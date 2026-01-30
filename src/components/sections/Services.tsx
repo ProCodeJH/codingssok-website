@@ -5,19 +5,19 @@ import Image from "next/image";
 
 const services = [
     {
-        icon: "💻",
+        num: "01",
         title: "텍스트 코딩 심화",
         desc: "C언어와 Python을 체계적으로",
         features: ["C언어 기초~심화", "Python 프로그래밍", "알고리즘 문제풀이"]
     },
     {
-        icon: "🔧",
+        num: "02",
         title: "피지컬 컴퓨팅",
         desc: "하드웨어와 소프트웨어 연결",
         features: ["아두이노 IoT", "센서 프로젝트", "로봇 제어"]
     },
     {
-        icon: "🏆",
+        num: "03",
         title: "대회 & 자격증",
         desc: "목표를 향해 체계적 준비",
         features: ["정보올림피아드", "SW 공모전", "정보처리기능사"]
@@ -144,7 +144,7 @@ export default function Services() {
                                 transition={{ delay: i * 0.1, duration: 0.8 }}
                                 className="card p-8 hover:shadow-2xl transition-all duration-500"
                             >
-                                <div className="text-5xl mb-6">{service.icon}</div>
+                                <div className="text-5xl font-bold text-gray-200 mb-6">{service.num}</div>
                                 <h3 className="heading-card mb-2">{service.title}</h3>
                                 <p className="text-body text-sm mb-6">{service.desc}</p>
                                 <div className="space-y-3">

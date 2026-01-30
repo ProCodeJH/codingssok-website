@@ -24,46 +24,57 @@ export default function Curriculum() {
                 </div>
 
                 <div className="relative z-10 max-w-7xl mx-auto px-6 w-full py-32">
-                    <div className="grid lg:grid-cols-2 gap-16 items-center">
-                        {/* Left: Content */}
+                    <div className="grid lg:grid-cols-2 gap-20 items-center">
+                        {/* Left: Content - 더 여유롭게, 덜 형식적으로 */}
                         <motion.div
                             initial={{ opacity: 0, y: 30 }}
                             whileInView={{ opacity: 1, y: 0 }}
                             viewport={{ once: true }}
                             transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-                            className="text-white"
+                            className="text-white lg:pl-8"
                         >
-                            <span className="label text-white/50 mb-4 block">커리큘럼</span>
-                            <h2 className="heading-section mb-8">
+                            <span className="text-sm font-medium text-blue-300 tracking-wide mb-6 block">
+                                커리큘럼
+                            </span>
+                            <h2 className="heading-section mb-10">
                                 체계적인 5트랙으로
                                 <br />
-                                <span className="text-white/70">완벽한 코딩 실력 완성</span>
+                                <span className="text-white/60">완벽한 코딩 실력 완성</span>
                             </h2>
 
-                            {/* Feature points */}
-                            <div className="space-y-4 mb-10">
-                                <p className="feature-point-white text-lg">실시간 학습 진도 추적 시스템</p>
-                                <p className="feature-point-white text-lg">개인 맞춤 AI 학습 도우미</p>
-                                <p className="feature-point-white text-lg">문제 발생 전 사전 알림</p>
+                            {/* Feature points - 자연스러운 문장 */}
+                            <div className="space-y-5 mb-12">
+                                <p className="flex items-center gap-4 text-white/90 text-lg">
+                                    <span className="text-blue-400">→</span>
+                                    실시간으로 학습 진도를 추적해드려요
+                                </p>
+                                <p className="flex items-center gap-4 text-white/90 text-lg">
+                                    <span className="text-blue-400">→</span>
+                                    맞춤형 AI가 학습을 도와드려요
+                                </p>
+                                <p className="flex items-center gap-4 text-white/90 text-lg">
+                                    <span className="text-blue-400">→</span>
+                                    문제가 생기기 전에 미리 알려드려요
+                                </p>
                             </div>
 
-                            {/* Quote */}
+                            {/* Quote - 더 자연스럽게 */}
                             <motion.div
-                                className="border-l-2 border-white/20 pl-6"
+                                className="border-l-2 border-white/30 pl-8"
                                 initial={{ opacity: 0, x: -20 }}
                                 whileInView={{ opacity: 1, x: 0 }}
                                 viewport={{ once: true }}
                                 transition={{ delay: 0.3, duration: 0.8 }}
                             >
-                                <p className="quote-white text-lg mb-4">
-                                    &quot;코딩쏙 덕분에 완전한 학습 관리 시스템을 갖추게 되었어요.
-                                    아이가 학습하는 동안 저희가 직접 챙기지 않아도 알아서 알려주세요.&quot;
+                                <p className="text-white/80 text-lg mb-4 leading-relaxed italic">
+                                    &quot;아이가 스스로 열심히 하더라고요.
+                                    저희가 일일이 챙기지 않아도 알아서 알려주니까 너무 편해요.&quot;
                                 </p>
-                                <p className="text-white/50 text-sm">— 초등 6학년 학부모</p>
+                                <p className="text-white/40 text-sm">초등 6학년 학부모님</p>
                             </motion.div>
                         </motion.div>
 
-                        {/* Right: Phone Mockup */}
+                        {/* Right: Phone Mockup - 투명 배경 */}
                         <motion.div
                             initial={{ opacity: 0, x: 60 }}
                             whileInView={{ opacity: 1, x: 0 }}
@@ -78,8 +89,8 @@ export default function Curriculum() {
                                 <Image
                                     src="/images/phone.png"
                                     alt="Mobile learning app"
-                                    width={300}
-                                    height={600}
+                                    width={280}
+                                    height={560}
                                     className="drop-shadow-2xl"
                                 />
                             </motion.div>
@@ -91,30 +102,41 @@ export default function Curriculum() {
             {/* Section 2: Split Layout */}
             <section className="relative min-h-[80vh]">
                 <div className="grid lg:grid-cols-2 min-h-[80vh]">
-                    {/* Left: White with content */}
+                    {/* Left: White with content - 패딩 개선 */}
                     <div className="bg-white py-24 px-6 lg:px-16 flex items-center">
-                        <div className="max-w-lg ml-auto">
+                        <div className="max-w-lg ml-auto lg:pr-8">
                             <motion.div
                                 initial={{ opacity: 0, y: 30 }}
                                 whileInView={{ opacity: 1, y: 0 }}
                                 viewport={{ once: true }}
                                 transition={{ duration: 0.8 }}
                             >
-                                <span className="label mb-6 block">실시간 소통</span>
-                                <h2 className="heading-section mb-6">
-                                    모든 정보가
+                                <span className="text-sm font-medium text-blue-600 tracking-wide mb-6 block">
+                                    실시간 소통
+                                </span>
+                                <h2 className="heading-section mb-8">
+                                    언제든 연락주세요.
                                     <br />
-                                    <span className="text-gray-400">실시간으로 공유됩니다</span>
+                                    <span className="text-gray-400">바로 답변드릴게요.</span>
                                 </h2>
-                                <p className="text-body-lg mb-8">
-                                    코딩쏙은 학부모님과 학생이 있는 곳에서 함께합니다 —
-                                    업데이트 공유, 질문 답변, 문제 해결까지 알아서 처리합니다.
+                                <p className="text-body-lg mb-10 leading-relaxed">
+                                    카카오톡, 문자, 전화 — 편하신 방법으로 연락주시면 됩니다.
+                                    학습 상담부터 진도 문의까지 실시간으로 도와드려요.
                                 </p>
 
                                 <div className="space-y-4 mb-10">
-                                    <p className="feature-point">카카오톡, 문자, 이메일로 즉시 응답</p>
-                                    <p className="feature-point">학습 상담 및 진도 문의 실시간 처리</p>
-                                    <p className="feature-point">학부모님과 학생에게 실시간 정보 제공</p>
+                                    <p className="flex items-center gap-4 text-gray-600 text-lg">
+                                        <span className="text-blue-500">→</span>
+                                        카카오톡으로 바로 상담
+                                    </p>
+                                    <p className="flex items-center gap-4 text-gray-600 text-lg">
+                                        <span className="text-blue-500">→</span>
+                                        수업 진도 실시간 확인
+                                    </p>
+                                    <p className="flex items-center gap-4 text-gray-600 text-lg">
+                                        <span className="text-blue-500">→</span>
+                                        중요한 알림은 자동 발송
+                                    </p>
                                 </div>
 
                                 <motion.a
@@ -123,7 +145,7 @@ export default function Curriculum() {
                                     whileHover={{ scale: 1.02 }}
                                     whileTap={{ scale: 0.98 }}
                                 >
-                                    상담 신청 <span className="opacity-60">→</span>
+                                    상담 신청하기 <span className="opacity-60">→</span>
                                 </motion.a>
                             </motion.div>
                         </div>
@@ -151,17 +173,17 @@ export default function Curriculum() {
                                 {/* Chat messages */}
                                 <div className="space-y-4">
                                     <div className="flex justify-end">
-                                        <div className="bg-blue-500 text-white px-4 py-2 rounded-2xl rounded-br-sm text-sm max-w-[200px]">
+                                        <div className="bg-blue-500 text-white px-5 py-3 rounded-2xl rounded-br-sm text-sm max-w-[220px]">
                                             우리 아이 진도가 어떻게 되나요?
                                         </div>
                                     </div>
 
                                     <div className="flex items-start gap-3">
-                                        <div className="w-8 h-8 rounded-lg bg-black flex items-center justify-center flex-shrink-0">
+                                        <div className="w-9 h-9 rounded-lg bg-black flex items-center justify-center flex-shrink-0">
                                             <span className="text-white text-xs font-bold">쏙</span>
                                         </div>
-                                        <div className="bg-white border px-4 py-2 rounded-2xl rounded-bl-sm text-sm shadow-sm">
-                                            Python 3장까지 완료했고, 다음 수업은 6월 26일 예정입니다! 🎉
+                                        <div className="bg-white border px-5 py-3 rounded-2xl rounded-bl-sm text-sm shadow-sm">
+                                            Python 3장까지 완료했어요! 다음 수업은 수요일이에요 :)
                                         </div>
                                     </div>
                                 </div>

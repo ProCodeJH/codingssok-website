@@ -1,0 +1,61 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model User {
+  id          String    @id @default(cuid())
+  name        String
+  email       String    @unique
+  password    String    // bcrypt hashed
+  eduCode     String?   // 교육코드 (74123)
+  role        String    @default("STUDENT") // STUDENT, TEACHER, ADMIN
+  points      Int       @default(0)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  submissions Submission[]
+  exchanges   PointExchange[]
+}
+
+model Problem {
+  id          String    @id @default(cuid())
+  title       String
+  description String
+  subject     String    // PYTHON, C_LANG, SCRATCH, ALGORITHM
+  difficulty  String    // EASY, MEDIUM, HARD
+  points      Int       @default(10)
+  answer      String
+  hint        String?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  submissions Submission[]
+}
+
+model Submission {
+  id        String   @id @default(cuid())
+  userId    String
+  problemId String
+  answer    String
+  isCorrect Boolean
+  earnedPts Int      @default(0)
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id])
+  problem   Problem  @relation(fields: [problemId], references: [id])
+}
+
+model PointExchange {
+  id        String   @id @default(cuid())
+  userId    String
+  points    Int
+  giftType  String   @default("문화상품권") // 기프티콘 종류
+  status    String   @default("PENDING") // PENDING, APPROVED, REJECTED
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id])
+}

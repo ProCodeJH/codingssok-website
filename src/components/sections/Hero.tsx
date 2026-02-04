@@ -5,7 +5,7 @@ import Image from "next/image";
 
 export default function Hero() {
     return (
-        <section className="relative min-h-screen flex items-center overflow-hidden bg-gradient-to-br from-slate-50 via-blue-50/30 to-purple-50/20">
+        <section className="relative min-h-screen flex items-center overflow-hidden bg-gradient-to-br from-slate-50 via-blue-50/30 to-purple-50/20 pt-20 md:pt-0">
             {/* Subtle background patterns */}
             <div className="absolute inset-0 overflow-hidden">
                 <div className="absolute top-20 left-10 w-96 h-96 bg-blue-200/20 rounded-full blur-3xl" />
@@ -13,8 +13,8 @@ export default function Hero() {
                 <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-gradient-to-br from-blue-100/10 to-purple-100/10 rounded-full blur-3xl" />
             </div>
 
-            <div className="relative z-10 max-w-7xl mx-auto px-8 lg:px-12 w-full py-24">
-                <div className="grid lg:grid-cols-2 gap-16 items-center">
+            <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-12 w-full py-12 md:py-24">
+                <div className="grid lg:grid-cols-2 gap-8 lg:gap-16 items-center">
                     {/* Left: Content */}
                     <motion.div
                         initial={{ opacity: 0, y: 40 }}
@@ -32,7 +32,7 @@ export default function Hero() {
                             <span className="text-sm font-medium text-blue-700">AI 시대의 코딩 교육</span>
                         </motion.div>
 
-                        <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 leading-tight">
+                        <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-4 sm:mb-6 leading-tight">
                             <span className="text-transparent bg-clip-text bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900">
                                 프리미엄
                             </span>
@@ -42,17 +42,17 @@ export default function Hero() {
                             </span>
                         </h1>
 
-                        <p className="text-lg md:text-xl text-gray-600 mb-10 max-w-lg mx-auto lg:mx-0 leading-relaxed">
+                        <p className="text-base sm:text-lg md:text-xl text-gray-600 mb-6 sm:mb-10 max-w-lg mx-auto lg:mx-0 leading-relaxed">
                             C·Python 중심 텍스트코딩 강화로 프로젝트·공모전·자격증까지.
                             <br className="hidden md:block" />
                             IT 현직 전문가가 직접 가르칩니다.
                         </p>
 
                         {/* CTAs */}
-                        <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start mb-12">
+                        <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center lg:justify-start mb-8 sm:mb-12">
                             <motion.a
                                 href="#contact"
-                                className="px-8 py-4 bg-gray-900 text-white font-semibold rounded-full hover:bg-gray-800 transition-all shadow-lg shadow-gray-900/20 flex items-center justify-center gap-2"
+                                className="px-6 sm:px-8 py-3 sm:py-4 bg-gray-900 text-white text-sm sm:text-base font-semibold rounded-full hover:bg-gray-800 transition-all shadow-lg shadow-gray-900/20 flex items-center justify-center gap-2"
                                 whileHover={{ scale: 1.02, y: -2 }}
                                 whileTap={{ scale: 0.98 }}
                             >
@@ -60,7 +60,7 @@ export default function Hero() {
                             </motion.a>
                             <motion.a
                                 href="#curriculum"
-                                className="px-8 py-4 bg-white text-gray-900 font-semibold rounded-full border-2 border-gray-200 hover:border-gray-300 transition-all flex items-center justify-center"
+                                className="px-6 sm:px-8 py-3 sm:py-4 bg-white text-gray-900 text-sm sm:text-base font-semibold rounded-full border-2 border-gray-200 hover:border-gray-300 transition-all flex items-center justify-center"
                                 whileHover={{ scale: 1.02, y: -2 }}
                                 whileTap={{ scale: 0.98 }}
                             >
@@ -70,7 +70,7 @@ export default function Hero() {
 
                         {/* Trust Badges */}
                         <motion.div
-                            className="flex flex-wrap items-center justify-center lg:justify-start gap-6"
+                            className="flex flex-wrap items-center justify-center lg:justify-start gap-3 sm:gap-6"
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
                             transition={{ delay: 0.6, duration: 0.8 }}

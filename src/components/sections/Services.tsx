@@ -38,7 +38,7 @@ export default function Services() {
         <>
             {/* Features Grid Section */}
             <section id="services" className="py-32 bg-white">
-                <div className="max-w-7xl mx-auto px-8 lg:px-12">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-12">
                     <motion.div
                         initial={{ opacity: 0, y: 30 }}
                         whileInView={{ opacity: 1, y: 0 }}
@@ -46,7 +46,7 @@ export default function Services() {
                         transition={{ duration: 0.8 }}
                         className="text-center mb-20"
                     >
-                        <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-4 leading-tight">
+                        <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-4 leading-tight">
                             세세한 것까지
                             <br />
                             <span className="text-gray-400">다 챙겨드립니다</span>
@@ -54,7 +54,7 @@ export default function Services() {
                     </motion.div>
 
                     {/* 3-Column Highlights */}
-                    <div className="grid md:grid-cols-3 gap-12 mb-32">
+                    <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-6 sm:gap-8 lg:gap-12 mb-16 sm:mb-24 lg:mb-32">
                         {highlights.map((item, i) => (
                             <motion.div
                                 key={i}
@@ -125,7 +125,7 @@ export default function Services() {
 
             {/* Services Cards - Photo Backgrounds */}
             <section className="py-32 bg-gradient-to-br from-gray-50 to-white">
-                <div className="max-w-7xl mx-auto px-8 lg:px-12">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-12">
                     <motion.div
                         initial={{ opacity: 0, y: 30 }}
                         whileInView={{ opacity: 1, y: 0 }}
@@ -136,14 +136,14 @@ export default function Services() {
                         <span className="inline-flex items-center gap-2 px-4 py-2 bg-purple-500/10 border border-purple-200/50 rounded-full mb-6">
                             <span className="text-sm font-medium text-purple-700">서비스</span>
                         </span>
-                        <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-4 leading-tight">
+                        <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-4 leading-tight">
                             IT 현직자가
                             <br />
                             <span className="text-gray-400">직접 가르칩니다</span>
                         </h2>
                     </motion.div>
 
-                    <div className="grid md:grid-cols-3 gap-8">
+                    <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
                         {services.map((service, i) => (
                             <motion.div
                                 key={i}
@@ -174,7 +174,7 @@ export default function Services() {
 
             {/* Photo Gallery */}
             <section className="py-32 bg-white">
-                <div className="max-w-7xl mx-auto px-8 lg:px-12">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-12">
                     <motion.div
                         initial={{ opacity: 0, y: 30 }}
                         whileInView={{ opacity: 1, y: 0 }}
@@ -187,7 +187,7 @@ export default function Services() {
                         </h2>
                     </motion.div>
 
-                    <div className="grid md:grid-cols-3 gap-6">
+                    <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6">
                         {[
                             { src: "/images/classroom1.png", alt: "Classroom 1" },
                             { src: "/images/mentor1.png", alt: "Mentor teaching" },

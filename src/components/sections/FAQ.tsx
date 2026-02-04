@@ -32,8 +32,8 @@ export default function FAQ() {
 
     return (
         <section id="faq" className="py-32 bg-gradient-to-br from-gray-50 to-white">
-            <div className="max-w-7xl mx-auto px-8 lg:px-12">
-                <div className="grid lg:grid-cols-2 gap-16 lg:gap-24">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-12">
+                <div className="grid lg:grid-cols-2 gap-8 lg:gap-16 xl:gap-24">
                     {/* Left: Header */}
                     <motion.div
                         initial={{ opacity: 0, y: 30 }}
@@ -44,7 +44,7 @@ export default function FAQ() {
                         <span className="inline-flex items-center gap-2 px-4 py-2 bg-gray-200/50 border border-gray-200 rounded-full mb-6">
                             <span className="text-sm font-medium text-gray-700">FAQ</span>
                         </span>
-                        <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-6 leading-tight">
+                        <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-4 sm:mb-6 leading-tight">
                             자주 묻는 질문
                         </h2>
                         <p className="text-lg text-gray-500 mb-10">
@@ -76,7 +76,7 @@ export default function FAQ() {
                                     onClick={() => setOpenIndex(openIndex === i ? null : i)}
                                     className="w-full flex items-center justify-between p-6 text-left hover:bg-gray-50 transition-colors"
                                 >
-                                    <span className="font-semibold text-gray-900 pr-4">{faq.q}</span>
+                                    <span className="font-semibold text-gray-900 pr-4 text-sm sm:text-base leading-relaxed">{faq.q}</span>
                                     <motion.div
                                         animate={{ rotate: openIndex === i ? 180 : 0 }}
                                         transition={{ duration: 0.3 }}

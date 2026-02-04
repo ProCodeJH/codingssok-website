@@ -39,7 +39,7 @@ const plans = [
 export default function Pricing() {
     return (
         <section id="pricing" className="py-32 bg-white">
-            <div className="max-w-7xl mx-auto px-8 lg:px-12">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-12">
                 <motion.div
                     initial={{ opacity: 0, y: 30 }}
                     whileInView={{ opacity: 1, y: 0 }}
@@ -50,7 +50,7 @@ export default function Pricing() {
                     <span className="inline-flex items-center gap-2 px-4 py-2 bg-orange-500/10 border border-orange-200/50 rounded-full mb-6">
                         <span className="text-sm font-medium text-orange-700">수강료</span>
                     </span>
-                    <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-6 leading-tight">
+                    <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-4 sm:mb-6 leading-tight">
                         합리적인 수강료,
                         <br />
                         <span className="text-gray-400">확실한 성과</span>
@@ -60,7 +60,7 @@ export default function Pricing() {
                     </p>
                 </motion.div>
 
-                <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+                <div className="grid md:grid-cols-3 gap-4 sm:gap-6 lg:gap-8 max-w-5xl mx-auto items-start">
                     {plans.map((plan, i) => (
                         <motion.div
                             key={i}
@@ -68,9 +68,9 @@ export default function Pricing() {
                             whileInView={{ opacity: 1, y: 0 }}
                             viewport={{ once: true }}
                             transition={{ delay: i * 0.1, duration: 0.8 }}
-                            className={`relative rounded-3xl p-8 transition-all duration-500 ${plan.popular
-                                    ? 'bg-gradient-to-br from-gray-900 to-gray-800 text-white shadow-2xl scale-105 border border-gray-700'
-                                    : 'bg-gray-50 hover:bg-white hover:shadow-xl border border-transparent hover:border-gray-100'
+                            className={`relative rounded-2xl sm:rounded-3xl p-6 sm:p-8 transition-all duration-500 ${plan.popular
+                                ? 'bg-gradient-to-br from-gray-900 to-gray-800 text-white shadow-2xl md:scale-[1.03] z-10 border border-gray-700'
+                                : 'bg-gray-50 hover:bg-white hover:shadow-xl border border-transparent hover:border-gray-100'
                                 }`}
                         >
                             {plan.popular && (
@@ -89,7 +89,7 @@ export default function Pricing() {
                             </div>
 
                             <div className="mb-10">
-                                <span className="text-4xl font-bold">{plan.price}</span>
+                                <span className="text-3xl sm:text-4xl font-bold">{plan.price}</span>
                                 <span className={`text-sm ${plan.popular ? 'text-gray-400' : 'text-gray-500'}`}>
                                     {plan.period}
                                 </span>
@@ -114,8 +114,8 @@ export default function Pricing() {
                             <motion.a
                                 href="#contact"
                                 className={`block w-full text-center py-4 rounded-full font-semibold text-sm transition-all ${plan.popular
-                                        ? 'bg-white text-gray-900 hover:bg-gray-100 shadow-lg'
-                                        : 'bg-gray-900 text-white hover:bg-gray-800'
+                                    ? 'bg-white text-gray-900 hover:bg-gray-100 shadow-lg'
+                                    : 'bg-gray-900 text-white hover:bg-gray-800'
                                     }`}
                                 whileHover={{ scale: 1.02, y: -2 }}
                                 whileTap={{ scale: 0.98 }}

@@ -15,14 +15,14 @@ export default function Footer() {
                     <div className="absolute bottom-20 right-10 w-80 h-80 bg-purple-500/10 rounded-full blur-3xl" />
                 </div>
 
-                <div className="relative z-10 max-w-4xl mx-auto px-8 lg:px-12 text-center">
+                <div className="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 lg:px-12 text-center">
                     <motion.div
                         initial={{ opacity: 0, y: 30 }}
                         whileInView={{ opacity: 1, y: 0 }}
                         viewport={{ once: true }}
                         transition={{ duration: 0.8 }}
                     >
-                        <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-6 leading-tight">
+                        <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-4 sm:mb-6 leading-tight">
                             꿈이 있으시군요.
                             <br />
                             <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-400">
@@ -50,7 +50,7 @@ export default function Footer() {
 
             {/* Achievement Gallery */}
             <section className="py-20 bg-white">
-                <div className="max-w-7xl mx-auto px-8 lg:px-12">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-12">
                     <motion.div
                         initial={{ opacity: 0, y: 30 }}
                         whileInView={{ opacity: 1, y: 0 }}
@@ -62,7 +62,7 @@ export default function Footer() {
                         <p className="text-gray-500">자격증 취득부터 대회 수상까지</p>
                     </motion.div>
 
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 sm:gap-6">
                         {[
                             { src: "/images/programming-cert.png", alt: "Certificate" },
                             { src: "/images/medal.png", alt: "Medal" },
@@ -91,8 +91,8 @@ export default function Footer() {
 
             {/* Footer */}
             <footer className="py-20 bg-gray-50 border-t border-gray-100">
-                <div className="max-w-7xl mx-auto px-8 lg:px-12">
-                    <div className="grid md:grid-cols-5 gap-12 mb-16">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-12">
+                    <div className="grid sm:grid-cols-2 md:grid-cols-5 gap-8 sm:gap-12 mb-12 sm:mb-16">
                         {/* Logo */}
                         <div className="md:col-span-2">
                             <Link href="/" className="inline-flex items-center gap-3 mb-6">

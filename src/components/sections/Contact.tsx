@@ -16,7 +16,7 @@ export default function Contact() {
     };
 
     return (
-        <section id="contact" className="w-full py-32 bg-gray-50 flex justify-center">
+        <section id="contact" className="w-full py-48 bg-gray-50 flex justify-center">
             <div className="w-full max-w-6xl mx-auto px-8">
                 <div className="flex flex-col lg:flex-row justify-center gap-12">
                     {/* Info */}

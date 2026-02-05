@@ -32,7 +32,7 @@ const plans = [
 
 export default function Pricing() {
     return (
-        <section id="pricing" className="w-full py-32 bg-gray-50 flex justify-center">
+        <section id="pricing" className="w-full py-48 bg-gray-50 flex justify-center">
             <div className="w-full max-w-6xl mx-auto px-8">
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
@@ -46,7 +46,7 @@ export default function Pricing() {
                     </h2>
                 </motion.div>
 
-                <div className="flex flex-wrap justify-center gap-8">
+                <div className="flex flex-wrap justify-center gap-12">
                     {plans.map((plan, i) => (
                         <motion.div
                             key={i}

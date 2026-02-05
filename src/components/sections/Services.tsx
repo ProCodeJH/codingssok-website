@@ -29,7 +29,7 @@ export default function Services() {
     return (
         <>
             {/* Quote */}
-            <section className="w-full py-32 bg-gray-900 flex justify-center">
+            <section className="w-full py-48 bg-gray-900 flex justify-center">
                 <div className="w-full max-w-4xl mx-auto px-8 text-center">
                     <motion.div
                         initial={{ opacity: 0, y: 20 }}
@@ -47,7 +47,7 @@ export default function Services() {
             </section>
 
             {/* Services */}
-            <section id="services" className="w-full py-32 bg-gray-50 flex justify-center">
+            <section id="services" className="w-full py-48 bg-gray-50 flex justify-center">
                 <div className="w-full max-w-6xl mx-auto px-8">
                     <motion.div
                         initial={{ opacity: 0, y: 20 }}
@@ -61,7 +61,7 @@ export default function Services() {
                         </h2>
                     </motion.div>
 
-                    <div className="flex flex-wrap justify-center gap-8">
+                    <div className="flex flex-wrap justify-center gap-12">
                         {services.map((service, i) => (
                             <motion.div
                                 key={i}
@@ -88,7 +88,7 @@ export default function Services() {
             </section>
 
             {/* Gallery */}
-            <section className="w-full py-32 bg-white flex justify-center">
+            <section className="w-full py-48 bg-white flex justify-center">
                 <div className="w-full max-w-6xl mx-auto px-8">
                     <motion.h2
                         initial={{ opacity: 0, y: 20 }}
@@ -99,7 +99,7 @@ export default function Services() {
                         수업 현장
                     </motion.h2>
 
-                    <div className="flex flex-wrap justify-center gap-8">
+                    <div className="flex flex-wrap justify-center gap-12">
                         {[
                             { src: "/images/classroom1.png", alt: "수업 현장 1" },
                             { src: "/images/mentor1.png", alt: "멘토링" },

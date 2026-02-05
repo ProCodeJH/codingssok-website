@@ -9,17 +9,15 @@ import Contact from "@/components/sections/Contact";
 
 export default function Home() {
   return (
-    <>
+    <div id="main-content">
       <Navbar />
-      <main className="flex-1 w-full">
-        <Hero />
-        <Curriculum />
-        <Services />
-        <Pricing />
-        <FAQ />
-        <Contact />
-      </main>
+      <Hero />
+      <Curriculum />
+      <Services />
+      <Pricing />
+      <FAQ />
+      <Contact />
       <Footer />
-    </>
+    </div>
   );
 }

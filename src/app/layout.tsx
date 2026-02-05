@@ -60,9 +60,7 @@ export default function RootLayout({
         >
           본문으로 바로가기
         </a>
-        <div id="main-content" className="min-h-screen flex flex-col">
-          {children}
-        </div>
+        {children}
       </body>
     </html>
   );

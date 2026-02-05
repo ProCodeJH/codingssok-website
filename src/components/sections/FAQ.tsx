@@ -16,7 +16,7 @@ export default function FAQ() {
     const [openIndex, setOpenIndex] = useState<number | null>(0);
 
     return (
-        <section id="faq" className="w-full py-48 bg-white flex justify-center">
+        <section id="faq" className="w-full bg-white flex justify-center" style={{ paddingTop: '200px', paddingBottom: '200px' }}>
             <div className="w-full max-w-3xl mx-auto px-8">
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}

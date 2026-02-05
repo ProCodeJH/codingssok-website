@@ -32,7 +32,7 @@ const plans = [
 
 export default function Pricing() {
     return (
-        <section id="pricing" className="w-full py-48 bg-gray-50 flex justify-center">
+        <section id="pricing" className="w-full bg-gray-50 flex justify-center" style={{ paddingTop: '200px', paddingBottom: '200px' }}>
             <div className="w-full max-w-6xl mx-auto px-8">
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}

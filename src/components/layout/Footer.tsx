@@ -8,7 +8,7 @@ export default function Footer() {
     return (
         <>
             {/* CTA Section */}
-            <section className="py-32 bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 relative overflow-hidden flex justify-center">
+            <section className="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 relative overflow-hidden flex justify-center" style={{ paddingTop: '200px', paddingBottom: '200px' }}>
                 {/* Background decorations */}
                 <div className="absolute inset-0">
                     <div className="absolute top-20 left-10 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl" />
@@ -49,7 +49,7 @@ export default function Footer() {
             </section>
 
             {/* Achievement Gallery */}
-            <section className="py-20 bg-white flex justify-center">
+            <section className="bg-white flex justify-center" style={{ paddingTop: '150px', paddingBottom: '150px' }}>
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-12">
                     <motion.div
                         initial={{ opacity: 0, y: 30 }}
@@ -90,7 +90,7 @@ export default function Footer() {
             </section>
 
             {/* Footer */}
-            <footer className="py-20 bg-gray-50 border-t border-gray-100 flex justify-center">
+            <footer className="bg-gray-50 border-t border-gray-100 flex justify-center" style={{ paddingTop: '150px', paddingBottom: '150px' }}>
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-12">
                     <div className="grid sm:grid-cols-2 md:grid-cols-5 gap-8 sm:gap-12 mb-12 sm:mb-16">
                         {/* Logo */}

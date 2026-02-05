@@ -24,7 +24,7 @@ export default function Curriculum() {
                     initial={{ opacity: 0, y: 20 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
-                    className="text-center mb-16"
+                    className="text-center" style={{ marginBottom: '100px' }}
                 >
                     <p className="text-sm text-gray-400 uppercase tracking-wider mb-4">Curriculum</p>
                     <h2 className="text-4xl font-bold text-gray-900">

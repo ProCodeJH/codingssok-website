@@ -38,7 +38,7 @@ export default function Pricing() {
                     initial={{ opacity: 0, y: 20 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
-                    className="text-center mb-16"
+                    className="text-center" style={{ marginBottom: '100px' }}
                 >
                     <p className="text-sm text-gray-400 uppercase tracking-wider mb-4">Pricing</p>
                     <h2 className="text-4xl font-bold text-gray-900">
@@ -46,7 +46,7 @@ export default function Pricing() {
                     </h2>
                 </motion.div>
 
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-start">
                     {plans.map((plan, i) => (
                         <motion.div
                             key={i}
@@ -58,7 +58,7 @@ export default function Pricing() {
                                 }`}
                         >
                             {plan.popular && (
-                                <span className="absolute -top-3 left-1/2 -translate-x-1/2 px-4 py-1 bg-white text-gray-900 text-xs font-bold rounded-full">
+                                <span className="inline-block px-4 py-1 bg-white text-gray-900 text-xs font-bold rounded-full mb-4">
                                     인기
                                 </span>
                             )}

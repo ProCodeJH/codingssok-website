@@ -29,7 +29,7 @@ export default function Services() {
     return (
         <>
             {/* Quote */}
-            <section className="py-24 bg-gray-900">
+            <section className="w-full py-24 bg-gray-900">
                 <div className="w-full max-w-4xl mx-auto px-8 text-center">
                     <motion.div
                         initial={{ opacity: 0, y: 20 }}
@@ -47,7 +47,7 @@ export default function Services() {
             </section>
 
             {/* Services */}
-            <section id="services" className="py-24 bg-gray-50">
+            <section id="services" className="w-full py-24 bg-gray-50">
                 <div className="w-full max-w-6xl mx-auto px-8">
                     <motion.div
                         initial={{ opacity: 0, y: 20 }}
@@ -88,7 +88,7 @@ export default function Services() {
             </section>
 
             {/* Gallery */}
-            <section className="py-24 bg-white">
+            <section className="w-full py-24 bg-white">
                 <div className="w-full max-w-6xl mx-auto px-8">
                     <motion.h2
                         initial={{ opacity: 0, y: 20 }}

@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, MessageCircle } from "lucide-react";
 
 const faqs = [
     {
@@ -31,81 +31,86 @@ export default function FAQ() {
     const [openIndex, setOpenIndex] = useState<number | null>(0);
 
     return (
-        <section id="faq" className="py-32 bg-gradient-to-br from-gray-50 to-white">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-12">
-                <div className="grid lg:grid-cols-2 gap-8 lg:gap-16 xl:gap-24">
-                    {/* Left: Header */}
-                    <motion.div
-                        initial={{ opacity: 0, y: 30 }}
-                        whileInView={{ opacity: 1, y: 0 }}
-                        viewport={{ once: true }}
-                        transition={{ duration: 0.8 }}
-                        className="text-center lg:text-left"
+        <section id="faq" className="py-24 sm:py-32 bg-gradient-to-br from-gray-50 to-white">
+            <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-12">
+                {/* Header - Centered */}
+                <motion.div
+                    initial={{ opacity: 0, y: 30 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.8 }}
+                    className="text-center mb-12 sm:mb-16"
+                >
+                    <motion.span
+                        className="inline-flex items-center gap-2 px-5 py-2.5 bg-gray-100 border border-gray-200 rounded-full mb-6"
+                        whileHover={{ scale: 1.05 }}
                     >
-                        <span className="inline-flex items-center gap-2 px-4 py-2 bg-gray-200/50 border border-gray-200 rounded-full mb-6">
-                            <span className="text-sm font-medium text-gray-700">FAQ</span>
-                        </span>
-                        <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-4 sm:mb-6 leading-tight">
-                            자주 묻는 질문
-                        </h2>
-                        <p className="text-lg text-gray-500 mb-10">
-                            더 궁금한 점이 있으시면 언제든지 상담 신청해주세요.
-                        </p>
+                        <MessageCircle size={16} className="text-gray-600" />
+                        <span className="text-sm font-semibold text-gray-700">FAQ</span>
+                    </motion.span>
+                    <h2 className="text-3xl sm:text-4xl md:text-5xl font-black text-gray-900 mb-4 sm:mb-6">
+                        자주 묻는 질문
+                    </h2>
+                    <p className="text-lg sm:text-xl text-gray-500 max-w-md mx-auto">
+                        더 궁금한 점이 있으시면 언제든지 상담 신청해주세요
+                    </p>
+                </motion.div>
 
-                        <motion.a
-                            href="#contact"
-                            className="inline-flex items-center gap-2 px-8 py-4 border-2 border-gray-900 text-gray-900 font-semibold rounded-full hover:bg-gray-900 hover:text-white transition-all"
-                            whileHover={{ scale: 1.02, y: -2 }}
-                            whileTap={{ scale: 0.98 }}
+                {/* Accordion - Centered */}
+                <div className="space-y-4 mb-12">
+                    {faqs.map((faq, i) => (
+                        <motion.div
+                            key={i}
+                            initial={{ opacity: 0, y: 20 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true }}
+                            transition={{ delay: i * 0.05, duration: 0.6 }}
+                            className="bg-white rounded-2xl overflow-hidden shadow-lg border border-gray-100"
                         >
-                            상담 신청 <span className="opacity-60">→</span>
-                        </motion.a>
-                    </motion.div>
-
-                    {/* Right: Accordion */}
-                    <div className="space-y-4">
-                        {faqs.map((faq, i) => (
-                            <motion.div
-                                key={i}
-                                initial={{ opacity: 0, y: 20 }}
-                                whileInView={{ opacity: 1, y: 0 }}
-                                viewport={{ once: true }}
-                                transition={{ delay: i * 0.05, duration: 0.6 }}
-                                className="bg-white rounded-2xl overflow-hidden shadow-sm border border-gray-100"
+                            <button
+                                onClick={() => setOpenIndex(openIndex === i ? null : i)}
+                                className="w-full flex items-center justify-between p-6 text-left hover:bg-gray-50 transition-colors"
                             >
-                                <button
-                                    onClick={() => setOpenIndex(openIndex === i ? null : i)}
-                                    className="w-full flex items-center justify-between p-6 text-left hover:bg-gray-50 transition-colors"
+                                <span className="font-bold text-gray-900 pr-4 text-base sm:text-lg leading-relaxed">{faq.q}</span>
+                                <motion.div
+                                    animate={{ rotate: openIndex === i ? 180 : 0 }}
+                                    transition={{ duration: 0.3 }}
+                                    className="flex-shrink-0 w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center"
                                 >
-                                    <span className="font-semibold text-gray-900 pr-4 text-sm sm:text-base leading-relaxed">{faq.q}</span>
-                                    <motion.div
-                                        animate={{ rotate: openIndex === i ? 180 : 0 }}
-                                        transition={{ duration: 0.3 }}
-                                        className="flex-shrink-0"
-                                    >
-                                        <ChevronDown size={20} className="text-gray-400" />
-                                    </motion.div>
-                                </button>
+                                    <ChevronDown size={18} className="text-gray-600" />
+                                </motion.div>
+                            </button>
 
-                                <AnimatePresence>
-                                    {openIndex === i && (
-                                        <motion.div
-                                            initial={{ height: 0, opacity: 0 }}
-                                            animate={{ height: "auto", opacity: 1 }}
-                                            exit={{ height: 0, opacity: 0 }}
-                                            transition={{ duration: 0.3, ease: "easeInOut" }}
-                                        >
-                                            <div className="px-6 pb-6">
-                                                <p className="text-gray-600 leading-relaxed">
-                                                    {faq.a}
-                                                </p>
-                                            </div>
-                                        </motion.div>
-                                    )}
-                                </AnimatePresence>
-                            </motion.div>
-                        ))}
-                    </div>
+                            <AnimatePresence>
+                                {openIndex === i && (
+                                    <motion.div
+                                        initial={{ height: 0, opacity: 0 }}
+                                        animate={{ height: "auto", opacity: 1 }}
+                                        exit={{ height: 0, opacity: 0 }}
+                                        transition={{ duration: 0.3, ease: "easeInOut" }}
+                                    >
+                                        <div className="px-6 pb-6">
+                                            <p className="text-gray-600 leading-relaxed text-base">
+                                                {faq.a}
+                                            </p>
+                                        </div>
+                                    </motion.div>
+                                )}
+                            </AnimatePresence>
+                        </motion.div>
+                    ))}
+                </div>
+
+                {/* CTA Button - Centered */}
+                <div className="text-center">
+                    <motion.a
+                        href="#contact"
+                        className="inline-flex items-center gap-3 px-10 py-5 bg-gray-900 text-white font-bold text-lg rounded-2xl hover:bg-gray-800 transition-all shadow-xl shadow-gray-900/20"
+                        whileHover={{ scale: 1.03, y: -2 }}
+                        whileTap={{ scale: 0.98 }}
+                    >
+                        상담 신청하기 <span className="opacity-60">→</span>
+                    </motion.a>
                 </div>
             </div>
         </section>

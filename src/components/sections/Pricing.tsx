@@ -85,7 +85,7 @@ export default function Pricing() {
                             viewport={{ once: true }}
                             transition={{ delay: i * 0.15, duration: 0.8 }}
                             whileHover={{ y: -8 }}
-                            className={`relative rounded-3xl p-8 lg:p-10 transition-all duration-500 ${plan.popular
+                            className={`relative rounded-3xl p-8 lg:p-10 transition-all duration-500 text-center ${plan.popular
                                 ? 'bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-white shadow-2xl shadow-gray-900/30 md:scale-[1.05] z-10 border border-gray-700/50'
                                 : 'bg-white/90 backdrop-blur-xl hover:shadow-2xl border border-white/50 shadow-lg'
                                 }`}
@@ -104,7 +104,7 @@ export default function Pricing() {
                             )}
 
                             {/* Icon */}
-                            <div className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${plan.gradient} flex items-center justify-center mb-6 shadow-lg ${plan.popular ? 'shadow-blue-500/30' : ''}`}>
+                            <div className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${plan.gradient} flex items-center justify-center mb-6 shadow-lg mx-auto ${plan.popular ? 'shadow-blue-500/30' : ''}`}>
                                 <plan.icon size={24} className="text-white" />
                             </div>
 
@@ -122,7 +122,7 @@ export default function Pricing() {
                                 </span>
                             </div>
 
-                            <ul className="space-y-4 mb-10">
+                            <ul className="space-y-4 mb-10 text-left inline-block">
                                 {plan.features.map((feature, j) => (
                                     <li key={j} className="flex items-start gap-3">
                                         <div className={`w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5 ${plan.popular ? 'bg-blue-500/20' : 'bg-blue-500/10'}`}>

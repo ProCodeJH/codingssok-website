@@ -2,125 +2,138 @@
 
 import { useState } from "react";
 import { motion } from "framer-motion";
-import Image from "next/image";
-import { MapPin, Phone, Clock } from "lucide-react";
+import { MapPin, Phone, Clock, Send, Sparkles } from "lucide-react";
 
 export default function Contact() {
-    const [formData, setFormData] = useState({ name: "", phone: "", grade: "", message: "" });
-    const [isSubmitted, setIsSubmitted] = useState(false);
-
-    const handleSubmit = (e: React.FormEvent) => {
-        e.preventDefault();
-        setIsSubmitted(true);
-        setTimeout(() => setIsSubmitted(false), 3000);
-    };
+    const [formData, setFormData] = useState({
+        type: "",
+        name: "",
+        phone: "",
+        grade: "",
+        message: "",
+    });
 
     return (
-        <section id="contact" className="w-full bg-gray-50 flex justify-center" style={{ paddingTop: '200px', paddingBottom: '200px' }}>
+        <section id="contact" className="w-full bg-gradient-to-b from-gray-50 to-white flex justify-center" style={{ paddingTop: '200px', paddingBottom: '200px' }}>
             <div className="w-full max-w-6xl mx-auto px-8">
+                <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    className="text-center" style={{ marginBottom: '100px' }}
+                >
+                    <span className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-green-100 to-emerald-100 text-green-700 rounded-full text-sm font-medium mb-6">
+                        <Sparkles size={16} />
+                        CONTACT
+                    </span>
+                    <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
+                        상담 신청
+                    </h2>
+                    <p className="text-lg text-gray-500 max-w-md mx-auto">
+                        무료 상담으로 맞춤 커리큘럼을 안내받으세요
+                    </p>
+                </motion.div>
+
                 <div className="flex flex-col lg:flex-row justify-center gap-12">
                     {/* Info */}
                     <motion.div
-                        initial={{ opacity: 0, y: 20 }}
-                        whileInView={{ opacity: 1, y: 0 }}
+                        initial={{ opacity: 0, x: -20 }}
+                        whileInView={{ opacity: 1, x: 0 }}
                         viewport={{ once: true }}
-                        className="flex-1 max-w-md"
+                        className="lg:w-1/3 space-y-6"
                     >
-                        <p className="text-sm text-gray-400 uppercase tracking-wider mb-4">Contact</p>
-                        <h2 className="text-4xl font-bold text-gray-900 mb-6">상담 신청</h2>
-                        <p className="text-gray-500 mb-10">무료 상담으로 맞춤 커리큘럼을 안내받으세요.</p>
-
-                        <div className="space-y-6 mb-10">
-                            {[
-                                { icon: MapPin, label: "위치", value: "대전 유성구 봉명동" },
-                                { icon: Phone, label: "전화", value: "010-1234-5678" },
-                                { icon: Clock, label: "운영", value: "평일 14:00 ~ 21:00" },
-                            ].map(({ icon: Icon, label, value }, i) => (
-                                <div key={i} className="flex items-center gap-4">
-                                    <div className="w-12 h-12 bg-gray-900 rounded-xl flex items-center justify-center">
-                                        <Icon size={20} className="text-white" />
-                                    </div>
-                                    <div>
-                                        <p className="font-semibold text-gray-900">{label}</p>
-                                        <p className="text-gray-500">{value}</p>
-                                    </div>
-                                </div>
-                            ))}
+                        <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-2xl p-6 border border-blue-100/50">
+                            <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-xl flex items-center justify-center mb-4">
+                                <MapPin size={24} className="text-white" />
+                            </div>
+                            <h3 className="font-bold text-gray-900 mb-2">위치</h3>
+                            <p className="text-gray-600">대전 유성구 봉명동</p>
                         </div>
 
-                        <div className="relative h-40 rounded-2xl overflow-hidden">
-                            <Image src="/images/classroom2.png" alt="학원" fill className="object-cover" />
+                        <div className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-2xl p-6 border border-green-100/50">
+                            <div className="w-12 h-12 bg-gradient-to-br from-green-500 to-emerald-500 rounded-xl flex items-center justify-center mb-4">
+                                <Phone size={24} className="text-white" />
+                            </div>
+                            <h3 className="font-bold text-gray-900 mb-2">전화</h3>
+                            <p className="text-gray-600">010-1234-5678</p>
+                        </div>
+
+                        <div className="bg-gradient-to-br from-purple-50 to-pink-50 rounded-2xl p-6 border border-purple-100/50">
+                            <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-pink-500 rounded-xl flex items-center justify-center mb-4">
+                                <Clock size={24} className="text-white" />
+                            </div>
+                            <h3 className="font-bold text-gray-900 mb-2">운영</h3>
+                            <p className="text-gray-600">평일 14:00 ~ 21:00</p>
                         </div>
                     </motion.div>
 
                     {/* Form */}
                     <motion.div
-                        initial={{ opacity: 0, y: 20 }}
-                        whileInView={{ opacity: 1, y: 0 }}
+                        initial={{ opacity: 0, x: 20 }}
+                        whileInView={{ opacity: 1, x: 0 }}
                         viewport={{ once: true }}
-                        transition={{ delay: 0.1 }}
-                        className="flex-1 max-w-md bg-white rounded-2xl p-8"
+                        className="lg:w-2/3"
                     >
-                        {isSubmitted ? (
-                            <div className="text-center py-16">
-                                <div className="w-16 h-16 bg-gray-900 rounded-full flex items-center justify-center mx-auto mb-6 text-white text-2xl">✓</div>
-                                <h3 className="text-xl font-bold text-gray-900 mb-2">신청 완료</h3>
-                                <p className="text-gray-500">빠른 시일 내에 연락드리겠습니다.</p>
-                            </div>
-                        ) : (
-                            <form onSubmit={handleSubmit} className="space-y-5">
-                                {[
-                                    { label: "이름", type: "text", key: "name", placeholder: "홍길동" },
-                                    { label: "연락처", type: "tel", key: "phone", placeholder: "010-0000-0000" },
-                                ].map(({ label, type, key, placeholder }) => (
-                                    <div key={key}>
-                                        <label className="block text-sm font-medium text-gray-700 mb-2">{label}</label>
-                                        <input
-                                            type={type}
-                                            value={formData[key as keyof typeof formData]}
-                                            onChange={(e) => setFormData({ ...formData, [key]: e.target.value })}
-                                            className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-900"
-                                            placeholder={placeholder}
-                                            required
-                                        />
-                                    </div>
-                                ))}
+                        <form className="bg-white rounded-3xl p-8 shadow-xl shadow-gray-200/50 border border-gray-100">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">학년</label>
-                                    <select
-                                        value={formData.grade}
-                                        onChange={(e) => setFormData({ ...formData, grade: e.target.value })}
-                                        className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-900"
-                                        required
-                                    >
-                                        <option value="">선택</option>
-                                        <option>초등 저학년</option>
-                                        <option>초등 고학년</option>
-                                        <option>중학생</option>
-                                        <option>고등학생</option>
-                                        <option>성인</option>
-                                    </select>
-                                </div>
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">문의 내용</label>
-                                    <textarea
-                                        value={formData.message}
-                                        onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-                                        className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-900 resize-none"
-                                        rows={4}
-                                        placeholder="궁금한 점을 적어주세요"
+                                    <label className="block text-sm font-medium text-gray-700 mb-2">이름</label>
+                                    <input
+                                        type="text"
+                                        placeholder="홍길동"
+                                        className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all outline-none"
+                                        value={formData.name}
+                                        onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                                     />
                                 </div>
-                                <motion.button
-                                    type="submit"
-                                    className="w-full py-4 bg-gray-900 text-white font-semibold rounded-xl"
-                                    whileHover={{ scale: 1.01 }}
-                                    whileTap={{ scale: 0.99 }}
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-2">연락처</label>
+                                    <input
+                                        type="tel"
+                                        placeholder="010-0000-0000"
+                                        className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all outline-none"
+                                        value={formData.phone}
+                                        onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                                    />
+                                </div>
+                            </div>
+
+                            <div className="mb-6">
+                                <label className="block text-sm font-medium text-gray-700 mb-2">학년</label>
+                                <select
+                                    className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all outline-none bg-white"
+                                    value={formData.grade}
+                                    onChange={(e) => setFormData({ ...formData, grade: e.target.value })}
                                 >
-                                    상담 신청하기
-                                </motion.button>
-                            </form>
-                        )}
+                                    <option value="">선택</option>
+                                    <option value="elementary">초등학생</option>
+                                    <option value="middle">중학생</option>
+                                    <option value="high">고등학생</option>
+                                    <option value="adult">성인</option>
+                                </select>
+                            </div>
+
+                            <div className="mb-8">
+                                <label className="block text-sm font-medium text-gray-700 mb-2">문의 내용</label>
+                                <textarea
+                                    rows={4}
+                                    placeholder="궁금한 점을 적어주세요"
+                                    className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all outline-none resize-none"
+                                    value={formData.message}
+                                    onChange={(e) => setFormData({ ...formData, message: e.target.value })}
+                                />
+                            </div>
+
+                            <motion.button
+                                type="submit"
+                                className="w-full py-4 bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-semibold rounded-xl hover:from-blue-700 hover:to-indigo-700 transition-all flex items-center justify-center gap-2 shadow-lg shadow-blue-500/25"
+                                whileHover={{ scale: 1.01 }}
+                                whileTap={{ scale: 0.99 }}
+                            >
+                                <Send size={18} />
+                                상담 신청하기
+                            </motion.button>
+                        </form>
                     </motion.div>
                 </div>
             </div>

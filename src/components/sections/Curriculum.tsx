@@ -43,7 +43,7 @@ export default function Curriculum() {
                                 whileInView={{ opacity: 1, y: 0 }}
                                 viewport={{ once: true }}
                                 transition={{ delay: i * 0.1, duration: 0.6 }}
-                                className="group bg-gray-50 rounded-2xl sm:rounded-3xl p-4 sm:p-6 hover:bg-white hover:shadow-xl transition-all duration-300 border border-transparent hover:border-gray-100"
+                                className="group bg-gray-50 rounded-2xl sm:rounded-3xl p-4 sm:p-6 hover:bg-white hover:shadow-xl transition-all duration-300 border border-transparent hover:border-gray-100 text-center"
                             >
                                 <span className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-200 group-hover:text-blue-200 transition-colors block mb-2 sm:mb-4">
                                     {track.num}

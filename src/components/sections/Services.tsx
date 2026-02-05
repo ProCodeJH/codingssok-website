@@ -114,7 +114,7 @@ export default function Services() {
                             <div className="w-14 h-14 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center shadow-lg">
                                 <span className="text-white font-bold text-lg">쏙</span>
                             </div>
-                            <div className="text-left">
+                            <div className="text-center">
                                 <p className="font-semibold text-lg">코딩쏙 학원</p>
                                 <p className="text-gray-400">IT 교육 전문</p>
                             </div>
@@ -151,16 +151,16 @@ export default function Services() {
                                 whileInView={{ opacity: 1, y: 0 }}
                                 viewport={{ once: true }}
                                 transition={{ delay: i * 0.1, duration: 0.8 }}
-                                className="group bg-white rounded-3xl p-8 shadow-sm hover:shadow-2xl transition-all duration-500 border border-gray-100"
+                                className="group bg-white rounded-3xl p-8 shadow-sm hover:shadow-2xl transition-all duration-500 border border-gray-100 text-center"
                             >
-                                <div className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${service.gradient} flex items-center justify-center mb-6 shadow-lg`}>
+                                <div className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${service.gradient} flex items-center justify-center mb-6 shadow-lg mx-auto`}>
                                     <span className="text-white font-bold text-lg">{service.num}</span>
                                 </div>
                                 <h3 className="text-xl font-bold text-gray-900 mb-2">{service.title}</h3>
                                 <p className="text-gray-500 text-sm mb-8">{service.desc}</p>
                                 <div className="space-y-3">
                                     {service.features.map((f, j) => (
-                                        <p key={j} className="flex items-center gap-3 text-gray-600 text-sm">
+                                        <p key={j} className="flex items-center justify-center gap-3 text-gray-600 text-sm">
                                             <span className="text-blue-500">→</span>
                                             {f}
                                         </p>

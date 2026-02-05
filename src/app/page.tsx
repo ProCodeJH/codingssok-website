@@ -11,7 +11,7 @@ export default function Home() {
   return (
     <>
       <Navbar />
-      <main className="w-full">
+      <main className="flex-1 w-full flex flex-col items-center">
         <Hero />
         <Curriculum />
         <Services />

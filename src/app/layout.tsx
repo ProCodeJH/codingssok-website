@@ -65,14 +65,14 @@ export default function RootLayout({
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
       </head>
-      <body className="antialiased" suppressHydrationWarning>
+      <body className="antialiased min-h-screen flex flex-col items-center" suppressHydrationWarning>
         <a
           href="#main-content"
           className="sr-only focus:not-sr-only focus:absolute focus:z-50 focus:p-4 focus:bg-[#0066FF] focus:text-white focus:rounded-lg focus:top-4 focus:left-4"
         >
           본문으로 바로가기
         </a>
-        <main id="main-content">
+        <main id="main-content" className="w-full">
           {children}
         </main>
       </body>

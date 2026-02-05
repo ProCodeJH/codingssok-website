@@ -18,7 +18,7 @@ const features = [
 
 export default function Curriculum() {
     return (
-        <section id="curriculum" className="w-full py-24 bg-white">
+        <section id="curriculum" className="w-full py-24 bg-white flex justify-center">
             <div className="w-full max-w-6xl mx-auto px-8">
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}

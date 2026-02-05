@@ -7,7 +7,7 @@ const tracks = [
     { num: "02", title: "C언어", desc: "문법 · 알고리즘" },
     { num: "03", title: "Python", desc: "데이터 · 자동화" },
     { num: "04", title: "아두이노", desc: "IoT · 로봇" },
-    { num: "05", title: "대회/자격증", desc: "정보올림피아드" },
+    { num: "05", title: "대회", desc: "정보올림피아드" },
 ];
 
 const features = [
@@ -20,34 +20,29 @@ export default function Curriculum() {
     return (
         <section id="curriculum" className="py-24 bg-white">
             <div className="max-w-5xl mx-auto px-6 lg:px-8">
-                {/* Header */}
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
                     className="text-center mb-16"
                 >
-                    <p className="text-sm font-medium text-gray-400 uppercase tracking-wider mb-4">Curriculum</p>
-                    <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-900 mb-4">
+                    <p className="text-sm text-gray-400 uppercase tracking-wider mb-4">Curriculum</p>
+                    <h2 className="text-3xl lg:text-4xl font-bold text-gray-900">
                         체계적인 5트랙 커리큘럼
                     </h2>
-                    <p className="text-lg text-gray-500 max-w-lg mx-auto">
-                        기초부터 대회 준비까지, 단계별 맞춤 학습
-                    </p>
                 </motion.div>
 
-                {/* 5 Tracks */}
                 <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 mb-20">
                     {tracks.map((track, i) => (
                         <motion.div
                             key={i}
-                            initial={{ opacity: 0, y: 20 }}
+                            initial={{ opacity: 0, y: 16 }}
                             whileInView={{ opacity: 1, y: 0 }}
                             viewport={{ once: true }}
-                            transition={{ delay: i * 0.1 }}
-                            className="group bg-gray-50 hover:bg-gray-900 rounded-2xl p-6 text-center transition-colors duration-300 cursor-pointer"
+                            transition={{ delay: i * 0.05 }}
+                            className="group bg-gray-50 hover:bg-gray-900 rounded-2xl p-6 text-center cursor-pointer transition-colors"
                         >
-                            <span className="text-3xl font-bold text-gray-200 group-hover:text-gray-700 block mb-3 transition-colors">
+                            <span className="text-3xl font-bold text-gray-200 group-hover:text-gray-700 block mb-2 transition-colors">
                                 {track.num}
                             </span>
                             <h3 className="font-bold text-gray-900 group-hover:text-white mb-1 transition-colors">
@@ -60,21 +55,20 @@ export default function Curriculum() {
                     ))}
                 </div>
 
-                {/* Features */}
                 <div className="grid md:grid-cols-3 gap-6">
                     {features.map((feature, i) => (
                         <motion.div
                             key={i}
-                            initial={{ opacity: 0, y: 20 }}
+                            initial={{ opacity: 0, y: 16 }}
                             whileInView={{ opacity: 1, y: 0 }}
                             viewport={{ once: true }}
-                            transition={{ delay: i * 0.1 }}
+                            transition={{ delay: i * 0.05 }}
                             className="bg-gray-50 rounded-2xl p-8 text-center"
                         >
-                            <div className="w-12 h-12 rounded-full bg-gray-900 text-white flex items-center justify-center mx-auto mb-5">
-                                <span className="font-bold">{String(i + 1).padStart(2, '0')}</span>
+                            <div className="w-12 h-12 bg-gray-900 text-white rounded-full flex items-center justify-center mx-auto mb-5 font-bold">
+                                {String(i + 1).padStart(2, '0')}
                             </div>
-                            <h3 className="font-bold text-gray-900 mb-2">{feature.title}</h3>
+                            <h3 className="font-semibold text-gray-900 mb-2">{feature.title}</h3>
                             <p className="text-gray-500">{feature.desc}</p>
                         </motion.div>
                     ))}

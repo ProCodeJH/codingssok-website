@@ -63,6 +63,7 @@ export default function Services() {
                         </p>
                     </motion.div>
 
+                    {/* 서비스 카드 - 동일 높이 */}
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                         {services.map((service, i) => (
                             <motion.div
@@ -71,14 +72,15 @@ export default function Services() {
                                 whileInView={{ opacity: 1, y: 0 }}
                                 viewport={{ once: true }}
                                 transition={{ delay: i * 0.1 }}
-                                className="bg-white rounded-2xl p-8 text-center border border-gray-200 shadow-sm"
+                                className="flex flex-col items-center bg-white rounded-2xl p-8 border border-gray-200 shadow-sm"
+                                style={{ minHeight: '320px' }}
                             >
-                                <div className="w-14 h-14 bg-gray-900 rounded-2xl flex items-center justify-center mx-auto mb-6">
+                                <div className="w-14 h-14 bg-gray-900 rounded-2xl flex items-center justify-center mb-6">
                                     <service.icon size={24} className="text-white" />
                                 </div>
-                                <h3 className="text-lg font-bold text-gray-900 mb-1">{service.title}</h3>
-                                <p className="text-sm text-gray-500 mb-6">{service.desc}</p>
-                                <ul className="space-y-2 text-sm text-gray-600">
+                                <h3 className="text-lg font-bold text-gray-900 mb-1 text-center">{service.title}</h3>
+                                <p className="text-sm text-gray-500 mb-6 text-center">{service.desc}</p>
+                                <ul className="space-y-2 text-sm text-gray-600 text-center mt-auto">
                                     {service.items.map((item, j) => (
                                         <li key={j}>{item}</li>
                                     ))}
@@ -103,6 +105,7 @@ export default function Services() {
                         </h2>
                     </motion.div>
 
+                    {/* 갤러리 - 동일 높이 (aspect ratio) */}
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                         {[
                             { src: "/images/classroom1.png", alt: "수업 현장 1" },

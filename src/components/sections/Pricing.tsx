@@ -30,6 +30,9 @@ const plans = [
     },
 ];
 
+// 최대 feature 개수에 맞춰 빈 항목 추가
+const maxFeatures = Math.max(...plans.map(p => p.features.length));
+
 export default function Pricing() {
     return (
         <section id="pricing" className="w-full bg-gray-50 flex justify-center" style={{ paddingTop: '160px', paddingBottom: '160px' }}>
@@ -49,55 +52,72 @@ export default function Pricing() {
                 </motion.div>
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    {plans.map((plan, i) => (
-                        <motion.div
-                            key={i}
-                            initial={{ opacity: 0, y: 20 }}
-                            whileInView={{ opacity: 1, y: 0 }}
-                            viewport={{ once: true }}
-                            transition={{ delay: i * 0.1 }}
-                            className="relative bg-white rounded-2xl p-8 border border-gray-200 shadow-sm"
-                        >
-                            {/* 인기 배지 - 카드 내부 상단 */}
-                            {plan.popular && (
-                                <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2">
-                                    <span className="px-4 py-1.5 bg-gray-900 text-white text-xs font-medium rounded-full">
-                                        인기
-                                    </span>
-                                </div>
-                            )}
+                    {plans.map((plan, i) => {
+                        // 빈 feature로 높이 맞추기
+                        const paddedFeatures = [...plan.features];
+                        while (paddedFeatures.length < maxFeatures) {
+                            paddedFeatures.push("");
+                        }
 
-                            <div className="text-center" style={{ marginTop: plan.popular ? '16px' : '0' }}>
-                                <h3 className="text-xl font-bold text-gray-900 mb-1">{plan.name}</h3>
-                                <p className="text-sm text-gray-500 mb-6">{plan.desc}</p>
-
-                                <div className="mb-8">
-                                    <span className="text-4xl font-bold text-gray-900">{plan.price}</span>
-                                    <span className="text-gray-400">{plan.period}</span>
-                                </div>
-                            </div>
-
-                            <ul className="space-y-4 mb-8">
-                                {plan.features.map((f, j) => (
-                                    <li key={j} className="flex items-center gap-3 text-sm text-gray-600">
-                                        <div className="w-5 h-5 bg-gray-100 rounded-full flex items-center justify-center flex-shrink-0">
-                                            <Check size={12} className="text-gray-600" />
-                                        </div>
-                                        {f}
-                                    </li>
-                                ))}
-                            </ul>
-
-                            <motion.a
-                                href="#contact"
-                                className="block w-full py-3.5 bg-gray-900 text-white font-medium rounded-xl text-center hover:bg-gray-800 transition-colors"
-                                whileHover={{ scale: 1.02 }}
-                                whileTap={{ scale: 0.98 }}
+                        return (
+                            <motion.div
+                                key={i}
+                                initial={{ opacity: 0, y: 20 }}
+                                whileInView={{ opacity: 1, y: 0 }}
+                                viewport={{ once: true }}
+                                transition={{ delay: i * 0.1 }}
+                                className="flex flex-col bg-white rounded-2xl p-8 border border-gray-200 shadow-sm"
                             >
-                                문의하기
-                            </motion.a>
-                        </motion.div>
-                    ))}
+                                {/* 인기 배지 - 높이 고정 영역 */}
+                                <div className="h-6 flex justify-center mb-4">
+                                    {plan.popular && (
+                                        <span className="px-4 py-1 bg-gray-900 text-white text-xs font-medium rounded-full">
+                                            인기
+                                        </span>
+                                    )}
+                                </div>
+
+                                {/* 헤더 */}
+                                <div className="text-center">
+                                    <h3 className="text-xl font-bold text-gray-900 mb-1">{plan.name}</h3>
+                                    <p className="text-sm text-gray-500 mb-6">{plan.desc}</p>
+
+                                    <div className="mb-8">
+                                        <span className="text-4xl font-bold text-gray-900">{plan.price}</span>
+                                        <span className="text-gray-400">{plan.period}</span>
+                                    </div>
+                                </div>
+
+                                {/* Features - 고정 높이 */}
+                                <ul className="space-y-4 mb-8 flex-grow">
+                                    {paddedFeatures.map((f, j) => (
+                                        <li key={j} className="flex items-center gap-3 text-sm" style={{ minHeight: '24px' }}>
+                                            {f ? (
+                                                <>
+                                                    <div className="w-5 h-5 bg-gray-100 rounded-full flex items-center justify-center flex-shrink-0">
+                                                        <Check size={12} className="text-gray-600" />
+                                                    </div>
+                                                    <span className="text-gray-600">{f}</span>
+                                                </>
+                                            ) : (
+                                                <div className="h-5" />
+                                            )}
+                                        </li>
+                                    ))}
+                                </ul>
+
+                                {/* 버튼 - 항상 하단 */}
+                                <motion.a
+                                    href="#contact"
+                                    className="block w-full py-3.5 bg-gray-900 text-white font-medium rounded-xl text-center hover:bg-gray-800 transition-colors mt-auto"
+                                    whileHover={{ scale: 1.02 }}
+                                    whileTap={{ scale: 0.98 }}
+                                >
+                                    문의하기
+                                </motion.a>
+                            </motion.div>
+                        );
+                    })}
                 </div>
             </div>
         </section>

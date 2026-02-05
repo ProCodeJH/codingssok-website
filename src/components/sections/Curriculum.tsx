@@ -1,7 +1,6 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Code, Cpu, Trophy } from "lucide-react";
 
 const tracks = [
     { num: "01", title: "기초", desc: "스크래치 · 엔트리" },
@@ -35,7 +34,7 @@ export default function Curriculum() {
                     </p>
                 </motion.div>
 
-                {/* 5트랙 카드 */}
+                {/* 5트랙 카드 - 동일 높이 */}
                 <div className="grid grid-cols-2 md:grid-cols-5 gap-4" style={{ marginBottom: '80px' }}>
                     {tracks.map((track, i) => (
                         <motion.div
@@ -44,22 +43,23 @@ export default function Curriculum() {
                             whileInView={{ opacity: 1, y: 0 }}
                             viewport={{ once: true }}
                             transition={{ delay: i * 0.05 }}
-                            className="bg-white rounded-2xl p-6 text-center border border-gray-200 shadow-sm hover:shadow-md transition-shadow"
+                            className="flex flex-col items-center bg-white rounded-2xl p-6 border border-gray-200 shadow-sm hover:shadow-md transition-shadow"
+                            style={{ minHeight: '160px' }}
                         >
-                            <span className="text-2xl font-bold text-gray-200 block mb-2">
+                            <span className="text-2xl font-bold text-gray-200 mb-2">
                                 {track.num}
                             </span>
-                            <h3 className="font-bold text-gray-900 mb-1">
+                            <h3 className="font-bold text-gray-900 mb-1 text-center">
                                 {track.title}
                             </h3>
-                            <p className="text-xs text-gray-500">
+                            <p className="text-xs text-gray-500 text-center">
                                 {track.desc}
                             </p>
                         </motion.div>
                     ))}
                 </div>
 
-                {/* 특징 카드 */}
+                {/* 특징 카드 - 동일 높이 */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                     {features.map((feature, i) => (
                         <motion.div
@@ -68,13 +68,14 @@ export default function Curriculum() {
                             whileInView={{ opacity: 1, y: 0 }}
                             viewport={{ once: true }}
                             transition={{ delay: i * 0.05 }}
-                            className="bg-white rounded-2xl p-8 text-center border border-gray-200 shadow-sm"
+                            className="flex flex-col items-center bg-white rounded-2xl p-8 border border-gray-200 shadow-sm"
+                            style={{ minHeight: '200px' }}
                         >
                             <span className="inline-flex items-center justify-center w-10 h-10 bg-gray-900 text-white rounded-full text-sm font-bold mb-4">
                                 {feature.num}
                             </span>
-                            <h3 className="font-bold text-gray-900 mb-2">{feature.title}</h3>
-                            <p className="text-sm text-gray-500">{feature.desc}</p>
+                            <h3 className="font-bold text-gray-900 mb-2 text-center">{feature.title}</h3>
+                            <p className="text-sm text-gray-500 text-center">{feature.desc}</p>
                         </motion.div>
                     ))}
                 </div>

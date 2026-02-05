@@ -9,7 +9,7 @@ import Contact from "@/components/sections/Contact";
 
 export default function Home() {
   return (
-    <div id="main-content" className="w-full">
+    <div id="main-content" style={{ width: '100%', maxWidth: '100%', display: 'block' }}>
       <Navbar />
       <Hero />
       <Curriculum />

@@ -47,7 +47,7 @@ export default function Contact() {
                         whileInView={{ opacity: 1, x: 0 }}
                         viewport={{ once: true }}
                         transition={{ duration: 0.8 }}
-                        className="space-y-6"
+                        className="space-y-6 text-center lg:text-left"
                     >
                         {/* Image */}
                         <div className="relative h-[200px] rounded-3xl overflow-hidden mb-8 shadow-xl">
@@ -67,7 +67,7 @@ export default function Contact() {
                                 whileInView={{ opacity: 1, y: 0 }}
                                 viewport={{ once: true }}
                                 transition={{ delay: i * 0.1, duration: 0.6 }}
-                                className="bg-gray-50 rounded-2xl p-6 hover:bg-white hover:shadow-lg transition-all border border-transparent hover:border-gray-100"
+                                className="bg-gray-50 rounded-2xl p-6 hover:bg-white hover:shadow-lg transition-all border border-transparent hover:border-gray-100 text-center lg:text-left"
                             >
                                 <p className="text-sm text-gray-400 mb-2">{info.label}</p>
                                 <p className="font-semibold text-xl text-gray-900">{info.value}</p>

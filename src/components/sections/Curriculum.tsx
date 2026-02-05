@@ -65,6 +65,7 @@ export default function Curriculum() {
                             whileInView={{ opacity: 1, x: 0 }}
                             viewport={{ once: true }}
                             transition={{ duration: 0.8 }}
+                            className="text-center lg:text-left"
                         >
                             <h3 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-gray-900 mb-6 sm:mb-8 leading-tight">
                                 학습 진도를
@@ -84,7 +85,7 @@ export default function Curriculum() {
                                         whileInView={{ opacity: 1, x: 0 }}
                                         viewport={{ once: true }}
                                         transition={{ delay: i * 0.1, duration: 0.6 }}
-                                        className="flex gap-4"
+                                        className="flex gap-4 text-left items-start justify-center lg:justify-start"
                                     >
                                         <div className={`w-12 h-12 rounded-2xl bg-${item.color}-100 flex items-center justify-center flex-shrink-0`}>
                                             <span className={`text-${item.color}-600 font-bold text-sm`}>{item.num}</span>
@@ -159,6 +160,7 @@ export default function Curriculum() {
                             whileInView={{ opacity: 1, x: 0 }}
                             viewport={{ once: true }}
                             transition={{ duration: 0.8 }}
+                            className="text-center lg:text-left"
                         >
                             <span className="inline-flex items-center gap-2 px-4 py-2 bg-green-500/10 border border-green-200/50 rounded-full mb-6">
                                 <span className="text-sm font-medium text-green-700">실시간 소통</span>

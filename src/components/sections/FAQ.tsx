@@ -40,6 +40,7 @@ export default function FAQ() {
                         whileInView={{ opacity: 1, y: 0 }}
                         viewport={{ once: true }}
                         transition={{ duration: 0.8 }}
+                        className="text-center lg:text-left"
                     >
                         <span className="inline-flex items-center gap-2 px-4 py-2 bg-gray-200/50 border border-gray-200 rounded-full mb-6">
                             <span className="text-sm font-medium text-gray-700">FAQ</span>

@@ -6,28 +6,28 @@ import { ArrowRight } from "lucide-react";
 
 export default function Hero() {
     return (
-        <section className="relative min-h-screen flex items-center bg-white pt-20 lg:pt-0">
-            <div className="max-w-5xl mx-auto px-6 lg:px-8 w-full py-16 lg:py-0">
-                <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+        <section className="min-h-screen flex items-center justify-center bg-white">
+            <div className="w-full max-w-7xl mx-auto px-8 py-20">
+                <div className="flex flex-col lg:flex-row items-center justify-center gap-16">
                     {/* Content */}
                     <motion.div
                         initial={{ opacity: 0, y: 24 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.6 }}
-                        className="text-center lg:text-left"
+                        className="flex-1 max-w-xl text-center lg:text-left"
                     >
-                        <span className="inline-flex items-center gap-2 px-4 py-2 bg-gray-100 rounded-full text-sm text-gray-600 mb-8">
+                        <div className="inline-flex items-center gap-2 px-4 py-2 bg-gray-100 rounded-full text-sm text-gray-600 mb-8">
                             <span className="w-2 h-2 bg-green-500 rounded-full" />
                             대전 유성구 · 정원 마감 임박
-                        </span>
+                        </div>
 
-                        <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-gray-900 leading-tight mb-6">
+                        <h1 className="text-5xl lg:text-6xl font-bold text-gray-900 leading-tight mb-6">
                             코딩, 제대로
                             <br />
                             <span className="text-gray-400">배우는 곳</span>
                         </h1>
 
-                        <p className="text-lg text-gray-500 mb-10 max-w-md mx-auto lg:mx-0">
+                        <p className="text-lg text-gray-500 mb-10 leading-relaxed">
                             C·Python 텍스트 코딩 중심.
                             <br />
                             현직 개발자가 프로젝트부터 자격증까지.
@@ -52,18 +52,18 @@ export default function Hero() {
                             </motion.a>
                         </div>
 
-                        <div className="flex items-center justify-center lg:justify-start gap-8 text-center">
-                            <div>
+                        <div className="flex items-center justify-center lg:justify-start gap-8">
+                            <div className="text-center">
                                 <p className="text-2xl font-bold text-gray-900">50+</p>
                                 <p className="text-sm text-gray-400">수강생</p>
                             </div>
                             <div className="w-px h-10 bg-gray-200" />
-                            <div>
+                            <div className="text-center">
                                 <p className="text-2xl font-bold text-gray-900">98%</p>
                                 <p className="text-sm text-gray-400">만족도</p>
                             </div>
                             <div className="w-px h-10 bg-gray-200" />
-                            <div>
+                            <div className="text-center">
                                 <p className="text-2xl font-bold text-gray-900">5년+</p>
                                 <p className="text-sm text-gray-400">교육 경력</p>
                             </div>
@@ -75,7 +75,7 @@ export default function Hero() {
                         initial={{ opacity: 0, x: 24 }}
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ duration: 0.6, delay: 0.2 }}
-                        className="hidden lg:block"
+                        className="flex-1 max-w-lg w-full"
                     >
                         <div className="relative aspect-[4/3] rounded-3xl overflow-hidden bg-gray-100">
                             <Image

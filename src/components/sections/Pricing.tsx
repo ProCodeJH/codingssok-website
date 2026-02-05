@@ -33,7 +33,7 @@ const plans = [
 export default function Pricing() {
     return (
         <section id="pricing" className="py-24 bg-gray-50">
-            <div className="max-w-5xl mx-auto px-6 lg:px-8">
+            <div className="w-full max-w-6xl mx-auto px-8">
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     whileInView={{ opacity: 1, y: 0 }}
@@ -41,12 +41,12 @@ export default function Pricing() {
                     className="text-center mb-16"
                 >
                     <p className="text-sm text-gray-400 uppercase tracking-wider mb-4">Pricing</p>
-                    <h2 className="text-3xl lg:text-4xl font-bold text-gray-900">
+                    <h2 className="text-4xl font-bold text-gray-900">
                         합리적인 수강료
                     </h2>
                 </motion.div>
 
-                <div className="grid md:grid-cols-3 gap-6">
+                <div className="flex flex-wrap justify-center gap-6">
                     {plans.map((plan, i) => (
                         <motion.div
                             key={i}
@@ -54,7 +54,7 @@ export default function Pricing() {
                             whileInView={{ opacity: 1, y: 0 }}
                             viewport={{ once: true }}
                             transition={{ delay: i * 0.05 }}
-                            className={`relative rounded-2xl p-8 text-center ${plan.popular ? 'bg-gray-900 text-white' : 'bg-white'
+                            className={`relative w-80 rounded-2xl p-8 text-center ${plan.popular ? 'bg-gray-900 text-white' : 'bg-white'
                                 }`}
                         >
                             {plan.popular && (

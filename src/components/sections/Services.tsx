@@ -30,7 +30,7 @@ export default function Services() {
         <>
             {/* Quote */}
             <section className="py-24 bg-gray-900">
-                <div className="max-w-3xl mx-auto px-6 lg:px-8 text-center">
+                <div className="w-full max-w-4xl mx-auto px-8 text-center">
                     <motion.div
                         initial={{ opacity: 0, y: 20 }}
                         whileInView={{ opacity: 1, y: 0 }}
@@ -48,7 +48,7 @@ export default function Services() {
 
             {/* Services */}
             <section id="services" className="py-24 bg-gray-50">
-                <div className="max-w-5xl mx-auto px-6 lg:px-8">
+                <div className="w-full max-w-6xl mx-auto px-8">
                     <motion.div
                         initial={{ opacity: 0, y: 20 }}
                         whileInView={{ opacity: 1, y: 0 }}
@@ -56,12 +56,12 @@ export default function Services() {
                         className="text-center mb-16"
                     >
                         <p className="text-sm text-gray-400 uppercase tracking-wider mb-4">Services</p>
-                        <h2 className="text-3xl lg:text-4xl font-bold text-gray-900">
+                        <h2 className="text-4xl font-bold text-gray-900">
                             맞춤형 코딩 교육
                         </h2>
                     </motion.div>
 
-                    <div className="grid md:grid-cols-3 gap-6">
+                    <div className="flex flex-wrap justify-center gap-6">
                         {services.map((service, i) => (
                             <motion.div
                                 key={i}
@@ -69,7 +69,7 @@ export default function Services() {
                                 whileInView={{ opacity: 1, y: 0 }}
                                 viewport={{ once: true }}
                                 transition={{ delay: i * 0.05 }}
-                                className="bg-white rounded-2xl p-8 text-center hover:shadow-lg transition-shadow"
+                                className="w-80 bg-white rounded-2xl p-8 text-center hover:shadow-lg transition-shadow"
                             >
                                 <div className="w-14 h-14 bg-gray-900 rounded-2xl flex items-center justify-center mx-auto mb-6">
                                     <service.icon size={24} className="text-white" />
@@ -89,7 +89,7 @@ export default function Services() {
 
             {/* Gallery */}
             <section className="py-24 bg-white">
-                <div className="max-w-5xl mx-auto px-6 lg:px-8">
+                <div className="w-full max-w-6xl mx-auto px-8">
                     <motion.h2
                         initial={{ opacity: 0, y: 20 }}
                         whileInView={{ opacity: 1, y: 0 }}
@@ -99,7 +99,7 @@ export default function Services() {
                         수업 현장
                     </motion.h2>
 
-                    <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <div className="flex flex-wrap justify-center gap-4">
                         {[
                             { src: "/images/classroom1.png", alt: "수업 현장 1" },
                             { src: "/images/mentor1.png", alt: "멘토링" },
@@ -111,7 +111,7 @@ export default function Services() {
                                 whileInView={{ opacity: 1, scale: 1 }}
                                 viewport={{ once: true }}
                                 transition={{ delay: i * 0.05 }}
-                                className="relative aspect-[4/3] rounded-2xl overflow-hidden group"
+                                className="w-80 aspect-[4/3] relative rounded-2xl overflow-hidden group"
                             >
                                 <Image
                                     src={img.src}

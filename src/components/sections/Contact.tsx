@@ -17,16 +17,17 @@ export default function Contact() {
 
     return (
         <section id="contact" className="py-24 bg-gray-50">
-            <div className="max-w-5xl mx-auto px-6 lg:px-8">
-                <div className="grid lg:grid-cols-2 gap-12 items-start">
+            <div className="w-full max-w-6xl mx-auto px-8">
+                <div className="flex flex-col lg:flex-row justify-center gap-12">
                     {/* Info */}
                     <motion.div
                         initial={{ opacity: 0, y: 20 }}
                         whileInView={{ opacity: 1, y: 0 }}
                         viewport={{ once: true }}
+                        className="flex-1 max-w-md"
                     >
                         <p className="text-sm text-gray-400 uppercase tracking-wider mb-4">Contact</p>
-                        <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-6">상담 신청</h2>
+                        <h2 className="text-4xl font-bold text-gray-900 mb-6">상담 신청</h2>
                         <p className="text-gray-500 mb-10">무료 상담으로 맞춤 커리큘럼을 안내받으세요.</p>
 
                         <div className="space-y-6 mb-10">
@@ -58,7 +59,7 @@ export default function Contact() {
                         whileInView={{ opacity: 1, y: 0 }}
                         viewport={{ once: true }}
                         transition={{ delay: 0.1 }}
-                        className="bg-white rounded-2xl p-8"
+                        className="flex-1 max-w-md bg-white rounded-2xl p-8"
                     >
                         {isSubmitted ? (
                             <div className="text-center py-16">

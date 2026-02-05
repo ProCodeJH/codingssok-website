@@ -17,7 +17,7 @@ export default function FAQ() {
 
     return (
         <section id="faq" className="py-24 bg-white">
-            <div className="max-w-3xl mx-auto px-6 lg:px-8">
+            <div className="w-full max-w-3xl mx-auto px-8">
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     whileInView={{ opacity: 1, y: 0 }}
@@ -25,7 +25,7 @@ export default function FAQ() {
                     className="text-center mb-12"
                 >
                     <p className="text-sm text-gray-400 uppercase tracking-wider mb-4">FAQ</p>
-                    <h2 className="text-3xl lg:text-4xl font-bold text-gray-900">자주 묻는 질문</h2>
+                    <h2 className="text-4xl font-bold text-gray-900">자주 묻는 질문</h2>
                 </motion.div>
 
                 <div className="space-y-3 mb-12">

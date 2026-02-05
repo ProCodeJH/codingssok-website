@@ -71,7 +71,7 @@ export default function Services() {
                                 whileInView={{ opacity: 1, y: 0 }}
                                 viewport={{ once: true }}
                                 transition={{ delay: i * 0.1 }}
-                                className="bg-white rounded-2xl p-8 text-center border border-gray-200"
+                                className="bg-white rounded-2xl p-8 text-center border border-gray-200 shadow-sm"
                             >
                                 <div className="w-14 h-14 bg-gray-900 rounded-2xl flex items-center justify-center mx-auto mb-6">
                                     <service.icon size={24} className="text-white" />
@@ -115,7 +115,7 @@ export default function Services() {
                                 whileInView={{ opacity: 1, scale: 1 }}
                                 viewport={{ once: true }}
                                 transition={{ delay: i * 0.1 }}
-                                className="aspect-[4/3] relative rounded-2xl overflow-hidden bg-gray-100"
+                                className="aspect-[4/3] relative rounded-2xl overflow-hidden bg-gray-100 border border-gray-200 shadow-sm"
                             >
                                 <Image
                                     src={img.src}

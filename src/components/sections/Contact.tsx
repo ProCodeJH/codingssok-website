@@ -29,59 +29,59 @@ export default function Contact() {
                     </p>
                 </motion.div>
 
-                <div className="flex flex-col lg:flex-row gap-12">
-                    {/* Info */}
+                <div className="flex flex-col lg:flex-row gap-8">
+                    {/* Info Cards */}
                     <motion.div
                         initial={{ opacity: 0, x: -20 }}
                         whileInView={{ opacity: 1, x: 0 }}
                         viewport={{ once: true }}
                         className="lg:w-1/3 space-y-4"
                     >
-                        <div className="bg-white rounded-xl p-5 border border-gray-200">
+                        <div className="bg-white rounded-2xl p-6 border border-gray-200 shadow-sm">
                             <div className="flex items-center gap-4">
-                                <div className="w-10 h-10 bg-gray-900 rounded-lg flex items-center justify-center">
-                                    <MapPin size={18} className="text-white" />
+                                <div className="w-12 h-12 bg-gray-900 rounded-xl flex items-center justify-center flex-shrink-0">
+                                    <MapPin size={20} className="text-white" />
                                 </div>
                                 <div>
-                                    <h3 className="font-medium text-gray-900">위치</h3>
+                                    <h3 className="font-bold text-gray-900 mb-0.5">위치</h3>
                                     <p className="text-sm text-gray-500">대전 유성구 봉명동</p>
                                 </div>
                             </div>
                         </div>
 
-                        <div className="bg-white rounded-xl p-5 border border-gray-200">
+                        <div className="bg-white rounded-2xl p-6 border border-gray-200 shadow-sm">
                             <div className="flex items-center gap-4">
-                                <div className="w-10 h-10 bg-gray-900 rounded-lg flex items-center justify-center">
-                                    <Phone size={18} className="text-white" />
+                                <div className="w-12 h-12 bg-gray-900 rounded-xl flex items-center justify-center flex-shrink-0">
+                                    <Phone size={20} className="text-white" />
                                 </div>
                                 <div>
-                                    <h3 className="font-medium text-gray-900">전화</h3>
+                                    <h3 className="font-bold text-gray-900 mb-0.5">전화</h3>
                                     <p className="text-sm text-gray-500">010-1234-5678</p>
                                 </div>
                             </div>
                         </div>
 
-                        <div className="bg-white rounded-xl p-5 border border-gray-200">
+                        <div className="bg-white rounded-2xl p-6 border border-gray-200 shadow-sm">
                             <div className="flex items-center gap-4">
-                                <div className="w-10 h-10 bg-gray-900 rounded-lg flex items-center justify-center">
-                                    <Clock size={18} className="text-white" />
+                                <div className="w-12 h-12 bg-gray-900 rounded-xl flex items-center justify-center flex-shrink-0">
+                                    <Clock size={20} className="text-white" />
                                 </div>
                                 <div>
-                                    <h3 className="font-medium text-gray-900">운영</h3>
+                                    <h3 className="font-bold text-gray-900 mb-0.5">운영</h3>
                                     <p className="text-sm text-gray-500">평일 14:00 ~ 21:00</p>
                                 </div>
                             </div>
                         </div>
                     </motion.div>
 
-                    {/* Form */}
+                    {/* Form Card */}
                     <motion.div
                         initial={{ opacity: 0, x: 20 }}
                         whileInView={{ opacity: 1, x: 0 }}
                         viewport={{ once: true }}
                         className="lg:w-2/3"
                     >
-                        <form className="bg-white rounded-2xl p-8 border border-gray-200">
+                        <form className="bg-white rounded-2xl p-8 border border-gray-200 shadow-sm">
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-5">
                                 <div>
                                     <label className="block text-sm font-medium text-gray-700 mb-2">이름</label>

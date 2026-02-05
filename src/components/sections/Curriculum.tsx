@@ -1,6 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
+import { Code, Cpu, Trophy } from "lucide-react";
 
 const tracks = [
     { num: "01", title: "기초", desc: "스크래치 · 엔트리" },
@@ -34,6 +35,7 @@ export default function Curriculum() {
                     </p>
                 </motion.div>
 
+                {/* 5트랙 카드 */}
                 <div className="grid grid-cols-2 md:grid-cols-5 gap-4" style={{ marginBottom: '80px' }}>
                     {tracks.map((track, i) => (
                         <motion.div
@@ -42,21 +44,22 @@ export default function Curriculum() {
                             whileInView={{ opacity: 1, y: 0 }}
                             viewport={{ once: true }}
                             transition={{ delay: i * 0.05 }}
-                            className="group bg-gray-50 hover:bg-gray-900 rounded-2xl p-6 text-center transition-colors cursor-pointer"
+                            className="bg-white rounded-2xl p-6 text-center border border-gray-200 shadow-sm hover:shadow-md transition-shadow"
                         >
-                            <span className="text-2xl font-bold text-gray-200 group-hover:text-gray-600 block mb-2 transition-colors">
+                            <span className="text-2xl font-bold text-gray-200 block mb-2">
                                 {track.num}
                             </span>
-                            <h3 className="font-bold text-gray-900 group-hover:text-white mb-1 transition-colors">
+                            <h3 className="font-bold text-gray-900 mb-1">
                                 {track.title}
                             </h3>
-                            <p className="text-xs text-gray-500 group-hover:text-gray-400 transition-colors">
+                            <p className="text-xs text-gray-500">
                                 {track.desc}
                             </p>
                         </motion.div>
                     ))}
                 </div>
 
+                {/* 특징 카드 */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                     {features.map((feature, i) => (
                         <motion.div
@@ -65,7 +68,7 @@ export default function Curriculum() {
                             whileInView={{ opacity: 1, y: 0 }}
                             viewport={{ once: true }}
                             transition={{ delay: i * 0.05 }}
-                            className="bg-gray-50 rounded-2xl p-8 text-center"
+                            className="bg-white rounded-2xl p-8 text-center border border-gray-200 shadow-sm"
                         >
                             <span className="inline-flex items-center justify-center w-10 h-10 bg-gray-900 text-white rounded-full text-sm font-bold mb-4">
                                 {feature.num}

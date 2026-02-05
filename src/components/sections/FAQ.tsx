@@ -32,7 +32,7 @@ export default function FAQ() {
                     </p>
                 </motion.div>
 
-                <div className="space-y-3">
+                <div className="space-y-4">
                     {faqs.map((faq, i) => (
                         <motion.div
                             key={i}
@@ -40,8 +40,7 @@ export default function FAQ() {
                             whileInView={{ opacity: 1, y: 0 }}
                             viewport={{ once: true }}
                             transition={{ delay: i * 0.05 }}
-                            className={`rounded-xl overflow-hidden transition-colors ${openIndex === i ? 'bg-gray-50' : 'bg-white border border-gray-200'
-                                }`}
+                            className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden"
                         >
                             <button
                                 onClick={() => setOpenIndex(openIndex === i ? null : i)}
@@ -51,6 +50,7 @@ export default function FAQ() {
                                 <motion.div
                                     animate={{ rotate: openIndex === i ? 180 : 0 }}
                                     transition={{ duration: 0.2 }}
+                                    className="flex-shrink-0 ml-4"
                                 >
                                     <ChevronDown size={18} className="text-gray-400" />
                                 </motion.div>
@@ -63,7 +63,7 @@ export default function FAQ() {
                                         exit={{ height: 0, opacity: 0 }}
                                         transition={{ duration: 0.2 }}
                                     >
-                                        <p className="px-5 pb-5 text-gray-600 leading-relaxed">
+                                        <p className="px-5 pb-5 text-gray-600 leading-relaxed border-t border-gray-100 pt-4">
                                             {faq.a}
                                         </p>
                                     </motion.div>

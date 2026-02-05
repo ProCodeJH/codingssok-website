@@ -56,30 +56,33 @@ export default function Pricing() {
                             whileInView={{ opacity: 1, y: 0 }}
                             viewport={{ once: true }}
                             transition={{ delay: i * 0.1 }}
-                            className={`relative bg-white rounded-2xl p-8 ${plan.popular
-                                    ? 'ring-2 ring-gray-900 shadow-xl'
-                                    : 'border border-gray-200'
-                                }`}
+                            className="relative bg-white rounded-2xl p-8 border border-gray-200 shadow-sm"
                         >
+                            {/* 인기 배지 - 카드 내부 상단 */}
                             {plan.popular && (
-                                <span className="absolute -top-3 left-1/2 -translate-x-1/2 px-4 py-1 bg-gray-900 text-white text-xs font-medium rounded-full">
-                                    인기
-                                </span>
+                                <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2">
+                                    <span className="px-4 py-1.5 bg-gray-900 text-white text-xs font-medium rounded-full">
+                                        인기
+                                    </span>
+                                </div>
                             )}
 
-                            <div className="text-center mb-8">
-                                <h3 className="text-lg font-bold text-gray-900 mb-1">{plan.name}</h3>
-                                <p className="text-sm text-gray-500 mb-4">{plan.desc}</p>
-                                <div>
+                            <div className="text-center" style={{ marginTop: plan.popular ? '16px' : '0' }}>
+                                <h3 className="text-xl font-bold text-gray-900 mb-1">{plan.name}</h3>
+                                <p className="text-sm text-gray-500 mb-6">{plan.desc}</p>
+
+                                <div className="mb-8">
                                     <span className="text-4xl font-bold text-gray-900">{plan.price}</span>
                                     <span className="text-gray-400">{plan.period}</span>
                                 </div>
                             </div>
 
-                            <ul className="space-y-3 mb-8">
+                            <ul className="space-y-4 mb-8">
                                 {plan.features.map((f, j) => (
                                     <li key={j} className="flex items-center gap-3 text-sm text-gray-600">
-                                        <Check size={16} className="text-gray-900 flex-shrink-0" />
+                                        <div className="w-5 h-5 bg-gray-100 rounded-full flex items-center justify-center flex-shrink-0">
+                                            <Check size={12} className="text-gray-600" />
+                                        </div>
                                         {f}
                                     </li>
                                 ))}
@@ -87,10 +90,7 @@ export default function Pricing() {
 
                             <motion.a
                                 href="#contact"
-                                className={`block w-full py-3.5 font-medium rounded-xl text-center transition-colors ${plan.popular
-                                        ? 'bg-gray-900 text-white hover:bg-gray-800'
-                                        : 'bg-gray-100 text-gray-900 hover:bg-gray-200'
-                                    }`}
+                                className="block w-full py-3.5 bg-gray-900 text-white font-medium rounded-xl text-center hover:bg-gray-800 transition-colors"
                                 whileHover={{ scale: 1.02 }}
                                 whileTap={{ scale: 0.98 }}
                             >

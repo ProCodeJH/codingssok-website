@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ChevronDown, HelpCircle } from "lucide-react";
+import { ChevronDown } from "lucide-react";
 
 const faqs = [
     { q: "수업은 어떤 방식으로 진행되나요?", a: "소수정예(4~6명) 그룹 수업으로 진행되며, 개인별 맞춤 피드백을 제공합니다." },
@@ -16,27 +16,23 @@ export default function FAQ() {
     const [openIndex, setOpenIndex] = useState<number | null>(0);
 
     return (
-        <section id="faq" className="w-full bg-gradient-to-b from-white to-gray-50 flex justify-center" style={{ paddingTop: '200px', paddingBottom: '200px' }}>
+        <section id="faq" className="w-full bg-white flex justify-center" style={{ paddingTop: '160px', paddingBottom: '160px' }}>
             <div className="w-full max-w-3xl mx-auto px-8">
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
-                    className="text-center" style={{ marginBottom: '80px' }}
+                    className="text-center" style={{ marginBottom: '60px' }}
                 >
-                    <span className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-amber-100 to-orange-100 text-amber-700 rounded-full text-sm font-medium mb-6">
-                        <HelpCircle size={16} />
-                        FAQ
-                    </span>
-                    <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
+                    <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-3">
                         자주 묻는 질문
                     </h2>
-                    <p className="text-lg text-gray-500">
+                    <p className="text-gray-500">
                         궁금한 점이 있으시면 언제든 문의해주세요
                     </p>
                 </motion.div>
 
-                <div className="space-y-4">
+                <div className="space-y-3">
                     {faqs.map((faq, i) => (
                         <motion.div
                             key={i}
@@ -44,25 +40,19 @@ export default function FAQ() {
                             whileInView={{ opacity: 1, y: 0 }}
                             viewport={{ once: true }}
                             transition={{ delay: i * 0.05 }}
-                            className={`rounded-2xl overflow-hidden transition-all duration-300 ${openIndex === i
-                                    ? 'bg-gradient-to-br from-blue-50 to-indigo-50 border-2 border-blue-200/50'
-                                    : 'bg-white border border-gray-100 hover:border-gray-200'
+                            className={`rounded-xl overflow-hidden transition-colors ${openIndex === i ? 'bg-gray-50' : 'bg-white border border-gray-200'
                                 }`}
                         >
                             <button
                                 onClick={() => setOpenIndex(openIndex === i ? null : i)}
-                                className="w-full flex items-center justify-between p-6 text-left"
+                                className="w-full flex items-center justify-between p-5 text-left"
                             >
-                                <span className={`font-semibold ${openIndex === i ? 'text-blue-700' : 'text-gray-900'}`}>
-                                    {faq.q}
-                                </span>
+                                <span className="font-medium text-gray-900">{faq.q}</span>
                                 <motion.div
                                     animate={{ rotate: openIndex === i ? 180 : 0 }}
                                     transition={{ duration: 0.2 }}
-                                    className={`flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center ${openIndex === i ? 'bg-blue-500 text-white' : 'bg-gray-100 text-gray-500'
-                                        }`}
                                 >
-                                    <ChevronDown size={18} />
+                                    <ChevronDown size={18} className="text-gray-400" />
                                 </motion.div>
                             </button>
                             <AnimatePresence>
@@ -73,7 +63,7 @@ export default function FAQ() {
                                         exit={{ height: 0, opacity: 0 }}
                                         transition={{ duration: 0.2 }}
                                     >
-                                        <p className="px-6 pb-6 text-gray-600 leading-relaxed">
+                                        <p className="px-5 pb-5 text-gray-600 leading-relaxed">
                                             {faq.a}
                                         </p>
                                     </motion.div>
@@ -91,7 +81,7 @@ export default function FAQ() {
                 >
                     <a
                         href="#contact"
-                        className="inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-semibold rounded-full hover:from-blue-700 hover:to-indigo-700 transition-all shadow-lg shadow-blue-500/25"
+                        className="inline-block px-8 py-3.5 bg-gray-900 text-white font-medium rounded-xl hover:bg-gray-800 transition-colors"
                     >
                         상담 신청하기
                     </a>

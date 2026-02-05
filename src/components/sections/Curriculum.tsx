@@ -18,7 +18,7 @@ const features = [
 
 export default function Curriculum() {
     return (
-        <section id="curriculum" className="w-full py-24 bg-white flex justify-center">
+        <section id="curriculum" className="w-full py-32 bg-white flex justify-center">
             <div className="w-full max-w-6xl mx-auto px-8">
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
@@ -32,7 +32,7 @@ export default function Curriculum() {
                     </h2>
                 </motion.div>
 
-                <div className="flex flex-wrap justify-center gap-4 mb-20">
+                <div className="flex flex-wrap justify-center gap-8 mb-24">
                     {tracks.map((track, i) => (
                         <motion.div
                             key={i}
@@ -55,7 +55,7 @@ export default function Curriculum() {
                     ))}
                 </div>
 
-                <div className="flex flex-wrap justify-center gap-6">
+                <div className="flex flex-wrap justify-center gap-8">
                     {features.map((feature, i) => (
                         <motion.div
                             key={i}

@@ -61,7 +61,7 @@ export default function Services() {
                         </h2>
                     </motion.div>
 
-                    <div className="flex flex-wrap justify-center gap-12">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                         {services.map((service, i) => (
                             <motion.div
                                 key={i}
@@ -69,7 +69,7 @@ export default function Services() {
                                 whileInView={{ opacity: 1, y: 0 }}
                                 viewport={{ once: true }}
                                 transition={{ delay: i * 0.05 }}
-                                className="w-80 bg-white rounded-2xl p-8 text-center hover:shadow-lg transition-shadow"
+                                className="bg-white rounded-2xl p-8 text-center hover:shadow-lg transition-shadow"
                             >
                                 <div className="w-14 h-14 bg-gray-900 rounded-2xl flex items-center justify-center mx-auto mb-6">
                                     <service.icon size={24} className="text-white" />
@@ -99,7 +99,7 @@ export default function Services() {
                         수업 현장
                     </motion.h2>
 
-                    <div className="flex flex-wrap justify-center gap-12">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                         {[
                             { src: "/images/classroom1.png", alt: "수업 현장 1" },
                             { src: "/images/mentor1.png", alt: "멘토링" },
@@ -111,7 +111,7 @@ export default function Services() {
                                 whileInView={{ opacity: 1, scale: 1 }}
                                 viewport={{ once: true }}
                                 transition={{ delay: i * 0.05 }}
-                                className="w-80 aspect-[4/3] relative rounded-2xl overflow-hidden group"
+                                className="aspect-[4/3] relative rounded-2xl overflow-hidden group"
                             >
                                 <Image
                                     src={img.src}

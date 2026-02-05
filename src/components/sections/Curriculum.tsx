@@ -32,7 +32,7 @@ export default function Curriculum() {
                     </h2>
                 </motion.div>
 
-                <div className="flex flex-wrap justify-center gap-12 mb-32">
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6 mb-32">
                     {tracks.map((track, i) => (
                         <motion.div
                             key={i}
@@ -40,7 +40,7 @@ export default function Curriculum() {
                             whileInView={{ opacity: 1, y: 0 }}
                             viewport={{ once: true }}
                             transition={{ delay: i * 0.05 }}
-                            className="group w-40 bg-gray-50 hover:bg-gray-900 rounded-2xl p-6 text-center cursor-pointer transition-colors"
+                            className="group bg-gray-50 hover:bg-gray-900 rounded-2xl p-6 text-center cursor-pointer transition-colors"
                         >
                             <span className="text-3xl font-bold text-gray-200 group-hover:text-gray-700 block mb-2 transition-colors">
                                 {track.num}
@@ -55,7 +55,7 @@ export default function Curriculum() {
                     ))}
                 </div>
 
-                <div className="flex flex-wrap justify-center gap-12">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                     {features.map((feature, i) => (
                         <motion.div
                             key={i}
@@ -63,7 +63,7 @@ export default function Curriculum() {
                             whileInView={{ opacity: 1, y: 0 }}
                             viewport={{ once: true }}
                             transition={{ delay: i * 0.05 }}
-                            className="w-72 bg-gray-50 rounded-2xl p-8 text-center"
+                            className="bg-gray-50 rounded-2xl p-8 text-center"
                         >
                             <div className="w-12 h-12 bg-gray-900 text-white rounded-full flex items-center justify-center mx-auto mb-5 font-bold">
                                 {String(i + 1).padStart(2, '0')}

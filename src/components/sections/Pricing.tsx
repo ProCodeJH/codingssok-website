@@ -46,7 +46,7 @@ export default function Pricing() {
                     </h2>
                 </motion.div>
 
-                <div className="flex flex-wrap justify-center gap-12">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                     {plans.map((plan, i) => (
                         <motion.div
                             key={i}
@@ -54,7 +54,7 @@ export default function Pricing() {
                             whileInView={{ opacity: 1, y: 0 }}
                             viewport={{ once: true }}
                             transition={{ delay: i * 0.05 }}
-                            className={`relative w-80 rounded-2xl p-8 text-center ${plan.popular ? 'bg-gray-900 text-white' : 'bg-white'
+                            className={`relative rounded-2xl p-8 text-center ${plan.popular ? 'bg-gray-900 text-white' : 'bg-white'
                                 }`}
                         >
                             {plan.popular && (

@@ -19,7 +19,7 @@ const features = [
 export default function Curriculum() {
     return (
         <section id="curriculum" className="py-24 bg-white">
-            <div className="max-w-7xl mx-auto px-6 lg:px-12">
+            <div className="max-w-5xl mx-auto px-6 lg:px-8">
                 {/* Header */}
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}

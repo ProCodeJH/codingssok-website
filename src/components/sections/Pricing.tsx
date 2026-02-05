@@ -33,7 +33,7 @@ const plans = [
 export default function Pricing() {
     return (
         <section id="pricing" className="py-24 bg-gray-50">
-            <div className="max-w-7xl mx-auto px-6 lg:px-12">
+            <div className="max-w-5xl mx-auto px-6 lg:px-8">
                 {/* Header */}
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
@@ -60,8 +60,8 @@ export default function Pricing() {
                             viewport={{ once: true }}
                             transition={{ delay: i * 0.1 }}
                             className={`relative rounded-2xl p-8 text-center ${plan.popular
-                                    ? 'bg-gray-900 text-white'
-                                    : 'bg-white border border-gray-100'
+                                ? 'bg-gray-900 text-white'
+                                : 'bg-white border border-gray-100'
                                 }`}
                         >
                             {plan.popular && (
@@ -96,8 +96,8 @@ export default function Pricing() {
                             <motion.a
                                 href="#contact"
                                 className={`block w-full py-4 font-semibold rounded-xl transition-colors ${plan.popular
-                                        ? 'bg-white text-gray-900 hover:bg-gray-100'
-                                        : 'bg-gray-900 text-white hover:bg-gray-800'
+                                    ? 'bg-white text-gray-900 hover:bg-gray-100'
+                                    : 'bg-gray-900 text-white hover:bg-gray-800'
                                     }`}
                                 whileHover={{ scale: 1.02 }}
                                 whileTap={{ scale: 0.98 }}

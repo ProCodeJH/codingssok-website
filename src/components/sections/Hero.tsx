@@ -12,8 +12,8 @@ export default function Hero() {
                 <div className="absolute top-0 right-0 w-1/2 h-full bg-gradient-to-l from-gray-50 to-transparent" />
             </div>
 
-            <div className="relative z-10 max-w-7xl mx-auto px-6 lg:px-12 w-full py-16 md:py-24">
-                <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
+            <div className="relative z-10 max-w-6xl mx-auto px-6 lg:px-8 w-full py-16 md:py-24">
+                <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
                     {/* Left: Content */}
                     <motion.div
                         initial={{ opacity: 0, y: 30 }}

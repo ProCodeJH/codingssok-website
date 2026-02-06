@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ChevronDown, HelpCircle } from "lucide-react";
+import { ChevronDown } from "lucide-react";
 
 const faqs = [
     { q: "수업은 어떤 방식으로 진행되나요?", a: "소수정예(4~6명) 그룹 수업으로 진행되며, 개인별 맞춤 피드백을 제공합니다." },
@@ -12,76 +12,47 @@ const faqs = [
     { q: "공모전이나 자격증 준비도 가능한가요?", a: "네, 정보올림피아드, SW공모전, 정보처리기능사 등 목표에 맞춘 집중 케어 프로그램을 운영하고 있습니다." },
 ];
 
-const container = {
-    hidden: { opacity: 0 },
-    show: { opacity: 1, transition: { staggerChildren: 0.1 } }
-};
-
-const item = {
-    hidden: { opacity: 0, y: 20 },
-    show: { opacity: 1, y: 0, transition: { duration: 0.5 } }
-};
-
 export default function FAQ() {
     const [openIndex, setOpenIndex] = useState<number | null>(0);
 
     return (
-        <section id="faq" className="section-cosmic bg-cosmic noise">
-            <div className="relative z-10 w-full max-w-3xl mx-auto px-8">
-                {/* Header */}
+        <section id="faq" className="w-full bg-white flex justify-center" style={{ paddingTop: '160px', paddingBottom: '160px' }}>
+            <div className="w-full max-w-3xl mx-auto px-8">
                 <motion.div
-                    initial={{ opacity: 0, y: 30 }}
+                    initial={{ opacity: 0, y: 20 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
-                    transition={{ duration: 0.8 }}
-                    className="text-center mb-16"
+                    className="text-center" style={{ marginBottom: '60px' }}
                 >
-                    <span className="badge-cosmic mb-6">
-                        <HelpCircle size={14} />
-                        FAQ
-                    </span>
-                    <h2 className="section-title text-gradient mb-4">
+                    <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-3">
                         자주 묻는 질문
                     </h2>
-                    <p className="section-subtitle mx-auto">
+                    <p className="text-gray-500">
                         궁금한 점이 있으시면 언제든 문의해주세요
                     </p>
                 </motion.div>
 
-                {/* FAQ Items */}
-                <motion.div
-                    variants={container}
-                    initial="hidden"
-                    whileInView="show"
-                    viewport={{ once: true }}
-                    className="space-y-4"
-                >
+                <div className="space-y-4">
                     {faqs.map((faq, i) => (
                         <motion.div
                             key={i}
-                            variants={item}
-                            className={`glass-card overflow-hidden transition-all ${openIndex === i
-                                ? 'ring-1 ring-purple-500/30 shadow-lg shadow-purple-500/10'
-                                : ''
-                                }`}
+                            initial={{ opacity: 0, y: 10 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true }}
+                            transition={{ delay: i * 0.05 }}
+                            className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden"
                         >
                             <button
                                 onClick={() => setOpenIndex(openIndex === i ? null : i)}
-                                className="w-full flex items-center justify-between p-6 text-left"
+                                className="w-full flex items-center justify-between p-5 text-left"
                             >
-                                <span className={`font-medium transition-colors ${openIndex === i ? 'text-purple-300' : 'text-white'
-                                    }`}>
-                                    {faq.q}
-                                </span>
+                                <span className="font-medium text-gray-900">{faq.q}</span>
                                 <motion.div
                                     animate={{ rotate: openIndex === i ? 180 : 0 }}
-                                    transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] as const }}
-                                    className={`flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center transition-colors ${openIndex === i
-                                        ? 'bg-purple-500 text-white'
-                                        : 'bg-white/5 text-gray-400'
-                                        }`}
+                                    transition={{ duration: 0.2 }}
+                                    className="flex-shrink-0 ml-4"
                                 >
-                                    <ChevronDown size={18} />
+                                    <ChevronDown size={18} className="text-gray-400" />
                                 </motion.div>
                             </button>
                             <AnimatePresence>
@@ -90,9 +61,9 @@ export default function FAQ() {
                                         initial={{ height: 0, opacity: 0 }}
                                         animate={{ height: "auto", opacity: 1 }}
                                         exit={{ height: 0, opacity: 0 }}
-                                        transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] as const }}
+                                        transition={{ duration: 0.2 }}
                                     >
-                                        <p className="px-6 pb-6 text-gray-400 leading-relaxed border-t border-white/5 pt-4">
+                                        <p className="px-5 pb-5 text-gray-600 leading-relaxed border-t border-gray-100 pt-4">
                                             {faq.a}
                                         </p>
                                     </motion.div>
@@ -100,23 +71,20 @@ export default function FAQ() {
                             </AnimatePresence>
                         </motion.div>
                     ))}
-                </motion.div>
+                </div>
 
-                {/* CTA */}
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
                     className="text-center mt-12"
                 >
-                    <motion.a
+                    <a
                         href="#contact"
-                        className="btn-cosmic"
-                        whileHover={{ scale: 1.05 }}
-                        whileTap={{ scale: 0.95 }}
+                        className="inline-block px-8 py-3.5 bg-gray-900 text-white font-medium rounded-xl hover:bg-gray-800 transition-colors"
                     >
                         상담 신청하기
-                    </motion.a>
+                    </a>
                 </motion.div>
             </div>
         </section>

@@ -2,13 +2,7 @@
 
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { MapPin, Phone, Clock, Send, Sparkles } from "lucide-react";
-
-const contactInfo = [
-    { icon: MapPin, label: "위치", value: "대전 유성구 봉명동", gradient: "from-blue-500 to-cyan-500" },
-    { icon: Phone, label: "전화", value: "010-1234-5678", gradient: "from-purple-500 to-pink-500" },
-    { icon: Clock, label: "운영", value: "평일 14:00 ~ 21:00", gradient: "from-amber-500 to-orange-500" },
-];
+import { MapPin, Phone, Clock } from "lucide-react";
 
 export default function Contact() {
     const [formData, setFormData] = useState({
@@ -19,112 +13,119 @@ export default function Contact() {
     });
 
     return (
-        <section id="contact" className="section-cosmic bg-cosmic grid-pattern">
-            {/* Background Glow */}
-            <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-purple-500/10 rounded-full blur-[150px]" />
-            <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-cyan-500/10 rounded-full blur-[120px]" />
-
-            <div className="relative z-10 w-full max-w-6xl mx-auto px-8">
-                {/* Header */}
+        <section id="contact" className="w-full bg-gray-50 flex justify-center" style={{ paddingTop: '160px', paddingBottom: '160px' }}>
+            <div className="w-full max-w-5xl mx-auto px-8">
                 <motion.div
-                    initial={{ opacity: 0, y: 30 }}
+                    initial={{ opacity: 0, y: 20 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
-                    transition={{ duration: 0.8 }}
-                    className="text-center mb-20"
+                    className="text-center" style={{ marginBottom: '80px' }}
                 >
-                    <span className="badge-cosmic mb-6">
-                        <Sparkles size={14} />
-                        CONTACT
-                    </span>
-                    <h2 className="section-title text-gradient mb-4">
+                    <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-3">
                         상담 신청
                     </h2>
-                    <p className="section-subtitle mx-auto">
+                    <p className="text-gray-500">
                         무료 상담으로 맞춤 커리큘럼을 안내받으세요
                     </p>
                 </motion.div>
 
-                <div className="flex flex-col lg:flex-row gap-12">
-                    {/* Contact Info */}
+                <div className="flex flex-col lg:flex-row gap-8">
+                    {/* Info Cards */}
                     <motion.div
-                        initial={{ opacity: 0, x: -30 }}
+                        initial={{ opacity: 0, x: -20 }}
                         whileInView={{ opacity: 1, x: 0 }}
                         viewport={{ once: true }}
-                        className="lg:w-1/3 space-y-6"
+                        className="lg:w-1/3 space-y-4"
                     >
-                        {contactInfo.map((info, i) => (
-                            <motion.div
-                                key={i}
-                                className="glass-card p-6 group"
-                                whileHover={{ x: 8 }}
-                                transition={{ delay: i * 0.1 }}
-                            >
-                                <div className="flex items-center gap-4">
-                                    <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${info.gradient} flex items-center justify-center shadow-lg group-hover:animate-pulse-glow`}>
-                                        <info.icon size={20} className="text-white" />
-                                    </div>
-                                    <div>
-                                        <h3 className="font-medium text-white">{info.label}</h3>
-                                        <p className="text-gray-400">{info.value}</p>
-                                    </div>
+                        <div className="bg-white rounded-2xl p-6 border border-gray-200 shadow-sm">
+                            <div className="flex items-center gap-4">
+                                <div className="w-12 h-12 bg-gray-900 rounded-xl flex items-center justify-center flex-shrink-0">
+                                    <MapPin size={20} className="text-white" />
                                 </div>
-                            </motion.div>
-                        ))}
+                                <div>
+                                    <h3 className="font-bold text-gray-900 mb-0.5">위치</h3>
+                                    <p className="text-sm text-gray-500">대전 유성구 봉명동</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="bg-white rounded-2xl p-6 border border-gray-200 shadow-sm">
+                            <div className="flex items-center gap-4">
+                                <div className="w-12 h-12 bg-gray-900 rounded-xl flex items-center justify-center flex-shrink-0">
+                                    <Phone size={20} className="text-white" />
+                                </div>
+                                <div>
+                                    <h3 className="font-bold text-gray-900 mb-0.5">전화</h3>
+                                    <p className="text-sm text-gray-500">010-1234-5678</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="bg-white rounded-2xl p-6 border border-gray-200 shadow-sm">
+                            <div className="flex items-center gap-4">
+                                <div className="w-12 h-12 bg-gray-900 rounded-xl flex items-center justify-center flex-shrink-0">
+                                    <Clock size={20} className="text-white" />
+                                </div>
+                                <div>
+                                    <h3 className="font-bold text-gray-900 mb-0.5">운영</h3>
+                                    <p className="text-sm text-gray-500">평일 14:00 ~ 21:00</p>
+                                </div>
+                            </div>
+                        </div>
                     </motion.div>
 
-                    {/* Form */}
+                    {/* Form Card */}
                     <motion.div
-                        initial={{ opacity: 0, x: 30 }}
+                        initial={{ opacity: 0, x: 20 }}
                         whileInView={{ opacity: 1, x: 0 }}
                         viewport={{ once: true }}
                         className="lg:w-2/3"
                     >
-                        <form className="glass-card p-8">
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                        <form className="bg-white rounded-2xl p-8 border border-gray-200 shadow-sm">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-5">
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-300 mb-2">이름</label>
+                                    <label className="block text-sm font-medium text-gray-700 mb-2">이름</label>
                                     <input
                                         type="text"
                                         placeholder="홍길동"
-                                        className="w-full px-4 py-3.5 rounded-xl bg-white/5 border border-white/10 text-white placeholder-gray-500 focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20 transition-all outline-none"
+                                        className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-gray-900 focus:ring-1 focus:ring-gray-900 transition-all outline-none"
                                         value={formData.name}
                                         onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                                     />
                                 </div>
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-300 mb-2">연락처</label>
+                                    <label className="block text-sm font-medium text-gray-700 mb-2">연락처</label>
                                     <input
                                         type="tel"
                                         placeholder="010-0000-0000"
-                                        className="w-full px-4 py-3.5 rounded-xl bg-white/5 border border-white/10 text-white placeholder-gray-500 focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20 transition-all outline-none"
+                                        className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-gray-900 focus:ring-1 focus:ring-gray-900 transition-all outline-none"
                                         value={formData.phone}
                                         onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                                     />
                                 </div>
                             </div>
 
-                            <div className="mb-6">
-                                <label className="block text-sm font-medium text-gray-300 mb-2">학년</label>
+                            <div className="mb-5">
+                                <label className="block text-sm font-medium text-gray-700 mb-2">학년</label>
                                 <select
-                                    className="w-full px-4 py-3.5 rounded-xl bg-white/5 border border-white/10 text-white focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20 transition-all outline-none appearance-none cursor-pointer"
+                                    className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-gray-900 focus:ring-1 focus:ring-gray-900 transition-all outline-none bg-white"
                                     value={formData.grade}
                                     onChange={(e) => setFormData({ ...formData, grade: e.target.value })}
                                 >
-                                    <option value="" className="bg-gray-900">선택</option>
-                                    <option value="elementary" className="bg-gray-900">초등학생</option>
-                                    <option value="middle" className="bg-gray-900">중학생</option>
-                                    <option value="high" className="bg-gray-900">고등학생</option>
-                                    <option value="adult" className="bg-gray-900">성인</option>
+                                    <option value="">선택</option>
+                                    <option value="elementary">초등학생</option>
+                                    <option value="middle">중학생</option>
+                                    <option value="high">고등학생</option>
+                                    <option value="adult">성인</option>
                                 </select>
                             </div>
 
-                            <div className="mb-8">
-                                <label className="block text-sm font-medium text-gray-300 mb-2">문의 내용</label>
+                            <div className="mb-6">
+                                <label className="block text-sm font-medium text-gray-700 mb-2">문의 내용</label>
                                 <textarea
                                     rows={4}
                                     placeholder="궁금한 점을 적어주세요"
-                                    className="w-full px-4 py-3.5 rounded-xl bg-white/5 border border-white/10 text-white placeholder-gray-500 focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20 transition-all outline-none resize-none"
+                                    className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-gray-900 focus:ring-1 focus:ring-gray-900 transition-all outline-none resize-none"
                                     value={formData.message}
                                     onChange={(e) => setFormData({ ...formData, message: e.target.value })}
                                 />
@@ -132,11 +133,10 @@ export default function Contact() {
 
                             <motion.button
                                 type="submit"
-                                className="btn-cosmic w-full"
-                                whileHover={{ scale: 1.02 }}
-                                whileTap={{ scale: 0.98 }}
+                                className="w-full py-4 bg-gray-900 text-white font-medium rounded-xl hover:bg-gray-800 transition-colors"
+                                whileHover={{ scale: 1.01 }}
+                                whileTap={{ scale: 0.99 }}
                             >
-                                <Send size={18} />
                                 상담 신청하기
                             </motion.button>
                         </form>

@@ -1,128 +1,84 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { BookOpen, Code, Rocket, Cpu, Trophy, Users, LineChart, Briefcase } from "lucide-react";
 
 const tracks = [
-    { num: "01", title: "기초", desc: "스크래치 · 엔트리", icon: BookOpen, color: "from-cyan-500 to-blue-500" },
-    { num: "02", title: "C언어", desc: "문법 · 알고리즘", icon: Code, color: "from-purple-500 to-violet-500" },
-    { num: "03", title: "Python", desc: "데이터 · 자동화", icon: Rocket, color: "from-pink-500 to-rose-500" },
-    { num: "04", title: "아두이노", desc: "IoT · 로봇", icon: Cpu, color: "from-emerald-500 to-green-500" },
-    { num: "05", title: "대회", desc: "정보올림피아드", icon: Trophy, color: "from-amber-500 to-orange-500" },
+    { num: "01", title: "기초", desc: "스크래치 · 엔트리" },
+    { num: "02", title: "C언어", desc: "문법 · 알고리즘" },
+    { num: "03", title: "Python", desc: "데이터 · 자동화" },
+    { num: "04", title: "아두이노", desc: "IoT · 로봇" },
+    { num: "05", title: "대회", desc: "정보올림피아드" },
 ];
 
 const features = [
-    { num: "01", title: "실시간 진도 추적", desc: "학부모 앱으로 언제든 확인", icon: LineChart },
-    { num: "02", title: "1:1 맞춤 피드백", desc: "개인별 강약점 분석", icon: Users },
-    { num: "03", title: "프로젝트 포트폴리오", desc: "대입 · 취업 활용", icon: Briefcase },
+    { num: "01", title: "실시간 진도 추적", desc: "학부모 앱으로 언제든 확인" },
+    { num: "02", title: "1:1 맞춤 피드백", desc: "개인별 강약점 분석" },
+    { num: "03", title: "프로젝트 포트폴리오", desc: "대입 · 취업 활용" },
 ];
-
-const container = {
-    hidden: { opacity: 0 },
-    show: {
-        opacity: 1,
-        transition: { staggerChildren: 0.1 }
-    }
-};
-
-const item = {
-    hidden: { opacity: 0, y: 30, scale: 0.95 },
-    show: { opacity: 1, y: 0, scale: 1, transition: { duration: 0.5, ease: [0.16, 1, 0.3, 1] as const } }
-};
 
 export default function Curriculum() {
     return (
-        <section id="curriculum" className="section-cosmic bg-cosmic grid-pattern">
-            <div className="relative z-10 w-full max-w-6xl mx-auto px-8">
-                {/* Header */}
+        <section id="curriculum" className="w-full bg-white flex justify-center" style={{ paddingTop: '160px', paddingBottom: '160px' }}>
+            <div className="w-full max-w-5xl mx-auto px-8">
                 <motion.div
-                    initial={{ opacity: 0, y: 30 }}
+                    initial={{ opacity: 0, y: 20 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
-                    transition={{ duration: 0.8 }}
-                    className="text-center mb-20"
+                    className="text-center" style={{ marginBottom: '80px' }}
                 >
-                    <span className="badge-cosmic mb-6">
-                        <BookOpen size={14} />
-                        CURRICULUM
-                    </span>
-                    <h2 className="section-title text-gradient mb-4">
+                    <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-3">
                         체계적인 5트랙 커리큘럼
                     </h2>
-                    <p className="section-subtitle mx-auto">
+                    <p className="text-gray-500">
                         단계별 맞춤 학습으로 실력을 키워요
                     </p>
                 </motion.div>
 
-                {/* 5 Tracks */}
-                <motion.div
-                    variants={container}
-                    initial="hidden"
-                    whileInView="show"
-                    viewport={{ once: true }}
-                    className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-20"
-                >
+                {/* 5트랙 카드 - 동일 높이 */}
+                <div className="grid grid-cols-2 md:grid-cols-5 gap-4" style={{ marginBottom: '80px' }}>
                     {tracks.map((track, i) => (
                         <motion.div
                             key={i}
-                            variants={item}
-                            className="glass-card p-6 text-center group cursor-pointer"
-                            whileHover={{ scale: 1.05 }}
+                            initial={{ opacity: 0, y: 20 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true }}
+                            transition={{ delay: i * 0.05 }}
+                            className="flex flex-col items-center bg-white rounded-2xl p-6 border border-gray-200 shadow-sm hover:shadow-md transition-shadow"
+                            style={{ minHeight: '160px' }}
                         >
-                            {/* Icon */}
-                            <div className={`w-12 h-12 mx-auto mb-4 rounded-xl bg-gradient-to-br ${track.color} flex items-center justify-center shadow-lg group-hover:animate-pulse-glow`}>
-                                <track.icon size={20} className="text-white" />
-                            </div>
-
-                            {/* Number */}
-                            <span className="text-2xl font-bold text-gray-600 block mb-1">
+                            <span className="text-2xl font-bold text-gray-200 mb-2">
                                 {track.num}
                             </span>
-
-                            {/* Title */}
-                            <h3 className="font-bold text-white mb-1 group-hover:text-gradient transition-all">
+                            <h3 className="font-bold text-gray-900 mb-1 text-center">
                                 {track.title}
                             </h3>
-
-                            {/* Desc */}
-                            <p className="text-xs text-gray-400">
+                            <p className="text-xs text-gray-500 text-center">
                                 {track.desc}
                             </p>
                         </motion.div>
                     ))}
-                </motion.div>
+                </div>
 
-                {/* Features */}
-                <motion.div
-                    variants={container}
-                    initial="hidden"
-                    whileInView="show"
-                    viewport={{ once: true }}
-                    className="grid grid-cols-1 md:grid-cols-3 gap-6"
-                >
+                {/* 특징 카드 - 동일 높이 */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                     {features.map((feature, i) => (
                         <motion.div
                             key={i}
-                            variants={item}
-                            className="glass-card p-8 text-center group"
-                            whileHover={{ y: -8 }}
+                            initial={{ opacity: 0, y: 20 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true }}
+                            transition={{ delay: i * 0.05 }}
+                            className="flex flex-col items-center bg-white rounded-2xl p-8 border border-gray-200 shadow-sm"
+                            style={{ minHeight: '200px' }}
                         >
-                            {/* Number Badge */}
-                            <div className="w-12 h-12 mx-auto mb-4 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center text-white font-bold shadow-lg shadow-purple-500/30">
+                            <span className="inline-flex items-center justify-center w-10 h-10 bg-gray-900 text-white rounded-full text-sm font-bold mb-4">
                                 {feature.num}
-                            </div>
-
-                            {/* Icon */}
-                            <feature.icon size={32} className="mx-auto mb-4 text-purple-400" />
-
-                            {/* Title */}
-                            <h3 className="text-xl font-bold text-white mb-2">{feature.title}</h3>
-
-                            {/* Desc */}
-                            <p className="text-gray-400">{feature.desc}</p>
+                            </span>
+                            <h3 className="font-bold text-gray-900 mb-2 text-center">{feature.title}</h3>
+                            <p className="text-sm text-gray-500 text-center">{feature.desc}</p>
                         </motion.div>
                     ))}
-                </motion.div>
+                </div>
             </div>
         </section>
     );

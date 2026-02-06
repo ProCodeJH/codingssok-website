@@ -126,29 +126,6 @@ export default function Hero() {
                             transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
                         />
 
-                        {/* 플로팅 태그들 */}
-                        <motion.div
-                            className="absolute -top-2 right-8 z-20 px-3 py-1.5 bg-white rounded-full shadow-lg border border-blue-100 text-xs font-medium text-blue-600"
-                            animate={{ y: [0, -8, 0] }}
-                            transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
-                        >
-                            🐍 Python
-                        </motion.div>
-                        <motion.div
-                            className="absolute top-1/4 -left-4 z-20 px-3 py-1.5 bg-white rounded-full shadow-lg border border-cyan-100 text-xs font-medium text-cyan-600"
-                            animate={{ y: [0, 8, 0] }}
-                            transition={{ duration: 3.5, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
-                        >
-                            ⚡ C언어
-                        </motion.div>
-                        <motion.div
-                            className="absolute bottom-1/4 -right-2 z-20 px-3 py-1.5 bg-white rounded-full shadow-lg border border-blue-100 text-xs font-medium text-blue-600"
-                            animate={{ y: [0, -6, 0] }}
-                            transition={{ duration: 4, repeat: Infinity, ease: "easeInOut", delay: 1 }}
-                        >
-                            🤖 아두이노
-                        </motion.div>
-
                         {/* 메인 이미지 */}
                         <div className="relative aspect-[4/3] rounded-3xl overflow-hidden bg-gray-100 shadow-2xl shadow-blue-500/10 border border-blue-100/50">
                             <Image

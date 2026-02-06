@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, MessageCircle } from "lucide-react";
 
 const faqs = [
     { q: "수업은 어떤 방식으로 진행되나요?", a: "소수정예(4~6명) 그룹 수업으로 진행되며, 개인별 맞춤 피드백을 제공합니다." },
@@ -16,7 +16,7 @@ export default function FAQ() {
     const [openIndex, setOpenIndex] = useState<number | null>(0);
 
     return (
-        <section id="faq" className="w-full bg-white flex justify-center" style={{ paddingTop: '160px', paddingBottom: '160px' }}>
+        <section id="faq" className="w-full bg-gray-50 flex justify-center" style={{ paddingTop: '160px', paddingBottom: '160px' }}>
             <div className="w-full max-w-3xl mx-auto px-8">
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
@@ -24,7 +24,10 @@ export default function FAQ() {
                     viewport={{ once: true }}
                     className="text-center" style={{ marginBottom: '60px' }}
                 >
-                    <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-3">
+                    <div className="inline-flex items-center justify-center w-14 h-14 bg-gradient-to-r from-blue-600 to-cyan-500 rounded-2xl mb-6 shadow-lg shadow-blue-500/30">
+                        <MessageCircle size={24} className="text-white" />
+                    </div>
+                    <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
                         자주 묻는 질문
                     </h2>
                     <p className="text-gray-500">
@@ -40,19 +43,34 @@ export default function FAQ() {
                             whileInView={{ opacity: 1, y: 0 }}
                             viewport={{ once: true }}
                             transition={{ delay: i * 0.05 }}
-                            className={`bg-white rounded-2xl border shadow-sm overflow-hidden transition-all ${openIndex === i ? 'border-blue-300 shadow-lg shadow-blue-500/10' : 'border-gray-200'}`}
+                            className={`bg-white rounded-2xl border-2 overflow-hidden transition-all duration-300 ${openIndex === i
+                                    ? 'border-blue-400 shadow-xl shadow-blue-500/10'
+                                    : 'border-gray-100 shadow-sm hover:border-gray-200 hover:shadow-md'
+                                }`}
                         >
                             <button
                                 onClick={() => setOpenIndex(openIndex === i ? null : i)}
-                                className="w-full flex items-center justify-between p-5 text-left"
+                                className={`w-full flex items-center justify-between p-6 text-left transition-colors ${openIndex === i ? 'bg-blue-50/50' : 'hover:bg-gray-50'
+                                    }`}
                             >
-                                <span className="font-medium text-gray-900">{faq.q}</span>
+                                <div className="flex items-center gap-4">
+                                    <span className={`flex items-center justify-center w-8 h-8 rounded-full text-sm font-bold transition-colors ${openIndex === i
+                                            ? 'bg-gradient-to-r from-blue-600 to-cyan-500 text-white'
+                                            : 'bg-gray-100 text-gray-500'
+                                        }`}>
+                                        {i + 1}
+                                    </span>
+                                    <span className={`font-medium transition-colors ${openIndex === i ? 'text-blue-700' : 'text-gray-900'}`}>
+                                        {faq.q}
+                                    </span>
+                                </div>
                                 <motion.div
                                     animate={{ rotate: openIndex === i ? 180 : 0 }}
                                     transition={{ duration: 0.2 }}
-                                    className="flex-shrink-0 ml-4"
+                                    className={`flex-shrink-0 ml-4 w-8 h-8 rounded-full flex items-center justify-center transition-colors ${openIndex === i ? 'bg-blue-100 text-blue-600' : 'bg-gray-100 text-gray-400'
+                                        }`}
                                 >
-                                    <ChevronDown size={18} className="text-gray-400" />
+                                    <ChevronDown size={18} />
                                 </motion.div>
                             </button>
                             <AnimatePresence>
@@ -61,11 +79,15 @@ export default function FAQ() {
                                         initial={{ height: 0, opacity: 0 }}
                                         animate={{ height: "auto", opacity: 1 }}
                                         exit={{ height: 0, opacity: 0 }}
-                                        transition={{ duration: 0.2 }}
+                                        transition={{ duration: 0.3, ease: "easeInOut" }}
                                     >
-                                        <p className="px-5 pb-5 text-gray-600 leading-relaxed border-t border-gray-100 pt-4">
-                                            {faq.a}
-                                        </p>
+                                        <div className="px-6 pb-6 pt-2">
+                                            <div className="pl-12 border-l-2 border-blue-200 ml-4">
+                                                <p className="text-gray-600 leading-relaxed">
+                                                    {faq.a}
+                                                </p>
+                                            </div>
+                                        </div>
                                     </motion.div>
                                 )}
                             </AnimatePresence>
@@ -77,14 +99,17 @@ export default function FAQ() {
                     initial={{ opacity: 0, y: 20 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
-                    className="text-center mt-12"
+                    className="text-center mt-16"
                 >
-                    <a
+                    <p className="text-gray-500 mb-6">더 궁금한 점이 있으신가요?</p>
+                    <motion.a
                         href="#contact"
-                        className="inline-block px-8 py-3.5 bg-gradient-to-r from-blue-600 to-cyan-500 text-white font-medium rounded-xl hover:shadow-lg hover:shadow-blue-500/30 hover:-translate-y-1 transition-all"
+                        className="inline-flex items-center gap-2 px-10 py-4 bg-gradient-to-r from-blue-600 to-cyan-500 text-white font-semibold rounded-full shadow-lg shadow-blue-500/30"
+                        whileHover={{ scale: 1.03, y: -2 }}
+                        whileTap={{ scale: 0.98 }}
                     >
-                        상담 신청하기
-                    </a>
+                        무료 상담 신청하기
+                    </motion.a>
                 </motion.div>
             </div>
         </section>

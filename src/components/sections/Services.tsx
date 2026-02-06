@@ -75,7 +75,7 @@ export default function Services() {
                                 className="flex flex-col items-center bg-white rounded-2xl p-8 border border-gray-200 shadow-sm"
                                 style={{ minHeight: '320px' }}
                             >
-                                <div className="w-14 h-14 bg-gray-900 rounded-2xl flex items-center justify-center mb-6">
+                                <div className="w-14 h-14 bg-gradient-to-r from-purple-600 to-pink-500 rounded-2xl flex items-center justify-center mb-6 shadow-lg shadow-purple-500/30">
                                     <service.icon size={24} className="text-white" />
                                 </div>
                                 <h3 className="text-lg font-bold text-gray-900 mb-1 text-center">{service.title}</h3>
@@ -118,7 +118,7 @@ export default function Services() {
                                 whileInView={{ opacity: 1, scale: 1 }}
                                 viewport={{ once: true }}
                                 transition={{ delay: i * 0.1 }}
-                                className="aspect-[4/3] relative rounded-2xl overflow-hidden bg-gray-100 border border-gray-200 shadow-sm"
+                                className="aspect-[4/3] relative rounded-2xl overflow-hidden bg-gray-100 border border-gray-200 shadow-sm hover:shadow-xl hover:shadow-purple-500/10 transition-all"
                             >
                                 <Image
                                     src={img.src}

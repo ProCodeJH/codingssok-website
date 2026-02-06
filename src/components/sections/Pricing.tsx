@@ -71,8 +71,8 @@ export default function Pricing() {
                                 {/* 인기 배지 - 높이 고정 영역 */}
                                 <div className="h-6 flex justify-center mb-4">
                                     {plan.popular && (
-                                        <span className="px-4 py-1 bg-gray-900 text-white text-xs font-medium rounded-full">
-                                            인기
+                                        <span className="px-4 py-1 bg-gradient-to-r from-purple-600 to-pink-500 text-white text-xs font-medium rounded-full shadow-lg shadow-purple-500/30">
+                                            ✨ 인기
                                         </span>
                                     )}
                                 </div>
@@ -94,8 +94,8 @@ export default function Pricing() {
                                         <li key={j} className="flex items-center gap-3 text-sm" style={{ minHeight: '24px' }}>
                                             {f ? (
                                                 <>
-                                                    <div className="w-5 h-5 bg-gray-100 rounded-full flex items-center justify-center flex-shrink-0">
-                                                        <Check size={12} className="text-gray-600" />
+                                                    <div className="w-5 h-5 bg-purple-100 rounded-full flex items-center justify-center flex-shrink-0">
+                                                        <Check size={12} className="text-purple-600" />
                                                     </div>
                                                     <span className="text-gray-600">{f}</span>
                                                 </>
@@ -109,8 +109,8 @@ export default function Pricing() {
                                 {/* 버튼 - 항상 하단 */}
                                 <motion.a
                                     href="#contact"
-                                    className="block w-full py-3.5 bg-gray-900 text-white font-medium rounded-xl text-center hover:bg-gray-800 transition-colors mt-auto"
-                                    whileHover={{ scale: 1.02 }}
+                                    className="block w-full py-3.5 bg-gradient-to-r from-purple-600 to-pink-500 text-white font-medium rounded-xl text-center hover:shadow-lg hover:shadow-purple-500/30 transition-all mt-auto"
+                                    whileHover={{ scale: 1.02, y: -2 }}
                                     whileTap={{ scale: 0.98 }}
                                 >
                                     문의하기

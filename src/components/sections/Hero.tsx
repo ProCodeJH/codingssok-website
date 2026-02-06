@@ -16,8 +16,8 @@ export default function Hero() {
                         transition={{ duration: 0.6 }}
                         className="flex-1 max-w-xl text-center lg:text-left"
                     >
-                        <div className="inline-flex items-center gap-2 px-4 py-2 bg-gray-100 rounded-full text-sm text-gray-600 mb-8">
-                            <span className="w-2 h-2 bg-green-500 rounded-full" />
+                        <div className="inline-flex items-center gap-2 px-4 py-2 bg-purple-50 border border-purple-200 rounded-full text-sm text-purple-700 mb-8">
+                            <span className="w-2 h-2 bg-purple-500 rounded-full animate-pulse" />
                             대전 유성구 · 정원 마감 임박
                         </div>
 
@@ -36,8 +36,8 @@ export default function Hero() {
                         <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start mb-12">
                             <motion.a
                                 href="#contact"
-                                className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-gray-900 text-white font-semibold rounded-full"
-                                whileHover={{ scale: 1.02 }}
+                                className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-gradient-to-r from-purple-600 to-pink-500 text-white font-semibold rounded-full shadow-lg shadow-purple-500/30"
+                                whileHover={{ scale: 1.02, y: -2 }}
                                 whileTap={{ scale: 0.98 }}
                             >
                                 무료 상담 신청 <ArrowRight size={18} />
@@ -87,7 +87,7 @@ export default function Hero() {
                             />
                             <div className="absolute bottom-6 left-6 right-6 bg-white/95 backdrop-blur rounded-2xl p-5">
                                 <div className="flex items-center gap-4">
-                                    <div className="w-12 h-12 bg-gray-900 rounded-xl flex items-center justify-center text-white font-bold">쏙</div>
+                                    <div className="w-12 h-12 bg-gradient-to-r from-purple-600 to-pink-500 rounded-xl flex items-center justify-center text-white font-bold shadow-lg shadow-purple-500/30">쏙</div>
                                     <div>
                                         <p className="font-semibold text-gray-900">실시간 학습 관리</p>
                                         <p className="text-sm text-gray-500">진도 · 과제 · 출결</p>

@@ -61,8 +61,8 @@ export default function FAQ() {
                             key={i}
                             variants={item}
                             className={`glass-card overflow-hidden transition-all ${openIndex === i
-                                    ? 'ring-1 ring-purple-500/30 shadow-lg shadow-purple-500/10'
-                                    : ''
+                                ? 'ring-1 ring-purple-500/30 shadow-lg shadow-purple-500/10'
+                                : ''
                                 }`}
                         >
                             <button
@@ -75,10 +75,10 @@ export default function FAQ() {
                                 </span>
                                 <motion.div
                                     animate={{ rotate: openIndex === i ? 180 : 0 }}
-                                    transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+                                    transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] as const }}
                                     className={`flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center transition-colors ${openIndex === i
-                                            ? 'bg-purple-500 text-white'
-                                            : 'bg-white/5 text-gray-400'
+                                        ? 'bg-purple-500 text-white'
+                                        : 'bg-white/5 text-gray-400'
                                         }`}
                                 >
                                     <ChevronDown size={18} />
@@ -90,7 +90,7 @@ export default function FAQ() {
                                         initial={{ height: 0, opacity: 0 }}
                                         animate={{ height: "auto", opacity: 1 }}
                                         exit={{ height: 0, opacity: 0 }}
-                                        transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+                                        transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] as const }}
                                     >
                                         <p className="px-6 pb-6 text-gray-400 leading-relaxed border-t border-white/5 pt-4">
                                             {faq.a}

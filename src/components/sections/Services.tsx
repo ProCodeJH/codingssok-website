@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion";
 import Image from "next/image";
-import { Code, Cpu, Trophy } from "lucide-react";
+import { Code, Cpu, Trophy, Quote, Sparkles } from "lucide-react";
 
 const services = [
     {
@@ -10,125 +10,173 @@ const services = [
         title: "텍스트 코딩",
         desc: "C언어 · Python",
         items: ["문법 기초부터 심화", "알고리즘 문제풀이", "프로젝트 개발"],
+        gradient: "from-blue-500 to-cyan-500",
     },
     {
         icon: Cpu,
         title: "피지컬 컴퓨팅",
         desc: "아두이노 · IoT",
         items: ["센서 활용 실습", "로봇 제어", "하드웨어 연동"],
+        gradient: "from-purple-500 to-pink-500",
     },
     {
         icon: Trophy,
         title: "대회 & 자격증",
         desc: "목표 달성 케어",
         items: ["정보올림피아드", "SW 공모전", "정보처리기능사"],
+        gradient: "from-amber-500 to-orange-500",
     },
 ];
+
+const container = {
+    hidden: { opacity: 0 },
+    show: { opacity: 1, transition: { staggerChildren: 0.15 } }
+};
+
+const item = {
+    hidden: { opacity: 0, y: 40 },
+    show: { opacity: 1, y: 0, transition: { duration: 0.6, ease: [0.16, 1, 0.3, 1] as const } }
+};
 
 export default function Services() {
     return (
         <>
-            {/* Quote */}
-            <section className="w-full bg-gray-900 flex justify-center" style={{ paddingTop: '120px', paddingBottom: '120px' }}>
-                <div className="w-full max-w-3xl mx-auto px-8 text-center">
+            {/* Quote Section */}
+            <section className="section-cosmic bg-cosmic relative overflow-hidden">
+                {/* Background Glow */}
+                <div className="absolute inset-0 bg-gradient-to-b from-purple-900/20 via-transparent to-transparent" />
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-purple-500/10 rounded-full blur-[120px]" />
+
+                <div className="relative z-10 w-full max-w-4xl mx-auto px-8 text-center">
                     <motion.div
-                        initial={{ opacity: 0, y: 20 }}
-                        whileInView={{ opacity: 1, y: 0 }}
+                        initial={{ opacity: 0, scale: 0.9 }}
+                        whileInView={{ opacity: 1, scale: 1 }}
                         viewport={{ once: true }}
+                        transition={{ duration: 0.8 }}
                     >
-                        <p className="text-xl lg:text-2xl text-white leading-relaxed mb-6">
+                        <Quote size={48} className="mx-auto mb-8 text-purple-400 opacity-50" />
+                        <p className="text-2xl lg:text-4xl font-medium text-white leading-relaxed mb-8">
                             "우리 아이가 직접 만든 게임을
                             <br />
-                            저한테 자랑할 때 가장 뿌듯해요."
+                            <span className="text-gradient">저한테 자랑할 때</span> 가장 뿌듯해요."
                         </p>
-                        <p className="text-gray-400">— 학부모 김OO님</p>
+                        <p className="text-gray-400 text-lg">— 학부모 김OO님</p>
                     </motion.div>
                 </div>
             </section>
 
-            {/* Services */}
-            <section id="services" className="w-full bg-gray-50 flex justify-center" style={{ paddingTop: '160px', paddingBottom: '160px' }}>
-                <div className="w-full max-w-5xl mx-auto px-8">
+            {/* Services Section */}
+            <section id="services" className="section-cosmic bg-cosmic noise">
+                <div className="relative z-10 w-full max-w-6xl mx-auto px-8">
+                    {/* Header */}
                     <motion.div
-                        initial={{ opacity: 0, y: 20 }}
+                        initial={{ opacity: 0, y: 30 }}
                         whileInView={{ opacity: 1, y: 0 }}
                         viewport={{ once: true }}
-                        className="text-center" style={{ marginBottom: '80px' }}
+                        transition={{ duration: 0.8 }}
+                        className="text-center mb-20"
                     >
-                        <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-3">
+                        <span className="badge-cosmic mb-6">
+                            <Sparkles size={14} />
+                            SERVICES
+                        </span>
+                        <h2 className="section-title text-gradient mb-4">
                             맞춤형 코딩 교육
                         </h2>
-                        <p className="text-gray-500">
+                        <p className="section-subtitle mx-auto">
                             현직 개발자가 직접 설계한 커리큘럼
                         </p>
                     </motion.div>
 
-                    {/* 서비스 카드 - 동일 높이 */}
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    {/* Service Cards */}
+                    <motion.div
+                        variants={container}
+                        initial="hidden"
+                        whileInView="show"
+                        viewport={{ once: true }}
+                        className="grid grid-cols-1 md:grid-cols-3 gap-8"
+                    >
                         {services.map((service, i) => (
                             <motion.div
                                 key={i}
-                                initial={{ opacity: 0, y: 20 }}
-                                whileInView={{ opacity: 1, y: 0 }}
-                                viewport={{ once: true }}
-                                transition={{ delay: i * 0.1 }}
-                                className="flex flex-col items-center bg-white rounded-2xl p-8 border border-gray-200 shadow-sm"
-                                style={{ minHeight: '320px' }}
+                                variants={item}
+                                className="glass-card p-8 text-center group"
+                                whileHover={{ y: -12 }}
                             >
-                                <div className="w-14 h-14 bg-gray-900 rounded-2xl flex items-center justify-center mb-6">
-                                    <service.icon size={24} className="text-white" />
+                                {/* Icon */}
+                                <div className={`w-16 h-16 mx-auto mb-6 rounded-2xl bg-gradient-to-br ${service.gradient} flex items-center justify-center shadow-lg group-hover:animate-pulse-glow transition-all`}>
+                                    <service.icon size={28} className="text-white" />
                                 </div>
-                                <h3 className="text-lg font-bold text-gray-900 mb-1 text-center">{service.title}</h3>
-                                <p className="text-sm text-gray-500 mb-6 text-center">{service.desc}</p>
-                                <ul className="space-y-2 text-sm text-gray-600 text-center mt-auto">
+
+                                {/* Title */}
+                                <h3 className="text-xl font-bold text-white mb-2">{service.title}</h3>
+                                <p className="text-purple-300 text-sm mb-6">{service.desc}</p>
+
+                                {/* Items */}
+                                <ul className="space-y-3">
                                     {service.items.map((item, j) => (
-                                        <li key={j}>{item}</li>
+                                        <li key={j} className="text-gray-400 flex items-center justify-center gap-2">
+                                            <span className="w-1.5 h-1.5 rounded-full bg-purple-500" />
+                                            {item}
+                                        </li>
                                     ))}
                                 </ul>
                             </motion.div>
                         ))}
-                    </div>
+                    </motion.div>
                 </div>
             </section>
 
-            {/* Gallery */}
-            <section className="w-full bg-white flex justify-center" style={{ paddingTop: '160px', paddingBottom: '160px' }}>
-                <div className="w-full max-w-5xl mx-auto px-8">
+            {/* Gallery Section */}
+            <section className="section-cosmic bg-cosmic grid-pattern">
+                <div className="relative z-10 w-full max-w-6xl mx-auto px-8">
                     <motion.div
-                        initial={{ opacity: 0, y: 20 }}
+                        initial={{ opacity: 0, y: 30 }}
                         whileInView={{ opacity: 1, y: 0 }}
                         viewport={{ once: true }}
-                        className="text-center" style={{ marginBottom: '60px' }}
+                        transition={{ duration: 0.8 }}
+                        className="text-center mb-16"
                     >
-                        <h2 className="text-3xl md:text-4xl font-bold text-gray-900">
+                        <h2 className="section-title text-gradient">
                             수업 현장
                         </h2>
                     </motion.div>
 
-                    {/* 갤러리 - 동일 높이 (aspect ratio) */}
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <motion.div
+                        variants={container}
+                        initial="hidden"
+                        whileInView="show"
+                        viewport={{ once: true }}
+                        className="grid grid-cols-2 md:grid-cols-5 gap-4"
+                    >
                         {[
-                            { src: "/images/classroom1.png", alt: "수업 현장 1" },
-                            { src: "/images/mentor1.png", alt: "멘토링" },
-                            { src: "/images/robot.png", alt: "로봇 프로젝트" },
+                            { src: "/images/classroom1.png", alt: "수업 현장" },
+                            { src: "/images/mentor1.png", alt: "1:1 멘토링" },
+                            { src: "/images/robot.png", alt: "아두이노 프로젝트" },
+                            { src: "/images/competition.png", alt: "대회 수상" },
+                            { src: "/images/collaboration.png", alt: "팀 프로젝트" },
                         ].map((img, i) => (
                             <motion.div
                                 key={i}
-                                initial={{ opacity: 0, scale: 0.95 }}
-                                whileInView={{ opacity: 1, scale: 1 }}
-                                viewport={{ once: true }}
-                                transition={{ delay: i * 0.1 }}
-                                className="aspect-[4/3] relative rounded-2xl overflow-hidden bg-gray-100 border border-gray-200 shadow-sm"
+                                variants={item}
+                                className="aspect-[4/3] relative rounded-2xl overflow-hidden glass-card p-1 group"
+                                whileHover={{ scale: 1.02 }}
                             >
-                                <Image
-                                    src={img.src}
-                                    alt={img.alt}
-                                    fill
-                                    className="object-cover hover:scale-105 transition-transform duration-500"
-                                />
+                                <div className="w-full h-full relative rounded-xl overflow-hidden">
+                                    <Image
+                                        src={img.src}
+                                        alt={img.alt}
+                                        fill
+                                        className="object-cover group-hover:scale-110 transition-transform duration-700"
+                                    />
+                                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                                    <p className="absolute bottom-4 left-4 text-white font-medium opacity-0 group-hover:opacity-100 transition-opacity">
+                                        {img.alt}
+                                    </p>
+                                </div>
                             </motion.div>
                         ))}
-                    </div>
+                    </motion.div>
                 </div>
             </section>
         </>

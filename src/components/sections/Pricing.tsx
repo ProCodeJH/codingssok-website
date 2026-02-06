@@ -56,7 +56,7 @@ export default function Pricing() {
                         합리적인 가격
                     </motion.div>
                     <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
-                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-cyan-500">투자</span>가 아닌 <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-cyan-500">투자</span>
+                        합리적인 <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-cyan-500">수강료</span>
                     </h2>
                     <p className="text-lg text-gray-500">
                         목표에 맞는 플랜을 선택하세요
@@ -101,8 +101,8 @@ export default function Pricing() {
 
                             {/* 메인 카드 */}
                             <div className={`relative h-full rounded-3xl overflow-hidden transition-all duration-300 ${plan.popular
-                                    ? 'bg-gradient-to-b from-gray-900 via-gray-900 to-gray-800 shadow-2xl shadow-blue-500/20 border-2 border-blue-500/30'
-                                    : 'bg-white shadow-xl border border-gray-100 group-hover:shadow-2xl'
+                                ? 'bg-gradient-to-b from-gray-900 via-gray-900 to-gray-800 shadow-2xl shadow-blue-500/20 border-2 border-blue-500/30'
+                                : 'bg-white shadow-xl border border-gray-100 group-hover:shadow-2xl'
                                 }`}>
                                 {/* 상단 라인 */}
                                 {plan.popular && (
@@ -124,8 +124,8 @@ export default function Pricing() {
                                     <div className="text-center mb-8">
                                         <div className="flex items-end justify-center gap-1">
                                             <span className={`text-5xl lg:text-6xl font-bold ${plan.popular
-                                                    ? 'text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-cyan-400'
-                                                    : 'text-gray-900'
+                                                ? 'text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-cyan-400'
+                                                : 'text-gray-900'
                                                 }`}>
                                                 {plan.price}
                                             </span>
@@ -147,8 +147,8 @@ export default function Pricing() {
                                                 className={`flex items-center gap-3 ${plan.popular ? 'text-gray-300' : 'text-gray-600'}`}
                                             >
                                                 <span className={`flex items-center justify-center w-5 h-5 rounded-full ${plan.popular
-                                                        ? 'bg-gradient-to-r from-blue-500 to-cyan-500'
-                                                        : 'bg-blue-100'
+                                                    ? 'bg-gradient-to-r from-blue-500 to-cyan-500'
+                                                    : 'bg-blue-100'
                                                     }`}>
                                                     <Check size={12} className={plan.popular ? 'text-white' : 'text-blue-600'} />
                                                 </span>
@@ -161,8 +161,8 @@ export default function Pricing() {
                                     <motion.a
                                         href="#contact"
                                         className={`block w-full py-4 text-center font-semibold rounded-2xl transition-all duration-300 ${plan.popular
-                                                ? 'bg-gradient-to-r from-blue-600 to-cyan-500 text-white shadow-lg shadow-blue-500/30 hover:shadow-xl hover:shadow-blue-500/40'
-                                                : 'bg-gray-100 text-gray-900 hover:bg-gray-200'
+                                            ? 'bg-gradient-to-r from-blue-600 to-cyan-500 text-white shadow-lg shadow-blue-500/30 hover:shadow-xl hover:shadow-blue-500/40'
+                                            : 'bg-gray-100 text-gray-900 hover:bg-gray-200'
                                             }`}
                                         whileHover={{ scale: 1.02 }}
                                         whileTap={{ scale: 0.98 }}

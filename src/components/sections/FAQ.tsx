@@ -40,7 +40,7 @@ export default function FAQ() {
                             whileInView={{ opacity: 1, y: 0 }}
                             viewport={{ once: true }}
                             transition={{ delay: i * 0.05 }}
-                            className={`bg-white rounded-2xl border shadow-sm overflow-hidden transition-all ${openIndex === i ? 'border-purple-300 shadow-lg shadow-purple-500/10' : 'border-gray-200'}`}
+                            className={`bg-white rounded-2xl border shadow-sm overflow-hidden transition-all ${openIndex === i ? 'border-blue-300 shadow-lg shadow-blue-500/10' : 'border-gray-200'}`}
                         >
                             <button
                                 onClick={() => setOpenIndex(openIndex === i ? null : i)}
@@ -81,7 +81,7 @@ export default function FAQ() {
                 >
                     <a
                         href="#contact"
-                        className="inline-block px-8 py-3.5 bg-gradient-to-r from-purple-600 to-pink-500 text-white font-medium rounded-xl hover:shadow-lg hover:shadow-purple-500/30 hover:-translate-y-1 transition-all"
+                        className="inline-block px-8 py-3.5 bg-gradient-to-r from-blue-600 to-cyan-500 text-white font-medium rounded-xl hover:shadow-lg hover:shadow-blue-500/30 hover:-translate-y-1 transition-all"
                     >
                         상담 신청하기
                     </a>

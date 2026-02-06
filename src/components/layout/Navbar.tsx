@@ -39,7 +39,7 @@ export default function Navbar() {
                     <div className="flex items-center justify-between h-16 md:h-20">
                         {/* Logo */}
                         <Link href="/" className="flex items-center gap-2.5">
-                            <div className="w-8 h-8 rounded-lg bg-gradient-to-r from-purple-600 to-pink-500 flex items-center justify-center shadow-lg shadow-purple-500/30">
+                            <div className="w-8 h-8 rounded-lg bg-gradient-to-r from-blue-600 to-cyan-500 flex items-center justify-center shadow-lg shadow-blue-500/30">
                                 <span className="text-white text-sm font-bold">쏙</span>
                             </div>
                             <span className="font-semibold text-black">
@@ -56,7 +56,7 @@ export default function Navbar() {
                                     className="text-sm text-gray-600 hover:text-black transition-colors duration-300 relative group"
                                 >
                                     {link.name}
-                                    <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-purple-600 to-pink-500 transition-all duration-300 group-hover:w-full" />
+                                    <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-blue-600 to-cyan-500 transition-all duration-300 group-hover:w-full" />
                                 </a>
                             ))}
                         </div>
@@ -65,7 +65,7 @@ export default function Navbar() {
                         <div className="hidden md:flex items-center">
                             <motion.a
                                 href="#contact"
-                                className="inline-flex items-center gap-2 text-sm py-2.5 px-5 bg-gradient-to-r from-purple-600 to-pink-500 text-white font-medium rounded-full shadow-lg shadow-purple-500/30"
+                                className="inline-flex items-center gap-2 text-sm py-2.5 px-5 bg-gradient-to-r from-blue-600 to-cyan-500 text-white font-medium rounded-full shadow-lg shadow-blue-500/30"
                                 whileHover={{ scale: 1.02, y: -1 }}
                                 whileTap={{ scale: 0.98 }}
                             >

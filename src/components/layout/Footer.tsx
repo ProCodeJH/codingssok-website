@@ -11,8 +11,8 @@ export default function Footer() {
             <section className="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 relative overflow-hidden flex justify-center" style={{ paddingTop: '200px', paddingBottom: '200px' }}>
                 {/* Background decorations */}
                 <div className="absolute inset-0">
-                    <div className="absolute top-20 left-10 w-96 h-96 bg-purple-500/15 rounded-full blur-3xl" />
-                    <div className="absolute bottom-20 right-10 w-80 h-80 bg-pink-500/15 rounded-full blur-3xl" />
+                    <div className="absolute top-20 left-10 w-96 h-96 bg-blue-500/15 rounded-full blur-3xl" />
+                    <div className="absolute bottom-20 right-10 w-80 h-80 bg-cyan-500/15 rounded-full blur-3xl" />
                 </div>
 
                 <div className="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 lg:px-12 text-center">
@@ -25,7 +25,7 @@ export default function Footer() {
                         <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-4 sm:mb-6 leading-tight">
                             꿈이 있으시군요.
                             <br />
-                            <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400">
+                            <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-cyan-400">
                                 코딩쏙이 함께할게요.
                             </span>
                         </h2>
@@ -38,7 +38,7 @@ export default function Footer() {
 
                         <motion.a
                             href="#contact"
-                            className="inline-flex items-center gap-2 px-10 py-5 bg-gradient-to-r from-purple-600 to-pink-500 text-white font-semibold rounded-full transition-all shadow-2xl shadow-purple-500/30"
+                            className="inline-flex items-center gap-2 px-10 py-5 bg-gradient-to-r from-blue-600 to-cyan-500 text-white font-semibold rounded-full transition-all shadow-2xl shadow-blue-500/30"
                             whileHover={{ scale: 1.03, y: -2 }}
                             whileTap={{ scale: 0.98 }}
                         >

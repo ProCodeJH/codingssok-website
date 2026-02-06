@@ -43,7 +43,7 @@ export default function Curriculum() {
                             whileInView={{ opacity: 1, y: 0 }}
                             viewport={{ once: true }}
                             transition={{ delay: i * 0.05 }}
-                            className="flex flex-col items-center bg-white rounded-2xl p-6 border border-gray-200 shadow-sm hover:shadow-lg hover:border-purple-300 hover:-translate-y-1 transition-all"
+                            className="flex flex-col items-center bg-white rounded-2xl p-6 border border-gray-200 shadow-sm hover:shadow-lg hover:border-blue-300 hover:-translate-y-1 transition-all"
                             style={{ minHeight: '160px' }}
                         >
                             <span className="text-2xl font-bold text-gray-200 mb-2">
@@ -71,7 +71,7 @@ export default function Curriculum() {
                             className="flex flex-col items-center bg-white rounded-2xl p-8 border border-gray-200 shadow-sm"
                             style={{ minHeight: '200px' }}
                         >
-                            <span className="inline-flex items-center justify-center w-10 h-10 bg-gradient-to-r from-purple-600 to-pink-500 text-white rounded-full text-sm font-bold mb-4 shadow-lg shadow-purple-500/30">
+                            <span className="inline-flex items-center justify-center w-10 h-10 bg-gradient-to-r from-blue-600 to-cyan-500 text-white rounded-full text-sm font-bold mb-4 shadow-lg shadow-blue-500/30">
                                 {feature.num}
                             </span>
                             <h3 className="font-bold text-gray-900 mb-2 text-center">{feature.title}</h3>

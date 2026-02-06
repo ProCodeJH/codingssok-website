@@ -39,7 +39,7 @@ export default function Contact() {
                     >
                         <div className="bg-white rounded-2xl p-6 border border-gray-200 shadow-sm">
                             <div className="flex items-center gap-4">
-                                <div className="w-12 h-12 bg-gradient-to-r from-purple-600 to-pink-500 rounded-xl flex items-center justify-center flex-shrink-0 shadow-lg shadow-purple-500/30">
+                                <div className="w-12 h-12 bg-gradient-to-r from-blue-600 to-cyan-500 rounded-xl flex items-center justify-center flex-shrink-0 shadow-lg shadow-blue-500/30">
                                     <MapPin size={20} className="text-white" />
                                 </div>
                                 <div>
@@ -51,7 +51,7 @@ export default function Contact() {
 
                         <div className="bg-white rounded-2xl p-6 border border-gray-200 shadow-sm">
                             <div className="flex items-center gap-4">
-                                <div className="w-12 h-12 bg-gradient-to-r from-purple-600 to-pink-500 rounded-xl flex items-center justify-center flex-shrink-0 shadow-lg shadow-purple-500/30">
+                                <div className="w-12 h-12 bg-gradient-to-r from-blue-600 to-cyan-500 rounded-xl flex items-center justify-center flex-shrink-0 shadow-lg shadow-blue-500/30">
                                     <Phone size={20} className="text-white" />
                                 </div>
                                 <div>
@@ -63,7 +63,7 @@ export default function Contact() {
 
                         <div className="bg-white rounded-2xl p-6 border border-gray-200 shadow-sm">
                             <div className="flex items-center gap-4">
-                                <div className="w-12 h-12 bg-gradient-to-r from-purple-600 to-pink-500 rounded-xl flex items-center justify-center flex-shrink-0 shadow-lg shadow-purple-500/30">
+                                <div className="w-12 h-12 bg-gradient-to-r from-blue-600 to-cyan-500 rounded-xl flex items-center justify-center flex-shrink-0 shadow-lg shadow-blue-500/30">
                                     <Clock size={20} className="text-white" />
                                 </div>
                                 <div>
@@ -88,7 +88,7 @@ export default function Contact() {
                                     <input
                                         type="text"
                                         placeholder="홍길동"
-                                        className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-purple-500 focus:ring-1 focus:ring-purple-500 transition-all outline-none"
+                                        className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all outline-none"
                                         value={formData.name}
                                         onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                                     />
@@ -98,7 +98,7 @@ export default function Contact() {
                                     <input
                                         type="tel"
                                         placeholder="010-0000-0000"
-                                        className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-purple-500 focus:ring-1 focus:ring-purple-500 transition-all outline-none"
+                                        className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all outline-none"
                                         value={formData.phone}
                                         onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                                     />
@@ -133,7 +133,7 @@ export default function Contact() {
 
                             <motion.button
                                 type="submit"
-                                className="w-full py-4 bg-gradient-to-r from-purple-600 to-pink-500 text-white font-medium rounded-xl hover:shadow-lg hover:shadow-purple-500/30 hover:-translate-y-1 transition-all"
+                                className="w-full py-4 bg-gradient-to-r from-blue-600 to-cyan-500 text-white font-medium rounded-xl hover:shadow-lg hover:shadow-blue-500/30 hover:-translate-y-1 transition-all"
                                 whileHover={{ scale: 1.01 }}
                                 whileTap={{ scale: 0.99 }}
                             >

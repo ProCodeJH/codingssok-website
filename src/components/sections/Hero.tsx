@@ -44,14 +44,14 @@ export default function Hero() {
                             </span>
                         </h1>
 
-                        <p className="text-lg text-gray-500 mb-12 leading-loose">
+                        <p className="text-lg text-gray-500 mb-16 leading-loose">
                             <span className="text-blue-600 font-semibold">C·Python</span> 텍스트 코딩 중심.
                             <br />
                             <span className="text-gray-700 font-medium">현직 개발자</span>가 프로젝트부터 자격증까지.
                         </p>
 
                         {/* 버튼 그룹 */}
-                        <div className="flex flex-col sm:flex-row gap-5 justify-center lg:justify-start mb-14">
+                        <div className="flex flex-col sm:flex-row gap-5 justify-center lg:justify-start mb-20">
                             <motion.a
                                 href="#contact"
                                 className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-gradient-to-r from-blue-600 to-cyan-500 text-white font-semibold rounded-full shadow-lg shadow-blue-500/30"
@@ -71,7 +71,7 @@ export default function Hero() {
                         </div>
 
                         {/* 통계 - 아이콘 + 그라디언트 숫자 (블루) */}
-                        <div className="flex items-center justify-center lg:justify-start gap-8 sm:gap-10">
+                        <div className="flex items-center justify-center lg:justify-start gap-10 sm:gap-14">
                             <motion.div
                                 className="text-center"
                                 whileHover={{ scale: 1.05 }}

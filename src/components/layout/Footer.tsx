@@ -1,82 +1,144 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
-import { ArrowUp } from "lucide-react";
+
+/*
+  Footer — nodcoding style
+  Clean minimal footer with links + copyright
+*/
 
 export default function Footer() {
-    const [showBackToTop, setShowBackToTop] = useState(false);
-
-    useEffect(() => {
-        const handleScroll = () => { setShowBackToTop(window.scrollY > 300); };
-        window.addEventListener("scroll", handleScroll);
-        return () => window.removeEventListener("scroll", handleScroll);
-    }, []);
-
-    const scrollToTop = () => { window.scrollTo({ top: 0, behavior: "smooth" }); };
-
     return (
-        <>
-            <footer className="py-20 bg-gray-50 border-t border-gray-100">
-                <div className="max-w-7xl mx-auto px-8 lg:px-12">
-                    <div className="grid md:grid-cols-4 gap-12 mb-16">
-                        <div className="md:col-span-1">
-                            <Link href="/" className="inline-flex items-center gap-3 mb-6">
-                                <div className="w-10 h-10 bg-gray-900 rounded-lg flex items-center justify-center">
-                                    <span className="text-white font-bold text-lg">쏙</span>
-                                </div>
-                                <span className="text-xl font-bold text-gray-900">코딩쏙</span>
-                            </Link>
-                            <p className="text-gray-500 text-sm leading-relaxed">C·Python 중심 텍스트코딩 전문 학원</p>
-                        </div>
-                        <div>
-                            <h4 className="font-semibold text-gray-900 mb-4">교육 과정</h4>
-                            <ul className="space-y-2">
-                                <li><Link href="#curriculum" className="text-sm text-gray-500 hover:text-gray-900 transition-colors">커리큘럼</Link></li>
-                                <li><Link href="#pricing" className="text-sm text-gray-500 hover:text-gray-900 transition-colors">수강료</Link></li>
-                            </ul>
-                        </div>
-                        <div>
-                            <h4 className="font-semibold text-gray-900 mb-4">지원</h4>
-                            <ul className="space-y-2">
-                                <li><Link href="#faq" className="text-sm text-gray-500 hover:text-gray-900 transition-colors">FAQ</Link></li>
-                                <li><Link href="#contact" className="text-sm text-gray-500 hover:text-gray-900 transition-colors">상담 신청</Link></li>
-                            </ul>
-                        </div>
-                        <div>
-                            <h4 className="font-semibold text-gray-900 mb-4">연락처</h4>
-                            <ul className="space-y-2">
-                                <li className="text-sm text-gray-500">010-7566-7229</li>
-                                <li className="text-sm text-gray-500">대전 유성구 테크노중앙로 67</li>
-                                <li className="text-sm text-gray-500">평일 14:00 - 21:00</li>
-                            </ul>
-                        </div>
+        <footer
+            style={{
+                padding: "var(--section-spacing-sm) 0 var(--section-spacing-sm)",
+                background: "var(--color-black)",
+                color: "var(--color-grey-1)",
+            }}
+        >
+            <div className="container-nod">
+                {/* Top row: Logo + links */}
+                <div
+                    style={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                        alignItems: "flex-start",
+                        flexWrap: "wrap",
+                        gap: 40,
+                        paddingBottom: 40,
+                        borderBottom: "1px solid rgba(255,255,255,0.08)",
+                    }}
+                >
+                    {/* Logo */}
+                    <div>
+                        <Link
+                            href="/"
+                            style={{
+                                display: "inline-flex",
+                                alignItems: "center",
+                                gap: 10,
+                                marginBottom: 16,
+                            }}
+                        >
+                            <div
+                                style={{
+                                    width: 32,
+                                    height: 32,
+                                    background: "var(--color-brand-1)",
+                                    borderRadius: 8,
+                                    display: "flex",
+                                    alignItems: "center",
+                                    justifyContent: "center",
+                                }}
+                            >
+                                <span style={{ color: "#fff", fontWeight: 700, fontSize: 16 }}>쏙</span>
+                            </div>
+                            <span style={{ fontWeight: 600, fontSize: 16, color: "var(--color-white)" }}>
+                                코딩쏙
+                            </span>
+                        </Link>
+                        <p style={{ fontSize: 13, color: "var(--color-grey)", maxWidth: 300, lineHeight: 1.6 }}>
+                            현직 IT 전문가의 소수 정예 코딩 교육.
+                            <br />
+                            코드를 직접 치며 배우는 실전 수업.
+                        </p>
                     </div>
-                    <div className="pt-8 border-t border-gray-200 flex flex-col md:flex-row justify-between items-center gap-4">
-                        <p className="text-sm text-gray-400">© 2026 코딩쏙. All rights reserved.</p>
-                        <div className="flex gap-6">
-                            <Link href="#" className="text-sm text-gray-400 hover:text-gray-900 transition-colors">개인정보처리방침</Link>
-                            <Link href="#" className="text-sm text-gray-400 hover:text-gray-900 transition-colors">이용약관</Link>
+
+                    {/* Link columns */}
+                    <div style={{ display: "flex", gap: 64, flexWrap: "wrap" }}>
+                        <div>
+                            <h4 style={{ fontSize: 13, fontWeight: 600, color: "var(--color-white)", marginBottom: 16, textTransform: "uppercase", letterSpacing: "0.1em" }}>
+                                과정
+                            </h4>
+                            <ul style={{ listStyle: "none", padding: 0, display: "flex", flexDirection: "column", gap: 10 }}>
+                                {["C언어", "Python", "알고리즘", "자격증", "AI"].map((t) => (
+                                    <li key={t}>
+                                        <Link href="#curriculum" style={{ fontSize: 14, color: "var(--color-grey-1)", transition: "color 0.2s" }}>
+                                            {t}
+                                        </Link>
+                                    </li>
+                                ))}
+                            </ul>
+                        </div>
+                        <div>
+                            <h4 style={{ fontSize: 13, fontWeight: 600, color: "var(--color-white)", marginBottom: 16, textTransform: "uppercase", letterSpacing: "0.1em" }}>
+                                안내
+                            </h4>
+                            <ul style={{ listStyle: "none", padding: 0, display: "flex", flexDirection: "column", gap: 10 }}>
+                                {[
+                                    { name: "수강료", href: "#pricing" },
+                                    { name: "FAQ", href: "#faq" },
+                                    { name: "상담 신청", href: "#contact" },
+                                ].map((l) => (
+                                    <li key={l.name}>
+                                        <Link href={l.href} style={{ fontSize: 14, color: "var(--color-grey-1)", transition: "color 0.2s" }}>
+                                            {l.name}
+                                        </Link>
+                                    </li>
+                                ))}
+                            </ul>
+                        </div>
+                        <div>
+                            <h4 style={{ fontSize: 13, fontWeight: 600, color: "var(--color-white)", marginBottom: 16, textTransform: "uppercase", letterSpacing: "0.1em" }}>
+                                연락처
+                            </h4>
+                            <ul style={{ listStyle: "none", padding: 0, display: "flex", flexDirection: "column", gap: 10 }}>
+                                <li>
+                                    <a href="tel:010-7566-7229" style={{ fontSize: 14, color: "var(--color-grey-1)" }}>
+                                        📞 010-7566-7229
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="mailto:codingssok@gmail.com" style={{ fontSize: 14, color: "var(--color-grey-1)" }}>
+                                        ✉ codingssok@gmail.com
+                                    </a>
+                                </li>
+                            </ul>
                         </div>
                     </div>
                 </div>
-            </footer>
 
-            <AnimatePresence>
-                {showBackToTop && (
-                    <motion.button
-                        initial={{ opacity: 0, scale: 0.8, y: 20 }}
-                        animate={{ opacity: 1, scale: 1, y: 0 }}
-                        exit={{ opacity: 0, scale: 0.8, y: 20 }}
-                        transition={{ duration: 0.3 }}
-                        onClick={scrollToTop}
-                        className="fixed bottom-8 right-8 z-50 w-12 h-12 rounded-full bg-gray-900 text-white shadow-2xl flex items-center justify-center hover:bg-gray-700 hover:scale-110 transition-all cursor-pointer"
-                    >
-                        <ArrowUp size={20} />
-                    </motion.button>
-                )}
-            </AnimatePresence>
-        </>
+                {/* Bottom */}
+                <div
+                    style={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                        alignItems: "center",
+                        paddingTop: 24,
+                        flexWrap: "wrap",
+                        gap: 16,
+                    }}
+                >
+                    <p style={{ fontSize: 13, color: "var(--color-grey)" }}>
+                        &copy; {new Date().getFullYear()} 코딩쏙. All rights reserved.
+                    </p>
+                    <div style={{ display: "flex", gap: 20 }}>
+                        <Link href="/privacy" style={{ fontSize: 13, color: "var(--color-grey)" }}>
+                            개인정보처리방침
+                        </Link>
+                    </div>
+                </div>
+            </div>
+        </footer>
     );
 }

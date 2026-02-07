@@ -84,7 +84,7 @@ function MenuLink({
     );
 }
 
-/* ── SVG Pill Button — nodcoding btn-plain ── */
+/* ── SVG Pill Button — nodcoding btn-plain (exact path) ── */
 function PillButton({
     children,
     href,
@@ -95,11 +95,10 @@ function PillButton({
     onClick?: (e: React.MouseEvent<HTMLAnchorElement>) => void;
 }) {
     const w = 160;
-    const h = 50;
-    const rx = h * 0.66; // Pill radius
+    const h = 54;
 
-    // nodcoding pill path:  M rx,0 L (w-rx),0 C (w+rx/2),0 (w+rx/2),h (w-rx),h L rx,h C -rx/2,h -rx/2,0 rx,0
-    const pillPath = `M${rx},0 L${w - rx},0 C${w + rx * 0.5},0 ${w + rx * 0.5},${h} ${w - rx},${h} L${rx},${h} C${-rx * 0.5},${h} ${-rx * 0.5},0 ${rx},0`;
+    // Exact nodcoding btn-plain path coordinates
+    const pillPath = "M27,0 L133,0 C168.505,0 168.505,54 133,54 L27,54 C-8.505,54 -8.505,0 27,0";
 
     return (
         <a href={href} onClick={onClick} className="btn-plain" style={{ width: w, height: h }}>
@@ -109,12 +108,15 @@ function PillButton({
             </span>
             <svg
                 className="btn-plain__background"
-                width={w}
-                height={h}
+                width="10"
+                height="10"
                 fill="none"
+                xmlns="http://www.w3.org/2000/svg"
                 overflow="visible"
                 preserveAspectRatio="none"
+                style={{ width: w, height: h }}
             >
+                <path d={pillPath} className="btn-plain__path" />
                 <path d={pillPath} className="btn-plain__path" />
             </svg>
         </a>

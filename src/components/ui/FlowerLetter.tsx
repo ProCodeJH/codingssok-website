@@ -1,113 +1,206 @@
 "use client";
 
-import { useRef, useEffect } from "react";
+import { useRef, useMemo } from "react";
+import { Canvas, useFrame } from "@react-three/fiber";
+import { Environment, Float, MeshTransmissionMaterial, Text3D, Center } from "@react-three/drei";
 import { motion, useSpring, useMotionValue, useScroll, useTransform } from "framer-motion";
 import { useMousePosition } from "@/components/effects/MouseTracker";
+import * as THREE from "three";
 
 /*
-  Pixel-perfect replica of nodcoding.com's `.b__letter` structure.
-  Extracted from the exact Lottie SVG inline renders + stem path coordinates.
-
-  Each letter has:
-    .b__letter__flower  → Lottie SVG shapes (mouse-reactive translate3d + rotate)
-    .b__letter__stem    → SVG quadratic stem + circle tip dot
-
-  Mouse influence per letter (extracted from nodcoding inline transforms):
-    코(C): translate3d(4.51, 0.012, 0) rotate(0.296°) — subtle
-    딩(O): translate3d(57.75, 2.11, 0) rotate(4.19°)  — dramatic
-    쏙(D): translate3d(26.43, 0.40, 0) rotate(1.74°)  — medium
+  코딩쏙 Original — 3D Glass Code Orbs
+  
+  Uses React Three Fiber + drei for Framer-level 3D quality:
+    - MeshTransmissionMaterial: glass/crystal refraction
+    - Environment mapping: realistic reflections
+    - Float: gentle idle animation
+    - Mouse-reactive rotation via useFrame
+    - Code symbols rendered as 3D geometry inside orbs
 */
 
-/* ─── SVG shape definitions — exact nodcoding Lottie paths ─── */
-
-interface FlowerShape {
-    viewBox: string;
-    width: number;
-    height: number;
-    paths: { d: string; fill: string; transform?: string }[];
+/* ─── Orb config per letter ─── */
+interface OrbConfig {
+    symbol: string;
+    color: string;
+    emissive: string;
+    envMapIntensity: number;
 }
 
-const SHAPES: Record<string, FlowerShape> = {
-    /*
-      Letter C (코) — Pink half-circle + Gold half-circle
-      Lottie: home-hero-c.json
-      Extracted from inline <svg viewBox="0 0 299 285">
-    */
+const ORB_CONFIGS: Record<string, OrbConfig> = {
     코: {
-        viewBox: "0 0 299 285",
-        width: 299,
-        height: 285,
-        paths: [
-            {
-                d: "M155.34 284.27c-78.27 0-141.73-63.46-141.73-141.73S77.07 0.81 155.34 0.81V284.27z",
-                fill: "#FFBABA", // rgb(255,186,186)
-            },
-            {
-                d: "M253.2 284.27c-78.27 0-141.73-63.46-141.73-141.73S174.94 0.81 253.2 0.81V284.27z",
-                fill: "#FFD37D", // rgb(255,211,125)
-            },
-        ],
+        symbol: "{ }",
+        color: "#FF9A9E",
+        emissive: "#FFD37D",
+        envMapIntensity: 1.2,
     },
-    /*
-      Letter O (딩) — Green rotated half + Orange rotated half
-      Lottie: home-hero-o.json
-      Extracted from inline <svg viewBox="0 0 289 288">
-      Note: uses matrix transforms for rotation animation
-    */
     딩: {
-        viewBox: "0 0 289 288",
-        width: 289,
-        height: 288,
-        paths: [
-            {
-                d: "M0,-134 C74,54-134 134,-74,0 134,0 C46,0.23 -85.9,-0.23 -134,0 C-134,-74,0 -74,0-134 0,-134z",
-                fill: "#77C6B3", // rgb(119,198,179)
-                transform: "matrix(-0.82,0.69,-0.69,-0.82,-166.81,268.18)",
-            },
-            {
-                d: "M0,-134 C74,-134 134,-74 134,0 C46,0.23 -85.9,-0.23 -134,0 C-134,-74 -74,-134 0,-134z",
-                fill: "#EC5212", // rgb(236,82,18)
-                transform: "matrix(0.82,-0.69,0.69,0.82,455.56,19.97)",
-            },
-        ],
+        symbol: "< >",
+        color: "#77C6B3",
+        emissive: "#EC5212",
+        envMapIntensity: 1.5,
     },
-    /*
-      Letter D (쏙) — Blue half-circle + Dark blue rectangle
-      Lottie: home-hero-d.json
-      Extracted from inline <svg viewBox="0 0 288 288">
-    */
     쏙: {
-        viewBox: "0 0 288 288",
-        width: 288,
-        height: 288,
-        paths: [
-            {
-                d: "M144 0c74 0 134 60 134 134s-60 134-134 134V0z",
-                fill: "#70A2E1", // rgb(112,162,225)
-            },
-            {
-                d: "M56.5 0h88v287h-88V0z",
-                fill: "#3658D3", // rgb(54,88,211)
-            },
-        ],
+        symbol: "( )",
+        color: "#70A2E1",
+        emissive: "#3658D3",
+        envMapIntensity: 1.3,
     },
 };
 
-/*
-  Mouse influence multipliers per letter index.
-  Extracted from nodcoding's inline transforms when mouse was at
-  progress-x: 0.999, progress-y: 0.338:
+/* ─── 3D Glass Sphere ─── */
+function GlassOrb({
+    color,
+    emissive,
+    mouseX,
+    mouseY,
+}: {
+    color: string;
+    emissive: string;
+    mouseX: number;
+    mouseY: number;
+}) {
+    const meshRef = useRef<THREE.Mesh>(null);
 
-  - C:  tx=4.51,   ty=0.012,  r=0.296°   → baseX≈9.0,  baseR≈0.6
-  - O:  tx=57.75,  ty=2.11,   r=4.19°    → baseX≈115.7, baseR≈8.4
-  - D:  tx=26.43,  ty=0.40,   r=1.74°    → baseX≈52.9,  baseR≈3.5
+    useFrame((_, delta) => {
+        if (meshRef.current) {
+            // Smooth rotation following mouse
+            meshRef.current.rotation.x = THREE.MathUtils.lerp(
+                meshRef.current.rotation.x,
+                mouseY * 0.3,
+                delta * 2
+            );
+            meshRef.current.rotation.y = THREE.MathUtils.lerp(
+                meshRef.current.rotation.y,
+                mouseX * 0.5,
+                delta * 2
+            );
+        }
+    });
 
-  Our 3 letters map: 코→C, 딩→O, 쏙→D
-*/
+    return (
+        <mesh ref={meshRef}>
+            <sphereGeometry args={[1.2, 64, 64]} />
+            <MeshTransmissionMaterial
+                backside
+                samples={16}
+                thickness={0.5}
+                chromaticAberration={0.06}
+                anisotropy={0.3}
+                distortion={0.2}
+                distortionScale={0.3}
+                temporalDistortion={0.1}
+                ior={1.5}
+                color={color}
+                roughness={0.05}
+                transmission={0.95}
+                clearcoat={1}
+                clearcoatRoughness={0.05}
+            />
+        </mesh>
+    );
+}
+
+/* ─── Inner wireframe sphere for depth ─── */
+function InnerWireframe({ color }: { color: string }) {
+    const ref = useRef<THREE.Mesh>(null);
+
+    useFrame((_, delta) => {
+        if (ref.current) {
+            ref.current.rotation.x += delta * 0.2;
+            ref.current.rotation.z += delta * 0.15;
+        }
+    });
+
+    return (
+        <mesh ref={ref}>
+            <icosahedronGeometry args={[0.6, 1]} />
+            <meshBasicMaterial color={color} wireframe opacity={0.3} transparent />
+        </mesh>
+    );
+}
+
+/* ─── Code Symbol Ring ─── */
+function SymbolRing({ symbol, color }: { symbol: string; color: string }) {
+    const ref = useRef<THREE.Group>(null);
+
+    useFrame((_, delta) => {
+        if (ref.current) {
+            ref.current.rotation.y += delta * 0.4;
+        }
+    });
+
+    // Place each character around the sphere
+    const chars = symbol.split("");
+    const radius = 1.5;
+
+    return (
+        <group ref={ref}>
+            {chars.map((char, i) => {
+                const angle = (i / chars.length) * Math.PI * 2;
+                const x = Math.cos(angle) * radius;
+                const z = Math.sin(angle) * radius;
+                return (
+                    <group key={i} position={[x, 0, z]} rotation={[0, -angle + Math.PI / 2, 0]}>
+                        <Center>
+                            <mesh>
+                                <planeGeometry args={[0.4, 0.5]} />
+                                <meshBasicMaterial
+                                    color={color}
+                                    transparent
+                                    opacity={0.8}
+                                    side={THREE.DoubleSide}
+                                />
+                            </mesh>
+                        </Center>
+                    </group>
+                );
+            })}
+        </group>
+    );
+}
+
+/* ─── Single 3D Orb Scene ─── */
+function OrbScene({ config, mouseX, mouseY }: { config: OrbConfig; mouseX: number; mouseY: number }) {
+    return (
+        <>
+            <ambientLight intensity={0.4} />
+            <pointLight position={[5, 5, 5]} intensity={1.5} color="#ffffff" />
+            <pointLight position={[-3, -2, 4]} intensity={0.8} color={config.emissive} />
+            <spotLight
+                position={[0, 5, 0]}
+                angle={0.5}
+                penumbra={1}
+                intensity={1}
+                color={config.color}
+            />
+
+            <Float
+                speed={2}
+                rotationIntensity={0.3}
+                floatIntensity={0.5}
+                floatingRange={[-0.1, 0.1]}
+            >
+                <GlassOrb
+                    color={config.color}
+                    emissive={config.emissive}
+                    mouseX={mouseX}
+                    mouseY={mouseY}
+                />
+                <InnerWireframe color={config.emissive} />
+            </Float>
+
+            <SymbolRing symbol={config.symbol} color={config.emissive} />
+
+            <Environment preset="city" environmentIntensity={0.6} />
+        </>
+    );
+}
+
+/* ─── Mouse influence multipliers ─── */
 const MOUSE_FACTORS = [
-    { x: 9.0, y: 0.07, r: 0.6 },   // 코 (C) — subtle
-    { x: 115.0, y: 13.0, r: 8.4 },  // 딩 (O) — dramatic
-    { x: 53.0, y: 2.5, r: 3.5 },    // 쏙 (D) — medium
+    { x: 9.0, y: 0.07, r: 0.6 },
+    { x: 115.0, y: 13.0, r: 8.4 },
+    { x: 53.0, y: 2.5, r: 3.5 },
 ];
 
 interface FlowerLetterProps {
@@ -127,16 +220,11 @@ export default function FlowerLetter({
     flowerHeight,
     index,
 }: FlowerLetterProps) {
-    const ref = useRef<HTMLDivElement>(null);
     const mouse = useMousePosition();
-    const shape = SHAPES[shapeKey];
+    const orb = ORB_CONFIGS[shapeKey];
     const factor = MOUSE_FACTORS[index] || MOUSE_FACTORS[0];
 
-    // Mouse-reactive flower transform
-    // nodcoding formula: translate3d(X, Y, 0) rotate(R)
-    // X = (progressX - 0.5) * factor.x * 2
-    // Y = (progressY - 0.5) * factor.y * 2
-    // R = (progressX - 0.5) * factor.r * 2
+    // Mouse-reactive movement
     const dx = (mouse.progressX - 0.5);
     const flowerX = dx * factor.x * 2;
     const flowerY = (mouse.progressY - 0.5) * factor.y * 2;
@@ -144,36 +232,31 @@ export default function FlowerLetter({
 
     const springConfig = { damping: 25, stiffness: 120 };
     const springX = useSpring(useMotionValue(flowerX), springConfig);
-    const springY = useSpring(useMotionValue(flowerY), springConfig);
     const springR = useSpring(useMotionValue(flowerRotate), springConfig);
 
-    useEffect(() => {
-        springX.set(flowerX);
-        springY.set(flowerY);
-        springR.set(flowerRotate);
-    }, [flowerX, flowerY, flowerRotate, springX, springY, springR]);
+    springX.set(flowerX);
+    springR.set(flowerRotate);
 
-    // Scroll-driven letter reveal
+    // Scroll-driven reveal
     const containerRef = useRef<HTMLDivElement>(null);
     const { scrollYProgress } = useScroll({
         target: containerRef,
         offset: ["start 85%", "start 40%"],
     });
-    const letterY = useTransform(scrollYProgress, [0, 1], ["100%", "0%"]);
+    const letterYOffset = useTransform(scrollYProgress, [0, 1], ["100%", "0%"]);
     const letterOpacity = useTransform(scrollYProgress, [0, 0.3], [0, 1]);
 
-    // Stem path — nodcoding formula from extracted stems:
-    // M cx stemHeight*1.2 Q cx stemHeight*0.5 (cx + flowerX*ratio) 0 m ... circle
     const cx = stemWidth / 2;
+    const orbSize = flowerHeight;
 
-    if (!shape) return null;
+    if (!orb) return null;
 
     return (
         <motion.div
             ref={containerRef}
             className="flower-letter"
             style={{
-                y: letterY,
+                y: letterYOffset,
                 opacity: letterOpacity,
                 display: "inline-flex",
                 flexDirection: "column",
@@ -181,46 +264,32 @@ export default function FlowerLetter({
                 position: "relative",
             }}
         >
-            {/* Flower — mouse-reactive SVG shape */}
+            {/* 3D Orb Canvas */}
             <motion.div
-                ref={ref}
-                className="flower-letter__flower"
+                className="flower-letter__orb"
                 style={{
                     x: springX,
-                    y: springY,
                     rotate: springR,
-                    width: shape.width * (flowerHeight / shape.height),
-                    height: flowerHeight,
+                    width: orbSize,
+                    height: orbSize,
                     willChange: "transform",
                 }}
             >
-                <svg
-                    viewBox={shape.viewBox}
-                    width="100%"
-                    height="100%"
-                    preserveAspectRatio="xMidYMid meet"
-                    style={{ overflow: "visible" }}
+                <Canvas
+                    camera={{ position: [0, 0, 4], fov: 45 }}
+                    style={{ width: "100%", height: "100%" }}
+                    gl={{ antialias: true, alpha: true }}
+                    dpr={[1, 2]}
                 >
-                    {shape.paths.map((p, i) => (
-                        <motion.path
-                            key={i}
-                            d={p.d}
-                            fill={p.fill}
-                            fillOpacity={1}
-                            initial={{ opacity: 0, scale: 0.8 }}
-                            animate={{ opacity: 1, scale: 1 }}
-                            transition={{
-                                delay: 0.3 + index * 0.2 + i * 0.1,
-                                duration: 0.8,
-                                ease: [0.16, 1, 0.3, 1],
-                            }}
-                            style={{ transformOrigin: "center center" }}
-                        />
-                    ))}
-                </svg>
+                    <OrbScene
+                        config={orb}
+                        mouseX={dx * 2}
+                        mouseY={(mouse.progressY - 0.5) * 2}
+                    />
+                </Canvas>
             </motion.div>
 
-            {/* Stem — nodcoding's exact SVG path with quadratic curve + circle tip */}
+            {/* Stem */}
             <svg
                 className="flower-letter__stem"
                 width={stemWidth}
@@ -243,7 +312,6 @@ export default function FlowerLetter({
                         ease: [0.16, 1, 0.3, 1],
                     }}
                 />
-                {/* Stem tip dot — nodcoding's 6px radius circle at stem end */}
                 <motion.circle
                     cx={cx + flowerX * 0.3}
                     cy={0}

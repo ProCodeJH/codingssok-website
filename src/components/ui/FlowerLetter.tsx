@@ -1,393 +1,116 @@
 "use client";
 
-import { useRef, Suspense, useMemo } from "react";
-import { Canvas, useFrame } from "@react-three/fiber";
-import { Environment, ContactShadows, RoundedBox } from "@react-three/drei";
+import { useRef, Suspense, useEffect } from "react";
+import { Canvas, useFrame, useThree } from "@react-three/fiber";
+import { useGLTF, Environment, ContactShadows } from "@react-three/drei";
 import { EffectComposer, Bloom } from "@react-three/postprocessing";
 import { motion } from "framer-motion";
 import { useMousePosition } from "@/components/effects/MouseTracker";
 import * as THREE from "three";
 
 /*
-  코딩쏙 — Premium Walking AI Robot
+  코딩쏙 — GLTF Robot Model
   
-  Walking animation:
-    - Legs alternate stepping based on X movement speed
-    - Arms swing opposite to legs
-    - Body bounces up/down during walk
-    - Leans into movement direction
-  
-  Premium design:
-    - Smooth pill/capsule body
-    - Glass visor face
-    - Glowing accents
-    - Soft shadows
+  Loads user-provided .glb robot model
+  Mouse-follow on X-axis with body lean
+  Head tracks mouse
+  Walking leg animation based on movement speed
 */
 
-function WalkingRobot({ mouseX, mouseY }: { mouseX: number; mouseY: number }) {
-    const groupRef = useRef<THREE.Group>(null);
-    const headRef = useRef<THREE.Group>(null);
-    const bodyRef = useRef<THREE.Group>(null);
-    const leftLegRef = useRef<THREE.Group>(null);
-    const rightLegRef = useRef<THREE.Group>(null);
-    const leftArmRef = useRef<THREE.Group>(null);
-    const rightArmRef = useRef<THREE.Group>(null);
-    const leftPupilRef = useRef<THREE.Mesh>(null);
-    const rightPupilRef = useRef<THREE.Mesh>(null);
-    const antennaRef = useRef<THREE.Group>(null);
-    const antennaTipRef = useRef<THREE.Mesh>(null);
-    const leftEyeGrpRef = useRef<THREE.Group>(null);
-    const rightEyeGrpRef = useRef<THREE.Group>(null);
-    const leftBlinkRef = useRef<THREE.Mesh>(null);
-    const rightBlinkRef = useRef<THREE.Mesh>(null);
+/* ─── Auto-fit model to scene ─── */
+function useModelBounds(scene: THREE.Object3D) {
+    const box = new THREE.Box3().setFromObject(scene);
+    const size = new THREE.Vector3();
+    box.getSize(size);
+    const center = new THREE.Vector3();
+    box.getCenter(center);
+    const maxDim = Math.max(size.x, size.y, size.z);
+    const scale = 2.2 / maxDim; // fit within ~2.2 units
+    return { scale, center, size };
+}
 
-    // Track velocity for walk cycle
+/* ─── Robot Component ─── */
+function RobotModel({ mouseX, mouseY }: { mouseX: number; mouseY: number }) {
+    const groupRef = useRef<THREE.Group>(null);
+    const { scene, animations } = useGLTF("/models/robot.glb");
+    const mixerRef = useRef<THREE.AnimationMixer | null>(null);
     const prevX = useRef(0);
     const walkPhase = useRef(0);
+
+    // Clone the scene so we can manipulate it
+    const clonedScene = scene.clone(true);
+
+    // Auto-fit
+    const { scale, center } = useModelBounds(clonedScene);
+
+    // Set up animation mixer if animations exist
+    useEffect(() => {
+        if (animations.length > 0) {
+            const mixer = new THREE.AnimationMixer(clonedScene);
+            animations.forEach((clip) => {
+                mixer.clipAction(clip).play();
+            });
+            mixerRef.current = mixer;
+            return () => {
+                mixer.stopAllAction();
+            };
+        }
+    }, []);
 
     useFrame((state, delta) => {
         const t = state.clock.getElapsedTime();
 
-        // ── Smooth X-axis following ──
+        // Update animation mixer
+        if (mixerRef.current) {
+            mixerRef.current.update(delta);
+        }
+
         if (groupRef.current) {
+            // Smooth X-axis follow
             const targetX = mouseX * 2.5;
             const currentX = groupRef.current.position.x;
             groupRef.current.position.x = THREE.MathUtils.lerp(currentX, targetX, 0.03);
 
-            // Calculate movement speed
+            // Calculate speed
             const speed = Math.abs(groupRef.current.position.x - prevX.current) / Math.max(delta, 0.001);
             prevX.current = groupRef.current.position.x;
 
-            // Walk cycle phase advances based on speed
-            const walkSpeed = Math.min(speed * 0.8, 12);
-            walkPhase.current += delta * walkSpeed;
-
-            // Lean into direction of movement
+            // Lean into movement
             const moveDir = targetX - currentX;
             groupRef.current.rotation.z = THREE.MathUtils.lerp(
                 groupRef.current.rotation.z,
-                -moveDir * 0.03,
+                -moveDir * 0.04,
                 0.05
             );
 
-            // Body bounce during walk
-            const bounce = walkSpeed > 0.5 ? Math.abs(Math.sin(walkPhase.current)) * 0.06 : 0;
-            groupRef.current.position.y = bounce;
-        }
-
-        // ── Leg walking animation ──
-        const legSwing = Math.sin(walkPhase.current) * 0.5;
-        if (leftLegRef.current) {
-            leftLegRef.current.rotation.x = legSwing;
-        }
-        if (rightLegRef.current) {
-            rightLegRef.current.rotation.x = -legSwing;
-        }
-
-        // ── Arms swing opposite to legs ──
-        if (leftArmRef.current) {
-            leftArmRef.current.rotation.x = -legSwing * 0.6;
-        }
-        if (rightArmRef.current) {
-            rightArmRef.current.rotation.x = legSwing * 0.6;
-        }
-
-        // ── Head looks at mouse ──
-        if (headRef.current) {
-            headRef.current.rotation.y = THREE.MathUtils.lerp(
-                headRef.current.rotation.y,
-                mouseX * 0.4,
+            // Look toward mouse (Y rotation)
+            groupRef.current.rotation.y = THREE.MathUtils.lerp(
+                groupRef.current.rotation.y,
+                mouseX * 0.3,
                 0.04
             );
-            headRef.current.rotation.x = THREE.MathUtils.lerp(
-                headRef.current.rotation.x,
-                mouseY * 0.12,
+
+            // Subtle head tilt up/down
+            groupRef.current.rotation.x = THREE.MathUtils.lerp(
+                groupRef.current.rotation.x,
+                mouseY * 0.08,
                 0.04
             );
-        }
 
-        // ── Pupils track mouse ──
-        const px = mouseX * 0.06;
-        const py = mouseY * 0.04;
-        if (leftPupilRef.current) {
-            leftPupilRef.current.position.x = px;
-            leftPupilRef.current.position.y = py;
-        }
-        if (rightPupilRef.current) {
-            rightPupilRef.current.position.x = px;
-            rightPupilRef.current.position.y = py;
-        }
+            // Walk bounce
+            const walkSpeed = Math.min(speed * 0.6, 8);
+            walkPhase.current += delta * walkSpeed;
+            const bounce = walkSpeed > 0.3 ? Math.abs(Math.sin(walkPhase.current)) * 0.04 : 0;
 
-        // ── Blink every ~4s ──
-        const blink = t % 4.2;
-        const isBlinking = blink > 4.0;
-        if (leftBlinkRef.current) leftBlinkRef.current.visible = isBlinking;
-        if (rightBlinkRef.current) rightBlinkRef.current.visible = isBlinking;
-        if (leftEyeGrpRef.current) leftEyeGrpRef.current.visible = !isBlinking;
-        if (rightEyeGrpRef.current) rightEyeGrpRef.current.visible = !isBlinking;
-
-        // ── Antenna sway ──
-        if (antennaRef.current) {
-            antennaRef.current.rotation.z = Math.sin(t * 2) * 0.12;
-        }
-        if (antennaTipRef.current) {
-            const pulse = 1 + Math.sin(t * 5) * 0.2;
-            antennaTipRef.current.scale.setScalar(pulse);
+            // Idle gentle float
+            const idleFloat = Math.sin(t * 1.5) * 0.03;
+            groupRef.current.position.y = -center.y * scale + bounce + idleFloat;
         }
     });
 
-    // ── Colors ──
-    const C = {
-        body: "#FFFFFF",
-        bodyDark: "#E8ECF0",
-        accent: "#4C9EFF",
-        accentLight: "#8DC4FF",
-        visor: "#E3EEFF",
-        eye: "#FFFFFF",
-        pupil: "#1E293B",
-        blush: "#FFB3C6",
-        mouth: "#FF8FAB",
-        glow: "#4C9EFF",
-        foot: "#3A3A4A",
-    };
-
     return (
-        <group ref={groupRef}>
-            {/* ══════ BODY ══════ */}
-            <group ref={bodyRef} position={[0, 0, 0]}>
-                {/* Main torso — pill shape */}
-                <mesh position={[0, -0.1, 0]}>
-                    <capsuleGeometry args={[0.42, 0.5, 16, 32]} />
-                    <meshPhysicalMaterial
-                        color={C.body}
-                        roughness={0.15}
-                        metalness={0.05}
-                        clearcoat={0.8}
-                        clearcoatRoughness={0.1}
-                    />
-                </mesh>
-
-                {/* Chest accent stripe */}
-                <mesh position={[0, 0.05, 0.42]}>
-                    <boxGeometry args={[0.5, 0.06, 0.02]} />
-                    <meshStandardMaterial color={C.accent} emissive={C.accent} emissiveIntensity={0.5} />
-                </mesh>
-
-                {/* Power core (belly) */}
-                <mesh position={[0, -0.15, 0.42]}>
-                    <circleGeometry args={[0.1, 32]} />
-                    <meshStandardMaterial
-                        color={C.accent}
-                        emissive={C.accent}
-                        emissiveIntensity={2}
-                        roughness={0.1}
-                    />
-                </mesh>
-                {/* Power core glow ring */}
-                <mesh position={[0, -0.15, 0.41]}>
-                    <ringGeometry args={[0.1, 0.14, 32]} />
-                    <meshBasicMaterial color={C.accentLight} transparent opacity={0.4} side={THREE.DoubleSide} />
-                </mesh>
-            </group>
-
-            {/* ══════ HEAD ══════ */}
-            <group ref={headRef} position={[0, 0.75, 0]}>
-                {/* Main head — smooth sphere */}
-                <mesh>
-                    <sphereGeometry args={[0.55, 64, 64]} />
-                    <meshPhysicalMaterial
-                        color={C.body}
-                        roughness={0.12}
-                        metalness={0.05}
-                        clearcoat={0.9}
-                        clearcoatRoughness={0.08}
-                    />
-                </mesh>
-
-                {/* Face visor — glass */}
-                <mesh position={[0, -0.03, 0.35]} rotation={[-0.15, 0, 0]}>
-                    <sphereGeometry args={[0.38, 48, 48, 0, Math.PI * 2, 0, Math.PI * 0.55]} />
-                    <meshPhysicalMaterial
-                        color={C.visor}
-                        roughness={0.05}
-                        metalness={0.02}
-                        transparent
-                        opacity={0.6}
-                        clearcoat={1}
-                        clearcoatRoughness={0.02}
-                    />
-                </mesh>
-
-                {/* ── Eyes ── */}
-                <group ref={leftEyeGrpRef} position={[-0.16, 0.02, 0.48]}>
-                    <mesh>
-                        <sphereGeometry args={[0.1, 32, 32]} />
-                        <meshBasicMaterial color={C.eye} />
-                    </mesh>
-                    <mesh ref={leftPupilRef} position={[0, 0, 0.06]}>
-                        <sphereGeometry args={[0.055, 32, 32]} />
-                        <meshBasicMaterial color={C.pupil} />
-                    </mesh>
-                    {/* Sparkle */}
-                    <mesh position={[0.03, 0.035, 0.09]}>
-                        <sphereGeometry args={[0.02, 12, 12]} />
-                        <meshBasicMaterial color="#FFFFFF" />
-                    </mesh>
-                </group>
-
-                <group ref={rightEyeGrpRef} position={[0.16, 0.02, 0.48]}>
-                    <mesh>
-                        <sphereGeometry args={[0.1, 32, 32]} />
-                        <meshBasicMaterial color={C.eye} />
-                    </mesh>
-                    <mesh ref={rightPupilRef} position={[0, 0, 0.06]}>
-                        <sphereGeometry args={[0.055, 32, 32]} />
-                        <meshBasicMaterial color={C.pupil} />
-                    </mesh>
-                    <mesh position={[0.03, 0.035, 0.09]}>
-                        <sphereGeometry args={[0.02, 12, 12]} />
-                        <meshBasicMaterial color="#FFFFFF" />
-                    </mesh>
-                </group>
-
-                {/* Blink lids */}
-                <mesh ref={leftBlinkRef} position={[-0.16, 0.02, 0.5]} visible={false}>
-                    <boxGeometry args={[0.2, 0.03, 0.01]} />
-                    <meshBasicMaterial color={C.body} side={THREE.DoubleSide} />
-                </mesh>
-                <mesh ref={rightBlinkRef} position={[0.16, 0.02, 0.5]} visible={false}>
-                    <boxGeometry args={[0.2, 0.03, 0.01]} />
-                    <meshBasicMaterial color={C.body} side={THREE.DoubleSide} />
-                </mesh>
-
-                {/* Smile */}
-                <mesh position={[0, -0.13, 0.5]} rotation={[0.15, 0, 0]}>
-                    <torusGeometry args={[0.06, 0.015, 8, 20, Math.PI]} />
-                    <meshBasicMaterial color={C.mouth} />
-                </mesh>
-
-                {/* Blush */}
-                <mesh position={[-0.3, -0.06, 0.38]}>
-                    <circleGeometry args={[0.06, 20]} />
-                    <meshBasicMaterial color={C.blush} transparent opacity={0.4} side={THREE.DoubleSide} />
-                </mesh>
-                <mesh position={[0.3, -0.06, 0.38]}>
-                    <circleGeometry args={[0.06, 20]} />
-                    <meshBasicMaterial color={C.blush} transparent opacity={0.4} side={THREE.DoubleSide} />
-                </mesh>
-
-                {/* ── Antenna ── */}
-                <group ref={antennaRef} position={[0, 0.55, 0]}>
-                    <mesh position={[0, 0.1, 0]}>
-                        <cylinderGeometry args={[0.018, 0.022, 0.2, 12]} />
-                        <meshPhysicalMaterial color={C.bodyDark} roughness={0.2} clearcoat={0.5} />
-                    </mesh>
-                    <mesh ref={antennaTipRef} position={[0, 0.25, 0]}>
-                        <sphereGeometry args={[0.05, 20, 20]} />
-                        <meshStandardMaterial
-                            color={C.glow}
-                            emissive={C.glow}
-                            emissiveIntensity={4}
-                            roughness={0.1}
-                        />
-                    </mesh>
-                </group>
-
-                {/* Ear sensors */}
-                <mesh position={[-0.56, 0.05, 0]} rotation={[0, 0, Math.PI / 2]}>
-                    <cylinderGeometry args={[0.05, 0.05, 0.08, 16]} />
-                    <meshPhysicalMaterial color={C.bodyDark} roughness={0.15} clearcoat={0.7} />
-                </mesh>
-                <mesh position={[0.56, 0.05, 0]} rotation={[0, 0, Math.PI / 2]}>
-                    <cylinderGeometry args={[0.05, 0.05, 0.08, 16]} />
-                    <meshPhysicalMaterial color={C.bodyDark} roughness={0.15} clearcoat={0.7} />
-                </mesh>
-            </group>
-
-            {/* ══════ ARMS ══════ */}
-            {/* Shoulder joints */}
-            <mesh position={[-0.5, 0.15, 0]}>
-                <sphereGeometry args={[0.07, 16, 16]} />
-                <meshPhysicalMaterial color={C.bodyDark} roughness={0.15} clearcoat={0.5} />
-            </mesh>
-            <mesh position={[0.5, 0.15, 0]}>
-                <sphereGeometry args={[0.07, 16, 16]} />
-                <meshPhysicalMaterial color={C.bodyDark} roughness={0.15} clearcoat={0.5} />
-            </mesh>
-
-            <group ref={leftArmRef} position={[-0.5, 0.15, 0]}>
-                <mesh position={[0, -0.22, 0]}>
-                    <capsuleGeometry args={[0.05, 0.25, 8, 16]} />
-                    <meshPhysicalMaterial color={C.body} roughness={0.15} clearcoat={0.7} />
-                </mesh>
-                {/* Hand */}
-                <mesh position={[0, -0.42, 0]}>
-                    <sphereGeometry args={[0.07, 16, 16]} />
-                    <meshPhysicalMaterial color={C.bodyDark} roughness={0.15} clearcoat={0.5} />
-                </mesh>
-            </group>
-
-            <group ref={rightArmRef} position={[0.5, 0.15, 0]}>
-                <mesh position={[0, -0.22, 0]}>
-                    <capsuleGeometry args={[0.05, 0.25, 8, 16]} />
-                    <meshPhysicalMaterial color={C.body} roughness={0.15} clearcoat={0.7} />
-                </mesh>
-                <mesh position={[0, -0.42, 0]}>
-                    <sphereGeometry args={[0.07, 16, 16]} />
-                    <meshPhysicalMaterial color={C.bodyDark} roughness={0.15} clearcoat={0.5} />
-                </mesh>
-            </group>
-
-            {/* ══════ LEGS ══════ */}
-            {/* Hip joints */}
-            <mesh position={[-0.18, -0.45, 0]}>
-                <sphereGeometry args={[0.06, 16, 16]} />
-                <meshPhysicalMaterial color={C.bodyDark} roughness={0.15} clearcoat={0.5} />
-            </mesh>
-            <mesh position={[0.18, -0.45, 0]}>
-                <sphereGeometry args={[0.06, 16, 16]} />
-                <meshPhysicalMaterial color={C.bodyDark} roughness={0.15} clearcoat={0.5} />
-            </mesh>
-
-            <group ref={leftLegRef} position={[-0.18, -0.45, 0]}>
-                {/* Upper leg */}
-                <mesh position={[0, -0.18, 0]}>
-                    <capsuleGeometry args={[0.06, 0.2, 8, 16]} />
-                    <meshPhysicalMaterial color={C.body} roughness={0.15} clearcoat={0.7} />
-                </mesh>
-                {/* Knee */}
-                <mesh position={[0, -0.32, 0]}>
-                    <sphereGeometry args={[0.055, 16, 16]} />
-                    <meshPhysicalMaterial color={C.bodyDark} roughness={0.15} clearcoat={0.5} />
-                </mesh>
-                {/* Lower leg */}
-                <mesh position={[0, -0.48, 0]}>
-                    <capsuleGeometry args={[0.055, 0.18, 8, 16]} />
-                    <meshPhysicalMaterial color={C.body} roughness={0.15} clearcoat={0.7} />
-                </mesh>
-                {/* Foot */}
-                <RoundedBox args={[0.14, 0.06, 0.2]} radius={0.025} smoothness={4} position={[0, -0.62, 0.03]}>
-                    <meshPhysicalMaterial color={C.foot} roughness={0.3} clearcoat={0.5} />
-                </RoundedBox>
-            </group>
-
-            <group ref={rightLegRef} position={[0.18, -0.45, 0]}>
-                <mesh position={[0, -0.18, 0]}>
-                    <capsuleGeometry args={[0.06, 0.2, 8, 16]} />
-                    <meshPhysicalMaterial color={C.body} roughness={0.15} clearcoat={0.7} />
-                </mesh>
-                <mesh position={[0, -0.32, 0]}>
-                    <sphereGeometry args={[0.055, 16, 16]} />
-                    <meshPhysicalMaterial color={C.bodyDark} roughness={0.15} clearcoat={0.5} />
-                </mesh>
-                <mesh position={[0, -0.48, 0]}>
-                    <capsuleGeometry args={[0.055, 0.18, 8, 16]} />
-                    <meshPhysicalMaterial color={C.body} roughness={0.15} clearcoat={0.7} />
-                </mesh>
-                <RoundedBox args={[0.14, 0.06, 0.2]} radius={0.025} smoothness={4} position={[0, -0.62, 0.03]}>
-                    <meshPhysicalMaterial color={C.foot} roughness={0.3} clearcoat={0.5} />
-                </RoundedBox>
-            </group>
+        <group ref={groupRef} scale={scale} position={[0, -center.y * scale, 0]}>
+            <primitive object={clonedScene} />
         </group>
     );
 }
@@ -398,25 +121,26 @@ function RobotScene({ mouseX, mouseY }: { mouseX: number; mouseY: number }) {
         <>
             <ambientLight intensity={0.8} />
             <directionalLight position={[4, 6, 6]} intensity={2} color="#FFFFFF" castShadow />
-            <directionalLight position={[-3, 4, 4]} intensity={0.6} color="#E0F0FF" />
-            <pointLight position={[0, -1, 5]} intensity={0.4} color="#4C9EFF" />
+            <directionalLight position={[-3, 4, 3]} intensity={0.6} color="#E8F4FF" />
+            <pointLight position={[0, 0, 5]} intensity={0.5} color="#4C9EFF" />
+            <pointLight position={[-2, -1, 3]} intensity={0.3} color="#FFB3C6" />
 
-            <WalkingRobot mouseX={mouseX} mouseY={mouseY} />
+            <RobotModel mouseX={mouseX} mouseY={mouseY} />
 
             <ContactShadows
-                position={[0, -1.15, 0]}
+                position={[0, -1.2, 0]}
                 opacity={0.3}
                 scale={6}
                 blur={2.5}
-                far={4}
+                far={5}
             />
 
             <Environment preset="apartment" environmentIntensity={0.5} />
 
             <EffectComposer>
                 <Bloom
-                    intensity={0.4}
-                    luminanceThreshold={0.8}
+                    intensity={0.3}
+                    luminanceThreshold={0.85}
                     luminanceSmoothing={0.9}
                     mipmapBlur
                 />
@@ -424,6 +148,9 @@ function RobotScene({ mouseX, mouseY }: { mouseX: number; mouseY: number }) {
         </>
     );
 }
+
+/* ─── Preload model ─── */
+useGLTF.preload("/models/robot.glb");
 
 /* ─── Export ─── */
 export default function FlowerLetter({
@@ -452,8 +179,8 @@ export default function FlowerLetter({
                 flexDirection: "column",
                 alignItems: "center",
                 position: "relative",
-                width: 400,
-                height: 400,
+                width: 420,
+                height: 420,
             }}
         >
             <Suspense
@@ -464,20 +191,21 @@ export default function FlowerLetter({
                         display: "flex",
                         alignItems: "center",
                         justifyContent: "center",
-                        fontSize: "4rem",
+                        fontSize: "3rem",
+                        color: "#aaa",
                     }}>
-                        🤖
+                        로봇 로딩중...
                     </div>
                 }
             >
                 <Canvas
-                    camera={{ position: [0, 0.2, 3.8], fov: 35 }}
-                    style={{ width: "100%", height: "100%" }}
+                    camera={{ position: [0, 0.5, 4], fov: 35 }}
+                    style={{ width: "100%", height: "100%", background: "transparent" }}
                     gl={{
                         antialias: true,
                         alpha: true,
                         toneMapping: THREE.ACESFilmicToneMapping,
-                        toneMappingExposure: 1.15,
+                        toneMappingExposure: 1.2,
                     }}
                     dpr={[1, 2]}
                 >

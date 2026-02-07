@@ -2,198 +2,135 @@
 
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { MapPin, Phone, Clock, Send, Sparkles, Gift, CheckCircle } from "lucide-react";
-import TiltCard from "@/components/ui/TiltCard";
+import { Send, Check, AlertCircle, Loader2 } from "lucide-react";
+import Image from "next/image";
 
 const contactInfo = [
-    { icon: MapPin, title: "위치", value: "대전 유성구 봉명동", color: "from-blue-600 to-cyan-500" },
-    { icon: Phone, title: "전화", value: "010-1234-5678", color: "from-indigo-600 to-blue-600" },
-    { icon: Clock, title: "운영", value: "평일 14:00 ~ 21:00", color: "from-cyan-500 to-blue-600" },
+    { label: "전화 상담", value: "010-7566-7229", sub: "평일/주말 상담 가능" },
+    { label: "위치", value: "대전 유성구 테크노중앙로 67", sub: "엑스포타워 5층" },
+    { label: "운영 시간", value: "평일 14:00 - 21:00", sub: "주말 10:00 - 18:00" },
 ];
 
-
+interface FormData { studentName: string; grade: string; phone: string; course: string; message: string; }
+interface FormErrors { studentName?: string; phone?: string; course?: string; }
 
 export default function Contact() {
-    const [submitted, setSubmitted] = useState(false);
+    const [isSubmitted, setIsSubmitted] = useState(false);
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [submitError, setSubmitError] = useState("");
+    const [formData, setFormData] = useState<FormData>({ studentName: "", grade: "", phone: "", course: "", message: "" });
+    const [errors, setErrors] = useState<FormErrors>({});
 
-    const handleSubmit = (e: React.FormEvent) => {
-        e.preventDefault();
-        setSubmitted(true);
-        setTimeout(() => setSubmitted(false), 4000);
+    const validate = (): boolean => {
+        const newErrors: FormErrors = {};
+        if (!formData.studentName || formData.studentName.length < 2) newErrors.studentName = "이름은 2자 이상 입력해주세요";
+        const phoneClean = formData.phone.replace(/[\s-]/g, "");
+        if (!phoneClean || !/^01[0-9]\d{7,8}$/.test(phoneClean)) newErrors.phone = "올바른 전화번호를 입력해주세요 (예: 010-1234-5678)";
+        if (!formData.course) newErrors.course = "관심 과정을 선택해주세요";
+        setErrors(newErrors);
+        return Object.keys(newErrors).length === 0;
     };
 
+    const handleChange = (field: keyof FormData, value: string) => {
+        setFormData((prev) => ({ ...prev, [field]: value }));
+        if (errors[field as keyof FormErrors]) setErrors((prev) => ({ ...prev, [field]: undefined }));
+        setSubmitError("");
+    };
+
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!validate()) return;
+        setIsSubmitting(true);
+        setSubmitError("");
+        try {
+            const res = await fetch("/api/contact", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(formData) });
+            const data = await res.json();
+            if (data.success) { setIsSubmitted(true); } else { setSubmitError(data.error || "전송 중 오류가 발생했습니다."); }
+        } catch { setSubmitError("네트워크 오류가 발생했습니다. 다시 시도해주세요."); }
+        finally { setIsSubmitting(false); }
+    };
+
+    const inputClass = (field: keyof FormErrors) =>
+        `w-full px-5 py-4 bg-white border rounded-xl text-sm focus:outline-none focus:ring-2 focus:border-transparent transition-all ${errors[field] ? "border-red-300 focus:ring-red-500" : "border-gray-200 focus:ring-blue-500"}`;
+
     return (
-        <section id="contact" className="w-full bg-gradient-to-b from-gray-50 via-white to-gray-50 relative overflow-hidden flex justify-center" style={{ paddingTop: '180px', paddingBottom: '180px' }}>
-            {/* 배경 효과 */}
-            <div className="absolute inset-0 pointer-events-none">
-                <div className="absolute top-0 right-1/4 w-96 h-96 bg-blue-100/50 rounded-full blur-3xl" />
-                <div className="absolute bottom-0 left-1/4 w-80 h-80 bg-cyan-100/30 rounded-full blur-3xl" />
-                <div className="absolute inset-0 opacity-[0.015]" style={{
-                    backgroundImage: 'radial-gradient(circle, #3b82f6 1px, transparent 1px)',
-                    backgroundSize: '50px 50px'
-                }} />
-                <svg className="absolute inset-0 w-full h-full opacity-[0.03]">
-                    <filter id="contact-noise"><feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="4" stitchTiles="stitch" /></filter>
-                    <rect width="100%" height="100%" filter="url(#contact-noise)" />
-                </svg>
-            </div>
-
-            <div className="relative z-10 w-full max-w-6xl mx-auto px-8">
-                <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    className="text-center" style={{ marginBottom: '80px' }}
-                >
-                    <TiltCard className="inline-block mb-8">
-                        <motion.div
-                            initial={{ scale: 0.8, rotateY: -30 }}
-                            whileInView={{ scale: 1, rotateY: 0 }}
-                            viewport={{ once: true }}
-                            className="w-20 h-20 bg-gradient-to-br from-blue-600 to-cyan-500 rounded-3xl flex items-center justify-center shadow-2xl shadow-blue-500/30"
-                        >
-                            <Send size={32} className="text-white" />
-                        </motion.div>
-                    </TiltCard>
-
-                    <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
-                        상담 <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-cyan-500">신청</span>
-                    </h2>
-                    <p className="text-lg text-gray-500">
-                        무료 상담으로 맞춤 커리큘럼을 안내받으세요
-                    </p>
+        <section id="contact" className="py-32 bg-white">
+            <div className="max-w-7xl mx-auto px-8 lg:px-12">
+                <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.8 }} className="text-center mb-20">
+                    <span className="inline-flex items-center gap-2 px-4 py-2 bg-green-500/10 border border-green-200/50 rounded-full mb-6">
+                        <span className="text-sm font-medium text-green-700">상담 신청</span>
+                    </span>
+                    <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-6 leading-tight">무료 상담 신청</h2>
+                    <p className="text-lg text-gray-500">신청 후 24시간 이내 연락드립니다</p>
                 </motion.div>
 
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
-                    {/* 왼쪽 - 연락처 정보 카드 */}
-                    <div className="space-y-6">
+                <div className="grid lg:grid-cols-2 gap-16 max-w-5xl mx-auto">
+                    <motion.div initial={{ opacity: 0, x: -30 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ duration: 0.8 }} className="space-y-6">
+                        <div className="relative h-[200px] rounded-3xl overflow-hidden mb-8 shadow-xl">
+                            <Image src="/images/classroom2.png" alt="Modern classroom" fill className="object-cover" />
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
+                        </div>
                         {contactInfo.map((info, i) => (
-                            <motion.div
-                                key={i}
-                                initial={{ opacity: 0, x: -30 }}
-                                whileInView={{ opacity: 1, x: 0 }}
-                                viewport={{ once: true }}
-                                transition={{ delay: i * 0.1, ease: [0.16, 1, 0.3, 1] as const }}
-                                whileHover={{ x: 8, transition: { duration: 0.2 } }}
-                                className="group relative"
-                            >
-                                {/* 글로우 — 부모에 relative 있음 */}
-                                <div className="absolute inset-0 bg-gradient-to-r from-blue-600 to-cyan-500 rounded-2xl blur-xl opacity-0 group-hover:opacity-10 transition-opacity duration-300" />
-
-                                <div className="relative flex items-center gap-5 p-6 bg-white/80 backdrop-blur-xl rounded-2xl border border-gray-100 shadow-lg group-hover:shadow-xl group-hover:border-blue-200 transition-all duration-300">
-                                    <motion.div
-                                        className={`w-14 h-14 bg-gradient-to-br ${info.color} rounded-xl flex items-center justify-center shadow-lg shadow-blue-500/20 flex-shrink-0`}
-                                        whileHover={{ rotate: [0, -5, 5, 0], scale: 1.1 }}
-                                    >
-                                        <info.icon size={24} className="text-white" />
-                                    </motion.div>
-                                    <div>
-                                        <span className="text-sm text-gray-500 font-medium">{info.title}</span>
-                                        <p className="font-semibold text-gray-900 text-lg">{info.value}</p>
-                                    </div>
-                                </div>
+                            <motion.div key={i} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.1, duration: 0.6 }} className="bg-gray-50 rounded-2xl p-6 hover:bg-white hover:shadow-lg transition-all border border-transparent hover:border-gray-100">
+                                <p className="text-sm text-gray-400 mb-2">{info.label}</p>
+                                <p className="font-semibold text-xl text-gray-900">{info.value}</p>
+                                <p className="text-sm text-gray-500 mt-1">{info.sub}</p>
                             </motion.div>
                         ))}
+                    </motion.div>
 
-                        {/* 첫 상담 특전 카드 — 3D Tilt */}
-                        <motion.div
-                            initial={{ opacity: 0, x: -30 }}
-                            whileInView={{ opacity: 1, x: 0 }}
-                            viewport={{ once: true }}
-                            transition={{ delay: 0.4 }}
-                        >
-                            <TiltCard>
-                                <div className="relative p-6 bg-gradient-to-br from-blue-600 to-cyan-500 rounded-2xl shadow-xl shadow-blue-500/30 text-white overflow-hidden">
-                                    {/* 노이즈 텍스처 */}
-                                    <svg className="absolute inset-0 w-full h-full opacity-[0.08]">
-                                        <filter id="bonus-noise"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="4" stitchTiles="stitch" /></filter>
-                                        <rect width="100%" height="100%" filter="url(#bonus-noise)" />
-                                    </svg>
-                                    <Gift className="absolute top-4 right-4 opacity-30" size={48} />
-                                    <div className="relative z-10">
-                                        <h4 className="font-bold text-lg mb-2 flex items-center gap-2">
-                                            <Sparkles size={18} /> 첫 상담 특전
-                                        </h4>
-                                        <p className="text-white/90 text-sm leading-relaxed">
-                                            지금 상담 신청하시면 <strong>무료 레벨 테스트</strong>와 맞춤 커리큘럼 제안을 받으실 수 있습니다.
-                                        </p>
+                    <motion.div initial={{ opacity: 0, x: 30 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ duration: 0.8 }} className="bg-gray-50 rounded-3xl p-8 border border-gray-100">
+                        {isSubmitted ? (
+                            <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="text-center py-16">
+                                <motion.div className="w-20 h-20 rounded-full bg-green-100 flex items-center justify-center mx-auto mb-6" initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ type: "spring", stiffness: 200, damping: 10, delay: 0.2 }}>
+                                    <Check size={40} className="text-green-600" />
+                                </motion.div>
+                                <h3 className="text-2xl font-bold text-gray-900 mb-3">신청 완료!</h3>
+                                <p className="text-gray-500">24시간 이내 연락드리겠습니다.</p>
+                            </motion.div>
+                        ) : (
+                            <form onSubmit={handleSubmit} className="space-y-6">
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div>
+                                        <label className="block text-sm font-semibold text-gray-700 mb-2">학생 이름</label>
+                                        <input type="text" className={inputClass("studentName")} placeholder="홍길동" value={formData.studentName} onChange={(e) => handleChange("studentName", e.target.value)} />
+                                        {errors.studentName && <p className="mt-1.5 text-xs text-red-500 flex items-center gap-1"><AlertCircle size={12} />{errors.studentName}</p>}
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-semibold text-gray-700 mb-2">학년</label>
+                                        <input type="text" className="w-full px-5 py-4 bg-white border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all" placeholder="초등 6학년" value={formData.grade} onChange={(e) => handleChange("grade", e.target.value)} />
                                     </div>
                                 </div>
-                            </TiltCard>
-                        </motion.div>
-                    </div>
-
-                    {/* 오른쪽 - 폼 (3D Tilt) */}
-                    <motion.div
-                        initial={{ opacity: 0, x: 30 }}
-                        whileInView={{ opacity: 1, x: 0 }}
-                        viewport={{ once: true }}
-                        transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] as const }}
-                    >
-                        <TiltCard>
-                            <div className="relative">
-                                {/* 카드 글로우 — relative 부모 안에 있음 */}
-                                <div className="absolute -inset-1 bg-gradient-to-r from-blue-600 to-cyan-500 rounded-[28px] blur-2xl opacity-10" />
-
-                                <form onSubmit={handleSubmit} className="relative bg-white/90 backdrop-blur-xl rounded-3xl p-8 lg:p-10 border border-gray-100 shadow-2xl">
-                                    <div className="grid grid-cols-2 gap-5 mb-5">
-                                        <div>
-                                            <label className="block text-sm font-medium text-gray-700 mb-2">이름</label>
-                                            <input
-                                                type="text"
-                                                placeholder="홍길동"
-                                                className="w-full px-4 py-4 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-gray-900 placeholder:text-gray-400"
-                                            />
-                                        </div>
-                                        <div>
-                                            <label className="block text-sm font-medium text-gray-700 mb-2">연락처</label>
-                                            <input
-                                                type="tel"
-                                                placeholder="010-0000-0000"
-                                                className="w-full px-4 py-4 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-gray-900 placeholder:text-gray-400"
-                                            />
-                                        </div>
-                                    </div>
-                                    <div className="mb-5">
-                                        <label className="block text-sm font-medium text-gray-700 mb-2">학년</label>
-                                        <select className="w-full px-4 py-4 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-gray-900 appearance-none cursor-pointer">
-                                            <option>선택</option>
-                                            <option>초등 1~3학년</option>
-                                            <option>초등 4~6학년</option>
-                                            <option>중학생</option>
-                                            <option>고등학생</option>
-                                            <option>성인</option>
-                                        </select>
-                                    </div>
-                                    <div className="mb-8">
-                                        <label className="block text-sm font-medium text-gray-700 mb-2">문의 내용</label>
-                                        <textarea
-                                            rows={4}
-                                            placeholder="궁금한 점을 적어주세요"
-                                            className="w-full px-4 py-4 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all resize-none text-gray-900 placeholder:text-gray-400"
-                                        />
-                                    </div>
-                                    {submitted && (
-                                        <motion.div
-                                            initial={{ opacity: 0, y: 10 }}
-                                            animate={{ opacity: 1, y: 0 }}
-                                            className="mb-4 p-4 bg-emerald-50 border border-emerald-200 rounded-xl flex items-center gap-3 text-emerald-700"
-                                        >
-                                            <CheckCircle size={20} />
-                                            <span className="text-sm font-medium">상담 신청이 접수되었습니다! 빠르게 연락드리겠습니다.</span>
-                                        </motion.div>
-                                    )}
-                                    <motion.button
-                                        type="submit"
-                                        className="w-full py-5 bg-gradient-to-r from-blue-600 to-cyan-500 text-white font-bold text-lg rounded-xl shadow-lg shadow-blue-500/30"
-                                        whileHover={{ scale: 1.02, y: -2, boxShadow: "0 20px 40px rgba(59, 130, 246, 0.4)" }}
-                                        whileTap={{ scale: 0.98 }}
-                                    >
-                                        상담 신청하기
-                                    </motion.button>
-                                </form>
-                            </div>
-                        </TiltCard>
+                                <div>
+                                    <label className="block text-sm font-semibold text-gray-700 mb-2">연락처</label>
+                                    <input type="tel" className={inputClass("phone")} placeholder="010-0000-0000" value={formData.phone} onChange={(e) => handleChange("phone", e.target.value)} />
+                                    {errors.phone && <p className="mt-1.5 text-xs text-red-500 flex items-center gap-1"><AlertCircle size={12} />{errors.phone}</p>}
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-semibold text-gray-700 mb-2">관심 과정</label>
+                                    <select className={inputClass("course")} value={formData.course} onChange={(e) => handleChange("course", e.target.value)}>
+                                        <option value="">선택해주세요</option>
+                                        <option value="basic">기초반 (스크래치/엔트리)</option>
+                                        <option value="advanced">심화반 (C/Python)</option>
+                                        <option value="cert">자격증반</option>
+                                        <option value="contest">대회 준비반</option>
+                                    </select>
+                                    {errors.course && <p className="mt-1.5 text-xs text-red-500 flex items-center gap-1"><AlertCircle size={12} />{errors.course}</p>}
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-semibold text-gray-700 mb-2">문의 사항 (선택)</label>
+                                    <textarea className="w-full px-5 py-4 bg-white border border-gray-200 rounded-xl text-sm min-h-[100px] resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all" placeholder="궁금하신 점을 자유롭게 적어주세요" value={formData.message} onChange={(e) => handleChange("message", e.target.value)} />
+                                </div>
+                                {submitError && (
+                                    <motion.div initial={{ opacity: 0, y: -5 }} animate={{ opacity: 1, y: 0 }} className="flex items-center gap-2 text-sm text-red-600 bg-red-50 px-4 py-3 rounded-xl">
+                                        <AlertCircle size={16} />{submitError}
+                                    </motion.div>
+                                )}
+                                <motion.button type="submit" disabled={isSubmitting} className="w-full py-4 bg-gray-900 text-white font-semibold rounded-full hover:bg-gray-800 transition-all flex items-center justify-center gap-2 shadow-lg disabled:opacity-70 disabled:cursor-not-allowed" whileHover={isSubmitting ? {} : { scale: 1.01, y: -2 }} whileTap={isSubmitting ? {} : { scale: 0.99 }}>
+                                    {isSubmitting ? (<><Loader2 size={16} className="animate-spin" />전송 중...</>) : (<>상담 신청 <Send size={16} /></>)}
+                                </motion.button>
+                            </form>
+                        )}
                     </motion.div>
                 </div>
             </div>

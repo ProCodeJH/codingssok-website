@@ -2,167 +2,109 @@
 
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowRight, Sparkles, Heart, MapPin, Phone, Mail, ArrowUp } from "lucide-react";
+import Link from "next/link";
+import Image from "next/image";
+import { ArrowUp } from "lucide-react";
 
 export default function Footer() {
-    const [showTop, setShowTop] = useState(false);
+    const [showBackToTop, setShowBackToTop] = useState(false);
 
     useEffect(() => {
-        const handleScroll = () => setShowTop(window.scrollY > 600);
+        const handleScroll = () => { setShowBackToTop(window.scrollY > 300); };
         window.addEventListener("scroll", handleScroll);
         return () => window.removeEventListener("scroll", handleScroll);
     }, []);
 
-    const scrollToTop = () => window.scrollTo({ top: 0, behavior: "smooth" });
+    const scrollToTop = () => { window.scrollTo({ top: 0, behavior: "smooth" }); };
 
     return (
         <>
-            <footer className="w-full relative overflow-hidden">
-                {/* CTA 섹션 */}
-                <div className="bg-gradient-to-br from-slate-900 via-gray-900 to-slate-900 relative" style={{ paddingTop: '140px', paddingBottom: '140px' }}>
-                    <div className="absolute inset-0">
-                        <div className="absolute top-0 left-1/3 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl" />
-                        <div className="absolute bottom-0 right-1/3 w-80 h-80 bg-cyan-500/10 rounded-full blur-3xl" />
-                        <div className="absolute inset-0 opacity-[0.03]" style={{
-                            backgroundImage: 'linear-gradient(rgba(255,255,255,1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,1) 1px, transparent 1px)',
-                            backgroundSize: '60px 60px'
-                        }} />
-                        <svg className="absolute inset-0 w-full h-full opacity-[0.04]">
-                            <filter id="footer-noise"><feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="4" stitchTiles="stitch" /></filter>
-                            <rect width="100%" height="100%" filter="url(#footer-noise)" />
-                        </svg>
-                    </div>
+            <section className="py-32 bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 relative overflow-hidden">
+                <div className="absolute inset-0">
+                    <div className="absolute top-20 left-10 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl" />
+                    <div className="absolute bottom-20 right-10 w-80 h-80 bg-purple-500/10 rounded-full blur-3xl" />
+                </div>
+                <div className="relative z-10 max-w-4xl mx-auto px-8 lg:px-12 text-center">
+                    <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.8 }}>
+                        <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-6 leading-tight">
+                            꿈이 있으시군요.<br />
+                            <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-400">코딩쏙이 함께할게요.</span>
+                        </h2>
+                        <p className="text-lg text-gray-400 mb-12 max-w-lg mx-auto">상담부터 수업, 포트폴리오까지 —<br />모든 학습의 방향을 직접 이끌어드립니다.</p>
+                        <motion.a href="#contact" className="inline-flex items-center gap-2 px-10 py-5 bg-white text-gray-900 font-semibold rounded-full hover:scale-105 transition-all shadow-2xl" whileHover={{ scale: 1.03, y: -2 }} whileTap={{ scale: 0.98 }}>
+                            무료 상담 예약 <span className="opacity-60">→</span>
+                        </motion.a>
+                    </motion.div>
+                </div>
+            </section>
 
-                    <div className="relative z-10 max-w-4xl mx-auto px-8 text-center">
-                        <motion.div
-                            initial={{ opacity: 0, y: 30 }}
-                            whileInView={{ opacity: 1, y: 0 }}
-                            viewport={{ once: true }}
-                            transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] as const }}
-                        >
-                            <motion.div
-                                initial={{ scale: 0.8 }}
-                                whileInView={{ scale: 1 }}
-                                viewport={{ once: true }}
-                                whileHover={{ scale: 1.05, rotate: 3 }}
-                                className="inline-flex items-center gap-2 px-5 py-2.5 bg-white/5 backdrop-blur-sm border border-white/10 rounded-full text-sm text-white/80 mb-10"
-                            >
-                                <Sparkles size={16} className="text-cyan-400" />
-                                지금 시작하세요
+            <section className="py-20 bg-white">
+                <div className="max-w-7xl mx-auto px-8 lg:px-12">
+                    <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.8 }} className="text-center mb-12">
+                        <h3 className="text-2xl font-bold text-gray-900 mb-2">우리 학생들의 성과</h3>
+                        <p className="text-gray-500">자격증 취득부터 대회 수상까지</p>
+                    </motion.div>
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+                        {[{ src: "/images/programming-cert.png", alt: "Certificate" }, { src: "/images/medal.png", alt: "Medal" }, { src: "/images/award.png", alt: "Award" }, { src: "/images/happy.png", alt: "Happy student" }].map((img, i) => (
+                            <motion.div key={i} initial={{ opacity: 0, scale: 0.95 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true }} transition={{ delay: i * 0.1, duration: 0.6 }} className="relative aspect-square rounded-2xl overflow-hidden group shadow-lg">
+                                <Image src={img.src} alt={img.alt} fill className="object-cover transition-transform duration-500 group-hover:scale-105" />
                             </motion.div>
-
-                            <h2 className="text-4xl lg:text-6xl font-bold text-white mb-6 leading-tight">
-                                꿈이 있으시군요.
-                                <br />
-                                <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-cyan-400">
-                                    코딩쏙이 함께할게요.
-                                </span>
-                            </h2>
-                            <p className="text-lg lg:text-xl text-gray-400 mb-12 leading-relaxed max-w-2xl mx-auto">
-                                상담부터 수업, 포트폴리오까지 —
-                                <br />
-                                모든 학습의 방향을 직접 이끌어드립니다.
-                            </p>
-
-                            <motion.a
-                                href="#contact"
-                                className="inline-flex items-center gap-3 px-10 py-5 bg-gradient-to-r from-blue-600 to-cyan-500 text-white font-bold text-lg rounded-2xl shadow-2xl shadow-blue-500/40"
-                                whileHover={{
-                                    scale: 1.05,
-                                    y: -6,
-                                    boxShadow: "0 30px 60px rgba(59, 130, 246, 0.5)",
-                                }}
-                                whileTap={{ scale: 0.98 }}
-                            >
-                                무료 상담 예약 <ArrowRight size={20} />
-                            </motion.a>
-                        </motion.div>
+                        ))}
                     </div>
                 </div>
+            </section>
 
-                {/* 푸터 하단 — 확장 */}
-                <div className="bg-gray-950 py-10 border-t border-white/5">
-                    <div className="max-w-6xl mx-auto px-8">
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
-                            {/* 로고 + 설명 */}
-                            <div>
-                                <div className="flex items-center gap-3 mb-4">
-                                    <div className="w-8 h-8 rounded-lg bg-gradient-to-r from-blue-600 to-cyan-500 flex items-center justify-center">
-                                        <span className="text-white text-sm font-bold">쏙</span>
-                                    </div>
-                                    <span className="font-bold text-white text-lg">코딩쏙</span>
+            <footer className="py-20 bg-gray-50 border-t border-gray-100">
+                <div className="max-w-7xl mx-auto px-8 lg:px-12">
+                    <div className="grid md:grid-cols-5 gap-12 mb-16">
+                        <div className="md:col-span-2">
+                            <Link href="/" className="inline-flex items-center gap-3 mb-6">
+                                <div className="w-12 h-12 bg-gradient-to-br from-gray-800 to-gray-900 rounded-xl flex items-center justify-center shadow-lg">
+                                    <span className="text-white font-bold text-xl">쏙</span>
                                 </div>
-                                <p className="text-gray-500 text-sm leading-relaxed">
-                                    대전 유성구 소수정예 코딩 교육 전문.
-                                    <br />
-                                    현직 개발자가 직접 가르칩니다.
-                                </p>
-                            </div>
-
-                            {/* 연락처 */}
-                            <div>
-                                <h4 className="text-white font-semibold mb-4 text-sm uppercase tracking-wider">Contact</h4>
-                                <ul className="space-y-3">
-                                    <li className="flex items-center gap-3 text-gray-500 text-sm">
-                                        <MapPin size={14} className="text-blue-400 flex-shrink-0" />
-                                        대전 유성구 봉명동
-                                    </li>
-                                    <li className="flex items-center gap-3 text-gray-500 text-sm">
-                                        <Phone size={14} className="text-blue-400 flex-shrink-0" />
-                                        010-1234-5678
-                                    </li>
-                                    <li className="flex items-center gap-3 text-gray-500 text-sm">
-                                        <Mail size={14} className="text-blue-400 flex-shrink-0" />
-                                        codingssok@gmail.com
-                                    </li>
-                                </ul>
-                            </div>
-
-                            {/* 바로가기 */}
-                            <div>
-                                <h4 className="text-white font-semibold mb-4 text-sm uppercase tracking-wider">Quick Links</h4>
-                                <ul className="space-y-3">
-                                    {["커리큘럼", "서비스", "수강료", "FAQ"].map((link) => (
-                                        <li key={link}>
-                                            <a href={`#${link === '커리큘럼' ? 'curriculum' : link === '서비스' ? 'services' : link === '수강료' ? 'pricing' : 'faq'}`}
-                                                className="text-gray-500 text-sm hover:text-blue-400 transition-colors">
-                                                {link}
-                                            </a>
-                                        </li>
-                                    ))}
-                                </ul>
-                            </div>
+                                <span className="text-2xl font-bold text-gray-900">코딩쏙</span>
+                            </Link>
+                            <p className="text-gray-500 text-sm leading-relaxed max-w-xs">C·Python 중심 텍스트코딩 전문 학원. IT 현직 전문가가 직접 가르칩니다.</p>
                         </div>
-
-                        {/* 구분선 */}
-                        <div className="h-px bg-gradient-to-r from-transparent via-gray-800 to-transparent mb-6" />
-
-                        {/* 저작권 */}
-                        <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-                            <p className="text-gray-600 text-xs">
-                                © 2026 코딩쏙. All rights reserved.
-                            </p>
-                            <p className="text-gray-600 text-xs flex items-center gap-1">
-                                Made with <Heart size={12} className="text-red-500 fill-red-500" /> by CodingSSok
-                            </p>
+                        <div>
+                            <h4 className="font-semibold text-gray-900 mb-5">교육 과정</h4>
+                            <ul className="space-y-3">
+                                <li><Link href="#curriculum" className="text-sm text-gray-500 hover:text-gray-900 transition-colors">커리큘럼</Link></li>
+                                <li><Link href="#services" className="text-sm text-gray-500 hover:text-gray-900 transition-colors">서비스</Link></li>
+                                <li><Link href="#pricing" className="text-sm text-gray-500 hover:text-gray-900 transition-colors">수강료</Link></li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h4 className="font-semibold text-gray-900 mb-5">지원</h4>
+                            <ul className="space-y-3">
+                                <li><Link href="#faq" className="text-sm text-gray-500 hover:text-gray-900 transition-colors">자주 묻는 질문</Link></li>
+                                <li><Link href="#contact" className="text-sm text-gray-500 hover:text-gray-900 transition-colors">상담 신청</Link></li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h4 className="font-semibold text-gray-900 mb-5">연락처</h4>
+                            <ul className="space-y-3">
+                                <li className="text-sm text-gray-500">010-7566-7229</li>
+                                <li className="text-sm text-gray-500">대전 유성구 테크노중앙로 67</li>
+                                <li className="text-sm text-gray-500">평일 14:00 - 21:00</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div className="pt-10 border-t border-gray-200 flex flex-col md:flex-row justify-between items-center gap-6">
+                        <p className="text-sm text-gray-400">© 2026 코딩쏙. All rights reserved.</p>
+                        <div className="flex gap-8">
+                            <Link href="#" className="text-sm text-gray-400 hover:text-gray-900 transition-colors">개인정보처리방침</Link>
+                            <Link href="#" className="text-sm text-gray-400 hover:text-gray-900 transition-colors">이용약관</Link>
                         </div>
                     </div>
                 </div>
             </footer>
 
-            {/* Back-to-top */}
             <AnimatePresence>
-                {showTop && (
-                    <motion.button
-                        initial={{ opacity: 0, y: 20, scale: 0.8 }}
-                        animate={{ opacity: 1, y: 0, scale: 1 }}
-                        exit={{ opacity: 0, y: 20, scale: 0.8 }}
-                        onClick={scrollToTop}
-                        className="fixed bottom-24 right-6 z-40 w-12 h-12 bg-gradient-to-br from-blue-600 to-cyan-500 text-white rounded-full shadow-lg shadow-blue-500/30 flex items-center justify-center hover:shadow-xl hover:shadow-blue-500/40 transition-shadow"
-                        whileHover={{ scale: 1.1, y: -2 }}
-                        whileTap={{ scale: 0.9 }}
-                        aria-label="맨 위로 이동"
-                    >
+                {showBackToTop && (
+                    <motion.button initial={{ opacity: 0, scale: 0.8, y: 20 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.8, y: 20 }} transition={{ duration: 0.3 }}
+                        onClick={scrollToTop} className="fixed bottom-8 right-8 z-50 w-12 h-12 rounded-full bg-gray-900 text-white shadow-2xl flex items-center justify-center hover:bg-gray-700 hover:scale-110 transition-all cursor-pointer"
+                        whileHover={{ y: -3 }} whileTap={{ scale: 0.9 }}>
                         <ArrowUp size={20} />
                     </motion.button>
                 )}

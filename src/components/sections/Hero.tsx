@@ -1,220 +1,92 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
-import { motion, useInView, useScroll, useTransform } from "framer-motion";
+import { motion } from "framer-motion";
 import Image from "next/image";
-import { ArrowRight, Users, Star, Award } from "lucide-react";
+import { Phone, MessageCircle } from "lucide-react";
 
-
-function AnimatedCounter({ target, suffix = "", duration = 2000 }: { target: number; suffix?: string; duration?: number }) {
-    const [count, setCount] = useState(0);
-    const ref = useRef<HTMLSpanElement>(null);
-    const isInView = useInView(ref, { once: true, margin: "-100px" });
-
-    useEffect(() => {
-        if (!isInView) return;
-        const steps = 50;
-        let step = 0;
-        const timer = setInterval(() => {
-            step++;
-            const progress = step / steps;
-            const eased = 1 - Math.pow(1 - progress, 3);
-            setCount(Math.floor(target * eased));
-            if (step >= steps) clearInterval(timer);
-        }, duration / steps);
-        return () => clearInterval(timer);
-    }, [isInView, target, duration]);
-
-    return <span ref={ref}>{count}{suffix}</span>;
-}
-
-const titleChars = ["코", "딩", ",", " ", "제", "대", "로"];
-const subtitleChars = ["배", "우", "는", " ", "곳"];
+const typingWords = ["프리미엄", "코딩 교육"];
 
 export default function Hero() {
-    const sectionRef = useRef<HTMLElement>(null);
-    const { scrollYProgress } = useScroll({
-        target: sectionRef,
-        offset: ["start start", "end start"]
-    });
-    const bgY1 = useTransform(scrollYProgress, [0, 1], [0, -80]);
-    const bgY2 = useTransform(scrollYProgress, [0, 1], [0, -120]);
-    const bgY3 = useTransform(scrollYProgress, [0, 1], [0, -60]);
-
     return (
-        <section ref={sectionRef} className="min-h-screen flex items-center justify-center bg-white relative overflow-hidden">
-            {/* 배경 그라디언트 mesh + 노이즈 + Parallax */}
-            <div className="absolute inset-0 pointer-events-none">
-                <motion.div style={{ y: bgY1 }} className="absolute top-0 left-1/4 w-96 h-96 bg-blue-200/30 rounded-full blur-3xl" />
-                <motion.div style={{ y: bgY2 }} className="absolute bottom-0 right-1/4 w-80 h-80 bg-cyan-200/20 rounded-full blur-3xl" />
-                <motion.div style={{ y: bgY3 }} className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-gradient-to-br from-blue-100/20 to-cyan-100/20 rounded-full blur-3xl" />
-                {/* 도트 패턴 */}
-                <div className="absolute inset-0 opacity-[0.015]" style={{
-                    backgroundImage: 'radial-gradient(circle, #3b82f6 1px, transparent 1px)',
-                    backgroundSize: '40px 40px'
-                }} />
-                {/* 노이즈 텍스처 */}
-                <svg className="absolute inset-0 w-full h-full opacity-[0.025]">
-                    <filter id="hero-noise"><feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="4" stitchTiles="stitch" /></filter>
-                    <rect width="100%" height="100%" filter="url(#hero-noise)" />
-                </svg>
-
+        <section className="relative min-h-screen flex items-center overflow-hidden bg-gradient-to-br from-slate-50 via-blue-50/30 to-purple-50/20">
+            <div className="absolute inset-0 overflow-hidden">
+                <div className="absolute top-20 left-10 w-96 h-96 bg-blue-200/20 rounded-full blur-3xl" />
+                <div className="absolute bottom-20 right-10 w-80 h-80 bg-purple-200/20 rounded-full blur-3xl" />
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-gradient-to-br from-blue-100/10 to-purple-100/10 rounded-full blur-3xl" />
             </div>
 
-            <div className="relative z-10 w-full max-w-7xl mx-auto px-8 py-20">
-                <div className="flex flex-col lg:flex-row items-center justify-center gap-20">
-                    {/* Content */}
-                    <motion.div
-                        initial={{ opacity: 0, y: 24 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] as const }}
-                        className="flex-1 max-w-xl text-center lg:text-left"
-                    >
-                        {/* 배지 */}
-                        <motion.div
-                            className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-50 to-cyan-50 border border-blue-200 rounded-full text-sm text-blue-700 mb-10 shadow-sm"
-                            animate={{ scale: [1, 1.02, 1] }}
-                            transition={{ duration: 2, repeat: Infinity }}
-                        >
-                            <span className="w-2 h-2 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-full animate-pulse" />
-                            <span className="font-medium">대전 유성구</span>
-                            <span className="text-blue-400">·</span>
-                            <span className="text-blue-600 font-semibold">정원 마감 임박</span>
+            <div className="relative z-10 max-w-7xl mx-auto px-8 lg:px-12 w-full py-24">
+                <div className="grid lg:grid-cols-2 gap-16 items-center">
+                    <motion.div initial={{ opacity: 0, y: 40 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }} className="text-center lg:text-left">
+                        <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.1, duration: 0.5 }} className="inline-flex items-center gap-2 px-4 py-2 bg-blue-500/10 border border-blue-200/50 rounded-full mb-8">
+                            <div className="w-2 h-2 rounded-full bg-blue-500 animate-pulse" />
+                            <span className="text-sm font-medium text-blue-700">AI 시대의 코딩 교육</span>
                         </motion.div>
 
-                        {/* 타이틀 - Kinetic Typography */}
-                        <h1 className="text-5xl lg:text-6xl font-bold leading-tight mb-8">
-                            <span className="inline-block">
-                                {titleChars.map((char, i) => (
-                                    <motion.span
-                                        key={`t-${i}`}
-                                        initial={{ opacity: 0, y: 20 }}
-                                        animate={{ opacity: 1, y: 0 }}
-                                        transition={{ delay: 0.3 + i * 0.06, duration: 0.5, ease: [0.16, 1, 0.3, 1] as const }}
-                                        className="inline-block text-gray-900"
-                                    >
-                                        {char === " " ? "\u00A0" : char}
-                                    </motion.span>
-                                ))}
-                            </span>
-                            <br />
-                            <span className="inline-block">
-                                {subtitleChars.map((char, i) => (
-                                    <motion.span
-                                        key={`s-${i}`}
-                                        initial={{ opacity: 0, y: 20 }}
-                                        animate={{ opacity: 1, y: 0 }}
-                                        transition={{ delay: 0.7 + i * 0.06, duration: 0.5, ease: [0.16, 1, 0.3, 1] as const }}
-                                        className="inline-block text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-cyan-500 to-blue-600"
-                                    >
-                                        {char === " " ? "\u00A0" : char}
-                                    </motion.span>
-                                ))}
-                            </span>
+                        <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 leading-tight">
+                            {typingWords.map((word, wi) => (
+                                <span key={wi} className="block">
+                                    <span className={wi === 0 ? "text-transparent bg-clip-text bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900" : "text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-purple-600 to-blue-600"}>
+                                        {word.split("").map((char, ci) => (
+                                            <motion.span key={ci} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 + wi * 0.5 + ci * 0.05, duration: 0.3, ease: "easeOut" }} className="inline-block">
+                                                {char === " " ? "\u00A0" : char}
+                                            </motion.span>
+                                        ))}
+                                    </span>
+                                </span>
+                            ))}
                         </h1>
 
-                        <motion.p
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            transition={{ delay: 1.1, duration: 0.6 }}
-                            className="text-lg text-gray-500 mb-12 leading-loose"
-                        >
-                            <span className="text-blue-600 font-semibold">C·Python</span> 텍스트 코딩 중심.
-                            <br />
-                            <span className="text-gray-700 font-medium">현직 개발자</span>가 프로젝트부터 자격증까지.
-                        </motion.p>
+                        <p className="text-lg md:text-xl text-gray-600 mb-10 max-w-lg mx-auto lg:mx-0 leading-relaxed">
+                            C·Python 중심 텍스트코딩 강화로 프로젝트·공모전·자격증까지.<br className="hidden md:block" />IT 현직 전문가가 직접 가르칩니다.
+                        </p>
 
-                        {/* CTA 버튼 */}
-                        <motion.div
-                            initial={{ opacity: 0, y: 16 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ delay: 1.2, duration: 0.6, ease: [0.16, 1, 0.3, 1] as const }}
-                            className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 mb-14"
-                        >
-                            <motion.a
-                                href="#contact"
-                                className="group inline-flex items-center gap-2.5 px-8 py-4 bg-gradient-to-r from-blue-600 to-cyan-500 text-white font-semibold rounded-2xl shadow-lg shadow-blue-500/25"
-                                whileHover={{ scale: 1.03, y: -2, boxShadow: "0 20px 40px rgba(59, 130, 246, 0.35)" }}
-                                whileTap={{ scale: 0.97 }}
-                            >
-                                무료 상담 신청
-                                <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
+                        <div className="flex flex-col sm:flex-row gap-3 justify-center lg:justify-start mb-6">
+                            <motion.a href="#contact" className="px-8 py-4 bg-gray-900 text-white font-semibold rounded-full hover:bg-gray-800 transition-all shadow-lg shadow-gray-900/20 flex items-center justify-center gap-2" whileHover={{ scale: 1.02, y: -2 }} whileTap={{ scale: 0.98 }}>
+                                무료 상담 신청 <span className="opacity-60">→</span>
                             </motion.a>
-                            <motion.a
-                                href="#curriculum"
-                                className="inline-flex items-center gap-2 px-8 py-4 text-gray-600 font-medium rounded-2xl border border-gray-200 hover:border-blue-300 hover:text-blue-600 hover:bg-blue-50/50 transition-all"
-                                whileHover={{ scale: 1.02 }}
-                                whileTap={{ scale: 0.97 }}
-                            >
-                                커리큘럼 보기
+                            <motion.a href="tel:010-7566-7229" className="px-8 py-4 bg-white text-gray-900 font-semibold rounded-full border-2 border-gray-200 hover:border-gray-300 transition-all flex items-center justify-center gap-2" whileHover={{ scale: 1.02, y: -2 }} whileTap={{ scale: 0.98 }}>
+                                <Phone size={16} className="text-blue-500" /> 전화 상담
                             </motion.a>
-                        </motion.div>
+                        </div>
+                        <div className="flex justify-center lg:justify-start mb-12">
+                            <motion.a href="https://pf.kakao.com/_codingssok" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 px-6 py-3 bg-[#FEE500] text-[#3C1E1E] font-semibold rounded-full hover:brightness-95 transition-all text-sm" whileHover={{ scale: 1.02, y: -1 }} whileTap={{ scale: 0.98 }}>
+                                <MessageCircle size={16} /> 카카오톡 상담
+                            </motion.a>
+                        </div>
 
-                        {/* 통계 */}
-                        <motion.div
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            transition={{ delay: 1.5, duration: 0.6 }}
-                            className="flex items-center justify-center lg:justify-start gap-10 sm:gap-14"
-                        >
-                            <motion.div className="text-center" whileHover={{ scale: 1.05 }}>
-                                <div className="flex items-center justify-center gap-2 mb-2">
-                                    <Users size={18} className="text-blue-500" />
-                                    <p className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-cyan-500"><AnimatedCounter target={50} suffix="+" /></p>
-                                </div>
-                                <p className="text-xs sm:text-sm text-gray-500">수강생</p>
-                            </motion.div>
-                            <div className="w-px h-12 bg-gradient-to-b from-transparent via-blue-200 to-transparent" />
-                            <motion.div className="text-center" whileHover={{ scale: 1.05 }}>
-                                <div className="flex items-center justify-center gap-2 mb-2">
-                                    <Star size={18} className="text-cyan-500" />
-                                    <p className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-cyan-500 to-blue-600"><AnimatedCounter target={98} suffix="%" /></p>
-                                </div>
-                                <p className="text-xs sm:text-sm text-gray-500">만족도</p>
-                            </motion.div>
-                            <div className="w-px h-12 bg-gradient-to-b from-transparent via-blue-200 to-transparent" />
-                            <motion.div className="text-center" whileHover={{ scale: 1.05 }}>
-                                <div className="flex items-center justify-center gap-2 mb-2">
-                                    <Award size={18} className="text-blue-500" />
-                                    <p className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-cyan-500"><AnimatedCounter target={5} suffix="년+" /></p>
-                                </div>
-                                <p className="text-xs sm:text-sm text-gray-500">교육 경력</p>
-                            </motion.div>
+                        <motion.div className="flex flex-wrap items-center justify-center lg:justify-start gap-6" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.6, duration: 0.8 }}>
+                            <div className="flex items-center gap-3 px-4 py-2 bg-white/80 backdrop-blur-sm rounded-full shadow-sm">
+                                <div className="w-2 h-2 rounded-full bg-blue-500" />
+                                <span className="text-sm text-gray-600 font-medium">정보올림피아드 수상</span>
+                            </div>
+                            <div className="flex items-center gap-3 px-4 py-2 bg-white/80 backdrop-blur-sm rounded-full shadow-sm">
+                                <div className="w-2 h-2 rounded-full bg-green-500" />
+                                <span className="text-sm text-gray-600 font-medium">현직 개발자 강사진</span>
+                            </div>
                         </motion.div>
                     </motion.div>
 
-                    {/* Image with floating elements */}
-                    <motion.div
-                        initial={{ opacity: 0, x: 24 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ duration: 0.6, delay: 0.2 }}
-                        className="flex-1 max-w-lg w-full relative"
-                    >
-                        {/* 플로팅 장식 */}
-                        <motion.div
-                            className="absolute -top-4 -left-4 w-20 h-20 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-2xl opacity-20 blur-sm"
-                            animate={{ y: [0, -10, 0], rotate: [0, 5, 0] }}
-                            transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-                        />
-                        <motion.div
-                            className="absolute -bottom-6 -right-6 w-24 h-24 bg-gradient-to-br from-cyan-500 to-blue-500 rounded-full opacity-15 blur-sm"
-                            animate={{ y: [0, 10, 0], scale: [1, 1.1, 1] }}
-                            transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
-                        />
-
-                        {/* 메인 이미지 */}
-                        <div className="relative aspect-[4/3] rounded-3xl overflow-hidden bg-gray-100 shadow-2xl shadow-blue-500/10 border border-blue-100/50">
-                            <Image
-                                src="/images/classroom1.png"
-                                alt="코딩쏙 수업"
-                                fill
-                                className="object-cover"
-                                sizes="(max-width: 1024px) 100vw, 50vw"
-                                priority
-                            />
-
-
-                        </div>
+                    <motion.div initial={{ opacity: 0, x: 60 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 1, delay: 0.3, ease: [0.16, 1, 0.3, 1] }} className="relative hidden lg:block h-[600px]">
+                        <motion.div className="absolute left-0 top-8 z-10" animate={{ y: [0, -12, 0] }} transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}>
+                            <Image src="/images/ipad-Photoroom.png" alt="Learning dashboard" width={420} height={320} className="drop-shadow-2xl" />
+                        </motion.div>
+                        <motion.div className="absolute right-0 bottom-8 z-30" animate={{ y: [0, -15, 0] }} transition={{ duration: 4, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}>
+                            <Image src="/images/iphone-Photoroom.png" alt="Mobile app" width={180} height={360} className="drop-shadow-2xl" />
+                        </motion.div>
+                        <motion.div className="absolute top-0 right-8 z-40 bg-white/90 backdrop-blur-lg px-5 py-3 rounded-2xl shadow-xl border border-gray-100" animate={{ y: [0, -8, 0] }} transition={{ duration: 3, repeat: Infinity, ease: "easeInOut", delay: 0.2 }}>
+                            <div className="flex items-center gap-3">
+                                <div className="w-3 h-3 rounded-full bg-green-500 animate-pulse" />
+                                <span className="text-sm font-semibold text-gray-800">실시간 학습 관리</span>
+                            </div>
+                        </motion.div>
+                        <motion.div className="absolute bottom-32 left-8 z-40 bg-white/90 backdrop-blur-lg px-6 py-4 rounded-2xl shadow-xl border border-gray-100" animate={{ y: [0, -6, 0] }} transition={{ duration: 4, repeat: Infinity, ease: "easeInOut", delay: 1 }}>
+                            <p className="text-xs text-gray-500 mb-1">이번 주 진도</p>
+                            <p className="text-2xl font-bold text-gray-900">87%</p>
+                            <div className="w-full h-1.5 bg-gray-100 rounded-full mt-2 overflow-hidden">
+                                <div className="w-[87%] h-full bg-gradient-to-r from-blue-500 to-purple-500 rounded-full" />
+                            </div>
+                        </motion.div>
                     </motion.div>
                 </div>
             </div>

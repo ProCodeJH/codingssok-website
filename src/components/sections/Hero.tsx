@@ -6,18 +6,14 @@ import FlowerLetter from "@/components/ui/FlowerLetter";
 import Link from "next/link";
 
 /*
-  Replicates nodcoding.com's `.b-hero-home` structure.
-  Exact dimensions extracted from HTML:
-    C: flower-height 296px, stem 236×874px
-    O: flower-height 297px, stem 287×790px
-    D: flower-height 296px, stem 231×869px
-  Scaled by ~0.4 for responsive render (prevents overflow)
+  코딩쏙 Hero — 3D Floating Code Orbs
+  No more stems — orbs float freely at staggered heights
 */
 
 const letters = [
-    { letter: "코", shapeKey: "코", stemWidth: 94, stemHeight: 350, flowerHeight: 118 },
-    { letter: "딩", shapeKey: "딩", stemWidth: 115, stemHeight: 316, flowerHeight: 119 },
-    { letter: "쏙", shapeKey: "쏙", stemWidth: 92, stemHeight: 348, flowerHeight: 118 },
+    { letter: "코", shapeKey: "코", orbSize: 220 },
+    { letter: "딩", shapeKey: "딩", orbSize: 250 },
+    { letter: "쏙", shapeKey: "쏙", orbSize: 220 },
 ];
 
 export default function Hero() {
@@ -50,10 +46,10 @@ export default function Hero() {
                 className="b__letters"
                 style={{
                     display: "flex",
-                    alignItems: "flex-end",
+                    alignItems: "center",
                     justifyContent: "center",
-                    gap: "clamp(8px, 2vw, 24px)",
-                    padding: "60px 20px 0",
+                    gap: "clamp(16px, 4vw, 48px)",
+                    padding: "40px 20px 0",
                     position: "relative",
                     zIndex: 2,
                 }}
@@ -63,9 +59,7 @@ export default function Hero() {
                         key={l.letter}
                         letter={l.letter}
                         shapeKey={l.shapeKey}
-                        stemWidth={l.stemWidth}
-                        stemHeight={l.stemHeight}
-                        flowerHeight={l.flowerHeight}
+                        orbSize={l.orbSize}
                         index={i}
                     />
                 ))}

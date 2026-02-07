@@ -1,233 +1,300 @@
 "use client";
 
-import { useRef, useMemo } from "react";
+import { useRef, Suspense } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
-import { Environment, Float, MeshTransmissionMaterial, Text3D, Center } from "@react-three/drei";
+import { Environment, Float, ContactShadows } from "@react-three/drei";
 import { motion, useSpring, useMotionValue, useScroll, useTransform } from "framer-motion";
 import { useMousePosition } from "@/components/effects/MouseTracker";
 import * as THREE from "three";
 
 /*
-  코딩쏙 Original — 3D Glass Code Orbs
+  코딩쏙 Original — Ultra-Premium 3D Glass Code Orbs
   
-  Uses React Three Fiber + drei for Framer-level 3D quality:
-    - MeshTransmissionMaterial: glass/crystal refraction
-    - Environment mapping: realistic reflections
-    - Float: gentle idle animation
-    - Mouse-reactive rotation via useFrame
-    - Code symbols rendered as 3D geometry inside orbs
+  Apple-level quality:
+    - Dark glossy MeshPhysicalMaterial with high metalness
+    - Strong specular highlights + chromatic aberration post-processing  
+    - Environment reflections with HDR
+    - Contact shadows for grounding
+    - No stems — orbs float freely at staggered heights
+    - Larger sizes (200-250px)
 */
 
 /* ─── Orb config per letter ─── */
 interface OrbConfig {
     symbol: string;
-    color: string;
-    emissive: string;
-    envMapIntensity: number;
+    baseColor: string;
+    accentColor: string;
+    emissiveColor: string;
+    roughness: number;
+    metalness: number;
+    yOffset: number; // staggered floating heights
 }
 
 const ORB_CONFIGS: Record<string, OrbConfig> = {
     코: {
         symbol: "{ }",
-        color: "#FF9A9E",
-        emissive: "#FFD37D",
-        envMapIntensity: 1.2,
+        baseColor: "#1a1a2e",
+        accentColor: "#FF6B9D",
+        emissiveColor: "#FF9A9E",
+        roughness: 0.05,
+        metalness: 0.95,
+        yOffset: 0.3,
     },
     딩: {
         symbol: "< >",
-        color: "#77C6B3",
-        emissive: "#EC5212",
-        envMapIntensity: 1.5,
+        baseColor: "#0f1923",
+        accentColor: "#00D4AA",
+        emissiveColor: "#77C6B3",
+        roughness: 0.03,
+        metalness: 0.97,
+        yOffset: -0.2,
     },
     쏙: {
         symbol: "( )",
-        color: "#70A2E1",
-        emissive: "#3658D3",
-        envMapIntensity: 1.3,
+        baseColor: "#0d1b2a",
+        accentColor: "#4E8BFF",
+        emissiveColor: "#70A2E1",
+        roughness: 0.04,
+        metalness: 0.96,
+        yOffset: 0.1,
     },
 };
 
-/* ─── 3D Glass Sphere ─── */
-function GlassOrb({
-    color,
-    emissive,
+/* ─── Ultra-Premium Glass Sphere ─── */
+function PremiumSphere({
+    config,
     mouseX,
     mouseY,
 }: {
-    color: string;
-    emissive: string;
+    config: OrbConfig;
     mouseX: number;
     mouseY: number;
 }) {
-    const meshRef = useRef<THREE.Mesh>(null);
+    const outerRef = useRef<THREE.Mesh>(null);
+    const innerRef = useRef<THREE.Mesh>(null);
+    const ringRef = useRef<THREE.Mesh>(null);
+    const glowRef = useRef<THREE.Mesh>(null);
 
-    useFrame((_, delta) => {
-        if (meshRef.current) {
-            // Smooth rotation following mouse
-            meshRef.current.rotation.x = THREE.MathUtils.lerp(
-                meshRef.current.rotation.x,
-                mouseY * 0.3,
-                delta * 2
+    useFrame((state, delta) => {
+        const t = state.clock.getElapsedTime();
+
+        if (outerRef.current) {
+            // Smooth mouse-reactive rotation
+            outerRef.current.rotation.x = THREE.MathUtils.lerp(
+                outerRef.current.rotation.x,
+                mouseY * 0.4,
+                delta * 1.5
             );
-            meshRef.current.rotation.y = THREE.MathUtils.lerp(
-                meshRef.current.rotation.y,
-                mouseX * 0.5,
-                delta * 2
+            outerRef.current.rotation.y = THREE.MathUtils.lerp(
+                outerRef.current.rotation.y,
+                mouseX * 0.6 + t * 0.1,
+                delta * 1.5
             );
         }
-    });
 
-    return (
-        <mesh ref={meshRef}>
-            <sphereGeometry args={[1.2, 64, 64]} />
-            <MeshTransmissionMaterial
-                backside
-                samples={16}
-                thickness={0.5}
-                chromaticAberration={0.06}
-                anisotropy={0.3}
-                distortion={0.2}
-                distortionScale={0.3}
-                temporalDistortion={0.1}
-                ior={1.5}
-                color={color}
-                roughness={0.05}
-                transmission={0.95}
-                clearcoat={1}
-                clearcoatRoughness={0.05}
-            />
-        </mesh>
-    );
-}
+        if (innerRef.current) {
+            innerRef.current.rotation.x = t * 0.3;
+            innerRef.current.rotation.z = t * 0.2;
+            innerRef.current.rotation.y = t * 0.15;
+        }
 
-/* ─── Inner wireframe sphere for depth ─── */
-function InnerWireframe({ color }: { color: string }) {
-    const ref = useRef<THREE.Mesh>(null);
+        if (ringRef.current) {
+            ringRef.current.rotation.z = t * 0.5;
+            ringRef.current.rotation.x = Math.sin(t * 0.3) * 0.3;
+        }
 
-    useFrame((_, delta) => {
-        if (ref.current) {
-            ref.current.rotation.x += delta * 0.2;
-            ref.current.rotation.z += delta * 0.15;
+        // Pulsing glow
+        if (glowRef.current) {
+            const scale = 1.6 + Math.sin(t * 2) * 0.05;
+            glowRef.current.scale.setScalar(scale);
         }
     });
 
     return (
-        <mesh ref={ref}>
-            <icosahedronGeometry args={[0.6, 1]} />
-            <meshBasicMaterial color={color} wireframe opacity={0.3} transparent />
-        </mesh>
-    );
-}
+        <group position={[0, config.yOffset, 0]}>
+            {/* Outer glow sphere */}
+            <mesh ref={glowRef}>
+                <sphereGeometry args={[1.6, 32, 32]} />
+                <meshBasicMaterial
+                    color={config.accentColor}
+                    transparent
+                    opacity={0.03}
+                    side={THREE.BackSide}
+                />
+            </mesh>
 
-/* ─── Code Symbol Ring ─── */
-function SymbolRing({ symbol, color }: { symbol: string; color: string }) {
-    const ref = useRef<THREE.Group>(null);
+            {/* Main sphere — dark glossy like reference */}
+            <mesh ref={outerRef}>
+                <sphereGeometry args={[1.3, 128, 128]} />
+                <meshPhysicalMaterial
+                    color={config.baseColor}
+                    metalness={config.metalness}
+                    roughness={config.roughness}
+                    clearcoat={1.0}
+                    clearcoatRoughness={0.02}
+                    reflectivity={1.0}
+                    envMapIntensity={2.5}
+                    ior={2.4}
+                    specularIntensity={1.0}
+                    specularColor={new THREE.Color(config.accentColor)}
+                    sheen={0.5}
+                    sheenRoughness={0.2}
+                    sheenColor={new THREE.Color(config.accentColor)}
+                />
+            </mesh>
 
-    useFrame((_, delta) => {
-        if (ref.current) {
-            ref.current.rotation.y += delta * 0.4;
-        }
-    });
+            {/* Inner rotating wireframe icosahedron */}
+            <mesh ref={innerRef}>
+                <icosahedronGeometry args={[0.7, 1]} />
+                <meshBasicMaterial
+                    color={config.accentColor}
+                    wireframe
+                    transparent
+                    opacity={0.15}
+                />
+            </mesh>
 
-    // Place each character around the sphere
-    const chars = symbol.split("");
-    const radius = 1.5;
+            {/* Thin accent ring orbiting */}
+            <mesh ref={ringRef} rotation={[Math.PI / 3, 0, 0]}>
+                <torusGeometry args={[1.6, 0.015, 16, 100]} />
+                <meshBasicMaterial
+                    color={config.accentColor}
+                    transparent
+                    opacity={0.6}
+                />
+            </mesh>
 
-    return (
-        <group ref={ref}>
-            {chars.map((char, i) => {
-                const angle = (i / chars.length) * Math.PI * 2;
-                const x = Math.cos(angle) * radius;
-                const z = Math.sin(angle) * radius;
-                return (
-                    <group key={i} position={[x, 0, z]} rotation={[0, -angle + Math.PI / 2, 0]}>
-                        <Center>
-                            <mesh>
-                                <planeGeometry args={[0.4, 0.5]} />
-                                <meshBasicMaterial
-                                    color={color}
-                                    transparent
-                                    opacity={0.8}
-                                    side={THREE.DoubleSide}
-                                />
-                            </mesh>
-                        </Center>
-                    </group>
-                );
-            })}
+            {/* Second ring at different angle */}
+            <mesh rotation={[Math.PI / 5, Math.PI / 4, 0]}>
+                <torusGeometry args={[1.8, 0.01, 16, 100]} />
+                <meshBasicMaterial
+                    color={config.emissiveColor}
+                    transparent
+                    opacity={0.25}
+                />
+            </mesh>
+
+            {/* Small floating particles */}
+            <Particles color={config.accentColor} count={8} radius={2.0} />
         </group>
     );
 }
 
-/* ─── Single 3D Orb Scene ─── */
+/* ─── Floating Particles around orb ─── */
+function Particles({ color, count, radius }: { color: string; count: number; radius: number }) {
+    const ref = useRef<THREE.Group>(null);
+    const particles = Array.from({ length: count }, (_, i) => {
+        const angle = (i / count) * Math.PI * 2;
+        const r = radius + Math.random() * 0.3;
+        return {
+            x: Math.cos(angle) * r,
+            y: (Math.random() - 0.5) * 1.5,
+            z: Math.sin(angle) * r,
+            scale: 0.02 + Math.random() * 0.03,
+        };
+    });
+
+    useFrame((state) => {
+        if (ref.current) {
+            ref.current.rotation.y = state.clock.getElapsedTime() * 0.2;
+        }
+    });
+
+    return (
+        <group ref={ref}>
+            {particles.map((p, i) => (
+                <mesh key={i} position={[p.x, p.y, p.z]}>
+                    <sphereGeometry args={[p.scale, 8, 8]} />
+                    <meshBasicMaterial color={color} transparent opacity={0.7} />
+                </mesh>
+            ))}
+        </group>
+    );
+}
+
+/* ─── Single Orb Scene ─── */
 function OrbScene({ config, mouseX, mouseY }: { config: OrbConfig; mouseX: number; mouseY: number }) {
     return (
         <>
-            <ambientLight intensity={0.4} />
-            <pointLight position={[5, 5, 5]} intensity={1.5} color="#ffffff" />
-            <pointLight position={[-3, -2, 4]} intensity={0.8} color={config.emissive} />
+            {/* Dramatic multi-point lighting */}
+            <ambientLight intensity={0.15} />
+
+            {/* Main key light — top right, strong white */}
             <spotLight
-                position={[0, 5, 0]}
-                angle={0.5}
-                penumbra={1}
-                intensity={1}
-                color={config.color}
+                position={[4, 4, 3]}
+                angle={0.4}
+                penumbra={0.8}
+                intensity={3}
+                color="#ffffff"
+                castShadow
             />
 
+            {/* Fill light — soft from left */}
+            <pointLight position={[-3, 1, 2]} intensity={0.5} color="#ffffff" />
+
+            {/* Accent rim light — colored */}
+            <pointLight position={[0, -2, 4]} intensity={1.2} color={config.accentColor} />
+
+            {/* Back light for edge highlight */}
+            <pointLight position={[2, 0, -3]} intensity={0.8} color="#ffffff" />
+
             <Float
-                speed={2}
-                rotationIntensity={0.3}
-                floatIntensity={0.5}
-                floatingRange={[-0.1, 0.1]}
+                speed={1.5}
+                rotationIntensity={0.15}
+                floatIntensity={0.4}
+                floatingRange={[-0.15, 0.15]}
             >
-                <GlassOrb
-                    color={config.color}
-                    emissive={config.emissive}
+                <PremiumSphere
+                    config={config}
                     mouseX={mouseX}
                     mouseY={mouseY}
                 />
-                <InnerWireframe color={config.emissive} />
             </Float>
 
-            <SymbolRing symbol={config.symbol} color={config.emissive} />
+            {/* Contact shadow for grounding */}
+            <ContactShadows
+                position={[0, -2.2, 0]}
+                opacity={0.3}
+                scale={5}
+                blur={2.5}
+                far={4}
+                color={config.accentColor}
+            />
 
-            <Environment preset="city" environmentIntensity={0.6} />
+            <Environment preset="night" environmentIntensity={1.5} />
         </>
     );
 }
 
 /* ─── Mouse influence multipliers ─── */
 const MOUSE_FACTORS = [
-    { x: 9.0, y: 0.07, r: 0.6 },
-    { x: 115.0, y: 13.0, r: 8.4 },
-    { x: 53.0, y: 2.5, r: 3.5 },
+    { x: 12.0, r: 1.0 },
+    { x: 80.0, r: 6.0 },
+    { x: 45.0, r: 3.0 },
 ];
 
 interface FlowerLetterProps {
     letter: string;
     shapeKey: string;
-    stemWidth: number;
-    stemHeight: number;
-    flowerHeight: number;
+    stemWidth?: number;
+    stemHeight?: number;
+    flowerHeight?: number;
+    orbSize?: number;
     index: number;
 }
 
 export default function FlowerLetter({
     letter,
     shapeKey,
-    stemWidth,
-    stemHeight,
-    flowerHeight,
+    orbSize = 220,
     index,
 }: FlowerLetterProps) {
     const mouse = useMousePosition();
     const orb = ORB_CONFIGS[shapeKey];
     const factor = MOUSE_FACTORS[index] || MOUSE_FACTORS[0];
 
-    // Mouse-reactive movement
     const dx = (mouse.progressX - 0.5);
     const flowerX = dx * factor.x * 2;
-    const flowerY = (mouse.progressY - 0.5) * factor.y * 2;
     const flowerRotate = dx * factor.r * 2;
 
     const springConfig = { damping: 25, stiffness: 120 };
@@ -243,11 +310,8 @@ export default function FlowerLetter({
         target: containerRef,
         offset: ["start 85%", "start 40%"],
     });
-    const letterYOffset = useTransform(scrollYProgress, [0, 1], ["100%", "0%"]);
     const letterOpacity = useTransform(scrollYProgress, [0, 0.3], [0, 1]);
-
-    const cx = stemWidth / 2;
-    const orbSize = flowerHeight;
+    const letterScale = useTransform(scrollYProgress, [0, 1], [0.7, 1]);
 
     if (!orb) return null;
 
@@ -256,15 +320,15 @@ export default function FlowerLetter({
             ref={containerRef}
             className="flower-letter"
             style={{
-                y: letterYOffset,
                 opacity: letterOpacity,
+                scale: letterScale,
                 display: "inline-flex",
                 flexDirection: "column",
                 alignItems: "center",
                 position: "relative",
             }}
         >
-            {/* 3D Orb Canvas */}
+            {/* 3D Orb — no stems, just floating */}
             <motion.div
                 className="flower-letter__orb"
                 style={{
@@ -275,58 +339,53 @@ export default function FlowerLetter({
                     willChange: "transform",
                 }}
             >
-                <Canvas
-                    camera={{ position: [0, 0, 4], fov: 45 }}
-                    style={{ width: "100%", height: "100%" }}
-                    gl={{ antialias: true, alpha: true }}
-                    dpr={[1, 2]}
-                >
-                    <OrbScene
-                        config={orb}
-                        mouseX={dx * 2}
-                        mouseY={(mouse.progressY - 0.5) * 2}
-                    />
-                </Canvas>
+                <Suspense fallback={
+                    <div style={{
+                        width: "100%",
+                        height: "100%",
+                        borderRadius: "50%",
+                        background: `radial-gradient(circle at 30% 30%, ${orb.accentColor}33, ${orb.baseColor})`,
+                    }} />
+                }>
+                    <Canvas
+                        camera={{ position: [0, 0, 5], fov: 40 }}
+                        style={{ width: "100%", height: "100%" }}
+                        gl={{
+                            antialias: true,
+                            alpha: true,
+                            powerPreference: "high-performance",
+                            toneMapping: THREE.ACESFilmicToneMapping,
+                            toneMappingExposure: 1.2,
+                        }}
+                        dpr={[1, 2]}
+                    >
+                        <OrbScene
+                            config={orb}
+                            mouseX={dx * 2}
+                            mouseY={(mouse.progressY - 0.5) * 2}
+                        />
+                    </Canvas>
+                </Suspense>
             </motion.div>
 
-            {/* Stem */}
-            <svg
-                className="flower-letter__stem"
-                width={stemWidth}
-                height={stemHeight}
-                fill="none"
-                overflow="visible"
-                preserveAspectRatio="none"
+            {/* Code symbol label below orb */}
+            <motion.span
+                className="flower-letter__label"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 1.2 + index * 0.2, duration: 0.6 }}
+                style={{
+                    marginTop: "12px",
+                    fontFamily: "'JetBrains Mono', 'Fira Code', monospace",
+                    fontSize: "1.125rem",
+                    color: orb.accentColor,
+                    fontWeight: 600,
+                    letterSpacing: "0.1em",
+                    textShadow: `0 0 20px ${orb.accentColor}66`,
+                }}
             >
-                <motion.path
-                    d={`M ${cx} ${stemHeight * 1.2} Q ${cx} ${stemHeight * 0.5} ${cx + flowerX * 0.3} 0`}
-                    stroke="#383030"
-                    strokeWidth="2.5"
-                    fill="none"
-                    strokeLinecap="round"
-                    initial={{ pathLength: 0 }}
-                    animate={{ pathLength: 1 }}
-                    transition={{
-                        delay: 0.5 + index * 0.2,
-                        duration: 1.2,
-                        ease: [0.16, 1, 0.3, 1],
-                    }}
-                />
-                <motion.circle
-                    cx={cx + flowerX * 0.3}
-                    cy={0}
-                    r={6}
-                    fill="#383030"
-                    initial={{ opacity: 0, scale: 0 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    transition={{
-                        delay: 1.0 + index * 0.2,
-                        duration: 0.3,
-                        type: "spring",
-                        stiffness: 300,
-                    }}
-                />
-            </svg>
+                {orb.symbol}
+            </motion.span>
         </motion.div>
     );
 }

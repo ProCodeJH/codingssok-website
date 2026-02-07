@@ -43,7 +43,7 @@ export default function Hero() {
                 alignItems: "center",
                 justifyContent: "center",
                 overflow: "hidden",
-                background: "#FAFAF9",
+                background: "var(--color-beige)",
             }}
         >
             {/* ── .b__letters ── */}

@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import { motion, useInView, useScroll, useTransform } from "framer-motion";
 import Image from "next/image";
 import { ArrowRight, Users, Star, Award } from "lucide-react";
-import CodeRainCanvas from "@/components/effects/CodeRainCanvas";
+
 
 function AnimatedCounter({ target, suffix = "", duration = 2000 }: { target: number; suffix?: string; duration?: number }) {
     const [count, setCount] = useState(0);
@@ -58,7 +58,7 @@ export default function Hero() {
                     <filter id="hero-noise"><feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="4" stitchTiles="stitch" /></filter>
                     <rect width="100%" height="100%" filter="url(#hero-noise)" />
                 </svg>
-                <CodeRainCanvas />
+
             </div>
 
             <div className="relative z-10 w-full max-w-7xl mx-auto px-8 py-20">
@@ -190,75 +190,8 @@ export default function Hero() {
                             <div className="absolute inset-0 bg-gradient-to-t from-black/10 via-transparent to-transparent" />
 
                             {/* 초프리미엄 대시보드 오버레이 */}
-                            <motion.div
-                                className="absolute bottom-3 left-3 right-3 overflow-hidden rounded-2xl"
-                                initial={{ y: 20, opacity: 0 }}
-                                animate={{ y: 0, opacity: 1 }}
-                                transition={{ delay: 0.6, ease: [0.16, 1, 0.3, 1] as const }}
-                            >
-                                {/* 글래스모피즘 배경 */}
-                                <div className="relative bg-white/90 backdrop-blur-2xl border border-white/60 shadow-2xl shadow-black/10 rounded-2xl p-4">
-                                    {/* 상단 시머 라인 */}
-                                    <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-blue-500 to-transparent opacity-60" />
 
-                                    {/* 헤더 */}
-                                    <div className="flex items-center justify-between mb-3">
-                                        <div className="flex items-center gap-2">
-                                            <div className="w-7 h-7 bg-gradient-to-br from-blue-600 to-cyan-500 rounded-lg flex items-center justify-center shadow-md shadow-blue-500/30">
-                                                <span className="text-white text-[10px] font-black">쏙</span>
-                                            </div>
-                                            <span className="text-xs font-bold text-gray-800 tracking-tight">Learning Dashboard</span>
-                                        </div>
-                                        <div className="flex items-center gap-1.5 px-2 py-0.5 bg-emerald-50 border border-emerald-200 rounded-full">
-                                            <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse" />
-                                            <span className="text-[10px] text-emerald-600 font-bold tracking-wide">LIVE</span>
-                                        </div>
-                                    </div>
 
-                                    {/* 3-Stat 미니 대시보드 */}
-                                    <div className="grid grid-cols-3 gap-2">
-                                        {/* 진도율 */}
-                                        <div className="bg-gradient-to-br from-blue-50 to-blue-100/50 rounded-xl p-2.5 border border-blue-100">
-                                            <p className="text-[9px] text-blue-500 font-semibold mb-1 tracking-wide">진도율</p>
-                                            <p className="text-lg font-black text-blue-700 leading-none">87<span className="text-xs font-bold">%</span></p>
-                                            <div className="mt-1.5 h-1 bg-blue-200/50 rounded-full overflow-hidden">
-                                                <motion.div
-                                                    className="h-full bg-gradient-to-r from-blue-500 to-blue-600 rounded-full"
-                                                    initial={{ width: 0 }}
-                                                    animate={{ width: '87%' }}
-                                                    transition={{ delay: 1.2, duration: 1.5, ease: [0.16, 1, 0.3, 1] as const }}
-                                                />
-                                            </div>
-                                        </div>
-                                        {/* 과제 */}
-                                        <div className="bg-gradient-to-br from-cyan-50 to-cyan-100/50 rounded-xl p-2.5 border border-cyan-100">
-                                            <p className="text-[9px] text-cyan-600 font-semibold mb-1 tracking-wide">과제</p>
-                                            <p className="text-lg font-black text-cyan-700 leading-none">12<span className="text-xs font-bold">/14</span></p>
-                                            <div className="mt-1.5 h-1 bg-cyan-200/50 rounded-full overflow-hidden">
-                                                <motion.div
-                                                    className="h-full bg-gradient-to-r from-cyan-500 to-cyan-600 rounded-full"
-                                                    initial={{ width: 0 }}
-                                                    animate={{ width: '86%' }}
-                                                    transition={{ delay: 1.4, duration: 1.5, ease: [0.16, 1, 0.3, 1] as const }}
-                                                />
-                                            </div>
-                                        </div>
-                                        {/* 출석 */}
-                                        <div className="bg-gradient-to-br from-emerald-50 to-emerald-100/50 rounded-xl p-2.5 border border-emerald-100">
-                                            <p className="text-[9px] text-emerald-600 font-semibold mb-1 tracking-wide">출석</p>
-                                            <p className="text-lg font-black text-emerald-700 leading-none">100<span className="text-xs font-bold">%</span></p>
-                                            <div className="mt-1.5 h-1 bg-emerald-200/50 rounded-full overflow-hidden">
-                                                <motion.div
-                                                    className="h-full bg-gradient-to-r from-emerald-500 to-emerald-600 rounded-full"
-                                                    initial={{ width: 0 }}
-                                                    animate={{ width: '100%' }}
-                                                    transition={{ delay: 1.6, duration: 1.5, ease: [0.16, 1, 0.3, 1] as const }}
-                                                />
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </motion.div>
                         </div>
                     </motion.div>
                 </div>

@@ -6,15 +6,9 @@ import FlowerLetter from "@/components/ui/FlowerLetter";
 import Link from "next/link";
 
 /*
-  코딩쏙 Hero — 3D Glass Code Orbs
-  Transparent glass with strong depth, widely spaced
+  코딩쏙 Hero — Single Cute AI Robot
+  One chibi robot that follows mouse cursor
 */
-
-const letters = [
-    { letter: "코", shapeKey: "코", orbSize: 240 },
-    { letter: "딩", shapeKey: "딩", orbSize: 280 },
-    { letter: "쏙", shapeKey: "쏙", orbSize: 240 },
-];
 
 export default function Hero() {
     const sectionRef = useRef<HTMLElement>(null);
@@ -41,28 +35,19 @@ export default function Hero() {
                 background: "var(--color-beige)",
             }}
         >
-            {/* ── .b__letters ── */}
+            {/* ── Single Robot ── */}
             <div
                 className="b__letters"
                 style={{
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
-                    gap: "clamp(32px, 6vw, 64px)",
                     padding: "20px 20px 0",
                     position: "relative",
                     zIndex: 2,
                 }}
             >
-                {letters.map((l, i) => (
-                    <FlowerLetter
-                        key={l.letter}
-                        letter={l.letter}
-                        shapeKey={l.shapeKey}
-                        orbSize={l.orbSize}
-                        index={i}
-                    />
-                ))}
+                <FlowerLetter index={0} />
             </div>
 
             {/* ── s__content — nodcoding section content overlay ── */}

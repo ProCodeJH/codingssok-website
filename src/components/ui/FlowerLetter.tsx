@@ -4,352 +4,324 @@ import { useRef, Suspense, useMemo } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { Environment, Float, RoundedBox, ContactShadows } from "@react-three/drei";
 import { EffectComposer, Bloom } from "@react-three/postprocessing";
-import { motion, useSpring, useMotionValue, useScroll, useTransform } from "framer-motion";
+import { motion, useSpring, useMotionValue } from "framer-motion";
 import { useMousePosition } from "@/components/effects/MouseTracker";
 import * as THREE from "three";
 
 /*
-  코딩쏙 — Cute 3D AI Robots
+  코딩쏙 — Single Cute AI Robot (Chibi Style)
   
-  Each letter gets a unique kawaii robot:
-    코 — Pink bot, curly antenna, loves { }
-    딩 — Mint bot, zigzag antenna, loves < >
-    쏙 — Blue bot, star antenna, loves ( )
-  
-  Built from Three.js primitives:
-    RoundedBox body, sphere head, cylinder limbs
-    LED eyes that blink + follow mouse
-    Bobbing idle animation + Float
+  Chibi proportions: huge head, tiny body
+  Follows mouse on X-axis (whole body slides)
+  Eyes track mouse cursor
+  Blinks, waves, wobbles
 */
 
-/* ─── Robot config ─── */
-interface RobotConfig {
-    symbol: string;
-    bodyColor: string;
-    accentColor: string;
-    eyeColor: string;
-    cheekColor: string;
-}
-
-const ROBOT_CONFIGS: Record<string, RobotConfig> = {
-    코: {
-        symbol: "{ }",
-        bodyColor: "#FF8FAB",
-        accentColor: "#FFD6E0",
-        eyeColor: "#FFFFFF",
-        cheekColor: "#FF6B8A",
-    },
-    딩: {
-        symbol: "< >",
-        bodyColor: "#5CE0C2",
-        accentColor: "#B8F5E8",
-        eyeColor: "#FFFFFF",
-        cheekColor: "#3DCFAD",
-    },
-    쏙: {
-        symbol: "( )",
-        bodyColor: "#6FA8F5",
-        accentColor: "#C3DDFF",
-        eyeColor: "#FFFFFF",
-        cheekColor: "#5090E0",
-    },
-};
-
-/* ─── Cute Robot Character ─── */
-function CuteRobot({
-    config,
-    mouseX,
-    mouseY,
-}: {
-    config: RobotConfig;
-    mouseX: number;
-    mouseY: number;
-}) {
+/* ─── Chibi Robot ─── */
+function ChibiRobot({ mouseX, mouseY }: { mouseX: number; mouseY: number }) {
     const groupRef = useRef<THREE.Group>(null);
     const headRef = useRef<THREE.Group>(null);
-    const leftEyeRef = useRef<THREE.Group>(null);
-    const rightEyeRef = useRef<THREE.Group>(null);
     const leftPupilRef = useRef<THREE.Mesh>(null);
     const rightPupilRef = useRef<THREE.Mesh>(null);
     const leftArmRef = useRef<THREE.Group>(null);
     const rightArmRef = useRef<THREE.Group>(null);
     const antennaRef = useRef<THREE.Group>(null);
-    const leftEyeClosedRef = useRef<THREE.Mesh>(null);
-    const rightEyeClosedRef = useRef<THREE.Mesh>(null);
+    const antennaBulbRef = useRef<THREE.Mesh>(null);
+    const leftEyeGroupRef = useRef<THREE.Group>(null);
+    const rightEyeGroupRef = useRef<THREE.Group>(null);
+    const leftBlinkRef = useRef<THREE.Mesh>(null);
+    const rightBlinkRef = useRef<THREE.Mesh>(null);
 
     useFrame((state) => {
         const t = state.clock.getElapsedTime();
 
-        // Head follows mouse smoothly
+        // Whole body slides on X-axis following mouse
+        if (groupRef.current) {
+            groupRef.current.position.x = THREE.MathUtils.lerp(
+                groupRef.current.position.x,
+                mouseX * 1.2,
+                0.04
+            );
+            // Subtle tilt when moving
+            groupRef.current.rotation.z = THREE.MathUtils.lerp(
+                groupRef.current.rotation.z,
+                -mouseX * 0.08,
+                0.04
+            );
+            // Gentle idle bob
+            groupRef.current.position.y = Math.sin(t * 1.2) * 0.05;
+        }
+
+        // Head looks toward mouse
         if (headRef.current) {
             headRef.current.rotation.y = THREE.MathUtils.lerp(
                 headRef.current.rotation.y,
-                mouseX * 0.4,
-                0.05
+                mouseX * 0.5,
+                0.06
             );
             headRef.current.rotation.x = THREE.MathUtils.lerp(
                 headRef.current.rotation.x,
-                mouseY * 0.2,
-                0.05
+                mouseY * 0.15,
+                0.06
             );
         }
 
-        // Pupils follow mouse
-        const pupilOffsetX = mouseX * 0.06;
-        const pupilOffsetY = mouseY * 0.04;
+        // Pupils track mouse
+        const px = mouseX * 0.07;
+        const py = mouseY * 0.05;
         if (leftPupilRef.current) {
-            leftPupilRef.current.position.x = pupilOffsetX;
-            leftPupilRef.current.position.y = pupilOffsetY;
+            leftPupilRef.current.position.x = px;
+            leftPupilRef.current.position.y = py;
         }
         if (rightPupilRef.current) {
-            rightPupilRef.current.position.x = pupilOffsetX;
-            rightPupilRef.current.position.y = pupilOffsetY;
+            rightPupilRef.current.position.x = px;
+            rightPupilRef.current.position.y = py;
         }
 
-        // Eye blink every ~3 seconds
-        const blinkCycle = t % 3.5;
-        const isBlinking = blinkCycle > 3.3 && blinkCycle < 3.5;
-        if (leftEyeClosedRef.current) leftEyeClosedRef.current.visible = isBlinking;
-        if (rightEyeClosedRef.current) rightEyeClosedRef.current.visible = isBlinking;
-        if (leftEyeRef.current) {
-            leftEyeRef.current.visible = !isBlinking;
-        }
-        if (rightEyeRef.current) {
-            rightEyeRef.current.visible = !isBlinking;
-        }
+        // Blink every ~4s
+        const blink = t % 4;
+        const isBlinking = blink > 3.8;
+        if (leftBlinkRef.current) leftBlinkRef.current.visible = isBlinking;
+        if (rightBlinkRef.current) rightBlinkRef.current.visible = isBlinking;
+        if (leftEyeGroupRef.current) leftEyeGroupRef.current.visible = !isBlinking;
+        if (rightEyeGroupRef.current) rightEyeGroupRef.current.visible = !isBlinking;
 
-        // Arms gentle wave
-        if (leftArmRef.current) {
-            leftArmRef.current.rotation.z = Math.sin(t * 1.5) * 0.15 + 0.3;
-        }
+        // Right arm waves hello
         if (rightArmRef.current) {
-            rightArmRef.current.rotation.z = Math.sin(t * 1.5 + Math.PI) * 0.15 - 0.3;
+            const wave = Math.sin(t * 3) * 0.25;
+            rightArmRef.current.rotation.z = -0.8 + wave;
+        }
+
+        // Left arm gentle idle
+        if (leftArmRef.current) {
+            leftArmRef.current.rotation.z = 0.3 + Math.sin(t * 1.5) * 0.1;
         }
 
         // Antenna wobble
         if (antennaRef.current) {
-            antennaRef.current.rotation.z = Math.sin(t * 2) * 0.1;
-            antennaRef.current.rotation.x = Math.sin(t * 1.7) * 0.08;
+            antennaRef.current.rotation.z = Math.sin(t * 2.5) * 0.15;
+            antennaRef.current.rotation.x = Math.cos(t * 2) * 0.1;
         }
 
-        // Gentle body sway
-        if (groupRef.current) {
-            groupRef.current.rotation.z = Math.sin(t * 0.8) * 0.03;
+        // Antenna bulb pulses
+        if (antennaBulbRef.current) {
+            const s = 1 + Math.sin(t * 4) * 0.15;
+            antennaBulbRef.current.scale.setScalar(s);
         }
     });
 
-    const bodyMat = useMemo(
-        () => new THREE.MeshStandardMaterial({
-            color: config.bodyColor,
-            roughness: 0.3,
-            metalness: 0.1,
-        }),
-        [config.bodyColor]
-    );
-
-    const accentMat = useMemo(
-        () => new THREE.MeshStandardMaterial({
-            color: config.accentColor,
-            roughness: 0.4,
-            metalness: 0.05,
-        }),
-        [config.accentColor]
-    );
+    const BODY = "#FFD93D";   // 밝은 옐로우
+    const ACCENT = "#FFFBE6"; // 크림
+    const DARK = "#2D2D2D";
+    const PINK = "#FF8FAB";
+    const BLUE = "#6FA8F5";
 
     return (
         <group ref={groupRef}>
-            {/* ── Body ── */}
-            <RoundedBox args={[1.1, 1.3, 0.9]} radius={0.25} smoothness={8} position={[0, -0.3, 0]}>
-                <meshStandardMaterial color={config.bodyColor} roughness={0.3} metalness={0.1} />
+            {/* ── BODY (small, chibi) ── */}
+            <RoundedBox args={[0.9, 0.8, 0.7]} radius={0.25} smoothness={8} position={[0, -0.7, 0]}>
+                <meshStandardMaterial color={BODY} roughness={0.35} metalness={0.05} />
             </RoundedBox>
 
-            {/* Belly screen */}
-            <RoundedBox args={[0.6, 0.5, 0.05]} radius={0.1} smoothness={4} position={[0, -0.25, 0.43]}>
-                <meshStandardMaterial color="#1a1a2e" roughness={0.1} metalness={0.3} />
-            </RoundedBox>
-            {/* Screen glow */}
-            <mesh position={[0, -0.25, 0.46]}>
-                <planeGeometry args={[0.5, 0.4]} />
-                <meshBasicMaterial color={config.accentColor} transparent opacity={0.3} />
+            {/* Belly button / power indicator */}
+            <mesh position={[0, -0.65, 0.36]}>
+                <circleGeometry args={[0.08, 32]} />
+                <meshStandardMaterial color={BLUE} emissive={BLUE} emissiveIntensity={2} />
             </mesh>
 
-            {/* ── Head ── */}
-            <group ref={headRef} position={[0, 0.85, 0]}>
-                {/* Head shape */}
-                <RoundedBox args={[1.2, 0.95, 0.95]} radius={0.3} smoothness={8}>
-                    <meshStandardMaterial color={config.bodyColor} roughness={0.3} metalness={0.1} />
-                </RoundedBox>
+            {/* ── HEAD (huge, chibi ratio) ── */}
+            <group ref={headRef} position={[0, 0.25, 0]}>
+                {/* Main head — big rounded sphere-ish */}
+                <mesh>
+                    <sphereGeometry args={[0.85, 64, 64]} />
+                    <meshStandardMaterial color={BODY} roughness={0.3} metalness={0.05} />
+                </mesh>
 
-                {/* Face plate */}
-                <RoundedBox args={[1.0, 0.7, 0.1]} radius={0.2} smoothness={4} position={[0, -0.02, 0.43]}>
-                    <meshStandardMaterial color={config.accentColor} roughness={0.2} metalness={0.05} />
-                </RoundedBox>
+                {/* Face visor / screen */}
+                <mesh position={[0, -0.05, 0.6]} rotation={[0, 0, 0]}>
+                    <sphereGeometry args={[0.55, 48, 48, 0, Math.PI * 2, 0, Math.PI / 2]} />
+                    <meshStandardMaterial
+                        color="#F0F4FF"
+                        roughness={0.1}
+                        metalness={0.1}
+                        transparent
+                        opacity={0.85}
+                    />
+                </mesh>
 
-                {/* ── Left Eye ── */}
-                <group ref={leftEyeRef} position={[-0.25, 0.05, 0.49]}>
+                {/* ── LEFT EYE ── */}
+                <group ref={leftEyeGroupRef} position={[-0.22, 0.05, 0.75]}>
                     {/* Eye white */}
                     <mesh>
-                        <sphereGeometry args={[0.15, 32, 32]} />
-                        <meshStandardMaterial color={config.eyeColor} roughness={0.1} />
+                        <sphereGeometry args={[0.16, 32, 32]} />
+                        <meshBasicMaterial color="#FFFFFF" />
                     </mesh>
                     {/* Pupil */}
                     <mesh ref={leftPupilRef} position={[0, 0, 0.1]}>
-                        <sphereGeometry args={[0.08, 32, 32]} />
-                        <meshStandardMaterial color="#1a1a2e" roughness={0.05} metalness={0.2} />
+                        <sphereGeometry args={[0.09, 32, 32]} />
+                        <meshBasicMaterial color={DARK} />
                     </mesh>
-                    {/* Highlight */}
-                    <mesh position={[0.04, 0.04, 0.13]}>
-                        <sphereGeometry args={[0.03, 16, 16]} />
-                        <meshBasicMaterial color="#ffffff" />
+                    {/* Highlight sparkle */}
+                    <mesh position={[0.04, 0.05, 0.14]}>
+                        <sphereGeometry args={[0.035, 16, 16]} />
+                        <meshBasicMaterial color="#FFFFFF" />
+                    </mesh>
+                    <mesh position={[-0.02, -0.02, 0.14]}>
+                        <sphereGeometry args={[0.02, 16, 16]} />
+                        <meshBasicMaterial color="#FFFFFF" />
                     </mesh>
                 </group>
 
-                {/* ── Right Eye ── */}
-                <group ref={rightEyeRef} position={[0.25, 0.05, 0.49]}>
+                {/* ── RIGHT EYE ── */}
+                <group ref={rightEyeGroupRef} position={[0.22, 0.05, 0.75]}>
                     <mesh>
-                        <sphereGeometry args={[0.15, 32, 32]} />
-                        <meshStandardMaterial color={config.eyeColor} roughness={0.1} />
+                        <sphereGeometry args={[0.16, 32, 32]} />
+                        <meshBasicMaterial color="#FFFFFF" />
                     </mesh>
                     <mesh ref={rightPupilRef} position={[0, 0, 0.1]}>
-                        <sphereGeometry args={[0.08, 32, 32]} />
-                        <meshStandardMaterial color="#1a1a2e" roughness={0.05} metalness={0.2} />
+                        <sphereGeometry args={[0.09, 32, 32]} />
+                        <meshBasicMaterial color={DARK} />
                     </mesh>
-                    <mesh position={[0.04, 0.04, 0.13]}>
-                        <sphereGeometry args={[0.03, 16, 16]} />
-                        <meshBasicMaterial color="#ffffff" />
+                    <mesh position={[0.04, 0.05, 0.14]}>
+                        <sphereGeometry args={[0.035, 16, 16]} />
+                        <meshBasicMaterial color="#FFFFFF" />
+                    </mesh>
+                    <mesh position={[-0.02, -0.02, 0.14]}>
+                        <sphereGeometry args={[0.02, 16, 16]} />
+                        <meshBasicMaterial color="#FFFFFF" />
                     </mesh>
                 </group>
 
-                {/* Blink overlays (hidden by default) */}
-                <mesh ref={leftEyeClosedRef} position={[-0.25, 0.05, 0.5]} visible={false}>
-                    <boxGeometry args={[0.28, 0.04, 0.01]} />
-                    <meshStandardMaterial color={config.bodyColor} />
+                {/* Blink lids */}
+                <mesh ref={leftBlinkRef} position={[-0.22, 0.05, 0.76]} visible={false}>
+                    <planeGeometry args={[0.32, 0.05]} />
+                    <meshBasicMaterial color={BODY} side={THREE.DoubleSide} />
                 </mesh>
-                <mesh ref={rightEyeClosedRef} position={[0.25, 0.05, 0.5]} visible={false}>
-                    <boxGeometry args={[0.28, 0.04, 0.01]} />
-                    <meshStandardMaterial color={config.bodyColor} />
-                </mesh>
-
-                {/* Mouth — cute smile */}
-                <mesh position={[0, -0.18, 0.49]} rotation={[0, 0, 0]}>
-                    <torusGeometry args={[0.09, 0.02, 8, 16, Math.PI]} />
-                    <meshStandardMaterial color="#FF7096" roughness={0.3} />
+                <mesh ref={rightBlinkRef} position={[0.22, 0.05, 0.76]} visible={false}>
+                    <planeGeometry args={[0.32, 0.05]} />
+                    <meshBasicMaterial color={BODY} side={THREE.DoubleSide} />
                 </mesh>
 
-                {/* Cheeks */}
-                <mesh position={[-0.38, -0.08, 0.4]}>
-                    <sphereGeometry args={[0.08, 16, 16]} />
-                    <meshBasicMaterial color={config.cheekColor} transparent opacity={0.5} />
-                </mesh>
-                <mesh position={[0.38, -0.08, 0.4]}>
-                    <sphereGeometry args={[0.08, 16, 16]} />
-                    <meshBasicMaterial color={config.cheekColor} transparent opacity={0.5} />
+                {/* Cute smile */}
+                <mesh position={[0, -0.2, 0.78]} rotation={[0.1, 0, 0]}>
+                    <torusGeometry args={[0.08, 0.02, 8, 20, Math.PI]} />
+                    <meshBasicMaterial color={PINK} />
                 </mesh>
 
-                {/* ── Antenna ── */}
-                <group ref={antennaRef} position={[0, 0.5, 0]}>
-                    {/* Stick */}
-                    <mesh position={[0, 0.15, 0]}>
-                        <cylinderGeometry args={[0.03, 0.03, 0.3, 12]} />
-                        <meshStandardMaterial color={config.bodyColor} roughness={0.3} />
+                {/* Blush cheeks */}
+                <mesh position={[-0.45, -0.1, 0.55]}>
+                    <circleGeometry args={[0.1, 24]} />
+                    <meshBasicMaterial color={PINK} transparent opacity={0.35} side={THREE.DoubleSide} />
+                </mesh>
+                <mesh position={[0.45, -0.1, 0.55]}>
+                    <circleGeometry args={[0.1, 24]} />
+                    <meshBasicMaterial color={PINK} transparent opacity={0.35} side={THREE.DoubleSide} />
+                </mesh>
+
+                {/* ── ANTENNA ── */}
+                <group ref={antennaRef} position={[0, 0.85, 0]}>
+                    <mesh position={[0, 0.12, 0]}>
+                        <cylinderGeometry args={[0.025, 0.03, 0.25, 12]} />
+                        <meshStandardMaterial color={BODY} roughness={0.3} metalness={0.1} />
                     </mesh>
-                    {/* Bulb */}
-                    <mesh position={[0, 0.35, 0]}>
-                        <sphereGeometry args={[0.08, 16, 16]} />
+                    <mesh ref={antennaBulbRef} position={[0, 0.3, 0]}>
+                        <sphereGeometry args={[0.07, 24, 24]} />
                         <meshStandardMaterial
-                            color={config.accentColor}
-                            emissive={config.accentColor}
-                            emissiveIntensity={2}
+                            color="#FFE066"
+                            emissive="#FFD93D"
+                            emissiveIntensity={3}
+                            roughness={0.1}
                         />
                     </mesh>
                 </group>
 
                 {/* Ears */}
-                <RoundedBox args={[0.15, 0.3, 0.2]} radius={0.06} smoothness={4} position={[-0.7, 0, 0]}>
-                    <meshStandardMaterial color={config.accentColor} roughness={0.3} />
-                </RoundedBox>
-                <RoundedBox args={[0.15, 0.3, 0.2]} radius={0.06} smoothness={4} position={[0.7, 0, 0]}>
-                    <meshStandardMaterial color={config.accentColor} roughness={0.3} />
-                </RoundedBox>
-            </group>
-
-            {/* ── Arms ── */}
-            <group ref={leftArmRef} position={[-0.7, -0.1, 0]}>
-                <mesh position={[0, -0.3, 0]}>
-                    <capsuleGeometry args={[0.08, 0.4, 8, 16]} />
-                    <meshStandardMaterial color={config.bodyColor} roughness={0.3} />
+                <mesh position={[-0.88, 0.1, 0]}>
+                    <cylinderGeometry args={[0.06, 0.06, 0.15, 16]} />
+                    <meshStandardMaterial color={ACCENT} roughness={0.3} />
                 </mesh>
-                {/* Hand */}
-                <mesh position={[0, -0.6, 0]}>
-                    <sphereGeometry args={[0.12, 16, 16]} />
-                    <meshStandardMaterial color={config.accentColor} roughness={0.3} />
+                <mesh position={[0.88, 0.1, 0]}>
+                    <cylinderGeometry args={[0.06, 0.06, 0.15, 16]} />
+                    <meshStandardMaterial color={ACCENT} roughness={0.3} />
                 </mesh>
             </group>
 
-            <group ref={rightArmRef} position={[0.7, -0.1, 0]}>
-                <mesh position={[0, -0.3, 0]}>
-                    <capsuleGeometry args={[0.08, 0.4, 8, 16]} />
-                    <meshStandardMaterial color={config.bodyColor} roughness={0.3} />
+            {/* ── ARMS ── */}
+            <group ref={leftArmRef} position={[-0.55, -0.5, 0]}>
+                <mesh position={[0, -0.2, 0]}>
+                    <capsuleGeometry args={[0.065, 0.25, 8, 16]} />
+                    <meshStandardMaterial color={BODY} roughness={0.35} />
                 </mesh>
-                <mesh position={[0, -0.6, 0]}>
-                    <sphereGeometry args={[0.12, 16, 16]} />
-                    <meshStandardMaterial color={config.accentColor} roughness={0.3} />
+                <mesh position={[0, -0.42, 0]}>
+                    <sphereGeometry args={[0.09, 16, 16]} />
+                    <meshStandardMaterial color={ACCENT} roughness={0.3} />
                 </mesh>
             </group>
 
-            {/* ── Legs ── */}
-            <mesh position={[-0.25, -1.15, 0]}>
-                <capsuleGeometry args={[0.1, 0.3, 8, 16]} />
-                <meshStandardMaterial color={config.bodyColor} roughness={0.3} />
+            <group ref={rightArmRef} position={[0.55, -0.5, 0]}>
+                <mesh position={[0, -0.2, 0]}>
+                    <capsuleGeometry args={[0.065, 0.25, 8, 16]} />
+                    <meshStandardMaterial color={BODY} roughness={0.35} />
+                </mesh>
+                <mesh position={[0, -0.42, 0]}>
+                    <sphereGeometry args={[0.09, 16, 16]} />
+                    <meshStandardMaterial color={ACCENT} roughness={0.3} />
+                </mesh>
+            </group>
+
+            {/* ── LEGS (stubby chibi) ── */}
+            <mesh position={[-0.2, -1.25, 0]}>
+                <capsuleGeometry args={[0.09, 0.2, 8, 16]} />
+                <meshStandardMaterial color={BODY} roughness={0.35} />
             </mesh>
-            <mesh position={[0.25, -1.15, 0]}>
-                <capsuleGeometry args={[0.1, 0.3, 8, 16]} />
-                <meshStandardMaterial color={config.bodyColor} roughness={0.3} />
+            <mesh position={[0.2, -1.25, 0]}>
+                <capsuleGeometry args={[0.09, 0.2, 8, 16]} />
+                <meshStandardMaterial color={BODY} roughness={0.35} />
             </mesh>
 
             {/* Feet */}
-            <RoundedBox args={[0.25, 0.12, 0.3]} radius={0.05} smoothness={4} position={[-0.25, -1.45, 0.05]}>
-                <meshStandardMaterial color={config.accentColor} roughness={0.3} />
+            <RoundedBox args={[0.2, 0.1, 0.25]} radius={0.04} smoothness={4} position={[-0.2, -1.45, 0.03]}>
+                <meshStandardMaterial color={ACCENT} roughness={0.3} />
             </RoundedBox>
-            <RoundedBox args={[0.25, 0.12, 0.3]} radius={0.05} smoothness={4} position={[0.25, -1.45, 0.05]}>
-                <meshStandardMaterial color={config.accentColor} roughness={0.3} />
+            <RoundedBox args={[0.2, 0.1, 0.25]} radius={0.04} smoothness={4} position={[0.2, -1.45, 0.03]}>
+                <meshStandardMaterial color={ACCENT} roughness={0.3} />
             </RoundedBox>
         </group>
     );
 }
 
-/* ─── Robot Scene ─── */
-function RobotScene({ config, mouseX, mouseY }: { config: RobotConfig; mouseX: number; mouseY: number }) {
+/* ─── Scene ─── */
+function RobotScene({ mouseX, mouseY }: { mouseX: number; mouseY: number }) {
     return (
         <>
-            <ambientLight intensity={0.6} />
-            <directionalLight position={[3, 5, 5]} intensity={1.5} color="#ffffff" castShadow />
-            <pointLight position={[-3, 2, 3]} intensity={0.8} color="#ffffff" />
-            <pointLight position={[0, -1, 4]} intensity={0.5} color={config.accentColor} />
+            <ambientLight intensity={0.7} />
+            <directionalLight position={[3, 5, 5]} intensity={1.8} color="#FFFBE6" castShadow />
+            <pointLight position={[-3, 2, 3]} intensity={0.5} color="#ffffff" />
+            <pointLight position={[0, -1, 5]} intensity={0.3} color="#FFD93D" />
 
             <Float
-                speed={2}
-                rotationIntensity={0.1}
-                floatIntensity={0.5}
-                floatingRange={[-0.15, 0.15]}
+                speed={2.5}
+                rotationIntensity={0.08}
+                floatIntensity={0.4}
+                floatingRange={[-0.1, 0.1]}
             >
-                <CuteRobot config={config} mouseX={mouseX} mouseY={mouseY} />
+                <ChibiRobot mouseX={mouseX} mouseY={mouseY} />
             </Float>
 
             <ContactShadows
                 position={[0, -1.6, 0]}
-                opacity={0.35}
-                scale={4}
+                opacity={0.25}
+                scale={5}
                 blur={2.5}
                 far={5}
             />
 
-            <Environment preset="apartment" environmentIntensity={0.5} />
+            <Environment preset="apartment" environmentIntensity={0.4} />
 
             <EffectComposer>
                 <Bloom
-                    intensity={0.4}
-                    luminanceThreshold={0.8}
+                    intensity={0.3}
+                    luminanceThreshold={0.85}
                     luminanceSmoothing={0.9}
                     mipmapBlur
                 />
@@ -358,130 +330,65 @@ function RobotScene({ config, mouseX, mouseY }: { config: RobotConfig; mouseX: n
     );
 }
 
-/* ─── Mouse influence ─── */
-const MOUSE_FACTORS = [
-    { x: 15.0, r: 1.5 },
-    { x: 90.0, r: 7.0 },
-    { x: 50.0, r: 4.0 },
-];
-
-interface FlowerLetterProps {
-    letter: string;
-    shapeKey: string;
+/* ─── Export: Single Robot Component ─── */
+export default function FlowerLetter({
+    index = 0,
+}: {
+    letter?: string;
+    shapeKey?: string;
     stemWidth?: number;
     stemHeight?: number;
     flowerHeight?: number;
     orbSize?: number;
-    index: number;
-}
-
-export default function FlowerLetter({
-    letter,
-    shapeKey,
-    orbSize = 240,
-    index,
-}: FlowerLetterProps) {
+    index?: number;
+}) {
     const mouse = useMousePosition();
-    const config = ROBOT_CONFIGS[shapeKey];
-    const factor = MOUSE_FACTORS[index] || MOUSE_FACTORS[0];
-
-    const dx = (mouse.progressX - 0.5);
-    const flowerX = dx * factor.x * 2;
-    const flowerRotate = dx * factor.r * 0.5;
-
-    const springConfig = { damping: 20, stiffness: 100 };
-    const springX = useSpring(useMotionValue(flowerX), springConfig);
-    const springR = useSpring(useMotionValue(flowerRotate), springConfig);
-
-    springX.set(flowerX);
-    springR.set(flowerRotate);
-
-    const containerRef = useRef<HTMLDivElement>(null);
-    const { scrollYProgress } = useScroll({
-        target: containerRef,
-        offset: ["start 85%", "start 40%"],
-    });
-    const letterOpacity = useTransform(scrollYProgress, [0, 0.3], [0, 1]);
-    const letterScale = useTransform(scrollYProgress, [0, 1], [0.6, 1]);
-
-    if (!config) return null;
+    const dx = mouse.progressX - 0.5;
+    const dy = mouse.progressY - 0.5;
 
     return (
         <motion.div
-            ref={containerRef}
             className="flower-letter"
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.5, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
             style={{
-                opacity: letterOpacity,
-                scale: letterScale,
                 display: "inline-flex",
                 flexDirection: "column",
                 alignItems: "center",
                 position: "relative",
+                width: 320,
+                height: 380,
             }}
         >
-            <motion.div
-                className="flower-letter__orb"
-                style={{
-                    x: springX,
-                    rotate: springR,
-                    width: orbSize,
-                    height: orbSize * 1.2,
-                    willChange: "transform",
-                }}
+            <Suspense
+                fallback={
+                    <div style={{
+                        width: "100%",
+                        height: "100%",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        fontSize: "4rem",
+                    }}>
+                        🤖
+                    </div>
+                }
             >
-                <Suspense
-                    fallback={
-                        <div
-                            style={{
-                                width: "100%",
-                                height: "100%",
-                                display: "flex",
-                                alignItems: "center",
-                                justifyContent: "center",
-                                fontSize: "3rem",
-                            }}
-                        >
-                            🤖
-                        </div>
-                    }
+                <Canvas
+                    camera={{ position: [0, 0.1, 4], fov: 35 }}
+                    style={{ width: "100%", height: "100%" }}
+                    gl={{
+                        antialias: true,
+                        alpha: true,
+                        toneMapping: THREE.ACESFilmicToneMapping,
+                        toneMappingExposure: 1.1,
+                    }}
+                    dpr={[1, 2]}
                 >
-                    <Canvas
-                        camera={{ position: [0, 0.2, 4.5], fov: 35 }}
-                        style={{ width: "100%", height: "100%" }}
-                        gl={{
-                            antialias: true,
-                            alpha: true,
-                            toneMapping: THREE.ACESFilmicToneMapping,
-                            toneMappingExposure: 1.2,
-                        }}
-                        dpr={[1, 2]}
-                    >
-                        <RobotScene
-                            config={config}
-                            mouseX={dx * 2}
-                            mouseY={(mouse.progressY - 0.5) * 2}
-                        />
-                    </Canvas>
-                </Suspense>
-            </motion.div>
-
-            {/* Robot name label */}
-            <motion.span
-                className="flower-letter__label"
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 1.2 + index * 0.2, duration: 0.6 }}
-                style={{
-                    marginTop: "8px",
-                    fontFamily: "'JetBrains Mono', 'Fira Code', monospace",
-                    fontSize: "1rem",
-                    color: config.bodyColor,
-                    fontWeight: 700,
-                    letterSpacing: "0.05em",
-                }}
-            >
-                {config.symbol}
-            </motion.span>
+                    <RobotScene mouseX={dx * 2} mouseY={dy * 2} />
+                </Canvas>
+            </Suspense>
         </motion.div>
     );
 }

@@ -187,9 +187,6 @@ export default function Hero() {
                                 className="object-cover"
                                 priority
                             />
-                            <div className="absolute inset-0 bg-gradient-to-t from-black/10 via-transparent to-transparent" />
-
-                            {/* 초프리미엄 대시보드 오버레이 */}
 
 
                         </div>

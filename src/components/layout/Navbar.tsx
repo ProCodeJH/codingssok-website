@@ -84,7 +84,7 @@ function MenuLink({
     );
 }
 
-/* ── SVG Pill Button — nodcoding btn-plain (exact path) ── */
+/* ── SVG Pill Button — nodcoding btn-plain (exact path + hover morph) ── */
 function PillButton({
     children,
     href,
@@ -94,17 +94,36 @@ function PillButton({
     href: string;
     onClick?: (e: React.MouseEvent<HTMLAnchorElement>) => void;
 }) {
+    const [isHovered, setIsHovered] = useState(false);
     const w = 160;
     const h = 54;
 
-    // Exact nodcoding btn-plain path coordinates
-    const pillPath = "M27,0 L133,0 C168.505,0 168.505,54 133,54 L27,54 C-8.505,54 -8.505,0 27,0";
+    /*
+      nodcoding btn-plain SVG path morph:
+      - Idle:  Control points at ±35.505 (168.505 and -8.505)
+      - Hover: Control points expand to ±39.505 (172.505 and -12.505)
+              + M/L points shift ±4px (27→23, 133→137)
+      This creates the subtle "blob expand" effect on hover
+    */
+    const idlePath = "M27,0 L133,0 C168.505,0 168.505,54 133,54 L27,54 C-8.505,54 -8.505,0 27,0";
+    const hoverPath = "M23,0 L137,0 C172.505,0 172.505,54 137,54 L23,54 C-12.505,54 -12.505,0 23,0";
 
     return (
-        <a href={href} onClick={onClick} className="btn-plain" style={{ width: w, height: h }}>
+        <a
+            href={href}
+            onClick={onClick}
+            className="btn-plain"
+            style={{ width: w, height: h }}
+            onMouseEnter={() => setIsHovered(true)}
+            onMouseLeave={() => setIsHovered(false)}
+        >
             <span className="btn-plain__inner">
                 <span className="btn-plain__text">{children}</span>
-                <span className="btn-plain__arrow" />
+                <motion.span
+                    className="btn-plain__arrow"
+                    animate={{ x: isHovered ? 4 : 0 }}
+                    transition={{ duration: 0.3, ease: [0.645, 0.045, 0.355, 1] }}
+                />
             </span>
             <svg
                 className="btn-plain__background"
@@ -116,8 +135,18 @@ function PillButton({
                 preserveAspectRatio="none"
                 style={{ width: w, height: h }}
             >
-                <path d={pillPath} className="btn-plain__path" />
-                <path d={pillPath} className="btn-plain__path" />
+                <motion.path
+                    d={idlePath}
+                    className="btn-plain__path"
+                    animate={{ d: isHovered ? hoverPath : idlePath }}
+                    transition={{ duration: 0.4, ease: [0.645, 0.045, 0.355, 1] }}
+                />
+                <motion.path
+                    d={idlePath}
+                    className="btn-plain__path"
+                    animate={{ d: isHovered ? hoverPath : idlePath }}
+                    transition={{ duration: 0.4, ease: [0.645, 0.045, 0.355, 1], delay: 0.03 }}
+                />
             </svg>
         </a>
     );

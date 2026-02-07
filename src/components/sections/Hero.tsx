@@ -6,14 +6,14 @@ import FlowerLetter from "@/components/ui/FlowerLetter";
 import Link from "next/link";
 
 /*
-  코딩쏙 Hero — 3D Floating Code Orbs
-  No more stems — orbs float freely at staggered heights
+  코딩쏙 Hero — 3D Glass Code Orbs
+  Transparent glass with strong depth, widely spaced
 */
 
 const letters = [
-    { letter: "코", shapeKey: "코", orbSize: 220 },
-    { letter: "딩", shapeKey: "딩", orbSize: 250 },
-    { letter: "쏙", shapeKey: "쏙", orbSize: 220 },
+    { letter: "코", shapeKey: "코", orbSize: 240 },
+    { letter: "딩", shapeKey: "딩", orbSize: 280 },
+    { letter: "쏙", shapeKey: "쏙", orbSize: 240 },
 ];
 
 export default function Hero() {
@@ -48,8 +48,8 @@ export default function Hero() {
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
-                    gap: "clamp(16px, 4vw, 48px)",
-                    padding: "40px 20px 0",
+                    gap: "clamp(32px, 6vw, 64px)",
+                    padding: "20px 20px 0",
                     position: "relative",
                     zIndex: 2,
                 }}

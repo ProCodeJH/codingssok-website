@@ -43,30 +43,30 @@ interface OrbConfig {
 const ORB_CONFIGS: Record<string, OrbConfig> = {
     코: {
         symbol: "{ }",
-        baseColor: "#0a0a18",
+        baseColor: "#FFE5F0",      // 밝은 핑크 크리스탈
         glowColor: "#FF6B9D",
         accentColor: "#FFB3D9",
-        emissiveIntensity: 0.8,
+        emissiveIntensity: 0.6,
         distortSpeed: 1.2,
         distortStrength: 0.4,
         yOffset: 0.3,
     },
     딩: {
         symbol: "< >",
-        baseColor: "#050f1a",
+        baseColor: "#E0FFFF",      // 밝은 시안 크리스탈
         glowColor: "#00F5D4",
         accentColor: "#72EFDD",
-        emissiveIntensity: 1.0,
+        emissiveIntensity: 0.7,
         distortSpeed: 1.5,
         distortStrength: 0.5,
         yOffset: -0.2,
     },
     쏙: {
         symbol: "( )",
-        baseColor: "#08111d",
+        baseColor: "#E8F4FF",      // 밝은 블루 크리스탈
         glowColor: "#4E8BFF",
         accentColor: "#A3C9FF",
-        emissiveIntensity: 0.9,
+        emissiveIntensity: 0.65,
         distortSpeed: 1.3,
         distortStrength: 0.45,
         yOffset: 0.1,
@@ -139,15 +139,18 @@ function OrganicSphere({
             <Sphere ref={outerRef} args={[1.3, 128, 128]}>
                 <MeshDistortMaterial
                     color={config.baseColor}
-                    metalness={0.98}
-                    roughness={0.02}
+                    metalness={0.1}
+                    roughness={0.05}
                     clearcoat={1.0}
                     clearcoatRoughness={0.01}
-                    envMapIntensity={3.0}
+                    envMapIntensity={2.0}
                     distort={config.distortStrength}
                     speed={config.distortSpeed}
-                    reflectivity={1.0}
-                    ior={2.5}
+                    transmission={0.95}
+                    thickness={0.8}
+                    ior={1.5}
+                    transparent
+                    opacity={0.85}
                 />
             </Sphere>
 
@@ -156,9 +159,9 @@ function OrganicSphere({
                 <MeshDistortMaterial
                     color={config.glowColor}
                     emissive={config.glowColor}
-                    emissiveIntensity={config.emissiveIntensity}
+                    emissiveIntensity={config.emissiveIntensity * 1.8}
                     transparent
-                    opacity={0.3}
+                    opacity={0.5}
                     distort={config.distortStrength * 0.6}
                     speed={config.distortSpeed * 0.8}
                     side={THREE.DoubleSide}
@@ -170,9 +173,9 @@ function OrganicSphere({
                 <MeshDistortMaterial
                     color={config.accentColor}
                     emissive={config.accentColor}
-                    emissiveIntensity={1.2}
+                    emissiveIntensity={1.5}
                     transparent
-                    opacity={0.4}
+                    opacity={0.6}
                     distort={config.distortStrength * 0.8}
                     speed={config.distortSpeed * 1.2}
                     side={THREE.DoubleSide}
@@ -184,7 +187,7 @@ function OrganicSphere({
                 <meshBasicMaterial
                     color={config.glowColor}
                     transparent
-                    opacity={0.8}
+                    opacity={0.95}
                 />
             </Sphere>
 

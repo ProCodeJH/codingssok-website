@@ -35,11 +35,24 @@ import { useMousePosition } from "@/components/effects/MouseTracker";
 */
 
 /* ─── Animated Eye Component ─── */
+/*
+  nodcoding's eye uses clip-path: path() for the eye shape.
+  The pupil (b__pupil) tracks the mouse inside the clipped area.
+
+  Exact paths from HTML inline styles:
+    --path-open:  path('M 0 61 Q 137 -61 274 61 Q 137 183 0 61 Z')
+    --path-close: path('M 0 61 Q 137  61 274 61 Q 137  61 0 61 Z')
+
+  The open→close transition flattens Q-control-points to center (61).
+  Mouse inertia: 0.05
+  Eye size: 274×122 (= 274w × (61+61)h)
+*/
 function AnimatedEye() {
     const mouse = useMousePosition();
+    const [isHovered, setIsHovered] = useState(false);
 
-    // Pupil movement — tracks mouse with inertia 0.05
-    const springConfig = { damping: 30, stiffness: 80 };
+    // Pupil movement — tracks mouse with spring inertia
+    const springConfig = { damping: 30, stiffness: 80, mass: 0.5 };
     const pupilX = useSpring(
         useMotionValue((mouse.progressX - 0.5) * 40),
         springConfig
@@ -49,36 +62,62 @@ function AnimatedEye() {
         springConfig
     );
 
-    // Update springs on mouse move
+    // Update springs on every render (mouse move)
     pupilX.set((mouse.progressX - 0.5) * 40);
     pupilY.set((mouse.progressY - 0.5) * 20);
 
+    /*
+      Eye open/close uses d attribute animation on SVG path.
+      Open:  Q points at y=-61 and y=183 (full eye shape)
+      Close: Q points at y=61 and y=61   (flat line — eye closed)
+    */
+    const pathOpen = "M 0 61 Q 137 -61 274 61 Q 137 183 0 61 Z";
+    const pathClose = "M 0 61 Q 137  61 274 61 Q 137  61 0 61 Z";
+
     return (
-        <div className="eye-container">
-            {/* Eye shape — SVG with open/close clip-path */}
+        <div
+            className="eye-container"
+            onMouseEnter={() => setIsHovered(true)}
+            onMouseLeave={() => setIsHovered(false)}
+        >
+            {/* Eye shape — SVG with animated d path for open/close */}
             <svg
                 className="eye-shape"
                 viewBox="0 0 274 122"
                 width="274"
                 height="122"
                 fill="none"
+                style={{ overflow: "visible" }}
             >
-                {/* Eye outline (open state) */}
-                <path
-                    d="M 0 61 Q 137 -61 274 61 Q 137 183 0 61 Z"
+                {/* Eye white fill */}
+                <motion.path
+                    d={pathOpen}
                     fill="var(--color-beige)"
+                    initial={{ d: pathClose }}
+                    animate={{ d: isHovered ? pathClose : pathOpen }}
+                    transition={{ duration: 0.3, ease: [0.645, 0.045, 0.355, 1] }}
+                />
+                {/* Eye outline stroke */}
+                <motion.path
+                    d={pathOpen}
+                    fill="none"
                     stroke="var(--color-heading)"
                     strokeWidth="2.5"
+                    initial={{ d: pathClose }}
+                    animate={{ d: isHovered ? pathClose : pathOpen }}
+                    transition={{ duration: 0.3, ease: [0.645, 0.045, 0.355, 1] }}
                 />
             </svg>
 
-            {/* Pupil — follows mouse */}
+            {/* Pupil — follows mouse, hidden when eye closes */}
             <motion.div
                 className="eye-pupil"
                 style={{
                     x: pupilX,
                     y: pupilY,
                 }}
+                animate={{ opacity: isHovered ? 0 : 1, scale: isHovered ? 0.3 : 1 }}
+                transition={{ duration: 0.2 }}
             >
                 <div className="eye-pupil__inner eye-pupil__inner--main" />
                 <div className="eye-pupil__inner eye-pupil__inner--secondary" />

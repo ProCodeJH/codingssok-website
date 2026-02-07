@@ -6,16 +6,18 @@ import FlowerLetter from "@/components/ui/FlowerLetter";
 import Link from "next/link";
 
 /*
-  Replicates nodcoding.com's `.b-hero-home` structure:
-    .b__letters  → FlowerLetter × 3 ("코", "딩", "쏙")
-    .b__bootcamp → clip-path reveal text ("대전 코딩 학원")
-    .b__render   → SVG background shape
+  Replicates nodcoding.com's `.b-hero-home` structure.
+  Exact dimensions extracted from HTML:
+    C: flower-height 296px, stem 236×874px
+    O: flower-height 297px, stem 287×790px
+    D: flower-height 296px, stem 231×869px
+  Scaled by ~0.4 for responsive render (prevents overflow)
 */
 
 const letters = [
-    { letter: "코", shapeKey: "코", stemWidth: 109, stemHeight: 275, flowerHeight: 140 },
-    { letter: "딩", shapeKey: "딩", stemWidth: 133, stemHeight: 247, flowerHeight: 140 },
-    { letter: "쏙", shapeKey: "쏙", stemWidth: 107, stemHeight: 274, flowerHeight: 140 },
+    { letter: "코", shapeKey: "코", stemWidth: 94, stemHeight: 350, flowerHeight: 118 },
+    { letter: "딩", shapeKey: "딩", stemWidth: 115, stemHeight: 316, flowerHeight: 119 },
+    { letter: "쏙", shapeKey: "쏙", stemWidth: 92, stemHeight: 348, flowerHeight: 118 },
 ];
 
 export default function Hero() {

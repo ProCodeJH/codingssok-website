@@ -1,9 +1,10 @@
 "use client";
 
-import { useRef, useState, useEffect } from "react";
-import { motion, useMotionValue, useTransform } from "framer-motion";
+import { useState, useEffect } from "react";
+import { motion } from "framer-motion";
 import Image from "next/image";
 import { Code, Cpu, Trophy, Sparkles, ArrowRight, Zap, Quote } from "lucide-react";
+import TiltCard from "@/components/ui/TiltCard";
 
 const services = [
     {
@@ -41,34 +42,7 @@ const reviews = [
     { text: "정보처리기능사 한 번에 합격! 코딩쏙 덕분입니다.", name: "수강생 이OO", role: "고등 1학년" },
 ];
 
-function TiltCard({ children, className = "" }: { children: React.ReactNode; className?: string }) {
-    const ref = useRef<HTMLDivElement>(null);
-    const x = useMotionValue(0);
-    const y = useMotionValue(0);
-    const rotateX = useTransform(y, [-0.5, 0.5], [5, -5]);
-    const rotateY = useTransform(x, [-0.5, 0.5], [-5, 5]);
 
-    const handleMouse = (e: React.MouseEvent) => {
-        const rect = ref.current?.getBoundingClientRect();
-        if (!rect) return;
-        x.set((e.clientX - rect.left) / rect.width - 0.5);
-        y.set((e.clientY - rect.top) / rect.height - 0.5);
-    };
-
-    const resetMouse = () => { x.set(0); y.set(0); };
-
-    return (
-        <motion.div
-            ref={ref}
-            onMouseMove={handleMouse}
-            onMouseLeave={resetMouse}
-            style={{ rotateX, rotateY, transformStyle: "preserve-3d", perspective: 1000 }}
-            className={className}
-        >
-            {children}
-        </motion.div>
-    );
-}
 
 export default function Services() {
     const [activeReview, setActiveReview] = useState(0);
@@ -128,8 +102,8 @@ export default function Services() {
                                 className="group"
                             >
                                 <div className={`relative backdrop-blur-xl rounded-3xl p-8 h-full transition-all duration-500 ${activeReview === i
-                                        ? 'bg-white/10 border-2 border-blue-400/50 shadow-lg shadow-blue-500/20 scale-[1.02]'
-                                        : 'bg-white/5 border border-white/10 group-hover:border-blue-500/30 group-hover:bg-white/[0.08]'
+                                    ? 'bg-white/10 border-2 border-blue-400/50 shadow-lg shadow-blue-500/20 scale-[1.02]'
+                                    : 'bg-white/5 border border-white/10 group-hover:border-blue-500/30 group-hover:bg-white/[0.08]'
                                     }`}>
                                     <Quote size={24} className="text-blue-400/40 mb-4" />
                                     <p className="text-white/90 text-lg leading-relaxed mb-6 font-light">
@@ -151,7 +125,24 @@ export default function Services() {
                 </div>
             </section>
 
+            {/* Infinite Marquee Band */}
+            <div className="w-full bg-gradient-to-r from-blue-600 via-cyan-500 to-blue-600 py-5 overflow-hidden">
+                <div className="animate-marquee whitespace-nowrap flex items-center gap-12">
+                    {[...Array(2)].map((_, setIdx) => (
+                        <div key={setIdx} className="flex items-center gap-12 min-w-max">
+                            {["C언어", "Python", "아두이노", "알고리즘", "정보올림피아드", "정보처리기능사", "프로젝트", "포트폴리오", "1:1 멘토링", "소수정예"].map((text, i) => (
+                                <span key={i} className="flex items-center gap-3">
+                                    <span className="text-white/90 text-lg font-semibold tracking-wide">{text}</span>
+                                    <span className="w-1.5 h-1.5 bg-white/40 rounded-full" />
+                                </span>
+                            ))}
+                        </div>
+                    ))}
+                </div>
+            </div>
+
             {/* Services */}
+
             <section id="services" className="w-full bg-white relative overflow-hidden flex justify-center" style={{ paddingTop: '180px', paddingBottom: '180px' }}>
                 <div className="absolute inset-0 pointer-events-none">
                     <div className="absolute top-20 right-20 w-72 h-72 bg-blue-50 rounded-full blur-3xl" />
@@ -292,6 +283,7 @@ export default function Services() {
                                     alt={img.alt}
                                     fill
                                     className="object-cover group-hover:scale-110 transition-transform duration-700"
+                                    sizes="(max-width: 768px) 100vw, 33vw"
                                 />
                                 <div className="absolute inset-0 bg-gradient-to-t from-gray-900/80 via-gray-900/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                                 <div className="absolute bottom-0 left-0 right-0 p-6 translate-y-full group-hover:translate-y-0 transition-transform duration-300">

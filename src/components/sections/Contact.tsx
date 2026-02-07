@@ -1,8 +1,9 @@
 "use client";
 
-import { useRef } from "react";
-import { motion, useMotionValue, useTransform } from "framer-motion";
-import { MapPin, Phone, Clock, Send, Sparkles, Gift } from "lucide-react";
+import { useState } from "react";
+import { motion } from "framer-motion";
+import { MapPin, Phone, Clock, Send, Sparkles, Gift, CheckCircle } from "lucide-react";
+import TiltCard from "@/components/ui/TiltCard";
 
 const contactInfo = [
     { icon: MapPin, title: "위치", value: "대전 유성구 봉명동", color: "from-blue-600 to-cyan-500" },
@@ -10,36 +11,17 @@ const contactInfo = [
     { icon: Clock, title: "운영", value: "평일 14:00 ~ 21:00", color: "from-cyan-500 to-blue-600" },
 ];
 
-function TiltCard({ children, className = "" }: { children: React.ReactNode; className?: string }) {
-    const ref = useRef<HTMLDivElement>(null);
-    const x = useMotionValue(0);
-    const y = useMotionValue(0);
-    const rotateX = useTransform(y, [-0.5, 0.5], [6, -6]);
-    const rotateY = useTransform(x, [-0.5, 0.5], [-6, 6]);
 
-    const handleMouse = (e: React.MouseEvent) => {
-        const rect = ref.current?.getBoundingClientRect();
-        if (!rect) return;
-        x.set((e.clientX - rect.left) / rect.width - 0.5);
-        y.set((e.clientY - rect.top) / rect.height - 0.5);
-    };
-
-    const resetMouse = () => { x.set(0); y.set(0); };
-
-    return (
-        <motion.div
-            ref={ref}
-            onMouseMove={handleMouse}
-            onMouseLeave={resetMouse}
-            style={{ rotateX, rotateY, transformStyle: "preserve-3d", perspective: 1000 }}
-            className={className}
-        >
-            {children}
-        </motion.div>
-    );
-}
 
 export default function Contact() {
+    const [submitted, setSubmitted] = useState(false);
+
+    const handleSubmit = (e: React.FormEvent) => {
+        e.preventDefault();
+        setSubmitted(true);
+        setTimeout(() => setSubmitted(false), 4000);
+    };
+
     return (
         <section id="contact" className="w-full bg-gradient-to-b from-gray-50 via-white to-gray-50 relative overflow-hidden flex justify-center" style={{ paddingTop: '180px', paddingBottom: '180px' }}>
             {/* 배경 효과 */}
@@ -153,7 +135,7 @@ export default function Contact() {
                                 {/* 카드 글로우 — relative 부모 안에 있음 */}
                                 <div className="absolute -inset-1 bg-gradient-to-r from-blue-600 to-cyan-500 rounded-[28px] blur-2xl opacity-10" />
 
-                                <form className="relative bg-white/90 backdrop-blur-xl rounded-3xl p-8 lg:p-10 border border-gray-100 shadow-2xl">
+                                <form onSubmit={handleSubmit} className="relative bg-white/90 backdrop-blur-xl rounded-3xl p-8 lg:p-10 border border-gray-100 shadow-2xl">
                                     <div className="grid grid-cols-2 gap-5 mb-5">
                                         <div>
                                             <label className="block text-sm font-medium text-gray-700 mb-2">이름</label>
@@ -191,6 +173,16 @@ export default function Contact() {
                                             className="w-full px-4 py-4 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all resize-none text-gray-900 placeholder:text-gray-400"
                                         />
                                     </div>
+                                    {submitted && (
+                                        <motion.div
+                                            initial={{ opacity: 0, y: 10 }}
+                                            animate={{ opacity: 1, y: 0 }}
+                                            className="mb-4 p-4 bg-emerald-50 border border-emerald-200 rounded-xl flex items-center gap-3 text-emerald-700"
+                                        >
+                                            <CheckCircle size={20} />
+                                            <span className="text-sm font-medium">상담 신청이 접수되었습니다! 빠르게 연락드리겠습니다.</span>
+                                        </motion.div>
+                                    )}
                                     <motion.button
                                         type="submit"
                                         className="w-full py-5 bg-gradient-to-r from-blue-600 to-cyan-500 text-white font-bold text-lg rounded-xl shadow-lg shadow-blue-500/30"

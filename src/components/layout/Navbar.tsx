@@ -28,7 +28,7 @@ export default function Navbar() {
         <>
             <motion.nav
                 className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${isScrolled
-                    ? 'bg-white/90 backdrop-blur-lg shadow-sm'
+                    ? 'bg-white/80 backdrop-blur-2xl shadow-lg shadow-black/[0.03]'
                     : 'bg-transparent'
                     }`}
                 initial={{ y: -100 }}
@@ -36,7 +36,7 @@ export default function Navbar() {
                 transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
             >
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-12">
-                    <div className="flex items-center justify-between h-16 md:h-20">
+                    <div className={`flex items-center justify-between transition-all duration-300 ${isScrolled ? 'h-14 md:h-16' : 'h-16 md:h-20'}`}>
                         {/* Logo */}
                         <Link href="/" className="flex items-center gap-2.5">
                             <div className="w-8 h-8 rounded-lg bg-gradient-to-r from-blue-600 to-cyan-500 flex items-center justify-center shadow-lg shadow-blue-500/30">
@@ -71,6 +71,15 @@ export default function Navbar() {
                         </button>
                     </div>
                 </div>
+                {/* 하단 그라디언트 라인 */}
+                {isScrolled && (
+                    <motion.div
+                        initial={{ scaleX: 0 }}
+                        animate={{ scaleX: 1 }}
+                        className="h-px bg-gradient-to-r from-transparent via-blue-400/40 to-transparent"
+                        style={{ originX: 0.5 }}
+                    />
+                )}
             </motion.nav>
 
             {/* Mobile Menu */}

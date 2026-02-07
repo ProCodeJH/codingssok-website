@@ -124,7 +124,31 @@ export default function Hero() {
                             <span className="text-gray-700 font-medium">현직 개발자</span>가 프로젝트부터 자격증까지.
                         </motion.p>
 
-
+                        {/* CTA 버튼 */}
+                        <motion.div
+                            initial={{ opacity: 0, y: 16 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: 1.2, duration: 0.6, ease: [0.16, 1, 0.3, 1] as const }}
+                            className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 mb-14"
+                        >
+                            <motion.a
+                                href="#contact"
+                                className="group inline-flex items-center gap-2.5 px-8 py-4 bg-gradient-to-r from-blue-600 to-cyan-500 text-white font-semibold rounded-2xl shadow-lg shadow-blue-500/25"
+                                whileHover={{ scale: 1.03, y: -2, boxShadow: "0 20px 40px rgba(59, 130, 246, 0.35)" }}
+                                whileTap={{ scale: 0.97 }}
+                            >
+                                무료 상담 신청
+                                <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
+                            </motion.a>
+                            <motion.a
+                                href="#curriculum"
+                                className="inline-flex items-center gap-2 px-8 py-4 text-gray-600 font-medium rounded-2xl border border-gray-200 hover:border-blue-300 hover:text-blue-600 hover:bg-blue-50/50 transition-all"
+                                whileHover={{ scale: 1.02 }}
+                                whileTap={{ scale: 0.97 }}
+                            >
+                                커리큘럼 보기
+                            </motion.a>
+                        </motion.div>
 
                         {/* 통계 */}
                         <motion.div
@@ -185,6 +209,7 @@ export default function Hero() {
                                 alt="코딩쏙 수업"
                                 fill
                                 className="object-cover"
+                                sizes="(max-width: 1024px) 100vw, 50vw"
                                 priority
                             />
 

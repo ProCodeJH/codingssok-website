@@ -61,17 +61,6 @@ export default function Navbar() {
                             ))}
                         </div>
 
-                        {/* CTA Button */}
-                        <div className="hidden md:flex items-center">
-                            <motion.a
-                                href="#contact"
-                                className="inline-flex items-center gap-2 text-sm py-2.5 px-5 bg-gradient-to-r from-blue-600 to-cyan-500 text-white font-medium rounded-full shadow-lg shadow-blue-500/30"
-                                whileHover={{ scale: 1.02, y: -1 }}
-                                whileTap={{ scale: 0.98 }}
-                            >
-                                상담 신청 <span className="opacity-80">→</span>
-                            </motion.a>
-                        </div>
 
                         {/* Mobile Menu Button */}
                         <button

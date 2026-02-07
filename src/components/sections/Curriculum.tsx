@@ -84,60 +84,163 @@ export default function Curriculum() {
                     </p>
                 </motion.div>
 
-                {/* 5트랙 카드 — 모바일: 수직 타임라인, 데스크탑: 5열 그리드 */}
-                {/* 데스크탑 그리드 */}
-                <div className="hidden md:grid md:grid-cols-5 gap-5" style={{ marginBottom: '100px' }}>
-                    {tracks.map((track, i) => (
+                {/* 5트랙 카드 — 데스크탑: 초프리미엄 수평 타임라인 */}
+                <div className="hidden md:block relative" style={{ marginBottom: '100px' }}>
+                    {/* 수평 연결 타임라인 */}
+                    <div className="absolute top-[52px] left-[10%] right-[10%] h-[2px] z-0">
                         <motion.div
-                            key={i}
-                            initial={{ opacity: 0, y: 30 }}
-                            whileInView={{ opacity: 1, y: 0 }}
+                            className="h-full bg-gradient-to-r from-emerald-400 via-blue-400 via-cyan-400 via-violet-400 to-amber-400 rounded-full"
+                            initial={{ scaleX: 0 }}
+                            whileInView={{ scaleX: 1 }}
                             viewport={{ once: true }}
-                            transition={{ delay: i * 0.1, duration: 0.5, ease: [0.16, 1, 0.3, 1] as const }}
-                            className="group relative"
-                        >
-                            <TiltCard>
-                                {/* 카드 글로우 */}
-                                <div className={`absolute inset-0 bg-gradient-to-r ${track.color} rounded-3xl blur-xl opacity-0 group-hover:opacity-40 transition-opacity duration-300 translate-y-4`} />
+                            transition={{ duration: 1.2, delay: 0.3, ease: [0.16, 1, 0.3, 1] as const }}
+                            style={{ originX: 0 }}
+                        />
+                        {/* 타임라인 글로우 */}
+                        <motion.div
+                            className="absolute inset-0 h-[2px] bg-gradient-to-r from-emerald-400 via-blue-400 via-cyan-400 via-violet-400 to-amber-400 rounded-full blur-sm opacity-50"
+                            initial={{ scaleX: 0 }}
+                            whileInView={{ scaleX: 1 }}
+                            viewport={{ once: true }}
+                            transition={{ duration: 1.2, delay: 0.3, ease: [0.16, 1, 0.3, 1] as const }}
+                            style={{ originX: 0 }}
+                        />
+                    </div>
+
+                    <div className="grid grid-cols-5 gap-6 relative z-10">
+                        {tracks.map((track, i) => (
+                            <motion.div
+                                key={i}
+                                initial={{ opacity: 0, y: 40, scale: 0.9 }}
+                                whileInView={{ opacity: 1, y: 0, scale: 1 }}
+                                viewport={{ once: true }}
+                                transition={{
+                                    delay: 0.4 + i * 0.12,
+                                    duration: 0.7,
+                                    type: "spring",
+                                    stiffness: 120,
+                                    damping: 14,
+                                }}
+                                className="group relative flex flex-col items-center"
+                            >
+                                {/* 타임라인 노드 */}
+                                <motion.div
+                                    className="relative mb-6"
+                                    whileHover={{ scale: 1.2 }}
+                                    transition={{ type: "spring", stiffness: 300 }}
+                                >
+                                    {/* 맥동 링 */}
+                                    <motion.div
+                                        className={`absolute -inset-2 bg-gradient-to-r ${track.color} rounded-full opacity-0 group-hover:opacity-30`}
+                                        animate={{ scale: [1, 1.4, 1], opacity: [0.3, 0, 0.3] }}
+                                        transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+                                    />
+                                    {/* 메인 도트 */}
+                                    <div className={`w-10 h-10 bg-gradient-to-br ${track.color} rounded-full flex items-center justify-center shadow-lg ${track.shadow} border-4 border-white relative z-10`}>
+                                        <span className="text-white text-xs font-black">{track.num}</span>
+                                    </div>
+                                </motion.div>
 
                                 {/* 메인 카드 */}
-                                <div className="relative bg-white rounded-3xl p-6 border border-gray-100 shadow-lg group-hover:shadow-2xl transition-all duration-300 overflow-hidden"
-                                    style={{ minHeight: '220px' }}
-                                >
-                                    <div className={`absolute top-0 left-0 right-0 h-1 bg-gradient-to-r ${track.color}`} />
+                                <TiltCard className="w-full">
+                                    <div className="relative rounded-2xl overflow-hidden">
+                                        {/* 애니메이션 그라디언트 보더 */}
+                                        <div
+                                            className={`absolute -inset-[1px] bg-gradient-to-br ${track.color} rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500`}
+                                        />
 
-                                    <div className="absolute top-0 right-0 w-32 h-32 opacity-5 group-hover:opacity-10 transition-opacity">
-                                        <track.icon size={128} />
+                                        {/* 카드 글로우 (호버) */}
+                                        <div className={`absolute -inset-4 bg-gradient-to-br ${track.color} rounded-3xl blur-2xl opacity-0 group-hover:opacity-25 transition-all duration-500`} />
+
+                                        {/* 카드 본체 */}
+                                        <div className="relative bg-white rounded-2xl p-5 m-[1px] overflow-hidden group-hover:bg-gray-50/80 transition-colors duration-300" style={{ minHeight: '260px' }}>
+                                            {/* 시머 이펙트 */}
+                                            <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-700">
+                                                <div
+                                                    className="absolute inset-0"
+                                                    style={{
+                                                        background: 'linear-gradient(105deg, transparent 40%, rgba(255,255,255,0.8) 45%, rgba(255,255,255,0.9) 50%, rgba(255,255,255,0.8) 55%, transparent 60%)',
+                                                        backgroundSize: '200% 100%',
+                                                        animation: 'shimmer 2s ease-in-out infinite',
+                                                    }}
+                                                />
+                                            </div>
+
+                                            {/* 배경 아이콘 워터마크 */}
+                                            <div className="absolute -bottom-4 -right-4 opacity-[0.04] group-hover:opacity-[0.08] transition-opacity duration-500 group-hover:rotate-12 transform">
+                                                <track.icon size={120} strokeWidth={1} />
+                                            </div>
+
+                                            {/* 아이콘 */}
+                                            <motion.div
+                                                className={`w-12 h-12 bg-gradient-to-br ${track.color} rounded-xl flex items-center justify-center mb-4 shadow-lg ${track.shadow}`}
+                                                whileHover={{ rotate: [0, -12, 12, -6, 0], transition: { duration: 0.6 } }}
+                                            >
+                                                <track.icon size={22} className="text-white" />
+                                            </motion.div>
+
+                                            {/* 라벨 */}
+                                            <div className="flex items-center gap-2 mb-2">
+                                                <span className={`text-[10px] font-bold tracking-[0.2em] text-transparent bg-clip-text bg-gradient-to-r ${track.color} uppercase`}>
+                                                    Track {track.num}
+                                                </span>
+                                                <div className={`h-px flex-1 bg-gradient-to-r ${track.color} opacity-20`} />
+                                            </div>
+
+                                            {/* 제목 */}
+                                            <h3 className="text-lg font-extrabold text-gray-900 mb-1 tracking-tight">
+                                                {track.title}
+                                            </h3>
+                                            <p className="text-xs text-gray-400 font-medium mb-4">
+                                                {track.desc}
+                                            </p>
+
+                                            {/* 레벨 인디케이터 */}
+                                            <div className="mb-3">
+                                                <div className="flex items-center justify-between mb-1">
+                                                    <span className="text-[10px] text-gray-400 font-medium">난이도</span>
+                                                    <span className={`text-[10px] font-bold text-transparent bg-clip-text bg-gradient-to-r ${track.color}`}>
+                                                        Lv.{track.num}
+                                                    </span>
+                                                </div>
+                                                <div className="flex gap-1">
+                                                    {[1, 2, 3, 4, 5].map((lvl) => (
+                                                        <motion.div
+                                                            key={lvl}
+                                                            className={`h-1.5 flex-1 rounded-full ${lvl <= parseInt(track.num)
+                                                                    ? `bg-gradient-to-r ${track.color}`
+                                                                    : 'bg-gray-100'
+                                                                }`}
+                                                            initial={{ scaleX: 0 }}
+                                                            whileInView={{ scaleX: 1 }}
+                                                            viewport={{ once: true }}
+                                                            transition={{ delay: 0.8 + i * 0.12 + lvl * 0.05, duration: 0.4, ease: [0.16, 1, 0.3, 1] as const }}
+                                                            style={{ originX: 0 }}
+                                                        />
+                                                    ))}
+                                                </div>
+                                            </div>
+
+                                            {/* 호버 시 상세 정보 슬라이드업 */}
+                                            <motion.div
+                                                className="overflow-hidden"
+                                                initial={{ height: 0, opacity: 0 }}
+                                                whileHover={{ height: 'auto', opacity: 1 }}
+                                                transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] as const }}
+                                            >
+                                                <div className={`pt-3 mt-3 border-t border-dashed`} style={{ borderColor: 'rgba(0,0,0,0.06)' }}>
+                                                    <div className="flex items-center gap-2">
+                                                        <div className={`w-1.5 h-1.5 rounded-full bg-gradient-to-r ${track.color}`} />
+                                                        <span className="text-xs font-semibold text-gray-700">{track.detail}</span>
+                                                    </div>
+                                                </div>
+                                            </motion.div>
+                                        </div>
                                     </div>
-
-                                    <motion.div
-                                        className={`w-14 h-14 bg-gradient-to-br ${track.color} rounded-2xl flex items-center justify-center mb-4 shadow-lg ${track.shadow}`}
-                                        whileHover={{ rotate: [0, -10, 10, 0], transition: { duration: 0.5 } }}
-                                    >
-                                        <track.icon size={24} className="text-white" />
-                                    </motion.div>
-
-                                    <span className="text-xs font-bold text-gray-300 tracking-widest">
-                                        TRACK {track.num}
-                                    </span>
-
-                                    <h3 className="text-xl font-bold text-gray-900 mt-1 mb-1">
-                                        {track.title}
-                                    </h3>
-
-                                    <p className="text-sm text-gray-500 mb-2">
-                                        {track.desc}
-                                    </p>
-
-                                    <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                                        <span className={`text-xs font-medium text-transparent bg-clip-text bg-gradient-to-r ${track.color}`}>
-                                            {track.detail}
-                                        </span>
-                                    </div>
-                                </div>
-                            </TiltCard>
-                        </motion.div>
-                    ))}
+                                </TiltCard>
+                            </motion.div>
+                        ))}
+                    </div>
                 </div>
 
                 {/* 모바일 타임라인 */}

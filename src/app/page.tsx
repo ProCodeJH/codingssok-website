@@ -6,6 +6,7 @@ import Hero from "@/components/sections/Hero";
 import VideoHighlight from "@/components/sections/VideoHighlight";
 import WhyUs from "@/components/sections/WhyUs";
 import Curriculum from "@/components/sections/Curriculum";
+import Reviews from "@/components/sections/Reviews";
 import Testimonials from "@/components/sections/Testimonials";
 import Pricing from "@/components/sections/Pricing";
 import FAQ from "@/components/sections/FAQ";
@@ -21,6 +22,7 @@ export default function Home() {
         <VideoHighlight />
         <WhyUs />
         <Curriculum />
+        <Reviews />
         <Testimonials />
         <Pricing />
         <FAQ />

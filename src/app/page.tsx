@@ -3,6 +3,7 @@
 import MouseTracker from "@/components/effects/MouseTracker";
 import Navbar from "@/components/layout/Navbar";
 import Hero from "@/components/sections/Hero";
+import VideoHighlight from "@/components/sections/VideoHighlight";
 import WhyUs from "@/components/sections/WhyUs";
 import Curriculum from "@/components/sections/Curriculum";
 import Testimonials from "@/components/sections/Testimonials";
@@ -17,6 +18,7 @@ export default function Home() {
       <main>
         <Navbar />
         <Hero />
+        <VideoHighlight />
         <WhyUs />
         <Curriculum />
         <Testimonials />

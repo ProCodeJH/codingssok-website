@@ -119,10 +119,10 @@ export default function Navbar() {
                             >
                                 <a
                                     href="#contact"
-                                    className="btn-primary w-full justify-center text-base py-4"
+                                    className="inline-flex items-center justify-center gap-2 w-full py-4 bg-gradient-to-r from-blue-600 to-cyan-500 text-white font-semibold text-base rounded-full shadow-lg shadow-blue-500/30"
                                     onClick={() => setIsMobileMenuOpen(false)}
                                 >
-                                    상담 신청 <span className="opacity-60">→</span>
+                                    상담 신청 <span className="opacity-80">→</span>
                                 </a>
                             </motion.div>
                         </div>

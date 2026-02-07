@@ -1,22 +1,24 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { ArrowRight, Sparkles, Heart } from "lucide-react";
+import { ArrowRight, Sparkles, Heart, MapPin, Phone, Mail } from "lucide-react";
 
 export default function Footer() {
     return (
         <footer className="w-full relative overflow-hidden">
-            {/* CTA 섹션 - 프리미엄 다크 */}
+            {/* CTA 섹션 */}
             <div className="bg-gradient-to-br from-slate-900 via-gray-900 to-slate-900 relative" style={{ paddingTop: '140px', paddingBottom: '140px' }}>
-                {/* 배경 효과 */}
                 <div className="absolute inset-0">
                     <div className="absolute top-0 left-1/3 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl" />
                     <div className="absolute bottom-0 right-1/3 w-80 h-80 bg-cyan-500/10 rounded-full blur-3xl" />
-                    {/* 그리드 패턴 */}
                     <div className="absolute inset-0 opacity-[0.03]" style={{
                         backgroundImage: 'linear-gradient(rgba(255,255,255,1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,1) 1px, transparent 1px)',
                         backgroundSize: '60px 60px'
                     }} />
+                    <svg className="absolute inset-0 w-full h-full opacity-[0.04]">
+                        <filter id="footer-noise"><feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="4" stitchTiles="stitch" /></filter>
+                        <rect width="100%" height="100%" filter="url(#footer-noise)" />
+                    </svg>
                 </div>
 
                 <div className="relative z-10 max-w-4xl mx-auto px-8 text-center">
@@ -24,9 +26,8 @@ export default function Footer() {
                         initial={{ opacity: 0, y: 30 }}
                         whileInView={{ opacity: 1, y: 0 }}
                         viewport={{ once: true }}
-                        transition={{ duration: 0.8 }}
+                        transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] as const }}
                     >
-                        {/* 3D 뱃지 */}
                         <motion.div
                             initial={{ scale: 0.8 }}
                             whileInView={{ scale: 1 }}
@@ -51,7 +52,6 @@ export default function Footer() {
                             모든 학습의 방향을 직접 이끌어드립니다.
                         </p>
 
-                        {/* 3D CTA 버튼 */}
                         <motion.a
                             href="#contact"
                             className="inline-flex items-center gap-3 px-10 py-5 bg-gradient-to-r from-blue-600 to-cyan-500 text-white font-bold text-lg rounded-2xl shadow-2xl shadow-blue-500/40"
@@ -59,10 +59,8 @@ export default function Footer() {
                                 scale: 1.05,
                                 y: -6,
                                 boxShadow: "0 30px 60px rgba(59, 130, 246, 0.5)",
-                                rotateX: 5
                             }}
                             whileTap={{ scale: 0.98 }}
-                            style={{ perspective: '1000px', transformStyle: 'preserve-3d' }}
                         >
                             무료 상담 예약 <ArrowRight size={20} />
                         </motion.a>
@@ -70,26 +68,70 @@ export default function Footer() {
                 </div>
             </div>
 
-            {/* 푸터 하단 */}
-            <div className="bg-gray-950 py-8 border-t border-white/5">
+            {/* 푸터 하단 — 확장 */}
+            <div className="bg-gray-950 py-10 border-t border-white/5">
                 <div className="max-w-6xl mx-auto px-8">
-                    <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-                        {/* 로고 */}
-                        <div className="flex items-center gap-3">
-                            <div className="w-8 h-8 rounded-lg bg-gradient-to-r from-blue-600 to-cyan-500 flex items-center justify-center">
-                                <span className="text-white text-sm font-bold">쏙</span>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
+                        {/* 로고 + 설명 */}
+                        <div>
+                            <div className="flex items-center gap-3 mb-4">
+                                <div className="w-8 h-8 rounded-lg bg-gradient-to-r from-blue-600 to-cyan-500 flex items-center justify-center">
+                                    <span className="text-white text-sm font-bold">쏙</span>
+                                </div>
+                                <span className="font-bold text-white text-lg">코딩쏙</span>
                             </div>
-                            <span className="font-bold text-white">코딩쏙</span>
+                            <p className="text-gray-500 text-sm leading-relaxed">
+                                대전 유성구 소수정예 코딩 교육 전문.
+                                <br />
+                                현직 개발자가 직접 가르칩니다.
+                            </p>
                         </div>
 
-                        {/* 저작권 */}
-                        <p className="text-gray-500 text-sm flex items-center gap-1">
-                            Made with <Heart size={14} className="text-red-500 fill-red-500" /> by CodingSSok
-                        </p>
-
                         {/* 연락처 */}
-                        <p className="text-gray-500 text-sm">
-                            대전 유성구 봉명동 · 010-1234-5678
+                        <div>
+                            <h4 className="text-white font-semibold mb-4 text-sm uppercase tracking-wider">Contact</h4>
+                            <ul className="space-y-3">
+                                <li className="flex items-center gap-3 text-gray-500 text-sm">
+                                    <MapPin size={14} className="text-blue-400 flex-shrink-0" />
+                                    대전 유성구 봉명동
+                                </li>
+                                <li className="flex items-center gap-3 text-gray-500 text-sm">
+                                    <Phone size={14} className="text-blue-400 flex-shrink-0" />
+                                    010-1234-5678
+                                </li>
+                                <li className="flex items-center gap-3 text-gray-500 text-sm">
+                                    <Mail size={14} className="text-blue-400 flex-shrink-0" />
+                                    codingssok@gmail.com
+                                </li>
+                            </ul>
+                        </div>
+
+                        {/* 바로가기 */}
+                        <div>
+                            <h4 className="text-white font-semibold mb-4 text-sm uppercase tracking-wider">Quick Links</h4>
+                            <ul className="space-y-3">
+                                {["커리큘럼", "서비스", "수강료", "FAQ"].map((link) => (
+                                    <li key={link}>
+                                        <a href={`#${link === '커리큘럼' ? 'curriculum' : link === '서비스' ? 'services' : link === '수강료' ? 'pricing' : 'faq'}`}
+                                            className="text-gray-500 text-sm hover:text-blue-400 transition-colors">
+                                            {link}
+                                        </a>
+                                    </li>
+                                ))}
+                            </ul>
+                        </div>
+                    </div>
+
+                    {/* 구분선 */}
+                    <div className="h-px bg-gradient-to-r from-transparent via-gray-800 to-transparent mb-6" />
+
+                    {/* 저작권 */}
+                    <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+                        <p className="text-gray-600 text-xs">
+                            © 2026 코딩쏙. All rights reserved.
+                        </p>
+                        <p className="text-gray-600 text-xs flex items-center gap-1">
+                            Made with <Heart size={12} className="text-red-500 fill-red-500" /> by CodingSSok
                         </p>
                     </div>
                 </div>

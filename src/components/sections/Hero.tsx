@@ -1,20 +1,53 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { useState, useEffect, useRef } from "react";
+import { motion, useInView, useScroll, useTransform } from "framer-motion";
 import Image from "next/image";
 import { ArrowRight, Users, Star, Award } from "lucide-react";
+import CodeRainCanvas from "@/components/effects/CodeRainCanvas";
+
+function AnimatedCounter({ target, suffix = "", duration = 2000 }: { target: number; suffix?: string; duration?: number }) {
+    const [count, setCount] = useState(0);
+    const ref = useRef<HTMLSpanElement>(null);
+    const isInView = useInView(ref, { once: true, margin: "-100px" });
+
+    useEffect(() => {
+        if (!isInView) return;
+        const steps = 50;
+        let step = 0;
+        const timer = setInterval(() => {
+            step++;
+            const progress = step / steps;
+            const eased = 1 - Math.pow(1 - progress, 3);
+            setCount(Math.floor(target * eased));
+            if (step >= steps) clearInterval(timer);
+        }, duration / steps);
+        return () => clearInterval(timer);
+    }, [isInView, target, duration]);
+
+    return <span ref={ref}>{count}{suffix}</span>;
+}
 
 const titleChars = ["코", "딩", ",", " ", "제", "대", "로"];
 const subtitleChars = ["배", "우", "는", " ", "곳"];
 
 export default function Hero() {
+    const sectionRef = useRef<HTMLElement>(null);
+    const { scrollYProgress } = useScroll({
+        target: sectionRef,
+        offset: ["start start", "end start"]
+    });
+    const bgY1 = useTransform(scrollYProgress, [0, 1], [0, -80]);
+    const bgY2 = useTransform(scrollYProgress, [0, 1], [0, -120]);
+    const bgY3 = useTransform(scrollYProgress, [0, 1], [0, -60]);
+
     return (
-        <section className="min-h-screen flex items-center justify-center bg-white relative overflow-hidden">
-            {/* 배경 그라디언트 mesh + 노이즈 */}
+        <section ref={sectionRef} className="min-h-screen flex items-center justify-center bg-white relative overflow-hidden">
+            {/* 배경 그라디언트 mesh + 노이즈 + Parallax */}
             <div className="absolute inset-0 pointer-events-none">
-                <div className="absolute top-0 left-1/4 w-96 h-96 bg-blue-200/30 rounded-full blur-3xl" />
-                <div className="absolute bottom-0 right-1/4 w-80 h-80 bg-cyan-200/20 rounded-full blur-3xl" />
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-gradient-to-br from-blue-100/20 to-cyan-100/20 rounded-full blur-3xl" />
+                <motion.div style={{ y: bgY1 }} className="absolute top-0 left-1/4 w-96 h-96 bg-blue-200/30 rounded-full blur-3xl" />
+                <motion.div style={{ y: bgY2 }} className="absolute bottom-0 right-1/4 w-80 h-80 bg-cyan-200/20 rounded-full blur-3xl" />
+                <motion.div style={{ y: bgY3 }} className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-gradient-to-br from-blue-100/20 to-cyan-100/20 rounded-full blur-3xl" />
                 {/* 도트 패턴 */}
                 <div className="absolute inset-0 opacity-[0.015]" style={{
                     backgroundImage: 'radial-gradient(circle, #3b82f6 1px, transparent 1px)',
@@ -25,6 +58,7 @@ export default function Hero() {
                     <filter id="hero-noise"><feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="4" stitchTiles="stitch" /></filter>
                     <rect width="100%" height="100%" filter="url(#hero-noise)" />
                 </svg>
+                <CodeRainCanvas />
             </div>
 
             <div className="relative z-10 w-full max-w-7xl mx-auto px-8 py-20">
@@ -125,7 +159,7 @@ export default function Hero() {
                             <motion.div className="text-center" whileHover={{ scale: 1.05 }}>
                                 <div className="flex items-center justify-center gap-2 mb-2">
                                     <Users size={18} className="text-blue-500" />
-                                    <p className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-cyan-500">50+</p>
+                                    <p className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-cyan-500"><AnimatedCounter target={50} suffix="+" /></p>
                                 </div>
                                 <p className="text-xs sm:text-sm text-gray-500">수강생</p>
                             </motion.div>
@@ -133,7 +167,7 @@ export default function Hero() {
                             <motion.div className="text-center" whileHover={{ scale: 1.05 }}>
                                 <div className="flex items-center justify-center gap-2 mb-2">
                                     <Star size={18} className="text-cyan-500" />
-                                    <p className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-cyan-500 to-blue-600">98%</p>
+                                    <p className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-cyan-500 to-blue-600"><AnimatedCounter target={98} suffix="%" /></p>
                                 </div>
                                 <p className="text-xs sm:text-sm text-gray-500">만족도</p>
                             </motion.div>
@@ -141,7 +175,7 @@ export default function Hero() {
                             <motion.div className="text-center" whileHover={{ scale: 1.05 }}>
                                 <div className="flex items-center justify-center gap-2 mb-2">
                                     <Award size={18} className="text-blue-500" />
-                                    <p className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-cyan-500">5년+</p>
+                                    <p className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-cyan-500"><AnimatedCounter target={5} suffix="년+" /></p>
                                 </div>
                                 <p className="text-xs sm:text-sm text-gray-500">교육 경력</p>
                             </motion.div>

@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef } from "react";
+import { useRef, useState, useEffect } from "react";
 import { motion, useMotionValue, useTransform } from "framer-motion";
 import Image from "next/image";
 import { Code, Cpu, Trophy, Sparkles, ArrowRight, Zap, Quote } from "lucide-react";
@@ -71,6 +71,15 @@ function TiltCard({ children, className = "" }: { children: React.ReactNode; cla
 }
 
 export default function Services() {
+    const [activeReview, setActiveReview] = useState(0);
+
+    useEffect(() => {
+        const timer = setInterval(() => {
+            setActiveReview((prev) => (prev + 1) % reviews.length);
+        }, 3000);
+        return () => clearInterval(timer);
+    }, []);
+
     return (
         <>
             {/* Quote - 3개 리뷰 캐러셀 */}
@@ -118,7 +127,10 @@ export default function Services() {
                                 whileHover={{ y: -8, transition: { duration: 0.2 } }}
                                 className="group"
                             >
-                                <div className="relative bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl p-8 h-full group-hover:border-blue-500/30 group-hover:bg-white/[0.08] transition-all duration-300">
+                                <div className={`relative backdrop-blur-xl rounded-3xl p-8 h-full transition-all duration-500 ${activeReview === i
+                                        ? 'bg-white/10 border-2 border-blue-400/50 shadow-lg shadow-blue-500/20 scale-[1.02]'
+                                        : 'bg-white/5 border border-white/10 group-hover:border-blue-500/30 group-hover:bg-white/[0.08]'
+                                    }`}>
                                     <Quote size={24} className="text-blue-400/40 mb-4" />
                                     <p className="text-white/90 text-lg leading-relaxed mb-6 font-light">
                                         &ldquo;{review.text}&rdquo;

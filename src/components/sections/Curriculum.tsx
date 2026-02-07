@@ -84,8 +84,9 @@ export default function Curriculum() {
                     </p>
                 </motion.div>
 
-                {/* 5트랙 카드 — 모바일 1열, 태블릿 3열, 데스크탑 5열 */}
-                <div className="grid grid-cols-1 sm:grid-cols-3 md:grid-cols-5 gap-5" style={{ marginBottom: '100px' }}>
+                {/* 5트랙 카드 — 모바일: 수직 타임라인, 데스크탑: 5열 그리드 */}
+                {/* 데스크탑 그리드 */}
+                <div className="hidden md:grid md:grid-cols-5 gap-5" style={{ marginBottom: '100px' }}>
                     {tracks.map((track, i) => (
                         <motion.div
                             key={i}
@@ -137,6 +138,47 @@ export default function Curriculum() {
                             </TiltCard>
                         </motion.div>
                     ))}
+                </div>
+
+                {/* 모바일 타임라인 */}
+                <div className="md:hidden relative" style={{ marginBottom: '100px' }}>
+                    {/* 세로 연결선 */}
+                    <div className="absolute left-6 top-0 bottom-0 w-0.5 bg-gradient-to-b from-blue-200 via-cyan-300 to-blue-200" />
+
+                    <div className="space-y-6">
+                        {tracks.map((track, i) => (
+                            <motion.div
+                                key={i}
+                                initial={{ opacity: 0, x: -20 }}
+                                whileInView={{ opacity: 1, x: 0 }}
+                                viewport={{ once: true }}
+                                transition={{ delay: i * 0.1, duration: 0.5, ease: [0.16, 1, 0.3, 1] as const }}
+                                className="relative pl-16 group"
+                            >
+                                {/* 타임라인 도트 */}
+                                <div className={`absolute left-3 top-6 w-7 h-7 bg-gradient-to-br ${track.color} rounded-full flex items-center justify-center z-10 shadow-lg ${track.shadow}`}>
+                                    <span className="text-white text-xs font-bold">{track.num}</span>
+                                </div>
+
+                                {/* 카드 */}
+                                <div className="relative bg-white rounded-2xl p-5 border border-gray-100 shadow-md group-hover:shadow-xl transition-all duration-300 overflow-hidden">
+                                    <div className={`absolute top-0 left-0 w-1 h-full bg-gradient-to-b ${track.color}`} />
+                                    <div className="flex items-center gap-3 mb-2">
+                                        <div className={`w-10 h-10 bg-gradient-to-br ${track.color} rounded-xl flex items-center justify-center shadow-md ${track.shadow}`}>
+                                            <track.icon size={18} className="text-white" />
+                                        </div>
+                                        <div>
+                                            <h3 className="text-lg font-bold text-gray-900">{track.title}</h3>
+                                            <p className="text-xs text-gray-400">{track.desc}</p>
+                                        </div>
+                                    </div>
+                                    <p className={`text-sm font-medium text-transparent bg-clip-text bg-gradient-to-r ${track.color}`}>
+                                        {track.detail}
+                                    </p>
+                                </div>
+                            </motion.div>
+                        ))}
+                    </div>
                 </div>
 
                 {/* 특징 카드 — 이모지 제거, 아이콘 기반 */}

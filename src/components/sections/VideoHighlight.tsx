@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect, useCallback } from "react";
 import {
     motion,
     useScroll,
@@ -11,117 +11,136 @@ import {
 import { useMousePosition } from "@/components/effects/MouseTracker";
 
 /*
-  Pixel-perfect replica of nodcoding.com's `.s-video-highlight` section.
-
-  Structure (extracted from HTML):
-    .s-video-highlight
-      .u-container
-        .b-heading-eye-1         → Title + animated eye
-          .b__content .b__title  → "The Nod Coding Experience"
-          .b__head .b__eye       → Mouse-tracking eye with pupil
-        .s__body
-          .s__video-wrapper      → Cover image + video + play button
-          .s__text.t-t-xl        → Description with bullet point
-
-  Eye paths (extracted):
-    --path-open:  path('M 0 61 Q 137 -61 274 61 Q 137 183 0 61 Z')
-    --path-close: path('M 0 61 Q 137  61 274 61 Q 137  61 0 61 Z')
-
-  CSS:
-    margin-top: 114px (~var(--section-spacing))
-    margin-bottom: ~190px (~var(--section-spacing-lg))
-    height: ~1130px
-    z-index: 2
+  코딩쏙 Video Highlight Section
+  - Replaced nodcoding's eye with:
+    1. </> Code Bracket — mouse-tracking tilt SVG
+    2. Terminal Cursor — typing effect with blinking cursor
 */
 
-/* ─── Animated Eye Component ─── */
-/*
-  nodcoding's eye uses clip-path: path() for the eye shape.
-  The pupil (b__pupil) tracks the mouse inside the clipped area.
+/* ─── Typing phrases for the terminal ─── */
+const TYPING_PHRASES = [
+    "> 코딩 시작...",
+    "> print('안녕!')",
+    "> for i in range(∞):",
+    ">     꿈을 코딩하다",
+    "> import 미래",
+    "> def 성장():",
+];
 
-  Exact paths from HTML inline styles:
-    --path-open:  path('M 0 61 Q 137 -61 274 61 Q 137 183 0 61 Z')
-    --path-close: path('M 0 61 Q 137  61 274 61 Q 137  61 0 61 Z')
-
-  The open→close transition flattens Q-control-points to center (61).
-  Mouse inertia: 0.05
-  Eye size: 274×122 (= 274w × (61+61)h)
-*/
-function AnimatedEye() {
+/* ─── Code Bracket + Terminal Component ─── */
+function CodeBracketTerminal() {
     const mouse = useMousePosition();
-    const [isHovered, setIsHovered] = useState(false);
+    const [currentPhrase, setCurrentPhrase] = useState("");
+    const [phraseIndex, setPhraseIndex] = useState(0);
+    const [charIndex, setCharIndex] = useState(0);
+    const [isDeleting, setIsDeleting] = useState(false);
 
-    // Pupil movement — tracks mouse with spring inertia
-    const springConfig = { damping: 30, stiffness: 80, mass: 0.5 };
-    const pupilX = useSpring(
-        useMotionValue((mouse.progressX - 0.5) * 40),
+    // Mouse-tracking tilt for the bracket
+    const springConfig = { damping: 20, stiffness: 100, mass: 0.5 };
+    const rotateX = useSpring(
+        useMotionValue((mouse.progressY - 0.5) * -20),
         springConfig
     );
-    const pupilY = useSpring(
-        useMotionValue((mouse.progressY - 0.5) * 20),
+    const rotateY = useSpring(
+        useMotionValue((mouse.progressX - 0.5) * 20),
         springConfig
     );
 
-    // Update springs on every render (mouse move)
-    pupilX.set((mouse.progressX - 0.5) * 40);
-    pupilY.set((mouse.progressY - 0.5) * 20);
+    rotateX.set((mouse.progressY - 0.5) * -20);
+    rotateY.set((mouse.progressX - 0.5) * 20);
 
-    /*
-      Eye open/close uses d attribute animation on SVG path.
-      Open:  Q points at y=-61 and y=183 (full eye shape)
-      Close: Q points at y=61 and y=61   (flat line — eye closed)
-    */
-    const pathOpen = "M 0 61 Q 137 -61 274 61 Q 137 183 0 61 Z";
-    const pathClose = "M 0 61 Q 137  61 274 61 Q 137  61 0 61 Z";
+    // Typing effect
+    const tick = useCallback(() => {
+        const fullPhrase = TYPING_PHRASES[phraseIndex];
+
+        if (!isDeleting) {
+            setCurrentPhrase(fullPhrase.substring(0, charIndex + 1));
+            setCharIndex((prev) => prev + 1);
+
+            if (charIndex + 1 === fullPhrase.length) {
+                // Pause at end of phrase, then start deleting
+                setTimeout(() => setIsDeleting(true), 1800);
+                return;
+            }
+        } else {
+            setCurrentPhrase(fullPhrase.substring(0, charIndex - 1));
+            setCharIndex((prev) => prev - 1);
+
+            if (charIndex <= 1) {
+                setIsDeleting(false);
+                setPhraseIndex((prev) => (prev + 1) % TYPING_PHRASES.length);
+                setCharIndex(0);
+            }
+        }
+    }, [charIndex, isDeleting, phraseIndex]);
+
+    useEffect(() => {
+        const speed = isDeleting ? 40 : 80;
+        const timer = setTimeout(tick, speed);
+        return () => clearTimeout(timer);
+    }, [tick, isDeleting]);
 
     return (
-        <div
-            className="eye-container"
-            onMouseEnter={() => setIsHovered(true)}
-            onMouseLeave={() => setIsHovered(false)}
-        >
-            {/* Eye shape — SVG with animated d path for open/close */}
-            <svg
-                className="eye-shape"
-                viewBox="0 0 274 122"
-                width="274"
-                height="122"
-                fill="none"
-                style={{ overflow: "visible" }}
-            >
-                {/* Eye white fill */}
-                <motion.path
-                    d={pathOpen}
-                    fill="var(--color-beige)"
-                    initial={{ d: pathClose }}
-                    animate={{ d: isHovered ? pathClose : pathOpen }}
-                    transition={{ duration: 0.3, ease: [0.645, 0.045, 0.355, 1] }}
-                />
-                {/* Eye outline stroke */}
-                <motion.path
-                    d={pathOpen}
-                    fill="none"
-                    stroke="var(--color-heading)"
-                    strokeWidth="2.5"
-                    initial={{ d: pathClose }}
-                    animate={{ d: isHovered ? pathClose : pathOpen }}
-                    transition={{ duration: 0.3, ease: [0.645, 0.045, 0.355, 1] }}
-                />
-            </svg>
-
-            {/* Pupil — follows mouse, hidden when eye closes */}
+        <div className="code-bracket-terminal">
+            {/* </> Bracket — tilts with mouse */}
             <motion.div
-                className="eye-pupil"
+                className="code-bracket"
                 style={{
-                    x: pupilX,
-                    y: pupilY,
+                    rotateX,
+                    rotateY,
+                    perspective: 600,
                 }}
-                animate={{ opacity: isHovered ? 0 : 1, scale: isHovered ? 0.3 : 1 }}
-                transition={{ duration: 0.2 }}
             >
-                <div className="eye-pupil__inner eye-pupil__inner--main" />
-                <div className="eye-pupil__inner eye-pupil__inner--secondary" />
+                <svg
+                    viewBox="0 0 200 100"
+                    width="200"
+                    height="100"
+                    fill="none"
+                    className="code-bracket__svg"
+                >
+                    {/* < */}
+                    <motion.path
+                        d="M 55 10 L 15 50 L 55 90"
+                        stroke="var(--color-brand-1)"
+                        strokeWidth="8"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        initial={{ pathLength: 0 }}
+                        whileInView={{ pathLength: 1 }}
+                        viewport={{ once: true }}
+                        transition={{ duration: 0.6, delay: 0.2 }}
+                    />
+                    {/* / */}
+                    <motion.path
+                        d="M 85 15 L 115 85"
+                        stroke="var(--color-brand-3)"
+                        strokeWidth="7"
+                        strokeLinecap="round"
+                        initial={{ pathLength: 0 }}
+                        whileInView={{ pathLength: 1 }}
+                        viewport={{ once: true }}
+                        transition={{ duration: 0.4, delay: 0.5 }}
+                    />
+                    {/* > */}
+                    <motion.path
+                        d="M 145 10 L 185 50 L 145 90"
+                        stroke="var(--color-brand-4)"
+                        strokeWidth="8"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        initial={{ pathLength: 0 }}
+                        whileInView={{ pathLength: 1 }}
+                        viewport={{ once: true }}
+                        transition={{ duration: 0.6, delay: 0.3 }}
+                    />
+                </svg>
             </motion.div>
+
+            {/* Terminal typing */}
+            <div className="terminal-line">
+                <span className="terminal-line__text">{currentPhrase}</span>
+                <span className="terminal-line__cursor">_</span>
+            </div>
         </div>
     );
 }
@@ -212,10 +231,9 @@ export default function VideoHighlight() {
                         </div>
                     </div>
 
-                    {/* Eye — mouse tracking */}
+                    {/* Code Bracket + Terminal — replaces eye */}
                     <div className="heading-eye__head">
-                        <div className="heading-eye__head-bg" />
-                        <AnimatedEye />
+                        <CodeBracketTerminal />
                     </div>
                 </div>
 

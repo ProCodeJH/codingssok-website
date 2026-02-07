@@ -27,9 +27,6 @@ export default function Hero() {
         offset: ["start start", "end start"],
     });
 
-    // Bootcamp text clip-path reveal
-    const clipProgress = useTransform(scrollYProgress, [0.05, 0.25], [0, 100]);
-
     // SVG render path — white fill rises from bottom
     const renderY = useTransform(scrollYProgress, [0, 0.3], [670, 400]);
 
@@ -74,93 +71,63 @@ export default function Hero() {
                 ))}
             </div>
 
-            {/* ── .b__bootcamp — clip-path text reveal ── */}
-            <motion.div
-                className="b__bootcamp"
-                style={{
-                    position: "relative",
-                    zIndex: 3,
-                    marginTop: "-30px",
-                    textAlign: "center",
-                    overflow: "hidden",
-                }}
-            >
-                <motion.div
-                    style={{
-                        clipPath: `polygon(0 0, ${clipProgress}% 0, ${clipProgress}% 100%, 0 100%)`,
-                    }}
-                >
-                    <h1
-                        style={{
-                            fontSize: "clamp(2rem, 5vw, 4.5rem)",
-                            fontWeight: 800,
-                            color: "#383030",
-                            lineHeight: 1.1,
-                            letterSpacing: "-0.03em",
-                            whiteSpace: "nowrap",
-                        }}
-                    >
-                        코딩쏙
+            {/* ── s__content — nodcoding section content overlay ── */}
+            <div className="s__content" style={{ width: "100%" }}>
+                <div className="u-container">
+                    <h1 className="s__title s__title--lg t-h-xs">
+                        {/* s__title__main — letter reveal animation */}
+                        <motion.span
+                            className="s__title__main"
+                            initial={{ opacity: 0, y: 40 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: 1.0, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+                        >
+                            코딩쏙
+                        </motion.span>
+
+                        {/* s__title__secondary — heading reveal */}
+                        <motion.span
+                            className="s__title__secondary"
+                            initial={{ opacity: 0, y: 30 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: 1.3, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+                        >
+                            대전 C·Python 코딩 전문 학원
+                        </motion.span>
                     </h1>
-                </motion.div>
-            </motion.div>
 
-            {/* ── Subtitle ── */}
+                    {/* s__text--sm — text reveal with delay */}
+                    <motion.div
+                        className="s__text s__text--sm"
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 1.6, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+                    >
+                        <p>AI 시대의 핵심 역량, 코딩을 배우세요. 커리어 전환이든 성장이든, 코딩은 당신의 삶을 영원히 바꿔줄 것입니다. 첫 걸음을 내딛고 코딩쏙의 C·Python 부트캠프에 지금 바로 지원하세요.</p>
+                    </motion.div>
+                </div>
+            </div>
+
+            {/* ── CTA Buttons — nodcoding btn-pill style ── */}
             <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 1.8, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-                style={{
-                    textAlign: "center",
-                    marginTop: 24,
-                    position: "relative",
-                    zIndex: 3,
-                }}
-            >
-                <p
-                    style={{
-                        fontSize: "clamp(1rem, 2vw, 1.25rem)",
-                        color: "#6B6B6B",
-                        maxWidth: 480,
-                        margin: "0 auto",
-                        lineHeight: 1.6,
-                    }}
-                >
-                    C·Python 중심 텍스트코딩 전문 학원
-                    <br />
-                    AI 시대 역량을 &apos;쏙&apos; 채우는 코딩 교육
-                </p>
-            </motion.div>
-
-            {/* ── CTA Buttons — nodcoding "Apply now" pill style ── */}
-            <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 2.2, duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+                transition={{ delay: 2.0, duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
                 style={{
                     display: "flex",
                     gap: 16,
-                    marginTop: 40,
+                    marginTop: 16,
                     position: "relative",
                     zIndex: 3,
+                    paddingLeft: `calc(var(--container-offset) / 2)`,
+                    paddingRight: `calc(var(--container-offset) / 2)`,
+                    maxWidth: "var(--container-max-width)",
+                    width: "100%",
                 }}
             >
                 <Link
                     href="#contact"
                     className="btn-pill btn-pill--primary"
-                    style={{
-                        display: "inline-flex",
-                        alignItems: "center",
-                        gap: 8,
-                        padding: "14px 32px",
-                        borderRadius: 999,
-                        background: "#EC5212",
-                        color: "#fff",
-                        fontWeight: 600,
-                        fontSize: 16,
-                        textDecoration: "none",
-                        transition: "transform 0.3s ease, box-shadow 0.3s ease",
-                    }}
                 >
                     무료 상담 예약
                     <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
@@ -170,19 +137,6 @@ export default function Hero() {
                 <Link
                     href="tel:010-7566-7229"
                     className="btn-pill btn-pill--secondary"
-                    style={{
-                        display: "inline-flex",
-                        alignItems: "center",
-                        gap: 8,
-                        padding: "14px 32px",
-                        borderRadius: 999,
-                        background: "#383030",
-                        color: "#fff",
-                        fontWeight: 600,
-                        fontSize: 16,
-                        textDecoration: "none",
-                        transition: "transform 0.3s ease, box-shadow 0.3s ease",
-                    }}
                 >
                     전화 문의
                 </Link>

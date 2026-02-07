@@ -3,9 +3,10 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Send, Phone, MessageCircle, MapPin, Clock, CheckCircle } from "lucide-react";
-import TextReveal from "@/components/ui/TextReveal";
+import LetterReveal from "@/components/ui/LetterReveal";
 import StaggerReveal from "@/components/ui/StaggerReveal";
-import MagneticButton from "@/components/ui/MagneticButton";
+import SVGPillButton from "@/components/ui/SVGPillButton";
+import WaveSeparator from "@/components/ui/WaveSeparator";
 
 const contactInfo = [
     { icon: Phone, label: "전화", value: "042-123-4567", href: "tel:042-123-4567" },
@@ -53,15 +54,20 @@ export default function Contact() {
                         <span className="text-sm font-medium text-blue-700">상담 신청</span>
                     </motion.span>
                     <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-6">
-                        <TextReveal delay={0.1} stagger={0.08}>무료 상담을 신청하세요</TextReveal>
+                        <LetterReveal delay={0.1} stagger={0.04}>무료 상담을 신청하세요</LetterReveal>
                     </h2>
                     <p className="text-lg text-gray-500 max-w-2xl mx-auto">
-                        <TextReveal delay={0.4} stagger={0.02}>아이의 코딩 교육, 전문가와 함께 시작하세요</TextReveal>
+                        <LetterReveal delay={0.5} stagger={0.02} splitBy="word">아이의 코딩 교육, 전문가와 함께 시작하세요</LetterReveal>
                     </p>
                 </div>
 
+                {/* SVG wave separator */}
+                <div className="max-w-3xl mx-auto mb-12">
+                    <WaveSeparator variant="wave" height={14} color="#D1D5DB" />
+                </div>
+
                 <div className="grid lg:grid-cols-2 gap-16 max-w-5xl mx-auto">
-                    {/* Contact info — staggered reveal */}
+                    {/* Contact info */}
                     <StaggerReveal className="space-y-6" stagger={0.1} direction="left" distance={30}>
                         {contactInfo.map((info, i) => (
                             <a key={i} href={info.href} className="flex items-center gap-4 p-4 rounded-2xl hover:bg-gray-50 transition-colors group">
@@ -113,6 +119,7 @@ export default function Contact() {
                                             whileInView={{ opacity: 1, y: 0 }}
                                             viewport={{ once: true }}
                                             transition={{ delay: fi * 0.1, duration: 0.5 }}
+                                            className="relative group"
                                         >
                                             <label className="block text-sm font-medium text-gray-700 mb-2">{field.label}</label>
                                             <input
@@ -122,6 +129,12 @@ export default function Contact() {
                                                 value={formData[field.name as keyof typeof formData]}
                                                 onChange={(e) => setFormData({ ...formData, [field.name]: e.target.value })}
                                             />
+                                            {/* SVG underline on focus */}
+                                            <svg className="absolute bottom-0 left-0 w-full h-0.5 overflow-visible opacity-0 group-focus-within:opacity-100 transition-opacity" viewBox="0 0 400 2" preserveAspectRatio="none">
+                                                <motion.line x1="0" y1="1" x2="400" y2="1" stroke="#3B82F6" strokeWidth="2"
+                                                    initial={{ pathLength: 0 }} whileInView={{ pathLength: 1 }} viewport={{ once: true }}
+                                                    transition={{ duration: 0.6 }} />
+                                            </svg>
                                             {errors[field.name] && <p className="text-xs text-red-500 mt-1">{errors[field.name]}</p>}
                                         </motion.div>
                                     ))}
@@ -163,18 +176,18 @@ export default function Contact() {
                                         />
                                     </motion.div>
 
-                                    <MagneticButton
-                                        as="button"
-                                        className="btn-primary w-full justify-center"
-                                        strength={6}
+                                    <SVGPillButton
                                         onClick={() => { }}
+                                        variant="primary"
+                                        size="lg"
+                                        className="w-full justify-center"
                                     >
                                         {isLoading ? (
                                             <motion.span animate={{ rotate: 360 }} transition={{ repeat: Infinity, duration: 1, ease: "linear" }}>⏳</motion.span>
                                         ) : (
                                             <>상담 신청 <Send size={16} /></>
                                         )}
-                                    </MagneticButton>
+                                    </SVGPillButton>
                                 </motion.form>
                             )}
                         </AnimatePresence>

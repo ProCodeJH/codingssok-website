@@ -2,8 +2,9 @@
 
 import { motion } from "framer-motion";
 import TiltCard from "@/components/ui/TiltCard";
-import TextReveal from "@/components/ui/TextReveal";
+import LetterReveal from "@/components/ui/LetterReveal";
 import StaggerReveal from "@/components/ui/StaggerReveal";
+import WaveSeparator from "@/components/ui/WaveSeparator";
 
 const tracks = [
     { icon: "🧩", title: "스크래치/엔트리", desc: "비주얼 프로그래밍으로 코딩 사고력 기초를 다집니다.", level: "입문", color: "from-emerald-400 to-teal-500" },
@@ -27,10 +28,10 @@ export default function Curriculum() {
                         <span className="text-sm font-medium text-green-700">커리큘럼</span>
                     </motion.span>
                     <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-6 leading-tight">
-                        <TextReveal delay={0.1} stagger={0.06}>단계별 맞춤 학습 로드맵</TextReveal>
+                        <LetterReveal delay={0.1} stagger={0.04}>단계별 맞춤 학습 로드맵</LetterReveal>
                     </h2>
                     <p className="text-lg text-gray-500 max-w-2xl mx-auto">
-                        <TextReveal delay={0.4} stagger={0.02} splitBy="word">입문부터 대회 준비까지 체계적으로 성장합니다</TextReveal>
+                        <LetterReveal delay={0.5} stagger={0.02} splitBy="word">입문부터 대회 준비까지 체계적으로 성장합니다</LetterReveal>
                     </p>
                 </div>
 
@@ -46,6 +47,11 @@ export default function Curriculum() {
                         </TiltCard>
                     ))}
                 </StaggerReveal>
+
+                {/* Wave separator at bottom */}
+                <div className="mt-20">
+                    <WaveSeparator variant="wave" height={16} />
+                </div>
             </div>
         </section>
     );

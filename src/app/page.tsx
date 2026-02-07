@@ -6,7 +6,10 @@ import Services from "@/components/sections/Services";
 import Pricing from "@/components/sections/Pricing";
 import FAQ from "@/components/sections/FAQ";
 import Contact from "@/components/sections/Contact";
+import BubblesInterlude from "@/components/sections/BubblesInterlude";
+import TestimonialSlider from "@/components/sections/TestimonialSlider";
 
+import MouseTracker from "@/components/effects/MouseTracker";
 import CursorGlow from "@/components/effects/CursorGlow";
 import ScrollProgress from "@/components/effects/ScrollProgress";
 import FloatingCTA from "@/components/effects/FloatingCTA";
@@ -16,20 +19,24 @@ import SmoothScroll from "@/components/effects/SmoothScroll";
 export default function Home() {
   return (
     <SmoothScroll>
-      <div id="main-content" style={{ width: '100%', maxWidth: '100%', display: 'block' }}>
-        <SplashScreen />
-        <CursorGlow />
-        <ScrollProgress />
-        <Navbar />
-        <Hero />
-        <Curriculum />
-        <Services />
-        <Pricing />
-        <FAQ />
-        <Contact />
-        <Footer />
-        <FloatingCTA />
-      </div>
+      <MouseTracker>
+        <div id="main-content" style={{ width: '100%', maxWidth: '100%', display: 'block' }}>
+          <SplashScreen />
+          <CursorGlow />
+          <ScrollProgress />
+          <Navbar />
+          <Hero />
+          <Curriculum />
+          <BubblesInterlude />
+          <Services />
+          <TestimonialSlider />
+          <Pricing />
+          <FAQ />
+          <Contact />
+          <Footer />
+          <FloatingCTA />
+        </div>
+      </MouseTracker>
     </SmoothScroll>
   );
 }

@@ -6,13 +6,16 @@ import Link from "next/link";
 import Image from "next/image";
 import { ArrowUp } from "lucide-react";
 import Marquee from "@/components/ui/Marquee";
-import TextReveal from "@/components/ui/TextReveal";
-import MagneticButton from "@/components/ui/MagneticButton";
+import LetterReveal from "@/components/ui/LetterReveal";
+import SVGPillButton from "@/components/ui/SVGPillButton";
+import EyeTracker from "@/components/ui/EyeTracker";
+import { useMousePosition } from "@/components/effects/MouseTracker";
 
 const trustItems = ["Python", "C/C++", "Arduino", "알고리즘", "정보올림피아드", "앱 개발", "자격증", "AI 기초", "데이터 분석", "웹 개발"];
 
 export default function Footer() {
     const [showBackToTop, setShowBackToTop] = useState(false);
+    const mouse = useMousePosition();
 
     useEffect(() => {
         const handleScroll = () => { setShowBackToTop(window.scrollY > 300); };
@@ -22,26 +25,50 @@ export default function Footer() {
 
     const scrollToTop = () => { window.scrollTo({ top: 0, behavior: "smooth" }); };
 
+    // Mouse-reactive gradient angle
+    const gradientAngle = Math.round(mouse.progressX * 45 + 135);
+
     return (
         <>
-            {/* CTA Section */}
-            <section className="py-32 bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 relative overflow-hidden">
-                <div className="absolute inset-0">
+            {/* CTA Section — nodcoding style with eye + mouse-reactive bg */}
+            <section
+                className="py-32 relative overflow-hidden"
+                style={{
+                    background: `linear-gradient(${gradientAngle}deg, #111827 0%, #1F2937 50%, #111827 100%)`,
+                    transition: "background 0.5s ease",
+                }}
+            >
+                <div className="absolute inset-0 pointer-events-none">
                     <div className="absolute top-20 left-10 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl" />
                     <div className="absolute bottom-20 right-10 w-80 h-80 bg-purple-500/10 rounded-full blur-3xl" />
                 </div>
                 <div className="relative z-10 max-w-4xl mx-auto px-8 lg:px-12 text-center">
                     <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.8 }}>
+                        {/* Eye tracker — nodcoding footer signature */}
+                        <motion.div
+                            className="flex justify-center mb-10"
+                            initial={{ opacity: 0, scale: 0 }}
+                            whileInView={{ opacity: 1, scale: 1 }}
+                            viewport={{ once: true }}
+                            transition={{ duration: 0.6, type: "spring" }}
+                        >
+                            <EyeTracker size={120} pupilColor="#1F2937" secondaryColor="#3B82F6" />
+                        </motion.div>
+
                         <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-6 leading-tight">
-                            <TextReveal className="block text-white" delay={0.1} stagger={0.08}>꿈이 있으시군요.</TextReveal>
+                            <LetterReveal className="block text-white" delay={0.1} stagger={0.04}>
+                                꿈이 있으시군요.
+                            </LetterReveal>
                             <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-400">
-                                <TextReveal className="inline" delay={0.5} stagger={0.08}>코딩쏙이 함께할게요.</TextReveal>
+                                <LetterReveal className="inline" delay={0.6} stagger={0.04}>
+                                    코딩쏙이 함께할게요.
+                                </LetterReveal>
                             </span>
                         </h2>
                         <p className="text-lg text-gray-400 mb-12 max-w-lg mx-auto">상담부터 수업, 포트폴리오까지 —<br />모든 학습의 방향을 직접 이끌어드립니다.</p>
-                        <MagneticButton as="a" href="#contact" className="inline-flex items-center gap-2 px-10 py-5 bg-white text-gray-900 font-semibold rounded-full hover:scale-105 transition-all shadow-2xl" strength={10}>
-                            무료 상담 예약 <span className="opacity-60">→</span>
-                        </MagneticButton>
+                        <SVGPillButton href="#contact" variant="secondary" size="lg">
+                            무료 상담 예약
+                        </SVGPillButton>
                     </motion.div>
                 </div>
             </section>

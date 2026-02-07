@@ -3,7 +3,8 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronDown } from "lucide-react";
-import TextReveal from "@/components/ui/TextReveal";
+import LetterReveal from "@/components/ui/LetterReveal";
+import WaveSeparator from "@/components/ui/WaveSeparator";
 
 const categories = [
     { name: "수업", color: "bg-blue-500" },
@@ -36,9 +37,10 @@ export default function FAQ() {
                         <span className="text-sm font-medium text-amber-700">FAQ</span>
                     </motion.span>
                     <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-6">
-                        <TextReveal delay={0.1} stagger={0.08}>자주 묻는 질문</TextReveal>
+                        <LetterReveal delay={0.1} stagger={0.04}>자주 묻는 질문</LetterReveal>
                     </h2>
                 </div>
+
                 <div className="space-y-4">
                     {faqs.map((faq, i) => {
                         const isOpen = open === i;
@@ -70,6 +72,10 @@ export default function FAQ() {
                                             transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
                                         >
                                             <div className="px-6 pb-6 pl-11">
+                                                {/* SVG line separator */}
+                                                <div className="mb-3">
+                                                    <WaveSeparator variant="dots" height={8} color="#D1D5DB" />
+                                                </div>
                                                 <div className="flex items-center gap-2 mb-2">
                                                     <span className={`text-xs px-2 py-0.5 rounded-full text-white ${cat.color}`}>{cat.name}</span>
                                                 </div>

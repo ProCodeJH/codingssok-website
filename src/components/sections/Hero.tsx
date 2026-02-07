@@ -2,13 +2,11 @@
 
 import { useState, useEffect, useRef } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
-import { Phone, MessageCircle, ArrowRight, Shield, Award, Users } from "lucide-react";
-import TextReveal from "@/components/ui/TextReveal";
-import MagneticButton from "@/components/ui/MagneticButton";
-import Parallax from "@/components/ui/Parallax";
-
-const HEADLINE = "AI 시대 역량을";
-const HEADLINE2 = "'쏙' 채우는 코딩 교육";
+import { Phone, MessageCircle, Shield, Award, Users } from "lucide-react";
+import LetterReveal from "@/components/ui/LetterReveal";
+import SVGPillButton from "@/components/ui/SVGPillButton";
+import EyeTracker from "@/components/ui/EyeTracker";
+import { useMousePosition } from "@/components/effects/MouseTracker";
 
 const trustBadges = [
     { icon: Shield, label: "현직 IT 전문가" },
@@ -16,8 +14,83 @@ const trustBadges = [
     { icon: Users, label: "500+ 수강생" },
 ];
 
+/* ── Animated SVG Illustration ── */
+function CodingIllustration() {
+    const mouse = useMousePosition();
+    const offsetX = (mouse.progressX - 0.5) * 20;
+    const offsetY = (mouse.progressY - 0.5) * 15;
+
+    return (
+        <motion.div
+            className="relative w-full h-full"
+            animate={{ x: offsetX, y: offsetY }}
+            transition={{ type: "spring", damping: 30, stiffness: 100 }}
+        >
+            <svg viewBox="0 0 500 500" className="w-full h-full" fill="none">
+                {/* Monitor */}
+                <motion.rect
+                    x="80" y="60" width="340" height="240" rx="16"
+                    fill="#1F2937" stroke="#374151" strokeWidth="2"
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ duration: 0.8, delay: 0.3 }}
+                />
+                {/* Screen content - code lines */}
+                {[0, 1, 2, 3, 4, 5].map((i) => (
+                    <motion.rect
+                        key={i}
+                        x={110 + (i % 3) * 8}
+                        y={90 + i * 30}
+                        width={80 + Math.random() * 160}
+                        height="14"
+                        rx="3"
+                        fill={["#60A5FA", "#34D399", "#F59E0B", "#A78BFA", "#FB7185", "#22D3EE"][i]}
+                        opacity="0.6"
+                        initial={{ width: 0 }}
+                        animate={{ width: 80 + ((i * 37) % 160) }}
+                        transition={{ duration: 0.6, delay: 0.6 + i * 0.15, ease: [0.16, 1, 0.3, 1] }}
+                    />
+                ))}
+                {/* Monitor stand */}
+                <motion.path
+                    d="M220 300 L280 300 L300 360 L200 360 Z"
+                    fill="#374151"
+                    initial={{ opacity: 0 }} animate={{ opacity: 1 }}
+                    transition={{ delay: 0.5 }}
+                />
+                {/* Keyboard */}
+                <motion.rect
+                    x="150" y="370" width="200" height="30" rx="6"
+                    fill="#4B5563" stroke="#6B7280" strokeWidth="1"
+                    initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.7 }}
+                />
+                {/* Floating shapes - mouse reactive */}
+                <motion.circle
+                    cx="430" cy="120" r="25"
+                    fill="#3B82F6" opacity="0.3"
+                    animate={{ y: [0, -12, 0], x: offsetX * 0.5 }}
+                    transition={{ y: { repeat: Infinity, duration: 3 }, x: { type: "spring" } }}
+                />
+                <motion.rect
+                    x="50" y="350" width="40" height="40" rx="8"
+                    fill="#8B5CF6" opacity="0.25"
+                    animate={{ rotate: [0, 45, 0], x: offsetX * -0.3 }}
+                    transition={{ rotate: { repeat: Infinity, duration: 6 }, x: { type: "spring" } }}
+                />
+                <motion.polygon
+                    points="430,350 460,400 400,400"
+                    fill="#10B981" opacity="0.3"
+                    animate={{ y: [0, 8, 0], x: offsetX * 0.4 }}
+                    transition={{ y: { repeat: Infinity, duration: 4 }, x: { type: "spring" } }}
+                />
+            </svg>
+        </motion.div>
+    );
+}
+
 export default function Hero() {
-    /* ── Typing animation for sub-headline ── */
+    /* ── Typing animation ── */
     const fullText = "C·Python 중심 텍스트코딩 강화로\n프로젝트 · 공모전 · 자격증까지";
     const [displayText, setDisplayText] = useState("");
     const [charIndex, setCharIndex] = useState(0);
@@ -32,7 +105,7 @@ export default function Hero() {
         }
     }, [charIndex, fullText]);
 
-    /* ── Parallax background ── */
+    /* ── Parallax ── */
     const sectionRef = useRef<HTMLElement>(null);
     const { scrollYProgress } = useScroll({ target: sectionRef, offset: ["start start", "end start"] });
     const bgY = useTransform(scrollYProgress, [0, 1], ["0%", "30%"]);
@@ -40,7 +113,7 @@ export default function Hero() {
 
     return (
         <section ref={sectionRef} id="hero" className="relative min-h-screen flex items-center pt-20 overflow-hidden bg-white">
-            {/* Parallax background blobs */}
+            {/* Background blobs with parallax */}
             <motion.div className="absolute inset-0 pointer-events-none" style={{ y: bgY, opacity }}>
                 <div className="absolute top-20 left-10 w-[600px] h-[600px] bg-blue-100/50 rounded-full blur-[120px]" />
                 <div className="absolute bottom-20 right-10 w-[500px] h-[500px] bg-cyan-100/40 rounded-full blur-[100px]" />
@@ -48,7 +121,7 @@ export default function Hero() {
             </motion.div>
 
             <div className="relative z-10 max-w-7xl mx-auto px-8 lg:px-12 grid lg:grid-cols-2 gap-16 items-center w-full">
-                {/* Left — text column */}
+                {/* Left — text */}
                 <div className="text-center lg:text-left">
                     {/* Badge */}
                     <motion.div
@@ -61,12 +134,14 @@ export default function Hero() {
                         <span className="text-sm font-medium text-blue-700">2026 신규 모집 중</span>
                     </motion.div>
 
-                    {/* Headline — TextReveal mask animation */}
+                    {/* Headline — LetterReveal */}
                     <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 leading-[1.1] tracking-[-0.03em] mb-4">
-                        <TextReveal className="block" delay={0.3} stagger={0.08}>{HEADLINE}</TextReveal>
-                        <TextReveal className="block mt-2" delay={0.6} stagger={0.08}>
-                            {HEADLINE2}
-                        </TextReveal>
+                        <LetterReveal className="block" delay={0.3} stagger={0.04}>
+                            AI 시대 역량을
+                        </LetterReveal>
+                        <LetterReveal className="block mt-2" delay={0.7} stagger={0.04}>
+                            &apos;쏙&apos; 채우는 코딩 교육
+                        </LetterReveal>
                     </h1>
 
                     {/* Typing sub-headline */}
@@ -84,26 +159,25 @@ export default function Hero() {
                         />
                     </motion.p>
 
-                    {/* CTA Buttons — MagneticButton */}
+                    {/* CTA — SVGPillButton */}
                     <motion.div
                         className="flex flex-wrap gap-4 justify-center lg:justify-start"
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 1.5, duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
                     >
-                        <MagneticButton as="a" href="tel:042-123-4567" className="btn-primary" strength={8}>
+                        <SVGPillButton href="tel:042-123-4567" variant="primary" size="lg">
                             <Phone size={16} /> 전화 상담
-                        </MagneticButton>
-                        <MagneticButton as="a" href="#contact" className="btn-secondary" strength={8}>
+                        </SVGPillButton>
+                        <SVGPillButton href="#contact" variant="secondary" size="lg">
                             <MessageCircle size={16} /> 카카오톡 문의
-                        </MagneticButton>
+                        </SVGPillButton>
                     </motion.div>
 
                     {/* Trust badges */}
                     <motion.div
                         className="flex flex-wrap gap-6 mt-10 justify-center lg:justify-start"
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
+                        initial={{ opacity: 0 }} animate={{ opacity: 1 }}
                         transition={{ delay: 1.8, duration: 0.6 }}
                     >
                         {trustBadges.map((badge, i) => (
@@ -115,55 +189,29 @@ export default function Hero() {
                     </motion.div>
                 </div>
 
-                {/* Right — floating device showcase with parallax */}
-                <Parallax speed={0.3} className="hidden lg:block h-[600px]">
-                    <div className="relative w-full h-full">
-                        {/* Laptop mockup */}
-                        <motion.div
-                            className="absolute top-8 left-0 w-[420px] h-[280px] bg-gradient-to-br from-gray-900 to-gray-800 rounded-2xl shadow-2xl shadow-blue-500/10 p-3"
-                            initial={{ opacity: 0, x: 60, rotate: 2 }}
-                            animate={{ opacity: 1, x: 0, rotate: 0 }}
-                            transition={{ delay: 0.5, duration: 1, ease: [0.16, 1, 0.3, 1] }}
-                        >
-                            <div className="w-full h-full bg-gray-950 rounded-lg flex items-center justify-center overflow-hidden">
-                                <div className="text-[10px] font-mono text-green-400/70 leading-relaxed p-4 w-full">
-                                    <p><span className="text-blue-400">def</span> <span className="text-yellow-300">solve</span>(n):</p>
-                                    <p className="ml-4"><span className="text-purple-400">if</span> n &lt;= 1:</p>
-                                    <p className="ml-8"><span className="text-purple-400">return</span> n</p>
-                                    <p className="ml-4"><span className="text-purple-400">return</span> solve(n-1) + solve(n-2)</p>
-                                    <p className="mt-2"><span className="text-gray-500"># 결과: 피보나치 수열</span></p>
-                                    <p><span className="text-blue-400">print</span>(solve(<span className="text-orange-400">10</span>)) <span className="text-gray-500"># → 55</span></p>
-                                </div>
-                            </div>
-                        </motion.div>
+                {/* Right — SVG illustration + EyeTracker */}
+                <div className="hidden lg:block relative h-[600px]">
+                    <CodingIllustration />
 
-                        {/* Phone mockup */}
-                        <motion.div
-                            className="absolute bottom-12 right-4 w-[180px] h-[360px] bg-gradient-to-br from-white to-gray-50 rounded-[28px] shadow-2xl shadow-cyan-500/10 p-2 border border-gray-200"
-                            initial={{ opacity: 0, y: 80 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ delay: 0.8, duration: 1, ease: [0.16, 1, 0.3, 1] }}
-                        >
-                            <div className="w-full h-full bg-gradient-to-br from-blue-600 to-cyan-500 rounded-[22px] flex flex-col items-center justify-center text-white p-4">
-                                <div className="text-3xl mb-2">🏆</div>
-                                <p className="text-xs font-bold text-center">정보올림피아드</p>
-                                <p className="text-xs opacity-70 text-center mt-1">대회 준비반</p>
-                            </div>
-                        </motion.div>
+                    {/* Eye tracker - nodcoding signature */}
+                    <motion.div
+                        className="absolute bottom-8 right-8"
+                        initial={{ opacity: 0, scale: 0 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        transition={{ delay: 1.5, duration: 0.6, type: "spring" }}
+                    >
+                        <EyeTracker size={100} pupilColor="#1F2937" secondaryColor="#3B82F6" />
+                    </motion.div>
 
-                        {/* Floating badge */}
-                        <motion.div
-                            className="absolute top-[45%] right-[25%] px-4 py-2 bg-white rounded-xl shadow-lg border border-gray-100"
-                            animate={{ y: [0, -10, 0] }}
-                            transition={{ repeat: Infinity, duration: 3, ease: "easeInOut" }}
-                        >
-                            <div className="flex items-center gap-2">
-                                <ArrowRight size={14} className="text-blue-500" />
-                                <span className="text-xs font-semibold text-gray-700">합격률 95%</span>
-                            </div>
-                        </motion.div>
-                    </div>
-                </Parallax>
+                    {/* Floating badge */}
+                    <motion.div
+                        className="absolute top-[40%] right-[10%] px-4 py-2 bg-white rounded-xl shadow-lg border border-gray-100 z-20"
+                        animate={{ y: [0, -10, 0] }}
+                        transition={{ repeat: Infinity, duration: 3, ease: "easeInOut" }}
+                    >
+                        <span className="text-xs font-semibold text-gray-700">합격률 95% ✨</span>
+                    </motion.div>
+                </div>
             </div>
         </section>
     );

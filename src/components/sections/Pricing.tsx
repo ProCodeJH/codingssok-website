@@ -2,9 +2,10 @@
 
 import { motion } from "framer-motion";
 import TiltCard from "@/components/ui/TiltCard";
-import TextReveal from "@/components/ui/TextReveal";
+import LetterReveal from "@/components/ui/LetterReveal";
 import StaggerReveal from "@/components/ui/StaggerReveal";
-import MagneticButton from "@/components/ui/MagneticButton";
+import SVGPillButton from "@/components/ui/SVGPillButton";
+import HillsSeparator from "@/components/ui/HillsSeparator";
 import { Check } from "lucide-react";
 
 const plans = [
@@ -16,6 +17,9 @@ const plans = [
 export default function Pricing() {
     return (
         <section id="pricing" className="py-32 bg-white overflow-hidden">
+            {/* Top hills separator */}
+            <HillsSeparator lines={2} />
+
             <div className="max-w-7xl mx-auto px-8 lg:px-12">
                 <div className="text-center mb-20">
                     <motion.span
@@ -27,10 +31,10 @@ export default function Pricing() {
                         <span className="text-sm font-medium text-orange-700">수강료</span>
                     </motion.span>
                     <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-6">
-                        <TextReveal delay={0.1} stagger={0.08}>투명한 수강료 안내</TextReveal>
+                        <LetterReveal delay={0.1} stagger={0.04}>투명한 수강료 안내</LetterReveal>
                     </h2>
                     <p className="text-lg text-gray-500">
-                        <TextReveal delay={0.4} stagger={0.03}>모든 반 무료 체험 수업 가능</TextReveal>
+                        <LetterReveal delay={0.5} stagger={0.02} splitBy="word">모든 반 무료 체험 수업 가능</LetterReveal>
                     </p>
                 </div>
 
@@ -67,17 +71,22 @@ export default function Pricing() {
                                     </li>
                                 ))}
                             </ul>
-                            <MagneticButton
-                                as="a"
+                            <SVGPillButton
                                 href="#contact"
-                                className={`block w-full py-3.5 text-center font-semibold rounded-full transition-all ${plan.popular ? "bg-white text-gray-900 hover:bg-gray-100" : "bg-gray-900 text-white hover:bg-gray-800"}`}
-                                strength={6}
+                                variant={plan.popular ? "secondary" : "dark"}
+                                size="md"
+                                className="w-full justify-center"
                             >
                                 상담 신청
-                            </MagneticButton>
+                            </SVGPillButton>
                         </TiltCard>
                     ))}
                 </StaggerReveal>
+            </div>
+
+            {/* Bottom hills separator */}
+            <div className="mt-20">
+                <HillsSeparator lines={2} />
             </div>
         </section>
     );

@@ -1,136 +1,183 @@
 "use client";
 
 import { useState } from "react";
-import { motion } from "framer-motion";
-import { Send, Check, AlertCircle, Loader2 } from "lucide-react";
-import Image from "next/image";
+import { motion, AnimatePresence } from "framer-motion";
+import { Send, Phone, MessageCircle, MapPin, Clock, CheckCircle } from "lucide-react";
+import TextReveal from "@/components/ui/TextReveal";
+import StaggerReveal from "@/components/ui/StaggerReveal";
+import MagneticButton from "@/components/ui/MagneticButton";
 
 const contactInfo = [
-    { label: "전화 상담", value: "010-7566-7229", sub: "평일/주말 상담 가능" },
-    { label: "위치", value: "대전 유성구 테크노중앙로 67", sub: "엑스포타워 5층" },
-    { label: "운영 시간", value: "평일 14:00 - 21:00", sub: "주말 10:00 - 18:00" },
+    { icon: Phone, label: "전화", value: "042-123-4567", href: "tel:042-123-4567" },
+    { icon: MessageCircle, label: "카카오톡", value: "codingssok", href: "https://pf.kakao.com/codingssok" },
+    { icon: MapPin, label: "위치", value: "대전광역시 유성구", href: "#" },
+    { icon: Clock, label: "운영시간", value: "평일 14:00 - 21:00", href: "#" },
 ];
-
-interface FormData { studentName: string; grade: string; phone: string; course: string; message: string; }
-interface FormErrors { studentName?: string; phone?: string; course?: string; }
 
 export default function Contact() {
     const [isSubmitted, setIsSubmitted] = useState(false);
-    const [isSubmitting, setIsSubmitting] = useState(false);
-    const [submitError, setSubmitError] = useState("");
-    const [formData, setFormData] = useState<FormData>({ studentName: "", grade: "", phone: "", course: "", message: "" });
-    const [errors, setErrors] = useState<FormErrors>({});
+    const [isLoading, setIsLoading] = useState(false);
+    const [formData, setFormData] = useState({ studentName: "", phone: "", course: "", message: "" });
+    const [errors, setErrors] = useState<Record<string, string>>({});
 
-    const validate = (): boolean => {
-        const newErrors: FormErrors = {};
-        if (!formData.studentName || formData.studentName.length < 2) newErrors.studentName = "이름은 2자 이상 입력해주세요";
-        const phoneClean = formData.phone.replace(/[\s-]/g, "");
-        if (!phoneClean || !/^01[0-9]\d{7,8}$/.test(phoneClean)) newErrors.phone = "올바른 전화번호를 입력해주세요 (예: 010-1234-5678)";
+    const validate = () => {
+        const newErrors: Record<string, string> = {};
+        if (!formData.studentName.trim()) newErrors.studentName = "학생 이름을 입력해주세요";
+        if (!formData.phone.trim()) newErrors.phone = "연락처를 입력해주세요";
         if (!formData.course) newErrors.course = "관심 과정을 선택해주세요";
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
     };
 
-    const handleChange = (field: keyof FormData, value: string) => {
-        setFormData((prev) => ({ ...prev, [field]: value }));
-        if (errors[field as keyof FormErrors]) setErrors((prev) => ({ ...prev, [field]: undefined }));
-        setSubmitError("");
-    };
-
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!validate()) return;
-        setIsSubmitting(true);
-        setSubmitError("");
+        setIsLoading(true);
         try {
             const res = await fetch("/api/contact", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(formData) });
-            const data = await res.json();
-            if (data.success) { setIsSubmitted(true); } else { setSubmitError(data.error || "전송 중 오류가 발생했습니다."); }
-        } catch { setSubmitError("네트워크 오류가 발생했습니다. 다시 시도해주세요."); }
-        finally { setIsSubmitting(false); }
+            if (res.ok) setIsSubmitted(true);
+        } catch { /* handle error */ }
+        setIsLoading(false);
     };
-
-    const inputClass = (field: keyof FormErrors) =>
-        `w-full px-5 py-4 bg-white border rounded-xl text-sm focus:outline-none focus:ring-2 focus:border-transparent transition-all ${errors[field] ? "border-red-300 focus:ring-red-500" : "border-gray-200 focus:ring-blue-500"}`;
 
     return (
         <section id="contact" className="py-32 bg-white">
             <div className="max-w-7xl mx-auto px-8 lg:px-12">
-                <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.8 }} className="text-center mb-20">
-                    <span className="inline-flex items-center gap-2 px-4 py-2 bg-green-500/10 border border-green-200/50 rounded-full mb-6">
-                        <span className="text-sm font-medium text-green-700">상담 신청</span>
-                    </span>
-                    <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-6 leading-tight">무료 상담 신청</h2>
-                    <p className="text-lg text-gray-500">신청 후 24시간 이내 연락드립니다</p>
-                </motion.div>
+                <div className="text-center mb-16">
+                    <motion.span
+                        initial={{ opacity: 0, y: 10 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true }}
+                        className="inline-flex items-center gap-2 px-4 py-2 bg-blue-500/10 border border-blue-200/50 rounded-full mb-6"
+                    >
+                        <span className="text-sm font-medium text-blue-700">상담 신청</span>
+                    </motion.span>
+                    <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-6">
+                        <TextReveal delay={0.1} stagger={0.08}>무료 상담을 신청하세요</TextReveal>
+                    </h2>
+                    <p className="text-lg text-gray-500 max-w-2xl mx-auto">
+                        <TextReveal delay={0.4} stagger={0.02}>아이의 코딩 교육, 전문가와 함께 시작하세요</TextReveal>
+                    </p>
+                </div>
 
                 <div className="grid lg:grid-cols-2 gap-16 max-w-5xl mx-auto">
-                    <motion.div initial={{ opacity: 0, x: -30 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ duration: 0.8 }} className="space-y-6">
-                        <div className="relative h-[200px] rounded-3xl overflow-hidden mb-8 shadow-xl">
-                            <Image src="/images/classroom2.png" alt="Modern classroom" fill className="object-cover" />
-                            <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
-                        </div>
+                    {/* Contact info — staggered reveal */}
+                    <StaggerReveal className="space-y-6" stagger={0.1} direction="left" distance={30}>
                         {contactInfo.map((info, i) => (
-                            <motion.div key={i} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.1, duration: 0.6 }} className="bg-gray-50 rounded-2xl p-6 hover:bg-white hover:shadow-lg transition-all border border-transparent hover:border-gray-100">
-                                <p className="text-sm text-gray-400 mb-2">{info.label}</p>
-                                <p className="font-semibold text-xl text-gray-900">{info.value}</p>
-                                <p className="text-sm text-gray-500 mt-1">{info.sub}</p>
-                            </motion.div>
+                            <a key={i} href={info.href} className="flex items-center gap-4 p-4 rounded-2xl hover:bg-gray-50 transition-colors group">
+                                <div className="w-12 h-12 bg-gradient-to-br from-blue-600 to-cyan-500 rounded-xl flex items-center justify-center text-white shadow-lg group-hover:scale-110 transition-transform">
+                                    <info.icon size={20} />
+                                </div>
+                                <div>
+                                    <p className="text-sm text-gray-500">{info.label}</p>
+                                    <p className="font-semibold text-gray-900">{info.value}</p>
+                                </div>
+                            </a>
                         ))}
-                    </motion.div>
+                    </StaggerReveal>
 
-                    <motion.div initial={{ opacity: 0, x: 30 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ duration: 0.8 }} className="bg-gray-50 rounded-3xl p-8 border border-gray-100">
-                        {isSubmitted ? (
-                            <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="text-center py-16">
-                                <motion.div className="w-20 h-20 rounded-full bg-green-100 flex items-center justify-center mx-auto mb-6" initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ type: "spring", stiffness: 200, damping: 10, delay: 0.2 }}>
-                                    <Check size={40} className="text-green-600" />
-                                </motion.div>
-                                <h3 className="text-2xl font-bold text-gray-900 mb-3">신청 완료!</h3>
-                                <p className="text-gray-500">24시간 이내 연락드리겠습니다.</p>
-                            </motion.div>
-                        ) : (
-                            <form onSubmit={handleSubmit} className="space-y-6">
-                                <div className="grid grid-cols-2 gap-4">
-                                    <div>
-                                        <label className="block text-sm font-semibold text-gray-700 mb-2">학생 이름</label>
-                                        <input type="text" className={inputClass("studentName")} placeholder="홍길동" value={formData.studentName} onChange={(e) => handleChange("studentName", e.target.value)} />
-                                        {errors.studentName && <p className="mt-1.5 text-xs text-red-500 flex items-center gap-1"><AlertCircle size={12} />{errors.studentName}</p>}
-                                    </div>
-                                    <div>
-                                        <label className="block text-sm font-semibold text-gray-700 mb-2">학년</label>
-                                        <input type="text" className="w-full px-5 py-4 bg-white border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all" placeholder="초등 6학년" value={formData.grade} onChange={(e) => handleChange("grade", e.target.value)} />
-                                    </div>
-                                </div>
-                                <div>
-                                    <label className="block text-sm font-semibold text-gray-700 mb-2">연락처</label>
-                                    <input type="tel" className={inputClass("phone")} placeholder="010-0000-0000" value={formData.phone} onChange={(e) => handleChange("phone", e.target.value)} />
-                                    {errors.phone && <p className="mt-1.5 text-xs text-red-500 flex items-center gap-1"><AlertCircle size={12} />{errors.phone}</p>}
-                                </div>
-                                <div>
-                                    <label className="block text-sm font-semibold text-gray-700 mb-2">관심 과정</label>
-                                    <select className={inputClass("course")} value={formData.course} onChange={(e) => handleChange("course", e.target.value)}>
-                                        <option value="">선택해주세요</option>
-                                        <option value="basic">기초반 (스크래치/엔트리)</option>
-                                        <option value="advanced">심화반 (C/Python)</option>
-                                        <option value="cert">자격증반</option>
-                                        <option value="contest">대회 준비반</option>
-                                    </select>
-                                    {errors.course && <p className="mt-1.5 text-xs text-red-500 flex items-center gap-1"><AlertCircle size={12} />{errors.course}</p>}
-                                </div>
-                                <div>
-                                    <label className="block text-sm font-semibold text-gray-700 mb-2">문의 사항 (선택)</label>
-                                    <textarea className="w-full px-5 py-4 bg-white border border-gray-200 rounded-xl text-sm min-h-[100px] resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all" placeholder="궁금하신 점을 자유롭게 적어주세요" value={formData.message} onChange={(e) => handleChange("message", e.target.value)} />
-                                </div>
-                                {submitError && (
-                                    <motion.div initial={{ opacity: 0, y: -5 }} animate={{ opacity: 1, y: 0 }} className="flex items-center gap-2 text-sm text-red-600 bg-red-50 px-4 py-3 rounded-xl">
-                                        <AlertCircle size={16} />{submitError}
+                    {/* Form */}
+                    <motion.div
+                        initial={{ opacity: 0, x: 30 }}
+                        whileInView={{ opacity: 1, x: 0 }}
+                        viewport={{ once: true }}
+                        transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+                    >
+                        <AnimatePresence mode="wait">
+                            {isSubmitted ? (
+                                <motion.div
+                                    key="success"
+                                    initial={{ opacity: 0, scale: 0.9 }}
+                                    animate={{ opacity: 1, scale: 1 }}
+                                    className="flex flex-col items-center justify-center h-full gap-4 text-center py-16"
+                                >
+                                    <motion.div
+                                        initial={{ scale: 0 }}
+                                        animate={{ scale: 1 }}
+                                        transition={{ type: "spring", stiffness: 300, damping: 15 }}
+                                    >
+                                        <CheckCircle size={64} className="text-green-500" />
                                     </motion.div>
-                                )}
-                                <motion.button type="submit" disabled={isSubmitting} className="w-full py-4 bg-gray-900 text-white font-semibold rounded-full hover:bg-gray-800 transition-all flex items-center justify-center gap-2 shadow-lg disabled:opacity-70 disabled:cursor-not-allowed" whileHover={isSubmitting ? {} : { scale: 1.01, y: -2 }} whileTap={isSubmitting ? {} : { scale: 0.99 }}>
-                                    {isSubmitting ? (<><Loader2 size={16} className="animate-spin" />전송 중...</>) : (<>상담 신청 <Send size={16} /></>)}
-                                </motion.button>
-                            </form>
-                        )}
+                                    <h3 className="text-2xl font-bold text-gray-900">신청 완료!</h3>
+                                    <p className="text-gray-500">빠른 시일 내에 연락드리겠습니다.</p>
+                                </motion.div>
+                            ) : (
+                                <motion.form key="form" onSubmit={handleSubmit} className="space-y-5">
+                                    {[
+                                        { name: "studentName", label: "학생 이름", type: "text", placeholder: "학생 이름을 입력하세요" },
+                                        { name: "phone", label: "연락처", type: "tel", placeholder: "010-0000-0000" },
+                                    ].map((field, fi) => (
+                                        <motion.div
+                                            key={field.name}
+                                            initial={{ opacity: 0, y: 15 }}
+                                            whileInView={{ opacity: 1, y: 0 }}
+                                            viewport={{ once: true }}
+                                            transition={{ delay: fi * 0.1, duration: 0.5 }}
+                                        >
+                                            <label className="block text-sm font-medium text-gray-700 mb-2">{field.label}</label>
+                                            <input
+                                                type={field.type}
+                                                className={`input ${errors[field.name] ? "border-red-300" : ""}`}
+                                                placeholder={field.placeholder}
+                                                value={formData[field.name as keyof typeof formData]}
+                                                onChange={(e) => setFormData({ ...formData, [field.name]: e.target.value })}
+                                            />
+                                            {errors[field.name] && <p className="text-xs text-red-500 mt-1">{errors[field.name]}</p>}
+                                        </motion.div>
+                                    ))}
+
+                                    <motion.div
+                                        initial={{ opacity: 0, y: 15 }}
+                                        whileInView={{ opacity: 1, y: 0 }}
+                                        viewport={{ once: true }}
+                                        transition={{ delay: 0.2, duration: 0.5 }}
+                                    >
+                                        <label className="block text-sm font-medium text-gray-700 mb-2">관심 과정</label>
+                                        <select
+                                            className={`input ${errors.course ? "border-red-300" : ""}`}
+                                            value={formData.course}
+                                            onChange={(e) => setFormData({ ...formData, course: e.target.value })}
+                                        >
+                                            <option value="">선택해주세요</option>
+                                            <option value="scratch">스크래치/엔트리 (입문)</option>
+                                            <option value="python">Python (기초~중급)</option>
+                                            <option value="c">C/C++ (중급~심화)</option>
+                                            <option value="arduino">Arduino/IoT (응용)</option>
+                                            <option value="app">앱 개발 (프로젝트)</option>
+                                        </select>
+                                        {errors.course && <p className="text-xs text-red-500 mt-1">{errors.course}</p>}
+                                    </motion.div>
+
+                                    <motion.div
+                                        initial={{ opacity: 0, y: 15 }}
+                                        whileInView={{ opacity: 1, y: 0 }}
+                                        viewport={{ once: true }}
+                                        transition={{ delay: 0.3, duration: 0.5 }}
+                                    >
+                                        <label className="block text-sm font-medium text-gray-700 mb-2">추가 메시지 (선택)</label>
+                                        <textarea
+                                            className="input min-h-[100px] resize-none"
+                                            placeholder="궁금한 점이 있으시면 적어주세요"
+                                            value={formData.message}
+                                            onChange={(e) => setFormData({ ...formData, message: e.target.value })}
+                                        />
+                                    </motion.div>
+
+                                    <MagneticButton
+                                        as="button"
+                                        className="btn-primary w-full justify-center"
+                                        strength={6}
+                                        onClick={() => { }}
+                                    >
+                                        {isLoading ? (
+                                            <motion.span animate={{ rotate: 360 }} transition={{ repeat: Infinity, duration: 1, ease: "linear" }}>⏳</motion.span>
+                                        ) : (
+                                            <>상담 신청 <Send size={16} /></>
+                                        )}
+                                    </MagneticButton>
+                                </motion.form>
+                            )}
+                        </AnimatePresence>
                     </motion.div>
                 </div>
             </div>

@@ -1,64 +1,51 @@
 "use client";
 
 import { motion } from "framer-motion";
-import Image from "next/image";
 import TiltCard from "@/components/ui/TiltCard";
+import TextReveal from "@/components/ui/TextReveal";
+import StaggerReveal from "@/components/ui/StaggerReveal";
 
 const tracks = [
-    { num: "01", title: "기초 트랙", desc: "스크래치/엔트리로 컴퓨팅 사고력 배양" },
-    { num: "02", title: "텍스트 코딩", desc: "Python, C언어 체계적 학습" },
-    { num: "03", title: "알고리즘", desc: "문제 해결력과 논리적 사고력 강화" },
-    { num: "04", title: "프로젝트", desc: "실전 프로젝트로 포트폴리오 완성" },
-    { num: "05", title: "대회/자격증", desc: "정보올림피아드, 자격증 취득 준비" },
+    { icon: "🧩", title: "스크래치/엔트리", desc: "비주얼 프로그래밍으로 코딩 사고력 기초를 다집니다.", level: "입문", color: "from-emerald-400 to-teal-500" },
+    { icon: "🐍", title: "Python", desc: "데이터 분석, AI 기초까지 가장 인기 있는 언어를 배웁니다.", level: "기초~중급", color: "from-blue-400 to-indigo-500" },
+    { icon: "⚙️", title: "C/C++", desc: "정보올림피아드 & 알고리즘 대회를 위한 핵심 언어입니다.", level: "중급~심화", color: "from-orange-400 to-red-500" },
+    { icon: "🤖", title: "Arduino/IoT", desc: "하드웨어와 소프트웨어를 결합한 창의적 프로젝트를 만듭니다.", level: "응용", color: "from-purple-400 to-pink-500" },
+    { icon: "📱", title: "앱 개발", desc: "실제 사용 가능한 모바일 앱을 직접 기획하고 개발합니다.", level: "프로젝트", color: "from-cyan-400 to-blue-500" },
 ];
 
 export default function Curriculum() {
     return (
         <section id="curriculum" className="py-32 bg-white">
             <div className="max-w-7xl mx-auto px-8 lg:px-12">
-                <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.8 }} className="text-center mb-20">
-                    <span className="inline-flex items-center gap-2 px-4 py-2 bg-blue-500/10 border border-blue-200/50 rounded-full mb-6">
-                        <span className="text-sm font-medium text-blue-700">커리큘럼</span>
-                    </span>
-                    <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-6 leading-tight">체계적인 5트랙으로<br /><span className="text-gray-400">완벽한 실력 완성</span></h2>
-                </motion.div>
-                <div className="grid md:grid-cols-5 gap-6 mb-32">
+                <div className="text-center mb-20">
+                    <motion.span
+                        initial={{ opacity: 0, y: 10 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true }}
+                        className="inline-flex items-center gap-2 px-4 py-2 bg-green-500/10 border border-green-200/50 rounded-full mb-6"
+                    >
+                        <span className="text-sm font-medium text-green-700">커리큘럼</span>
+                    </motion.span>
+                    <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-6 leading-tight">
+                        <TextReveal delay={0.1} stagger={0.06}>단계별 맞춤 학습 로드맵</TextReveal>
+                    </h2>
+                    <p className="text-lg text-gray-500 max-w-2xl mx-auto">
+                        <TextReveal delay={0.4} stagger={0.02} splitBy="word">입문부터 대회 준비까지 체계적으로 성장합니다</TextReveal>
+                    </p>
+                </div>
+
+                <StaggerReveal className="grid md:grid-cols-2 lg:grid-cols-3 gap-6" stagger={0.12} distance={50}>
                     {tracks.map((track, i) => (
-                        <motion.div key={i} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.1, duration: 0.6 }}>
-                            <TiltCard className="bg-gray-50 rounded-3xl p-6 hover:bg-white hover:shadow-xl transition-all duration-300 border border-transparent hover:border-gray-100 h-full" tiltDegree={6}>
-                                <span className="text-4xl font-bold text-gray-200 block mb-4">{track.num}</span>
-                                <h3 className="text-lg font-bold text-gray-900 mb-2">{track.title}</h3>
-                                <p className="text-sm text-gray-500 leading-relaxed">{track.desc}</p>
-                            </TiltCard>
-                        </motion.div>
+                        <TiltCard key={i} className="bg-white rounded-3xl p-8 shadow-sm hover:shadow-xl transition-all duration-500 border border-gray-100 h-full group" tiltDegree={6}>
+                            <div className={`inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-br ${track.color} text-2xl mb-6 shadow-lg group-hover:scale-110 transition-transform duration-300`}>
+                                {track.icon}
+                            </div>
+                            <span className="inline-block px-2.5 py-1 text-xs font-medium bg-gray-100 text-gray-600 rounded-full mb-3">{track.level}</span>
+                            <h3 className="text-xl font-bold text-gray-900 mb-3">{track.title}</h3>
+                            <p className="text-gray-500 leading-relaxed">{track.desc}</p>
+                        </TiltCard>
                     ))}
-                </div>
-                <div className="grid lg:grid-cols-2 gap-20 items-center">
-                    <motion.div initial={{ opacity: 0, x: -30 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ duration: 0.8 }}>
-                        <h3 className="text-2xl md:text-3xl lg:text-4xl font-bold text-gray-900 mb-8 leading-tight">학습 진도를<br /><span className="text-gray-400">실시간으로 확인하세요</span></h3>
-                        <div className="space-y-6 mb-10">
-                            {[{ num: "01", title: "실시간 진도 추적", desc: "언제든 자녀의 학습 현황을 확인할 수 있어요" }, { num: "02", title: "맞춤형 피드백", desc: "개인별 강약점 분석과 맞춤 학습 제안" }, { num: "03", title: "자동 알림", desc: "중요한 일정과 과제는 자동으로 알려드려요" }].map((item, i) => (
-                                <motion.div key={i} initial={{ opacity: 0, x: -20 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.1, duration: 0.6 }} className="flex gap-4">
-                                    <div className="w-12 h-12 rounded-2xl bg-gray-100 flex items-center justify-center flex-shrink-0">
-                                        <span className="text-gray-500 font-bold text-sm">{item.num}</span>
-                                    </div>
-                                    <div>
-                                        <h4 className="font-semibold text-gray-900 mb-1">{item.title}</h4>
-                                        <p className="text-gray-500">{item.desc}</p>
-                                    </div>
-                                </motion.div>
-                            ))}
-                        </div>
-                        <motion.a href="#contact" className="inline-flex items-center gap-2 px-8 py-4 bg-gray-900 text-white font-semibold rounded-full hover:bg-gray-800 transition-all shadow-lg" whileHover={{ scale: 1.02, y: -2 }} whileTap={{ scale: 0.98 }}>
-                            상담 신청하기 <span className="opacity-60">→</span>
-                        </motion.a>
-                    </motion.div>
-                    <motion.div initial={{ opacity: 0, x: 30 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ duration: 0.8, delay: 0.2 }} className="hidden lg:flex justify-center">
-                        <motion.div animate={{ y: [0, -12, 0] }} transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}>
-                            <Image src="/images/phone-Photoroom.png" alt="Mobile learning app" width={300} height={600} className="drop-shadow-2xl" />
-                        </motion.div>
-                    </motion.div>
-                </div>
+                </StaggerReveal>
             </div>
         </section>
     );

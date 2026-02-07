@@ -11,22 +11,25 @@ import CursorGlow from "@/components/effects/CursorGlow";
 import ScrollProgress from "@/components/effects/ScrollProgress";
 import FloatingCTA from "@/components/effects/FloatingCTA";
 import SplashScreen from "@/components/effects/SplashScreen";
+import SmoothScroll from "@/components/effects/SmoothScroll";
 
 export default function Home() {
   return (
-    <div id="main-content" style={{ width: '100%', maxWidth: '100%', display: 'block' }}>
-      <SplashScreen />
-      <CursorGlow />
-      <ScrollProgress />
-      <Navbar />
-      <Hero />
-      <Curriculum />
-      <Services />
-      <Pricing />
-      <FAQ />
-      <Contact />
-      <Footer />
-      <FloatingCTA />
-    </div>
+    <SmoothScroll>
+      <div id="main-content" style={{ width: '100%', maxWidth: '100%', display: 'block' }}>
+        <SplashScreen />
+        <CursorGlow />
+        <ScrollProgress />
+        <Navbar />
+        <Hero />
+        <Curriculum />
+        <Services />
+        <Pricing />
+        <FAQ />
+        <Contact />
+        <Footer />
+        <FloatingCTA />
+      </div>
+    </SmoothScroll>
   );
 }

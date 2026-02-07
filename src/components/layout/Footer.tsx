@@ -5,6 +5,11 @@ import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import Image from "next/image";
 import { ArrowUp } from "lucide-react";
+import Marquee from "@/components/ui/Marquee";
+import TextReveal from "@/components/ui/TextReveal";
+import MagneticButton from "@/components/ui/MagneticButton";
+
+const trustItems = ["Python", "C/C++", "Arduino", "알고리즘", "정보올림피아드", "앱 개발", "자격증", "AI 기초", "데이터 분석", "웹 개발"];
 
 export default function Footer() {
     const [showBackToTop, setShowBackToTop] = useState(false);
@@ -19,6 +24,7 @@ export default function Footer() {
 
     return (
         <>
+            {/* CTA Section */}
             <section className="py-32 bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 relative overflow-hidden">
                 <div className="absolute inset-0">
                     <div className="absolute top-20 left-10 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl" />
@@ -27,17 +33,31 @@ export default function Footer() {
                 <div className="relative z-10 max-w-4xl mx-auto px-8 lg:px-12 text-center">
                     <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.8 }}>
                         <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-6 leading-tight">
-                            꿈이 있으시군요.<br />
-                            <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-400">코딩쏙이 함께할게요.</span>
+                            <TextReveal className="block text-white" delay={0.1} stagger={0.08}>꿈이 있으시군요.</TextReveal>
+                            <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-400">
+                                <TextReveal className="inline" delay={0.5} stagger={0.08}>코딩쏙이 함께할게요.</TextReveal>
+                            </span>
                         </h2>
                         <p className="text-lg text-gray-400 mb-12 max-w-lg mx-auto">상담부터 수업, 포트폴리오까지 —<br />모든 학습의 방향을 직접 이끌어드립니다.</p>
-                        <motion.a href="#contact" className="inline-flex items-center gap-2 px-10 py-5 bg-white text-gray-900 font-semibold rounded-full hover:scale-105 transition-all shadow-2xl" whileHover={{ scale: 1.03, y: -2 }} whileTap={{ scale: 0.98 }}>
+                        <MagneticButton as="a" href="#contact" className="inline-flex items-center gap-2 px-10 py-5 bg-white text-gray-900 font-semibold rounded-full hover:scale-105 transition-all shadow-2xl" strength={10}>
                             무료 상담 예약 <span className="opacity-60">→</span>
-                        </motion.a>
+                        </MagneticButton>
                     </motion.div>
                 </div>
             </section>
 
+            {/* Trust Marquee Band */}
+            <div className="py-6 bg-gray-900 border-t border-gray-800">
+                <Marquee duration={20} direction="left" pauseOnHover>
+                    {trustItems.map((item, i) => (
+                        <span key={i} className="text-sm font-medium text-gray-400 px-4 py-1.5 border border-gray-700 rounded-full whitespace-nowrap">
+                            {item}
+                        </span>
+                    ))}
+                </Marquee>
+            </div>
+
+            {/* Achievement Gallery */}
             <section className="py-20 bg-white">
                 <div className="max-w-7xl mx-auto px-8 lg:px-12">
                     <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.8 }} className="text-center mb-12">
@@ -54,6 +74,7 @@ export default function Footer() {
                 </div>
             </section>
 
+            {/* Footer */}
             <footer className="py-20 bg-gray-50 border-t border-gray-100">
                 <div className="max-w-7xl mx-auto px-8 lg:px-12">
                     <div className="grid md:grid-cols-5 gap-12 mb-16">
@@ -100,6 +121,7 @@ export default function Footer() {
                 </div>
             </footer>
 
+            {/* Back to top */}
             <AnimatePresence>
                 {showBackToTop && (
                     <motion.button initial={{ opacity: 0, scale: 0.8, y: 20 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.8, y: 20 }} transition={{ duration: 0.3 }}

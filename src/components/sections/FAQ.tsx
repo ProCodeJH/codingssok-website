@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronDown } from "lucide-react";
+import TextReveal from "@/components/ui/TextReveal";
 
 const categories = [
     { name: "수업", color: "bg-blue-500" },
@@ -25,31 +26,49 @@ export default function FAQ() {
     return (
         <section id="faq" className="py-32 bg-gradient-to-br from-gray-50 to-blue-50/30">
             <div className="max-w-3xl mx-auto px-8 lg:px-12">
-                <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.8 }} className="text-center mb-16">
-                    <span className="inline-flex items-center gap-2 px-4 py-2 bg-amber-500/10 border border-amber-200/50 rounded-full mb-6">
+                <div className="text-center mb-16">
+                    <motion.span
+                        initial={{ opacity: 0, y: 10 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true }}
+                        className="inline-flex items-center gap-2 px-4 py-2 bg-amber-500/10 border border-amber-200/50 rounded-full mb-6"
+                    >
                         <span className="text-sm font-medium text-amber-700">FAQ</span>
-                    </span>
-                    <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-6">자주 묻는 질문</h2>
-                </motion.div>
+                    </motion.span>
+                    <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-6">
+                        <TextReveal delay={0.1} stagger={0.08}>자주 묻는 질문</TextReveal>
+                    </h2>
+                </div>
                 <div className="space-y-4">
                     {faqs.map((faq, i) => {
                         const isOpen = open === i;
                         const cat = categories[faq.cat];
                         return (
-                            <motion.div key={i} initial={{ opacity: 0, y: 10 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.05, duration: 0.5 }}
-                                className={`rounded-2xl border transition-all duration-300 ${isOpen ? "bg-white shadow-lg border-gray-200" : "bg-white/60 border-gray-100 hover:bg-white hover:shadow-sm"}`}>
+                            <motion.div
+                                key={i}
+                                initial={{ opacity: 0, y: 15 }}
+                                whileInView={{ opacity: 1, y: 0 }}
+                                viewport={{ once: true }}
+                                transition={{ delay: i * 0.07, duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+                                className={`rounded-2xl border transition-all duration-300 ${isOpen ? "bg-white shadow-lg border-gray-200" : "bg-white/60 border-gray-100 hover:bg-white hover:shadow-sm"}`}
+                            >
                                 <button onClick={() => setOpen(isOpen ? null : i)} className="w-full flex items-center justify-between p-6 text-left">
                                     <div className="flex items-center gap-3">
                                         <div className={`w-2.5 h-2.5 rounded-full ${cat.color} flex-shrink-0`} />
                                         <span className={`font-semibold transition-colors ${isOpen ? "text-gray-900" : "text-gray-700"}`}>{faq.q}</span>
                                     </div>
-                                    <motion.div animate={{ rotate: isOpen ? 180 : 0 }} transition={{ duration: 0.2 }}>
+                                    <motion.div animate={{ rotate: isOpen ? 180 : 0 }} transition={{ duration: 0.3, type: "spring", stiffness: 300, damping: 20 }}>
                                         <ChevronDown size={18} className="text-gray-400 flex-shrink-0" />
                                     </motion.div>
                                 </button>
                                 <AnimatePresence>
                                     {isOpen && (
-                                        <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}>
+                                        <motion.div
+                                            initial={{ height: 0, opacity: 0 }}
+                                            animate={{ height: "auto", opacity: 1 }}
+                                            exit={{ height: 0, opacity: 0 }}
+                                            transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+                                        >
                                             <div className="px-6 pb-6 pl-11">
                                                 <div className="flex items-center gap-2 mb-2">
                                                     <span className={`text-xs px-2 py-0.5 rounded-full text-white ${cat.color}`}>{cat.name}</span>

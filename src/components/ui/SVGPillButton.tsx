@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState, ReactNode } from "react";
+import { useRef, useEffect, useState, useId, ReactNode } from "react";
 import { motion } from "framer-motion";
 import Link from "next/link";
 
@@ -35,30 +35,27 @@ export default function SVGPillButton({
     className = "",
     external = false,
 }: SVGPillButtonProps) {
-    const ref = useRef<HTMLDivElement>(null);
+    const textRef = useRef<HTMLSpanElement>(null);
     const [isHovered, setIsHovered] = useState(false);
-    const [dimensions, setDimensions] = useState({ width: 160, height: sizeMap[size].height });
+    const [measured, setMeasured] = useState(false);
+    const [w, setW] = useState(160);
 
-    const { height, px, textClass, radius } = sizeMap[size];
+    const { height: h, px, textClass, radius: r } = sizeMap[size];
     const { fill, text, hoverFill } = variantColors[variant];
 
-    // Measure actual text width after mount
-    const measureRef = (el: HTMLSpanElement | null) => {
-        if (el) {
-            const rect = el.getBoundingClientRect();
-            setDimensions({ width: rect.width + px * 2 + 28, height }); // +28 for arrow space
+    // Measure text width once after mount
+    useEffect(() => {
+        if (textRef.current && !measured) {
+            const rect = textRef.current.getBoundingClientRect();
+            setW(Math.ceil(rect.width + px * 2 + 28));
+            setMeasured(true);
         }
-    };
+    }, [px, measured]);
 
-    const { width: w, height: h } = dimensions;
-    const r = radius;
-
-    // SVG pill path
     const pillPath = `M${r},0 L${w - r},0 C${w - r + r * 0.66},0 ${w},${h * 0.5 - r * 0.66} ${w},${h / 2} C${w},${h * 0.5 + r * 0.66} ${w - r + r * 0.66},${h} ${w - r},${h} L${r},${h} C${r - r * 0.66},${h} 0,${h * 0.5 + r * 0.66} 0,${h / 2} C0,${h * 0.5 - r * 0.66} ${r - r * 0.66},0 ${r},0`;
 
     const content = (
         <motion.div
-            ref={ref}
             className={`relative inline-flex items-center cursor-pointer select-none ${className}`}
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
@@ -72,18 +69,14 @@ export default function SVGPillButton({
                 className="absolute inset-0"
                 style={{ overflow: "visible" }}
             >
-                {/* Shadow path */}
                 <motion.path
                     d={pillPath}
                     fill={isHovered ? hoverFill : fill}
                     initial={false}
-                    animate={{
-                        scale: isHovered ? 1.04 : 1,
-                    }}
+                    animate={{ scale: isHovered ? 1.04 : 1 }}
                     style={{ transformOrigin: "center center" }}
                     transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
                 />
-                {/* Border path */}
                 <motion.path
                     d={pillPath}
                     fill="none"
@@ -91,40 +84,27 @@ export default function SVGPillButton({
                     strokeWidth="1.5"
                     opacity="0.3"
                     initial={false}
-                    animate={{
-                        scale: isHovered ? 1.08 : 1,
-                        opacity: isHovered ? 0.5 : 0.3,
-                    }}
+                    animate={{ scale: isHovered ? 1.08 : 1, opacity: isHovered ? 0.5 : 0.3 }}
                     style={{ transformOrigin: "center center" }}
                     transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
                 />
             </svg>
 
-            {/* Text Content */}
+            {/* Text */}
             <span
-                ref={measureRef}
+                ref={textRef}
                 className={`relative z-10 flex items-center gap-2 font-medium ${textClass} ${text}`}
                 style={{ padding: `0 ${px}px`, height: `${h}px`, lineHeight: `${h}px` }}
             >
                 {children}
-                {/* Arrow */}
                 <motion.svg
-                    width="14"
-                    height="14"
-                    viewBox="0 0 14 14"
-                    fill="none"
+                    width="14" height="14" viewBox="0 0 14 14" fill="none"
                     className="flex-shrink-0"
                     initial={false}
                     animate={{ x: isHovered ? 4 : 0 }}
                     transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
                 >
-                    <path
-                        d="M1 7h11M8 3l4 4-4 4"
-                        stroke="currentColor"
-                        strokeWidth="1.5"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                    />
+                    <path d="M1 7h11M8 3l4 4-4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
                 </motion.svg>
             </span>
         </motion.div>

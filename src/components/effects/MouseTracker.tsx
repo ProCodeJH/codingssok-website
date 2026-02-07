@@ -1,7 +1,6 @@
 "use client";
 
-import { createContext, useContext, useEffect, useRef, useState, ReactNode } from "react";
-import { motion, useMotionValue, useSpring } from "framer-motion";
+import { createContext, useContext, useEffect, useState, ReactNode } from "react";
 
 interface MouseContextType {
     x: number;
@@ -18,20 +17,11 @@ export function useMousePosition() {
 
 export default function MouseTracker({ children }: { children: ReactNode }) {
     const [mouse, setMouse] = useState<MouseContextType>({ x: 0, y: 0, progressX: 0.5, progressY: 0.5 });
-    const ref = useRef<HTMLDivElement>(null);
-
-    const springConfig = { damping: 25, stiffness: 150, mass: 0.5 };
-    const mouseX = useSpring(useMotionValue(0), springConfig);
-    const mouseY = useSpring(useMotionValue(0), springConfig);
 
     useEffect(() => {
         const handleMouseMove = (e: MouseEvent) => {
             const { clientX, clientY } = e;
             const { innerWidth, innerHeight } = window;
-
-            mouseX.set(clientX);
-            mouseY.set(clientY);
-
             setMouse({
                 x: clientX,
                 y: clientY,
@@ -42,12 +32,11 @@ export default function MouseTracker({ children }: { children: ReactNode }) {
 
         window.addEventListener("mousemove", handleMouseMove, { passive: true });
         return () => window.removeEventListener("mousemove", handleMouseMove);
-    }, [mouseX, mouseY]);
+    }, []);
 
     return (
         <MouseContext.Provider value={mouse}>
-            <motion.div
-                ref={ref}
+            <div
                 style={{
                     // @ts-expect-error CSS custom properties
                     "--mouse-x": `${mouse.x}px`,
@@ -57,7 +46,7 @@ export default function MouseTracker({ children }: { children: ReactNode }) {
                 }}
             >
                 {children}
-            </motion.div>
+            </div>
         </MouseContext.Provider>
     );
 }

@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useEffect, useState } from "react";
+import { useRef, useEffect, useState, useId } from "react";
 import { motion, useSpring, useMotionValue } from "framer-motion";
 
 interface EyeTrackerProps {
@@ -18,12 +18,15 @@ export default function EyeTracker({
 }: EyeTrackerProps) {
     const eyeRef = useRef<HTMLDivElement>(null);
     const [isBlinking, setIsBlinking] = useState(false);
+    const clipId = useId(); // Unique ID per instance
 
-    const pupilX = useSpring(useMotionValue(0), { damping: 20, stiffness: 200, mass: 0.3 });
-    const pupilY = useSpring(useMotionValue(0), { damping: 20, stiffness: 200, mass: 0.3 });
+    const pupilX = useMotionValue(0);
+    const pupilY = useMotionValue(0);
+    const springX = useSpring(pupilX, { damping: 20, stiffness: 200, mass: 0.3 });
+    const springY = useSpring(pupilY, { damping: 20, stiffness: 200, mass: 0.3 });
 
     const halfW = size / 2;
-    const halfH = size * 0.447; // aspect like nodcoding
+    const halfH = size * 0.447;
     const pupilSize = size * 0.22;
     const maxTravel = size * 0.18;
 
@@ -33,7 +36,6 @@ export default function EyeTracker({
             setIsBlinking(true);
             setTimeout(() => setIsBlinking(false), 150);
         };
-
         const interval = setInterval(blink, 3000 + Math.random() * 3000);
         return () => clearInterval(interval);
     }, []);
@@ -62,13 +64,24 @@ export default function EyeTracker({
         return () => window.removeEventListener("mousemove", handleMouseMove);
     }, [pupilX, pupilY, maxTravel]);
 
-    // Eye shape paths (open and close for blink)
     const openPath = `M 0 ${halfH} Q ${halfW} ${-halfH} ${size} ${halfH} Q ${halfW} ${halfH * 3} 0 ${halfH} Z`;
     const closedPath = `M 0 ${halfH} Q ${halfW} ${halfH} ${size} ${halfH} Q ${halfW} ${halfH} 0 ${halfH} Z`;
+    const safeClipId = clipId.replace(/:/g, "_");
 
     return (
         <div ref={eyeRef} className={`relative inline-flex items-center justify-center ${className}`} style={{ width: size, height: halfH * 2 }}>
             <svg width={size} height={halfH * 2} viewBox={`0 0 ${size} ${halfH * 2}`} className="overflow-visible">
+                <defs>
+                    <clipPath id={safeClipId}>
+                        <motion.path
+                            d={isBlinking ? closedPath : openPath}
+                            initial={false}
+                            animate={{ d: isBlinking ? closedPath : openPath }}
+                            transition={{ duration: 0.1, ease: "easeInOut" }}
+                        />
+                    </clipPath>
+                </defs>
+                {/* Eye outline */}
                 <motion.path
                     d={isBlinking ? closedPath : openPath}
                     fill="white"
@@ -78,21 +91,11 @@ export default function EyeTracker({
                     animate={{ d: isBlinking ? closedPath : openPath }}
                     transition={{ duration: 0.1, ease: "easeInOut" }}
                 />
-                <clipPath id="eye-clip">
-                    <motion.path
-                        d={isBlinking ? closedPath : openPath}
-                        initial={false}
-                        animate={{ d: isBlinking ? closedPath : openPath }}
-                        transition={{ duration: 0.1, ease: "easeInOut" }}
-                    />
-                </clipPath>
-                <g clipPath="url(#eye-clip)">
-                    <motion.g style={{ x: pupilX, y: pupilY }}>
-                        {/* Main pupil */}
+                {/* Clipped pupil area */}
+                <g clipPath={`url(#${safeClipId})`}>
+                    <motion.g style={{ x: springX, y: springY }}>
                         <circle cx={halfW} cy={halfH} r={pupilSize} fill={pupilColor} />
-                        {/* Secondary color ring */}
                         <circle cx={halfW} cy={halfH} r={pupilSize * 0.6} fill={secondaryColor} />
-                        {/* Highlight */}
                         <circle cx={halfW + pupilSize * 0.3} cy={halfH - pupilSize * 0.3} r={pupilSize * 0.15} fill="white" opacity="0.8" />
                     </motion.g>
                 </g>

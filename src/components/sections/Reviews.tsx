@@ -4,29 +4,30 @@ import { useRef } from "react";
 import { motion, useInView } from "framer-motion";
 
 /*
-  코딩쏙 — Reviews Section (nodcoding-faithful clone)
-  Large colored blocks with rounded corners, big rating counters, progress lines
+  코딩쏙 — Reviews Section
+  Pixel-perfect nodcoding clone: img logos, sr-only /5, animated counter, rating line
+  Structure matches: .s-reviews > .u-container > h2 + ul.s__reviews > li.s__review
 */
 
 const REVIEWS = [
     {
         name: "네이버 스마트플레이스",
-        logoText: "N",
-        color: "#FFBABA",     // brand-7 pink
+        logo: "/images/reviews-naver.svg",
+        color: "#FFBABA",     // brand-7
         score: 4.9,
         href: "https://map.naver.com",
     },
     {
         name: "카카오맵",
-        logoText: "K",
-        color: "#FFD37D",     // brand-2 gold
+        logo: "/images/reviews-kakao.svg",
+        color: "#FFD37D",     // brand-2
         score: 4.8,
         href: "https://map.kakao.com",
     },
     {
         name: "구글 리뷰",
-        logoText: "G",
-        color: "#77C6B3",     // brand-4 teal
+        logo: "/images/reviews-google.svg",
+        color: "#77C6B3",     // brand-4
         score: 4.9,
         href: "https://maps.google.com",
     },
@@ -40,28 +41,15 @@ export default function Reviews() {
         <section
             ref={ref}
             className="s-reviews"
-            style={{
-                padding: "var(--section-spacing) 0",
-                background: "var(--color-white)",
-            }}
         >
             <div className="u-container">
-                {/* Title */}
-                <motion.h2
-                    className="s__title t-h-4xl"
-                    initial={{ opacity: 0, y: 50 }}
-                    animate={isInView ? { opacity: 1, y: 0 } : {}}
-                    transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-                >
-                    Reviews
-                </motion.h2>
+                <h2 className="s__title t-h-4xl">Reviews</h2>
 
-                {/* Reviews List */}
                 <ul className="s__reviews js-reviews">
                     {REVIEWS.map((r, i) => (
                         <motion.li
                             key={r.name}
-                            className="s__review"
+                            className={`s__review${isInView ? " is-inview" : ""}`}
                             initial={{ opacity: 0, y: 40 }}
                             animate={isInView ? { opacity: 1, y: 0 } : {}}
                             transition={{
@@ -69,7 +57,6 @@ export default function Reviews() {
                                 duration: 0.7,
                                 ease: [0.16, 1, 0.3, 1],
                             }}
-                            style={{ "--review-color": r.color } as React.CSSProperties}
                         >
                             <a
                                 href={r.href}
@@ -77,25 +64,31 @@ export default function Reviews() {
                                 target="_blank"
                                 rel="noreferrer"
                             >
-                                {/* Logo */}
-                                <div className="s__review__logo">
-                                    <span className="s__review__logo__text">
-                                        {r.logoText}
-                                    </span>
-                                    <span className="s__review__logo__name">
-                                        {r.name}
-                                    </span>
-                                </div>
+                                {/* Logo — img like nodcoding */}
+                                <img
+                                    loading="lazy"
+                                    src={r.logo}
+                                    alt={r.name}
+                                    className="s__review__logo js-logo"
+                                />
 
-                                {/* Rating */}
-                                <div className="s__review__rating">
-                                    <div className="s__review__rating__note">
-                                        <div className="s__review__rating__counter">
+                                {/* Rating block with colored bg */}
+                                <div
+                                    className="s__review__rating js-rating"
+                                    style={{ "--review-color": r.color } as React.CSSProperties}
+                                >
+                                    <div className="s__review__rating__note js-note">
+                                        <div
+                                            className="s__review__rating__counter js-counter"
+                                            data-note={r.score}
+                                        >
                                             {r.score}
                                         </div>
-                                        <div className="s__review__rating__slash">/5</div>
+
+                                        <div className="u-sr-only">/5</div>
                                     </div>
-                                    <div className="s__review__rating__line" />
+
+                                    <div className="s__review__rating__line js-line" />
                                 </div>
                             </a>
                         </motion.li>

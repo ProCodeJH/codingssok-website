@@ -2,23 +2,13 @@
 
 import { useRef, useEffect, useState, useCallback } from "react";
 
-/* ── 9 bubbles matching nodcoding's layout ── */
-const BUBBLES = [
-    { size: 80, speed: 0.6 },
-    { size: 60, speed: 0.8 },
-    { size: 100, speed: 0.5 },
-    { size: 50, speed: 0.9 },
-    { size: 90, speed: 0.7 },
-    { size: 70, speed: 0.4 },
-    { size: 85, speed: 0.65 },
-    { size: 55, speed: 0.85 },
-    { size: 75, speed: 0.55 },
-];
+/* ── 9 bubbles matching nodcoding ── */
+const BUBBLE_COUNT = 9;
 
 export default function InterludeBubbles() {
     const containerRef = useRef<HTMLDivElement>(null);
     const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
-    const [dims, setDims] = useState({ w: 1920, h: 980 });
+    const [containerW, setContainerW] = useState(1920);
 
     const handleMouseMove = useCallback((e: MouseEvent) => {
         if (!containerRef.current) return;
@@ -36,10 +26,7 @@ export default function InterludeBubbles() {
 
         const ro = new ResizeObserver((entries) => {
             for (const entry of entries) {
-                setDims({
-                    w: entry.contentRect.width,
-                    h: entry.contentRect.height,
-                });
+                setContainerW(entry.contentRect.width);
             }
         });
         ro.observe(el);
@@ -50,29 +37,34 @@ export default function InterludeBubbles() {
         };
     }, [handleMouseMove]);
 
-    /* ── SVG path matching nodcoding: line + two filled dots ── */
-    const W = dims.w;
-    const dotQ1 = W * 0.444; // ~3088/6960
-    const dotQ2 = W * 0.556; // ~3872/6960
+    /* ── SVG path — matches nodcoding: full-width line + two dots ── */
+    // nodcoding uses 6960px SVG width for ~1920 viewport, ratio ≈ 3.625x
+    const svgW = containerW * 3.625;
     const r = 6;
+    const dotLeft = svgW * 0.4437;  // ~3088/6960
+    const dotRight = svgW * 0.5563; // ~3872/6960
+    const qLeft = svgW * 0.1775;    // ~1235/6960
+    const qRight = svgW * 0.8225;   // ~5725/6960
 
     const pathD = [
         `M 0 3`,
-        `Q ${W * 0.178} 3 ${dotQ1} 3`,
+        `Q ${qLeft} 3 ${dotLeft} 3`,
         `m 0 0 a ${r} ${r} 0 1 0 ${r * 2} 0 a ${r} ${r} 0 1 0 -${r * 2} 0`,
-        `M ${W} 3`,
-        `Q ${W * 0.822} 3 ${dotQ2} 3`,
+        `M ${svgW} 3`,
+        `Q ${qRight} 3 ${dotRight} 3`,
         `m -${r * 2} 0 a ${r} ${r} 0 1 0 ${r * 2} 0 a ${r} ${r} 0 1 0 -${r * 2} 0`,
     ].join(" ");
 
-    /* ── Compute per-bubble mouse offset (tiny parallax) ── */
-    const bubbleOffset = (speed: number) => {
-        const factor = speed * 0.00001;
+    /* ── Per-bubble mouse offset (tiny parallax like nodcoding) ── */
+    const speeds = [0.5, 0.65, 0.8, 0.52, 0.68, 0.9, 0.55, 0.72, 0.95];
+
+    const bubbles = Array.from({ length: BUBBLE_COUNT }, (_, i) => {
+        const factor = speeds[i] * 0.000005;
         return {
             x: -(mousePos.x * factor),
-            y: mousePos.y * factor * 0.2,
+            y: -(mousePos.y * factor),
         };
-    };
+    });
 
     return (
         <div
@@ -83,44 +75,29 @@ export default function InterludeBubbles() {
                 ref={containerRef}
                 className="b-interlude-bubbles"
                 data-plr-component="b-interlude-bubbles"
-                style={
-                    {
-                        "--mouse-x": mousePos.x,
-                        "--mouse-y": mousePos.y,
-                    } as React.CSSProperties
-                }
             >
                 <div className="b__inner">
-                    {/* Wave decoration */}
-                    <div
-                        className="a-waves a-waves--white"
-                        data-plr-component="a-waves"
-                    />
-
                     {/* Bubbles — mouse-reactive */}
                     <div className="b__bubbles js-bubbles">
-                        {BUBBLES.map((bubble, i) => {
-                            const off = bubbleOffset(bubble.speed);
-                            return (
-                                <div
-                                    key={i}
-                                    className="b__bubble js-bubble"
-                                    style={
-                                        {
-                                            "--x": `${off.x}px`,
-                                            "--y": `${off.y}px`,
-                                        } as React.CSSProperties
-                                    }
-                                >
-                                    <div className="b__circle" />
-                                </div>
-                            );
-                        })}
+                        {bubbles.map((off, i) => (
+                            <div
+                                key={i}
+                                className="b__bubble js-bubble"
+                                style={
+                                    {
+                                        "--x": `${off.x}px`,
+                                        "--y": `${off.y}px`,
+                                    } as React.CSSProperties
+                                }
+                            >
+                                <div className="b__circle" />
+                            </div>
+                        ))}
                     </div>
 
-                    {/* SVG continuous line with two dots — white fill like nodcoding */}
+                    {/* SVG continuous line with two dots — white fill, 6960px wide */}
                     <svg
-                        width={W}
+                        width="1920"
                         height="980"
                         fill="none"
                         xmlns="http://www.w3.org/2000/svg"
@@ -128,11 +105,15 @@ export default function InterludeBubbles() {
                         overflow="visible"
                         preserveAspectRatio="none"
                         style={{
-                            width: `${W}px`,
+                            width: `${svgW}px`,
                             height: "6px",
                         }}
                     >
-                        <path d={pathD} fill="#fff" className="js-render-path" />
+                        <path
+                            d={pathD}
+                            fill="#fff"
+                            className="js-render-path"
+                        />
                     </svg>
 
                     <div className="b__ruler js-ruler" />

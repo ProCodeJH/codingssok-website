@@ -50,13 +50,16 @@ export default function Reviews() {
                         <motion.li
                             key={r.name}
                             className={`s__review${isInView ? " is-inview" : ""}`}
-                            initial={{ opacity: 0, y: 40 }}
+                            initial={{ opacity: 0, y: 30 }}
                             animate={isInView ? { opacity: 1, y: 0 } : {}}
                             transition={{
                                 delay: 0.15 * i,
-                                duration: 0.7,
+                                duration: 0.6,
                                 ease: [0.16, 1, 0.3, 1],
                             }}
+                            style={{
+                                "--review-delay": `${0.2 * i}s`,
+                            } as React.CSSProperties}
                         >
                             <a
                                 href={r.href}

@@ -850,7 +850,7 @@ section {
   transform: scale(1.05);
 }
 
-/* Rating area — colored bg extending from LEFT, rounded bottom-right */
+/* Rating area — colored bg extending from LEFT, grows with scaleX animation */
 .s__review__rating {
   flex: 1;
   display: flex;
@@ -862,17 +862,35 @@ section {
   position: relative;
   min-height: var(--height, 9.1667rem);
   z-index: 2;
-  transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+  /* KEY ANIMATION: bar grows from left */
+  transform-origin: left center;
+  transform: scaleX(0);
+  transition: transform 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+  transition-delay: var(--review-delay, 0s);
 }
 
+/* When in view — bar grows to full width */
+.s__review.is-inview .s__review__rating {
+  transform: scaleX(1);
+}
+
+/* Hover — subtle nudge */
 .s__review__link:hover .s__review__rating {
-  transform: translateX(4px);
+  transform: scaleX(1) translateX(4px);
 }
 
+/* Note/counter inside bar — fades in after bar grows */
 .s__review__rating__note {
   display: flex;
   align-items: baseline;
   gap: 0.35rem;
+  opacity: 0;
+  transition: opacity 0.6s ease;
+  transition-delay: calc(var(--review-delay, 0s) + 0.5s);
+}
+
+.s__review.is-inview .s__review__rating__note {
+  opacity: 1;
 }
 
 .s__review__rating__counter {
@@ -915,6 +933,7 @@ section {
   transform-origin: left;
   transform: scaleX(0);
   transition: transform 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+  transition-delay: calc(var(--review-delay, 0s) + 0.3s);
 }
 
 .s__review.is-inview .s__review__rating__line::after {

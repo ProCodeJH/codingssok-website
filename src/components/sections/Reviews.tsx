@@ -85,7 +85,7 @@ export default function Reviews() {
                                             {r.score}
                                         </div>
 
-                                        <div className="u-sr-only">/5</div>
+                                        <div className="s__review__rating__slash">/5</div>
                                     </div>
 
                                     <div className="s__review__rating__line js-line" />

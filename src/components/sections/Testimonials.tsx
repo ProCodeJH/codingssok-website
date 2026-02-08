@@ -4,11 +4,18 @@ import { useRef } from "react";
 import { motion, useInView } from "framer-motion";
 
 /*
-  코딩쏙 — Success Stories (pixel-perfect nodcoding clone)
-  Structure: .s-success-stories > h2.b-marquee.b-marquee--green + .u-container > .b-testimonials.b-testimonials--multiple
-  Each testimonial: .sb-testimonial > blockquote.sb__quote + .sb__line--before (first only) + .sb__line--after
-  Author: .sb__quote__author__photo > img + .sb__quote__author__content > __main + __secondary
+  코딩쏙 — Success Stories (nodcoding pixel-perfect clone)
+  Draggable horizontal slider with colored background cards
+  Structure: .s-success-stories > marquee + .u-container > .b-testimonials > slider
 */
+
+const CARD_COLORS = [
+    "#FFBABA", // pink
+    "#FFD37D", // gold
+    "#77C6B3", // teal
+    "#70A2E1", // blue
+    "#FFA37C", // orange
+];
 
 const STORIES = [
     {
@@ -44,6 +51,27 @@ const STORIES = [
             "아이가 코딩을 어려워했는데, 여기서 배우면서 자신감이 생겼어요. 선생님이 일일이 봐주시니까 따라가는 게 확실히 다릅니다. 소규모 수업이라 집중도가 높아요.",
         name: "강O미 학부모",
         secondary: "초등 4학년 · 스크래치 → C 전환",
+        photo: null,
+    },
+    {
+        quote:
+            "코딩쏙 수업 후 논리적으로 생각하는 습관이 생겼어요. 수학 성적도 덩달아 올랐습니다. 코딩이 사고력 훈련이라는 걸 실감했어요.",
+        name: "정O환",
+        secondary: "중학 3학년 · C/C++ 심화",
+        photo: null,
+    },
+    {
+        quote:
+            "다른 학원에서는 따라가기 힘들었는데 여기 소수 정예 수업이라 모르는 거 바로 물어볼 수 있어서 좋았어요. 코딩 실력이 확실히 늘었습니다.",
+        name: "한O민 학부모",
+        secondary: "초등 5학년 · Python 기초",
+        photo: null,
+    },
+    {
+        quote:
+            "대학 입시 준비하면서 소프트웨어 관련 생기부 내용을 채울 수 있었어요. 프로젝트 결과물이 면접 때 큰 도움이 됐습니다.",
+        name: "윤O현",
+        secondary: "고등 2학년 · 프로젝트 포트폴리오",
         photo: null,
     },
 ];
@@ -88,31 +116,36 @@ export default function Testimonials() {
                             className="b__testimonials-slider js-slider"
                             drag="x"
                             dragConstraints={{
-                                left: -(STORIES.length - 1) * 600,
+                                left: -(STORIES.length - 1) * 360,
                                 right: 0,
                             }}
+                            dragElastic={0.1}
                             style={{
                                 cursor: "grab",
                                 userSelect: "none",
                                 touchAction: "pan-y",
                             }}
+                            whileTap={{ cursor: "grabbing" }}
                         >
                             {STORIES.map((story, i) => (
                                 <motion.div
                                     key={i}
                                     className="sb-testimonial"
-                                    initial={{ opacity: 0, y: 40 }}
+                                    initial={{ opacity: 0, y: 30 }}
                                     animate={
                                         isInView
                                             ? { opacity: 1, y: 0 }
                                             : {}
                                     }
                                     transition={{
-                                        delay: 0.1 * i,
-                                        duration: 0.7,
+                                        delay: 0.08 * i,
+                                        duration: 0.6,
                                         ease: [0.16, 1, 0.3, 1],
                                     }}
-                                    style={{ touchAction: "pan-y" }}
+                                    style={{
+                                        touchAction: "pan-y",
+                                        "--card-bg": CARD_COLORS[i % CARD_COLORS.length],
+                                    } as React.CSSProperties}
                                 >
                                     <blockquote className="sb__quote">
                                         <div className="sb__quote__inner t-t-xl">
@@ -163,7 +196,7 @@ export default function Testimonials() {
                 </div>
             </div>
 
-            {/* ── Marquee Title (bottom, like nodcoding) ── */}
+            {/* ── Marquee Title (bottom) ── */}
             <h2
                 className="b-marquee s__title b-marquee--green t-h-2xl"
                 data-plr-component="b-marquee"

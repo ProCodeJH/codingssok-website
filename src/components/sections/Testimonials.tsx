@@ -146,6 +146,7 @@ export default function Testimonials() {
                                         touchAction: "pan-y",
                                     }}
                                 >
+                                    {/* Speech bubble card — quote only */}
                                     <blockquote className="sb__quote">
                                         <div className="sb__quote__inner t-t-xl">
                                             <p className="sb__quote__text">
@@ -153,35 +154,35 @@ export default function Testimonials() {
                                                 &nbsp;&rdquo;
                                             </p>
                                         </div>
-
-                                        <cite className="sb__quote__author t-t-sm">
-                                            {/* Photo or fallback icon */}
-                                            {story.photo ? (
-                                                <span className="sb__quote__author__photo">
-                                                    <img
-                                                        loading="lazy"
-                                                        src={story.photo}
-                                                        width={200}
-                                                        height={200}
-                                                        alt=""
-                                                    />
-                                                </span>
-                                            ) : (
-                                                <span className="sb__quote__author__photo sb__quote__author__photo--initial">
-                                                    {story.name.charAt(0)}
-                                                </span>
-                                            )}
-
-                                            <span className="sb__quote__author__content">
-                                                <span className="sb__quote__author__main">
-                                                    {story.name}
-                                                </span>
-                                                <span className="sb__quote__author__secondary">
-                                                    {story.secondary}
-                                                </span>
-                                            </span>
-                                        </cite>
                                     </blockquote>
+
+                                    {/* Author below card */}
+                                    <cite className="sb__quote__author t-t-sm">
+                                        {story.photo ? (
+                                            <span className="sb__quote__author__photo">
+                                                <img
+                                                    loading="lazy"
+                                                    src={story.photo}
+                                                    width={200}
+                                                    height={200}
+                                                    alt=""
+                                                />
+                                            </span>
+                                        ) : (
+                                            <span className="sb__quote__author__photo sb__quote__author__photo--initial">
+                                                {story.name.charAt(0)}
+                                            </span>
+                                        )}
+
+                                        <span className="sb__quote__author__content">
+                                            <span className="sb__quote__author__main">
+                                                {story.name}
+                                            </span>
+                                            <span className="sb__quote__author__secondary">
+                                                {story.secondary}
+                                            </span>
+                                        </span>
+                                    </cite>
 
                                     {/* First testimonial gets sb__line--before */}
                                     {i === 0 && (

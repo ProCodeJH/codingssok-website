@@ -196,21 +196,6 @@ export default function Testimonials() {
                 </div>
             </div>
 
-            {/* ── Marquee Title (bottom) ── */}
-            <h2
-                className="b-marquee s__title b-marquee--green t-h-2xl"
-                data-plr-component="b-marquee"
-                style={{ "--duration": "10.52s" } as React.CSSProperties}
-            >
-                <span className="b__word">{MARQUEE_TEXT}</span>
-                {Array.from({ length: 6 }).map((_, i) => (
-                    <span
-                        key={`btm-${i}`}
-                        className="b__ghost"
-                        data-title={MARQUEE_TEXT}
-                    />
-                ))}
-            </h2>
         </div>
     );
 }

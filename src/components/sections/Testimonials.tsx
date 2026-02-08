@@ -144,8 +144,7 @@ export default function Testimonials() {
                                     }}
                                     style={{
                                         touchAction: "pan-y",
-                                        "--card-bg": CARD_COLORS[i % CARD_COLORS.length],
-                                    } as React.CSSProperties}
+                                    }}
                                 >
                                     <blockquote className="sb__quote">
                                         <div className="sb__quote__inner t-t-xl">

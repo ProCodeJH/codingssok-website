@@ -116,7 +116,7 @@ export default function Testimonials() {
                             className="b__testimonials-slider js-slider"
                             drag="x"
                             dragConstraints={{
-                                left: -(STORIES.length - 1) * 840,
+                                left: -(STORIES.length - 1) * 590,
                                 right: 0,
                             }}
                             dragElastic={0.1}

@@ -8,6 +8,7 @@ import WhyUs from "@/components/sections/WhyUs";
 import Curriculum from "@/components/sections/Curriculum";
 import Reviews from "@/components/sections/Reviews";
 import Testimonials from "@/components/sections/Testimonials";
+import InterludeBubbles from "@/components/sections/InterludeBubbles";
 import Pricing from "@/components/sections/Pricing";
 import FAQ from "@/components/sections/FAQ";
 import Contact from "@/components/sections/Contact";
@@ -24,6 +25,7 @@ export default function Home() {
         <Curriculum />
         <Reviews />
         <Testimonials />
+        <InterludeBubbles />
         <Pricing />
         <FAQ />
         <Contact />

@@ -6,13 +6,13 @@ import { useRef, useEffect, useState, useCallback } from "react";
 const BUBBLE_COUNT = 9;
 
 export default function InterludeBubbles() {
-    const containerRef = useRef<HTMLDivElement>(null);
+    const outerRef = useRef<HTMLDivElement>(null);
     const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
-    const [containerW, setContainerW] = useState(1920);
+    const [outerW, setOuterW] = useState(1952);
 
     const handleMouseMove = useCallback((e: MouseEvent) => {
-        if (!containerRef.current) return;
-        const rect = containerRef.current.getBoundingClientRect();
+        if (!outerRef.current) return;
+        const rect = outerRef.current.getBoundingClientRect();
         setMousePos({
             x: e.clientX - rect.left,
             y: e.clientY - rect.top,
@@ -20,13 +20,13 @@ export default function InterludeBubbles() {
     }, []);
 
     useEffect(() => {
-        const el = containerRef.current;
+        const el = outerRef.current;
         if (!el) return;
         el.addEventListener("mousemove", handleMouseMove);
 
         const ro = new ResizeObserver((entries) => {
             for (const entry of entries) {
-                setContainerW(entry.contentRect.width);
+                setOuterW(entry.contentRect.width);
             }
         });
         ro.observe(el);
@@ -37,14 +37,19 @@ export default function InterludeBubbles() {
         };
     }, [handleMouseMove]);
 
-    /* ── SVG path — matches nodcoding: full-width line + two dots ── */
-    // nodcoding uses 6960px SVG width for ~1920 viewport, ratio ≈ 3.625x
-    const svgW = containerW * 3.625;
+    /* ── SVG geometry — reverse-engineered from nodcoding ──
+     * SVG width = container width
+     * Dots: center ± 392px (verified across 1952px and 6960px viewports)
+     * Q control points: 40% of distance from edge to dot
+     */
+    const svgW = outerW;
+    const centerX = svgW / 2;
+    const dotOffset = 392;
+    const dotLeft = centerX - dotOffset;
+    const dotRight = centerX + dotOffset;
+    const qLeft = dotLeft * 0.4;
+    const qRight = svgW - (svgW - dotRight) * 0.4;
     const r = 6;
-    const dotLeft = svgW * 0.4437;  // ~3088/6960
-    const dotRight = svgW * 0.5563; // ~3872/6960
-    const qLeft = svgW * 0.1775;    // ~1235/6960
-    const qRight = svgW * 0.8225;   // ~5725/6960
 
     const pathD = [
         `M 0 3`,
@@ -72,7 +77,7 @@ export default function InterludeBubbles() {
             data-plr-component="s-interlude"
         >
             <div
-                ref={containerRef}
+                ref={outerRef}
                 className="b-interlude-bubbles"
                 data-plr-component="b-interlude-bubbles"
             >
@@ -95,7 +100,7 @@ export default function InterludeBubbles() {
                         ))}
                     </div>
 
-                    {/* SVG continuous line with two dots — white fill, 6960px wide */}
+                    {/* SVG line with two dots — white fill */}
                     <svg
                         width="1920"
                         height="980"

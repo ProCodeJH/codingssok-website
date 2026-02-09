@@ -4,58 +4,57 @@ import { useRef, useEffect, useState } from "react";
 import Link from "next/link";
 
 /*
-  Pricing section — 코딩쏙 수강료
-  Uses nodcoding s-bootcamps pattern with proper CSS classes
-  3-column grid with bordered cards, accent color bars, feature lists
+  Pricing — exact nodcoding s-bootcamps pattern
+  Uses <ul class="s__bootcamps"> with <li class="s__bootcamp sb-bootcamp">
+  Each row has: title, schedule, format, location, price, apply button
+  Top has hills illustration container + heading
 */
 
-const plans = [
+const courses = [
     {
         name: "기초 과정",
+        topic: "C / Python 기초",
+        schedule: "상시 모집",
+        format: "주 2회 · 90분",
+        location: "수원",
         price: "월 20만원",
-        period: "주 2회 · 90분",
-        features: [
-            "C언어 or Python 기초",
-            "1:1 코드 리뷰",
-            "소수 정예 (최대 6명)",
-            "자체 교재 제공",
-            "학습 리포트 제공",
-        ],
-        color: "var(--color-brand-5)",
-        popular: false,
     },
     {
         name: "심화 과정",
+        topic: "알고리즘 · 정보올림피아드",
+        schedule: "상시 모집",
+        format: "주 2회 · 120분",
+        location: "수원",
         price: "월 28만원",
-        period: "주 2회 · 120분",
-        features: [
-            "알고리즘·정보올림피아드",
-            "실전 문제 풀이 위주",
-            "대회 출전 준비",
-            "모의고사 및 해설",
-            "개인 멘토링 포함",
-        ],
-        color: "var(--color-brand-1)",
-        popular: true,
     },
     {
         name: "자격증 과정",
+        topic: "정보처리기능사",
+        schedule: "상시 모집",
+        format: "주 3회 · 90분",
+        location: "수원",
         price: "월 25만원",
-        period: "주 3회 · 90분",
-        features: [
-            "정보처리기능사 완벽 대비",
-            "이론 + 실기 통합",
-            "기출문제 정복",
-            "모의시험 실시",
-            "합격 보장 프로그램",
-        ],
-        color: "var(--color-brand-4)",
-        popular: false,
+    },
+    {
+        name: "1:1 과외",
+        topic: "맞춤 커리큘럼",
+        schedule: "상시 모집",
+        format: "주 1~3회",
+        location: "수원 / 온라인",
+        price: "별도 문의",
+    },
+    {
+        name: "무료 체험",
+        topic: "레벨 테스트 + 상담",
+        schedule: "수시",
+        format: "1회 90분",
+        location: "수원",
+        price: "무료",
     },
 ];
 
 export default function Pricing() {
-    const ref = useRef<HTMLElement>(null);
+    const ref = useRef<HTMLDivElement>(null);
     const [isIn, setIsIn] = useState(false);
 
     useEffect(() => {
@@ -75,89 +74,95 @@ export default function Pricing() {
     }, []);
 
     return (
-        <section
+        <div
             ref={ref}
             id="pricing"
-            className={`s-pricing${isIn ? " is-in" : ""}`}
+            className={`s-bootcamps${isIn ? " is-in" : ""}`}
+            data-plr-component="s-bootcamps"
         >
-            <div className="u-container">
-                {/* Header */}
-                <div className="s__header">
-                    <div>
-                        <p className="s__subtitle">Pricing</p>
-                        <h2 className="s__title">수강료 안내</h2>
-                    </div>
-                </div>
-
-                {/* Price cards */}
-                <div className="s__cards">
-                    {plans.map((p) => (
-                        <div
-                            key={p.name}
-                            className={`sb-price-card${p.popular ? " sb-price-card--popular" : ""}`}
-                        >
-                            {/* Popular badge */}
-                            {p.popular && (
-                                <div className="sb-price-card__badge">인기</div>
-                            )}
-
-                            {/* Top accent bar */}
-                            <div
-                                className="sb-price-card__accent"
-                                style={{ background: p.color }}
-                            />
-
-                            <h3 className="sb-price-card__name">{p.name}</h3>
-                            <p className="sb-price-card__price">{p.price}</p>
-                            <p className="sb-price-card__period">{p.period}</p>
-
-                            {/* Features */}
-                            <ul className="sb-price-card__features">
-                                {p.features.map((f, j) => (
-                                    <li key={j}>
-                                        <svg
-                                            width="14"
-                                            height="14"
-                                            viewBox="0 0 14 14"
-                                            fill="none"
-                                        >
-                                            <path
-                                                d="M2 7l3.5 3.5L12 4"
-                                                stroke={p.color}
-                                                strokeWidth="2"
-                                                strokeLinecap="round"
-                                                strokeLinejoin="round"
-                                            />
-                                        </svg>
-                                        {f}
-                                    </li>
-                                ))}
-                            </ul>
-
-                            {/* CTA */}
-                            <div className="sb-price-card__cta">
-                                <Link href="#contact" className="btn-pill">
-                                    상담 예약
-                                    <svg
-                                        width="14"
-                                        height="14"
-                                        viewBox="0 0 14 14"
-                                        fill="none"
-                                    >
-                                        <path
-                                            d="M1 7h11M8 3l4 4-4 4"
-                                            stroke="currentColor"
-                                            strokeWidth="1.5"
-                                            strokeLinecap="round"
-                                            strokeLinejoin="round"
-                                        />
-                                    </svg>
-                                </Link>
-                            </div>
-                        </div>
-                    ))}
+            {/* Hills illustration placeholder */}
+            <div className="b-hills s__illus is-init">
+                <div className="b__hills">
+                    <svg
+                        className="b__svg"
+                        viewBox="0 0 1920 400"
+                        preserveAspectRatio="none"
+                        fill="none"
+                    >
+                        <path
+                            d="M0 400V200C320 50 640 0 960 100C1280 200 1600 150 1920 200V400H0Z"
+                            fill="var(--color-brand-4, #77C6B3)"
+                            opacity="0.15"
+                        />
+                    </svg>
                 </div>
             </div>
-        </section>
+
+            <div className="u-container">
+                {/* Header */}
+                <div className="s__header js-header lg-reveal is-in">
+                    <h2
+                        className="s__title t-h-md js-title"
+                        aria-label="수강 과정"
+                    >
+                        수강 과정
+                    </h2>
+                    <p className="s__intro js-intro">
+                        코딩쏙의 과정을 살펴보고, 나에게 맞는 수업을 찾아보세요.
+                    </p>
+                </div>
+
+                {/* Bootcamp list */}
+                <ul className="s__bootcamps js-bootcamps">
+                    {courses.map((c, i) => (
+                        <li
+                            key={i}
+                            className="s__bootcamp sb-bootcamp js-bootcamp"
+                        >
+                            <Link
+                                href="#contact"
+                                data-option={`${c.name} · ${c.topic} · ${c.format}`}
+                                className="sb__link"
+                            >
+                                <span className="sb__title">
+                                    <span className="a-bullet-point a-bullet-point--outline a-bullet-point--green" />
+                                    {c.name}
+                                </span>
+
+                                <span className="sb__dates">
+                                    {c.topic}
+                                </span>
+
+                                <span className="sb__duration">
+                                    {c.format}
+                                </span>
+
+                                <span className="sb__location">
+                                    {c.location}
+                                </span>
+
+                                <span className="sb__price">
+                                    {c.price}
+                                </span>
+
+                                <span className="sb__btn">
+                                    <span
+                                        className="btn-plain sb__btn__link"
+                                        data-plr-component="btn-plain"
+                                    >
+                                        <span className="btn-plain__inner">
+                                            <span className="btn-plain__text">
+                                                신청
+                                            </span>
+                                            <span className="btn-plain__arrow" />
+                                        </span>
+                                    </span>
+                                </span>
+                            </Link>
+                        </li>
+                    ))}
+                </ul>
+            </div>
+        </div>
     );
 }

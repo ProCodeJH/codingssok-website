@@ -1,21 +1,18 @@
 "use client";
 
-import { useRef } from "react";
-import { motion, useInView } from "framer-motion";
+import { useRef, useEffect, useState, useCallback } from "react";
 
 /*
   코딩쏙 — Success Stories (nodcoding pixel-perfect clone)
   Draggable horizontal slider with colored background cards
   Structure: .s-success-stories > marquee + .u-container > .b-testimonials > slider
-*/
 
-const CARD_COLORS = [
-    "#FFBABA", // pink
-    "#FFD37D", // gold
-    "#77C6B3", // teal
-    "#70A2E1", // blue
-    "#FFA37C", // orange
-];
+  CSS handles:
+  - Color cycling via --testimonial-color + nth-child(4n+2/3/4)
+  - Entry animation: translate3d(100vw,0,0) → translate3d(0,0,0) when .is-in
+  - Connecting lines + dots via .sb__line
+  - Speech bubble tail via SVG mask on .sb__quote__inner::after
+*/
 
 const STORIES = [
     {
@@ -79,12 +76,71 @@ const STORIES = [
 const MARQUEE_TEXT = "수강생 성공 스토리";
 
 export default function Testimonials() {
-    const ref = useRef<HTMLDivElement>(null);
-    const isInView = useInView(ref, { once: true, margin: "-80px" });
+    const sectionRef = useRef<HTMLDivElement>(null);
+    const sliderRef = useRef<HTMLDivElement>(null);
+    const [isInView, setIsInView] = useState(false);
+
+    /* Drag state */
+    const isDragging = useRef(false);
+    const startX = useRef(0);
+    const scrollLeft = useRef(0);
+    const currentTranslate = useRef(0);
+
+    /* IntersectionObserver for .is-in class */
+    useEffect(() => {
+        const el = sectionRef.current;
+        if (!el) return;
+        const obs = new IntersectionObserver(
+            ([entry]) => {
+                if (entry.isIntersecting) {
+                    setIsInView(true);
+                    obs.disconnect();
+                }
+            },
+            { rootMargin: "-80px" }
+        );
+        obs.observe(el);
+        return () => obs.disconnect();
+    }, []);
+
+    /* Drag handlers for the slider */
+    const onPointerDown = useCallback((e: React.PointerEvent) => {
+        const slider = sliderRef.current;
+        if (!slider) return;
+        isDragging.current = true;
+        startX.current = e.clientX;
+        scrollLeft.current = currentTranslate.current;
+        slider.style.cursor = "grabbing";
+        slider.setPointerCapture(e.pointerId);
+    }, []);
+
+    const onPointerMove = useCallback((e: React.PointerEvent) => {
+        if (!isDragging.current) return;
+        const dx = e.clientX - startX.current;
+        const newTranslate = scrollLeft.current + dx;
+        // Clamp: max 0 (left edge), min = -(sliderScrollWidth - containerWidth)
+        const slider = sliderRef.current;
+        if (!slider || !slider.parentElement) return;
+        const maxScroll = slider.scrollWidth - slider.parentElement.clientWidth;
+        currentTranslate.current = Math.max(
+            -maxScroll,
+            Math.min(0, newTranslate)
+        );
+        slider.style.transform = `translate3d(${currentTranslate.current}px, 0, 0)`;
+    }, []);
+
+    const onPointerUp = useCallback((e: React.PointerEvent) => {
+        isDragging.current = false;
+        const slider = sliderRef.current;
+        if (slider) {
+            slider.style.cursor = "grab";
+            slider.releasePointerCapture(e.pointerId);
+        }
+    }, []);
 
     return (
         <div
-            ref={ref}
+            ref={sectionRef}
             className="s-success-stories"
             data-plr-component="s-success-stories"
         >
@@ -107,46 +163,26 @@ export default function Testimonials() {
             <div className="u-container">
                 {/* ── Testimonials Slider ── */}
                 <div
-                    className={`b-testimonials b-testimonials--multiple lg-reveal${isInView ? " is-in" : ""}`}
+                    className={`b-testimonials b-testimonials--multiple${isInView ? " is-in" : ""}`}
                     data-plr-component="b-testimonials"
-                    data-lg-reveal=""
                 >
                     <div className="b__testimonials js-testimonials">
-                        <motion.div
+                        <div
+                            ref={sliderRef}
                             className="b__testimonials-slider js-slider"
-                            drag="x"
-                            dragConstraints={{
-                                left: -(STORIES.length - 1) * 860,
-                                right: 0,
-                            }}
-                            dragElastic={0.1}
-                            style={{
-                                cursor: "grab",
-                                userSelect: "none",
-                                touchAction: "pan-y",
-                            }}
-                            whileTap={{ cursor: "grabbing" }}
+                            style={{ cursor: "grab", touchAction: "pan-y" }}
+                            onPointerDown={onPointerDown}
+                            onPointerMove={onPointerMove}
+                            onPointerUp={onPointerUp}
+                            onPointerCancel={onPointerUp}
                         >
                             {STORIES.map((story, i) => (
-                                <motion.div
+                                <div
                                     key={i}
                                     className="sb-testimonial"
-                                    initial={{ opacity: 0, y: 30 }}
-                                    animate={
-                                        isInView
-                                            ? { opacity: 1, y: 0 }
-                                            : {}
-                                    }
-                                    transition={{
-                                        delay: 0.08 * i,
-                                        duration: 0.6,
-                                        ease: [0.16, 1, 0.3, 1],
-                                    }}
-                                    style={{
-                                        touchAction: "pan-y",
-                                    }}
+                                    style={{ touchAction: "pan-y" }}
                                 >
-                                    {/* Speech bubble card — quote only */}
+                                    {/* Speech bubble card */}
                                     <blockquote className="sb__quote">
                                         <div className="sb__quote__inner t-t-xl">
                                             <p className="sb__quote__text">
@@ -158,22 +194,9 @@ export default function Testimonials() {
 
                                     {/* Author below card */}
                                     <cite className="sb__quote__author t-t-sm">
-                                        {story.photo ? (
-                                            <span className="sb__quote__author__photo">
-                                                <img
-                                                    loading="lazy"
-                                                    src={story.photo}
-                                                    width={200}
-                                                    height={200}
-                                                    alt=""
-                                                />
-                                            </span>
-                                        ) : (
-                                            <span className="sb__quote__author__photo sb__quote__author__photo--initial">
-                                                {story.name.charAt(0)}
-                                            </span>
-                                        )}
-
+                                        <span className="sb__quote__author__photo sb__quote__author__photo--initial">
+                                            {story.name.charAt(0)}
+                                        </span>
                                         <span className="sb__quote__author__content">
                                             <span className="sb__quote__author__main">
                                                 {story.name}
@@ -184,18 +207,15 @@ export default function Testimonials() {
                                         </span>
                                     </cite>
 
-                                    {/* First testimonial gets sb__line--before */}
-                                    {i === 0 && (
-                                        <div className="sb__line sb__line--before" />
-                                    )}
+                                    {/* Connecting lines (all cards get both) */}
+                                    <div className="sb__line sb__line--before" />
                                     <div className="sb__line sb__line--after" />
-                                </motion.div>
+                                </div>
                             ))}
-                        </motion.div>
+                        </div>
                     </div>
                 </div>
             </div>
-
         </div>
     );
 }

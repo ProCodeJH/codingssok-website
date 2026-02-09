@@ -1,11 +1,11 @@
 "use client";
 
-import { useState, useRef } from "react";
-import { motion, AnimatePresence, useInView } from "framer-motion";
+import { useState, useRef, useEffect } from "react";
 
 /*
-  nodcoding "Questions?" → 코딩쏙 FAQ
-  Accordion with smooth expand/collapse
+  FAQ — 코딩쏙 자주 묻는 질문
+  Accordion with CSS-driven expand/collapse (no framer-motion)
+  Uses nodcoding accordion pattern with 3px solid borders
 */
 
 const faqs = [
@@ -35,109 +35,77 @@ const faqs = [
     },
 ];
 
-function AccordionItem({ q, a, isOpen, onClick }: { q: string; a: string; isOpen: boolean; onClick: () => void }) {
-    return (
-        <div
-            style={{
-                borderBottom: "1px solid var(--color-grey-2)",
-            }}
-        >
-            <button
-                onClick={onClick}
-                style={{
-                    width: "100%",
-                    display: "flex",
-                    justifyContent: "space-between",
-                    alignItems: "center",
-                    padding: "24px 0",
-                    background: "none",
-                    border: "none",
-                    cursor: "pointer",
-                    textAlign: "left",
-                    gap: 16,
-                }}
-            >
-                <span style={{ fontSize: "clamp(1rem, 2vw, 1.15rem)", fontWeight: 500, color: "var(--color-black)" }}>
-                    {q}
-                </span>
-                <motion.svg
-                    width="20"
-                    height="20"
-                    viewBox="0 0 20 20"
-                    fill="none"
-                    animate={{ rotate: isOpen ? 45 : 0 }}
-                    transition={{ duration: 0.3, ease: [0.645, 0.045, 0.355, 1] }}
-                    style={{ flexShrink: 0 }}
-                >
-                    <path d="M10 4v12M4 10h12" stroke="var(--color-brand-1)" strokeWidth="2" strokeLinecap="round" />
-                </motion.svg>
-            </button>
-
-            <AnimatePresence initial={false}>
-                {isOpen && (
-                    <motion.div
-                        initial={{ height: 0, opacity: 0 }}
-                        animate={{ height: "auto", opacity: 1 }}
-                        exit={{ height: 0, opacity: 0 }}
-                        transition={{ duration: 0.4, ease: [0.645, 0.045, 0.355, 1] }}
-                        style={{ overflow: "hidden" }}
-                    >
-                        <p style={{ paddingBottom: 24, fontSize: "var(--font-size-t-md)", color: "var(--color-grey)", lineHeight: 1.7, maxWidth: 640 }}>
-                            {a}
-                        </p>
-                    </motion.div>
-                )}
-            </AnimatePresence>
-        </div>
-    );
-}
-
 export default function FAQ() {
     const ref = useRef<HTMLElement>(null);
-    const isInView = useInView(ref, { once: true, margin: "-100px" });
+    const [isIn, setIsIn] = useState(false);
     const [openIndex, setOpenIndex] = useState<number | null>(0);
+
+    useEffect(() => {
+        const el = ref.current;
+        if (!el) return;
+        const obs = new IntersectionObserver(
+            ([e]) => {
+                if (e.isIntersecting) {
+                    setIsIn(true);
+                    obs.disconnect();
+                }
+            },
+            { rootMargin: "-80px" }
+        );
+        obs.observe(el);
+        return () => obs.disconnect();
+    }, []);
 
     return (
         <section
             ref={ref}
             id="faq"
-            style={{
-                padding: "var(--section-spacing) 0",
-                background: "var(--color-white)",
-            }}
+            className={`s-faq${isIn ? " is-in" : ""}`}
         >
-            <div className="container-nod" style={{ maxWidth: 800, margin: "0 auto" }}>
+            <div className="u-container">
                 {/* Header */}
-                <motion.div
-                    initial={{ opacity: 0, y: 40 }}
-                    animate={isInView ? { opacity: 1, y: 0 } : {}}
-                    transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-                    style={{ marginBottom: 60, textAlign: "center" }}
-                >
-                    <p style={{ fontSize: "var(--font-size-t-sm)", color: "var(--color-brand-1)", fontWeight: 600, marginBottom: 16, textTransform: "uppercase", letterSpacing: "0.1em" }}>
-                        Questions?
-                    </p>
-                    <h2 style={{ fontSize: "clamp(2rem, 4vw, var(--font-size-h-2xs))", fontWeight: 600, color: "var(--color-black)", lineHeight: 0.9, letterSpacing: "-0.03em" }}>
-                        자주 묻는 질문
-                    </h2>
-                </motion.div>
+                <div className="s__header">
+                    <p className="s__subtitle">Questions?</p>
+                    <h2 className="s__title">자주 묻는 질문</h2>
+                </div>
 
                 {/* Accordion */}
-                <motion.div
-                    initial={{ opacity: 0 }}
-                    animate={isInView ? { opacity: 1 } : {}}
-                    transition={{ delay: 0.2, duration: 0.6 }}
-                >
+                <div className="s__accordion">
                     {faqs.map((faq, i) => (
-                        <AccordionItem
+                        <div
                             key={i}
-                            q={faq.q}
-                            a={faq.a}
-                            isOpen={openIndex === i}
-                            onClick={() => setOpenIndex(openIndex === i ? null : i)}
-                        />
+                            className={`sb-accordion-item${openIndex === i ? " sb-accordion-item--open" : ""}`}
+                        >
+                            <button
+                                className="sb-accordion-item__trigger"
+                                onClick={() =>
+                                    setOpenIndex(openIndex === i ? null : i)
+                                }
+                            >
+                                <span>{faq.q}</span>
+                                <svg
+                                    className="sb-accordion-item__icon"
+                                    width="20"
+                                    height="20"
+                                    viewBox="0 0 20 20"
+                                    fill="none"
+                                >
+                                    <path
+                                        d="M10 4v12M4 10h12"
+                                        stroke="var(--color-brand-1)"
+                                        strokeWidth="2"
+                                        strokeLinecap="round"
+                                    />
+                                </svg>
+                            </button>
+                            <div className="sb-accordion-item__body">
+                                <p className="sb-accordion-item__answer">
+                                    {faq.a}
+                                </p>
+                            </div>
+                        </div>
                     ))}
-                </motion.div>
+                </div>
             </div>
         </section>
     );

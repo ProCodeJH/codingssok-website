@@ -86,12 +86,12 @@ export default function Events() {
                             whileHover={{ y: -8 }}
                         >
                             {/* Image */}
-                            <div style={{ position: "relative", aspectRatio: "16/10", overflow: "hidden" }}>
+                            <div style={{ position: "relative", aspectRatio: "4/3", overflow: "hidden", background: "#f5f3ef" }}>
                                 <Image
                                     src={event.image}
                                     alt={event.title}
                                     fill
-                                    style={{ objectFit: "cover" }}
+                                    style={{ objectFit: "contain" }}
                                     sizes="(max-width: 768px) 100vw, 33vw"
                                 />
                                 {/* Badge overlay */}

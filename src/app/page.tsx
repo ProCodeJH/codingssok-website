@@ -6,6 +6,9 @@ import Hero from "@/components/sections/Hero";
 import VideoHighlight from "@/components/sections/VideoHighlight";
 import WhyUs from "@/components/sections/WhyUs";
 import Curriculum from "@/components/sections/Curriculum";
+import Schedule from "@/components/sections/Schedule";
+import Gallery from "@/components/sections/Gallery";
+import Events from "@/components/sections/Events";
 import Reviews from "@/components/sections/Reviews";
 import Testimonials from "@/components/sections/Testimonials";
 import InterludeBubbles from "@/components/sections/InterludeBubbles";
@@ -23,6 +26,9 @@ export default function Home() {
         <VideoHighlight />
         <WhyUs />
         <Curriculum />
+        <Schedule />
+        <Gallery />
+        <Events />
         <Reviews />
         <Testimonials />
         <InterludeBubbles />

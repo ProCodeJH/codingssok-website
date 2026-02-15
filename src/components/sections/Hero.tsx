@@ -6,9 +6,8 @@ import FlowerLetter from "@/components/ui/FlowerLetter";
 import Link from "next/link";
 
 /*
-  코딩쏙 Hero — Lottie Flower Letters
-  Six letters (C, O, D, I, N, G) with Lottie flowers on stems
-  nodcoding.com style
+  코딩쏙 Hero — 브랜드 철학
+  "우리 아이의 코딩은 틀린 것이 아니라, 나만의 답을 찾아가는 과정입니다."
 */
 
 const LETTERS = [
@@ -27,7 +26,6 @@ export default function Hero() {
         offset: ["start start", "end start"],
     });
 
-    // SVG render path — white fill rises from bottom
     const renderY = useTransform(scrollYProgress, [0, 0.3], [670, 400]);
 
     return (
@@ -73,7 +71,7 @@ export default function Hero() {
                 ))}
             </div>
 
-            {/* ── s__content — heading + description ── */}
+            {/* ── 브랜드 철학 카피 ── */}
             <div className="s__content" style={{ width: "100%" }}>
                 <div className="u-container">
                     <h1 className="s__title s__title--lg t-h-xs">
@@ -91,8 +89,10 @@ export default function Hero() {
                             initial={{ opacity: 0, y: 30 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: 1.3, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+                            style={{ fontSize: "clamp(1rem, 2.5vw, 1.8rem)", lineHeight: 1.5, display: "block", marginTop: 16 }}
                         >
-                            대전 C·Python 코딩 전문 학원
+                            우리 아이의 코딩은 틀린 것이 아니라,<br />
+                            나만의 답을 찾아가는 과정입니다.
                         </motion.span>
                     </h1>
 
@@ -102,7 +102,7 @@ export default function Hero() {
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 1.6, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
                     >
-                        <p>AI 시대의 핵심 역량, 코딩을 배우세요. 커리어 전환이든 성장이든, 코딩은 당신의 삶을 영원히 바꿔줄 것입니다. 첫 걸음을 내딛고 코딩쏙의 C·Python 부트캠프에 지금 바로 지원하세요.</p>
+                        <p>정해진 기준에 아이를 맞추지 마세요. 코딩쏙은 스스로 문제를 정의하고 나만의 해결 기준을 만드는 <strong>&lsquo;진짜 교육&rsquo;</strong>을 지향합니다.</p>
                     </motion.div>
                 </div>
             </div>
@@ -122,20 +122,21 @@ export default function Hero() {
                     paddingRight: `calc(var(--container-offset) / 2)`,
                     maxWidth: "var(--container-max-width)",
                     width: "100%",
+                    flexWrap: "wrap",
                 }}
             >
                 <Link href="#contact" className="btn-pill btn-pill--primary">
-                    무료 상담 예약
+                    🎯 우리 아이 코딩 시작점 30초 체크
                     <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
                         <path d="M1 7h11M8 3l4 4-4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
                     </svg>
                 </Link>
                 <Link href="tel:010-7566-7229" className="btn-pill btn-pill--secondary">
-                    전화 문의
+                    📞 전화 문의
                 </Link>
             </motion.div>
 
-            {/* ── .b__render — SVG background shape ── */}
+            {/* ── SVG background shape ── */}
             <svg
                 className="b__render"
                 width="100%"

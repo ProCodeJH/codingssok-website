@@ -17,6 +17,7 @@ const navLinks = [
     { name: "수강료", href: "#pricing" },
     { name: "FAQ", href: "#faq" },
     { name: "문의", href: "#contact" },
+    { name: "학습 플랫폼", href: "/login" },
 ];
 
 /* ── SVG Menu Underline — nodcoding menu-item__line ── */
@@ -246,12 +247,24 @@ export default function Navbar() {
                         >
                             {navLinks.map((link) => (
                                 <li key={link.name} className="menu-item">
-                                    <MenuLink
-                                        name={link.name}
-                                        href={link.href}
-                                        isActive={activeSection === link.href.replace("#", "")}
-                                        onClick={handleNavClick}
-                                    />
+                                    {link.href.startsWith("/") ? (
+                                        <Link
+                                            href={link.href}
+                                            className="menu-link"
+                                            style={{ position: "relative", display: "inline-flex" }}
+                                        >
+                                            <span className="menu-item__text" data-text={link.name}>
+                                                {link.name}
+                                            </span>
+                                        </Link>
+                                    ) : (
+                                        <MenuLink
+                                            name={link.name}
+                                            href={link.href}
+                                            isActive={activeSection === link.href.replace("#", "")}
+                                            onClick={handleNavClick}
+                                        />
+                                    )}
                                 </li>
                             ))}
                         </ul>
@@ -299,7 +312,13 @@ export default function Navbar() {
                             <motion.a
                                 key={link.name}
                                 href={link.href}
-                                onClick={(e) => handleNavClick(e, link.href)}
+                                onClick={(e) => {
+                                    if (link.href.startsWith("/")) {
+                                        // Let Next.js handle internal links
+                                        return;
+                                    }
+                                    handleNavClick(e, link.href);
+                                }}
                                 initial={{ opacity: 0, x: -20 }}
                                 animate={{ opacity: 1, x: 0 }}
                                 transition={{ delay: i * 0.08 }}

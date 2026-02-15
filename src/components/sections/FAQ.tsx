@@ -1,109 +1,120 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useRef, useState } from "react";
+import { motion, useInView, AnimatePresence } from "framer-motion";
 
 /*
-  FAQ — 코딩쏙 자주 묻는 질문
-  Accordion with CSS-driven expand/collapse (no framer-motion)
-  Uses nodcoding accordion pattern with 3px solid borders
+  학부모 안심 FAQ — 신뢰 구축
+  수학, 타이핑, 피드백 관련 3개 핵심 FAQ
 */
 
 const faqs = [
     {
-        q: "수업은 어떤 방식으로 진행되나요?",
-        a: "소수 정예(최대 6명) 오프라인 수업입니다. 학생 수준에 맞춰 직접 코드를 치며 배우는 실습 중심 수업이고, 이론 설명 → 함께 풀기 → 자기 힘으로 풀기 3단계로 진행됩니다.",
+        q: "수학이 약하면 코딩이 어렵지 않나요?",
+        a: "오히려 수학을 시각적으로 구현하며 더 쉽게 이해하게 됩니다. 사고력 수학 트랙이 그 가교 역할을 합니다.",
     },
     {
-        q: "코딩을 전혀 모르는데 따라갈 수 있나요?",
-        a: "물론입니다. 절반 이상의 학생이 코딩 경험 0에서 시작합니다. 첫 수업에서 환경 설정부터 차근차근 안내하고, 개인별 속도에 맞춰 진도를 조절합니다.",
+        q: "저학년인데 타이핑이 느려도 괜찮을까요?",
+        a: "초기에는 블록코딩과 교구 조립 중심으로 진행하므로 타이핑 실력과 무관하게 시작할 수 있습니다.",
     },
     {
-        q: "무료 체험 수업이 있나요?",
-        a: "네, 첫 1회 무료 체험 수업을 제공합니다. 실제 수업과 동일한 방식으로 진행되며, 수업 후 학생 수준 진단과 학습 방향 상담을 드립니다.",
-    },
-    {
-        q: "정보올림피아드 준비도 가능한가요?",
-        a: "기초 과정 수료 후 심화 과정에서 정보올림피아드(정올) 대비가 가능합니다. 기출 문제 풀이, 알고리즘 유형별 학습, 모의 대회 등을 통해 체계적으로 준비합니다.",
-    },
-    {
-        q: "성인도 수강 가능한가요?",
-        a: "네, 코딩쏙은 초등학생부터 성인까지 전연령을 대상으로 합니다. 취업 준비, 자격증 취득, 직무 전환 등 목적에 맞춘 맞춤 커리큘럼을 제공합니다.",
-    },
-    {
-        q: "수업 장소와 시간은 어떻게 되나요?",
-        a: "수원 지역에서 진행됩니다. 평일 오후/저녁, 주말 시간대 선택 가능하며, 학생의 학교 일정에 맞춰 유연하게 조율합니다.",
+        q: "피드백은 어떻게 주시나요?",
+        a: "주간 단위로 아이가 직면한 문제와 해결 과정을 담은 개별 리포트를 전송해 드립니다.",
     },
 ];
 
 export default function FAQ() {
     const ref = useRef<HTMLElement>(null);
-    const [isIn, setIsIn] = useState(false);
-    const [openIndex, setOpenIndex] = useState<number | null>(0);
-
-    useEffect(() => {
-        const el = ref.current;
-        if (!el) return;
-        const obs = new IntersectionObserver(
-            ([e]) => {
-                if (e.isIntersecting) {
-                    setIsIn(true);
-                    obs.disconnect();
-                }
-            },
-            { rootMargin: "-80px" }
-        );
-        obs.observe(el);
-        return () => obs.disconnect();
-    }, []);
+    const isInView = useInView(ref, { once: true, margin: "-100px" });
+    const [openIndex, setOpenIndex] = useState<number | null>(null);
 
     return (
         <section
             ref={ref}
             id="faq"
-            className={`s-faq${isIn ? " is-in" : ""}`}
+            style={{
+                padding: "var(--section-spacing) 0",
+                background: "var(--color-beige)",
+            }}
         >
-            <div className="u-container">
-                {/* Header */}
-                <div className="s__header">
-                    <p className="s__subtitle">Questions?</p>
-                    <h2 className="s__title">자주 묻는 질문</h2>
-                </div>
+            <div className="container-nod" style={{ maxWidth: 800 }}>
+                <motion.div
+                    initial={{ opacity: 0, y: 40 }}
+                    animate={isInView ? { opacity: 1, y: 0 } : {}}
+                    transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+                    style={{ marginBottom: 60, textAlign: "center" }}
+                >
+                    <p style={{ fontSize: "var(--font-size-t-sm)", color: "var(--color-brand-3)", fontWeight: 600, marginBottom: 16, textTransform: "uppercase", letterSpacing: "0.1em" }}>
+                        FAQ
+                    </p>
+                    <h2 style={{ fontSize: "clamp(1.8rem, 3.5vw, var(--font-size-h-2xs))", fontWeight: 600, color: "var(--color-black)", lineHeight: 1.1 }}>
+                        학부모님이 자주<br />묻는 질문
+                    </h2>
+                </motion.div>
 
-                {/* Accordion */}
-                <div className="s__accordion">
+                <div style={{ display: "flex", flexDirection: "column", gap: 1 }}>
                     {faqs.map((faq, i) => (
-                        <div
+                        <motion.div
                             key={i}
-                            className={`sb-accordion-item${openIndex === i ? " sb-accordion-item--open" : ""}`}
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={isInView ? { opacity: 1, y: 0 } : {}}
+                            transition={{ delay: 0.08 * i, duration: 0.6 }}
+                            style={{
+                                background: "var(--color-white)",
+                                borderRadius: i === 0 ? "16px 16px 0 0" : i === faqs.length - 1 ? "0 0 16px 16px" : 0,
+                                overflow: "hidden",
+                            }}
                         >
                             <button
-                                className="sb-accordion-item__trigger"
-                                onClick={() =>
-                                    setOpenIndex(openIndex === i ? null : i)
-                                }
+                                onClick={() => setOpenIndex(openIndex === i ? null : i)}
+                                style={{
+                                    width: "100%",
+                                    display: "flex",
+                                    alignItems: "center",
+                                    justifyContent: "space-between",
+                                    padding: "24px 32px",
+                                    background: "none",
+                                    border: "none",
+                                    cursor: "pointer",
+                                    textAlign: "left",
+                                }}
                             >
-                                <span>{faq.q}</span>
-                                <svg
-                                    className="sb-accordion-item__icon"
-                                    width="20"
-                                    height="20"
-                                    viewBox="0 0 20 20"
-                                    fill="none"
+                                <span style={{ fontSize: "clamp(1rem, 1.8vw, 1.15rem)", fontWeight: 600, color: "var(--color-black)" }}>
+                                    {faq.q}
+                                </span>
+                                <motion.span
+                                    animate={{ rotate: openIndex === i ? 45 : 0 }}
+                                    style={{
+                                        fontSize: 24,
+                                        color: "var(--color-brand-1)",
+                                        flexShrink: 0,
+                                        marginLeft: 16,
+                                    }}
                                 >
-                                    <path
-                                        d="M10 4v12M4 10h12"
-                                        stroke="var(--color-brand-1)"
-                                        strokeWidth="2"
-                                        strokeLinecap="round"
-                                    />
-                                </svg>
+                                    +
+                                </motion.span>
                             </button>
-                            <div className="sb-accordion-item__body">
-                                <p className="sb-accordion-item__answer">
-                                    {faq.a}
-                                </p>
-                            </div>
-                        </div>
+                            <AnimatePresence>
+                                {openIndex === i && (
+                                    <motion.div
+                                        initial={{ height: 0, opacity: 0 }}
+                                        animate={{ height: "auto", opacity: 1 }}
+                                        exit={{ height: 0, opacity: 0 }}
+                                        transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+                                        style={{ overflow: "hidden" }}
+                                    >
+                                        <p style={{
+                                            padding: "0 32px 24px",
+                                            fontSize: "var(--font-size-t-md)",
+                                            color: "var(--color-grey)",
+                                            lineHeight: 1.7,
+                                        }}>
+                                            {faq.a}
+                                        </p>
+                                    </motion.div>
+                                )}
+                            </AnimatePresence>
+                        </motion.div>
                     ))}
                 </div>
             </div>

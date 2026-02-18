@@ -136,6 +136,37 @@ export default function Hero() {
                 </Link>
             </motion.div>
 
+            {/* ── Scroll Down Indicator ── */}
+            <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 2.5, duration: 0.8 }}
+                style={{
+                    position: "absolute",
+                    bottom: 40,
+                    left: "50%",
+                    transform: "translateX(-50%)",
+                    zIndex: 5,
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "center",
+                    gap: 8,
+                }}
+            >
+                <span style={{ fontSize: 11, color: "#999", letterSpacing: "0.15em", textTransform: "uppercase", fontWeight: 500 }}>scroll</span>
+                <motion.div
+                    animate={{ y: [0, 8, 0] }}
+                    transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
+                    style={{ width: 20, height: 32, borderRadius: 10, border: "2px solid rgba(0,0,0,0.15)", display: "flex", justifyContent: "center", paddingTop: 6 }}
+                >
+                    <motion.div
+                        animate={{ opacity: [1, 0], y: [0, 10] }}
+                        transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
+                        style={{ width: 3, height: 6, borderRadius: 2, background: "rgba(0,0,0,0.3)" }}
+                    />
+                </motion.div>
+            </motion.div>
+
             {/* ── SVG background shape ── */}
             <svg
                 className="b__render"

@@ -1,6 +1,10 @@
 "use client";
 
 import MouseTracker from "@/components/effects/MouseTracker";
+import SmoothScroll from "@/components/effects/SmoothScroll";
+import ScrollProgress from "@/components/effects/ScrollProgress";
+import PageLoader from "@/components/effects/PageLoader";
+import BackToTop from "@/components/effects/BackToTop";
 import Navbar from "@/components/layout/Navbar";
 import Hero from "@/components/sections/Hero";
 import VideoHighlight from "@/components/sections/VideoHighlight";
@@ -19,24 +23,29 @@ import Footer from "@/components/layout/Footer";
 
 export default function Home() {
   return (
-    <MouseTracker>
-      <main>
-        <Navbar />
-        <Hero />
-        <VideoHighlight />
-        <WhyUs />
-        <Curriculum />
-        <Schedule />
-        <Gallery />
-        <Events />
-        <Reviews />
-        <Testimonials />
-        <InterludeBubbles />
-        <Pricing />
-        <FAQ />
-        <Contact />
-        <Footer />
-      </main>
-    </MouseTracker>
+    <SmoothScroll>
+      <MouseTracker>
+        <PageLoader />
+        <ScrollProgress />
+        <main>
+          <Navbar />
+          <Hero />
+          <VideoHighlight />
+          <WhyUs />
+          <Curriculum />
+          <Schedule />
+          <Gallery />
+          <Events />
+          <Reviews />
+          <Testimonials />
+          <InterludeBubbles />
+          <Pricing />
+          <FAQ />
+          <Contact />
+          <Footer />
+        </main>
+        <BackToTop />
+      </MouseTracker>
+    </SmoothScroll>
   );
 }

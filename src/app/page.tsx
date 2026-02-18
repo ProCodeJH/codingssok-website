@@ -8,6 +8,7 @@ import BackToTop from "@/components/effects/BackToTop";
 import Navbar from "@/components/layout/Navbar";
 import Hero from "@/components/sections/Hero";
 import VideoHighlight from "@/components/sections/VideoHighlight";
+import TechMarquee from "@/components/sections/TechMarquee";
 import WhyUs from "@/components/sections/WhyUs";
 import Curriculum from "@/components/sections/Curriculum";
 import Schedule from "@/components/sections/Schedule";
@@ -31,6 +32,7 @@ export default function Home() {
           <Navbar />
           <Hero />
           <VideoHighlight />
+          <TechMarquee />
           <WhyUs />
           <Curriculum />
           <Schedule />

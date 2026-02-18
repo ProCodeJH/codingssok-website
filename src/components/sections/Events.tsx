@@ -5,7 +5,9 @@ import { motion, useInView } from "framer-motion";
 import Image from "next/image";
 
 /*
-  Events — 공모전·대회 안내 (내용 강화 + 반응형)
+  Events — 대회·공모전 타임라인 레이아웃
+  *(yantra 좌우 교차 + heroines 이벤트 카드 + noah 스크롤 reveal)*
+  이미지↔텍스트 좌우 교차 배치 + 중앙 타임라인 라인
 */
 
 const events = [
@@ -16,7 +18,7 @@ const events = [
         date: "2025년 8월",
         location: "서울 코엑스",
         badge: "🥇 금상 수상",
-        color: "var(--color-brand-1)",
+        color: "#EC5212",
     },
     {
         image: "/images/events/competition-2.jpg",
@@ -25,7 +27,7 @@ const events = [
         date: "2025년 11월",
         location: "대전 KAIST",
         badge: "🏆 본선 진출",
-        color: "var(--color-brand-4)",
+        color: "#77C6B3",
     },
     {
         image: "/images/events/competition-3.png",
@@ -34,105 +36,183 @@ const events = [
         date: "2025년 12월",
         location: "온라인 개최",
         badge: "🎖️ 우수상 수상",
-        color: "var(--color-brand-3)",
+        color: "#70A2E1",
     },
 ];
 
+function TimelineCard({ event, index, isInView }: { event: typeof events[0]; index: number; isInView: boolean }) {
+    const isEven = index % 2 === 0;
+
+    return (
+        <motion.div
+            initial={{ opacity: 0, x: isEven ? -60 : 60 }}
+            animate={isInView ? { opacity: 1, x: 0 } : {}}
+            transition={{ delay: 0.2 * index, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+            style={{
+                display: "grid",
+                gridTemplateColumns: "1fr auto 1fr",
+                gap: "clamp(16px, 3vw, 40px)",
+                alignItems: "center",
+                marginBottom: "clamp(32px, 5vw, 56px)",
+            }}
+        >
+            {/* Left side */}
+            <div style={{ order: isEven ? 1 : 3 }}>
+                {isEven ? (
+                    <EventContent event={event} align="right" />
+                ) : (
+                    <EventImage event={event} />
+                )}
+            </div>
+
+            {/* Center timeline dot */}
+            <div style={{ order: 2, display: "flex", flexDirection: "column", alignItems: "center" }}>
+                <motion.div
+                    initial={{ scale: 0 }}
+                    animate={isInView ? { scale: 1 } : {}}
+                    transition={{ delay: 0.3 + index * 0.15, type: "spring", stiffness: 300 }}
+                    style={{
+                        width: 16, height: 16, borderRadius: 999,
+                        background: event.color,
+                        border: "3px solid #fff",
+                        boxShadow: `0 0 0 3px ${event.color}33, 0 2px 12px rgba(0,0,0,0.1)`,
+                        position: "relative", zIndex: 2,
+                    }}
+                />
+            </div>
+
+            {/* Right side */}
+            <div style={{ order: isEven ? 3 : 1 }}>
+                {isEven ? (
+                    <EventImage event={event} />
+                ) : (
+                    <EventContent event={event} align="left" />
+                )}
+            </div>
+        </motion.div>
+    );
+}
+
+function EventContent({ event, align }: { event: typeof events[0]; align: "left" | "right" }) {
+    return (
+        <div style={{ textAlign: align, padding: "clamp(16px, 2vw, 24px) 0" }}>
+            <span style={{
+                display: "inline-block",
+                fontSize: 12, fontWeight: 700, color: "#fff",
+                background: event.color, padding: "4px 12px", borderRadius: 6,
+                marginBottom: 12, letterSpacing: "0.05em",
+            }}>
+                {event.badge}
+            </span>
+            <h3 style={{ fontSize: "clamp(20px, 3vw, 26px)", fontWeight: 700, color: "#1a1a1a", marginBottom: 10, lineHeight: 1.2 }}>
+                {event.title}
+            </h3>
+            <p style={{ fontSize: 14, color: "#777", lineHeight: 1.7, marginBottom: 16 }}>
+                {event.desc}
+            </p>
+            <div style={{ display: "flex", gap: 16, fontSize: 13, color: "#999", justifyContent: align === "right" ? "flex-end" : "flex-start" }}>
+                <span>📅 {event.date}</span>
+                <span>📍 {event.location}</span>
+            </div>
+        </div>
+    );
+}
+
+function EventImage({ event }: { event: typeof events[0] }) {
+    return (
+        <motion.div
+            whileHover={{ scale: 1.03 }}
+            style={{
+                borderRadius: 20, overflow: "hidden",
+                boxShadow: "0 8px 32px rgba(0,0,0,0.08)",
+                position: "relative",
+                aspectRatio: "4/3",
+                background: "#f5f3ef",
+            }}
+        >
+            <Image
+                src={event.image}
+                alt={event.title}
+                fill
+                style={{ objectFit: "contain" }}
+                sizes="(max-width: 768px) 100vw, 50vw"
+            />
+        </motion.div>
+    );
+}
+
 export default function Events() {
     const ref = useRef<HTMLElement>(null);
-    const isInView = useInView(ref, { once: true, margin: "-100px" });
+    const isInView = useInView(ref, { once: true, margin: "-80px" });
 
     return (
         <section
             ref={ref}
             id="events"
             style={{
-                padding: "var(--section-spacing) 0",
+                padding: "clamp(80px, 12vw, 160px) 0",
                 background: "var(--color-beige)",
+                position: "relative",
             }}
         >
             <div className="container-nod">
+                {/* Section header */}
                 <motion.div
                     initial={{ opacity: 0, y: 40 }}
                     animate={isInView ? { opacity: 1, y: 0 } : {}}
-                    transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-                    style={{ marginBottom: 60, textAlign: "center" }}
+                    transition={{ duration: 0.8 }}
+                    style={{ textAlign: "center", marginBottom: "clamp(48px, 6vw, 80px)" }}
                 >
-                    <p style={{ fontSize: "var(--font-size-t-sm)", color: "var(--color-brand-1)", fontWeight: 600, marginBottom: 16, textTransform: "uppercase", letterSpacing: "0.1em" }}>
+                    <p style={{ fontSize: 13, color: "#EC5212", fontWeight: 700, marginBottom: 16, textTransform: "uppercase", letterSpacing: "0.15em" }}>
                         Achievements
                     </p>
-                    <h2 style={{ fontSize: "clamp(2rem, 4vw, var(--font-size-h-2xs))", fontWeight: 600, color: "var(--color-black)", lineHeight: 1.1 }}>
+                    <h2 style={{ fontSize: "clamp(28px, 5vw, 48px)", fontWeight: 800, color: "#1a1a1a", lineHeight: 1.15, letterSpacing: "-0.03em" }}>
                         대회·공모전 성과
                     </h2>
-                    <p style={{ fontSize: "var(--font-size-t-md)", color: "var(--color-grey)", marginTop: 16, maxWidth: 500, margin: "16px auto 0" }}>
-                        코딩쏙 학생들의 도전과 성취를 기록합니다.
+                    <p style={{ fontSize: 15, color: "#888", marginTop: 12 }}>
+                        코딩쏙 학생들의 도전과 성취를 기록합니다
                     </p>
                 </motion.div>
 
-                {/* Events cards */}
-                <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(300px, 100%), 1fr))", gap: 24 }}>
-                    {events.map((event, i) => (
-                        <motion.div
-                            key={i}
-                            initial={{ opacity: 0, y: 30 }}
-                            animate={isInView ? { opacity: 1, y: 0 } : {}}
-                            transition={{ delay: 0.15 * i, duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
-                            style={{
-                                background: "var(--color-white)",
-                                borderRadius: 20,
-                                overflow: "hidden",
-                                transition: "transform 0.3s var(--ease-nod)",
-                            }}
-                            whileHover={{ y: -8 }}
-                        >
-                            {/* Image */}
-                            <div style={{ position: "relative", aspectRatio: "4/3", overflow: "hidden", background: "#f5f3ef" }}>
-                                <Image
-                                    src={event.image}
-                                    alt={event.title}
-                                    fill
-                                    style={{ objectFit: "contain" }}
-                                    sizes="(max-width: 768px) 100vw, 33vw"
-                                />
-                                {/* Badge overlay */}
-                                <span style={{
-                                    position: "absolute", top: 12, right: 12,
-                                    background: "rgba(255,255,255,0.95)", backdropFilter: "blur(10px)",
-                                    padding: "6px 12px", borderRadius: 999,
-                                    fontSize: 12, fontWeight: 700, color: "#1a1a1a",
-                                    boxShadow: "0 2px 12px rgba(0,0,0,0.1)",
-                                }}>
-                                    {event.badge}
-                                </span>
-                            </div>
+                {/* Timeline */}
+                <div style={{ position: "relative", maxWidth: 900, margin: "0 auto" }}>
+                    {/* Center line */}
+                    <motion.div
+                        initial={{ scaleY: 0 }}
+                        animate={isInView ? { scaleY: 1 } : {}}
+                        transition={{ duration: 1.2, ease: "easeOut" }}
+                        style={{
+                            position: "absolute",
+                            left: "50%",
+                            top: 0,
+                            bottom: 0,
+                            width: 2,
+                            background: "linear-gradient(180deg, rgba(0,0,0,0.06), rgba(0,0,0,0.02))",
+                            transformOrigin: "top",
+                            zIndex: 1,
+                        }}
+                    />
 
-                            {/* Content */}
-                            <div style={{ padding: "24px 28px" }}>
-                                <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 10 }}>
-                                    <span style={{
-                                        fontSize: 11, fontWeight: 700, color: "var(--color-white)",
-                                        background: event.color, padding: "3px 10px", borderRadius: 6,
-                                        textTransform: "uppercase", letterSpacing: "0.05em",
-                                    }}>
-                                        Achievement
-                                    </span>
-                                </div>
-                                <h3 style={{ fontSize: "var(--font-size-t-lg)", fontWeight: 600, color: "var(--color-black)", margin: "0 0 8px", lineHeight: 1.2 }}>
-                                    {event.title}
-                                </h3>
-                                <p style={{ fontSize: "var(--font-size-t-md)", color: "var(--color-grey)", lineHeight: 1.6, marginBottom: 16 }}>
-                                    {event.desc}
-                                </p>
-                                {/* Date & Location */}
-                                <div style={{ display: "flex", gap: 16, fontSize: 12, color: "#999" }}>
-                                    <span>📅 {event.date}</span>
-                                    <span>📍 {event.location}</span>
-                                </div>
-                            </div>
-                        </motion.div>
+                    {events.map((event, i) => (
+                        <TimelineCard key={i} event={event} index={i} isInView={isInView} />
                     ))}
                 </div>
             </div>
+
+            {/* Mobile fallback: stack vertically */}
+            <style>{`
+        @media (max-width: 768px) {
+          #events [style*="grid-template-columns: 1fr auto 1fr"] {
+            grid-template-columns: auto 1fr !important;
+          }
+          #events [style*="order: 3"] {
+            order: 2 !important;
+          }
+          #events [style*="order: 1"][style*="text-align: right"] {
+            text-align: left !important;
+          }
+        }
+      `}</style>
         </section>
     );
 }

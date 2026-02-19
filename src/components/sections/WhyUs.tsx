@@ -79,7 +79,7 @@ function FeatureCard({ r, i, isInView }: { r: typeof reasons[0]; i: number; isIn
                 transition={{ type: "spring", stiffness: 300, damping: 20 }}
                 style={{
                     background: "#fff",
-                    borderRadius: 24,
+                    borderRadius: 16,
                     padding: "clamp(28px, 4vw, 40px)",
                     position: "relative",
                     overflow: "hidden",
@@ -95,7 +95,7 @@ function FeatureCard({ r, i, isInView }: { r: typeof reasons[0]; i: number; isIn
                 <div style={{
                     position: "absolute", top: 0, left: 0, right: 0, height: 4,
                     background: `linear-gradient(90deg, ${r.accentColor}, ${r.accentColor}88)`,
-                    borderRadius: "24px 24px 0 0",
+                    borderRadius: "16px 16px 0 0",
                 }} />
 
                 {/* Number + Icon row */}

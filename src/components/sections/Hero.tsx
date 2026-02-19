@@ -85,13 +85,13 @@ export default function Hero() {
                         </motion.span>
 
                         <motion.span
-                            className="s__title__secondary"
+                            className="s__title__secondary coddy-typing coddy-blink-caret"
                             initial={{ opacity: 0, y: 30 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: 1.3, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
                             style={{ fontSize: "clamp(1rem, 2.5vw, 1.8rem)", lineHeight: 1.5, display: "block", marginTop: 16 }}
                         >
-                            우리 아이의 코딩은 틀린 것이 아니라,<br />
+                            우리 아이의 코딩은 틀린 것이 아니라,
                             나만의 답을 찾아가는 과정입니다.
                         </motion.span>
                     </h1>
@@ -155,9 +155,9 @@ export default function Hero() {
             >
                 <span style={{ fontSize: 11, color: "#999", letterSpacing: "0.15em", textTransform: "uppercase", fontWeight: 500 }}>scroll</span>
                 <motion.div
-                    animate={{ y: [0, 8, 0] }}
-                    transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
-                    style={{ width: 20, height: 32, borderRadius: 10, border: "2px solid rgba(0,0,0,0.15)", display: "flex", justifyContent: "center", paddingTop: 6 }}
+                    animate={{ y: [0, 10, 0] }}
+                    transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+                    style={{ width: 24, height: 36, borderRadius: 12, border: "2px solid rgba(0,0,0,0.15)", display: "flex", justifyContent: "center", paddingTop: 6 }}
                 >
                     <motion.div
                         animate={{ opacity: [1, 0], y: [0, 10] }}

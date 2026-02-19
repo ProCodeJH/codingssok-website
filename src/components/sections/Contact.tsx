@@ -1,13 +1,22 @@
 "use client";
 
 import { useRef, useState, useEffect } from "react";
+import { motion } from "framer-motion";
 import Link from "next/link";
 
 /*
-  Contact / CTA — exact nodcoding s-content-1 pattern
-  Background shape on right side, content on left with title + body text + CTA btn
-  Structure: div.s-content-1 > u-container > div.s__inner > div.s__content + div.s__shape
+  Contact — Coddy 스플릿 스크린 패턴 + 코딩쏙 브랜드
+  - 왼쪽: 정보 + 소셜 + 장점 카드
+  - 오른쪽: 문의 폼 카드 (16px radius)
+  - 다크 섹션 배경 (Coddy 그라데이션)
 */
+
+const BENEFITS = [
+    { icon: "🎯", title: "1:1 맞춤 커리큘럼" },
+    { icon: "👨‍💻", title: "현직 IT 전문가 강사" },
+    { icon: "📊", title: "주간 학습 리포트" },
+    { icon: "🎁", title: "무료 체험 수업" },
+];
 
 export default function Contact() {
     const ref = useRef<HTMLDivElement>(null);
@@ -17,12 +26,7 @@ export default function Contact() {
         const el = ref.current;
         if (!el) return;
         const obs = new IntersectionObserver(
-            ([e]) => {
-                if (e.isIntersecting) {
-                    setIsIn(true);
-                    obs.disconnect();
-                }
-            },
+            ([e]) => { if (e.isIntersecting) { setIsIn(true); obs.disconnect(); } },
             { rootMargin: "-80px" }
         );
         obs.observe(el);
@@ -33,48 +37,196 @@ export default function Contact() {
         <div
             ref={ref}
             id="contact"
-            className={`s-content-1${isIn ? " is-in" : ""}`}
-            data-plr-component="s-content-1"
+            style={{
+                padding: "var(--section-spacing) 0",
+                background: "linear-gradient(135deg, #2a2420 0%, #1e1c1a 50%, #252320 100%)",
+                position: "relative",
+                overflow: "hidden",
+            }}
         >
-            {/* Background — nodcoding uses a rounded shaped bg */}
-            <div className="s__background" />
+            {/* Background glow */}
+            <div style={{
+                position: "absolute", top: "-20%", right: "-10%",
+                width: 500, height: 500, borderRadius: "50%",
+                background: "radial-gradient(circle, rgba(236,82,18,0.1) 0%, transparent 70%)",
+                pointerEvents: "none",
+            }} />
 
-            <div className="u-container">
-                <div className="s__inner">
-                    {/* Content column */}
-                    <div className="s__content">
-                        <h2 className="s__title t-h-2xs">
-                            코딩의 시작,
-                            <br />
+            <div className="u-container" style={{ maxWidth: 1200, margin: "0 auto", padding: "0 clamp(16px, 3vw, 40px)" }}>
+                <div style={{
+                    display: "grid",
+                    gridTemplateColumns: "1fr 1fr",
+                    gap: "clamp(32px, 5vw, 80px)",
+                    alignItems: "center",
+                }}>
+                    {/* ── 왼쪽: 정보 ── */}
+                    <motion.div
+                        initial={{ opacity: 0, x: -30 }}
+                        animate={isIn ? { opacity: 1, x: 0 } : {}}
+                        transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+                    >
+                        <span style={{
+                            display: "inline-block", fontSize: 12, fontWeight: 700,
+                            color: "#EC5212", letterSpacing: "0.15em", textTransform: "uppercase",
+                            marginBottom: 16,
+                        }}>CONTACT US</span>
+
+                        <h2 style={{
+                            fontSize: "clamp(2rem, 4vw, 3.5rem)",
+                            fontWeight: 700, color: "#fff", lineHeight: 1.15,
+                            marginBottom: 20,
+                        }}>
+                            코딩의 시작,<br />
                             코딩쏙에서.
                         </h2>
-                        <div className="s__text t-t-lg">
-                            <p>
-                                현직 IT 전문가의 소수 정예 코딩 교육.
-                                <br />
-                                무료 체험 수업으로 시작하세요.
-                            </p>
-                        </div>
-                        <div className="s__cta">
-                            <Link
-                                href="tel:010-7566-7229"
-                                className="btn-plain s__cta__btn"
-                                data-plr-component="btn-plain"
-                            >
-                                <span className="btn-plain__inner">
-                                    <span className="btn-plain__text">
-                                        상담 신청
-                                    </span>
-                                    <span className="btn-plain__arrow" />
-                                </span>
-                            </Link>
-                        </div>
-                    </div>
 
-                    {/* Decorative shape */}
-                    <div className="s__shape" aria-hidden="true">
-                        <div className="s__shape__circle" />
-                    </div>
+                        <p style={{
+                            fontSize: "clamp(0.9rem, 1.5vw, 1.1rem)",
+                            color: "rgba(255,255,255,0.6)", lineHeight: 1.7,
+                            marginBottom: 32, maxWidth: 400,
+                        }}>
+                            현직 IT 전문가의 소수 정예 코딩 교육.<br />
+                            무료 체험 수업으로 시작하세요.
+                        </p>
+
+                        {/* Benefits grid */}
+                        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 32 }}>
+                            {BENEFITS.map((b, i) => (
+                                <motion.div
+                                    key={i}
+                                    initial={{ opacity: 0, y: 15 }}
+                                    animate={isIn ? { opacity: 1, y: 0 } : {}}
+                                    transition={{ delay: 0.2 + i * 0.1, duration: 0.5 }}
+                                    style={{
+                                        display: "flex", alignItems: "center", gap: 10,
+                                        padding: "12px 16px", borderRadius: 12,
+                                        background: "rgba(255,255,255,0.04)",
+                                        border: "1px solid rgba(255,255,255,0.06)",
+                                    }}
+                                >
+                                    <span style={{ fontSize: 22 }}>{b.icon}</span>
+                                    <span style={{ fontSize: 14, fontWeight: 600, color: "rgba(255,255,255,0.8)" }}>{b.title}</span>
+                                </motion.div>
+                            ))}
+                        </div>
+
+                        {/* Social / Contact links */}
+                        <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
+                            <Link href="tel:010-7566-7229" style={{
+                                display: "flex", alignItems: "center", gap: 8,
+                                padding: "10px 20px", borderRadius: 32,
+                                background: "#EC5212", color: "#fff", textDecoration: "none",
+                                fontSize: 14, fontWeight: 700,
+                                boxShadow: "0 4px 16px rgba(236,82,18,0.4)",
+                            }}>
+                                📞 010-7566-7229
+                            </Link>
+                            <a href="https://blog.naver.com/codingssok" target="_blank" rel="noopener noreferrer" style={{
+                                display: "flex", alignItems: "center", gap: 6,
+                                padding: "10px 20px", borderRadius: 32,
+                                background: "rgba(255,255,255,0.06)", color: "rgba(255,255,255,0.7)",
+                                textDecoration: "none", fontSize: 14, fontWeight: 600,
+                                border: "1px solid rgba(255,255,255,0.06)",
+                            }}>
+                                📝 네이버 블로그
+                            </a>
+                        </div>
+                    </motion.div>
+
+                    {/* ── 오른쪽: 상담 카드 ── */}
+                    <motion.div
+                        initial={{ opacity: 0, x: 30 }}
+                        animate={isIn ? { opacity: 1, x: 0 } : {}}
+                        transition={{ duration: 0.8, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
+                        style={{
+                            background: "rgba(58,52,45,0.8)",
+                            backdropFilter: "blur(20px)",
+                            borderRadius: 16,
+                            padding: "clamp(28px, 3vw, 40px)",
+                            border: "1px solid rgba(255,255,255,0.06)",
+                            boxShadow: "0 20px 60px rgba(0,0,0,0.3)",
+                        }}
+                    >
+                        <h3 style={{ fontSize: 20, fontWeight: 700, color: "#fff", marginBottom: 8 }}>
+                            🌸 무료 체험 상담
+                        </h3>
+                        <p style={{ fontSize: 14, color: "rgba(255,255,255,0.5)", marginBottom: 24, lineHeight: 1.6 }}>
+                            아이의 코딩 적성에 맞는 최적의 트랙을 추천해 드립니다.
+                        </p>
+
+                        <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+                            <div>
+                                <label style={{ display: "block", fontSize: 12, fontWeight: 600, color: "rgba(255,255,255,0.5)", marginBottom: 6 }}>학생 이름</label>
+                                <input type="text" placeholder="이름을 입력하세요"
+                                    style={{
+                                        width: "100%", height: 51, borderRadius: 12, border: "none",
+                                        background: "#252320", color: "#fff", padding: "0 16px",
+                                        fontSize: 14, outline: "none", fontFamily: "inherit",
+                                        boxSizing: "border-box",
+                                    }}
+                                />
+                            </div>
+                            <div>
+                                <label style={{ display: "block", fontSize: 12, fontWeight: 600, color: "rgba(255,255,255,0.5)", marginBottom: 6 }}>연락처</label>
+                                <input type="tel" placeholder="010-0000-0000"
+                                    style={{
+                                        width: "100%", height: 51, borderRadius: 12, border: "none",
+                                        background: "#252320", color: "#fff", padding: "0 16px",
+                                        fontSize: 14, outline: "none", fontFamily: "inherit",
+                                        boxSizing: "border-box",
+                                    }}
+                                />
+                            </div>
+                            <div>
+                                <label style={{ display: "block", fontSize: 12, fontWeight: 600, color: "rgba(255,255,255,0.5)", marginBottom: 6 }}>학년</label>
+                                <select style={{
+                                    width: "100%", height: 51, borderRadius: 12, border: "none",
+                                    background: "#252320", color: "rgba(255,255,255,0.7)", padding: "0 16px",
+                                    fontSize: 14, outline: "none", fontFamily: "inherit",
+                                    boxSizing: "border-box", appearance: "none",
+                                }}>
+                                    <option value="">학년 선택</option>
+                                    {["초등 1~3", "초등 4~6", "중등", "고등"].map(g => (
+                                        <option key={g} value={g}>{g}</option>
+                                    ))}
+                                </select>
+                            </div>
+                            <div>
+                                <label style={{ display: "block", fontSize: 12, fontWeight: 600, color: "rgba(255,255,255,0.5)", marginBottom: 6 }}>관심 분야</label>
+                                <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+                                    {["C언어", "Python", "HTML/CSS", "블록코딩", "사고력수학"].map(tag => (
+                                        <span key={tag} style={{
+                                            padding: "8px 16px", borderRadius: 32,
+                                            background: "rgba(255,255,255,0.06)", color: "rgba(255,255,255,0.6)",
+                                            fontSize: 13, fontWeight: 500, cursor: "pointer",
+                                            border: "1px solid rgba(255,255,255,0.06)",
+                                            transition: "all 0.2s",
+                                        }}>
+                                            {tag}
+                                        </span>
+                                    ))}
+                                </div>
+                            </div>
+                        </div>
+
+                        <button style={{
+                            width: "100%", height: 47, borderRadius: 12, border: "none",
+                            background: "#EC5212", color: "#fff", fontWeight: 700,
+                            fontSize: 15, cursor: "pointer", marginTop: 24,
+                            fontFamily: "inherit",
+                            boxShadow: "0 4px 20px rgba(236,82,18,0.4)",
+                            transition: "all 0.2s",
+                        }}>
+                            🎯 무료 체험 신청하기
+                        </button>
+
+                        <p style={{
+                            fontSize: 12, color: "rgba(255,255,255,0.3)",
+                            textAlign: "center", marginTop: 12,
+                        }}>
+                            상담 신청 후 24시간 이내 연락 드립니다
+                        </p>
+                    </motion.div>
                 </div>
             </div>
         </div>

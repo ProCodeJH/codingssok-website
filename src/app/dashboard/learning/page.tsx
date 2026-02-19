@@ -235,6 +235,23 @@ const tracks: Track[] = [
     },
 ];
 
+// ─── 학습 플랫폼 HTML 경로 매핑 ───
+const trackHtmlPaths: Record<string, string> = {
+    "coding-basics": "/learning-platform/코딩기초/index.html",
+    "computational-thinking": "/learning-platform/컴퓨팅사고력/index.html",
+    "c-language": "/learning-platform/C언어/index.html",
+    "koi-past": "/learning-platform/KOI기출/index.html",
+    "word-processor": "/learning-platform/워드프로세서/index.html",
+};
+
+// ─── 추가 학습 과목 HTML 경로 (COS, COS-Pro, PCCE, 파이썬) ───
+const extraCourses = [
+    { id: "python", name: "파이썬", icon: "🐍", color: "#3b82f6", gradient: "linear-gradient(135deg, #3b82f6, #8b5cf6)", path: "/learning-platform/파이썬/index.html", desc: "Python 기초부터 심화까지" },
+    { id: "cos", name: "COS", icon: "📋", color: "#06b6d4", gradient: "linear-gradient(135deg, #06b6d4, #0891b2)", path: "/learning-platform/COS/index.html", desc: "COS 자격증 대비" },
+    { id: "cos-pro", name: "COS Pro", icon: "🏆", color: "#8b5cf6", gradient: "linear-gradient(135deg, #8b5cf6, #a855f7)", path: "/learning-platform/COS-Pro/index.html", desc: "COS Pro 자격증 대비" },
+    { id: "pcce", name: "PCCE", icon: "💻", color: "#ec4899", gradient: "linear-gradient(135deg, #ec4899, #f43f5e)", path: "/learning-platform/PCCE/index.html", desc: "PCCE 코딩 역량 평가" },
+];
+
 // ─── 웹 개발 레슨 (기존 유지) ───
 const webLessons: Lesson[] = [
     {
@@ -563,6 +580,25 @@ function LearningPageInner() {
                                                             </div>
                                                         </div>
                                                     ))}
+
+                                                    {/* 학습 시작 버튼 */}
+                                                    {trackHtmlPaths[track.id] && (
+                                                        <a href={trackHtmlPaths[track.id]} target="_blank" rel="noopener noreferrer"
+                                                            onClick={(e) => e.stopPropagation()}
+                                                            style={{
+                                                                display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
+                                                                marginTop: 16, padding: "14px 24px", borderRadius: 12, border: "none",
+                                                                background: track.gradient, color: "#fff", fontSize: 14, fontWeight: 800,
+                                                                cursor: "pointer", textDecoration: "none",
+                                                                boxShadow: `0 4px 16px ${track.color}40`,
+                                                                transition: "transform 0.2s, box-shadow 0.2s",
+                                                            }}
+                                                            onMouseEnter={(e) => { e.currentTarget.style.transform = "translateY(-2px)"; e.currentTarget.style.boxShadow = `0 8px 24px ${track.color}60`; }}
+                                                            onMouseLeave={(e) => { e.currentTarget.style.transform = "translateY(0)"; e.currentTarget.style.boxShadow = `0 4px 16px ${track.color}40`; }}
+                                                        >
+                                                            🚀 {track.name} 학습 시작
+                                                        </a>
+                                                    )}
                                                 </div>
                                             </motion.div>
                                         )}
@@ -576,15 +612,75 @@ function LearningPageInner() {
                         })}
                     </div>
 
+                    {/* ─── 추가 학습 과목 카드 (파이썬, COS, COS-Pro, PCCE) ─── */}
+                    <h3 style={{ fontSize: 16, fontWeight: 800, marginBottom: 16, color: t.textPrimary }}>
+                        📘 추가 학습 과목
+                    </h3>
+                    <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(240px, 1fr))", gap: 16, marginBottom: 32 }}>
+                        {extraCourses.map((course, i) => (
+                            <motion.a key={course.id} href={course.path} target="_blank" rel="noopener noreferrer"
+                                initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 + i * 0.08 }}
+                                whileHover={{ y: -4, boxShadow: "0 12px 32px rgba(0,0,0,0.2)" }}
+                                style={{
+                                    background: t.bgCard, border: `1.5px solid ${t.border}`, borderRadius: 14,
+                                    padding: "24px 20px", textDecoration: "none", color: t.textPrimary, position: "relative", overflow: "hidden",
+                                }}
+                            >
+                                <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 4, background: course.gradient }} />
+                                <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 8 }}>
+                                    <span style={{ fontSize: 28 }}>{course.icon}</span>
+                                    <div>
+                                        <div style={{ fontSize: 15, fontWeight: 800 }}>{course.name}</div>
+                                        <div style={{ fontSize: 11, color: t.textSecondary }}>{course.desc}</div>
+                                    </div>
+                                </div>
+                                <div style={{
+                                    display: "inline-flex", alignItems: "center", gap: 6, marginTop: 8,
+                                    padding: "6px 14px", borderRadius: 8, background: `${course.color}15`, color: course.color,
+                                    fontSize: 12, fontWeight: 700,
+                                }}>
+                                    🚀 학습 시작
+                                </div>
+                            </motion.a>
+                        ))}
+                    </div>
+
+                    {/* ─── 학습 플랫폼 허브 & 성취도 대시보드 ─── */}
+                    <div style={{ display: "flex", gap: 12, justifyContent: "center", flexWrap: "wrap", marginBottom: 32 }}>
+                        <motion.a href="/learning-platform/index.html" target="_blank" rel="noopener noreferrer"
+                            initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.6 }}
+                            whileHover={{ scale: 1.03 }}
+                            style={{
+                                display: "inline-flex", alignItems: "center", gap: 10, padding: "14px 32px",
+                                background: "linear-gradient(135deg, #EC5212, #e8854a)", color: "#fff", border: "none",
+                                borderRadius: 14, fontSize: 15, fontWeight: 700, cursor: "pointer", textDecoration: "none",
+                                boxShadow: "0 4px 16px rgba(236,82,18,0.25)",
+                            }}
+                        >
+                            📚 학습 플랫폼 허브 바로가기
+                        </motion.a>
+                        <motion.a href="/learning-platform/dashboard.html" target="_blank" rel="noopener noreferrer"
+                            initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.7 }}
+                            whileHover={{ scale: 1.03 }}
+                            style={{
+                                display: "inline-flex", alignItems: "center", gap: 10, padding: "14px 32px",
+                                background: "linear-gradient(135deg, #22c55e, #10b981)", color: "#fff", border: "none",
+                                borderRadius: 14, fontSize: 15, fontWeight: 700, cursor: "pointer", textDecoration: "none",
+                                boxShadow: "0 4px 16px rgba(34,197,94,0.25)",
+                            }}
+                        >
+                            📊 성취도 대시보드
+                        </motion.a>
+                    </div>
+
                     {/* Web Editor Quick Link */}
-                    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5 }} style={{ textAlign: "center" }}>
+                    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.8 }} style={{ textAlign: "center" }}>
                         <button onClick={() => setViewMode("web-editor")} style={{
-                            display: "inline-flex", alignItems: "center", gap: 10, padding: "14px 32px",
-                            background: "linear-gradient(135deg, #EC5212, #e8854a)", color: "#fff", border: "none",
-                            borderRadius: 14, fontSize: 15, fontWeight: 700, cursor: "pointer",
-                            boxShadow: "0 4px 16px rgba(236,82,18,0.25)",
+                            display: "inline-flex", alignItems: "center", gap: 10, padding: "12px 28px",
+                            background: t.bgCard, color: t.textSecondary, border: `1px solid ${t.border}`,
+                            borderRadius: 14, fontSize: 13, fontWeight: 600, cursor: "pointer",
                         }}>
-                            🌐 HTML/CSS/JS 웹 에디터로 이동
+                            🌐 HTML/CSS/JS 웹 에디터
                         </button>
                     </motion.div>
                 </div>

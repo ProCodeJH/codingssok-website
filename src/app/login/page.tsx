@@ -91,8 +91,8 @@ export default function LoginPage() {
 
   // 코딩쏙 브랜드 스타일
   const inputStyle: React.CSSProperties = {
-    width: "100%", padding: "14px 16px", borderRadius: 12, border: "none",
-    background: "rgba(255,255,255,0.06)", color: "#fff",
+    width: "100%", padding: "0 16px", borderRadius: 12, border: "none",
+    background: "#252320", color: "#fff", height: 51,
     fontSize: 14, outline: "none", fontFamily: "inherit",
     transition: "all 0.2s",
   };
@@ -124,10 +124,10 @@ export default function LoginPage() {
             border: "1px solid rgba(255,255,255,0.06)",
           }}
         >
-          {/* Tabs */}
+          {/* Tabs — Coddy JSON: 342×2px divider, 1px radius */}
           <div style={{
             display: "flex", marginBottom: 24,
-            borderBottom: "2px solid rgba(255,255,255,0.08)",
+            borderBottom: "2px solid rgba(255,255,255,0.06)", borderRadius: "0 0 1px 1px",
           }}>
             {(["login", "signup"] as const).map((m) => (
               <button
@@ -137,7 +137,7 @@ export default function LoginPage() {
                   flex: 1, padding: "14px 0", border: "none", background: "transparent",
                   fontWeight: 600, fontSize: 14, cursor: "pointer",
                   color: mode === m ? "#fff" : "rgba(255,255,255,0.4)",
-                  borderBottom: mode === m ? "2px solid #EC5212" : "2px solid transparent",
+                  borderBottom: mode === m ? "3px solid #EC5212" : "2px solid transparent",
                   marginBottom: -2, transition: "all 0.25s", fontFamily: "inherit",
                 }}
               >
@@ -201,7 +201,7 @@ export default function LoginPage() {
                     color: "#fff", fontWeight: 700, fontSize: 15,
                     cursor: loading ? "not-allowed" : "pointer",
                     boxShadow: loading ? "none" : "0 4px 20px rgba(236,82,18,0.4)",
-                    fontFamily: "inherit", marginTop: 4,
+                    fontFamily: "inherit", marginTop: 4, height: 47,
                     transition: "all 0.2s",
                   }}
                 >
@@ -210,9 +210,9 @@ export default function LoginPage() {
 
                 {/* Divider */}
                 <div style={{ display: "flex", alignItems: "center", gap: 12, margin: "4px 0" }}>
-                  <div style={{ flex: 1, height: 1, background: "rgba(255,255,255,0.08)" }} />
+                  <div style={{ flex: 1, height: 2, background: "rgba(255,255,255,0.06)", borderRadius: 1 }} />
                   <span style={{ fontSize: 12, color: "rgba(255,255,255,0.3)" }}>또는</span>
-                  <div style={{ flex: 1, height: 1, background: "rgba(255,255,255,0.08)" }} />
+                  <div style={{ flex: 1, height: 2, background: "rgba(255,255,255,0.06)", borderRadius: 1 }} />
                 </div>
 
                 {/* Social Buttons (placeholder) */}
@@ -226,8 +226,8 @@ export default function LoginPage() {
                     🟡 KAKAO
                   </button>
                   <button type="button" style={{
-                    flex: 1, padding: "12px 0", borderRadius: 12, border: "1px solid rgba(255,255,255,0.08)",
-                    background: "rgba(255,255,255,0.04)", color: "rgba(255,255,255,0.6)",
+                    flex: 1, height: 51, borderRadius: 12, border: "1px solid rgba(255,255,255,0.06)",
+                    background: "#2d2a26", color: "rgba(255,255,255,0.6)",
                     fontSize: 13, fontWeight: 600, cursor: "pointer", fontFamily: "inherit",
                     transition: "all 0.2s",
                   }}>

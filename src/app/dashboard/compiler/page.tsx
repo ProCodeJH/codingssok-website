@@ -8,6 +8,15 @@ import CheatSheet from "./components/CheatSheet";
 import SnippetLibrary from "./components/SnippetLibrary";
 import CodeStats from "./components/CodeStats";
 import Achievements from "./components/Achievements";
+import { CodingChallenge } from "./components/CodingChallenge";
+import { AlgorithmVisualizer } from "./components/AlgorithmVisualizer";
+import { MemoryVisualizer } from "./components/MemoryVisualizer";
+import { ExecutionVisualizer } from "./components/ExecutionVisualizer";
+import { FocusMode } from "./components/FocusMode";
+import { CodingHeatmap, recordCodingActivity } from "./components/CodingHeatmap";
+import { Leaderboard } from "./components/Leaderboard";
+import { TutorialMode } from "./components/TutorialMode";
+import { Bookmarks } from "./components/Bookmarks";
 
 /*
   C언어 온라인 컴파일러 — Coddy IDE Shell + 코딩쏙 브랜드
@@ -48,7 +57,11 @@ export default function CompilerPage() {
     const [history, setHistory] = useState<Submission[]>([]);
     const [showHistory, setShowHistory] = useState(false);
     const [layout, setLayout] = useState<"split" | "stack">("split");
-    const [activePanel, setActivePanel] = useState<"cheatsheet" | "snippets" | "stats" | "achievements" | null>(null);
+    const [activePanel, setActivePanel] = useState<"cheatsheet" | "snippets" | "stats" | "achievements" | "challenge" | "algorithm" | "memory" | "execution" | "tutorial" | "bookmarks" | null>(null);
+    const [showFocusMode, setShowFocusMode] = useState(false);
+    const [showHeatmap, setShowHeatmap] = useState(false);
+    const [showLeaderboard, setShowLeaderboard] = useState(false);
+    const [focusSessions, setFocusSessions] = useState(0);
     const [compileCount, setCompileCount] = useState(0);
     const textareaRef = useRef<HTMLTextAreaElement>(null);
     const lineNumberRef = useRef<HTMLDivElement>(null);
@@ -95,6 +108,7 @@ export default function CompilerPage() {
 
         setOutput(resultOutput); setRunning(false);
         setCompileCount(prev => prev + 1);
+        recordCodingActivity(code.split("\n").length);
         if (userId) {
             try {
                 await supabase.from("code_submissions").insert({ user_id: userId, language: "c", code, output: resultOutput, status: resultStatus });
@@ -141,9 +155,9 @@ export default function CompilerPage() {
                     <div style={{ width: 1, height: 20, background: border }} />
                     <h1 style={{ fontSize: "clamp(13px, 2vw, 16px)", fontWeight: 700, color: "#fff" }}>💻 C언어 컴파일러</h1>
                 </div>
-                <div style={{ display: "flex", gap: 6, alignItems: "center", flexWrap: "wrap" }}>
+                <div style={{ display: "flex", gap: 4, alignItems: "center", flexWrap: "wrap" }}>
                     <span style={{ fontSize: 11, color: "rgba(255,255,255,0.3)", fontFamily: "monospace" }}>Ctrl+Enter</span>
-                    {/* Tool buttons */}
+                    {/* Tool buttons — 기존 */}
                     {([
                         { key: "cheatsheet" as const, icon: "📋", label: "치트시트" },
                         { key: "snippets" as const, icon: "📂", label: "스니펫" },
@@ -156,6 +170,27 @@ export default function CompilerPage() {
                             fontSize: 11, cursor: "pointer", fontWeight: 500, fontFamily: "inherit", whiteSpace: "nowrap",
                         }}>{btn.icon} {btn.label}</button>
                     ))}
+                    <div style={{ width: 1, height: 16, background: border }} />
+                    {/* Tool buttons — 신규 학습/시각화 */}
+                    {([
+                        { key: "challenge" as const, icon: "🎯", label: "챌린지" },
+                        { key: "tutorial" as const, icon: "📖", label: "튜토리얼" },
+                        { key: "algorithm" as const, icon: "📊", label: "알고리즘" },
+                        { key: "memory" as const, icon: "🧠", label: "메모리" },
+                        { key: "execution" as const, icon: "▶️", label: "실행" },
+                        { key: "bookmarks" as const, icon: "🔖", label: "북마크" },
+                    ]).map(btn => (
+                        <button key={btn.key} onClick={() => setActivePanel(activePanel === btn.key ? null : btn.key)} style={{
+                            padding: "5px 8px", borderRadius: 6, border: `1px solid ${border}`,
+                            background: activePanel === btn.key ? bg3 : "transparent", color: activePanel === btn.key ? "#fff" : "rgba(255,255,255,0.45)",
+                            fontSize: 11, cursor: "pointer", fontWeight: 500, fontFamily: "inherit", whiteSpace: "nowrap",
+                        }}>{btn.icon} {btn.label}</button>
+                    ))}
+                    <div style={{ width: 1, height: 16, background: border }} />
+                    {/* 오버레이 도구 */}
+                    <button onClick={() => setShowFocusMode(true)} style={{ padding: "5px 8px", borderRadius: 6, border: `1px solid ${border}`, background: "transparent", color: "rgba(255,255,255,0.45)", fontSize: 11, cursor: "pointer", fontWeight: 500, fontFamily: "inherit", whiteSpace: "nowrap" }}>🧘 집중</button>
+                    <button onClick={() => setShowHeatmap(true)} style={{ padding: "5px 8px", borderRadius: 6, border: `1px solid ${border}`, background: "transparent", color: "rgba(255,255,255,0.45)", fontSize: 11, cursor: "pointer", fontWeight: 500, fontFamily: "inherit", whiteSpace: "nowrap" }}>🔥 히트맵</button>
+                    <button onClick={() => setShowLeaderboard(true)} style={{ padding: "5px 8px", borderRadius: 6, border: `1px solid ${border}`, background: "transparent", color: "rgba(255,255,255,0.45)", fontSize: 11, cursor: "pointer", fontWeight: 500, fontFamily: "inherit", whiteSpace: "nowrap" }}>🏅 랭킹</button>
                     <div style={{ width: 1, height: 20, background: border }} />
                     <button onClick={() => setShowHistory(!showHistory)} style={{
                         padding: "5px 8px", borderRadius: 6, border: `1px solid ${border}`,
@@ -330,11 +365,22 @@ export default function CompilerPage() {
                             {activePanel === "cheatsheet" && <CheatSheet onClose={() => setActivePanel(null)} />}
                             {activePanel === "snippets" && <SnippetLibrary onInsert={(c) => { setCode(c); setActivePanel(null); }} onClose={() => setActivePanel(null)} />}
                             {activePanel === "stats" && <CodeStats code={code} onClose={() => setActivePanel(null)} />}
-                            {activePanel === "achievements" && <Achievements onClose={() => setActivePanel(null)} stats={{ compileCount, totalLines: code.split("\n").length, challengesCompleted: 0, focusSessions: 0 }} />}
+                            {activePanel === "achievements" && <Achievements onClose={() => setActivePanel(null)} stats={{ compileCount, totalLines: code.split("\n").length, challengesCompleted: 0, focusSessions }} />}
+                            {activePanel === "challenge" && <CodingChallenge onLoadCode={(c) => { setCode(c); }} />}
+                            {activePanel === "algorithm" && <AlgorithmVisualizer />}
+                            {activePanel === "memory" && <MemoryVisualizer code={code} />}
+                            {activePanel === "execution" && <ExecutionVisualizer code={code} />}
+                            {activePanel === "tutorial" && <TutorialMode isOpen={true} onClose={() => setActivePanel(null)} onLoadCode={(c) => setCode(c)} />}
+                            {activePanel === "bookmarks" && <Bookmarks code={code} />}
                         </motion.div>
                     )}
                 </AnimatePresence>
             </div>
+
+            {/* Full-screen overlays */}
+            <FocusMode isActive={showFocusMode} onClose={() => { setShowFocusMode(false); setFocusSessions(s => s + 1); }} />
+            <CodingHeatmap isOpen={showHeatmap} onClose={() => setShowHeatmap(false)} />
+            <Leaderboard isOpen={showLeaderboard} onClose={() => setShowLeaderboard(false)} />
         </div>
     );
 }

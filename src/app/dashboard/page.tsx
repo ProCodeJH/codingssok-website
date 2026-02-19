@@ -57,7 +57,8 @@ export default function DashboardPage() {
         if (!user) return;
         const subjects = [
             { label: "C언어 기초", subject: "c-lang", total: 10, color: "#EC5212" },
-            { label: "HTML/CSS", subject: "html-css", total: 3, color: "#77C6B3" },
+            { label: "C 코스 (coddy)", subject: "c-course", total: 34, color: "#f59e0b" },
+            { label: "HTML/CSS", subject: "html-css", total: 6, color: "#77C6B3" },
             { label: "알고리즘", subject: "algorithm", total: 10, color: "#70A2E1" },
         ];
         const results: ProgressData[] = [];
@@ -115,7 +116,9 @@ export default function DashboardPage() {
 
     const modules = [
         { title: "C언어 컴파일러", desc: "온라인에서 바로 C 코드를 작성하고 실행하세요", href: "/dashboard/compiler", icon: "💻", color: "#EC5212", tag: "C" },
-        { title: "HTML 웹 문서 학습", desc: "HTML/CSS/JS를 배우고 실시간 미리보기로 확인", href: "/dashboard/learning", icon: "🌐", color: "#77C6B3", tag: "HTML" },
+        { title: "⚡ C 코스 Journey", desc: "coddy.tech 스타일 34개 레슨+챌린지로 C 기초 마스터", href: "/dashboard/learning?view=c-course", icon: "⚡", color: "#f59e0b", tag: "NEW" },
+        { title: "학습 트랙 허브", desc: "코딩사고력·컴퓨팅사고력·C언어·KOI·워프 5개 트랙", href: "/dashboard/learning?view=tracks", icon: "🗂️", color: "#818cf8", tag: "5트랙" },
+        { title: "HTML 웹 에디터", desc: "HTML/CSS/JS를 배우고 실시간 미리보기로 확인", href: "/dashboard/learning?view=web-editor", icon: "🌐", color: "#77C6B3", tag: "HTML" },
         { title: "숙제 & 노트", desc: "선생님이 남겨주신 숙제와 수업 노트 확인", href: "/dashboard/homework", icon: "📝", color: "#FFD37D", tag: "과제" },
     ];
 

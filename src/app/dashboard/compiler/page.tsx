@@ -3,7 +3,11 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { createClient } from "@/lib/supabase";
 import Link from "next/link";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
+import CheatSheet from "./components/CheatSheet";
+import SnippetLibrary from "./components/SnippetLibrary";
+import CodeStats from "./components/CodeStats";
+import Achievements from "./components/Achievements";
 
 /*
   C언어 온라인 컴파일러 — Coddy IDE Shell + 코딩쏙 브랜드
@@ -44,6 +48,8 @@ export default function CompilerPage() {
     const [history, setHistory] = useState<Submission[]>([]);
     const [showHistory, setShowHistory] = useState(false);
     const [layout, setLayout] = useState<"split" | "stack">("split");
+    const [activePanel, setActivePanel] = useState<"cheatsheet" | "snippets" | "stats" | "achievements" | null>(null);
+    const [compileCount, setCompileCount] = useState(0);
     const textareaRef = useRef<HTMLTextAreaElement>(null);
     const lineNumberRef = useRef<HTMLDivElement>(null);
 
@@ -88,6 +94,7 @@ export default function CompilerPage() {
         } catch { resultOutput = "❌ 서버 연결 실패. 잠시 후 다시 시도해주세요."; resultStatus = "error"; }
 
         setOutput(resultOutput); setRunning(false);
+        setCompileCount(prev => prev + 1);
         if (userId) {
             try {
                 await supabase.from("code_submissions").insert({ user_id: userId, language: "c", code, output: resultOutput, status: resultStatus });
@@ -134,12 +141,26 @@ export default function CompilerPage() {
                     <div style={{ width: 1, height: 20, background: border }} />
                     <h1 style={{ fontSize: "clamp(13px, 2vw, 16px)", fontWeight: 700, color: "#fff" }}>💻 C언어 컴파일러</h1>
                 </div>
-                <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+                <div style={{ display: "flex", gap: 6, alignItems: "center", flexWrap: "wrap" }}>
                     <span style={{ fontSize: 11, color: "rgba(255,255,255,0.3)", fontFamily: "monospace" }}>Ctrl+Enter</span>
+                    {/* Tool buttons */}
+                    {([
+                        { key: "cheatsheet" as const, icon: "📋", label: "치트시트" },
+                        { key: "snippets" as const, icon: "📂", label: "스니펫" },
+                        { key: "stats" as const, icon: "📊", label: "통계" },
+                        { key: "achievements" as const, icon: "🏆", label: "도전과제" },
+                    ]).map(btn => (
+                        <button key={btn.key} onClick={() => setActivePanel(activePanel === btn.key ? null : btn.key)} style={{
+                            padding: "5px 8px", borderRadius: 6, border: `1px solid ${border}`,
+                            background: activePanel === btn.key ? bg3 : "transparent", color: activePanel === btn.key ? "#fff" : "rgba(255,255,255,0.45)",
+                            fontSize: 11, cursor: "pointer", fontWeight: 500, fontFamily: "inherit", whiteSpace: "nowrap",
+                        }}>{btn.icon} {btn.label}</button>
+                    ))}
+                    <div style={{ width: 1, height: 20, background: border }} />
                     <button onClick={() => setShowHistory(!showHistory)} style={{
-                        padding: "6px 10px", borderRadius: 8, border: `1px solid ${border}`,
+                        padding: "5px 8px", borderRadius: 6, border: `1px solid ${border}`,
                         background: showHistory ? bg3 : "transparent", color: "rgba(255,255,255,0.5)",
-                        fontSize: 12, cursor: "pointer", fontWeight: 500, fontFamily: "inherit",
+                        fontSize: 11, cursor: "pointer", fontWeight: 500, fontFamily: "inherit",
                     }}>
                         📜 기록 ({history.length})
                     </button>
@@ -297,6 +318,22 @@ export default function CompilerPage() {
                         </pre>
                     </div>
                 </div>
+
+                {/* Tool side-panel */}
+                <AnimatePresence>
+                    {activePanel && (
+                        <motion.div
+                            initial={{ width: 0, opacity: 0 }} animate={{ width: 320, opacity: 1 }} exit={{ width: 0, opacity: 0 }}
+                            transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                            style={{ overflow: "hidden", borderLeft: `1px solid ${border}`, background: bg2, flexShrink: 0 }}
+                        >
+                            {activePanel === "cheatsheet" && <CheatSheet onClose={() => setActivePanel(null)} />}
+                            {activePanel === "snippets" && <SnippetLibrary onInsert={(c) => { setCode(c); setActivePanel(null); }} onClose={() => setActivePanel(null)} />}
+                            {activePanel === "stats" && <CodeStats code={code} onClose={() => setActivePanel(null)} />}
+                            {activePanel === "achievements" && <Achievements onClose={() => setActivePanel(null)} stats={{ compileCount, totalLines: code.split("\n").length, challengesCompleted: 0, focusSessions: 0 }} />}
+                        </motion.div>
+                    )}
+                </AnimatePresence>
             </div>
         </div>
     );

@@ -13,9 +13,10 @@ import { motion, AnimatePresence, useMotionValue, useSpring } from "framer-motio
 */
 
 const platformLinks = [
-    { name: "학습 플랫폼", href: "https://procodejh.github.io/learning-platform/", icon: "📚" },
-    { name: "PC 관리", href: "https://procodejh.github.io/PC-Management/", icon: "🖥️" },
-    { name: "C-Studio", href: "https://github.com/ProCodeJH/C-Studio", icon: "⚡" },
+    { name: "학습 트랙 허브", href: "/dashboard/learning", icon: "📚", desc: "5개 학습 트랙" },
+    { name: "C 코스 Journey", href: "/dashboard/learning?view=c-course", icon: "⚡", desc: "coddy 스타일 34 레슨" },
+    { name: "C 컴파일러", href: "/dashboard/compiler", icon: "💻", desc: "코드 작성 & 실행" },
+    { name: "숙제 & 노트", href: "/dashboard/homework", icon: "📝", desc: "과제 확인" },
 ];
 
 const navLinks = [
@@ -213,8 +214,6 @@ function PlatformDropdown() {
                             <a
                                 key={p.name}
                                 href={p.href}
-                                target="_blank"
-                                rel="noopener noreferrer"
                                 style={{
                                     display: "flex",
                                     alignItems: "center",
@@ -233,13 +232,9 @@ function PlatformDropdown() {
                                 <span style={{ fontSize: 20 }}>{p.icon}</span>
                                 <div>
                                     <div style={{ fontWeight: 600 }}>{p.name}</div>
-                                    <div style={{ fontSize: 11, color: "#b0a898", marginTop: 2 }}>
-                                        {p.href.includes("github.io") ? "GitHub Pages" : "GitHub"}
-                                    </div>
+                                    <div style={{ fontSize: 11, color: "#b0a898", marginTop: 2 }}>{p.desc}</div>
                                 </div>
-                                <svg width="14" height="14" viewBox="0 0 14 14" fill="none" style={{ marginLeft: "auto", opacity: 0.4 }}>
-                                    <path d="M4 10L10 4M10 4H5M10 4v5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                                </svg>
+                                <span style={{ marginLeft: "auto", fontSize: 12, color: "#b0a898" }}>→</span>
                             </a>
                         ))}
                     </motion.div>

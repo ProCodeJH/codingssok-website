@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useUserProgress } from "@/hooks/useUserProgress";
+import { useLeaderboard } from "@/hooks/useLearningData";
 
 const TOP_3 = [
     { rank: 1, name: "Alex Kim", xp: 9850, level: 67, streak: 45 },
@@ -45,6 +46,16 @@ const PODIUM_MEDALS = ["🥈", "🥇", "🥉"];
 
 export default function LeaderboardPage() {
     const { progress } = useUserProgress();
+    const { entries: dbEntries, myRank, loading: lbLoading } = useLeaderboard();
+
+    // Supabase 데이터가 있으면 사용, 없으면 mock fallback
+    const rankings = dbEntries.length > 0
+        ? dbEntries.map((e, i) => ({
+            rank: e.rank || i + 1, name: e.name || e.email?.split("@")[0] || "User",
+            xp: e.xp, level: e.level, streak: e.streak,
+            badge: e.tier || "Bronze", isMe: myRank ? e.user_id === myRank.user_id : false,
+        }))
+        : RANKINGS;
     const [period, setPeriod] = useState("weekly");
 
     return (
@@ -141,7 +152,7 @@ export default function LeaderboardPage() {
                     </h3>
                 </div>
                 <div>
-                    {RANKINGS.map((u) => {
+                    {rankings.map((u) => {
                         const bs = BADGE_STYLE[u.badge] || BADGE_STYLE.Bronze;
                         return (
                             <div key={u.rank} style={{

@@ -2,6 +2,7 @@
 
 import { useAuth } from "@/contexts/AuthContext";
 import { useUserProgress } from "@/hooks/useUserProgress";
+import { useUserBadges, useActivityLog } from "@/hooks/useLearningData";
 
 const BADGES = [
     { name: "Gold Contributor", icon: "emoji_events", bg: "#fef9c3", color: "#a16207", border: "#fde68a" },
@@ -35,9 +36,38 @@ const glassCard: React.CSSProperties = {
     boxShadow: "0 4px 20px rgba(0,0,0,0.03)",
 };
 
+function getTimeAgo(dateStr: string): string {
+    const diff = Date.now() - new Date(dateStr).getTime();
+    const mins = Math.floor(diff / 60000);
+    if (mins < 60) return `${mins}분 전`;
+    const hrs = Math.floor(mins / 60);
+    if (hrs < 24) return `${hrs}시간 전`;
+    const days = Math.floor(hrs / 24);
+    if (days === 1) return "어제";
+    if (days < 7) return `${days}일 전`;
+    return `${Math.floor(days / 7)}주 전`;
+}
 export default function ProfilePage() {
     const { user } = useAuth();
     const { progress } = useUserProgress();
+    const { badges: dbBadges } = useUserBadges();
+    const { activities: dbActivities } = useActivityLog(5);
+
+    // Supabase 데이터가 있으면 사용, 없으면 mock fallback
+    const badges = dbBadges.length > 0
+        ? dbBadges.map(b => ({
+            name: b.badge_name, icon: b.badge_icon,
+            bg: b.badge_bg, color: b.badge_color,
+            border: b.badge_bg, // fallback
+        }))
+        : BADGES;
+
+    const activities = dbActivities.length > 0
+        ? dbActivities.map(a => {
+            const ago = getTimeAgo(a.created_at);
+            return { action: a.action, xp: a.xp_earned, time: ago, icon: a.icon, bg: a.icon_bg, color: a.icon_color };
+        })
+        : ACTIVITY;
 
     const displayName = user?.name || user?.email?.split("@")[0] || "Student";
     const initial = (user?.email?.charAt(0) || "S").toUpperCase();
@@ -143,7 +173,7 @@ export default function ProfilePage() {
                             Badges Earned
                         </h2>
                         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))", gap: 12 }}>
-                            {BADGES.map((b, i) => (
+                            {badges.map((b, i) => (
                                 <div key={i} style={{
                                     display: "flex", alignItems: "center", gap: 12, padding: 14,
                                     background: b.bg, borderRadius: 12, border: `1px solid ${b.border}`,
@@ -164,7 +194,7 @@ export default function ProfilePage() {
                             최근 활동
                         </h2>
                         <div style={{ position: "relative", paddingLeft: 16, borderLeft: "2px solid #f1f5f9", display: "flex", flexDirection: "column", gap: 20 }}>
-                            {ACTIVITY.map((a, i) => (
+                            {activities.map((a, i) => (
                                 <div key={i} style={{ position: "relative" }}>
                                     <div style={{ position: "absolute", left: -25, top: 4, width: 16, height: 16, borderRadius: "50%", background: a.bg, color: a.color, display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 0 0 3px #fff" }}>
                                         <span className="material-symbols-outlined" style={{ fontSize: 10 }}>{a.icon}</span>

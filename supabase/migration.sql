@@ -1,120 +1,187 @@
--- 코딩쏙 LMS Database Schema
--- Supabase Migration
+-- ============================================================
+-- Codingssok Academy — Learning Dashboard Tables
+-- Supabase SQL Editor에서 실행하세요
+-- ============================================================
 
--- 학생 프로필
-CREATE TABLE IF NOT EXISTS profiles (
-    id UUID REFERENCES auth.users(id) PRIMARY KEY,
-    email TEXT NOT NULL,
-    name TEXT,
-    phone TEXT,
-    grade TEXT, -- 학년
-    track TEXT, -- 트랙 (thinking-math, physical, software, project, red)
-    created_at TIMESTAMPTZ DEFAULT NOW(),
-    updated_at TIMESTAMPTZ DEFAULT NOW()
+-- 1. courses: 코스/수업자료
+create table if not exists public.courses (
+  id uuid primary key default gen_random_uuid(),
+  title text not null,
+  description text,
+  icon text default '📘',
+  color text default '#3b82f6',
+  category text,
+  difficulty text default 'Beginner',
+  total_lessons int default 0,
+  html_path text,
+  xp_reward int default 100,
+  is_published boolean default true,
+  sort_order int default 0,
+  created_at timestamptz default now()
 );
 
--- 학습 진행률
-CREATE TABLE IF NOT EXISTS learning_progress (
-    id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
-    user_id UUID REFERENCES profiles(id) ON DELETE CASCADE,
-    subject TEXT NOT NULL, -- c-lang, html-css, algorithm, python 등
-    lesson_id INT NOT NULL,
-    completed BOOLEAN DEFAULT FALSE,
-    score INT DEFAULT 0,
-    completed_at TIMESTAMPTZ,
-    created_at TIMESTAMPTZ DEFAULT NOW()
+-- 2. user_progress: 유저별 XP/레벨/스트릭
+create table if not exists public.user_progress (
+  id uuid primary key default gen_random_uuid(),
+  user_id uuid references auth.users(id) on delete cascade not null,
+  xp int default 0,
+  level int default 1,
+  streak int default 0,
+  best_streak int default 0,
+  last_active_date date default current_date,
+  total_problems int default 0,
+  accuracy numeric(5,2) default 0,
+  avg_solve_time_minutes numeric(5,1) default 0,
+  rank int default 999,
+  tier text default 'Bronze',
+  updated_at timestamptz default now(),
+  unique(user_id)
 );
 
--- 코드 저장 (컴파일러 히스토리)
-CREATE TABLE IF NOT EXISTS code_submissions (
-    id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
-    user_id UUID REFERENCES profiles(id) ON DELETE CASCADE,
-    language TEXT NOT NULL DEFAULT 'c',
-    code TEXT NOT NULL,
-    output TEXT,
-    status TEXT DEFAULT 'success', -- success, compile_error, runtime_error
-    created_at TIMESTAMPTZ DEFAULT NOW()
+-- 3. user_course_progress: 유저별 코스 수강 이력
+create table if not exists public.user_course_progress (
+  id uuid primary key default gen_random_uuid(),
+  user_id uuid references auth.users(id) on delete cascade not null,
+  course_id uuid references public.courses(id) on delete cascade not null,
+  completed_lessons int default 0,
+  is_completed boolean default false,
+  total_study_seconds int default 0,
+  last_accessed_at timestamptz default now(),
+  unique(user_id, course_id)
 );
 
--- 숙제
-CREATE TABLE IF NOT EXISTS homework (
-    id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
-    title TEXT NOT NULL,
-    description TEXT,
-    subject TEXT NOT NULL,
-    due_date DATE,
-    assigned_to UUID REFERENCES profiles(id),
-    assigned_by TEXT DEFAULT 'teacher',
-    created_at TIMESTAMPTZ DEFAULT NOW()
+-- 4. challenges: 데일리 챌린지/문제
+create table if not exists public.challenges (
+  id uuid primary key default gen_random_uuid(),
+  title text not null,
+  description text,
+  difficulty text default 'Medium',
+  category text default 'Algorithms',
+  xp_reward int default 100,
+  time_limit_minutes int default 30,
+  code_template text,
+  test_cases jsonb default '[]'::jsonb,
+  scheduled_date date,
+  is_active boolean default true,
+  created_at timestamptz default now()
 );
 
--- 숙제 제출
-CREATE TABLE IF NOT EXISTS homework_submissions (
-    id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
-    homework_id UUID REFERENCES homework(id) ON DELETE CASCADE,
-    user_id UUID REFERENCES profiles(id) ON DELETE CASCADE,
-    content TEXT,
-    file_url TEXT,
-    submitted_at TIMESTAMPTZ DEFAULT NOW(),
-    grade TEXT, -- 평가
-    feedback TEXT -- 선생님 피드백
+-- 5. user_challenges: 유저별 챌린지 제출 이력
+create table if not exists public.user_challenges (
+  id uuid primary key default gen_random_uuid(),
+  user_id uuid references auth.users(id) on delete cascade not null,
+  challenge_id uuid references public.challenges(id) on delete cascade not null,
+  status text default 'pending',  -- pending, completed, failed
+  submitted_code text,
+  xp_earned int default 0,
+  completed_at timestamptz,
+  unique(user_id, challenge_id)
 );
 
--- 수업 노트
-CREATE TABLE IF NOT EXISTS notes (
-    id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
-    user_id UUID REFERENCES profiles(id) ON DELETE CASCADE,
-    title TEXT NOT NULL,
-    content TEXT NOT NULL,
-    tags TEXT[] DEFAULT '{}',
-    created_at TIMESTAMPTZ DEFAULT NOW(),
-    updated_at TIMESTAMPTZ DEFAULT NOW()
+-- 6. user_badges: 유저 배지/업적
+create table if not exists public.user_badges (
+  id uuid primary key default gen_random_uuid(),
+  user_id uuid references auth.users(id) on delete cascade not null,
+  badge_name text not null,
+  badge_icon text default 'military_tech',
+  badge_bg text default '#fef9c3',
+  badge_color text default '#a16207',
+  earned_at timestamptz default now()
 );
 
--- RLS 정책
-ALTER TABLE profiles ENABLE ROW LEVEL SECURITY;
-ALTER TABLE learning_progress ENABLE ROW LEVEL SECURITY;
-ALTER TABLE code_submissions ENABLE ROW LEVEL SECURITY;
-ALTER TABLE homework ENABLE ROW LEVEL SECURITY;
-ALTER TABLE homework_submissions ENABLE ROW LEVEL SECURITY;
-ALTER TABLE notes ENABLE ROW LEVEL SECURITY;
+-- 7. user_goals: 유저 목표
+create table if not exists public.user_goals (
+  id uuid primary key default gen_random_uuid(),
+  user_id uuid references auth.users(id) on delete cascade not null,
+  title text not null,
+  description text,
+  icon text default 'flag',
+  target int not null,
+  current int default 0,
+  unit text default 'problems',
+  deadline date,
+  color text default '#3b82f6',
+  light_bg text default '#eff6ff',
+  border_color text default '#bfdbfe',
+  is_completed boolean default false,
+  created_at timestamptz default now()
+);
 
--- 프로필: 본인만 읽기/수정
-CREATE POLICY "Users can view own profile" ON profiles FOR SELECT USING (auth.uid() = id);
-CREATE POLICY "Users can update own profile" ON profiles FOR UPDATE USING (auth.uid() = id);
+-- 8. activity_log: 유저 활동 기록
+create table if not exists public.activity_log (
+  id uuid primary key default gen_random_uuid(),
+  user_id uuid references auth.users(id) on delete cascade not null,
+  action text not null,
+  xp_earned int default 0,
+  icon text default 'check_circle',
+  icon_bg text default '#dcfce7',
+  icon_color text default '#15803d',
+  created_at timestamptz default now()
+);
 
--- 학습 진행률: 본인만
-CREATE POLICY "Users can view own progress" ON learning_progress FOR SELECT USING (auth.uid() = user_id);
-CREATE POLICY "Users can insert own progress" ON learning_progress FOR INSERT WITH CHECK (auth.uid() = user_id);
-CREATE POLICY "Users can update own progress" ON learning_progress FOR UPDATE USING (auth.uid() = user_id);
+-- ============================================================
+-- RLS (Row Level Security) Policies
+-- ============================================================
 
--- 코드 제출: 본인만
-CREATE POLICY "Users can view own submissions" ON code_submissions FOR SELECT USING (auth.uid() = user_id);
-CREATE POLICY "Users can insert own submissions" ON code_submissions FOR INSERT WITH CHECK (auth.uid() = user_id);
+-- courses: 인증된 유저 누구나 읽기 가능
+alter table public.courses enable row level security;
+create policy "Anyone can read courses" on public.courses for select using (true);
 
--- 숙제: 본인 것만 조회
-CREATE POLICY "Users can view own homework" ON homework FOR SELECT USING (auth.uid() = assigned_to);
+-- user_progress: 자기 데이터만
+alter table public.user_progress enable row level security;
+create policy "Users read own progress" on public.user_progress for select using (auth.uid() = user_id);
+create policy "Users insert own progress" on public.user_progress for insert with check (auth.uid() = user_id);
+create policy "Users update own progress" on public.user_progress for update using (auth.uid() = user_id);
 
--- 숙제 제출: 본인만
-CREATE POLICY "Users can view own hw submissions" ON homework_submissions FOR SELECT USING (auth.uid() = user_id);
-CREATE POLICY "Users can submit own hw" ON homework_submissions FOR INSERT WITH CHECK (auth.uid() = user_id);
+-- Leaderboard용: 모든 유저가 다른 유저 progress 읽기 (XP/rank만)
+create policy "Anyone can read leaderboard" on public.user_progress for select using (true);
 
--- 노트: 본인만
-CREATE POLICY "Users can view own notes" ON notes FOR SELECT USING (auth.uid() = user_id);
-CREATE POLICY "Users can insert own notes" ON notes FOR INSERT WITH CHECK (auth.uid() = user_id);
-CREATE POLICY "Users can update own notes" ON notes FOR UPDATE USING (auth.uid() = user_id);
-CREATE POLICY "Users can delete own notes" ON notes FOR DELETE USING (auth.uid() = user_id);
+-- user_course_progress
+alter table public.user_course_progress enable row level security;
+create policy "Users read own course progress" on public.user_course_progress for select using (auth.uid() = user_id);
+create policy "Users upsert own course progress" on public.user_course_progress for insert with check (auth.uid() = user_id);
+create policy "Users update own course progress" on public.user_course_progress for update using (auth.uid() = user_id);
 
--- 새 사용자 가입 시 프로필 자동 생성 트리거
-CREATE OR REPLACE FUNCTION public.handle_new_user()
-RETURNS TRIGGER AS $$
-BEGIN
-    INSERT INTO public.profiles (id, email)
-    VALUES (NEW.id, NEW.email);
-    RETURN NEW;
-END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
+-- challenges: 인증된 유저 누구나 읽기
+alter table public.challenges enable row level security;
+create policy "Anyone can read challenges" on public.challenges for select using (true);
 
-CREATE OR REPLACE TRIGGER on_auth_user_created
-    AFTER INSERT ON auth.users
-    FOR EACH ROW EXECUTE FUNCTION public.handle_new_user();
+-- user_challenges
+alter table public.user_challenges enable row level security;
+create policy "Users read own challenges" on public.user_challenges for select using (auth.uid() = user_id);
+create policy "Users insert own challenges" on public.user_challenges for insert with check (auth.uid() = user_id);
+create policy "Users update own challenges" on public.user_challenges for update using (auth.uid() = user_id);
+
+-- user_badges
+alter table public.user_badges enable row level security;
+create policy "Users read own badges" on public.user_badges for select using (auth.uid() = user_id);
+create policy "Users insert own badges" on public.user_badges for insert with check (auth.uid() = user_id);
+
+-- user_goals
+alter table public.user_goals enable row level security;
+create policy "Users read own goals" on public.user_goals for select using (auth.uid() = user_id);
+create policy "Users insert own goals" on public.user_goals for insert with check (auth.uid() = user_id);
+create policy "Users update own goals" on public.user_goals for update using (auth.uid() = user_id);
+create policy "Users delete own goals" on public.user_goals for delete using (auth.uid() = user_id);
+
+-- activity_log
+alter table public.activity_log enable row level security;
+create policy "Users read own activity" on public.activity_log for select using (auth.uid() = user_id);
+create policy "Users insert own activity" on public.activity_log for insert with check (auth.uid() = user_id);
+
+-- ============================================================
+-- Leaderboard 뷰 (랭킹 자동 계산)
+-- ============================================================
+create or replace view public.leaderboard_view as
+select
+  up.user_id,
+  p.name,
+  p.email,
+  up.xp,
+  up.level,
+  up.streak,
+  up.tier,
+  row_number() over (order by up.xp desc) as rank
+from public.user_progress up
+left join public.profiles p on p.id = up.user_id
+order by up.xp desc;

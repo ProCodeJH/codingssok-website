@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useUserProgress } from "@/hooks/useUserProgress";
+import { useUserGoals } from "@/hooks/useLearningData";
 
 const ACTIVE_GOALS = [
     {
@@ -51,6 +52,23 @@ const glassCard: React.CSSProperties = {
 export default function GoalsPage() {
     const { progress } = useUserProgress();
     const [tab, setTab] = useState<"active" | "completed">("active");
+    const { activeGoals: dbActive, completedGoals: dbCompleted, loading: goalsLoading } = useUserGoals();
+
+    // Supabase 데이터가 있으면 사용, 없으면 mock fallback
+    const activeGoals = dbActive.length > 0
+        ? dbActive.map((g, i) => ({
+            id: i + 1, title: g.title, desc: g.description || "", icon: g.icon,
+            target: g.target, current: g.current, unit: g.unit, deadline: g.deadline || "",
+            color: g.color, lightBg: g.light_bg, border: g.border_color,
+            milestones: [] as { name: string; done: boolean }[],
+        }))
+        : ACTIVE_GOALS;
+
+    const completedGoals = dbCompleted.length > 0
+        ? dbCompleted.map(g => ({
+            title: g.title, desc: g.description || "", icon: g.icon, completedDate: g.deadline || "",
+        }))
+        : COMPLETED_GOALS;
 
     return (
         <>
@@ -80,8 +98,8 @@ export default function GoalsPage() {
                 {/* Stats Row */}
                 <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(150px, 1fr))", gap: 16 }}>
                     {[
-                        { label: "Active Goals", value: 3, icon: "flag", color: "#0ea5e9", bg: "#e0f2fe" },
-                        { label: "Completed", value: 4, icon: "check_circle", color: "#22c55e", bg: "#dcfce7" },
+                        { label: "Active Goals", value: activeGoals.length, icon: "flag", color: "#0ea5e9", bg: "#e0f2fe" },
+                        { label: "Completed", value: completedGoals.length, icon: "check_circle", color: "#22c55e", bg: "#dcfce7" },
                         { label: "XP Earned", value: progress.xp, icon: "stars", color: "#a855f7", bg: "#f3e8ff" },
                         { label: "Day Streak", value: progress.streak, icon: "local_fire_department", color: "#f97316", bg: "#fff7ed" },
                     ].map((s, i) => (
@@ -97,21 +115,21 @@ export default function GoalsPage() {
 
                 {/* Tabs */}
                 <div style={{ display: "flex", gap: 4, background: "#f1f5f9", padding: 4, borderRadius: 12, width: "fit-content" }}>
-                    {["active", "completed"].map((t) => (
+                    {(["active", "completed"] as const).map((t) => (
                         <button key={t} onClick={() => setTab(t as "active" | "completed")} style={{
                             padding: "8px 24px", borderRadius: 8, fontSize: 14, fontWeight: 700,
                             border: "none", cursor: "pointer", transition: "all 0.2s",
                             ...(tab === t ? { background: "#fff", color: "#0f172a", boxShadow: "0 1px 3px rgba(0,0,0,0.1)" } : { background: "transparent", color: "#64748b" }),
                         }}>
-                            {t === "active" ? "Active Goals" : "Completed"} {t === "active" ? `(${ACTIVE_GOALS.length})` : `(${COMPLETED_GOALS.length})`}
+                            {t === "active" ? "Active Goals" : "Completed"} {t === "active" ? `(${activeGoals.length})` : `(${completedGoals.length})`}
                         </button>
                     ))}
                 </div>
 
                 {/* Active Goals */}
-                {tab === "active" && (
+                {tab === "active" && !goalsLoading && (
                     <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
-                        {ACTIVE_GOALS.map((g) => {
+                        {activeGoals.map((g) => {
                             const pct = Math.round((g.current / g.target) * 100);
                             return (
                                 <div key={g.id} style={{ ...glassCard, borderRadius: 24, padding: 28, position: "relative" }}>
@@ -161,9 +179,9 @@ export default function GoalsPage() {
                 )}
 
                 {/* Completed Goals */}
-                {tab === "completed" && (
+                {tab === "completed" && !goalsLoading && (
                     <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))", gap: 20 }}>
-                        {COMPLETED_GOALS.map((g, i) => (
+                        {completedGoals.map((g, i) => (
                             <div key={i} style={{ ...glassCard, borderRadius: 20, padding: 24, display: "flex", alignItems: "flex-start", gap: 16 }}>
                                 <div style={{ width: 48, height: 48, borderRadius: 14, background: "#dcfce7", color: "#16a34a", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
                                     <span className="material-symbols-outlined">{g.icon}</span>

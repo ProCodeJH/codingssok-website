@@ -3,138 +3,192 @@
 import { useEffect, useState, ReactNode } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-
 import { AuthProvider, useAuth } from "@/contexts/AuthContext";
 
 /* ── Nav Items ── */
 const NAV_ITEMS = [
-    { emoji: "🏔️", label: "여정", href: "/dashboard/learning" },
-    { emoji: "🏋️", label: "데일리 챌린지", href: "/dashboard/learning/challenge" },
-    { emoji: "🚩", label: "목표", href: "/dashboard/learning/goals" },
-    { emoji: "🏆", label: "리더보드", href: "/dashboard/learning/leaderboard" },
-    { emoji: "🏪", label: "스토어", href: "/dashboard/learning/store", badge: true },
-    { emoji: "🤓", label: "프로필", href: "/dashboard/learning/profile" },
+    { icon: "dashboard", label: "Dashboard", href: "/dashboard/learning" },
+    { icon: "library_books", label: "My Courses", href: "/dashboard/learning/challenge" },
+    { icon: "emoji_events", label: "Achievements", href: "/dashboard/learning/goals" },
+    { icon: "diversity_3", label: "Leaderboard", href: "/dashboard/learning/leaderboard" },
+    { icon: "storefront", label: "Store", href: "/dashboard/learning/store", badge: true },
+    { icon: "settings", label: "Profile", href: "/dashboard/learning/profile" },
 ];
+
+/* ── Custom CSS for glass design ── */
+const GLASS_CSS = `
+.glass-card{background:rgba(255,255,255,.65);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,.8);box-shadow:0 4px 6px -1px rgba(0,0,0,.02),0 2px 4px -1px rgba(0,0,0,.02),inset 0 0 20px rgba(255,255,255,.5)}
+.glass-card-hover:hover{background:rgba(255,255,255,.85);border-color:#fff;box-shadow:0 20px 25px -5px rgba(14,165,233,.1),0 10px 10px -5px rgba(14,165,233,.04),inset 0 0 20px rgba(255,255,255,.8);transform:translateY(-2px)}
+.iridescent-border{position:relative}
+.iridescent-border::before{content:'';position:absolute;inset:0;border-radius:inherit;padding:1px;background:linear-gradient(135deg,rgba(255,255,255,.8),rgba(56,189,248,.3),rgba(255,255,255,.8));-webkit-mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);-webkit-mask-composite:xor;mask-composite:exclude;pointer-events:none}
+.icon-3d-glass{background:linear-gradient(135deg,rgba(255,255,255,.9),rgba(255,255,255,.4));backdrop-filter:blur(4px);border:1px solid rgba(255,255,255,.9);box-shadow:6px 6px 12px rgba(164,194,244,.2),-6px -6px 12px rgba(255,255,255,.9),inset 2px 2px 4px rgba(255,255,255,.9),inset -2px -2px 4px rgba(164,194,244,.1)}
+.neon-ring{box-shadow:0 0 15px rgba(14,165,233,.4),inset 0 0 10px rgba(14,165,233,.2)}
+.roadmap-line-gradient{background:linear-gradient(90deg,#38bdf8 0%,#818cf8 50%,#e2e8f0 100%);height:3px;border-radius:99px;box-shadow:0 0 10px rgba(56,189,248,.3)}
+.floating-orb{position:absolute;border-radius:50%;filter:blur(80px);z-index:0;opacity:.6;pointer-events:none}
+.hide-scrollbar::-webkit-scrollbar{display:none}
+.hide-scrollbar{-ms-overflow-style:none;scrollbar-width:none}
+`;
 
 /* ── Auth Guard ── */
 function AuthGate({ children }: { children: ReactNode }) {
     const { user, loading } = useAuth();
 
     useEffect(() => {
-        if (!loading && !user) {
-            window.location.href = "/login";
-        }
+        if (!loading && !user) window.location.href = "/login";
     }, [loading, user]);
 
-    if (loading) {
-        return (
-            <div className="h-screen flex items-center justify-center bg-[#f8fafc]">
-                <div className="flex flex-col items-center gap-4">
-                    <div className="w-10 h-10 border-4 border-[#13daec] border-t-transparent rounded-full animate-spin" />
-                    <p className="text-sm text-gray-500 font-medium">로딩 중...</p>
-                </div>
+    if (loading) return (
+        <div className="h-screen flex items-center justify-center" style={{ background: "linear-gradient(135deg,#f0f9ff 0%,#e0f2fe 100%)" }}>
+            <div className="flex flex-col items-center gap-4">
+                <div className="w-10 h-10 border-4 border-sky-500 border-t-transparent rounded-full animate-spin" />
+                <p className="text-sm text-slate-500 font-medium">로딩 중...</p>
             </div>
-        );
-    }
+        </div>
+    );
 
     if (!user) return null;
     return <>{children}</>;
 }
 
-/* ── Sidebar ── */
-function Sidebar({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
+/* ── Left Sidebar ── */
+function LeftSidebar() {
     const pathname = usePathname();
-    const { user, signOut } = useAuth();
-
-    const isActive = (href: string) => {
-        if (href === "/dashboard/learning") return pathname === href;
-        return pathname.startsWith(href);
-    };
+    const isActive = (href: string) => href === "/dashboard/learning" ? pathname === href : pathname.startsWith(href);
 
     return (
-        <>
-            {/* Mobile overlay */}
-            {isOpen && (
-                <div
-                    className="fixed inset-0 bg-black/40 z-40 lg:hidden"
-                    onClick={onClose}
-                />
-            )}
+        <aside className="hidden lg:block lg:col-span-2 sticky top-32 h-[calc(100vh-10rem)]">
+            <nav className="space-y-2">
+                {NAV_ITEMS.map((item) => (
+                    <Link key={item.href} href={item.href}
+                        className={`flex items-center gap-3 px-5 py-3.5 rounded-2xl font-semibold text-sm transition-all relative overflow-hidden group
+                        ${isActive(item.href)
+                                ? "bg-sky-50 text-sky-700 font-bold shadow-sm border border-sky-100 ring-1 ring-sky-200/50"
+                                : "text-slate-500 hover:bg-white hover:text-sky-600 border border-transparent hover:border-sky-50 hover:shadow-lg hover:shadow-sky-100/50"
+                            }`}
+                    >
+                        {isActive(item.href) && (
+                            <div className="absolute inset-0 bg-gradient-to-r from-sky-100/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                        )}
+                        <span className={`material-symbols-outlined relative z-10 ${!isActive(item.href) ? "group-hover:scale-110" : ""} transition-transform`}>
+                            {item.icon}
+                        </span>
+                        <span className="relative z-10">{item.label}</span>
+                        {item.badge && <span className="absolute right-4 top-4 w-2 h-2 bg-red-500 rounded-full" />}
+                    </Link>
+                ))}
+            </nav>
 
-            <aside
-                className={`
-          fixed lg:sticky top-0 left-0 z-50 lg:z-auto
-          w-64 h-screen flex-shrink-0
-          bg-white border-r border-gray-200
-          flex flex-col justify-between
-          transition-transform duration-300
-          ${isOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"}
-        `}
-                style={{ fontFamily: "'Inter', sans-serif" }}
-            >
-                <div>
-                    {/* Logo */}
-                    <div className="h-20 flex items-center px-8 border-b border-gray-100">
-                        <div className="flex items-center gap-2">
-                            <div className="w-8 h-8 rounded-lg bg-[#3B82F6] flex items-center justify-center text-white font-bold text-lg">
-                                E
+            {/* Daily Challenge Mini Card */}
+            <div className="mt-10 px-2">
+                <div className="relative rounded-3xl p-5 overflow-hidden group shadow-2xl shadow-indigo-500/20 transition-all hover:scale-[1.02]">
+                    <div className="absolute inset-0 bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900" />
+                    <div className="absolute -right-4 -top-4 w-32 h-32 bg-sky-500/20 rounded-full blur-3xl group-hover:bg-sky-400/30 transition-all duration-700" />
+                    <div className="relative z-10">
+                        <div className="flex items-center justify-between mb-3">
+                            <div className="p-1.5 bg-yellow-500/20 rounded-lg backdrop-blur-sm border border-yellow-500/30">
+                                <span className="material-symbols-outlined text-yellow-400 text-lg block">bolt</span>
                             </div>
-                            <span className="font-bold text-xl tracking-tight text-gray-900">
-                                Elite<span className="text-[#3B82F6]">Academy</span>
-                            </span>
+                            <span className="text-[10px] font-bold bg-white/10 px-2.5 py-1 rounded-full text-white/90 backdrop-blur-md border border-white/10">DAILY DROP</span>
+                        </div>
+                        <h4 className="font-bold text-base text-white mb-1.5 tracking-tight">Algorithm Sort</h4>
+                        <p className="text-xs text-slate-300/80 mb-4 font-light leading-relaxed">Optimize the sort function for O(n) complexity.</p>
+                        <Link href="/dashboard/learning/challenge"
+                            className="w-full py-2.5 bg-gradient-to-r from-sky-500 to-indigo-500 hover:from-sky-400 hover:to-indigo-400 text-white rounded-xl text-xs font-bold transition-all shadow-lg shadow-sky-500/25 flex items-center justify-center gap-2">
+                            Start Challenge
+                            <span className="material-symbols-outlined text-xs">arrow_forward</span>
+                        </Link>
+                    </div>
+                </div>
+            </div>
+        </aside>
+    );
+}
+
+/* ── Top Navbar ── */
+function Navbar({ onMenuOpen }: { onMenuOpen: () => void }) {
+    const { user, signOut } = useAuth();
+
+    return (
+        <nav className="sticky top-0 z-50 w-full bg-white/70 backdrop-blur-xl border-b border-white/40 shadow-sm">
+            <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
+                <div className="flex justify-between h-20 items-center">
+                    {/* Logo */}
+                    <div className="flex items-center gap-4">
+                        <div className="w-11 h-11 rounded-2xl bg-gradient-to-tr from-sky-500 to-indigo-500 flex items-center justify-center text-white shadow-lg transform transition-transform hover:scale-105 hover:rotate-3">
+                            <span className="material-symbols-outlined text-2xl">school</span>
+                        </div>
+                        <div className="flex flex-col">
+                            <span className="text-xl font-extrabold tracking-tight text-slate-900">Elite<span className="text-sky-500">Academy</span></span>
+                            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em]">Hyper Learning Hub</span>
                         </div>
                     </div>
 
-                    {/* Nav */}
-                    <nav className="p-4 space-y-2">
-                        {NAV_ITEMS.map((item) => (
-                            <Link
-                                key={item.href}
-                                href={item.href}
-                                onClick={onClose}
-                                className={`
-                  flex items-center gap-4 px-4 py-3 rounded-xl transition-all group relative
-                  ${isActive(item.href)
-                                        ? "bg-blue-50 text-[#3B82F6] font-semibold shadow-sm ring-1 ring-blue-100"
-                                        : "text-gray-500 hover:bg-gray-50"
-                                    }
-                `}
-                            >
-                                <span className={`text-2xl transition-transform duration-200 ${!isActive(item.href) ? "group-hover:scale-110" : ""}`}>
-                                    {item.emoji}
-                                </span>
-                                <span className="font-medium">{item.label}</span>
-                                {item.badge && (
-                                    <span className="absolute right-4 top-4 w-2 h-2 bg-red-500 rounded-full" />
-                                )}
-                            </Link>
-                        ))}
-                    </nav>
-                </div>
+                    {/* Right side */}
+                    <div className="flex items-center gap-8">
+                        {/* Search */}
+                        <div className="hidden md:flex relative group">
+                            <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-sky-500 transition-colors text-xl">search</span>
+                            <input className="pl-12 pr-6 py-2.5 bg-slate-50/50 hover:bg-white border border-slate-200 hover:border-sky-200 rounded-full text-sm focus:ring-4 focus:ring-sky-100 focus:border-sky-400 w-72 transition-all outline-none shadow-inner text-slate-600 placeholder:text-slate-400"
+                                placeholder="Search for knowledge..." type="text" />
+                        </div>
 
-                {/* User profile bottom */}
-                <div className="p-4 border-t border-gray-100">
-                    <div className="flex items-center gap-3 p-2 rounded-xl bg-gray-50 border border-gray-100">
-                        <div className="w-10 h-10 rounded-full bg-[#3B82F6] flex items-center justify-center text-white font-bold text-sm flex-shrink-0">
-                            {user?.name?.charAt(0) || "U"}
+                        {/* User */}
+                        <div className="hidden sm:flex items-center gap-6 pl-6 border-l border-slate-200/60">
+                            <div className="flex flex-col items-end">
+                                <span className="text-sm font-bold text-slate-800">{user?.name || user?.email?.split("@")[0] || "Student"}</span>
+                                <div className="flex items-center gap-1.5">
+                                    <span className="relative flex h-2 w-2">
+                                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
+                                        <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
+                                    </span>
+                                    <span className="text-[10px] text-slate-500 font-semibold uppercase tracking-wide">Elite Member</span>
+                                </div>
+                            </div>
+                            <button onClick={signOut} title="로그아웃"
+                                className="w-11 h-11 rounded-full p-0.5 bg-gradient-to-br from-sky-300 to-indigo-300 shadow-lg cursor-pointer hover:shadow-xl transition-all flex items-center justify-center">
+                                <div className="w-full h-full rounded-full bg-sky-100 flex items-center justify-center text-sky-700 font-bold text-sm border-2 border-white">
+                                    {(user?.email?.charAt(0) || "U").toUpperCase()}
+                                </div>
+                            </button>
                         </div>
-                        <div className="flex-1 min-w-0">
-                            <p className="text-sm font-medium text-gray-900 truncate">{user?.name || "사용자"}</p>
-                            <p className="text-xs text-gray-400 truncate">Lv. {user?.level || 1}</p>
-                        </div>
-                        <button
-                            onClick={signOut}
-                            className="p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
-                            title="로그아웃"
-                        >
-                            <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
-                                <polyline points="16 17 21 12 16 7" />
-                                <line x1="21" y1="12" x2="9" y2="12" />
-                            </svg>
+
+                        {/* Mobile hamburger */}
+                        <button onClick={onMenuOpen} className="lg:hidden p-2 text-slate-500 hover:bg-slate-100 rounded-xl transition-colors">
+                            <span className="material-symbols-outlined">menu</span>
                         </button>
                     </div>
                 </div>
+            </div>
+        </nav>
+    );
+}
+
+/* ── Mobile Sidebar Drawer ── */
+function MobileDrawer({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
+    const pathname = usePathname();
+    const isActive = (href: string) => href === "/dashboard/learning" ? pathname === href : pathname.startsWith(href);
+
+    if (!isOpen) return null;
+    return (
+        <>
+            <div className="fixed inset-0 bg-black/40 z-[60] lg:hidden" onClick={onClose} />
+            <aside className="fixed top-0 left-0 z-[70] w-72 h-screen bg-white/95 backdrop-blur-xl border-r border-white/50 flex flex-col p-6 shadow-2xl lg:hidden">
+                <div className="flex items-center gap-3 mb-8">
+                    <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-sky-500 to-indigo-500 flex items-center justify-center text-white">
+                        <span className="material-symbols-outlined text-xl">school</span>
+                    </div>
+                    <span className="text-lg font-extrabold text-slate-900">Elite<span className="text-sky-500">Academy</span></span>
+                </div>
+                <nav className="space-y-2 flex-1">
+                    {NAV_ITEMS.map((item) => (
+                        <Link key={item.href} href={item.href} onClick={onClose}
+                            className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition-all
+                            ${isActive(item.href) ? "bg-sky-50 text-sky-700 border border-sky-100" : "text-slate-500 hover:bg-slate-50"}`}>
+                            <span className="material-symbols-outlined">{item.icon}</span>
+                            {item.label}
+                        </Link>
+                    ))}
+                </nav>
             </aside>
         </>
     );
@@ -147,31 +201,32 @@ export default function LearningLayout({ children }: { children: ReactNode }) {
     return (
         <AuthProvider>
             <AuthGate>
-                {/* Font imports for learning platform */}
+                {/* Inject glass CSS */}
+                <style dangerouslySetInnerHTML={{ __html: GLASS_CSS }} />
+                {/* Fonts */}
                 {/* eslint-disable-next-line @next/next/no-page-custom-font */}
-                <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" />
+                <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" />
                 {/* eslint-disable-next-line @next/next/no-page-custom-font */}
-                <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
-                <div className="flex h-screen overflow-hidden bg-[#F3F4F6]" style={{ fontFamily: "'Inter', sans-serif", fontSize: '16px' }}>
-                    <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
+                <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" />
 
-                    <main className="flex-1 flex flex-col h-screen overflow-hidden">
-                        {/* Mobile header */}
-                        <header className="lg:hidden h-16 bg-white border-b border-gray-200 flex items-center justify-between px-4 z-20 flex-shrink-0">
-                            <div className="font-bold text-lg text-gray-900">Elite Academy</div>
-                            <button
-                                onClick={() => setSidebarOpen(true)}
-                                className="p-2 text-gray-500 hover:bg-gray-100 rounded-lg"
-                            >
-                                <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                    <line x1="3" y1="12" x2="21" y2="12" />
-                                    <line x1="3" y1="6" x2="21" y2="6" />
-                                    <line x1="3" y1="18" x2="21" y2="18" />
-                                </svg>
-                            </button>
-                        </header>
+                <div className="min-h-screen flex flex-col relative overflow-x-hidden antialiased selection:bg-sky-500/20 selection:text-sky-700"
+                    style={{ fontSize: '16px', fontFamily: "'Plus Jakarta Sans', sans-serif", background: 'linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%)', backgroundAttachment: 'fixed' }}>
 
-                        <div className="flex-1 overflow-y-auto">
+                    {/* Floating orbs */}
+                    <div className="floating-orb bg-blue-300 w-96 h-96 top-0 left-0 -translate-x-1/2 -translate-y-1/2 fixed" />
+                    <div className="floating-orb bg-purple-200 w-[500px] h-[500px] bottom-0 right-0 translate-x-1/3 translate-y-1/3 fixed" />
+                    <div className="floating-orb bg-cyan-200 w-64 h-64 top-1/3 right-1/4 opacity-40 fixed" />
+
+                    {/* Top Navbar */}
+                    <Navbar onMenuOpen={() => setSidebarOpen(true)} />
+
+                    {/* Mobile Drawer */}
+                    <MobileDrawer isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
+
+                    {/* Main Grid */}
+                    <main className="flex-1 max-w-[1600px] w-full mx-auto px-4 sm:px-6 lg:px-8 py-10 grid grid-cols-1 lg:grid-cols-12 gap-8 relative z-10">
+                        <LeftSidebar />
+                        <div className="col-span-1 lg:col-span-10">
                             {children}
                         </div>
                     </main>

@@ -8,7 +8,7 @@ import { AuthProvider, useAuth } from "@/contexts/AuthContext";
 /* ── Nav Items ── */
 const NAV_ITEMS = [
     { icon: "dashboard", label: "Dashboard", href: "/dashboard/learning" },
-    { icon: "library_books", label: "My Courses", href: "/dashboard/learning/challenge" },
+    { icon: "library_books", label: "My Courses", href: "/dashboard/learning/courses" },
     { icon: "emoji_events", label: "Achievements", href: "/dashboard/learning/goals" },
     { icon: "diversity_3", label: "Leaderboard", href: "/dashboard/learning/leaderboard" },
     { icon: "sports_esports", label: "Player Stats", href: "/dashboard/learning/stats" },
@@ -79,7 +79,7 @@ function LeftSidebar() {
                             </div>
                             <h4 style={{ fontWeight: 700, fontSize: 16, color: "#fff", marginBottom: 6, letterSpacing: "-0.02em" }}>Algorithm Sort</h4>
                             <p style={{ fontSize: 12, color: "rgba(203,213,225,0.8)", marginBottom: 16, fontWeight: 300, lineHeight: 1.6 }}>Optimize the sort function for O(n) complexity.</p>
-                            <Link href="/dashboard/learning/challenge" style={{
+                            <Link href="/dashboard/learning/courses" style={{
                                 display: "flex", width: "100%", padding: "10px 0", justifyContent: "center", alignItems: "center", gap: 8,
                                 background: "linear-gradient(to right, #0ea5e9, #6366f1)", color: "#fff", borderRadius: 12, fontSize: 12, fontWeight: 700,
                                 textDecoration: "none", boxShadow: "0 10px 15px -3px rgba(14,165,233,0.25)"

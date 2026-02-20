@@ -4,17 +4,22 @@ import { useEffect, useState, ReactNode } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { AuthProvider, useAuth } from "@/contexts/AuthContext";
+import { getTierInfo } from "@/lib/xp-engine";
 
-/* ── Nav Items ── */
+/* ── Nav Items (한글화 + 새 메뉴) ── */
 const NAV_ITEMS = [
-    { icon: "dashboard", label: "Dashboard", href: "/dashboard/learning" },
-    { icon: "library_books", label: "My Courses", href: "/dashboard/learning/courses" },
+    { icon: "dashboard", label: "대시보드", href: "/dashboard/learning" },
+    { icon: "library_books", label: "내 코스", href: "/dashboard/learning/courses" },
     { icon: "terminal", label: "C 컴파일러", href: "/dashboard/learning/compiler" },
     { icon: "assignment", label: "숙제 & 노트", href: "/dashboard/learning/homework" },
-    { icon: "emoji_events", label: "Achievements", href: "/dashboard/learning/goals" },
-    { icon: "diversity_3", label: "Leaderboard", href: "/dashboard/learning/leaderboard" },
-    { icon: "sports_esports", label: "Player Stats", href: "/dashboard/learning/stats" },
-    { icon: "settings", label: "Profile", href: "/dashboard/learning/profile" },
+    { icon: "shield", label: "티어 & 승급", href: "/dashboard/learning/tier" },
+    { icon: "task_alt", label: "미션 & 업적", href: "/dashboard/learning/missions" },
+    { icon: "chat", label: "채팅", href: "/dashboard/learning/chat" },
+    { icon: "diversity_3", label: "리더보드", href: "/dashboard/learning/leaderboard" },
+    { icon: "sports_esports", label: "학습 통계", href: "/dashboard/learning/stats" },
+    { icon: "storefront", label: "상점", href: "/dashboard/learning/store" },
+    { icon: "person", label: "프로필", href: "/dashboard/learning/profile" },
+    { icon: "admin_panel_settings", label: "관리자", href: "/dashboard/learning/admin" },
 ];
 
 /* ── Auth Guard ── */
@@ -41,12 +46,12 @@ function LeftSidebar() {
     return (
         <aside style={{ display: "none" }} className="lg:!block lg:col-span-2">
             <div style={{ position: "sticky", top: 128, maxHeight: "calc(100vh - 10rem)", overflowY: "auto" }} className="hide-scrollbar">
-                <nav style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                <nav style={{ display: "flex", flexDirection: "column", gap: 6 }}>
                     {NAV_ITEMS.map((item) => (
                         <Link key={item.href} href={item.href}
                             style={{
-                                display: "flex", alignItems: "center", gap: 12, padding: "14px 20px",
-                                borderRadius: 16, fontSize: 14, fontWeight: isActive(item.href) ? 700 : 600,
+                                display: "flex", alignItems: "center", gap: 12, padding: "12px 18px",
+                                borderRadius: 14, fontSize: 13, fontWeight: isActive(item.href) ? 700 : 600,
                                 textDecoration: "none", transition: "all 0.2s",
                                 ...(isActive(item.href) ? {
                                     background: "#f0f9ff", color: "#0369a1",
@@ -64,8 +69,8 @@ function LeftSidebar() {
                     ))}
                 </nav>
 
-                {/* Daily Challenge Mini Card */}
-                <div style={{ marginTop: 40, padding: "0 8px" }}>
+                {/* 오늘의 챌린지 카드 */}
+                <div style={{ marginTop: 32, padding: "0 8px" }}>
                     <div style={{
                         position: "relative", borderRadius: 24, padding: 20, overflow: "hidden",
                         boxShadow: "0 25px 50px -12px rgba(99,102,241,0.2)",
@@ -77,16 +82,16 @@ function LeftSidebar() {
                                 <div style={{ padding: 6, background: "rgba(234,179,8,0.2)", borderRadius: 8, border: "1px solid rgba(234,179,8,0.3)" }}>
                                     <span className="material-symbols-outlined" style={{ color: "#facc15", fontSize: 18, display: "block" }}>bolt</span>
                                 </div>
-                                <span style={{ fontSize: 10, fontWeight: 700, background: "rgba(255,255,255,0.1)", padding: "4px 10px", borderRadius: 999, color: "rgba(255,255,255,0.9)", border: "1px solid rgba(255,255,255,0.1)" }}>DAILY DROP</span>
+                                <span style={{ fontSize: 10, fontWeight: 700, background: "rgba(255,255,255,0.1)", padding: "4px 10px", borderRadius: 999, color: "rgba(255,255,255,0.9)", border: "1px solid rgba(255,255,255,0.1)" }}>오늘의 챌린지</span>
                             </div>
-                            <h4 style={{ fontWeight: 700, fontSize: 16, color: "#fff", marginBottom: 6, letterSpacing: "-0.02em" }}>Algorithm Sort</h4>
-                            <p style={{ fontSize: 12, color: "rgba(203,213,225,0.8)", marginBottom: 16, fontWeight: 300, lineHeight: 1.6 }}>Optimize the sort function for O(n) complexity.</p>
+                            <h4 style={{ fontWeight: 700, fontSize: 16, color: "#fff", marginBottom: 6, letterSpacing: "-0.02em" }}>C언어 도전하기</h4>
+                            <p style={{ fontSize: 12, color: "rgba(203,213,225,0.8)", marginBottom: 16, fontWeight: 300, lineHeight: 1.6 }}>매일 새로운 C언어 문제에 도전해보세요!</p>
                             <Link href="/dashboard/learning/courses" style={{
                                 display: "flex", width: "100%", padding: "10px 0", justifyContent: "center", alignItems: "center", gap: 8,
                                 background: "linear-gradient(to right, #0ea5e9, #6366f1)", color: "#fff", borderRadius: 12, fontSize: 12, fontWeight: 700,
                                 textDecoration: "none", boxShadow: "0 10px 15px -3px rgba(14,165,233,0.25)"
                             }}>
-                                Start Challenge
+                                도전 시작
                                 <span className="material-symbols-outlined" style={{ fontSize: 12 }}>arrow_forward</span>
                             </Link>
                         </div>
@@ -106,7 +111,7 @@ function Navbar({ onMenuOpen }: { onMenuOpen: () => void }) {
             background: "rgba(255,255,255,0.7)", backdropFilter: "blur(20px)", WebkitBackdropFilter: "blur(20px)",
             borderBottom: "1px solid rgba(255,255,255,0.4)", boxShadow: "0 1px 2px rgba(0,0,0,0.05)"
         }}>
-            <div style={{ maxWidth: 1600, margin: "0 auto", padding: "0 24px" }}>
+            <div style={{ maxWidth: 1800, margin: "0 auto", padding: "0 24px" }}>
                 <div style={{ display: "flex", justifyContent: "space-between", height: 80, alignItems: "center" }}>
                     {/* Logo */}
                     <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
@@ -119,31 +124,31 @@ function Navbar({ onMenuOpen }: { onMenuOpen: () => void }) {
                         </div>
                         <div style={{ display: "flex", flexDirection: "column" }}>
                             <span style={{ fontSize: 20, fontWeight: 800, letterSpacing: "-0.02em", color: "#0f172a" }}>
-                                Elite<span style={{ color: "#0ea5e9" }}>Academy</span>
+                                코딩<span style={{ color: "#0ea5e9" }}>쏙</span>
                             </span>
-                            <span style={{ fontSize: 10, fontWeight: 700, color: "#94a3b8", textTransform: "uppercase", letterSpacing: "0.2em" }}>Hyper Learning Hub</span>
+                            <span style={{ fontSize: 10, fontWeight: 700, color: "#94a3b8", letterSpacing: "0.1em" }}>학습 대시보드</span>
                         </div>
                     </div>
 
                     {/* Right */}
                     <div style={{ display: "flex", alignItems: "center", gap: 32 }}>
-                        {/* Search - hidden on mobile */}
+                        {/* Search */}
                         <div className="hidden md:flex" style={{ position: "relative" }}>
                             <span className="material-symbols-outlined" style={{ position: "absolute", left: 16, top: "50%", transform: "translateY(-50%)", color: "#94a3b8", fontSize: 20 }}>search</span>
                             <input style={{
                                 paddingLeft: 48, paddingRight: 24, paddingTop: 10, paddingBottom: 10,
                                 background: "rgba(241,245,249,0.5)", border: "1px solid #e2e8f0", borderRadius: 999,
                                 fontSize: 14, width: 288, outline: "none", color: "#475569"
-                            }} placeholder="Search for knowledge..." type="text" />
+                            }} placeholder="코스, 문제 검색..." type="text" />
                         </div>
 
                         {/* User */}
                         <div className="hidden sm:flex" style={{ alignItems: "center", gap: 24, paddingLeft: 24, borderLeft: "1px solid rgba(226,232,240,0.6)" }}>
                             <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end" }}>
-                                <span style={{ fontSize: 14, fontWeight: 700, color: "#1e293b" }}>{user?.name || user?.email?.split("@")[0] || "Student"}</span>
+                                <span style={{ fontSize: 14, fontWeight: 700, color: "#1e293b" }}>{user?.name || user?.email?.split("@")[0] || "학생"}</span>
                                 <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
                                     <span style={{ width: 8, height: 8, borderRadius: "50%", background: "#22c55e", display: "inline-block" }} />
-                                    <span style={{ fontSize: 10, color: "#64748b", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.05em" }}>Elite Member</span>
+                                    <span style={{ fontSize: 10, color: "#64748b", fontWeight: 600, letterSpacing: "0.05em" }}>접속 중</span>
                                 </div>
                             </div>
                             <button onClick={signOut} title="로그아웃" style={{
@@ -194,9 +199,9 @@ function MobileDrawer({ isOpen, onClose }: { isOpen: boolean; onClose: () => voi
                     <div style={{ width: 36, height: 36, borderRadius: 12, background: "linear-gradient(to top right, #0ea5e9, #6366f1)", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff" }}>
                         <span className="material-symbols-outlined" style={{ fontSize: 20 }}>school</span>
                     </div>
-                    <span style={{ fontSize: 18, fontWeight: 800, color: "#0f172a" }}>Elite<span style={{ color: "#0ea5e9" }}>Academy</span></span>
+                    <span style={{ fontSize: 18, fontWeight: 800, color: "#0f172a" }}>코딩<span style={{ color: "#0ea5e9" }}>쏙</span></span>
                 </div>
-                <nav style={{ display: "flex", flexDirection: "column", gap: 8, flex: 1 }}>
+                <nav style={{ display: "flex", flexDirection: "column", gap: 6, flex: 1 }}>
                     {NAV_ITEMS.map((item) => (
                         <Link key={item.href} href={item.href} onClick={onClose} style={{
                             display: "flex", alignItems: "center", gap: 12, padding: "12px 16px", borderRadius: 12,
@@ -249,7 +254,7 @@ export default function LearningLayout({ children }: { children: ReactNode }) {
 
                     {/* Main Grid */}
                     <main style={{
-                        flex: 1, maxWidth: 1600, width: "100%", margin: "0 auto",
+                        flex: 1, maxWidth: 1800, width: "100%", margin: "0 auto",
                         padding: "40px 24px",
                         display: "grid", gridTemplateColumns: "1fr",
                         gap: 32, position: "relative", zIndex: 10,

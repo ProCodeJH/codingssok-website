@@ -18,6 +18,7 @@ export interface UserProgress {
     avgSolveTime: number;
     rank: number;
     tier: string;
+    placement_done: boolean;
     points: number;
     goals: GoalProgress[];
 }
@@ -46,6 +47,7 @@ const DEFAULT_PROGRESS: UserProgress = {
     avgSolveTime: 0,
     rank: 999,
     tier: "Bronze",
+    placement_done: false,
     points: 0,
     goals: [],
 };
@@ -132,6 +134,7 @@ export function useUserProgress() {
                             avgSolveTime: up?.avg_solve_time_minutes ?? 0,
                             rank: up?.rank ?? 999,
                             tier: up?.tier ?? "Bronze",
+                            placement_done: up?.placement_done ?? false,
                             points: up?.xp ?? 0,
                             completedCourses: courses?.map(c => c.course_id) ?? [],
                             completedChallenges: challenges?.map(c => c.challenge_id) ?? [],

@@ -2,6 +2,8 @@
 
 import { useState, useEffect, useCallback, useRef } from "react";
 import { createClient } from "@/lib/supabase";
+import { useAuth } from "@/contexts/AuthContext";
+import { awardXP, XP_REWARDS } from "@/lib/xp-engine";
 
 /*
   C언어 온라인 컴파일러 — 화이트톤 (learning 레이아웃 통합)
@@ -25,31 +27,36 @@ int main() {
     return 0;
 }`;
 
+const CODE_TEMPLATES = [
+    { label: "Hello World", code: DEFAULT_CODE },
+    { label: "배열 & 반복문", code: `#include <stdio.h>\n\nint main() {\n    int arr[5] = {10, 20, 30, 40, 50};\n    int sum = 0;\n\n    for (int i = 0; i < 5; i++) {\n        printf("arr[%d] = %d\\n", i, arr[i]);\n        sum += arr[i];\n    }\n\n    printf("합계: %d\\n", sum);\n    printf("평균: %.1f\\n", (float)sum / 5);\n    return 0;\n}` },
+    { label: "포인터 기초", code: `#include <stdio.h>\n\nint main() {\n    int x = 42;\n    int *p = &x;\n\n    printf("x의 값: %d\\n", x);\n    printf("x의 주소: %p\\n", (void*)&x);\n    printf("p가 가리키는 값: %d\\n", *p);\n    printf("p의 값 (주소): %p\\n", (void*)p);\n\n    *p = 100;\n    printf("변경 후 x: %d\\n", x);\n    return 0;\n}` },
+    { label: "구조체", code: `#include <stdio.h>\n\ntypedef struct {\n    char name[20];\n    int age;\n    float score;\n} Student;\n\nint main() {\n    Student s = {"홍길동", 18, 95.5};\n    printf("이름: %s\\n", s.name);\n    printf("나이: %d\\n", s.age);\n    printf("점수: %.1f\\n", s.score);\n    return 0;\n}` },
+    { label: "문자열 처리", code: `#include <stdio.h>\n#include <string.h>\n\nint main() {\n    char str[] = "Hello, Coding!";\n    printf("문자열: %s\\n", str);\n    printf("길이: %lu\\n", strlen(str));\n\n    // 문자열 뒤집기\n    int len = strlen(str);\n    for (int i = 0; i < len / 2; i++) {\n        char tmp = str[i];\n        str[i] = str[len-1-i];\n        str[len-1-i] = tmp;\n    }\n    printf("뒤집기: %s\\n", str);\n    return 0;\n}` },
+];
+
 interface Submission { id: string; code: string; output: string; status: string; created_at: string; }
 
 export default function CompilerPage() {
+    const { user } = useAuth();
     const [code, setCode] = useState(DEFAULT_CODE);
     const [output, setOutput] = useState("");
     const [running, setRunning] = useState(false);
-    const [userId, setUserId] = useState<string | null>(null);
     const [history, setHistory] = useState<Submission[]>([]);
     const [showHistory, setShowHistory] = useState(false);
+    const [showTemplates, setShowTemplates] = useState(false);
     const [layout, setLayout] = useState<"split" | "stack">("split");
+    const [xpMsg, setXpMsg] = useState("");
     const textareaRef = useRef<HTMLTextAreaElement>(null);
     const lineNumberRef = useRef<HTMLDivElement>(null);
     const supabase = createClient();
+    const userId = user?.id || null;
 
     useEffect(() => {
         const check = () => setLayout(window.innerWidth < 768 ? "stack" : "split");
         check(); window.addEventListener("resize", check);
         return () => window.removeEventListener("resize", check);
     }, []);
-
-    useEffect(() => {
-        supabase.auth.getUser().then(({ data }) => {
-            if (data.user) setUserId(data.user.id);
-        });
-    }, [supabase]);
 
     const fetchHistory = useCallback(async () => {
         if (!userId) return;
@@ -81,6 +88,12 @@ export default function CompilerPage() {
             try {
                 await supabase.from("code_submissions").insert({ user_id: userId, language: "c", code, output: resultOutput, status: resultStatus });
                 fetchHistory();
+                // XP 적립
+                if (resultStatus === "success") {
+                    const result = await awardXP(userId, XP_REWARDS.code_submit, "코드 실행 성공", "terminal");
+                    setXpMsg(`+${XP_REWARDS.code_submit} XP!`);
+                    setTimeout(() => setXpMsg(""), 3000);
+                }
             } catch (err) { console.error("제출 저장 실패:", err); }
         }
     }, [code, userId, supabase, fetchHistory]);
@@ -110,7 +123,12 @@ export default function CompilerPage() {
                     <p style={{ fontSize: 14, color: "#64748b", marginTop: 4 }}>온라인에서 바로 C 코드를 작성하고 실행하세요</p>
                 </div>
                 <div style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}>
+                    {xpMsg && <span style={{ fontSize: 13, fontWeight: 700, color: "#059669", background: "#dcfce7", padding: "6px 14px", borderRadius: 10, animation: "pulse 1s" }}>{xpMsg}</span>}
                     <span style={{ fontSize: 12, color: "#94a3b8", fontFamily: "monospace", background: "#f1f5f9", padding: "4px 10px", borderRadius: 8 }}>Ctrl+Enter 실행</span>
+                    <button onClick={() => setShowTemplates(!showTemplates)} style={{
+                        padding: "8px 14px", borderRadius: 10, fontSize: 13, fontWeight: 600, cursor: "pointer",
+                        border: "1px solid #e2e8f0", background: showTemplates ? "#fef3c7" : "#fff", color: showTemplates ? "#b45309" : "#475569",
+                    }}>📝 템플릿</button>
                     <button onClick={() => setShowHistory(!showHistory)} style={{
                         padding: "8px 14px", borderRadius: 10, fontSize: 13, fontWeight: 600, cursor: "pointer",
                         border: "1px solid #e2e8f0", background: showHistory ? "#f0f9ff" : "#fff", color: showHistory ? "#0369a1" : "#475569",
@@ -124,6 +142,21 @@ export default function CompilerPage() {
                     </button>
                 </div>
             </div>
+
+            {/* Template panel */}
+            {showTemplates && (
+                <div style={{ background: "#fff", border: "1px solid #e2e8f0", borderRadius: 16, padding: 16, boxShadow: "0 4px 6px -1px rgba(0,0,0,0.05)" }}>
+                    <h3 style={{ fontSize: 12, fontWeight: 700, color: "#94a3b8", marginBottom: 10, letterSpacing: "0.05em" }}>코드 템플릿</h3>
+                    <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+                        {CODE_TEMPLATES.map((t) => (
+                            <button key={t.label} onClick={() => { setCode(t.code); setShowTemplates(false); }} style={{
+                                padding: "8px 16px", borderRadius: 10, border: "1px solid #e2e8f0",
+                                background: "#fafafa", cursor: "pointer", fontSize: 13, fontWeight: 600, color: "#475569",
+                            }}>{t.label}</button>
+                        ))}
+                    </div>
+                </div>
+            )}
 
             {/* History panel */}
             {showHistory && (

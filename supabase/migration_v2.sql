@@ -172,55 +172,117 @@ CREATE TABLE IF NOT EXISTS public.attendance (
 
 -- tiers: 누구나 읽기
 ALTER TABLE public.tiers ENABLE ROW LEVEL SECURITY;
-CREATE POLICY "Anyone can read tiers" ON public.tiers FOR SELECT USING (true);
+DO $$ BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'Anyone can read tiers') THEN
+    CREATE POLICY "Anyone can read tiers" ON public.tiers FOR SELECT USING (true);
+  END IF;
+END $$;
 
 -- tier_exams: 누구나 읽기
 ALTER TABLE public.tier_exams ENABLE ROW LEVEL SECURITY;
-CREATE POLICY "Anyone can read tier_exams" ON public.tier_exams FOR SELECT USING (true);
+DO $$ BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'Anyone can read tier_exams') THEN
+    CREATE POLICY "Anyone can read tier_exams" ON public.tier_exams FOR SELECT USING (true);
+  END IF;
+END $$;
 
 -- user_tier_history: 자기 데이터
 ALTER TABLE public.user_tier_history ENABLE ROW LEVEL SECURITY;
-CREATE POLICY "Users read own tier history" ON public.user_tier_history FOR SELECT USING (auth.uid() = user_id);
-CREATE POLICY "Users insert own tier history" ON public.user_tier_history FOR INSERT WITH CHECK (auth.uid() = user_id);
+DO $$ BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'Users read own tier history') THEN
+    CREATE POLICY "Users read own tier history" ON public.user_tier_history FOR SELECT USING (auth.uid() = user_id);
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'Users insert own tier history') THEN
+    CREATE POLICY "Users insert own tier history" ON public.user_tier_history FOR INSERT WITH CHECK (auth.uid() = user_id);
+  END IF;
+END $$;
 
 -- daily_missions: 누구나 읽기
 ALTER TABLE public.daily_missions ENABLE ROW LEVEL SECURITY;
-CREATE POLICY "Anyone can read missions" ON public.daily_missions FOR SELECT USING (true);
+DO $$ BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'Anyone can read missions') THEN
+    CREATE POLICY "Anyone can read missions" ON public.daily_missions FOR SELECT USING (true);
+  END IF;
+END $$;
 
 -- user_daily_missions: 자기 데이터
 ALTER TABLE public.user_daily_missions ENABLE ROW LEVEL SECURITY;
-CREATE POLICY "Users read own missions" ON public.user_daily_missions FOR SELECT USING (auth.uid() = user_id);
-CREATE POLICY "Users insert own missions" ON public.user_daily_missions FOR INSERT WITH CHECK (auth.uid() = user_id);
-CREATE POLICY "Users update own missions" ON public.user_daily_missions FOR UPDATE USING (auth.uid() = user_id);
+DO $$ BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'Users read own missions') THEN
+    CREATE POLICY "Users read own missions" ON public.user_daily_missions FOR SELECT USING (auth.uid() = user_id);
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'Users insert own missions') THEN
+    CREATE POLICY "Users insert own missions" ON public.user_daily_missions FOR INSERT WITH CHECK (auth.uid() = user_id);
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'Users update own missions') THEN
+    CREATE POLICY "Users update own missions" ON public.user_daily_missions FOR UPDATE USING (auth.uid() = user_id);
+  END IF;
+END $$;
 
 -- achievements: 누구나 읽기
 ALTER TABLE public.achievements ENABLE ROW LEVEL SECURITY;
-CREATE POLICY "Anyone can read achievements" ON public.achievements FOR SELECT USING (true);
+DO $$ BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'Anyone can read achievements') THEN
+    CREATE POLICY "Anyone can read achievements" ON public.achievements FOR SELECT USING (true);
+  END IF;
+END $$;
 
 -- user_achievements: 자기 데이터 + 다른 유저 업적 조회
 ALTER TABLE public.user_achievements ENABLE ROW LEVEL SECURITY;
-CREATE POLICY "Anyone can read user achievements" ON public.user_achievements FOR SELECT USING (true);
-CREATE POLICY "Users insert own achievements" ON public.user_achievements FOR INSERT WITH CHECK (auth.uid() = user_id);
+DO $$ BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'Anyone can read user achievements') THEN
+    CREATE POLICY "Anyone can read user achievements" ON public.user_achievements FOR SELECT USING (true);
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'Users insert own achievements') THEN
+    CREATE POLICY "Users insert own achievements" ON public.user_achievements FOR INSERT WITH CHECK (auth.uid() = user_id);
+  END IF;
+END $$;
 
 -- follows: 누구나 읽기 + 자기가 팔로우 관리
 ALTER TABLE public.follows ENABLE ROW LEVEL SECURITY;
-CREATE POLICY "Anyone can read follows" ON public.follows FOR SELECT USING (true);
-CREATE POLICY "Users insert own follows" ON public.follows FOR INSERT WITH CHECK (auth.uid() = follower_id);
-CREATE POLICY "Users delete own follows" ON public.follows FOR DELETE USING (auth.uid() = follower_id);
+DO $$ BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'Anyone can read follows') THEN
+    CREATE POLICY "Anyone can read follows" ON public.follows FOR SELECT USING (true);
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'Users insert own follows') THEN
+    CREATE POLICY "Users insert own follows" ON public.follows FOR INSERT WITH CHECK (auth.uid() = follower_id);
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'Users delete own follows') THEN
+    CREATE POLICY "Users delete own follows" ON public.follows FOR DELETE USING (auth.uid() = follower_id);
+  END IF;
+END $$;
 
 -- chat_messages: 누구나 읽기/쓰기
 ALTER TABLE public.chat_messages ENABLE ROW LEVEL SECURITY;
-CREATE POLICY "Anyone can read chat" ON public.chat_messages FOR SELECT USING (true);
-CREATE POLICY "Auth users can send chat" ON public.chat_messages FOR INSERT WITH CHECK (auth.uid() = user_id);
+DO $$ BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'Anyone can read chat') THEN
+    CREATE POLICY "Anyone can read chat" ON public.chat_messages FOR SELECT USING (true);
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'Auth users can send chat') THEN
+    CREATE POLICY "Auth users can send chat" ON public.chat_messages FOR INSERT WITH CHECK (auth.uid() = user_id);
+  END IF;
+END $$;
 
 -- attendance: 자기 데이터
 ALTER TABLE public.attendance ENABLE ROW LEVEL SECURITY;
-CREATE POLICY "Users read own attendance" ON public.attendance FOR SELECT USING (auth.uid() = user_id);
-CREATE POLICY "Users insert own attendance" ON public.attendance FOR INSERT WITH CHECK (auth.uid() = user_id);
+DO $$ BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'Users read own attendance') THEN
+    CREATE POLICY "Users read own attendance" ON public.attendance FOR SELECT USING (auth.uid() = user_id);
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'Users insert own attendance') THEN
+    CREATE POLICY "Users insert own attendance" ON public.attendance FOR INSERT WITH CHECK (auth.uid() = user_id);
+  END IF;
+END $$;
 
 -- profiles: 누구나 읽기 + 자기 수정
-CREATE POLICY "Anyone can read profiles" ON public.profiles FOR SELECT USING (true);
-CREATE POLICY "Users update own profile" ON public.profiles FOR UPDATE USING (auth.uid() = id);
+DO $$ BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'Anyone can read profiles') THEN
+    CREATE POLICY "Anyone can read profiles" ON public.profiles FOR SELECT USING (true);
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'Users update own profile') THEN
+    CREATE POLICY "Users update own profile" ON public.profiles FOR UPDATE USING (auth.uid() = id);
+  END IF;
+END $$;
 
 -- ============================================================
 -- Leaderboard v2 뷰 (티어 포함)

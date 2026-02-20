@@ -17,8 +17,14 @@ CREATE TABLE IF NOT EXISTS public.store_purchases (
 );
 
 ALTER TABLE public.store_purchases ENABLE ROW LEVEL SECURITY;
-CREATE POLICY "Users read own purchases" ON public.store_purchases FOR SELECT USING (auth.uid() = user_id);
-CREATE POLICY "Users insert own purchases" ON public.store_purchases FOR INSERT WITH CHECK (auth.uid() = user_id);
+DO $$ BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'Users read own purchases') THEN
+    CREATE POLICY "Users read own purchases" ON public.store_purchases FOR SELECT USING (auth.uid() = user_id);
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'Users insert own purchases') THEN
+    CREATE POLICY "Users insert own purchases" ON public.store_purchases FOR INSERT WITH CHECK (auth.uid() = user_id);
+  END IF;
+END $$;
 
 -- ============================================================
 -- 2. announcements: 공지사항
@@ -33,10 +39,17 @@ CREATE TABLE IF NOT EXISTS public.announcements (
 );
 
 ALTER TABLE public.announcements ENABLE ROW LEVEL SECURITY;
-CREATE POLICY "Anyone can read announcements" ON public.announcements FOR SELECT USING (true);
--- 관리자만 공지 작성 (RLS로는 인증된 사용자만, 관리자 체크는 앱 레벨에서)
-CREATE POLICY "Auth users can create announcements" ON public.announcements FOR INSERT WITH CHECK (auth.uid() IS NOT NULL);
-CREATE POLICY "Auth users can delete announcements" ON public.announcements FOR DELETE USING (auth.uid() = author_id);
+DO $$ BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'Anyone can read announcements') THEN
+    CREATE POLICY "Anyone can read announcements" ON public.announcements FOR SELECT USING (true);
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'Auth users can create announcements') THEN
+    CREATE POLICY "Auth users can create announcements" ON public.announcements FOR INSERT WITH CHECK (auth.uid() IS NOT NULL);
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'Auth users can delete announcements') THEN
+    CREATE POLICY "Auth users can delete announcements" ON public.announcements FOR DELETE USING (auth.uid() = author_id);
+  END IF;
+END $$;
 
 -- ============================================================
 -- 3. user_course_progress: 코스별 진행률
@@ -54,9 +67,17 @@ CREATE TABLE IF NOT EXISTS public.user_course_progress (
 );
 
 ALTER TABLE public.user_course_progress ENABLE ROW LEVEL SECURITY;
-CREATE POLICY "Users read own course progress" ON public.user_course_progress FOR SELECT USING (auth.uid() = user_id);
-CREATE POLICY "Users insert own course progress" ON public.user_course_progress FOR INSERT WITH CHECK (auth.uid() = user_id);
-CREATE POLICY "Users update own course progress" ON public.user_course_progress FOR UPDATE USING (auth.uid() = user_id);
+DO $$ BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'Users read own course progress') THEN
+    CREATE POLICY "Users read own course progress" ON public.user_course_progress FOR SELECT USING (auth.uid() = user_id);
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'Users insert own course progress') THEN
+    CREATE POLICY "Users insert own course progress" ON public.user_course_progress FOR INSERT WITH CHECK (auth.uid() = user_id);
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'Users update own course progress') THEN
+    CREATE POLICY "Users update own course progress" ON public.user_course_progress FOR UPDATE USING (auth.uid() = user_id);
+  END IF;
+END $$;
 
 -- ============================================================
 -- 4. courses 테이블에 카테고리/난이도 컬럼 추가 (없으면)
@@ -104,5 +125,13 @@ END $$;
 CREATE INDEX IF NOT EXISTS idx_store_purchases_user ON public.store_purchases(user_id);
 CREATE INDEX IF NOT EXISTS idx_user_course_progress_user ON public.user_course_progress(user_id);
 CREATE INDEX IF NOT EXISTS idx_announcements_created ON public.announcements(created_at DESC);
-CREATE INDEX IF NOT EXISTS idx_chat_messages_channel ON public.chat_messages(channel, created_at DESC);
-CREATE INDEX IF NOT EXISTS idx_attendance_user_date ON public.attendance(user_id, check_date);
+
+-- chat_messages, attendance는 migration_v2에서 생성 — 없으면 건너뛰기
+DO $$ BEGIN
+  IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'chat_messages') THEN
+    CREATE INDEX IF NOT EXISTS idx_chat_messages_channel ON public.chat_messages(channel, created_at DESC);
+  END IF;
+  IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'attendance') THEN
+    CREATE INDEX IF NOT EXISTS idx_attendance_user_date ON public.attendance(user_id, check_date);
+  END IF;
+END $$;

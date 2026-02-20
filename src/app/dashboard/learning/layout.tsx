@@ -9,6 +9,8 @@ import { AuthProvider, useAuth } from "@/contexts/AuthContext";
 const NAV_ITEMS = [
     { icon: "dashboard", label: "Dashboard", href: "/dashboard/learning" },
     { icon: "library_books", label: "My Courses", href: "/dashboard/learning/courses" },
+    { icon: "terminal", label: "C 컴파일러", href: "/dashboard/learning/compiler" },
+    { icon: "assignment", label: "숙제 & 노트", href: "/dashboard/learning/homework" },
     { icon: "emoji_events", label: "Achievements", href: "/dashboard/learning/goals" },
     { icon: "diversity_3", label: "Leaderboard", href: "/dashboard/learning/leaderboard" },
     { icon: "sports_esports", label: "Player Stats", href: "/dashboard/learning/stats" },

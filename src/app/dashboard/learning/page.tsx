@@ -98,6 +98,42 @@ export default function JourneyPage() {
                 {/* ═══ Main Content ═══ */}
                 <div style={{ display: "flex", flexDirection: "column", gap: 40 }}>
 
+                    {/* ── Quick Access Modules (from /dashboard) ── */}
+                    <div>
+                        <h2 style={{ fontWeight: 800, fontSize: 18, color: "#0f172a", marginBottom: 16, display: "flex", alignItems: "center", gap: 8 }}>
+                            <span className="material-symbols-outlined" style={{ color: "#0ea5e9", fontSize: 20 }}>widgets</span>
+                            Quick Access
+                        </h2>
+                        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(180px, 1fr))", gap: 12 }}>
+                            {[
+                                { title: "C 컴파일러", desc: "코드 작성 & 실행", href: "/dashboard/learning/compiler", icon: "terminal", color: "#ec4899", gradient: "linear-gradient(135deg, #ec4899, #f43f5e)" },
+                                { title: "숙제 & 노트", desc: "숙제 확인 · 노트 관리", href: "/dashboard/learning/homework", icon: "assignment", color: "#f59e0b", gradient: "linear-gradient(135deg, #f59e0b, #f97316)" },
+                                { title: "My Courses", desc: "코스 목록 & 진행률", href: "/dashboard/learning/courses", icon: "library_books", color: "#0ea5e9", gradient: "linear-gradient(135deg, #0ea5e9, #3b82f6)" },
+                                { title: "Achievements", desc: "목표 & 도전과제", href: "/dashboard/learning/goals", icon: "emoji_events", color: "#8b5cf6", gradient: "linear-gradient(135deg, #8b5cf6, #6366f1)" },
+                                { title: "Leaderboard", desc: "랭킹 보드", href: "/dashboard/learning/leaderboard", icon: "diversity_3", color: "#14b8a6", gradient: "linear-gradient(135deg, #14b8a6, #06b6d4)" },
+                                { title: "Player Stats", desc: "학습 통계", href: "/dashboard/learning/stats", icon: "sports_esports", color: "#ef4444", gradient: "linear-gradient(135deg, #ef4444, #f97316)" },
+                            ].map((m) => (
+                                <a key={m.title} href={m.href} style={{
+                                    ...glassCard, borderRadius: 16, padding: "16px 18px", textDecoration: "none",
+                                    display: "flex", alignItems: "center", gap: 12, transition: "all 0.2s",
+                                    cursor: "pointer",
+                                }}>
+                                    <div style={{
+                                        width: 40, height: 40, borderRadius: 12, display: "flex", alignItems: "center", justifyContent: "center",
+                                        background: m.gradient, color: "#fff", flexShrink: 0,
+                                        boxShadow: `0 4px 12px ${m.color}30`,
+                                    }}>
+                                        <span className="material-symbols-outlined" style={{ fontSize: 20 }}>{m.icon}</span>
+                                    </div>
+                                    <div>
+                                        <div style={{ fontSize: 13, fontWeight: 700, color: "#0f172a" }}>{m.title}</div>
+                                        <div style={{ fontSize: 11, color: "#94a3b8" }}>{m.desc}</div>
+                                    </div>
+                                </a>
+                            ))}
+                        </div>
+                    </div>
+
                     {/* ── Learning Roadmap ── */}
                     <div style={{ ...glassCard, borderRadius: 40, padding: 32, position: "relative", overflow: "hidden" }}>
                         <div style={{ position: "absolute", top: 0, left: 0, width: "100%", height: 4, background: "linear-gradient(to right, #38bdf8, #6366f1, transparent)", opacity: 0.5 }} />

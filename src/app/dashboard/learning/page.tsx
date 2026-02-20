@@ -229,6 +229,51 @@ function LearningInner() {
                         </div>
                     </motion.div>
 
+                    {/* ── Elite Platform Pages ── */}
+                    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.08 }}
+                        style={{
+                            marginBottom: 28,
+                        }}
+                    >
+                        <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 16 }}>
+                            <span style={{ fontSize: 18 }}>⚡</span>
+                            <h3 style={{ fontSize: 16, fontWeight: 800, margin: 0, color: theme.text }}>Elite 학습 도구</h3>
+                            <span style={{ fontSize: 11, color: theme.textMuted, padding: "2px 10px", background: theme.bgSoft, borderRadius: 20 }}>프리미엄</span>
+                        </div>
+                        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(160px, 1fr))", gap: 12 }}>
+                            {[
+                                { id: "elite-roadmap", name: "로드맵", icon: "🗺️", color: "#06b6d4", gradient: "linear-gradient(135deg, #06b6d4, #0891b2)", htmlPath: "/learning-platform/elite/roadmap.html", desc: "학습 여정 시각화" },
+                                { id: "elite-hub", name: "학습 허브", icon: "📚", color: "#2563eb", gradient: "linear-gradient(135deg, #2563eb, #1d4ed8)", htmlPath: "/learning-platform/elite/hub.html", desc: "통합 학습 대시보드" },
+                                { id: "elite-challenge", name: "데일리 챌린지", icon: "🎯", color: "#7c3aed", gradient: "linear-gradient(135deg, #7c3aed, #6d28d9)", htmlPath: "/learning-platform/elite/challenge.html", desc: "매일 도전 문제" },
+                                { id: "elite-leaderboard", name: "리더보드", icon: "🏆", color: "#f59e0b", gradient: "linear-gradient(135deg, #f59e0b, #d97706)", htmlPath: "/learning-platform/elite/leaderboard.html", desc: "랭킹 & 순위" },
+                                { id: "elite-goals", name: "학습 목표", icon: "🎯", color: "#22c55e", gradient: "linear-gradient(135deg, #22c55e, #16a34a)", htmlPath: "/learning-platform/elite/goals.html", desc: "마일스톤 관리" },
+                                { id: "elite-profile", name: "프로필", icon: "👤", color: "#ec4899", gradient: "linear-gradient(135deg, #ec4899, #db2777)", htmlPath: "/learning-platform/elite/profile.html", desc: "게이미피케이션 프로필" },
+                                { id: "elite-editor", name: "코드 에디터", icon: "💻", color: "#6366f1", gradient: "linear-gradient(135deg, #6366f1, #4f46e5)", htmlPath: "/learning-platform/elite/editor.html", desc: "인터랙티브 코딩" },
+                            ].map((page) => (
+                                <motion.div
+                                    key={page.id}
+                                    whileHover={{ y: -4, scale: 1.02 }}
+                                    whileTap={{ scale: 0.98 }}
+                                    onClick={() => openCourse({ ...page, problems: 0, category: "foundation", order: 100 } as Course)}
+                                    style={{
+                                        background: theme.bgWhite, borderRadius: 16, border: `1px solid ${theme.border}`,
+                                        padding: "16px", cursor: "pointer", boxShadow: theme.shadow,
+                                        transition: "box-shadow 0.2s",
+                                        position: "relative", overflow: "hidden",
+                                    }}
+                                >
+                                    <div style={{
+                                        position: "absolute", top: 0, left: 0, right: 0, height: 3,
+                                        background: page.gradient,
+                                    }} />
+                                    <div style={{ fontSize: 24, marginBottom: 8 }}>{page.icon}</div>
+                                    <div style={{ fontSize: 13, fontWeight: 800, color: theme.text, marginBottom: 2 }}>{page.name}</div>
+                                    <div style={{ fontSize: 11, color: theme.textMuted }}>{page.desc}</div>
+                                </motion.div>
+                            ))}
+                        </div>
+                    </motion.div>
+
                     {/* ── Learning Roadmap ── */}
                     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}
                         style={{

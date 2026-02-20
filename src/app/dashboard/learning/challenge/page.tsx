@@ -55,10 +55,14 @@ export default function ChallengePage() {
     }, [started]);
 
     const formatTime = (s: number) => `${Math.floor(s / 60)}:${(s % 60).toString().padStart(2, "0")}`;
-    const diffColor: Record<string, string> = { Easy: "green", Medium: "orange", Hard: "red" };
+    const diffBadgeCls: Record<string, string> = {
+        Easy: "bg-green-500/20 text-green-400 border-green-500/30",
+        Medium: "bg-orange-500/20 text-orange-400 border-orange-500/30",
+        Hard: "bg-red-500/20 text-red-400 border-red-500/30",
+    };
 
     return (
-        <div className="p-6 lg:p-10 max-w-[1200px] mx-auto space-y-8">
+        <div className="p-6 lg:p-10 max-w-[1200px] mx-auto flex flex-col gap-8">
             {/* Daily Challenge Banner */}
             <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white p-8 lg:p-10 shadow-xl">
                 <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PHBhdHRlcm4gaWQ9ImdyaWQiIHdpZHRoPSI2MCIgaGVpZ2h0PSI2MCIgcGF0dGVyblVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+PHBhdGggZD0iTSA2MCAwIEwgMCAwIDAgNjAiIGZpbGw9Im5vbmUiIHN0cm9rZT0icmdiYSgyNTUsMjU1LDI1NSwwLjAzKSIgc3Ryb2tlLXdpZHRoPSIxIi8+PC9wYXR0ZXJuPjwvZGVmcz48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSJ1cmwoI2dyaWQpIi8+PC9zdmc+')] opacity-50" />
@@ -70,7 +74,7 @@ export default function ChallengePage() {
                             <span className="bg-white/10 backdrop-blur-md px-3 py-1 rounded-lg text-[10px] font-bold uppercase tracking-wider text-[#13daec] border border-white/10">
                                 Daily Challenge
                             </span>
-                            <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-${diffColor[DAILY_CHALLENGE.difficulty]}-500/20 text-${diffColor[DAILY_CHALLENGE.difficulty]}-400 border border-${diffColor[DAILY_CHALLENGE.difficulty]}-500/30`}>
+                            <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold border ${diffBadgeCls[DAILY_CHALLENGE.difficulty] || ""}`}>
                                 {DAILY_CHALLENGE.difficulty}
                             </span>
                         </div>

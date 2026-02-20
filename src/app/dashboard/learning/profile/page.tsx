@@ -4,27 +4,27 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useUserProgress } from "@/hooks/useUserProgress";
 
 const BADGES = [
-    { name: "Gold Contributor", icon: "emoji_events", color: "yellow" },
-    { name: "Python Expert", icon: "code", color: "blue" },
-    { name: "7-Day Streak", icon: "local_fire_department", color: "orange" },
-    { name: "Bug Hunter", icon: "bug_report", color: "red" },
-    { name: "Team Player", icon: "group", color: "purple" },
-    { name: "Fast Solver", icon: "bolt", color: "teal" },
+    { name: "Gold Contributor", icon: "emoji_events", bgCls: "bg-yellow-50 text-yellow-600 border-yellow-100" },
+    { name: "Python Expert", icon: "code", bgCls: "bg-blue-50 text-blue-600 border-blue-100" },
+    { name: "7-Day Streak", icon: "local_fire_department", bgCls: "bg-orange-50 text-orange-600 border-orange-100" },
+    { name: "Bug Hunter", icon: "bug_report", bgCls: "bg-red-50 text-red-600 border-red-100" },
+    { name: "Team Player", icon: "group", bgCls: "bg-purple-50 text-purple-600 border-purple-100" },
+    { name: "Fast Solver", icon: "bolt", bgCls: "bg-teal-50 text-teal-600 border-teal-100" },
 ];
 
 const ACTIVITY = [
-    { action: "Array Rotation 풀이 완료", xp: 150, time: "2시간 전", icon: "check_circle", color: "green" },
-    { action: "Python Masterclass 3장 완료", xp: 200, time: "어제", icon: "school", color: "blue" },
-    { action: "'Bug Hunter' 뱃지 획득", xp: 100, time: "2일 전", icon: "military_tech", color: "yellow" },
-    { action: "Daily Challenge 7일 연속 클리어", xp: 500, time: "3일 전", icon: "local_fire_department", color: "orange" },
-    { action: "Coding Foundations 코스 완료", xp: 300, time: "1주 전", icon: "flag", color: "purple" },
+    { action: "Array Rotation 풀이 완료", xp: 150, time: "2시간 전", icon: "check_circle", dotCls: "bg-green-100 text-green-600" },
+    { action: "Python Masterclass 3장 완료", xp: 200, time: "어제", icon: "school", dotCls: "bg-blue-100 text-blue-600" },
+    { action: "'Bug Hunter' 뱃지 획득", xp: 100, time: "2일 전", icon: "military_tech", dotCls: "bg-yellow-100 text-yellow-600" },
+    { action: "Daily Challenge 7일 연속 클리어", xp: 500, time: "3일 전", icon: "local_fire_department", dotCls: "bg-orange-100 text-orange-600" },
+    { action: "Coding Foundations 코스 완료", xp: 300, time: "1주 전", icon: "flag", dotCls: "bg-purple-100 text-purple-600" },
 ];
 
 const STATS = [
-    { label: "Problems Solved", value: "120", icon: "check_circle", color: "green" },
-    { label: "Accuracy", value: "94%", icon: "verified", color: "blue" },
-    { label: "Avg. Time", value: "12m", icon: "timer", color: "purple" },
-    { label: "Best Streak", value: "14d", icon: "local_fire_department", color: "orange" },
+    { label: "Problems Solved", value: "120", icon: "check_circle", cls: "bg-green-50 border-green-100", iconCls: "text-green-500" },
+    { label: "Accuracy", value: "94%", icon: "verified", cls: "bg-blue-50 border-blue-100", iconCls: "text-blue-500" },
+    { label: "Avg. Time", value: "12m", icon: "timer", cls: "bg-purple-50 border-purple-100", iconCls: "text-purple-500" },
+    { label: "Best Streak", value: "14d", icon: "local_fire_department", cls: "bg-orange-50 border-orange-100", iconCls: "text-orange-500" },
 ];
 
 export default function ProfilePage() {
@@ -35,7 +35,7 @@ export default function ProfilePage() {
     const xpPercent = Math.min((progress.xp / xpForNext) * 100, 100);
 
     return (
-        <div className="p-6 lg:p-10 max-w-[1200px] mx-auto space-y-8">
+        <div className="p-6 lg:p-10 max-w-[1200px] mx-auto flex flex-col gap-8">
             {/* Hero Card */}
             <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white p-8 lg:p-10 shadow-xl">
                 <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PHBhdHRlcm4gaWQ9ImdyaWQiIHdpZHRoPSI2MCIgaGVpZ2h0PSI2MCIgcGF0dGVyblVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+PHBhdGggZD0iTSA2MCAwIEwgMCAwIDAgNjAiIGZpbGw9Im5vbmUiIHN0cm9rZT0icmdiYSgyNTUsMjU1LDI1NSwwLjAzKSIgc3Ryb2tlLXdpZHRoPSIxIi8+PC9wYXR0ZXJuPjwvZGVmcz48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSJ1cmwoI2dyaWQpIi8+PC9zdmc+')] opacity-50" />
@@ -45,13 +45,13 @@ export default function ProfilePage() {
                 <div className="relative z-10 flex flex-col md:flex-row gap-8 items-center">
                     {/* Avatar + XP Ring */}
                     <div className="relative">
-                        <svg className="size-32 -rotate-90" viewBox="0 0 120 120">
+                        <svg className="w-32 h-32 -rotate-90" viewBox="0 0 120 120">
                             <circle cx="60" cy="60" r="54" fill="none" stroke="rgba(255,255,255,0.1)" strokeWidth="8" />
                             <circle cx="60" cy="60" r="54" fill="none" stroke="#13daec" strokeWidth="8"
                                 strokeDasharray={`${xpPercent * 3.39}, 339.3`} strokeLinecap="round" />
                         </svg>
                         <div className="absolute inset-0 flex items-center justify-center">
-                            <div className="size-24 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center text-4xl font-black border-2 border-white/20">
+                            <div className="w-24 h-24 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center text-4xl font-black border-2 border-white/20">
                                 {(user?.email?.charAt(0) || "U").toUpperCase()}
                             </div>
                         </div>
@@ -89,7 +89,7 @@ export default function ProfilePage() {
 
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
                 {/* Main Content */}
-                <div className="lg:col-span-8 space-y-8">
+                <div className="lg:col-span-8 flex flex-col gap-8">
                     {/* Stats Grid */}
                     <div className="bg-white rounded-2xl border border-gray-200 p-6 shadow-sm">
                         <h2 className="font-bold text-gray-900 flex items-center gap-2 mb-4">
@@ -98,8 +98,8 @@ export default function ProfilePage() {
                         </h2>
                         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                             {STATS.map((s, i) => (
-                                <div key={i} className={`p-4 bg-${s.color}-50 rounded-xl border border-${s.color}-100 text-center`}>
-                                    <span className={`material-symbols-outlined text-${s.color}-500 text-2xl mb-2 block`}>{s.icon}</span>
+                                <div key={i} className={`p-4 rounded-xl border text-center ${s.cls}`}>
+                                    <span className={`material-symbols-outlined text-2xl mb-2 block ${s.iconCls}`}>{s.icon}</span>
                                     <div className="text-2xl font-black text-gray-900">{s.value}</div>
                                     <div className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mt-1">{s.label}</div>
                                 </div>
@@ -117,7 +117,7 @@ export default function ProfilePage() {
                             <div className="absolute left-[19px] top-2 bottom-2 w-0.5 bg-gray-100" />
                             {ACTIVITY.map((a, i) => (
                                 <div key={i} className="flex gap-4 relative z-10">
-                                    <div className={`size-10 rounded-full bg-${a.color}-100 text-${a.color}-600 flex items-center justify-center shrink-0 ring-4 ring-white`}>
+                                    <div className={`w-10 h-10 rounded-full ${a.dotCls} flex items-center justify-center shrink-0 ring-4 ring-white`}>
                                         <span className="material-symbols-outlined text-lg">{a.icon}</span>
                                     </div>
                                     <div className="flex-1 bg-gray-50 rounded-xl p-4 hover:bg-white hover:shadow-md transition-all border border-transparent hover:border-gray-100">
@@ -134,7 +134,7 @@ export default function ProfilePage() {
                 </div>
 
                 {/* Sidebar */}
-                <div className="lg:col-span-4 space-y-6">
+                <div className="lg:col-span-4 flex flex-col gap-6">
                     {/* XP Progress */}
                     <div className="bg-white rounded-2xl border border-gray-200 p-6 shadow-sm">
                         <h3 className="font-bold text-gray-900 flex items-center gap-2 mb-4">
@@ -163,7 +163,7 @@ export default function ProfilePage() {
                         <div className="grid grid-cols-3 gap-3">
                             {BADGES.map((b, i) => (
                                 <div key={i} className="flex flex-col items-center text-center group cursor-pointer">
-                                    <div className={`size-12 rounded-xl bg-${b.color}-50 text-${b.color}-600 flex items-center justify-center group-hover:scale-110 transition-transform border border-${b.color}-100`}>
+                                    <div className={`w-12 h-12 rounded-xl ${b.bgCls} flex items-center justify-center group-hover:scale-110 transition-transform border`}>
                                         <span className="material-symbols-outlined text-xl">{b.icon}</span>
                                     </div>
                                     <span className="text-[10px] font-bold text-gray-500 mt-1.5 leading-tight">{b.name}</span>

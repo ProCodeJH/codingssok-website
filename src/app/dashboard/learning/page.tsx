@@ -5,12 +5,30 @@ import { useUserProgress } from "@/hooks/useUserProgress";
 
 /* ── Course Data ── */
 const COURSES = [
-    { id: "foundations", title: "Coding Foundations", desc: "First steps into programming. Learn variables, loops, and basic logic structures.", icon: "extension", problems: 80, tag: "Beginner", color: "green", status: "completed" as const },
-    { id: "thinking", title: "Computational Thinking", desc: "Enhance logical problem solving skills and algorithmic approaches.", icon: "psychology", problems: 120, tag: "Logic", color: "purple", status: "completed" as const },
-    { id: "python", title: "Python Masterclass", desc: "Deep dive into Python. From syntax to advanced data structures.", icon: "code", problems: 150, tag: "Advanced", color: "blue", status: "active" as const },
-    { id: "c-lang", title: "C Language", desc: "Low level programming concepts and memory management techniques.", icon: "bolt", problems: 200, tag: "System", color: "orange", status: "locked" as const },
-    { id: "cos", title: "COS Certification", desc: "Prepare for the Certified Operating Specialist exam.", icon: "assignment", problems: 100, tag: "Exam Prep", color: "teal", status: "locked" as const },
-    { id: "cospro", title: "COS Pro", desc: "Advanced certification track for professional developers.", icon: "trophy", problems: 80, tag: "Pro Exam", color: "pink", status: "locked" as const },
+    {
+        id: "foundations", title: "Coding Foundations", desc: "First steps into programming. Learn variables, loops, and basic logic structures.", icon: "extension", problems: 80, tag: "Beginner", status: "completed" as const,
+        barCls: "bg-green-500", iconBg: "bg-green-50", iconTxt: "text-green-600", statusBg: "bg-green-100 text-green-600", btnCls: "bg-green-500 hover:bg-green-600"
+    },
+    {
+        id: "thinking", title: "Computational Thinking", desc: "Enhance logical problem solving skills and algorithmic approaches.", icon: "psychology", problems: 120, tag: "Logic", status: "completed" as const,
+        barCls: "bg-purple-500", iconBg: "bg-purple-50", iconTxt: "text-purple-600", statusBg: "bg-purple-100 text-purple-600", btnCls: "bg-purple-500 hover:bg-purple-600"
+    },
+    {
+        id: "python", title: "Python Masterclass", desc: "Deep dive into Python. From syntax to advanced data structures.", icon: "code", problems: 150, tag: "Advanced", status: "active" as const,
+        barCls: "bg-blue-500", iconBg: "bg-blue-50", iconTxt: "text-blue-600", statusBg: "bg-blue-100 text-blue-600", btnCls: "bg-blue-600 hover:bg-blue-700"
+    },
+    {
+        id: "c-lang", title: "C Language", desc: "Low level programming concepts and memory management techniques.", icon: "bolt", problems: 200, tag: "System", status: "locked" as const,
+        barCls: "bg-orange-500", iconBg: "bg-orange-50", iconTxt: "text-orange-600", statusBg: "bg-gray-100 text-gray-500", btnCls: "bg-orange-500"
+    },
+    {
+        id: "cos", title: "COS Certification", desc: "Prepare for the Certified Operating Specialist exam.", icon: "assignment", problems: 100, tag: "Exam Prep", status: "locked" as const,
+        barCls: "bg-teal-500", iconBg: "bg-teal-50", iconTxt: "text-teal-600", statusBg: "bg-gray-100 text-gray-500", btnCls: "bg-teal-500"
+    },
+    {
+        id: "cospro", title: "COS Pro", desc: "Advanced certification track for professional developers.", icon: "trophy", problems: 80, tag: "Pro Exam", status: "locked" as const,
+        barCls: "bg-pink-500", iconBg: "bg-pink-50", iconTxt: "text-pink-600", statusBg: "bg-gray-100 text-gray-500", btnCls: "bg-pink-500"
+    },
 ];
 
 const ROADMAP = [
@@ -32,9 +50,9 @@ export default function JourneyPage() {
     const [filter, setFilter] = useState("all");
 
     return (
-        <div className="p-6 lg:p-10 max-w-[1200px] mx-auto space-y-8">
+        <div className="p-6 lg:p-10 max-w-[1200px] mx-auto flex flex-col gap-8">
             {/* Learning Roadmap */}
-            <div className="bg-white rounded-3xl border border-gray-200 p-8 shadow-sm overflow-x-auto">
+            <section className="bg-white rounded-3xl border border-gray-200 p-8 shadow-sm">
                 <div className="flex justify-between items-center mb-8">
                     <h2 className="font-bold text-lg text-gray-900 flex items-center gap-2">
                         <span className="material-symbols-outlined text-[#13daec]">map</span>
@@ -42,107 +60,89 @@ export default function JourneyPage() {
                     </h2>
                     <span className="text-xs font-medium text-gray-400 bg-gray-100 px-3 py-1 rounded-full">Recommended Path</span>
                 </div>
-                <div className="relative min-w-[600px] pt-4 pb-8 px-4">
-                    {/* Horizontal line */}
-                    <div className="absolute top-[2rem] left-0 right-0 h-[2px] bg-gray-200 z-0" />
-                    <div className="flex justify-between relative z-10">
-                        {ROADMAP.map((node, i) => (
-                            <div key={i} className={`flex flex-col items-center group cursor-pointer w-32 ${node.status === "locked" ? "opacity-60 hover:opacity-100 transition-opacity" : ""}`}>
-                                <div className="relative mb-3">
-                                    {node.status === "active" && <div className="absolute inset-0 bg-blue-500/20 rounded-full blur-xl animate-pulse" />}
+                <div className="overflow-x-auto">
+                    <div className="min-w-[600px] py-4 px-4">
+                        {/* Roadmap nodes — no absolute positioning */}
+                        <div className="flex justify-between items-start gap-2">
+                            {ROADMAP.map((node, i) => (
+                                <div key={i} className={`flex flex-col items-center w-28 shrink-0 ${node.status === "locked" ? "opacity-50" : ""}`}>
                                     <div className={`
-                    ${node.status === "active" ? "size-20 -mt-2" : "size-16"} 
-                    rounded-full bg-white border-4 flex items-center justify-center shadow-lg
+                    ${node.status === "active" ? "w-20 h-20" : "w-16 h-16"}
+                    rounded-full bg-white flex items-center justify-center shadow-lg mb-3 border-4
                     ${node.status === "done" ? "border-green-500" : node.status === "active" ? "border-blue-500" : "border-gray-200"}
-                    ${node.status === "active" ? "z-20" : ""} 
-                    group-hover:scale-110 transition-transform duration-300
                   `}>
-                                        <span className={`material-symbols-outlined ${node.status === "active" ? "text-3xl" : "text-2xl"} ${node.status === "done" ? "text-green-500" : node.status === "active" ? "text-blue-500" : "text-gray-400"}`}>
+                                        <span className={`material-symbols-outlined ${node.status === "active" ? "text-3xl text-blue-500" : node.status === "done" ? "text-2xl text-green-500" : "text-2xl text-gray-400"}`}>
                                             {node.status === "done" ? "check" : node.icon}
                                         </span>
                                     </div>
-                                    {/* Status badge */}
-                                    <div className={`absolute -top-1 -right-1 rounded-full p-1 border-2 border-white z-30
-                    ${node.status === "done" ? "bg-green-500" : node.status === "active" ? "bg-blue-500 animate-bounce" : "bg-gray-400"}`}>
-                                        <span className="material-symbols-outlined text-white text-[10px] font-bold block">
-                                            {node.status === "done" ? "done" : node.status === "active" ? "play_arrow" : "lock"}
-                                        </span>
-                                    </div>
-                                </div>
-                                <div className="text-center">
-                                    <h4 className={`font-bold text-sm mb-1 ${node.status === "active" ? "text-blue-600" : "text-gray-900"}`}>{node.title}</h4>
-                                    <p className={`text-[10px] font-medium ${node.status === "active" ? "text-blue-500/70 uppercase tracking-wider font-bold" : "text-gray-400"}`}>
+                                    <h4 className={`font-bold text-sm mb-1 text-center ${node.status === "active" ? "text-blue-600" : "text-gray-900"}`}>{node.title}</h4>
+                                    <p className={`text-[10px] font-medium text-center ${node.status === "active" ? "text-blue-500 uppercase tracking-wider font-bold" : "text-gray-400"}`}>
                                         {node.status === "active" ? "In Progress" : node.problems > 0 ? `${node.problems} Problems` : "Final Exam"}
                                     </p>
                                 </div>
-                            </div>
-                        ))}
+                            ))}
+                        </div>
                     </div>
                 </div>
-            </div>
+            </section>
 
             {/* Search + Filters */}
-            <div className="flex flex-col sm:flex-row gap-4 items-center justify-between">
+            <section className="flex flex-col sm:flex-row gap-4 items-center justify-between">
                 <div className="relative w-full sm:w-auto flex-1 max-w-md">
                     <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-lg">search</span>
                     <input className="w-full pl-10 pr-4 py-2.5 bg-white border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-[#13daec]/20 focus:border-[#13daec] outline-none shadow-sm" placeholder="Search modules..." type="text" />
                 </div>
-                <div className="flex gap-2 overflow-x-auto pb-2 sm:pb-0 w-full sm:w-auto">
+                <div className="flex gap-2 w-full sm:w-auto">
                     {[
-                        { key: "all", label: "All", icon: "grid_view", iconColor: "" },
-                        { key: "basics", label: "Basics", icon: "eco", iconColor: "text-green-500" },
-                        { key: "langs", label: "Langs", icon: "code", iconColor: "text-blue-500" },
-                        { key: "comp", label: "Comp", icon: "trophy", iconColor: "text-purple-500" },
+                        { key: "all", label: "All", icon: "grid_view" },
+                        { key: "basics", label: "Basics", icon: "eco" },
+                        { key: "langs", label: "Langs", icon: "code" },
+                        { key: "comp", label: "Comp", icon: "trophy" },
                     ].map((f) => (
                         <button key={f.key} onClick={() => setFilter(f.key)}
                             className={`px-4 py-2 rounded-lg text-xs font-bold transition-colors whitespace-nowrap flex items-center gap-1
                 ${filter === f.key ? "bg-blue-600 text-white shadow-md" : "bg-white text-gray-400 border border-gray-200 hover:bg-gray-50"}`}
                         >
-                            <span className={`material-symbols-outlined text-sm ${filter === f.key ? "" : f.iconColor}`}>{f.icon}</span> {f.label}
+                            <span className="material-symbols-outlined text-sm">{f.icon}</span> {f.label}
                         </button>
                     ))}
                 </div>
-            </div>
+            </section>
 
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+            {/* Main Content Grid */}
+            <section className="grid grid-cols-1 lg:grid-cols-12 gap-8">
                 {/* Course Cards */}
                 <div className="lg:col-span-8 grid grid-cols-1 md:grid-cols-2 gap-6">
-                    {COURSES.map((c) => {
-                        const colors: Record<string, string> = { green: "green", purple: "purple", blue: "blue", orange: "orange", teal: "teal", pink: "pink" };
-                        const clr = colors[c.color] || "gray";
-                        return (
-                            <div key={c.id} className={`bg-white rounded-xl shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden group border border-gray-100 relative ${c.status === "locked" ? "opacity-75 hover:opacity-100" : ""} ${c.status === "active" ? "ring-2 ring-blue-500/10 shadow-[0_0_25px_-5px_rgba(19,218,236,0.4)]" : ""}`}>
-                                {/* Top color bar */}
-                                <div className={`absolute top-0 left-0 right-0 h-1 bg-${clr}-500`} />
-                                <div className="p-6">
-                                    <div className="flex justify-between items-start mb-4">
-                                        <div className={`size-12 rounded-lg bg-${clr}-50 flex items-center justify-center text-${clr}-600 group-hover:scale-110 transition-transform`}>
-                                            <span className="material-symbols-outlined text-2xl">{c.icon}</span>
-                                        </div>
-                                        <div className="flex flex-col items-end">
-                                            <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Status</span>
-                                            <span className={`text-xs font-bold px-2 py-1 rounded flex items-center gap-1
-                        ${c.status === "completed" ? `text-${clr}-600 bg-${clr}-100` : c.status === "active" ? "text-blue-600 bg-blue-100" : "text-gray-500 bg-gray-100"}`}>
-                                                {c.status === "active" && <span className="animate-pulse size-1.5 rounded-full bg-blue-600" />}
-                                                {c.status === "completed" ? "Completed" : c.status === "active" ? "In Progress" : <><span className="material-symbols-outlined text-[10px]">lock</span> Locked</>}
-                                            </span>
-                                        </div>
+                    {COURSES.map((c) => (
+                        <div key={c.id} className={`bg-white rounded-xl shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden group border border-gray-100 ${c.status === "locked" ? "opacity-75 hover:opacity-100" : ""} ${c.status === "active" ? "ring-2 ring-blue-200" : ""}`}>
+                            {/* Top color bar */}
+                            <div className={`h-1 ${c.barCls}`} />
+                            <div className="p-6">
+                                <div className="flex justify-between items-start mb-4">
+                                    <div className={`w-12 h-12 rounded-lg ${c.iconBg} flex items-center justify-center ${c.iconTxt} group-hover:scale-110 transition-transform`}>
+                                        <span className="material-symbols-outlined text-2xl">{c.icon}</span>
                                     </div>
-                                    <h3 className="text-lg font-bold text-gray-900 mb-2">{c.title}</h3>
-                                    <p className="text-sm text-gray-500 mb-6 line-clamp-2">{c.desc}</p>
-                                    <div className="flex items-center gap-2 mb-6">
-                                        <span className="text-[10px] font-bold bg-gray-100 text-gray-600 px-2.5 py-1 rounded-md border border-gray-200">{c.problems} Problems</span>
-                                        <span className="text-[10px] font-bold bg-gray-100 text-gray-600 px-2.5 py-1 rounded-md border border-gray-200">{c.tag}</span>
+                                    <div className="flex flex-col items-end">
+                                        <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Status</span>
+                                        <span className={`text-xs font-bold px-2 py-1 rounded flex items-center gap-1 ${c.statusBg}`}>
+                                            {c.status === "active" && <span className="animate-pulse w-1.5 h-1.5 rounded-full bg-blue-600" />}
+                                            {c.status === "completed" ? "Completed" : c.status === "active" ? "In Progress" : "Locked"}
+                                        </span>
                                     </div>
-                                    <button disabled={c.status === "locked"} className={`w-full py-2.5 rounded-lg text-sm font-bold shadow-md transition-colors flex items-center justify-center gap-2 text-white
-                    ${c.status === "completed" ? `bg-${clr}-500 hover:bg-${clr}-600` : c.status === "active" ? "bg-blue-600 hover:bg-blue-700" : `bg-${clr}-500`}`}>
-                                        <span className="material-symbols-outlined text-lg">{c.status === "locked" ? "lock" : c.status === "active" ? "play_arrow" : "rocket_launch"}</span>
-                                        {c.status === "completed" ? "Review Course" : c.status === "active" ? "Continue Learning" : "Start Learning"}
-                                    </button>
                                 </div>
+                                <h3 className="text-lg font-bold text-gray-900 mb-2">{c.title}</h3>
+                                <p className="text-sm text-gray-500 mb-6 line-clamp-2">{c.desc}</p>
+                                <div className="flex items-center gap-2 mb-6">
+                                    <span className="text-[10px] font-bold bg-gray-100 text-gray-600 px-2.5 py-1 rounded-md border border-gray-200">{c.problems} Problems</span>
+                                    <span className="text-[10px] font-bold bg-gray-100 text-gray-600 px-2.5 py-1 rounded-md border border-gray-200">{c.tag}</span>
+                                </div>
+                                <button disabled={c.status === "locked"} className={`w-full py-2.5 rounded-lg text-sm font-bold shadow-md transition-colors flex items-center justify-center gap-2 text-white ${c.btnCls} disabled:opacity-50 disabled:cursor-not-allowed`}>
+                                    <span className="material-symbols-outlined text-lg">{c.status === "locked" ? "lock" : c.status === "active" ? "play_arrow" : "rocket_launch"}</span>
+                                    {c.status === "completed" ? "Review Course" : c.status === "active" ? "Continue Learning" : "Start Learning"}
+                                </button>
                             </div>
-                        );
-                    })}
+                        </div>
+                    ))}
                 </div>
 
                 {/* Right Sidebar */}
@@ -171,8 +171,8 @@ export default function JourneyPage() {
                                     <span className="material-symbols-outlined text-orange-500 text-sm">local_fire_department</span>
                                 </div>
                             </div>
-                            <div className="relative size-10">
-                                <svg className="size-full -rotate-90" viewBox="0 0 36 36">
+                            <div className="w-10 h-10">
+                                <svg className="w-full h-full -rotate-90" viewBox="0 0 36 36">
                                     <path className="text-orange-200" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" strokeWidth="4" />
                                     <path className="text-orange-500" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" strokeDasharray={`${Math.min(progress.streak * 5, 100)}, 100`} strokeWidth="4" />
                                 </svg>
@@ -189,19 +189,13 @@ export default function JourneyPage() {
                             </h2>
                             <span className="text-[10px] font-bold text-gray-400 uppercase bg-gray-100 px-2 py-1 rounded-md">View All</span>
                         </div>
-                        <div className="space-y-5 relative">
-                            <div className="absolute left-4 top-2 bottom-2 w-0.5 bg-gray-100 -z-0" />
+                        <div className="space-y-4">
                             {CLASSMATES.map((c, i) => (
-                                <div key={i} className="flex items-start gap-3 relative z-10 group cursor-pointer">
-                                    <div className="relative">
-                                        <div className="size-8 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center font-bold text-xs ring-2 ring-white shadow-sm">
-                                            {c.name.charAt(0)}
-                                        </div>
-                                        {c.level && (
-                                            <div className="absolute -bottom-1 -right-1 bg-green-500 text-white text-[8px] font-bold px-1 rounded-full border border-white">Lvl {c.level}</div>
-                                        )}
+                                <div key={i} className="flex items-start gap-3">
+                                    <div className="w-8 h-8 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center font-bold text-xs shrink-0">
+                                        {c.name.charAt(0)}
                                     </div>
-                                    <div className="flex-1 min-w-0 bg-gray-50 p-2.5 rounded-r-xl rounded-bl-xl hover:bg-white hover:shadow-md transition-all border border-transparent hover:border-gray-100">
+                                    <div className="flex-1 min-w-0 bg-gray-50 p-2.5 rounded-xl">
                                         <div className="flex justify-between items-baseline mb-1">
                                             <p className="text-xs font-bold text-gray-900">{c.name}</p>
                                             <span className="text-[10px] font-mono text-gray-400">{c.time}</span>
@@ -221,22 +215,18 @@ export default function JourneyPage() {
                     </div>
 
                     {/* AI Mentor CTA */}
-                    <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-violet-600 to-indigo-600 p-6 text-white shadow-xl cursor-pointer group">
-                        <div className="absolute -right-10 -top-10 h-32 w-32 rounded-full bg-white/10 blur-2xl group-hover:bg-white/20 transition-all" />
-                        <div className="relative z-10">
-                            <div className="mb-2 inline-flex items-center gap-1 rounded bg-white/20 px-2 py-0.5 text-[10px] font-bold uppercase backdrop-blur-sm">
-                                <span className="h-1.5 w-1.5 rounded-full bg-yellow-400" /> Pro Feature
-                            </div>
-                            <h3 className="mb-1 font-bold">Unlock AI Mentor</h3>
-                            <p className="text-xs text-indigo-100 mb-3">Get instant help with your code anytime.</p>
-                            <div className="flex items-center gap-2 text-xs font-bold text-white group-hover:underline">
-                                Upgrade Now <span className="material-symbols-outlined text-sm">arrow_forward</span>
-                            </div>
+                    <div className="bg-gradient-to-r from-violet-600 to-indigo-600 rounded-2xl p-6 text-white shadow-xl">
+                        <div className="mb-2 inline-flex items-center gap-1 rounded bg-white/20 px-2 py-0.5 text-[10px] font-bold uppercase backdrop-blur-sm">
+                            <span className="h-1.5 w-1.5 rounded-full bg-yellow-400" /> Pro Feature
                         </div>
-                        <span className="material-symbols-outlined absolute bottom-4 right-4 text-6xl text-white/10 rotate-12 group-hover:scale-110 transition-transform">smart_toy</span>
+                        <h3 className="mb-1 font-bold">Unlock AI Mentor</h3>
+                        <p className="text-xs text-indigo-100 mb-3">Get instant help with your code anytime.</p>
+                        <div className="flex items-center gap-2 text-xs font-bold text-white hover:underline cursor-pointer">
+                            Upgrade Now <span className="material-symbols-outlined text-sm">arrow_forward</span>
+                        </div>
                     </div>
                 </div>
-            </div>
+            </section>
         </div>
     );
 }

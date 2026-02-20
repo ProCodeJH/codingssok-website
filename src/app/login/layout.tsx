@@ -5,5 +5,5 @@ export default function LoginLayout({
 }: {
     children: React.ReactNode;
 }) {
-    return <>{children}</>;
+    return <div style={{ fontSize: '16px' }}>{children}</div>;
 }

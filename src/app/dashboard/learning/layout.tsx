@@ -152,7 +152,7 @@ export default function LearningLayout({ children }: { children: ReactNode }) {
                 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" />
                 {/* eslint-disable-next-line @next/next/no-page-custom-font */}
                 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
-                <div className="flex h-screen overflow-hidden bg-[#F3F4F6]" style={{ fontFamily: "'Inter', sans-serif" }}>
+                <div className="flex h-screen overflow-hidden bg-[#F3F4F6]" style={{ fontFamily: "'Inter', sans-serif", fontSize: '16px' }}>
                     <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
 
                     <main className="flex-1 flex flex-col h-screen overflow-hidden">

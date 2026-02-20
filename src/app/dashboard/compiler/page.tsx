@@ -1,5 +1,9 @@
-import { redirect } from "next/navigation";
+"use client";
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
 
 export default function OldCompilerPage() {
-    redirect("/dashboard/learning/compiler");
+    const router = useRouter();
+    useEffect(() => { router.replace("/dashboard/learning/compiler"); }, [router]);
+    return null;
 }

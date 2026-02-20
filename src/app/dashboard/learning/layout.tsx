@@ -11,7 +11,7 @@ const NAV_ITEMS = [
     { icon: "library_books", label: "My Courses", href: "/dashboard/learning/challenge" },
     { icon: "emoji_events", label: "Achievements", href: "/dashboard/learning/goals" },
     { icon: "diversity_3", label: "Leaderboard", href: "/dashboard/learning/leaderboard" },
-    { icon: "storefront", label: "Store", href: "/dashboard/learning/store" },
+    { icon: "sports_esports", label: "Player Stats", href: "/dashboard/learning/stats" },
     { icon: "settings", label: "Profile", href: "/dashboard/learning/profile" },
 ];
 

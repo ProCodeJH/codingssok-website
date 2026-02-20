@@ -4,189 +4,184 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useUserProgress } from "@/hooks/useUserProgress";
 
 const BADGES = [
-    { name: "Gold Contributor", icon: "emoji_events", bgCls: "bg-yellow-50 text-yellow-600 border-yellow-100" },
-    { name: "Python Expert", icon: "code", bgCls: "bg-blue-50 text-blue-600 border-blue-100" },
-    { name: "7-Day Streak", icon: "local_fire_department", bgCls: "bg-orange-50 text-orange-600 border-orange-100" },
-    { name: "Bug Hunter", icon: "bug_report", bgCls: "bg-red-50 text-red-600 border-red-100" },
-    { name: "Team Player", icon: "group", bgCls: "bg-purple-50 text-purple-600 border-purple-100" },
-    { name: "Fast Solver", icon: "bolt", bgCls: "bg-teal-50 text-teal-600 border-teal-100" },
+    { name: "Gold Contributor", icon: "emoji_events", bg: "#fef9c3", color: "#a16207", border: "#fde68a" },
+    { name: "Python Expert", icon: "code", bg: "#eff6ff", color: "#1d4ed8", border: "#bfdbfe" },
+    { name: "7-Day Streak", icon: "local_fire_department", bg: "#fff7ed", color: "#c2410c", border: "#fed7aa" },
+    { name: "Bug Hunter", icon: "bug_report", bg: "#fef2f2", color: "#b91c1c", border: "#fecaca" },
+    { name: "Team Player", icon: "group", bg: "#faf5ff", color: "#7e22ce", border: "#e9d5ff" },
+    { name: "Fast Solver", icon: "bolt", bg: "#f0fdfa", color: "#0f766e", border: "#99f6e4" },
 ];
 
 const ACTIVITY = [
-    { action: "Array Rotation 풀이 완료", xp: 150, time: "2시간 전", icon: "check_circle", dotCls: "bg-green-100 text-green-600" },
-    { action: "Python Masterclass 3장 완료", xp: 200, time: "어제", icon: "school", dotCls: "bg-blue-100 text-blue-600" },
-    { action: "'Bug Hunter' 뱃지 획득", xp: 100, time: "2일 전", icon: "military_tech", dotCls: "bg-yellow-100 text-yellow-600" },
-    { action: "Daily Challenge 7일 연속 클리어", xp: 500, time: "3일 전", icon: "local_fire_department", dotCls: "bg-orange-100 text-orange-600" },
-    { action: "Coding Foundations 코스 완료", xp: 300, time: "1주 전", icon: "flag", dotCls: "bg-purple-100 text-purple-600" },
+    { action: "Array Rotation 풀이 완료", xp: 150, time: "2시간 전", icon: "check_circle", bg: "#dcfce7", color: "#15803d" },
+    { action: "Python Masterclass 3장 완료", xp: 200, time: "어제", icon: "school", bg: "#dbeafe", color: "#1d4ed8" },
+    { action: "'Bug Hunter' 뱃지 획득", xp: 100, time: "2일 전", icon: "military_tech", bg: "#fef9c3", color: "#a16207" },
+    { action: "Daily Challenge 7일 연속 클리어", xp: 500, time: "3일 전", icon: "local_fire_department", bg: "#fee2e2", color: "#b91c1c" },
+    { action: "Coding Foundations 코스 완료", xp: 300, time: "1주 전", icon: "flag", bg: "#f3e8ff", color: "#7e22ce" },
 ];
 
 const STATS = [
-    { label: "Problems Solved", value: "120", icon: "check_circle", cls: "bg-green-50 border-green-100", iconCls: "text-green-500" },
-    { label: "Accuracy", value: "94%", icon: "verified", cls: "bg-blue-50 border-blue-100", iconCls: "text-blue-500" },
-    { label: "Avg. Time", value: "12m", icon: "timer", cls: "bg-purple-50 border-purple-100", iconCls: "text-purple-500" },
-    { label: "Best Streak", value: "14d", icon: "local_fire_department", cls: "bg-orange-50 border-orange-100", iconCls: "text-orange-500" },
+    { label: "Problems Solved", value: "120", icon: "check_circle", bg: "#f0fdf4", color: "#16a34a", border: "#bbf7d0" },
+    { label: "Accuracy", value: "94%", icon: "verified", bg: "#eff6ff", color: "#1d4ed8", border: "#bfdbfe" },
+    { label: "Avg. Time", value: "12m", icon: "timer", bg: "#faf5ff", color: "#7e22ce", border: "#e9d5ff" },
+    { label: "Best Streak", value: "14d", icon: "local_fire_department", bg: "#fff7ed", color: "#c2410c", border: "#fed7aa" },
 ];
+
+const glassCard: React.CSSProperties = {
+    background: "rgba(255,255,255,0.7)",
+    backdropFilter: "blur(12px)",
+    WebkitBackdropFilter: "blur(12px)",
+    border: "1px solid rgba(255,255,255,0.8)",
+    boxShadow: "0 4px 20px rgba(0,0,0,0.03)",
+};
 
 export default function ProfilePage() {
     const { user } = useAuth();
     const { progress } = useUserProgress();
 
+    const displayName = user?.name || user?.email?.split("@")[0] || "Student";
+    const initial = (user?.email?.charAt(0) || "S").toUpperCase();
     const xpForNext = (progress.level + 1) * 500;
     const xpPercent = Math.min((progress.xp / xpForNext) * 100, 100);
 
     return (
-        <div className="p-6 lg:p-10 max-w-[1200px] mx-auto flex flex-col gap-8">
-            {/* Hero Card */}
-            <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white p-8 lg:p-10 shadow-xl">
-                <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PHBhdHRlcm4gaWQ9ImdyaWQiIHdpZHRoPSI2MCIgaGVpZ2h0PSI2MCIgcGF0dGVyblVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+PHBhdGggZD0iTSA2MCAwIEwgMCAwIDAgNjAiIGZpbGw9Im5vbmUiIHN0cm9rZT0icmdiYSgyNTUsMjU1LDI1NSwwLjAzKSIgc3Ryb2tlLXdpZHRoPSIxIi8+PC9wYXR0ZXJuPjwvZGVmcz48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSJ1cmwoI2dyaWQpIi8+PC9zdmc+')] opacity-50" />
-                <div className="absolute -top-20 -right-20 w-60 h-60 bg-[#13daec]/20 rounded-full blur-[80px]" />
-                <div className="absolute -bottom-20 -left-20 w-60 h-60 bg-blue-600/20 rounded-full blur-[80px]" />
+        <>
+            <style>{`@media (min-width: 1024px) { .profile-grid { grid-template-columns: 7fr 3fr !important; } }`}</style>
+            <div style={{ maxWidth: 1200, margin: "0 auto", display: "flex", flexDirection: "column", gap: 32 }}>
 
-                <div className="relative z-10 flex flex-col md:flex-row gap-8 items-center">
-                    {/* Avatar + XP Ring */}
-                    <div className="relative">
-                        <svg className="w-32 h-32 -rotate-90" viewBox="0 0 120 120">
-                            <circle cx="60" cy="60" r="54" fill="none" stroke="rgba(255,255,255,0.1)" strokeWidth="8" />
-                            <circle cx="60" cy="60" r="54" fill="none" stroke="#13daec" strokeWidth="8"
-                                strokeDasharray={`${xpPercent * 3.39}, 339.3`} strokeLinecap="round" />
-                        </svg>
-                        <div className="absolute inset-0 flex items-center justify-center">
-                            <div className="w-24 h-24 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center text-4xl font-black border-2 border-white/20">
-                                {(user?.email?.charAt(0) || "U").toUpperCase()}
+                {/* Hero */}
+                <div style={{
+                    position: "relative", overflow: "hidden", borderRadius: 28,
+                    background: "linear-gradient(to bottom right, #0f172a, #1e293b, #0f172a)",
+                    color: "#fff", padding: "40px 48px", boxShadow: "0 25px 50px -12px rgba(0,0,0,0.25)",
+                }}>
+                    <div style={{ position: "absolute", top: -80, right: -80, width: 320, height: 320, background: "rgba(14,165,233,0.15)", borderRadius: "50%", filter: "blur(80px)" }} />
+                    <div style={{ position: "absolute", bottom: -40, left: -40, width: 200, height: 200, background: "rgba(99,102,241,0.15)", borderRadius: "50%", filter: "blur(48px)" }} />
+
+                    <div style={{ position: "relative", zIndex: 10, display: "flex", flexWrap: "wrap", alignItems: "center", gap: 32 }}>
+                        {/* Avatar */}
+                        <div style={{ position: "relative" }}>
+                            <div style={{
+                                width: 96, height: 96, borderRadius: "50%", padding: 3,
+                                background: "linear-gradient(to top right, #0ea5e9, #6366f1)",
+                                boxShadow: "0 0 0 4px rgba(255,255,255,0.1)",
+                            }}>
+                                <div style={{
+                                    width: "100%", height: "100%", borderRadius: "50%",
+                                    background: "linear-gradient(to bottom right, #0369a1, #4338ca)",
+                                    display: "flex", alignItems: "center", justifyContent: "center",
+                                    fontSize: 36, fontWeight: 800, color: "#fff", border: "3px solid #0f172a",
+                                }}>{initial}</div>
+                            </div>
+                            <div style={{ position: "absolute", bottom: 2, right: 2, width: 16, height: 16, borderRadius: "50%", background: "#22c55e", border: "2px solid #0f172a" }} />
+                        </div>
+
+                        {/* Info */}
+                        <div style={{ flex: 1, minWidth: 200 }}>
+                            <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 4 }}>
+                                <h1 style={{ fontSize: 28, fontWeight: 900, margin: 0 }}>{displayName}</h1>
+                                <span style={{ fontSize: 12, fontWeight: 700, color: "#0ea5e9", background: "rgba(14,165,233,0.15)", padding: "4px 12px", borderRadius: 999, border: "1px solid rgba(14,165,233,0.3)" }}>
+                                    Lv.{progress.level} Scholar
+                                </span>
+                            </div>
+                            <p style={{ color: "rgba(255,255,255,0.5)", margin: "0 0 20px 0", fontSize: 14 }}>@{displayName.toLowerCase().replace(/\s/g, "")}</p>
+
+                            {/* XP bar */}
+                            <div>
+                                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", fontSize: 12, marginBottom: 6 }}>
+                                    <span style={{ color: "rgba(255,255,255,0.6)" }}>Level {progress.level} → {progress.level + 1}</span>
+                                    <span style={{ color: "#0ea5e9", fontWeight: 700 }}>{progress.xp} / {xpForNext} XP</span>
+                                </div>
+                                <div style={{ height: 8, background: "rgba(255,255,255,0.1)", borderRadius: 999, overflow: "hidden" }}>
+                                    <div style={{
+                                        height: "100%", borderRadius: 999, width: `${xpPercent}%`,
+                                        background: "linear-gradient(to right, #0ea5e9, #6366f1)",
+                                        boxShadow: "0 0 10px rgba(14,165,233,0.5)",
+                                    }} />
+                                </div>
                             </div>
                         </div>
-                        <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 bg-[#13daec] text-white text-[10px] font-black px-3 py-1 rounded-full border-2 border-slate-900">
-                            Lv.{progress.level}
-                        </div>
-                    </div>
 
-                    {/* Info */}
-                    <div className="flex-1 text-center md:text-left">
-                        <h1 className="text-3xl font-black tracking-tight mb-1">{user?.email?.split("@")[0] || "Student"}</h1>
-                        <p className="text-white/50 text-sm mb-4">{user?.email || "student@elite.academy"}</p>
-                        <div className="flex flex-wrap gap-4 justify-center md:justify-start">
+                        {/* Stats */}
+                        <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 24 }}>
                             {[
-                                { icon: "stars", label: "XP", value: progress.xp },
-                                { icon: "local_fire_department", label: "Streak", value: `${progress.streak}d` },
-                                { icon: "leaderboard", label: "Rank", value: "#8" },
-                                { icon: "school", label: "Course", value: "Python" },
+                                { v: progress.streak, l: "Day Streak", icon: "local_fire_department", c: "#f97316" },
+                                { v: 120, l: "Problems", icon: "code", c: "#0ea5e9" },
+                                { v: progress.xp, l: "Total XP", icon: "stars", c: "#a855f7" },
                             ].map((s, i) => (
-                                <div key={i} className="bg-white/10 backdrop-blur-md rounded-xl px-4 py-2 border border-white/10">
-                                    <div className="text-[10px] text-white/40 uppercase tracking-wider font-bold flex items-center gap-1">
-                                        <span className="material-symbols-outlined text-[#13daec] text-[14px]">{s.icon}</span> {s.label}
-                                    </div>
-                                    <div className="text-lg font-black">{s.value}</div>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-
-                    <button className="bg-white/10 border border-white/20 backdrop-blur-md px-5 py-2.5 rounded-xl text-sm font-bold hover:bg-white/20 transition-colors flex items-center gap-2">
-                        <span className="material-symbols-outlined text-lg">edit</span> Edit Profile
-                    </button>
-                </div>
-            </div>
-
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-                {/* Main Content */}
-                <div className="lg:col-span-8 flex flex-col gap-8">
-                    {/* Stats Grid */}
-                    <div className="bg-white rounded-2xl border border-gray-200 p-6 shadow-sm">
-                        <h2 className="font-bold text-gray-900 flex items-center gap-2 mb-4">
-                            <span className="material-symbols-outlined text-[#13daec]">analytics</span>
-                            Statistics
-                        </h2>
-                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                            {STATS.map((s, i) => (
-                                <div key={i} className={`p-4 rounded-xl border text-center ${s.cls}`}>
-                                    <span className={`material-symbols-outlined text-2xl mb-2 block ${s.iconCls}`}>{s.icon}</span>
-                                    <div className="text-2xl font-black text-gray-900">{s.value}</div>
-                                    <div className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mt-1">{s.label}</div>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-
-                    {/* Activity Timeline */}
-                    <div className="bg-white rounded-2xl border border-gray-200 p-6 shadow-sm">
-                        <h2 className="font-bold text-gray-900 flex items-center gap-2 mb-6">
-                            <span className="material-symbols-outlined text-[#13daec]">history</span>
-                            Recent Activity
-                        </h2>
-                        <div className="space-y-4 relative">
-                            <div className="absolute left-[19px] top-2 bottom-2 w-0.5 bg-gray-100" />
-                            {ACTIVITY.map((a, i) => (
-                                <div key={i} className="flex gap-4 relative z-10">
-                                    <div className={`w-10 h-10 rounded-full ${a.dotCls} flex items-center justify-center shrink-0 ring-4 ring-white`}>
-                                        <span className="material-symbols-outlined text-lg">{a.icon}</span>
-                                    </div>
-                                    <div className="flex-1 bg-gray-50 rounded-xl p-4 hover:bg-white hover:shadow-md transition-all border border-transparent hover:border-gray-100">
-                                        <div className="flex justify-between">
-                                            <p className="text-sm font-bold text-gray-900">{a.action}</p>
-                                            <span className="text-xs font-bold text-green-600 bg-green-50 px-2 py-0.5 rounded-md">+{a.xp} XP</span>
-                                        </div>
-                                        <p className="text-xs text-gray-400 mt-1">{a.time}</p>
-                                    </div>
+                                <div key={i} style={{ textAlign: "center" }}>
+                                    <span className="material-symbols-outlined" style={{ color: s.c, fontSize: 22, display: "block", marginBottom: 4 }}>{s.icon}</span>
+                                    <div style={{ fontSize: 24, fontWeight: 900 }}>{s.v}</div>
+                                    <div style={{ fontSize: 10, color: "rgba(255,255,255,0.4)", textTransform: "uppercase", letterSpacing: "0.08em", fontWeight: 600 }}>{s.l}</div>
                                 </div>
                             ))}
                         </div>
                     </div>
                 </div>
 
-                {/* Sidebar */}
-                <div className="lg:col-span-4 flex flex-col gap-6">
-                    {/* XP Progress */}
-                    <div className="bg-white rounded-2xl border border-gray-200 p-6 shadow-sm">
-                        <h3 className="font-bold text-gray-900 flex items-center gap-2 mb-4">
-                            <span className="material-symbols-outlined text-purple-500">upgrade</span>
-                            Level Progress
-                        </h3>
-                        <div className="text-center mb-4">
-                            <div className="text-4xl font-black text-gray-900">{progress.level}</div>
-                            <div className="text-xs text-gray-400 font-bold uppercase tracking-wider">Current Level</div>
-                        </div>
-                        <div className="w-full bg-gray-100 rounded-full h-3 mb-2">
-                            <div className="bg-gradient-to-r from-[#13daec] to-blue-500 h-3 rounded-full transition-all" style={{ width: `${xpPercent}%` }} />
-                        </div>
-                        <div className="flex justify-between text-xs text-gray-400">
-                            <span>{progress.xp} XP</span>
-                            <span>{xpForNext} XP</span>
-                        </div>
-                    </div>
-
-                    {/* Badges */}
-                    <div className="bg-white rounded-2xl border border-gray-200 p-6 shadow-sm">
-                        <h3 className="font-bold text-gray-900 flex items-center gap-2 mb-4">
-                            <span className="material-symbols-outlined text-yellow-500">military_tech</span>
-                            Badges ({BADGES.length})
-                        </h3>
-                        <div className="grid grid-cols-3 gap-3">
-                            {BADGES.map((b, i) => (
-                                <div key={i} className="flex flex-col items-center text-center group cursor-pointer">
-                                    <div className={`w-12 h-12 rounded-xl ${b.bgCls} flex items-center justify-center group-hover:scale-110 transition-transform border`}>
-                                        <span className="material-symbols-outlined text-xl">{b.icon}</span>
-                                    </div>
-                                    <span className="text-[10px] font-bold text-gray-500 mt-1.5 leading-tight">{b.name}</span>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-
-                    {/* Tier Card */}
-                    <div className="relative overflow-hidden bg-gradient-to-br from-orange-500 to-amber-600 rounded-2xl p-6 text-white shadow-lg">
-                        <div className="absolute -right-6 -bottom-6 text-8xl opacity-20">🥉</div>
-                        <div className="relative z-10">
-                            <div className="text-[10px] font-bold uppercase tracking-wider text-orange-100 mb-2">Current Tier</div>
-                            <h4 className="font-black text-2xl mb-1">Bronze</h4>
-                            <p className="text-sm text-orange-100 mb-4">1,800 XP to Silver tier</p>
-                            <div className="w-full bg-white/20 rounded-full h-2">
-                                <div className="bg-white rounded-full h-2" style={{ width: "64%" }} />
+                {/* Stats Grid */}
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))", gap: 16 }}>
+                    {STATS.map((s, i) => (
+                        <div key={i} style={{ ...glassCard, borderRadius: 16, padding: 20, display: "flex", alignItems: "center", gap: 16 }}>
+                            <div style={{ width: 48, height: 48, borderRadius: 14, background: s.bg, color: s.color, border: `1px solid ${s.border}`, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                                <span className="material-symbols-outlined">{s.icon}</span>
                             </div>
-                            <p className="text-[10px] text-orange-200 mt-1.5 text-right">3,200 / 5,000 XP</p>
+                            <div>
+                                <div style={{ fontSize: 24, fontWeight: 900, color: "#0f172a" }}>{s.value}</div>
+                                <div style={{ fontSize: 12, color: "#64748b", fontWeight: 600 }}>{s.label}</div>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+
+                {/* Content Grid */}
+                <div style={{ display: "grid", gridTemplateColumns: "1fr", gap: 32 }} className="profile-grid">
+                    {/* Badges */}
+                    <div style={{ ...glassCard, borderRadius: 24, padding: 28 }}>
+                        <h2 style={{ fontSize: 18, fontWeight: 700, color: "#0f172a", margin: "0 0 20px 0", display: "flex", alignItems: "center", gap: 8 }}>
+                            <span className="material-symbols-outlined" style={{ color: "#eab308" }}>military_tech</span>
+                            Badges Earned
+                        </h2>
+                        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))", gap: 12 }}>
+                            {BADGES.map((b, i) => (
+                                <div key={i} style={{
+                                    display: "flex", alignItems: "center", gap: 12, padding: 14,
+                                    background: b.bg, borderRadius: 12, border: `1px solid ${b.border}`,
+                                }}>
+                                    <div style={{ width: 40, height: 40, borderRadius: 10, background: "#fff", color: b.color, display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 1px 2px rgba(0,0,0,0.05)" }}>
+                                        <span className="material-symbols-outlined">{b.icon}</span>
+                                    </div>
+                                    <span style={{ fontSize: 13, fontWeight: 600, color: "#0f172a" }}>{b.name}</span>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+
+                    {/* Recent Activity */}
+                    <div style={{ ...glassCard, borderRadius: 24, padding: 28 }}>
+                        <h2 style={{ fontSize: 18, fontWeight: 700, color: "#0f172a", margin: "0 0 20px 0", display: "flex", alignItems: "center", gap: 8 }}>
+                            <span className="material-symbols-outlined" style={{ color: "#0ea5e9" }}>history</span>
+                            최근 활동
+                        </h2>
+                        <div style={{ position: "relative", paddingLeft: 16, borderLeft: "2px solid #f1f5f9", display: "flex", flexDirection: "column", gap: 20 }}>
+                            {ACTIVITY.map((a, i) => (
+                                <div key={i} style={{ position: "relative" }}>
+                                    <div style={{ position: "absolute", left: -25, top: 4, width: 16, height: 16, borderRadius: "50%", background: a.bg, color: a.color, display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 0 0 3px #fff" }}>
+                                        <span className="material-symbols-outlined" style={{ fontSize: 10 }}>{a.icon}</span>
+                                    </div>
+                                    <div style={{ background: "#fff", padding: 14, borderRadius: 12, border: "1px solid #f1f5f9" }}>
+                                        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 4 }}>
+                                            <span style={{ fontSize: 14, fontWeight: 600, color: "#0f172a" }}>{a.action}</span>
+                                            <span style={{ fontSize: 10, color: "#94a3b8" }}>{a.time}</span>
+                                        </div>
+                                        <span style={{ fontSize: 12, fontWeight: 700, color: "#16a34a", background: "#dcfce7", padding: "2px 8px", borderRadius: 6 }}>+{a.xp} XP</span>
+                                    </div>
+                                </div>
+                            ))}
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
+        </>
     );
 }

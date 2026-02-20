@@ -3,195 +3,181 @@
 import { useState } from "react";
 import { useUserProgress } from "@/hooks/useUserProgress";
 
-/* ── Goals Data with static Tailwind classes ── */
 const ACTIVE_GOALS = [
     {
         id: 1, title: "Python Mastery", desc: "Complete all Python modules and reach expert level",
         icon: "code", target: 150, current: 87, unit: "problems", deadline: "Mar 15",
-        iconCls: "bg-blue-50 text-blue-600", barCls: "bg-blue-500", btnCls: "bg-blue-500 hover:bg-blue-600",
-        milestoneDone: "bg-blue-50 text-blue-600 border-blue-200", milestoneUndone: "bg-gray-50 text-gray-400 border-gray-200",
+        color: "#3b82f6", lightBg: "#eff6ff", border: "#bfdbfe",
         milestones: [
             { name: "Basics", done: true }, { name: "Data Structures", done: true },
             { name: "Algorithms", done: false }, { name: "Advanced", done: false },
-        ]
+        ],
     },
     {
         id: 2, title: "30-Day Streak", desc: "Maintain your daily challenge streak for 30 consecutive days",
         icon: "local_fire_department", target: 30, current: 12, unit: "days", deadline: "Mar 20",
-        iconCls: "bg-orange-50 text-orange-600", barCls: "bg-orange-500", btnCls: "bg-orange-500 hover:bg-orange-600",
-        milestoneDone: "bg-orange-50 text-orange-600 border-orange-200", milestoneUndone: "bg-gray-50 text-gray-400 border-gray-200",
+        color: "#f97316", lightBg: "#fff7ed", border: "#fed7aa",
         milestones: [
             { name: "Week 1", done: true }, { name: "Week 2", done: false },
             { name: "Week 3", done: false }, { name: "Week 4", done: false },
-        ]
+        ],
     },
     {
         id: 3, title: "Level 10 Scholar", desc: "Reach Level 10 by earning enough XP across all modules",
         icon: "school", target: 5000, current: 3200, unit: "XP", deadline: "Apr 1",
-        iconCls: "bg-purple-50 text-purple-600", barCls: "bg-purple-500", btnCls: "bg-purple-500 hover:bg-purple-600",
-        milestoneDone: "bg-purple-50 text-purple-600 border-purple-200", milestoneUndone: "bg-gray-50 text-gray-400 border-gray-200",
+        color: "#a855f7", lightBg: "#faf5ff", border: "#e9d5ff",
         milestones: [
             { name: "Level 5", done: true }, { name: "Level 7", done: true },
             { name: "Level 9", done: false }, { name: "Level 10", done: false },
-        ]
+        ],
     },
 ];
 
 const COMPLETED_GOALS = [
-    { title: "First Login", icon: "login", xp: 50, date: "Jan 5" },
-    { title: "5 Problems Solved", icon: "check_circle", xp: 100, date: "Jan 12" },
-    { title: "Join a Module", icon: "bookmark_added", xp: 75, date: "Jan 14" },
-    { title: "First Perfect Score", icon: "grade", xp: 200, date: "Jan 20" },
+    { title: "Coding Foundations Complete", desc: "Finished all beginner modules", icon: "check_circle", completedDate: "Feb 1" },
+    { title: "First Bug Fixed", desc: "Submitted your first bug fix", icon: "bug_report", completedDate: "Jan 20" },
+    { title: "10-Day Streak", desc: "Logged in for 10 consecutive days", icon: "local_fire_department", completedDate: "Jan 15" },
+    { title: "Community Helper", desc: "Helped 5 classmates with their code", icon: "group", completedDate: "Jan 10" },
 ];
 
-const SUGGESTED_GOALS = [
-    { title: "Speed Demon", desc: "Solve 10 problems under 5 minutes each", icon: "bolt", iconCls: "bg-teal-50 text-teal-600", xp: 500 },
-    { title: "Bug Hunter", desc: "Find and fix 20 code bugs in debug challenges", icon: "bug_report", iconCls: "bg-red-50 text-red-600", xp: 750 },
-    { title: "Community Hero", desc: "Help 15 classmates solve their problems", icon: "volunteer_activism", iconCls: "bg-pink-50 text-pink-600", xp: 600 },
-];
-
-const STAT_CLS = [
-    { label: "Active Goals", value: "3", icon: "flag", cls: "bg-blue-50 border-blue-100", iconCls: "text-blue-500" },
-    { label: "Completed", value: "4", icon: "check_circle", cls: "bg-green-50 border-green-100", iconCls: "text-green-500" },
-    { label: "XP Earned", value: "0", icon: "stars", cls: "bg-purple-50 border-purple-100", iconCls: "text-purple-500", dynamic: true },
-    { label: "Completion Rate", value: "80%", icon: "trending_up", cls: "bg-orange-50 border-orange-100", iconCls: "text-orange-500" },
-];
+const glassCard: React.CSSProperties = {
+    background: "rgba(255,255,255,0.7)",
+    backdropFilter: "blur(12px)",
+    WebkitBackdropFilter: "blur(12px)",
+    border: "1px solid rgba(255,255,255,0.8)",
+    boxShadow: "0 4px 20px rgba(0,0,0,0.03)",
+};
 
 export default function GoalsPage() {
     const { progress } = useUserProgress();
-    const [tab, setTab] = useState<"active" | "completed" | "discover">("active");
+    const [tab, setTab] = useState<"active" | "completed">("active");
 
     return (
-        <div className="p-6 lg:p-10 max-w-[1200px] mx-auto flex flex-col gap-8">
-            {/* Header Stats */}
-            <div className="bg-white rounded-3xl border border-gray-200 p-8 shadow-sm">
-                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+        <>
+            <style>{`@media (min-width: 1024px) { .goals-grid { grid-template-columns: 7fr 3fr !important; } }`}</style>
+            <div style={{ maxWidth: 1200, margin: "0 auto", display: "flex", flexDirection: "column", gap: 32 }}>
+
+                {/* Header */}
+                <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "space-between", alignItems: "flex-start", gap: 16 }}>
                     <div>
-                        <h1 className="text-2xl font-black text-gray-900 flex items-center gap-3">
-                            <span className="material-symbols-outlined text-[#13daec] text-3xl">flag</span>
+                        <h1 style={{ fontSize: 28, fontWeight: 900, color: "#0f172a", margin: "0 0 4px 0", display: "flex", alignItems: "center", gap: 12 }}>
+                            <span className="material-symbols-outlined" style={{ color: "#0ea5e9", fontSize: 32 }}>flag</span>
                             My Goals
                         </h1>
-                        <p className="text-sm text-gray-400 mt-1">Track your progress and set new targets</p>
+                        <p style={{ fontSize: 14, color: "#64748b", margin: 0 }}>Track your progress and set new targets</p>
                     </div>
-                    <button className="flex items-center gap-2 bg-[#13daec] text-white px-5 py-2.5 rounded-xl font-bold text-sm hover:bg-[#0fbccb] transition-colors shadow-lg shadow-[#13daec]/20">
-                        <span className="material-symbols-outlined text-lg">add</span> New Goal
+                    <button style={{
+                        display: "flex", alignItems: "center", gap: 8, padding: "10px 20px",
+                        background: "linear-gradient(to right, #0ea5e9, #6366f1)", color: "#fff",
+                        borderRadius: 12, border: "none", fontSize: 14, fontWeight: 700, cursor: "pointer",
+                        boxShadow: "0 10px 15px -3px rgba(14,165,233,0.25)",
+                    }}>
+                        <span className="material-symbols-outlined" style={{ fontSize: 18 }}>add</span>
+                        New Goal
                     </button>
                 </div>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                    {STAT_CLS.map((stat, i) => (
-                        <div key={i} className={`p-4 rounded-xl border text-center ${stat.cls}`}>
-                            <span className={`material-symbols-outlined text-2xl mb-2 block ${stat.iconCls}`}>{stat.icon}</span>
-                            <div className="text-2xl font-black text-gray-900">{stat.dynamic ? progress.xp.toLocaleString() : stat.value}</div>
-                            <div className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mt-1">{stat.label}</div>
+
+                {/* Stats Row */}
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(150px, 1fr))", gap: 16 }}>
+                    {[
+                        { label: "Active Goals", value: 3, icon: "flag", color: "#0ea5e9", bg: "#e0f2fe" },
+                        { label: "Completed", value: 4, icon: "check_circle", color: "#22c55e", bg: "#dcfce7" },
+                        { label: "XP Earned", value: progress.xp, icon: "stars", color: "#a855f7", bg: "#f3e8ff" },
+                        { label: "Day Streak", value: progress.streak, icon: "local_fire_department", color: "#f97316", bg: "#fff7ed" },
+                    ].map((s, i) => (
+                        <div key={i} style={{ ...glassCard, borderRadius: 16, padding: 20 }}>
+                            <div style={{ width: 40, height: 40, borderRadius: 10, background: s.bg, color: s.color, display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 12 }}>
+                                <span className="material-symbols-outlined">{s.icon}</span>
+                            </div>
+                            <div style={{ fontSize: 24, fontWeight: 900, color: "#0f172a" }}>{s.value}</div>
+                            <div style={{ fontSize: 12, color: "#64748b", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.05em" }}>{s.label}</div>
                         </div>
                     ))}
                 </div>
-            </div>
 
-            {/* Tab Navigation */}
-            <div className="flex gap-2 bg-white rounded-xl p-1.5 border border-gray-200 shadow-sm w-fit">
-                {(["active", "completed", "discover"] as const).map((t) => (
-                    <button key={t} onClick={() => setTab(t)}
-                        className={`px-5 py-2 rounded-lg text-sm font-bold transition-colors capitalize ${tab === t ? "bg-blue-600 text-white shadow-md" : "text-gray-400 hover:text-gray-600 hover:bg-gray-50"}`}>
-                        {t === "active" ? "Active" : t === "completed" ? "Completed" : "Discover"}
-                    </button>
-                ))}
-            </div>
+                {/* Tabs */}
+                <div style={{ display: "flex", gap: 4, background: "#f1f5f9", padding: 4, borderRadius: 12, width: "fit-content" }}>
+                    {["active", "completed"].map((t) => (
+                        <button key={t} onClick={() => setTab(t as "active" | "completed")} style={{
+                            padding: "8px 24px", borderRadius: 8, fontSize: 14, fontWeight: 700,
+                            border: "none", cursor: "pointer", transition: "all 0.2s",
+                            ...(tab === t ? { background: "#fff", color: "#0f172a", boxShadow: "0 1px 3px rgba(0,0,0,0.1)" } : { background: "transparent", color: "#64748b" }),
+                        }}>
+                            {t === "active" ? "Active Goals" : "Completed"} {t === "active" ? `(${ACTIVE_GOALS.length})` : `(${COMPLETED_GOALS.length})`}
+                        </button>
+                    ))}
+                </div>
 
-            {/* Active Goals */}
-            {tab === "active" && (
-                <div className="flex flex-col gap-6">
-                    {ACTIVE_GOALS.map((goal) => (
-                        <div key={goal.id} className="bg-white rounded-2xl border border-gray-200 p-6 shadow-sm hover:shadow-md transition-shadow">
-                            <div className="flex flex-col md:flex-row gap-6">
-                                <div className="flex-1">
-                                    <div className="flex items-start gap-4 mb-4">
-                                        <div className={`w-12 h-12 rounded-xl ${goal.iconCls} flex items-center justify-center`}>
-                                            <span className="material-symbols-outlined text-2xl">{goal.icon}</span>
-                                        </div>
-                                        <div>
-                                            <h3 className="text-lg font-bold text-gray-900">{goal.title}</h3>
-                                            <p className="text-sm text-gray-400">{goal.desc}</p>
-                                        </div>
-                                    </div>
-                                    {/* Progress bar */}
-                                    <div className="mb-4">
-                                        <div className="flex justify-between text-xs mb-2">
-                                            <span className="font-bold text-gray-600">{goal.current} / {goal.target} {goal.unit}</span>
-                                            <span className="font-bold text-gray-400">{Math.round((goal.current / goal.target) * 100)}%</span>
-                                        </div>
-                                        <div className="w-full bg-gray-100 rounded-full h-3">
-                                            <div className={`${goal.barCls} h-3 rounded-full transition-all relative`} style={{ width: `${(goal.current / goal.target) * 100}%` }}>
-                                                <div className="absolute right-0 top-1/2 -translate-y-1/2 w-4 h-4 bg-white border-2 border-current rounded-full shadow-sm" />
+                {/* Active Goals */}
+                {tab === "active" && (
+                    <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
+                        {ACTIVE_GOALS.map((g) => {
+                            const pct = Math.round((g.current / g.target) * 100);
+                            return (
+                                <div key={g.id} style={{ ...glassCard, borderRadius: 24, padding: 28, position: "relative" }}>
+                                    <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", marginBottom: 20 }}>
+                                        <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
+                                            <div style={{ width: 52, height: 52, borderRadius: 16, background: g.lightBg, color: g.color, display: "flex", alignItems: "center", justifyContent: "center", border: `1px solid ${g.border}` }}>
+                                                <span className="material-symbols-outlined" style={{ fontSize: 28 }}>{g.icon}</span>
+                                            </div>
+                                            <div>
+                                                <h3 style={{ fontSize: 18, fontWeight: 700, color: "#0f172a", margin: "0 0 4px 0" }}>{g.title}</h3>
+                                                <p style={{ fontSize: 13, color: "#64748b", margin: 0 }}>{g.desc}</p>
                                             </div>
                                         </div>
+                                        <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 4 }}>
+                                            <span style={{ fontSize: 12, color: "#64748b", background: "#f8fafc", padding: "4px 10px", borderRadius: 8, border: "1px solid #e2e8f0" }}>Due {g.deadline}</span>
+                                            <span style={{ fontSize: 24, fontWeight: 900, color: g.color }}>{pct}%</span>
+                                        </div>
                                     </div>
+
+                                    {/* Progress bar */}
+                                    <div style={{ marginBottom: 20 }}>
+                                        <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12, fontWeight: 600, color: "#64748b", marginBottom: 8 }}>
+                                            <span>{g.current} {g.unit}</span>
+                                            <span>{g.target} {g.unit}</span>
+                                        </div>
+                                        <div style={{ height: 10, background: "#f1f5f9", borderRadius: 999, overflow: "hidden", border: "1px solid #e2e8f0" }}>
+                                            <div style={{ height: "100%", borderRadius: 999, background: `linear-gradient(to right, ${g.color}, ${g.color}dd)`, width: `${pct}%`, transition: "width 0.5s ease" }} />
+                                        </div>
+                                    </div>
+
                                     {/* Milestones */}
-                                    <div className="flex gap-2 flex-wrap">
-                                        {goal.milestones.map((m, i) => (
-                                            <span key={i} className={`text-[10px] font-bold px-3 py-1.5 rounded-lg border flex items-center gap-1
-                                                ${m.done ? goal.milestoneDone : goal.milestoneUndone}`}>
-                                                <span className="material-symbols-outlined text-[12px]">{m.done ? "check_circle" : "radio_button_unchecked"}</span>
+                                    <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+                                        {g.milestones.map((m, mi) => (
+                                            <div key={mi} style={{
+                                                display: "flex", alignItems: "center", gap: 6, padding: "6px 12px", borderRadius: 8, fontSize: 12, fontWeight: 600,
+                                                ...(m.done ? { background: g.lightBg, color: g.color, border: `1px solid ${g.border}` } : { background: "#f8fafc", color: "#94a3b8", border: "1px solid #e2e8f0" }),
+                                            }}>
+                                                <span className="material-symbols-outlined" style={{ fontSize: 14 }}>{m.done ? "check_circle" : "radio_button_unchecked"}</span>
                                                 {m.name}
-                                            </span>
+                                            </div>
                                         ))}
                                     </div>
                                 </div>
-                                <div className="flex flex-row md:flex-col items-center md:items-end gap-4 md:gap-2 md:min-w-[120px]">
-                                    <div className="text-right">
-                                        <div className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Deadline</div>
-                                        <div className="text-sm font-bold text-gray-700">{goal.deadline}</div>
-                                    </div>
-                                    <button className={`text-xs font-bold text-white ${goal.btnCls} px-4 py-2 rounded-lg transition-colors shadow-md`}>
-                                        Continue
-                                    </button>
+                            );
+                        })}
+                    </div>
+                )}
+
+                {/* Completed Goals */}
+                {tab === "completed" && (
+                    <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))", gap: 20 }}>
+                        {COMPLETED_GOALS.map((g, i) => (
+                            <div key={i} style={{ ...glassCard, borderRadius: 20, padding: 24, display: "flex", alignItems: "flex-start", gap: 16 }}>
+                                <div style={{ width: 48, height: 48, borderRadius: 14, background: "#dcfce7", color: "#16a34a", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                                    <span className="material-symbols-outlined">{g.icon}</span>
+                                </div>
+                                <div style={{ flex: 1 }}>
+                                    <h4 style={{ fontWeight: 700, fontSize: 15, color: "#0f172a", margin: "0 0 4px 0" }}>{g.title}</h4>
+                                    <p style={{ fontSize: 13, color: "#64748b", margin: "0 0 8px 0" }}>{g.desc}</p>
+                                    <span style={{ fontSize: 11, color: "#94a3b8" }}>Completed {g.completedDate}</span>
                                 </div>
                             </div>
-                        </div>
-                    ))}
-                </div>
-            )}
-
-            {/* Completed Goals */}
-            {tab === "completed" && (
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    {COMPLETED_GOALS.map((goal, i) => (
-                        <div key={i} className="bg-white rounded-2xl border border-gray-200 p-5 shadow-sm flex items-center gap-4 group hover:border-green-200 transition-colors">
-                            <div className="w-12 h-12 rounded-xl bg-green-50 text-green-600 flex items-center justify-center group-hover:scale-110 transition-transform">
-                                <span className="material-symbols-outlined text-2xl">{goal.icon}</span>
-                            </div>
-                            <div className="flex-1">
-                                <h4 className="font-bold text-gray-900">{goal.title}</h4>
-                                <p className="text-xs text-gray-400">Completed on {goal.date}</p>
-                            </div>
-                            <div className="text-right">
-                                <span className="text-xs font-bold text-green-600 bg-green-50 px-2.5 py-1 rounded-lg">+{goal.xp} XP</span>
-                            </div>
-                        </div>
-                    ))}
-                </div>
-            )}
-
-            {/* Discover Goals */}
-            {tab === "discover" && (
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    {SUGGESTED_GOALS.map((goal, i) => (
-                        <div key={i} className="bg-white rounded-2xl border border-gray-200 p-6 shadow-sm hover:shadow-lg transition-all group">
-                            <div className={`w-14 h-14 rounded-2xl ${goal.iconCls} flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform`}>
-                                <span className="material-symbols-outlined text-3xl">{goal.icon}</span>
-                            </div>
-                            <h3 className="text-center font-bold text-gray-900 mb-2">{goal.title}</h3>
-                            <p className="text-center text-sm text-gray-400 mb-4">{goal.desc}</p>
-                            <div className="flex items-center justify-between">
-                                <span className="text-xs font-bold text-purple-600 bg-purple-50 px-2.5 py-1 rounded-lg">{goal.xp} XP</span>
-                                <button className="text-xs font-bold text-[#13daec] hover:text-[#0fbccb] flex items-center gap-1 transition-colors">
-                                    Start Goal <span className="material-symbols-outlined text-sm">arrow_forward</span>
-                                </button>
-                            </div>
-                        </div>
-                    ))}
-                </div>
-            )}
-        </div>
+                        ))}
+                    </div>
+                )}
+            </div>
+        </>
     );
 }

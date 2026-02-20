@@ -19,112 +19,157 @@ const RANKINGS = [
     { rank: 10, name: "Chris Oh", xp: 2400, level: 19, streak: 8, badge: "Bronze" },
 ];
 
-const TC: Record<string, { bg: string; text: string; border: string }> = {
-    Gold: { bg: "bg-yellow-50", text: "text-yellow-600", border: "border-yellow-200" },
-    Silver: { bg: "bg-gray-50", text: "text-gray-500", border: "border-gray-200" },
-    Bronze: { bg: "bg-orange-50", text: "text-orange-600", border: "border-orange-200" },
+const BADGE_STYLE: Record<string, { bg: string; color: string; border: string }> = {
+    Gold: { bg: "#fef9c3", color: "#a16207", border: "#fde68a" },
+    Silver: { bg: "#f1f5f9", color: "#475569", border: "#e2e8f0" },
+    Bronze: { bg: "#fff7ed", color: "#c2410c", border: "#fed7aa" },
 };
+
+const glassCard: React.CSSProperties = {
+    background: "rgba(255,255,255,0.7)",
+    backdropFilter: "blur(12px)",
+    WebkitBackdropFilter: "blur(12px)",
+    border: "1px solid rgba(255,255,255,0.8)",
+    boxShadow: "0 4px 20px rgba(0,0,0,0.03)",
+};
+
+// Podium order: 2nd, 1st, 3rd
+const PODIUM = [TOP_3[1], TOP_3[0], TOP_3[2]];
+const PODIUM_HEIGHTS = [112, 144, 96];
+const PODIUM_GRADS = [
+    "linear-gradient(to top, #9ca3af, #d1d5db)",
+    "linear-gradient(to top, #f59e0b, #fbbf24)",
+    "linear-gradient(to top, #b45309, #d97706)",
+];
+const PODIUM_MEDALS = ["🥈", "🥇", "🥉"];
 
 export default function LeaderboardPage() {
     const { progress } = useUserProgress();
     const [period, setPeriod] = useState("weekly");
 
-    const po = [TOP_3[1], TOP_3[0], TOP_3[2]];
-    const ph = ["h-28", "h-36", "h-24"];
-    const pc = ["from-gray-300 to-gray-400", "from-yellow-400 to-amber-500", "from-amber-600 to-orange-700"];
-    const mi = ["🥈", "🥇", "🥉"];
-
     return (
-        <div className="p-6 lg:p-10 max-w-[1200px] mx-auto space-y-8">
-            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <div style={{ maxWidth: 1200, margin: "0 auto", display: "flex", flexDirection: "column", gap: 32 }}>
+
+            {/* Header */}
+            <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "space-between", alignItems: "center", gap: 16 }}>
                 <div>
-                    <h1 className="text-2xl font-black text-gray-900 flex items-center gap-3">
-                        <span className="material-symbols-outlined text-yellow-500 text-3xl">leaderboard</span>
+                    <h1 style={{ fontSize: 28, fontWeight: 900, color: "#0f172a", margin: "0 0 4px 0", display: "flex", alignItems: "center", gap: 12 }}>
+                        <span className="material-symbols-outlined" style={{ color: "#eab308", fontSize: 32 }}>leaderboard</span>
                         Leaderboard
                     </h1>
-                    <p className="text-sm text-gray-400 mt-1">See where you stand among the community</p>
+                    <p style={{ fontSize: 14, color: "#64748b", margin: 0 }}>See where you stand among the community</p>
                 </div>
-                <div className="flex gap-2 bg-white rounded-xl p-1.5 border border-gray-200 shadow-sm">
+                <div style={{ display: "flex", gap: 4, background: "#fff", padding: 6, borderRadius: 12, border: "1px solid #e2e8f0", boxShadow: "0 1px 2px rgba(0,0,0,0.05)" }}>
                     {["weekly", "monthly", "alltime"].map((p) => (
-                        <button key={p} onClick={() => setPeriod(p)}
-                            className={`px-4 py-2 rounded-lg text-xs font-bold transition-colors ${period === p ? "bg-blue-600 text-white shadow-md" : "text-gray-400 hover:bg-gray-50"}`}>
+                        <button key={p} onClick={() => setPeriod(p)} style={{
+                            padding: "8px 16px", borderRadius: 8, fontSize: 12, fontWeight: 700,
+                            border: "none", cursor: "pointer", transition: "all 0.2s",
+                            ...(period === p ? { background: "#2563eb", color: "#fff", boxShadow: "0 4px 6px -1px rgba(37,99,235,0.3)" } : { background: "transparent", color: "#94a3b8" }),
+                        }}>
                             {p === "alltime" ? "All Time" : p.charAt(0).toUpperCase() + p.slice(1)}
                         </button>
                     ))}
                 </div>
             </div>
 
-            <div className="bg-gradient-to-r from-blue-600 to-indigo-600 rounded-2xl p-6 text-white shadow-xl relative overflow-hidden">
-                <div className="absolute -right-10 -top-10 w-40 h-40 bg-white/10 rounded-full blur-3xl" />
-                <div className="relative z-10 flex flex-col sm:flex-row items-center gap-6">
-                    <div className="size-16 rounded-2xl bg-white/20 flex items-center justify-center text-3xl font-black backdrop-blur-sm border border-white/20">#8</div>
-                    <div className="flex-1 text-center sm:text-left">
-                        <h3 className="text-lg font-bold">Your Current Ranking</h3>
-                        <p className="text-blue-200 text-sm">500 XP more to reach Rank #7</p>
+            {/* My Rank Banner */}
+            <div style={{
+                position: "relative", overflow: "hidden", borderRadius: 16, padding: 24,
+                background: "linear-gradient(to right, #2563eb, #4f46e5)", color: "#fff",
+                boxShadow: "0 25px 50px -12px rgba(37,99,235,0.3)",
+            }}>
+                <div style={{ position: "absolute", right: -40, top: -40, width: 160, height: 160, background: "rgba(255,255,255,0.1)", borderRadius: "50%", filter: "blur(48px)" }} />
+                <div style={{ position: "relative", zIndex: 10, display: "flex", flexWrap: "wrap", alignItems: "center", gap: 24 }}>
+                    <div style={{
+                        width: 64, height: 64, borderRadius: 16, background: "rgba(255,255,255,0.2)",
+                        display: "flex", alignItems: "center", justifyContent: "center", fontSize: 28, fontWeight: 900,
+                        backdropFilter: "blur(8px)", border: "1px solid rgba(255,255,255,0.2)",
+                    }}>#8</div>
+                    <div style={{ flex: 1 }}>
+                        <h3 style={{ fontSize: 18, fontWeight: 700, margin: "0 0 4px 0" }}>Your Current Ranking</h3>
+                        <p style={{ color: "#bfdbfe", fontSize: 14, margin: 0 }}>500 XP more to reach Rank #7</p>
                     </div>
-                    <div className="grid grid-cols-3 gap-6">
+                    <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 24 }}>
                         {[{ v: progress.xp, l: "Total XP" }, { v: progress.streak, l: "Streak" }, { v: 120, l: "Solved" }].map((s, i) => (
-                            <div key={i} className="text-center">
-                                <div className="text-2xl font-black">{s.v}</div>
-                                <div className="text-[10px] text-blue-200 uppercase tracking-wider font-bold">{s.l}</div>
+                            <div key={i} style={{ textAlign: "center" }}>
+                                <div style={{ fontSize: 24, fontWeight: 900 }}>{s.v}</div>
+                                <div style={{ fontSize: 10, color: "#bfdbfe", textTransform: "uppercase", letterSpacing: "0.08em", fontWeight: 700 }}>{s.l}</div>
                             </div>
                         ))}
                     </div>
                 </div>
             </div>
 
-            <div className="bg-white rounded-3xl border border-gray-200 p-8 shadow-sm">
-                <h2 className="text-center font-bold text-gray-900 mb-8">
-                    <span className="material-symbols-outlined text-yellow-500 text-2xl align-middle mr-2">emoji_events</span>
+            {/* Top 3 Podium */}
+            <div style={{ ...glassCard, borderRadius: 24, padding: 32 }}>
+                <h2 style={{ textAlign: "center", fontWeight: 700, color: "#0f172a", marginBottom: 32, display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
+                    <span className="material-symbols-outlined" style={{ color: "#eab308", fontSize: 24 }}>emoji_events</span>
                     Top 3 Champions
                 </h2>
-                <div className="flex justify-center items-end gap-4 md:gap-8 max-w-lg mx-auto">
-                    {po.map((u, i) => (
-                        <div key={u.rank} className={`flex flex-col items-center ${i === 1 ? "order-2" : i === 0 ? "order-1" : "order-3"}`}>
-                            <div className="relative mb-3">
-                                <div className={`size-16 md:size-20 rounded-full bg-gray-100 flex items-center justify-center text-2xl font-black text-gray-600 ${i === 1 ? "ring-4 ring-yellow-400 shadow-lg shadow-yellow-500/20" : ""}`}>
-                                    {u.name.charAt(0)}
-                                </div>
-                                <div className="absolute -top-2 -right-2 text-2xl">{mi[i]}</div>
+                <div style={{ display: "flex", justifyContent: "center", alignItems: "flex-end", gap: 32, maxWidth: 480, margin: "0 auto" }}>
+                    {PODIUM.map((u, i) => (
+                        <div key={u.rank} style={{ display: "flex", flexDirection: "column", alignItems: "center", order: i === 1 ? 2 : i === 0 ? 1 : 3 }}>
+                            <div style={{ position: "relative", marginBottom: 12 }}>
+                                <div style={{
+                                    width: i === 1 ? 80 : 64, height: i === 1 ? 80 : 64,
+                                    borderRadius: "50%", background: "#f1f5f9", display: "flex", alignItems: "center",
+                                    justifyContent: "center", fontSize: 24, fontWeight: 900, color: "#475569",
+                                    ...(i === 1 ? { boxShadow: "0 0 0 4px #fbbf24, 0 20px 25px -5px rgba(251,191,36,0.2)" } : {}),
+                                }}>{u.name.charAt(0)}</div>
+                                <div style={{ position: "absolute", top: -8, right: -8, fontSize: 24 }}>{PODIUM_MEDALS[i]}</div>
                             </div>
-                            <h4 className="font-bold text-sm text-gray-900 mb-1">{u.name}</h4>
-                            <span className="text-xs font-bold text-[#13daec] mb-3">{u.xp.toLocaleString()} XP</span>
-                            <div className={`w-20 md:w-24 ${ph[i]} bg-gradient-to-t ${pc[i]} rounded-t-xl flex items-center justify-center shadow-inner`}>
-                                <span className="text-3xl font-black text-white/80">#{u.rank}</span>
+                            <h4 style={{ fontWeight: 700, fontSize: 14, color: "#0f172a", margin: "0 0 4px 0" }}>{u.name}</h4>
+                            <span style={{ fontSize: 12, fontWeight: 700, color: "#13daec", marginBottom: 12 }}>{u.xp.toLocaleString()} XP</span>
+                            <div style={{
+                                width: 80, height: PODIUM_HEIGHTS[i], background: PODIUM_GRADS[i],
+                                borderRadius: "12px 12px 0 0", display: "flex", alignItems: "center", justifyContent: "center",
+                                boxShadow: "inset 0 2px 4px rgba(0,0,0,0.2)",
+                            }}>
+                                <span style={{ fontSize: 28, fontWeight: 900, color: "rgba(255,255,255,0.8)" }}>#{u.rank}</span>
                             </div>
                         </div>
                     ))}
                 </div>
             </div>
 
-            <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
-                <div className="p-6 border-b border-gray-100">
-                    <h3 className="font-bold text-gray-900 flex items-center gap-2">
-                        <span className="material-symbols-outlined text-[#13daec]">format_list_numbered</span>
+            {/* Full Rankings */}
+            <div style={{ background: "#fff", borderRadius: 16, border: "1px solid #e5e7eb", overflow: "hidden", boxShadow: "0 1px 3px rgba(0,0,0,0.05)" }}>
+                <div style={{ padding: "20px 24px", borderBottom: "1px solid #f1f5f9" }}>
+                    <h3 style={{ fontWeight: 700, color: "#0f172a", display: "flex", alignItems: "center", gap: 8, margin: 0 }}>
+                        <span className="material-symbols-outlined" style={{ color: "#13daec" }}>format_list_numbered</span>
                         Full Rankings
                     </h3>
                 </div>
-                <div className="divide-y divide-gray-50">
+                <div>
                     {RANKINGS.map((u) => {
-                        const t = TC[u.badge] || TC.Bronze;
+                        const bs = BADGE_STYLE[u.badge] || BADGE_STYLE.Bronze;
                         return (
-                            <div key={u.rank} className={`flex items-center gap-4 px-6 py-4 transition-colors ${u.isMe ? "bg-blue-50/60 border-l-4 border-l-blue-500" : "hover:bg-gray-50"}`}>
-                                <span className={`text-sm font-black w-8 ${u.rank <= 3 ? "text-yellow-500" : "text-gray-400"}`}>#{u.rank}</span>
-                                <div className={`size-10 rounded-full flex items-center justify-center text-sm font-bold ${u.isMe ? "bg-blue-500 text-white" : "bg-gray-100 text-gray-600"}`}>{u.name.charAt(0)}</div>
-                                <div className="flex-1 min-w-0">
-                                    <div className={`font-bold text-sm ${u.isMe ? "text-blue-600" : "text-gray-900"}`}>
-                                        {u.name} {u.isMe && <span className="text-[10px] font-bold text-blue-400 bg-blue-100 px-2 py-0.5 rounded-full ml-2">You</span>}
+                            <div key={u.rank} style={{
+                                display: "flex", alignItems: "center", gap: 16, padding: "16px 24px",
+                                borderBottom: "1px solid #f9fafb", transition: "background 0.15s",
+                                ...(u.isMe ? { background: "rgba(219,234,254,0.4)", borderLeft: "4px solid #3b82f6" } : {}),
+                            }}>
+                                <span style={{ fontSize: 14, fontWeight: 900, width: 32, color: u.rank <= 3 ? "#eab308" : "#94a3b8" }}>#{u.rank}</span>
+                                <div style={{
+                                    width: 40, height: 40, borderRadius: "50%", display: "flex", alignItems: "center",
+                                    justifyContent: "center", fontSize: 14, fontWeight: 700,
+                                    ...(u.isMe ? { background: "#3b82f6", color: "#fff" } : { background: "#f1f5f9", color: "#475569" }),
+                                }}>{u.name.charAt(0)}</div>
+                                <div style={{ flex: 1, minWidth: 0 }}>
+                                    <div style={{ fontWeight: 700, fontSize: 14, color: u.isMe ? "#2563eb" : "#0f172a", display: "flex", alignItems: "center", gap: 8 }}>
+                                        {u.name}
+                                        {u.isMe && <span style={{ fontSize: 10, fontWeight: 700, color: "#3b82f6", background: "#dbeafe", padding: "2px 8px", borderRadius: 999 }}>You</span>}
                                     </div>
-                                    <div className="text-xs text-gray-400">Level {u.level}</div>
+                                    <div style={{ fontSize: 12, color: "#94a3b8" }}>Level {u.level}</div>
                                 </div>
-                                <span className={`text-[10px] font-bold px-2.5 py-1 rounded-lg border ${t.bg} ${t.text} ${t.border}`}>{u.badge}</span>
-                                <div className="flex items-center gap-1 text-xs text-gray-400 w-16 justify-end">
-                                    <span className="material-symbols-outlined text-orange-400 text-sm">local_fire_department</span>
-                                    <span className="font-bold">{u.streak}d</span>
+                                <span style={{ fontSize: 10, fontWeight: 700, padding: "4px 10px", borderRadius: 8, background: bs.bg, color: bs.color, border: `1px solid ${bs.border}` }}>{u.badge}</span>
+                                <div style={{ display: "flex", alignItems: "center", gap: 4, fontSize: 12, color: "#94a3b8", width: 64, justifyContent: "flex-end" }}>
+                                    <span className="material-symbols-outlined" style={{ color: "#f97316", fontSize: 14 }}>local_fire_department</span>
+                                    <span style={{ fontWeight: 700 }}>{u.streak}d</span>
                                 </div>
-                                <div className="text-right w-24">
-                                    <span className="font-bold text-sm text-gray-900">{u.xp.toLocaleString()}</span>
-                                    <span className="text-xs text-gray-400 ml-1">XP</span>
+                                <div style={{ textAlign: "right", width: 96 }}>
+                                    <span style={{ fontWeight: 700, fontSize: 14, color: "#0f172a" }}>{u.xp.toLocaleString()}</span>
+                                    <span style={{ fontSize: 12, color: "#94a3b8", marginLeft: 4 }}>XP</span>
                                 </div>
                             </div>
                         );

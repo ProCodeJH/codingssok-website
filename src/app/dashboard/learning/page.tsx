@@ -1,450 +1,241 @@
 "use client";
 
-import { useState, useRef, useCallback, useEffect, Suspense } from "react";
-import { createClient } from "@/lib/supabase";
-import Link from "next/link";
-import { useSearchParams } from "next/navigation";
-import { motion, AnimatePresence } from "framer-motion";
-import { LearningRoadmap } from "./components/LearningRoadmap";
-import { StudyNotes } from "./components/StudyNotes";
-import { GamificationBar, useGamification } from "./components/GamificationBar";
-import { CourseView } from "./components/CourseView";
+import { useUserProgress } from "@/hooks/useUserProgress";
 
-/* ═══════════════════════════════════════════════════════════════
-   코딩쏙 학습 플랫폼 — 통합 허브 에디션
-   모든 학습 콘텐츠 + Elite 도구를 하나의 페이지에서 탭으로 전환
-   ═══════════════════════════════════════════════════════════════ */
-
-// ─── White + Blue Theme System ───
-const theme = {
-    bg: "#f8fafc",
-    bgWhite: "#ffffff",
-    bgCard: "#ffffff",
-    bgSoft: "#f1f5f9",
-    bgAccent: "#eff6ff",
-    primary: "#2563eb",
-    primaryLight: "#3b82f6",
-    primaryDark: "#1d4ed8",
-    gradient: "linear-gradient(135deg, #2563eb, #3b82f6, #60a5fa)",
-    gradientSoft: "linear-gradient(135deg, #eff6ff, #dbeafe)",
-    text: "#1e293b",
-    textSecondary: "#64748b",
-    textMuted: "#94a3b8",
-    border: "#e2e8f0",
-    borderLight: "#f1f5f9",
-    shadow: "0 1px 3px rgba(0,0,0,0.06)",
-    shadowMd: "0 4px 16px rgba(0,0,0,0.08)",
-    shadowLg: "0 8px 32px rgba(0,0,0,0.1)",
-    shadowBlue: "0 4px 20px rgba(37,99,235,0.15)",
-    success: "#22c55e",
-    warning: "#f59e0b",
-    danger: "#ef4444",
-};
-
-// ─── Course Data (9개 전체 과목) ───
-interface Course {
-    id: string; name: string; icon: string; color: string;
-    gradient: string; htmlPath: string; desc: string;
-    problems: number; category: "foundation" | "language" | "certification" | "competition";
-    order: number;
-}
-
-const courses: Course[] = [
-    { id: "coding-basics", name: "코딩 기초", icon: "🧩", color: "#22c55e", gradient: "linear-gradient(135deg, #22c55e, #16a34a)", htmlPath: "/learning-platform/코딩기초/index.html", desc: "프로그래밍의 첫 걸음, 기초 사고력 키우기", problems: 80, category: "foundation", order: 1 },
-    { id: "computational-thinking", name: "컴퓨팅 사고력", icon: "🧠", color: "#8b5cf6", gradient: "linear-gradient(135deg, #8b5cf6, #7c3aed)", htmlPath: "/learning-platform/컴퓨팅사고력/index.html", desc: "논리적 사고와 문제 해결 능력 향상", problems: 120, category: "foundation", order: 2 },
-    { id: "python", name: "파이썬", icon: "🐍", color: "#3b82f6", gradient: "linear-gradient(135deg, #3b82f6, #2563eb)", htmlPath: "/learning-platform/파이썬/index.html", desc: "Python 기초부터 심화까지", problems: 150, category: "language", order: 3 },
-    { id: "c-language", name: "C 언어", icon: "⚡", color: "#f59e0b", gradient: "linear-gradient(135deg, #f59e0b, #d97706)", htmlPath: "/learning-platform/C언어/index.html", desc: "C 프로그래밍 완전 정복", problems: 200, category: "language", order: 4 },
-    { id: "cos", name: "COS", icon: "📋", color: "#06b6d4", gradient: "linear-gradient(135deg, #06b6d4, #0891b2)", htmlPath: "/learning-platform/COS/index.html", desc: "COS 자격증 완벽 대비", problems: 100, category: "certification", order: 5 },
-    { id: "cos-pro", name: "COS Pro", icon: "🏆", color: "#ec4899", gradient: "linear-gradient(135deg, #ec4899, #db2777)", htmlPath: "/learning-platform/COS-Pro/index.html", desc: "COS Pro 자격증 도전", problems: 80, category: "certification", order: 6 },
-    { id: "pcce", name: "PCCE", icon: "💻", color: "#f97316", gradient: "linear-gradient(135deg, #f97316, #ea580c)", htmlPath: "/learning-platform/PCCE/index.html", desc: "PCCE 코딩 역량 평가 대비", problems: 60, category: "certification", order: 7 },
-    { id: "koi-past", name: "KOI 기출", icon: "🎯", color: "#ef4444", gradient: "linear-gradient(135deg, #ef4444, #dc2626)", htmlPath: "/learning-platform/KOI기출/index.html", desc: "KOI 올림피아드 기출 풀이", problems: 150, category: "competition", order: 8 },
-    { id: "word-processor", name: "워드프로세서", icon: "📄", color: "#6366f1", gradient: "linear-gradient(135deg, #6366f1, #4f46e5)", htmlPath: "/learning-platform/워드프로세서/index.html", desc: "워드프로세서 자격증 대비", problems: 80, category: "certification", order: 9 },
+/* ── Course Data ── */
+const COURSES = [
+    { id: "coding-foundations", name: "Coding Foundations", icon: "extension", color: "green", status: "completed" as const, problems: 80, level: "Beginner", desc: "First steps into programming. Learn variables, loops, and basic logic structures." },
+    { id: "computational-thinking", name: "Computational Thinking", icon: "psychology", color: "purple", status: "completed" as const, problems: 120, level: "Logic", desc: "Enhance logical problem solving skills and algorithmic approaches." },
+    { id: "python", name: "Python Masterclass", icon: "code", color: "blue", status: "current" as const, problems: 150, level: "Advanced", desc: "Deep dive into Python. From syntax to advanced data structures." },
+    { id: "c-language", name: "C Language", icon: "bolt", color: "orange", status: "locked" as const, problems: 200, level: "System", desc: "Low level programming concepts and memory management techniques." },
+    { id: "cos-cert", name: "COS Certification", icon: "assignment", color: "teal", status: "locked" as const, problems: 100, level: "Exam Prep", desc: "Prepare for the Certified Operating Specialist exam." },
+    { id: "cos-pro", name: "COS Pro", icon: "trophy", color: "pink", status: "locked" as const, problems: 80, level: "Pro Exam", desc: "Advanced certification track for professional developers." },
 ];
 
-const categories = [
-    { id: "all", name: "전체", icon: "📚" },
-    { id: "foundation", name: "기초 과정", icon: "🧩" },
-    { id: "language", name: "프로그래밍 언어", icon: "💻" },
-    { id: "certification", name: "자격증", icon: "📋" },
-    { id: "competition", name: "대회 준비", icon: "🏆" },
+const ROADMAP_NODES = [
+    { name: "Coding Basics", icon: "check", problems: 80, status: "completed" as const, color: "green" },
+    { name: "Logic Thinking", icon: "psychology", problems: 120, status: "completed" as const, color: "green" },
+    { name: "Python", icon: "code", problems: 150, status: "current" as const, color: "blue" },
+    { name: "C Language", icon: "data_object", problems: 200, status: "locked" as const, color: "slate" },
+    { name: "Masters", icon: "military_tech", problems: 0, status: "locked" as const, color: "slate" },
 ];
 
-// ─── Elite Tool Tabs ───
-type TabId = "courses" | "roadmap" | "challenge" | "leaderboard" | "goals" | "profile" | "editor";
-
-const eliteTabs: { id: TabId; name: string; icon: string; htmlPath?: string }[] = [
-    { id: "courses", name: "학습 과목", icon: "📚" },
-    { id: "roadmap", name: "로드맵", icon: "🗺️", htmlPath: "/learning-platform/elite/roadmap.html" },
-    { id: "challenge", name: "데일리 챌린지", icon: "🎯", htmlPath: "/learning-platform/elite/challenge.html" },
-    { id: "leaderboard", name: "리더보드", icon: "🏆", htmlPath: "/learning-platform/elite/leaderboard.html" },
-    { id: "goals", name: "학습 목표", icon: "📌", htmlPath: "/learning-platform/elite/goals.html" },
-    { id: "profile", name: "프로필", icon: "👤", htmlPath: "/learning-platform/elite/profile.html" },
-    { id: "editor", name: "코드 에디터", icon: "💻", htmlPath: "/learning-platform/elite/editor.html" },
+const CLASSMATES = [
+    { name: "Sarah K.", msg: 'Completed Memory Mgmt with 98% score! 🎉', time: "2m", color: "green", lvl: "3", avatar: "https://lh3.googleusercontent.com/aida-public/AB6AXuD6T5yFj3Yko5onxuuj2MwKFVX1yyGt-s1ykU2vgtgVGr99v-yUyEqVhaqlx6OBHDVRXz3DbQa9SD4tc4x5kWG-T7DvHthFLRJVkcV6YukrcVYaHQg4UwSqJ___dkwL_iQikdTtARza5D9W-jJJvFrED9yrlx9RzbYcFdzUEPRhNbGh5HlUSI97rVR3uWWXiGs05kggBIer8QHBaKj6sv9RAOK-5XwTDoGxbj7GHpdsnrouCFR7pSYkcj13FgiPoMUX9QBBni9GKuFG" },
+    { name: "Mike R.", msg: 'Started the Pointer Quiz.', time: "15m", color: "", lvl: "", avatar: "https://lh3.googleusercontent.com/aida-public/AB6AXuDw9T3PrgFgIMzN2uJPwgerID6vEwsd0762Dpl8OC-zcBbv3SoL8bkTeouyQFTErhYfCF3mEfPOKJ3NXZHWlJgaRRTG0D307rvE8NBl7EuOxWLYfwlUnic07zqh5eGnAblr3Z2u7x-SRJlYRDN2P7ZXt2LbbUUyr1TVX_DzLMLGi5Adq7dk61juENgQjDOxGE8_F0JTEQdgW76QtjNild7OiOPLN0OQjZKe4zChg4XbpRfpJj0cnVEVHtc7_LqRzFJBL8l8TH07VAlc" },
+    { name: "John Doe", msg: 'Earned "Bug Hunter" Badge', time: "1h", initials: "JD", color: "indigo" },
 ];
 
-// ─── Component ───
-function LearningInner() {
-    const searchParams = useSearchParams();
-    const supabase = createClient();
-    const [userId, setUserId] = useState<string | null>(null);
-    const [viewMode, setViewMode] = useState<"hub" | "course">("hub");
-    const [activeCourse, setActiveCourse] = useState<Course | null>(null);
-    const [activeTab, setActiveTab] = useState<TabId>("courses");
-    const [filterCategory, setFilterCategory] = useState("all");
-    const [showNotes, setShowNotes] = useState(false);
-    const [searchQuery, setSearchQuery] = useState("");
-    const { progress, addXp } = useGamification();
-    const iframeRef = useRef<HTMLIFrameElement>(null);
-
-    // Auth
-    useEffect(() => {
-        (async () => {
-            try {
-                const { data } = await supabase.auth.getUser();
-                if (data.user) setUserId(data.user.id);
-            } catch { /* ignore */ }
-        })();
-    }, [supabase]);
-
-    // URL param handling
-    useEffect(() => {
-        const courseParam = searchParams?.get("course");
-        if (courseParam) {
-            const found = courses.find(c => c.id === courseParam);
-            if (found) { setActiveCourse(found); setViewMode("course"); }
-        }
-        const tabParam = searchParams?.get("tab") as TabId | null;
-        if (tabParam && eliteTabs.find(t => t.id === tabParam)) {
-            setActiveTab(tabParam);
-        }
-    }, [searchParams]);
-
-    const openCourse = (course: Course) => {
-        setActiveCourse(course);
-        setViewMode("course");
-        addXp(5);
+function CourseStatusBadge({ status }: { status: string }) {
+    const map: Record<string, { label: string; cls: string }> = {
+        completed: { label: "Completed", cls: "text-green-600 bg-green-100" },
+        current: { label: "In Progress", cls: "text-blue-600 bg-blue-100" },
+        locked: { label: "Locked", cls: "text-slate-500 bg-slate-100" },
     };
-
-    const totalProblems = courses.reduce((s, c) => s + c.problems, 0);
-    const filteredCourses = courses
-        .filter(c => filterCategory === "all" || c.category === filterCategory)
-        .filter(c => !searchQuery || c.name.includes(searchQuery) || c.desc.includes(searchQuery));
-
-    // Roadmap nodes
-    const roadmapNodes = courses.slice(0, 6).map((c, i) => ({
-        id: c.id, name: c.name, icon: c.icon, color: c.color,
-        status: (i === 0 ? "completed" : i === 1 ? "current" : "locked") as "completed" | "current" | "locked",
-        path: c.htmlPath, problems: c.problems, desc: c.desc,
-    }));
-
-    // Auth forwarding for Elite iframes
-    const handleEliteIframeLoad = async () => {
-        try {
-            const sb = createClient();
-            const { data: { session } } = await sb.auth.getSession();
-            if (session && iframeRef.current?.contentWindow) {
-                iframeRef.current.contentWindow.postMessage({
-                    type: 'elite-auth',
-                    token: session.access_token,
-                    user: session.user,
-                }, '*');
-            }
-        } catch { /* auth forwarding optional */ }
-    };
-
-    // ═══ COURSE VIEW ═══
-    if (viewMode === "course" && activeCourse) {
-        return (
-            <>
-                <CourseView
-                    courseId={activeCourse.id} courseName={activeCourse.name}
-                    courseIcon={activeCourse.icon} courseColor={activeCourse.color}
-                    htmlPath={activeCourse.htmlPath}
-                    onBack={() => { setViewMode("hub"); setActiveCourse(null); }}
-                    onOpenNotes={() => setShowNotes(true)}
-                    onXpEarned={(xp) => addXp(xp)}
-                />
-                <AnimatePresence>
-                    {showNotes && <StudyNotes isOpen={showNotes} onClose={() => setShowNotes(false)} currentCourseId={activeCourse.id} currentCourseName={activeCourse.name} />}
-                </AnimatePresence>
-            </>
-        );
-    }
-
-    // Get current tab info
-    const currentTab = eliteTabs.find(t => t.id === activeTab)!;
-
-    // ═══ HUB VIEW (통합) ═══
+    const s = map[status] || map.locked;
     return (
-        <div style={{ minHeight: "100vh", background: theme.bg, fontFamily: "'Pretendard', 'Inter', system-ui, sans-serif", color: theme.text, display: "flex", flexDirection: "column" }}>
-
-            {/* ═══ Header ═══ */}
-            <motion.header initial={{ y: -20, opacity: 0 }} animate={{ y: 0, opacity: 1 }}
-                style={{
-                    background: "rgba(255,255,255,0.85)", backdropFilter: "blur(20px) saturate(180%)",
-                    borderBottom: `1px solid ${theme.border}`, padding: "0 clamp(16px, 3vw, 40px)",
-                    height: 64, display: "flex", alignItems: "center", justifyContent: "space-between",
-                    position: "sticky", top: 0, zIndex: 50,
-                }}
-            >
-                <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
-                    <Link href="/dashboard" style={{ textDecoration: "none", color: theme.primary, fontSize: 13, fontWeight: 600, display: "flex", alignItems: "center", gap: 4 }}>
-                        ← 대시보드
-                    </Link>
-                    <div style={{ width: 1, height: 20, background: theme.border }} />
-                    <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                        <motion.span animate={{ rotate: [0, 10, -10, 0] }} transition={{ repeat: Infinity, duration: 3 }} style={{ fontSize: 22 }}>📚</motion.span>
-                        <h1 style={{ fontSize: 17, fontWeight: 800, margin: 0, background: theme.gradient, WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>
-                            코딩쏙 학습 플랫폼
-                        </h1>
-                    </div>
-                </div>
-                <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                    <GamificationBar progress={progress} compact />
-                    <button onClick={() => setShowNotes(true)} style={{
-                        padding: "8px 16px", borderRadius: 10, border: "1px solid #e2e8f0", background: "#fff",
-                        fontSize: 12, fontWeight: 600, cursor: "pointer", display: "flex", alignItems: "center", gap: 4,
-                    }}>📝 노트</button>
-                </div>
-            </motion.header>
-
-            {/* ═══ Tab Navigation (Elite 도구 통합) ═══ */}
-            <div style={{
-                background: theme.bgWhite, borderBottom: `1px solid ${theme.border}`,
-                padding: "0 clamp(16px, 3vw, 40px)",
-                position: "sticky", top: 64, zIndex: 45,
-                overflowX: "auto", WebkitOverflowScrolling: "touch",
-            }}>
-                <div style={{
-                    display: "flex", gap: 0, minWidth: "max-content",
-                }}>
-                    {eliteTabs.map((tab) => {
-                        const isActive = activeTab === tab.id;
-                        return (
-                            <button
-                                key={tab.id}
-                                onClick={() => setActiveTab(tab.id)}
-                                style={{
-                                    padding: "14px 20px",
-                                    background: "transparent",
-                                    border: "none",
-                                    borderBottom: isActive ? `3px solid ${theme.primary}` : "3px solid transparent",
-                                    fontSize: 13,
-                                    fontWeight: isActive ? 800 : 600,
-                                    color: isActive ? theme.primary : theme.textSecondary,
-                                    cursor: "pointer",
-                                    display: "flex",
-                                    alignItems: "center",
-                                    gap: 6,
-                                    transition: "all 0.2s",
-                                    whiteSpace: "nowrap",
-                                }}
-                            >
-                                <span style={{ fontSize: 16 }}>{tab.icon}</span>
-                                {tab.name}
-                            </button>
-                        );
-                    })}
-                </div>
-            </div>
-
-            {/* ═══ Tab Content ═══ */}
-            <div style={{ flex: 1, display: "flex", flexDirection: "column" }}>
-                <AnimatePresence mode="wait">
-                    {activeTab === "courses" ? (
-                        /* ═══ 학습 과목 탭 ═══ */
-                        <motion.div key="courses"
-                            initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}
-                            transition={{ duration: 0.2 }}
-                            style={{ maxWidth: 1200, margin: "0 auto", padding: "32px 24px 80px", width: "100%" }}
-                        >
-                            {/* ── Hero Section ── */}
-                            <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }}
-                                style={{
-                                    background: theme.gradient, borderRadius: 24, padding: "48px 40px",
-                                    marginBottom: 36, position: "relative", overflow: "hidden",
-                                    boxShadow: theme.shadowBlue,
-                                }}
-                            >
-                                <div style={{ position: "absolute", top: -40, right: -40, width: 200, height: 200, borderRadius: "50%", background: "rgba(255,255,255,0.08)" }} />
-                                <div style={{ position: "absolute", bottom: -60, left: -20, width: 150, height: 150, borderRadius: "50%", background: "rgba(255,255,255,0.05)" }} />
-                                <div style={{ position: "relative", zIndex: 1 }}>
-                                    <motion.h2 initial={{ x: -30 }} animate={{ x: 0 }}
-                                        style={{ fontSize: "clamp(1.8rem, 4vw, 2.4rem)", fontWeight: 900, color: "#fff", marginBottom: 12, lineHeight: 1.3 }}
-                                    >
-                                        오늘도 코딩 실력을<br />한 단계 올려볼까요? 🚀
-                                    </motion.h2>
-                                    <p style={{ color: "rgba(255,255,255,0.85)", fontSize: 15, maxWidth: 500, lineHeight: 1.6, marginBottom: 24 }}>
-                                        9개 과목 · {totalProblems.toLocaleString()}개 문제 · 체계적인 커리큘럼으로<br />
-                                        코딩 왕초보부터 올림피아드까지 완벽 대비하세요.
-                                    </p>
-                                    <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
-                                        {[
-                                            { icon: "📊", label: `${courses.length}개 과목`, bg: "rgba(255,255,255,0.15)" },
-                                            { icon: "📝", label: `${totalProblems.toLocaleString()}+ 문제`, bg: "rgba(255,255,255,0.15)" },
-                                            { icon: "🔥", label: `${progress.streak}일 연속`, bg: "rgba(255,255,255,0.15)" },
-                                            { icon: "⚡", label: `${progress.xp} XP`, bg: "rgba(255,255,255,0.15)" },
-                                        ].map(stat => (
-                                            <div key={stat.label} style={{
-                                                padding: "8px 16px", borderRadius: 12, background: stat.bg,
-                                                display: "flex", alignItems: "center", gap: 6, fontSize: 13, fontWeight: 700, color: "#fff",
-                                            }}>
-                                                {stat.icon} {stat.label}
-                                            </div>
-                                        ))}
-                                    </div>
-                                </div>
-                            </motion.div>
-
-                            {/* ── Learning Roadmap ── */}
-                            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}
-                                style={{
-                                    background: theme.bgWhite, borderRadius: 20, border: `1px solid ${theme.border}`,
-                                    padding: "28px 24px", marginBottom: 28, boxShadow: theme.shadow, overflow: "hidden",
-                                }}
-                            >
-                                <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8 }}>
-                                    <span style={{ fontSize: 18 }}>🗺️</span>
-                                    <h3 style={{ fontSize: 16, fontWeight: 800, margin: 0, color: theme.text }}>학습 로드맵</h3>
-                                    <span style={{ fontSize: 11, color: theme.textMuted, padding: "2px 10px", background: theme.bgSoft, borderRadius: 20 }}>추천 학습 경로</span>
-                                </div>
-                                <div style={{ overflowX: "auto", paddingBottom: 8 }}>
-                                    <LearningRoadmap nodes={roadmapNodes} onNodeClick={(node) => {
-                                        const course = courses.find(c => c.id === node.id);
-                                        if (course) openCourse(course);
-                                    }} />
-                                </div>
-                            </motion.div>
-
-                            {/* ── Search & Filters ── */}
-                            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }}
-                                style={{ marginBottom: 24, display: "flex", gap: 12, flexWrap: "wrap", alignItems: "center" }}
-                            >
-                                <div style={{ position: "relative", flex: "1 1 300px" }}>
-                                    <span style={{ position: "absolute", left: 14, top: "50%", transform: "translateY(-50%)", fontSize: 14 }}>🔍</span>
-                                    <input placeholder="과목 검색..." value={searchQuery} onChange={e => setSearchQuery(e.target.value)}
-                                        style={{
-                                            width: "100%", padding: "12px 12px 12px 38px", borderRadius: 14, border: `1px solid ${theme.border}`,
-                                            fontSize: 14, outline: "none", background: theme.bgWhite, color: theme.text,
-                                            transition: "border-color 0.2s, box-shadow 0.2s",
-                                        }}
-                                        onFocus={e => { e.currentTarget.style.borderColor = theme.primary; e.currentTarget.style.boxShadow = theme.shadowBlue; }}
-                                        onBlur={e => { e.currentTarget.style.borderColor = theme.border; e.currentTarget.style.boxShadow = "none"; }}
-                                    />
-                                </div>
-                                <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
-                                    {categories.map(cat => (
-                                        <button key={cat.id} onClick={() => setFilterCategory(cat.id)}
-                                            style={{
-                                                padding: "8px 16px", borderRadius: 12, border: "none", fontSize: 12, fontWeight: 700, cursor: "pointer",
-                                                background: filterCategory === cat.id ? theme.primary : theme.bgWhite,
-                                                color: filterCategory === cat.id ? "#fff" : theme.textSecondary,
-                                                boxShadow: filterCategory === cat.id ? theme.shadowBlue : theme.shadow,
-                                                transition: "all 0.2s",
-                                            }}
-                                        >{cat.icon} {cat.name}</button>
-                                    ))}
-                                </div>
-                            </motion.div>
-
-                            {/* ── Course Cards Grid ── */}
-                            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))", gap: 20, marginBottom: 36 }}>
-                                {filteredCourses.map((course, i) => (
-                                    <motion.div key={course.id}
-                                        initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
-                                        transition={{ delay: 0.2 + i * 0.06 }}
-                                        whileHover={{ y: -6, boxShadow: theme.shadowLg }}
-                                        onClick={() => openCourse(course)}
-                                        style={{
-                                            background: theme.bgWhite, borderRadius: 20, padding: 0, cursor: "pointer",
-                                            border: `1px solid ${theme.border}`, overflow: "hidden",
-                                            boxShadow: theme.shadow, transition: "all 0.3s",
-                                        }}
-                                    >
-                                        <div style={{ height: 6, background: course.gradient }} />
-                                        <div style={{ padding: "24px 24px 20px" }}>
-                                            <div style={{ display: "flex", alignItems: "center", gap: 14, marginBottom: 14 }}>
-                                                <motion.div
-                                                    whileHover={{ rotate: [0, -10, 10, 0], scale: 1.1 }}
-                                                    style={{
-                                                        width: 52, height: 52, borderRadius: 14,
-                                                        background: `${course.color}12`, display: "flex", alignItems: "center", justifyContent: "center",
-                                                        fontSize: 26, border: `1px solid ${course.color}20`,
-                                                    }}
-                                                >{course.icon}</motion.div>
-                                                <div>
-                                                    <div style={{ fontSize: 17, fontWeight: 800, color: theme.text }}>{course.name}</div>
-                                                    <div style={{ fontSize: 12, color: theme.textSecondary, marginTop: 2 }}>{course.desc}</div>
-                                                </div>
-                                            </div>
-                                            <div style={{ display: "flex", gap: 8, marginBottom: 16 }}>
-                                                <span style={{
-                                                    padding: "4px 12px", borderRadius: 8, fontSize: 11, fontWeight: 700,
-                                                    background: `${course.color}10`, color: course.color,
-                                                }}>{course.problems}문제</span>
-                                                <span style={{
-                                                    padding: "4px 12px", borderRadius: 8, fontSize: 11, fontWeight: 700,
-                                                    background: "#f1f5f9", color: theme.textSecondary,
-                                                }}>{categories.find(c => c.id === course.category)?.name}</span>
-                                            </div>
-                                            <motion.div
-                                                whileHover={{ scale: 1.02 }}
-                                                style={{
-                                                    display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
-                                                    padding: "12px 20px", borderRadius: 12, background: course.gradient,
-                                                    color: "#fff", fontSize: 13, fontWeight: 700,
-                                                    boxShadow: `0 4px 12px ${course.color}30`,
-                                                }}
-                                            >
-                                                🚀 학습 시작하기
-                                            </motion.div>
-                                        </div>
-                                    </motion.div>
-                                ))}
-                            </div>
-                        </motion.div>
-                    ) : (
-                        /* ═══ Elite 도구 탭 (iframe 인라인 임베드) ═══ */
-                        <motion.div key={activeTab}
-                            initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}
-                            transition={{ duration: 0.2 }}
-                            style={{ flex: 1, display: "flex", flexDirection: "column", minHeight: "calc(100vh - 128px)" }}
-                        >
-                            <iframe
-                                ref={iframeRef}
-                                src={currentTab.htmlPath}
-                                onLoad={handleEliteIframeLoad}
-                                style={{
-                                    flex: 1, width: "100%", border: "none", background: "#fff",
-                                    minHeight: "calc(100vh - 128px)",
-                                }}
-                                sandbox="allow-scripts allow-same-origin allow-forms allow-popups"
-                                title={currentTab.name}
-                            />
-                        </motion.div>
-                    )}
-                </AnimatePresence>
-            </div>
-
-            {/* ═══ Study Notes Modal ═══ */}
-            <AnimatePresence>
-                {showNotes && <StudyNotes isOpen={showNotes} onClose={() => setShowNotes(false)} currentCourseId={activeCourse?.id} currentCourseName={activeCourse?.name} />}
-            </AnimatePresence>
-
-            {/* Hide tab scrollbar */}
-            <style jsx global>{`
-                @media (max-width: 768px) {
-                    .nav-main { display: none !important; }
-                }
-            `}</style>
-        </div>
+        <span className={`text-xs font-bold px-2 py-1 rounded flex items-center gap-1 ${s.cls}`}>
+            {status === "current" && <span className="animate-pulse size-1.5 rounded-full bg-blue-600" />}
+            {status === "locked" && <span className="material-symbols-outlined text-[10px]">lock</span>}
+            {s.label}
+        </span>
     );
 }
 
-export default function LearningPage() {
+const colorMap: Record<string, { bg: string; text: string; btn: string; btnHover: string }> = {
+    green: { bg: "bg-green-50", text: "text-green-600", btn: "bg-green-500 hover:bg-green-600", btnHover: "" },
+    purple: { bg: "bg-purple-50", text: "text-purple-600", btn: "bg-purple-500 hover:bg-purple-600", btnHover: "" },
+    blue: { bg: "bg-blue-50", text: "text-blue-600", btn: "bg-blue-600 hover:bg-blue-700", btnHover: "" },
+    orange: { bg: "bg-orange-50", text: "text-orange-600", btn: "bg-orange-500 hover:bg-orange-600", btnHover: "" },
+    teal: { bg: "bg-teal-50", text: "text-teal-600", btn: "bg-teal-500 hover:bg-teal-600", btnHover: "" },
+    pink: { bg: "bg-pink-50", text: "text-pink-600", btn: "bg-pink-500 hover:bg-pink-600", btnHover: "" },
+};
+
+export default function JourneyPage() {
+    const { progress } = useUserProgress();
+
     return (
-        <Suspense fallback={<div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: "100vh", background: "#f8fafc", fontSize: 18, color: "#64748b" }}>📚 학습 플랫폼 로딩 중...</div>}>
-            <LearningInner />
-        </Suspense>
+        <div className="p-6 lg:p-8 max-w-[1400px] mx-auto space-y-8">
+            {/* Roadmap */}
+            <div className="bg-white rounded-3xl border border-gray-200 p-8 shadow-sm overflow-x-auto">
+                <div className="flex justify-between items-center mb-8">
+                    <h2 className="font-bold text-lg text-gray-900 flex items-center gap-2">
+                        <span className="material-symbols-outlined text-[#13daec]">map</span>
+                        Learning Roadmap
+                    </h2>
+                    <span className="text-xs font-medium text-gray-500 bg-gray-100 px-3 py-1 rounded-full">Recommended Path</span>
+                </div>
+                <div className="relative min-w-[600px] pt-4 pb-8 px-4">
+                    {/* Horizontal line */}
+                    <div className="absolute top-8 left-0 right-0 h-0.5 bg-gray-200 z-0" />
+                    <div className="flex justify-between relative z-10">
+                        {ROADMAP_NODES.map((node, i) => (
+                            <div key={i} className={`flex flex-col items-center group w-28 ${node.status === "locked" ? "opacity-60 cursor-not-allowed hover:opacity-100" : "cursor-pointer"} transition-opacity`}>
+                                <div className="relative mb-3">
+                                    {node.status === "current" && <div className="absolute inset-0 bg-blue-500/20 rounded-full blur-xl animate-pulse" />}
+                                    <div className={`
+                    ${node.status === "current" ? "size-20 -mt-2" : "size-16"}
+                    rounded-full bg-white border-4
+                    ${node.status === "completed" ? "border-green-500" : node.status === "current" ? "border-blue-500 shadow-[0_0_25px_-5px_rgba(59,130,246,0.4)]" : "border-gray-200"}
+                    flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300 relative z-20
+                  `}>
+                                        <span className={`material-symbols-outlined ${node.status === "completed" ? "text-green-500" : node.status === "current" ? "text-blue-500" : "text-gray-400"} ${node.status === "current" ? "text-3xl" : "text-2xl"}`}>
+                                            {node.status === "completed" ? "check" : node.icon}
+                                        </span>
+                                    </div>
+                                    <div className={`absolute -top-1 -right-1 ${node.status === "completed" ? "bg-green-500" : node.status === "current" ? "bg-blue-500 animate-bounce" : "bg-gray-400"} rounded-full p-1 border-2 border-white z-30`}>
+                                        <span className="material-symbols-outlined text-white text-[10px] font-bold block">
+                                            {node.status === "completed" ? "done" : node.status === "current" ? "play_arrow" : "lock"}
+                                        </span>
+                                    </div>
+                                </div>
+                                <div className="text-center mt-1">
+                                    <h4 className={`font-bold text-sm mb-1 ${node.status === "current" ? "text-blue-600" : "text-gray-900"}`}>{node.name}</h4>
+                                    <p className={`text-[10px] font-medium ${node.status === "current" ? "text-blue-500/70 uppercase tracking-wider font-bold" : "text-gray-500"}`}>
+                                        {node.status === "current" ? "In Progress" : node.problems > 0 ? `${node.problems} Problems` : "Final Exam"}
+                                    </p>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            </div>
+
+            {/* Search + Filters */}
+            <div className="flex flex-col sm:flex-row gap-4 items-center justify-between">
+                <div className="relative w-full sm:w-auto flex-1 max-w-md">
+                    <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-lg">search</span>
+                    <input className="w-full pl-10 pr-4 py-2.5 bg-white border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-[#13daec]/20 focus:border-[#13daec] outline-none shadow-sm" placeholder="Search modules..." type="text" />
+                </div>
+                <div className="flex gap-2 overflow-x-auto pb-2 sm:pb-0 w-full sm:w-auto">
+                    <button className="px-4 py-2 bg-blue-600 text-white rounded-lg text-xs font-bold shadow-md whitespace-nowrap flex items-center gap-1">
+                        <span className="material-symbols-outlined text-sm">grid_view</span> All
+                    </button>
+                    {[
+                        { label: "Basics", icon: "eco", color: "text-green-500" },
+                        { label: "Langs", icon: "code", color: "text-blue-500" },
+                        { label: "Comp", icon: "trophy", color: "text-purple-500" },
+                    ].map((f) => (
+                        <button key={f.label} className="px-4 py-2 bg-white text-gray-500 border border-gray-200 hover:bg-gray-50 rounded-lg text-xs font-bold transition-colors whitespace-nowrap flex items-center gap-1">
+                            <span className={`material-symbols-outlined text-sm ${f.color}`}>{f.icon}</span> {f.label}
+                        </button>
+                    ))}
+                </div>
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                {/* Course Cards */}
+                <div className="lg:col-span-8 grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {COURSES.map((c) => {
+                        const cm = colorMap[c.color] || colorMap.blue;
+                        const isCompleted = progress.completedCourses.includes(c.id);
+                        return (
+                            <div key={c.id} className={`bg-white rounded-xl shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden group border border-gray-100 relative ${c.status === "locked" ? "opacity-75 hover:opacity-100" : ""}`}>
+                                <div className={`absolute top-0 left-0 right-0 h-1 ${cm.btn.split(" ")[0]}`} />
+                                <div className="p-6">
+                                    <div className="flex justify-between items-start mb-4">
+                                        <div className={`size-12 rounded-lg ${cm.bg} flex items-center justify-center ${cm.text} group-hover:scale-110 transition-transform`}>
+                                            <span className="material-symbols-outlined text-2xl">{c.icon}</span>
+                                        </div>
+                                        <div className="flex flex-col items-end">
+                                            <span className="text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-1">Status</span>
+                                            <CourseStatusBadge status={isCompleted ? "completed" : c.status} />
+                                        </div>
+                                    </div>
+                                    <h3 className="text-lg font-bold text-gray-900 mb-2">{c.name}</h3>
+                                    <p className="text-sm text-gray-500 mb-6 line-clamp-2">{c.desc}</p>
+                                    <div className="flex items-center gap-2 mb-6">
+                                        <span className="text-[10px] font-bold bg-gray-100 text-gray-600 px-2.5 py-1 rounded-md border border-gray-200">{c.problems} Problems</span>
+                                        <span className="text-[10px] font-bold bg-gray-100 text-gray-600 px-2.5 py-1 rounded-md border border-gray-200">{c.level}</span>
+                                    </div>
+                                    <button className={`w-full py-2.5 ${cm.btn} text-white rounded-lg text-sm font-bold shadow-md transition-colors flex items-center justify-center gap-2`} disabled={c.status === "locked"}>
+                                        <span className="material-symbols-outlined text-lg">{c.status === "locked" ? "lock" : c.status === "current" ? "play_arrow" : "rocket_launch"}</span>
+                                        {c.status === "locked" ? "Start Learning" : c.status === "current" ? "Continue Learning" : "Review Course"}
+                                    </button>
+                                </div>
+                            </div>
+                        );
+                    })}
+                </div>
+
+                {/* Right sidebar */}
+                <div className="lg:col-span-4 flex flex-col gap-6">
+                    {/* Activity Overview */}
+                    <div className="bg-white rounded-2xl border border-gray-200 p-6 shadow-sm">
+                        <h2 className="text-sm font-bold text-gray-900 flex items-center gap-2 mb-4">
+                            <span className="material-symbols-outlined text-[#13daec] text-xl">timelapse</span>
+                            Activity Overview
+                        </h2>
+                        <div className="grid grid-cols-2 gap-4 mb-4">
+                            <div className="p-3 bg-blue-50 rounded-xl border border-blue-100">
+                                <div className="text-xs text-blue-600 font-semibold mb-1">Time Spent</div>
+                                <div className="text-xl font-black text-gray-900">4h 15m</div>
+                            </div>
+                            <div className="p-3 bg-teal-50 rounded-xl border border-teal-100">
+                                <div className="text-xs text-teal-600 font-semibold mb-1">XP Earned</div>
+                                <div className="text-xl font-black text-gray-900">{progress.xp}</div>
+                            </div>
+                        </div>
+                        <div className="p-4 bg-orange-50 rounded-xl border border-orange-100 flex items-center justify-between">
+                            <div>
+                                <div className="text-xs text-orange-600 font-bold uppercase tracking-wider mb-1">Current Streak</div>
+                                <div className="text-lg font-black text-gray-900 flex items-center gap-1">
+                                    {progress.streak} Days
+                                    <span className="material-symbols-outlined text-orange-500 text-sm">local_fire_department</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Classmates */}
+                    <div className="bg-white rounded-2xl border border-gray-200 p-6 shadow-sm">
+                        <div className="flex items-center justify-between mb-5">
+                            <h2 className="font-bold text-gray-900 flex items-center gap-2">
+                                <span className="material-symbols-outlined text-[#3b82f6] text-xl">group</span>
+                                Classmates
+                            </h2>
+                            <span className="text-[10px] font-bold text-gray-500 uppercase bg-gray-100 px-2 py-1 rounded-md">View All</span>
+                        </div>
+                        <div className="space-y-5">
+                            {CLASSMATES.map((c, i) => (
+                                <div key={i} className="flex items-start gap-3 group cursor-pointer">
+                                    <div className="relative">
+                                        {c.avatar ? (
+                                            <div className="size-8 rounded-full bg-cover bg-center ring-2 ring-white shadow-sm" style={{ backgroundImage: `url("${c.avatar}")` }} />
+                                        ) : (
+                                            <div className={`size-8 rounded-full bg-${c.color}-100 text-${c.color}-600 flex items-center justify-center font-bold text-xs ring-2 ring-white shadow-sm`}>{c.initials}</div>
+                                        )}
+                                        {c.lvl && <div className="absolute -bottom-1 -right-1 bg-green-500 text-white text-[8px] font-bold px-1 rounded-full border border-white">Lvl {c.lvl}</div>}
+                                    </div>
+                                    <div className="flex-1 min-w-0 bg-gray-50 p-2.5 rounded-r-xl rounded-bl-xl hover:bg-white hover:shadow-md transition-all border border-transparent hover:border-gray-100">
+                                        <div className="flex justify-between items-baseline mb-1">
+                                            <p className="text-xs font-bold text-gray-900">{c.name}</p>
+                                            <span className="text-[10px] font-mono text-gray-500">{c.time}</span>
+                                        </div>
+                                        <p className="text-xs text-gray-500 leading-tight">{c.msg}</p>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+
+                    {/* AI Mentor CTA */}
+                    <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-violet-600 to-indigo-600 p-6 text-white shadow-xl cursor-pointer group">
+                        <div className="absolute -right-10 -top-10 h-32 w-32 rounded-full bg-white/10 blur-2xl group-hover:bg-white/20 transition-all" />
+                        <div className="relative z-10">
+                            <div className="mb-2 inline-flex items-center gap-1 rounded bg-white/20 px-2 py-0.5 text-[10px] font-bold uppercase backdrop-blur-sm">
+                                <span className="h-1.5 w-1.5 rounded-full bg-yellow-400" /> Pro Feature
+                            </div>
+                            <h3 className="mb-1 font-bold">Unlock AI Mentor</h3>
+                            <p className="text-xs text-indigo-100 mb-3">Get instant help with your code anytime.</p>
+                            <div className="flex items-center gap-2 text-xs font-bold text-white group-hover:underline">
+                                Upgrade Now <span className="material-symbols-outlined text-sm">arrow_forward</span>
+                            </div>
+                        </div>
+                        <span className="material-symbols-outlined absolute bottom-4 right-4 text-6xl text-white/10 rotate-12 group-hover:scale-110 transition-transform">smart_toy</span>
+                    </div>
+                </div>
+            </div>
+        </div>
     );
 }

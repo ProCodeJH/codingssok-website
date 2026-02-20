@@ -13,6 +13,36 @@ const GRADES = [
   "대학생/성인",
 ];
 
+/* ── Shared style helpers ── */
+const PRIMARY = "#13daec";
+const PRIMARY_DARK = "#0fbccb";
+
+const inputWrap: React.CSSProperties = { position: "relative" };
+const inputIcon: React.CSSProperties = {
+  position: "absolute", top: 0, left: 0, bottom: 0, display: "flex",
+  alignItems: "center", paddingLeft: 12, pointerEvents: "none", color: "#94a3b8",
+};
+const inputBase: React.CSSProperties = {
+  display: "block", width: "100%", paddingLeft: 40, paddingRight: 12,
+  paddingTop: 12, paddingBottom: 12, border: "1px solid #e2e8f0",
+  borderRadius: 12, background: "rgba(248,250,252,0.5)", fontSize: 14,
+  color: "#0f172a", outline: "none", transition: "all 0.2s",
+};
+const labelBase: React.CSSProperties = {
+  display: "block", fontSize: 14, fontWeight: 500, color: "#334155",
+  marginBottom: 6, marginLeft: 4,
+};
+const msgStyle = (ok: boolean): React.CSSProperties => ({
+  padding: 12, borderRadius: 12, fontSize: 14, fontWeight: 500,
+  background: ok ? "#f0fdf4" : "#fef2f2", color: ok ? "#15803d" : "#dc2626",
+});
+const primaryBtn: React.CSSProperties = {
+  display: "flex", width: "100%", justifyContent: "center", padding: "14px 16px",
+  borderRadius: 12, fontSize: 14, fontWeight: 700, color: "#fff", border: "none",
+  background: `linear-gradient(to right, ${PRIMARY}, #0ea5b3)`,
+  boxShadow: `0 4px 14px rgba(19,218,236,0.3)`, cursor: "pointer", transition: "all 0.2s",
+};
+
 export default function LoginPage() {
   const [mode, setMode] = useState<Mode>("login");
   const [email, setEmail] = useState("");
@@ -63,6 +93,10 @@ export default function LoginPage() {
         await sb.from("profiles").upsert({
           id: data.user.id, name, phone: phone.replace(/\D/g, "") || null, grade: grade || null, email,
         });
+        // 신규 가입 시 user_progress 초기화
+        await sb.from("user_progress").upsert({
+          user_id: data.user.id, xp: 0, level: 1, streak: 0,
+        }, { onConflict: "user_id" });
       }
       setSignupDone(true);
     } catch (err: unknown) {
@@ -72,97 +106,107 @@ export default function LoginPage() {
   };
 
   const pwStrength = password.length >= 12 ? 4 : password.length >= 8 ? 3 : password.length >= 6 ? 2 : password.length > 0 ? 1 : 0;
+  const pwColor = pwStrength <= 1 ? "#f87171" : pwStrength <= 2 ? "#fb923c" : pwStrength <= 3 ? "#facc15" : "#22c55e";
 
   return (
-    <div className="min-h-screen flex font-[Inter,sans-serif] text-slate-900 bg-white overflow-hidden">
+    <div style={{ minHeight: "100vh", display: "flex", fontFamily: "Inter, sans-serif", color: "#0f172a", background: "#fff", overflow: "hidden" }}>
       <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" />
       <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" />
 
       {/* ── LEFT: Decorative Panel (Login Only) ── */}
       {mode === "login" && (
-        <div className="hidden lg:flex w-1/2 bg-slate-50 relative items-center justify-center overflow-hidden">
-          <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-[#13daec]/20 rounded-full blur-[120px]" />
-          <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-blue-500/10 rounded-full blur-[100px]" />
-          <div className="relative z-10 text-center px-12 max-w-2xl">
+        <div style={{
+          display: "none", width: "50%", background: "#f8fafc", position: "relative",
+          alignItems: "center", justifyContent: "center", overflow: "hidden",
+        }} className="login-left-panel">
+          <div style={{ position: "absolute", top: "25%", left: "25%", width: 384, height: 384, background: "rgba(19,218,236,0.2)", borderRadius: "50%", filter: "blur(120px)" }} />
+          <div style={{ position: "absolute", bottom: "25%", right: "25%", width: 320, height: 320, background: "rgba(59,130,246,0.1)", borderRadius: "50%", filter: "blur(100px)" }} />
+          <div style={{ position: "relative", zIndex: 10, textAlign: "center", padding: "0 48px", maxWidth: 640 }}>
             {/* Floating card */}
-            <div className="mb-12" style={{ animation: "float 6s ease-in-out infinite" }}>
-              <div className="relative w-80 h-80 mx-auto">
-                <div className="absolute inset-0 bg-gradient-to-tr from-[#13daec]/30 to-blue-600/30 rounded-3xl blur-2xl transform rotate-6" />
-                <div className="relative bg-white border border-slate-100 rounded-3xl shadow-2xl p-6 h-full flex flex-col justify-between overflow-hidden">
-                  <div className="flex items-center gap-2 mb-4">
-                    <div className="w-3 h-3 rounded-full bg-red-400" />
-                    <div className="w-3 h-3 rounded-full bg-yellow-400" />
-                    <div className="w-3 h-3 rounded-full bg-green-400" />
+            <div style={{ marginBottom: 48, animation: "float 6s ease-in-out infinite" }}>
+              <div style={{ position: "relative", width: 320, height: 320, margin: "0 auto" }}>
+                <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top right, rgba(19,218,236,0.3), rgba(37,99,235,0.3))", borderRadius: 24, filter: "blur(24px)", transform: "rotate(6deg)" }} />
+                <div style={{
+                  position: "relative", background: "#fff", border: "1px solid #f1f5f9",
+                  borderRadius: 24, boxShadow: "0 25px 50px -12px rgba(0,0,0,0.15)",
+                  padding: 24, height: "100%", display: "flex", flexDirection: "column",
+                  justifyContent: "space-between", overflow: "hidden",
+                }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 16 }}>
+                    <div style={{ width: 12, height: 12, borderRadius: "50%", background: "#f87171" }} />
+                    <div style={{ width: 12, height: 12, borderRadius: "50%", background: "#facc15" }} />
+                    <div style={{ width: 12, height: 12, borderRadius: "50%", background: "#4ade80" }} />
                   </div>
-                  <div className="space-y-3 font-mono text-xs opacity-70 text-left">
-                    <div className="h-2 bg-slate-200 rounded w-1/3" />
-                    <div className="h-2 bg-[#13daec]/40 rounded w-3/4" />
-                    <div className="h-2 bg-slate-200 rounded w-1/2" />
-                    <div className="h-2 bg-slate-200 rounded w-2/3" />
-                    <div className="h-2 bg-[#13daec]/40 rounded w-1/4 mt-4" />
+                  <div style={{ display: "flex", flexDirection: "column", gap: 12, fontFamily: "monospace", fontSize: 12, opacity: 0.7, textAlign: "left" }}>
+                    <div style={{ height: 8, background: "#e2e8f0", borderRadius: 4, width: "33%" }} />
+                    <div style={{ height: 8, background: "rgba(19,218,236,0.4)", borderRadius: 4, width: "75%" }} />
+                    <div style={{ height: 8, background: "#e2e8f0", borderRadius: 4, width: "50%" }} />
+                    <div style={{ height: 8, background: "#e2e8f0", borderRadius: 4, width: "66%" }} />
+                    <div style={{ height: 8, background: "rgba(19,218,236,0.4)", borderRadius: 4, width: "25%", marginTop: 16 }} />
                   </div>
-                  <div className="absolute bottom-6 right-6 bg-white p-3 rounded-xl shadow-lg border border-slate-100 flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-full bg-[#13daec]/10 flex items-center justify-center text-[#13daec]">
-                      <span className="material-symbols-outlined text-xl">verified</span>
+                  <div style={{
+                    position: "absolute", bottom: 24, right: 24, background: "#fff",
+                    padding: 12, borderRadius: 16, boxShadow: "0 10px 15px -3px rgba(0,0,0,0.1)",
+                    border: "1px solid #f1f5f9", display: "flex", alignItems: "center", gap: 12,
+                  }}>
+                    <div style={{ width: 40, height: 40, borderRadius: "50%", background: "rgba(19,218,236,0.1)", display: "flex", alignItems: "center", justifyContent: "center", color: PRIMARY }}>
+                      <span className="material-symbols-outlined" style={{ fontSize: 20 }}>verified</span>
                     </div>
-                    <div className="text-left">
-                      <div className="text-[10px] text-slate-500 uppercase font-bold tracking-wider">Status</div>
-                      <div className="text-xs font-bold text-slate-900">Elite Member</div>
+                    <div style={{ textAlign: "left" }}>
+                      <div style={{ fontSize: 10, color: "#94a3b8", textTransform: "uppercase", fontWeight: 700, letterSpacing: "0.05em" }}>Status</div>
+                      <div style={{ fontSize: 12, fontWeight: 700, color: "#0f172a" }}>Elite Member</div>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
-            <h1 className="text-4xl font-black tracking-tight text-slate-900 mb-4">
-              Start your journey <br /> to <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#13daec] to-blue-500">mastery</span>
+            <h1 style={{ fontSize: 36, fontWeight: 900, letterSpacing: "-0.025em", color: "#0f172a", marginBottom: 16 }}>
+              Start your journey <br /> to <span style={{ color: "transparent", backgroundClip: "text", WebkitBackgroundClip: "text", backgroundImage: `linear-gradient(to right, ${PRIMARY}, #3b82f6)` }}>mastery</span>
             </h1>
-            <p className="text-slate-500 text-lg leading-relaxed">
+            <p style={{ color: "#64748b", fontSize: 18, lineHeight: 1.7 }}>
               Join the top 1% of developers refining their craft. Access elite challenges, peer reviews, and gamified growth.
             </p>
           </div>
-          <svg className="absolute inset-0 w-full h-full pointer-events-none opacity-[0.03]" preserveAspectRatio="none" viewBox="0 0 100 100">
-            <pattern height="4" id="grid" patternUnits="userSpaceOnUse" width="4">
-              <path d="M 4 0 L 0 0 0 4" fill="none" stroke="currentColor" strokeWidth="0.05" />
-            </pattern>
-            <rect fill="url(#grid)" height="100" width="100" />
-          </svg>
         </div>
       )}
 
       {/* ── RIGHT: Auth Form ── */}
-      <div className={`${mode === "login" ? "w-full lg:w-1/2" : "w-full"} flex items-center justify-center p-8 bg-white relative`}>
+      <div style={{
+        width: mode === "login" ? "100%" : "100%",
+        display: "flex", alignItems: "center", justifyContent: "center",
+        padding: 32, background: "#fff", position: "relative",
+      }} className={mode === "login" ? "login-form-panel" : ""}>
         {/* Signup background decoration */}
         {mode === "signup" && (
           <>
-            <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGNpcmNsZSBjeD0iMSIgY3k9IjEiIHI9IjEiIGZpbGw9IiMxM2RhZWMiIGZpbGwtb3BhY2l0eT0iMC4yIi8+PC9zdmc+')] [mask-image:linear-gradient(to_bottom,white,transparent)] pointer-events-none" />
-            <div className="absolute -top-40 -right-40 w-96 h-96 bg-[#13daec]/20 rounded-full blur-3xl opacity-50 pointer-events-none" />
-            <div className="absolute bottom-0 left-0 w-full h-1/2 bg-gradient-to-t from-white/80 to-transparent pointer-events-none" />
+            <div style={{ position: "absolute", top: -160, right: -160, width: 384, height: 384, background: "rgba(19,218,236,0.2)", borderRadius: "50%", filter: "blur(48px)", opacity: 0.5, pointerEvents: "none" }} />
+            <div style={{ position: "absolute", bottom: 0, left: 0, width: "100%", height: "50%", background: "linear-gradient(to top, rgba(255,255,255,0.8), transparent)", pointerEvents: "none" }} />
           </>
         )}
 
-        <div className="w-full max-w-md space-y-8 relative z-10">
+        <div style={{ width: "100%", maxWidth: 448, display: "flex", flexDirection: "column", gap: 32, position: "relative", zIndex: 10 }}>
           {/* Brand Header */}
           <div>
-            <div className="flex items-center gap-3 mb-8">
-              <div className="size-10 text-[#13daec] flex items-center justify-center bg-[#13daec]/10 rounded-xl">
-                <span className="material-symbols-outlined text-2xl">school</span>
+            <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 32 }}>
+              <div style={{ width: 40, height: 40, color: PRIMARY, display: "flex", alignItems: "center", justifyContent: "center", background: "rgba(19,218,236,0.1)", borderRadius: 12 }}>
+                <span className="material-symbols-outlined" style={{ fontSize: 24 }}>school</span>
               </div>
-              <h2 className="text-2xl font-bold tracking-tight">Elite Academy</h2>
+              <h2 style={{ fontSize: 24, fontWeight: 700, letterSpacing: "-0.025em" }}>Elite Academy</h2>
             </div>
             {mode === "login" ? (
               <>
-                <h1 className="text-3xl font-bold text-slate-900">Welcome back</h1>
-                <p className="text-slate-500 mt-2">Please enter your details to sign in.</p>
+                <h1 style={{ fontSize: 30, fontWeight: 700, color: "#0f172a" }}>Welcome back</h1>
+                <p style={{ color: "#64748b", marginTop: 8 }}>Please enter your details to sign in.</p>
               </>
             ) : (
               <>
                 {!signupDone && (
-                  <div className="text-center">
-                    <div className="inline-flex items-center justify-center size-14 rounded-full bg-[#13daec]/10 text-[#13daec] mb-4">
-                      <span className="material-symbols-outlined text-2xl">person_add</span>
+                  <div style={{ textAlign: "center" }}>
+                    <div style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", width: 56, height: 56, borderRadius: "50%", background: "rgba(19,218,236,0.1)", color: PRIMARY, marginBottom: 16 }}>
+                      <span className="material-symbols-outlined" style={{ fontSize: 24 }}>person_add</span>
                     </div>
-                    <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 mb-2 tracking-tight">Join the Elite Coding Community</h1>
-                    <p className="text-slate-500 text-sm">Start your journey to become a top-tier developer.</p>
+                    <h1 style={{ fontSize: 28, fontWeight: 700, color: "#0f172a", marginBottom: 8, letterSpacing: "-0.025em" }}>Join the Elite Community</h1>
+                    <p style={{ color: "#64748b", fontSize: 14 }}>Start your journey to become a top-tier developer.</p>
                   </div>
                 )}
               </>
@@ -172,21 +216,23 @@ export default function LoginPage() {
           {/* Social Buttons */}
           {!signupDone && (
             <>
-              <div className="grid grid-cols-2 gap-4">
-                <button className="flex items-center justify-center gap-3 px-4 py-2.5 border border-slate-200 rounded-xl hover:bg-slate-50 transition-colors group">
-                  <svg className="w-5 h-5" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" /><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" /><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" /><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" /></svg>
-                  <span className="text-sm font-semibold text-slate-700">Google</span>
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
+                <button style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 12, padding: "10px 16px", border: "1px solid #e2e8f0", borderRadius: 12, background: "#fff", cursor: "pointer", transition: "all 0.2s" }}>
+                  <svg width="20" height="20" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" /><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" /><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" /><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" /></svg>
+                  <span style={{ fontSize: 14, fontWeight: 600, color: "#334155" }}>Google</span>
                 </button>
-                <button className="flex items-center justify-center gap-3 px-4 py-2.5 border border-slate-200 rounded-xl hover:bg-slate-50 transition-colors group">
-                  <svg className="w-5 h-5" viewBox="0 0 24 24"><path fill="currentColor" d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12" /></svg>
-                  <span className="text-sm font-semibold text-slate-700">GitHub</span>
+                <button style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 12, padding: "10px 16px", border: "1px solid #e2e8f0", borderRadius: 12, background: "#fff", cursor: "pointer", transition: "all 0.2s" }}>
+                  <svg width="20" height="20" viewBox="0 0 24 24"><path fill="currentColor" d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12" /></svg>
+                  <span style={{ fontSize: 14, fontWeight: 600, color: "#334155" }}>GitHub</span>
                 </button>
               </div>
 
-              <div className="relative my-8">
-                <div className="absolute inset-0 flex items-center"><div className="w-full border-t border-slate-200" /></div>
-                <div className="relative flex justify-center text-xs uppercase">
-                  <span className="bg-white px-2 text-slate-400">{mode === "login" ? "Or continue with" : "Or join with email"}</span>
+              <div style={{ position: "relative", margin: "0" }}>
+                <div style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center" }}><div style={{ width: "100%", borderTop: "1px solid #e2e8f0" }} /></div>
+                <div style={{ position: "relative", display: "flex", justifyContent: "center" }}>
+                  <span style={{ background: "#fff", padding: "0 8px", fontSize: 12, textTransform: "uppercase", color: "#94a3b8" }}>
+                    {mode === "login" ? "Or continue with" : "Or join with email"}
+                  </span>
                 </div>
               </div>
             </>
@@ -194,52 +240,49 @@ export default function LoginPage() {
 
           {/* ── LOGIN FORM ── */}
           {mode === "login" && (
-            <form onSubmit={handleLogin} className="space-y-6">
+            <form onSubmit={handleLogin} style={{ display: "flex", flexDirection: "column", gap: 24 }}>
               <div>
-                <label htmlFor="email" className="block text-sm font-medium text-slate-700 mb-2">Email address</label>
-                <div className="relative">
+                <label htmlFor="email" style={labelBase}>Email address</label>
+                <div style={inputWrap}>
                   <input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required
-                    className="block w-full rounded-xl border-slate-300 py-3 pl-10 text-sm shadow-sm placeholder:text-slate-400 focus:border-[#13daec] focus:ring-[#13daec]"
-                    placeholder="student@elite.academy" />
-                  <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-                    <span className="material-symbols-outlined text-slate-400 text-[20px]">mail</span>
+                    style={inputBase} placeholder="student@elite.academy" />
+                  <div style={inputIcon}>
+                    <span className="material-symbols-outlined" style={{ fontSize: 20 }}>mail</span>
                   </div>
                 </div>
               </div>
               <div>
-                <label htmlFor="password" className="block text-sm font-medium text-slate-700 mb-2">Password</label>
-                <div className="relative">
+                <label htmlFor="password" style={labelBase}>Password</label>
+                <div style={inputWrap}>
                   <input id="password" type={showPw ? "text" : "password"} value={password} onChange={(e) => setPassword(e.target.value)} required minLength={6}
-                    className="block w-full rounded-xl border-slate-300 py-3 pl-10 pr-10 text-sm shadow-sm placeholder:text-slate-400 focus:border-[#13daec] focus:ring-[#13daec]"
-                    placeholder="••••••••" />
-                  <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-                    <span className="material-symbols-outlined text-slate-400 text-[20px]">lock</span>
+                    style={{ ...inputBase, paddingRight: 40 }} placeholder="••••••••" />
+                  <div style={inputIcon}>
+                    <span className="material-symbols-outlined" style={{ fontSize: 20 }}>lock</span>
                   </div>
-                  <button type="button" onClick={() => setShowPw(!showPw)} className="absolute inset-y-0 right-0 flex items-center pr-3 text-slate-400 hover:text-slate-600">
-                    <span className="material-symbols-outlined text-[20px]">{showPw ? "visibility" : "visibility_off"}</span>
+                  <button type="button" onClick={() => setShowPw(!showPw)}
+                    style={{ position: "absolute", top: 0, right: 0, bottom: 0, display: "flex", alignItems: "center", paddingRight: 12, background: "none", border: "none", color: "#94a3b8", cursor: "pointer" }}>
+                    <span className="material-symbols-outlined" style={{ fontSize: 20 }}>{showPw ? "visibility" : "visibility_off"}</span>
                   </button>
                 </div>
               </div>
-              <div className="flex items-center justify-between">
-                <div className="flex items-center">
-                  <input id="remember-me" type="checkbox" className="h-4 w-4 rounded border-slate-300 text-[#13daec] focus:ring-[#13daec]" />
-                  <label htmlFor="remember-me" className="ml-2 block text-sm text-slate-600">Remember me</label>
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                <div style={{ display: "flex", alignItems: "center" }}>
+                  <input id="remember-me" type="checkbox" style={{ width: 16, height: 16, accentColor: PRIMARY, borderRadius: 4 }} />
+                  <label htmlFor="remember-me" style={{ marginLeft: 8, fontSize: 14, color: "#475569" }}>Remember me</label>
                 </div>
-                <a href="#" className="text-sm font-medium text-[#13daec] hover:text-[#0fbccb]">Forgot password?</a>
+                <a href="#" style={{ fontSize: 14, fontWeight: 500, color: PRIMARY, textDecoration: "none" }}>Forgot password?</a>
               </div>
 
-              {msg && (
-                <p className={`p-3 rounded-xl text-sm font-medium ${msg.ok ? "bg-green-50 text-green-700" : "bg-red-50 text-red-600"}`}>{msg.text}</p>
-              )}
+              {msg && <p style={msgStyle(msg.ok)}>{msg.text}</p>}
 
-              <button type="submit" disabled={loading}
-                className="flex w-full justify-center rounded-xl bg-[#13daec] px-3 py-3.5 text-sm font-bold text-white shadow-[0_4px_14px_0_rgba(19,218,236,0.39)] hover:bg-[#0fbccb] hover:shadow-[0_6px_20px_rgba(19,218,236,0.23)] hover:-translate-y-0.5 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed">
+              <button type="submit" disabled={loading} style={{ ...primaryBtn, opacity: loading ? 0.5 : 1 }}>
                 {loading ? "로그인 중..." : "Log in"}
               </button>
 
-              <p className="text-center text-sm text-slate-500">
+              <p style={{ textAlign: "center", fontSize: 14, color: "#64748b" }}>
                 Not a member yet?{" "}
-                <button type="button" onClick={() => switchMode("signup")} className="font-semibold text-[#13daec] hover:text-[#0fbccb]">
+                <button type="button" onClick={() => switchMode("signup")}
+                  style={{ fontWeight: 600, color: PRIMARY, background: "none", border: "none", cursor: "pointer" }}>
                   Apply for access
                 </button>
               </p>
@@ -248,108 +291,103 @@ export default function LoginPage() {
 
           {/* ── SIGNUP FORM ── */}
           {mode === "signup" && !signupDone && (
-            <form onSubmit={handleSignup} className="space-y-5">
+            <form onSubmit={handleSignup} style={{ display: "flex", flexDirection: "column", gap: 20 }}>
+              {/* Name */}
               <div>
-                <label htmlFor="s-name" className="block text-sm font-medium text-slate-700 mb-1.5 ml-1">Full Name</label>
-                <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
-                    <span className="material-symbols-outlined text-[20px]">badge</span>
-                  </div>
+                <label htmlFor="s-name" style={labelBase}>Full Name</label>
+                <div style={inputWrap}>
+                  <div style={inputIcon}><span className="material-symbols-outlined" style={{ fontSize: 20 }}>badge</span></div>
                   <input id="s-name" type="text" value={name} onChange={(e) => setName(e.target.value)} required
-                    className="block w-full pl-10 pr-3 py-3 border border-slate-200 rounded-xl bg-slate-50/50 text-sm placeholder-slate-400 focus:outline-none focus:ring-1 focus:ring-[#13daec] focus:border-[#13daec] transition-all"
-                    placeholder="John Doe" />
+                    style={inputBase} placeholder="John Doe" />
                 </div>
               </div>
+              {/* Email */}
               <div>
-                <label htmlFor="s-email" className="block text-sm font-medium text-slate-700 mb-1.5 ml-1">Email Address</label>
-                <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
-                    <span className="material-symbols-outlined text-[20px]">mail</span>
-                  </div>
+                <label htmlFor="s-email" style={labelBase}>Email Address</label>
+                <div style={inputWrap}>
+                  <div style={inputIcon}><span className="material-symbols-outlined" style={{ fontSize: 20 }}>mail</span></div>
                   <input id="s-email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required
-                    className="block w-full pl-10 pr-3 py-3 border border-slate-200 rounded-xl bg-slate-50/50 text-sm placeholder-slate-400 focus:outline-none focus:ring-1 focus:ring-[#13daec] focus:border-[#13daec] transition-all"
-                    placeholder="you@example.com" />
+                    style={inputBase} placeholder="you@example.com" />
                 </div>
               </div>
+              {/* Phone */}
               <div>
-                <label htmlFor="s-phone" className="block text-sm font-medium text-slate-700 mb-1.5 ml-1">전화번호 (선택)</label>
-                <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
-                    <span className="material-symbols-outlined text-[20px]">phone</span>
-                  </div>
+                <label htmlFor="s-phone" style={labelBase}>전화번호 (선택)</label>
+                <div style={inputWrap}>
+                  <div style={inputIcon}><span className="material-symbols-outlined" style={{ fontSize: 20 }}>phone</span></div>
                   <input id="s-phone" type="tel" value={phone} onChange={(e) => setPhone(fmtPhone(e.target.value))}
-                    className="block w-full pl-10 pr-3 py-3 border border-slate-200 rounded-xl bg-slate-50/50 text-sm placeholder-slate-400 focus:outline-none focus:ring-1 focus:ring-[#13daec] focus:border-[#13daec] transition-all"
-                    placeholder="010-1234-5678" />
+                    style={inputBase} placeholder="010-1234-5678" />
                 </div>
               </div>
+              {/* Grade */}
               <div>
-                <label htmlFor="s-grade" className="block text-sm font-medium text-slate-700 mb-1.5 ml-1">학년</label>
-                <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
-                    <span className="material-symbols-outlined text-[20px]">school</span>
-                  </div>
+                <label htmlFor="s-grade" style={labelBase}>학년</label>
+                <div style={inputWrap}>
+                  <div style={inputIcon}><span className="material-symbols-outlined" style={{ fontSize: 20 }}>school</span></div>
                   <select id="s-grade" value={grade} onChange={(e) => setGrade(e.target.value)} required
-                    className="block w-full pl-10 pr-3 py-3 border border-slate-200 rounded-xl bg-slate-50/50 text-sm focus:outline-none focus:ring-1 focus:ring-[#13daec] focus:border-[#13daec] transition-all appearance-none cursor-pointer">
+                    style={{ ...inputBase, appearance: "none", cursor: "pointer" }}>
                     <option value="" disabled>학년을 선택하세요</option>
                     {GRADES.map((g) => <option key={g} value={g}>{g}</option>)}
                   </select>
                 </div>
               </div>
+              {/* Password */}
               <div>
-                <label htmlFor="s-pw" className="block text-sm font-medium text-slate-700 mb-1.5 ml-1">Create Password</label>
-                <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
-                    <span className="material-symbols-outlined text-[20px]">lock</span>
-                  </div>
+                <label htmlFor="s-pw" style={labelBase}>Create Password</label>
+                <div style={inputWrap}>
+                  <div style={inputIcon}><span className="material-symbols-outlined" style={{ fontSize: 20 }}>lock</span></div>
                   <input id="s-pw" type={showPw ? "text" : "password"} value={password} onChange={(e) => setPassword(e.target.value)} required minLength={6}
-                    className="block w-full pl-10 pr-10 py-3 border border-slate-200 rounded-xl bg-slate-50/50 text-sm placeholder-slate-400 focus:outline-none focus:ring-1 focus:ring-[#13daec] focus:border-[#13daec] transition-all"
-                    placeholder="••••••••" />
-                  <button type="button" onClick={() => setShowPw(!showPw)} className="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-600 cursor-pointer">
-                    <span className="material-symbols-outlined text-[20px]">{showPw ? "visibility" : "visibility_off"}</span>
+                    style={{ ...inputBase, paddingRight: 40 }} placeholder="••••••••" />
+                  <button type="button" onClick={() => setShowPw(!showPw)}
+                    style={{ position: "absolute", top: 0, right: 0, bottom: 0, display: "flex", alignItems: "center", paddingRight: 12, background: "none", border: "none", color: "#94a3b8", cursor: "pointer" }}>
+                    <span className="material-symbols-outlined" style={{ fontSize: 20 }}>{showPw ? "visibility" : "visibility_off"}</span>
                   </button>
                 </div>
                 {password && (
-                  <div className="mt-2 flex gap-1 h-1">
+                  <div style={{ marginTop: 8, display: "flex", gap: 4, height: 4 }}>
                     {[1, 2, 3, 4].map((l) => (
-                      <div key={l} className={`flex-1 rounded-full transition-all ${l <= pwStrength ? (pwStrength <= 1 ? "bg-red-400" : pwStrength <= 2 ? "bg-orange-400" : pwStrength <= 3 ? "bg-yellow-400" : "bg-green-500") : "bg-slate-200"}`} />
+                      <div key={l} style={{
+                        flex: 1, borderRadius: 9999, transition: "all 0.2s",
+                        background: l <= pwStrength ? pwColor : "#e2e8f0",
+                      }} />
                     ))}
                   </div>
                 )}
               </div>
+              {/* Confirm PW */}
               <div>
-                <label htmlFor="s-pwc" className="block text-sm font-medium text-slate-700 mb-1.5 ml-1">비밀번호 확인</label>
-                <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
-                    <span className="material-symbols-outlined text-[20px]">lock</span>
-                  </div>
+                <label htmlFor="s-pwc" style={labelBase}>비밀번호 확인</label>
+                <div style={inputWrap}>
+                  <div style={inputIcon}><span className="material-symbols-outlined" style={{ fontSize: 20 }}>lock</span></div>
                   <input id="s-pwc" type={showPw ? "text" : "password"} value={passwordConfirm} onChange={(e) => setPasswordConfirm(e.target.value)} required
-                    className={`block w-full pl-10 pr-3 py-3 border rounded-xl bg-slate-50/50 text-sm placeholder-slate-400 focus:outline-none focus:ring-1 focus:ring-[#13daec] transition-all ${passwordConfirm && password !== passwordConfirm ? "border-red-400" : "border-slate-200"}`}
+                    style={{ ...inputBase, borderColor: passwordConfirm && password !== passwordConfirm ? "#f87171" : "#e2e8f0" }}
                     placeholder="비밀번호 다시 입력" />
                 </div>
-                {passwordConfirm && password !== passwordConfirm && <p className="text-xs text-red-500 mt-1 ml-1">비밀번호가 일치하지 않습니다</p>}
-                {passwordConfirm && password === passwordConfirm && passwordConfirm.length >= 6 && <p className="text-xs text-green-600 mt-1 ml-1">✓ 비밀번호가 일치합니다</p>}
+                {passwordConfirm && password !== passwordConfirm && <p style={{ fontSize: 12, color: "#ef4444", marginTop: 4, marginLeft: 4 }}>비밀번호가 일치하지 않습니다</p>}
+                {passwordConfirm && password === passwordConfirm && passwordConfirm.length >= 6 && <p style={{ fontSize: 12, color: "#16a34a", marginTop: 4, marginLeft: 4 }}>✓ 비밀번호가 일치합니다</p>}
               </div>
 
-              <div className="flex items-center">
+              {/* Terms */}
+              <div style={{ display: "flex", alignItems: "center" }}>
                 <input id="terms" type="checkbox" checked={terms} onChange={(e) => setTerms(e.target.checked)}
-                  className="h-4 w-4 text-[#13daec] focus:ring-[#13daec] border-slate-300 rounded cursor-pointer" />
-                <label htmlFor="terms" className="ml-2 block text-sm text-slate-600">
-                  I agree to the <a href="#" className="text-[#13daec] hover:underline font-medium">Terms</a> and <a href="#" className="text-[#13daec] hover:underline font-medium">Privacy Policy</a>
+                  style={{ width: 16, height: 16, accentColor: PRIMARY, borderRadius: 4, cursor: "pointer" }} />
+                <label htmlFor="terms" style={{ marginLeft: 8, fontSize: 14, color: "#475569" }}>
+                  I agree to the{" "}
+                  <a href="#" style={{ color: PRIMARY, fontWeight: 500, textDecoration: "none" }}>Terms</a> and{" "}
+                  <a href="#" style={{ color: PRIMARY, fontWeight: 500, textDecoration: "none" }}>Privacy Policy</a>
                 </label>
               </div>
 
-              {msg && (
-                <p className={`p-3 rounded-xl text-sm font-medium ${msg.ok ? "bg-green-50 text-green-700" : "bg-red-50 text-red-600"}`}>{msg.text}</p>
-              )}
+              {msg && <p style={msgStyle(msg.ok)}>{msg.text}</p>}
 
-              <button type="submit" disabled={loading}
-                className="w-full flex justify-center py-3.5 px-4 rounded-xl shadow-lg shadow-[#13daec]/20 text-sm font-bold text-white bg-gradient-to-r from-[#13daec] to-[#0ea5b3] hover:to-[#0c909c] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#13daec] transition-all transform hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed">
+              <button type="submit" disabled={loading} style={{ ...primaryBtn, opacity: loading ? 0.5 : 1 }}>
                 {loading ? "가입 처리 중..." : "Create Account"}
               </button>
 
-              <p className="text-center text-sm text-slate-600">
+              <p style={{ textAlign: "center", fontSize: 14, color: "#475569" }}>
                 Already have an account?{" "}
-                <button type="button" onClick={() => switchMode("login")} className="font-bold text-[#13daec] hover:text-[#0fbccb]">
+                <button type="button" onClick={() => switchMode("login")}
+                  style={{ fontWeight: 700, color: PRIMARY, background: "none", border: "none", cursor: "pointer" }}>
                   Log in here
                 </button>
               </p>
@@ -358,30 +396,40 @@ export default function LoginPage() {
 
           {/* ── SIGNUP DONE ── */}
           {mode === "signup" && signupDone && (
-            <div className="text-center py-8">
-              <div className="text-6xl mb-6">🎉</div>
-              <h3 className="text-2xl font-bold text-slate-900 mb-3">가입 완료!</h3>
-              <p className="text-slate-500 mb-6"><strong className="text-slate-900">{name}</strong>님 환영합니다!<br />이메일 인증 후 로그인해주세요.</p>
+            <div style={{ textAlign: "center", padding: "32px 0" }}>
+              <div style={{ fontSize: 60, marginBottom: 24 }}>🎉</div>
+              <h3 style={{ fontSize: 24, fontWeight: 700, color: "#0f172a", marginBottom: 12 }}>가입 완료!</h3>
+              <p style={{ color: "#64748b", marginBottom: 24 }}>
+                <strong style={{ color: "#0f172a" }}>{name}</strong>님 환영합니다!<br />이메일 인증 후 로그인해주세요.
+              </p>
               <button onClick={() => { switchMode("login"); setPassword(""); setPasswordConfirm(""); }}
-                className="px-6 py-3 rounded-xl bg-[#13daec] text-white font-bold text-sm shadow-lg shadow-[#13daec]/30 hover:bg-[#0fbccb] transition-all">
+                style={{
+                  padding: "12px 24px", borderRadius: 12, background: PRIMARY, color: "#fff",
+                  fontWeight: 700, fontSize: 14, border: "none", cursor: "pointer",
+                  boxShadow: `0 10px 15px -3px rgba(19,218,236,0.3)`, transition: "all 0.2s",
+                }}>
                 로그인하러 가기 →
               </button>
             </div>
           )}
 
-          <p className="text-center text-xs text-slate-400 mt-4">
-            <Link href="/" className="text-[#13daec] hover:text-[#0fbccb] font-medium">← 홈으로 돌아가기</Link>
+          <p style={{ textAlign: "center", fontSize: 12, color: "#94a3b8", marginTop: 16 }}>
+            <Link href="/" style={{ color: PRIMARY, fontWeight: 500, textDecoration: "none" }}>← 홈으로 돌아가기</Link>
           </p>
         </div>
       </div>
 
       <style>{`
-        @keyframes float {
-          0% { transform: translateY(0px); }
-          50% { transform: translateY(-20px); }
-          100% { transform: translateY(0px); }
-        }
-      `}</style>
+                @keyframes float {
+                    0% { transform: translateY(0px); }
+                    50% { transform: translateY(-20px); }
+                    100% { transform: translateY(0px); }
+                }
+                @media (min-width: 1024px) {
+                    .login-left-panel { display: flex !important; }
+                    .login-form-panel { width: 50% !important; }
+                }
+            `}</style>
     </div>
   );
 }

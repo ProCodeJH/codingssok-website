@@ -12,19 +12,12 @@ import { motion, AnimatePresence, useMotionValue, useSpring } from "framer-motio
   - Scroll-aware transparency
 */
 
-const platformLinks = [
-    { name: "학습 트랙 허브", href: "/dashboard/learning", icon: "📚", desc: "5개 학습 트랙" },
-    { name: "C 코스 Journey", href: "/dashboard/learning?view=c-course", icon: "⚡", desc: "coddy 스타일 34 레슨" },
-    { name: "C 컴파일러", href: "/dashboard/compiler", icon: "💻", desc: "코드 작성 & 실행" },
-    { name: "숙제 & 노트", href: "/dashboard/homework", icon: "📝", desc: "과제 확인" },
-];
-
 const navLinks = [
     { name: "커리큘럼", href: "#curriculum" },
     { name: "수강료", href: "#pricing" },
     { name: "FAQ", href: "#faq" },
     { name: "문의", href: "#contact" },
-    { name: "플랫폼", href: "#platforms", hasDropdown: true },
+    { name: "학습 플랫폼", href: "/dashboard/learning" },
 ];
 
 /* ── SVG Menu Underline — nodcoding menu-item__line ── */
@@ -160,89 +153,7 @@ function PillButton({
     );
 }
 
-/* ── Platform Dropdown ── */
-function PlatformDropdown() {
-    const [isOpen, setIsOpen] = useState(false);
-    const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-    const handleEnter = () => {
-        if (timeoutRef.current) clearTimeout(timeoutRef.current);
-        setIsOpen(true);
-    };
-    const handleLeave = () => {
-        timeoutRef.current = setTimeout(() => setIsOpen(false), 200);
-    };
-
-    return (
-        <div
-            style={{ position: "relative" }}
-            onMouseEnter={handleEnter}
-            onMouseLeave={handleLeave}
-        >
-            <span
-                className="menu-link"
-                style={{ position: "relative", display: "inline-flex", cursor: "pointer", alignItems: "center", gap: 4 }}
-            >
-                <span className="menu-item__text" data-text="플랫폼">플랫폼</span>
-                <svg width="10" height="6" viewBox="0 0 10 6" fill="none" style={{ opacity: 0.5, transition: "transform 0.2s", transform: isOpen ? "rotate(180deg)" : "rotate(0)" }}>
-                    <path d="M1 1l4 4 4-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                </svg>
-            </span>
-            <AnimatePresence>
-                {isOpen && (
-                    <motion.div
-                        initial={{ opacity: 0, y: 8, scale: 0.96 }}
-                        animate={{ opacity: 1, y: 0, scale: 1 }}
-                        exit={{ opacity: 0, y: 8, scale: 0.96 }}
-                        transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
-                        style={{
-                            position: "absolute",
-                            top: "calc(100% + 12px)",
-                            right: 0,
-                            background: "rgba(37, 35, 32, 0.95)",
-                            backdropFilter: "blur(16px)",
-                            WebkitBackdropFilter: "blur(16px)",
-                            border: "1px solid rgba(255,255,255,0.08)",
-                            borderRadius: 16,
-                            padding: 8,
-                            minWidth: 220,
-                            boxShadow: "0 16px 48px rgba(0,0,0,0.3)",
-                            zIndex: 200,
-                        }}
-                    >
-                        {platformLinks.map((p) => (
-                            <a
-                                key={p.name}
-                                href={p.href}
-                                style={{
-                                    display: "flex",
-                                    alignItems: "center",
-                                    gap: 12,
-                                    padding: "12px 16px",
-                                    borderRadius: 10,
-                                    color: "#f5f0e8",
-                                    fontSize: 14,
-                                    fontWeight: 500,
-                                    textDecoration: "none",
-                                    transition: "background 0.15s",
-                                }}
-                                onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = "rgba(236, 82, 18, 0.12)"; }}
-                                onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = "transparent"; }}
-                            >
-                                <span style={{ fontSize: 20 }}>{p.icon}</span>
-                                <div>
-                                    <div style={{ fontWeight: 600 }}>{p.name}</div>
-                                    <div style={{ fontSize: 11, color: "#b0a898", marginTop: 2 }}>{p.desc}</div>
-                                </div>
-                                <span style={{ marginLeft: "auto", fontSize: 12, color: "#b0a898" }}>→</span>
-                            </a>
-                        ))}
-                    </motion.div>
-                )}
-            </AnimatePresence>
-        </div>
-    );
-}
 
 export default function Navbar() {
     const [isScrolled, setIsScrolled] = useState(false);
@@ -338,9 +249,7 @@ export default function Navbar() {
                         >
                             {navLinks.map((link) => (
                                 <li key={link.name} className="menu-item">
-                                    {link.hasDropdown ? (
-                                        <PlatformDropdown />
-                                    ) : link.href.startsWith("/") ? (
+                                    {link.href.startsWith("/") ? (
                                         <Link
                                             href={link.href}
                                             className="menu-link"

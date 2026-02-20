@@ -139,7 +139,8 @@ export default function JourneyPage() {
                                 { title: "HTML/CSS 웹 기초", total_lessons: 20, color: "#14b8a6", icon: "🌐" },
                             ]).map((c: any, i: number) => {
                                 const ucp = userCourseProgress.find((u) => u.course_id === c.id);
-                                const done = ucp?.completed_lessons || 0;
+                                const lessons = ucp?.completed_lessons;
+                                const done = Array.isArray(lessons) ? lessons.length : (typeof lessons === 'number' ? lessons : 0);
                                 const total = c.total_lessons || 1;
                                 const pct = Math.round((done / total) * 100);
                                 const color = c.color || COURSE_COLORS[i % COURSE_COLORS.length];
@@ -212,12 +213,13 @@ export default function JourneyPage() {
                                 { title: "HTML/CSS 웹 기초", description: "웹페이지 만들기", icon: "🌐", color: "#14b8a6", difficulty: "입문", total_lessons: 20 },
                             ]).map((c: any, i: number) => {
                                 const ucp = userCourseProgress.find((u) => u.course_id === c.id);
-                                const done = ucp?.completed_lessons || 0;
+                                const lessons = ucp?.completed_lessons;
+                                const done = Array.isArray(lessons) ? lessons.length : (typeof lessons === 'number' ? lessons : 0);
                                 const total = c.total_lessons || 1;
                                 const pct = Math.round((done / total) * 100);
                                 const color = c.color || COURSE_COLORS[i % COURSE_COLORS.length];
                                 return (
-                                    <Link key={c.title || i} href="/dashboard/learning/courses" style={{ textDecoration: "none" }}>
+                                    <Link key={c.title || i} href={`/dashboard/learning/courses/${c.id || i}`} style={{ textDecoration: "none" }}>
                                         <div style={{ ...glassCard, borderRadius: 20, padding: 24, transition: "all 0.2s", cursor: "pointer", position: "relative", overflow: "hidden" }}>
                                             <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 4, background: `linear-gradient(90deg, ${color}, ${color}66)` }} />
                                             <div style={{ display: "flex", alignItems: "center", gap: 14, marginBottom: 12 }}>

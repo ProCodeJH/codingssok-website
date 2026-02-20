@@ -1,6 +1,7 @@
 "use client";
 import { useState, useRef, useEffect } from "react";
 import { motion } from "framer-motion";
+import { createClient } from "@/lib/supabase";
 
 interface Props {
     courseId: string; courseName: string; courseIcon: string; courseColor: string;
@@ -111,7 +112,21 @@ export function CourseView({ courseId, courseName, courseIcon, courseColor, html
                 <iframe
                     ref={iframeRef}
                     src={htmlPath}
-                    onLoad={() => setIsLoading(false)}
+                    onLoad={async () => {
+                        setIsLoading(false);
+                        // Forward auth token to Elite pages via postMessage
+                        try {
+                            const sb = createClient();
+                            const { data: { session } } = await sb.auth.getSession();
+                            if (session && iframeRef.current?.contentWindow) {
+                                iframeRef.current.contentWindow.postMessage({
+                                    type: 'elite-auth',
+                                    token: session.access_token,
+                                    user: session.user,
+                                }, '*');
+                            }
+                        } catch (e) { /* auth forwarding optional */ }
+                    }}
                     style={{
                         flex: 1, width: "100%", border: "none", background: "#fff",
                     }}

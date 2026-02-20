@@ -120,6 +120,7 @@ export default function DashboardPage() {
         { title: "학습 트랙 허브", desc: "코딩사고력·컴퓨팅사고력·C언어·KOI·워프 5개 트랙", href: "/dashboard/learning?view=tracks", icon: "🗂️", color: "#818cf8", tag: "5트랙" },
         { title: "HTML 웹 에디터", desc: "HTML/CSS/JS를 배우고 실시간 미리보기로 확인", href: "/dashboard/learning?view=web-editor", icon: "🌐", color: "#77C6B3", tag: "HTML" },
         { title: "숙제 & 노트", desc: "선생님이 남겨주신 숙제와 수업 노트 확인", href: "/dashboard/homework", icon: "📝", color: "#FFD37D", tag: "과제" },
+        { title: "Elite 학습센터", desc: "로드맵·챌린지·리더보드·코드에디터 올인원 프리미엄", href: "/dashboard/learning", icon: "🏆", color: "#2563eb", tag: "ELITE" },
     ];
 
     return (

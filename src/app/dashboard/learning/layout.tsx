@@ -15,19 +15,7 @@ const NAV_ITEMS = [
     { icon: "settings", label: "Profile", href: "/dashboard/learning/profile" },
 ];
 
-/* ── Custom CSS for glass design ── */
-const GLASS_CSS = `
-.glass-card{background:rgba(255,255,255,.65);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,.8);box-shadow:0 4px 6px -1px rgba(0,0,0,.02),0 2px 4px -1px rgba(0,0,0,.02),inset 0 0 20px rgba(255,255,255,.5)}
-.glass-card-hover:hover{background:rgba(255,255,255,.85);border-color:#fff;box-shadow:0 20px 25px -5px rgba(14,165,233,.1),0 10px 10px -5px rgba(14,165,233,.04),inset 0 0 20px rgba(255,255,255,.8);transform:translateY(-2px)}
-.iridescent-border{position:relative}
-.iridescent-border::before{content:'';position:absolute;inset:0;border-radius:inherit;padding:1px;background:linear-gradient(135deg,rgba(255,255,255,.8),rgba(56,189,248,.3),rgba(255,255,255,.8));-webkit-mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);-webkit-mask-composite:xor;mask-composite:exclude;pointer-events:none}
-.icon-3d-glass{background:linear-gradient(135deg,rgba(255,255,255,.9),rgba(255,255,255,.4));backdrop-filter:blur(4px);border:1px solid rgba(255,255,255,.9);box-shadow:6px 6px 12px rgba(164,194,244,.2),-6px -6px 12px rgba(255,255,255,.9),inset 2px 2px 4px rgba(255,255,255,.9),inset -2px -2px 4px rgba(164,194,244,.1)}
-.neon-ring{box-shadow:0 0 15px rgba(14,165,233,.4),inset 0 0 10px rgba(14,165,233,.2)}
-.roadmap-line-gradient{background:linear-gradient(90deg,#38bdf8 0%,#818cf8 50%,#e2e8f0 100%);height:3px;border-radius:99px;box-shadow:0 0 10px rgba(56,189,248,.3)}
-.floating-orb{position:absolute;border-radius:50%;filter:blur(80px);z-index:0;opacity:.6;pointer-events:none}
-.hide-scrollbar::-webkit-scrollbar{display:none}
-.hide-scrollbar{-ms-overflow-style:none;scrollbar-width:none}
-`;
+
 
 /* ── Auth Guard ── */
 function AuthGate({ children }: { children: ReactNode }) {
@@ -56,7 +44,7 @@ function LeftSidebar() {
     const isActive = (href: string) => href === "/dashboard/learning" ? pathname === href : pathname.startsWith(href);
 
     return (
-        <aside className="hidden lg:block lg:col-span-2 sticky top-32 h-[calc(100vh-10rem)]">
+        <aside className="hidden lg:block lg:col-span-2 sticky top-32 h-[calc(100vh-10rem)] overflow-y-auto hide-scrollbar">
             <nav className="space-y-2">
                 {NAV_ITEMS.map((item) => (
                     <Link key={item.href} href={item.href}
@@ -201,8 +189,6 @@ export default function LearningLayout({ children }: { children: ReactNode }) {
     return (
         <AuthProvider>
             <AuthGate>
-                {/* Inject glass CSS */}
-                <style dangerouslySetInnerHTML={{ __html: GLASS_CSS }} />
                 {/* Fonts */}
                 {/* eslint-disable-next-line @next/next/no-page-custom-font */}
                 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" />

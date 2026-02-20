@@ -3,51 +3,60 @@
 import { useUserProgress } from "@/hooks/useUserProgress";
 import { useState } from "react";
 
+/* ── Styles ── */
+const glassCard: React.CSSProperties = {
+    background: "rgba(255,255,255,0.65)",
+    backdropFilter: "blur(16px)",
+    WebkitBackdropFilter: "blur(16px)",
+    border: "1px solid rgba(255,255,255,0.8)",
+    boxShadow: "0 4px 6px -1px rgba(0,0,0,0.02), 0 2px 4px -1px rgba(0,0,0,0.02), inset 0 0 20px rgba(255,255,255,0.5)",
+};
+
 /* ── Course Data ── */
 const COURSES = [
     {
         id: "foundations", title: "Coding Foundations",
         desc: "First steps into programming. Master variables, loops, and basic logic structures with interactive puzzles.",
         icon: "extension", problems: 80, tag: "Beginner", status: "completed" as const,
-        gradient: "from-emerald-400 to-teal-500",
-        iconBg: "bg-gradient-to-br from-emerald-50 to-teal-50 border-emerald-100",
-        iconColor: "text-emerald-600",
-        statusColor: "text-emerald-700 bg-emerald-100 border-emerald-200/50",
-        btnClass: "bg-white border border-emerald-200 text-emerald-600 hover:bg-emerald-50",
-        hoverTitle: "group-hover:text-emerald-700",
+        gradient: "linear-gradient(to right, #34d399, #14b8a6)",
+        iconBg: { background: "linear-gradient(to bottom right, #ecfdf5, #f0fdfa)", border: "1px solid #d1fae5" },
+        iconColor: "#059669",
+        statusBg: "#dcfce7", statusColor: "#15803d", statusBorder: "rgba(187,247,208,0.5)",
+        btnStyle: { background: "#fff", border: "1px solid #a7f3d0", color: "#059669" } as React.CSSProperties,
+        btnLabel: "Review Course", btnIcon: "rocket_launch",
     },
     {
         id: "thinking", title: "Computational Thinking",
         desc: "Enhance logical problem solving skills and sophisticated algorithmic approaches for complex systems.",
         icon: "psychology", problems: 120, tag: "Logic", status: "completed" as const,
-        gradient: "from-purple-400 to-fuchsia-500",
-        iconBg: "bg-gradient-to-br from-purple-50 to-fuchsia-50 border-purple-100",
-        iconColor: "text-purple-600",
-        statusColor: "text-purple-700 bg-purple-100 border-purple-200/50",
-        btnClass: "bg-white border border-purple-200 text-purple-600 hover:bg-purple-50",
-        hoverTitle: "group-hover:text-purple-700",
+        gradient: "linear-gradient(to right, #a78bfa, #e879f9)",
+        iconBg: { background: "linear-gradient(to bottom right, #faf5ff, #fdf4ff)", border: "1px solid #e9d5ff" },
+        iconColor: "#7c3aed",
+        statusBg: "#f3e8ff", statusColor: "#7e22ce", statusBorder: "rgba(233,213,255,0.5)",
+        btnStyle: { background: "#fff", border: "1px solid #d8b4fe", color: "#7c3aed" } as React.CSSProperties,
+        btnLabel: "Review Course", btnIcon: "rocket_launch",
     },
     {
         id: "python", title: "Python Masterclass",
         desc: "Deep dive into Python architecture. From syntax sugar to advanced data structures and memory models.",
         icon: "code", problems: 150, tag: "Advanced", status: "active" as const,
-        gradient: "from-sky-400 via-blue-500 to-indigo-500",
-        iconBg: "bg-gradient-to-tr from-sky-500 to-blue-600 border-none",
-        iconColor: "text-white",
-        statusColor: "text-sky-700 bg-sky-100 border-sky-200",
-        btnClass: "bg-gradient-to-r from-sky-500 to-blue-600 hover:from-sky-400 hover:to-blue-500 text-white shadow-lg shadow-sky-500/25",
-        hoverTitle: "group-hover:text-sky-600",
+        gradient: "linear-gradient(to right, #38bdf8, #3b82f6, #6366f1)",
+        iconBg: { background: "linear-gradient(to top right, #0ea5e9, #2563eb)", border: "none" },
+        iconColor: "#fff",
+        statusBg: "#e0f2fe", statusColor: "#0369a1", statusBorder: "#bae6fd",
+        btnStyle: { background: "linear-gradient(to right, #0ea5e9, #2563eb)", color: "#fff", border: "none", boxShadow: "0 10px 15px -3px rgba(14,165,233,0.25)" } as React.CSSProperties,
+        btnLabel: "Continue Learning", btnIcon: "play_arrow",
     },
     {
         id: "c-lang", title: "C Language",
         desc: "Low level programming concepts and manual memory management techniques for systems programming.",
         icon: "bolt", problems: 200, tag: "System", status: "locked" as const,
-        gradient: "",
-        iconBg: "bg-slate-100 border-slate-200",
-        iconColor: "text-slate-400",
-        statusColor: "text-slate-500 bg-slate-100 border-slate-200",
-        btnClass: "bg-slate-100 text-slate-400 border border-slate-200 cursor-not-allowed",
-        hoverTitle: "",
+        gradient: "linear-gradient(to right, #cbd5e1, #cbd5e1)",
+        iconBg: { background: "#f1f5f9", border: "1px solid #e2e8f0" },
+        iconColor: "#94a3b8",
+        statusBg: "#f1f5f9", statusColor: "#64748b", statusBorder: "#e2e8f0",
+        btnStyle: { background: "#f1f5f9", color: "#94a3b8", border: "1px solid #e2e8f0", cursor: "not-allowed" } as React.CSSProperties,
+        btnLabel: "Start Learning", btnIcon: "lock",
     },
 ];
 
@@ -60,9 +69,9 @@ const ROADMAP = [
 ];
 
 const CLASSMATES = [
-    { name: "Sarah K.", msg: 'Completed <span class="text-sky-600 font-semibold">Memory Mgmt</span> with 98% score! 🎉', time: "2m", hasAvatar: true },
-    { name: "Mike R.", msg: 'Started the <span class="text-indigo-600 font-semibold">Pointer Quiz</span>.', time: "15m", hasAvatar: true },
-    { name: "John Doe", msg: 'Earned "Bug Hunter" Badge', time: "1h", isBadge: true },
+    { name: "Sarah K.", initial: "S", msg: 'Completed <span style="color:#0284c7;font-weight:600">Memory Mgmt</span> with 98% score! 🎉', time: "2m" },
+    { name: "Mike R.", initial: "M", msg: 'Started the <span style="color:#4f46e5;font-weight:600">Pointer Quiz</span>.', time: "15m" },
+    { name: "John Doe", initial: "JD", msg: 'Earned "Bug Hunter" Badge 🏅', time: "1h" },
 ];
 
 export default function JourneyPage() {
@@ -70,279 +79,299 @@ export default function JourneyPage() {
     const [filter, setFilter] = useState("all");
 
     return (
-        <div className="grid grid-cols-1 lg:grid-cols-10 gap-8">
-            {/* ═══ Main Content ═══ */}
-            <div className="lg:col-span-7 flex flex-col gap-10">
+        <>
+            <style>{`
+                @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.5; } }
+                @keyframes ping { 75%,100% { transform: scale(2); opacity: 0; } }
+                @keyframes bounce { 0%,100% { transform: translateY(-25%); animation-timing-function: cubic-bezier(0.8,0,1,1); } 50% { transform: none; animation-timing-function: cubic-bezier(0,0,0.2,1); } }
+                @keyframes spin3 { to { transform: rotate(360deg); } }
+                @keyframes spin10 { to { transform: rotate(360deg); } }
+                @media (min-width: 1024px) {
+                    .lg-col-7 { grid-column: span 7 / span 7; }
+                    .lg-col-3 { grid-column: span 3 / span 3; }
+                }
+            `}</style>
 
-                {/* ── Learning Roadmap ── */}
-                <div className="glass-card rounded-[2.5rem] p-8 relative overflow-hidden group">
-                    <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-sky-400 via-indigo-500 to-transparent opacity-50" />
-                    <div className="flex justify-between items-end mb-10 relative z-10">
-                        <div>
-                            <h2 className="font-extrabold text-2xl text-slate-900 flex items-center gap-3">
-                                <span className="p-2 bg-sky-100 text-sky-600 rounded-xl">
-                                    <span className="material-symbols-outlined text-xl">map</span>
-                                </span>
-                                Learning Path
-                            </h2>
-                            <p className="text-slate-500 text-sm mt-1 ml-14">Your personalized curriculum to mastery</p>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr", gap: 32 }} className="lg-grid-10">
+                <style>{`@media (min-width: 1024px) { .lg-grid-10 { grid-template-columns: 7fr 3fr !important; } }`}</style>
+
+                {/* ═══ Main Content ═══ */}
+                <div style={{ display: "flex", flexDirection: "column", gap: 40 }}>
+
+                    {/* ── Learning Roadmap ── */}
+                    <div style={{ ...glassCard, borderRadius: 40, padding: 32, position: "relative", overflow: "hidden" }}>
+                        <div style={{ position: "absolute", top: 0, left: 0, width: "100%", height: 4, background: "linear-gradient(to right, #38bdf8, #6366f1, transparent)", opacity: 0.5 }} />
+                        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", marginBottom: 40 }}>
+                            <div>
+                                <h2 style={{ fontWeight: 800, fontSize: 24, color: "#0f172a", display: "flex", alignItems: "center", gap: 12, margin: 0 }}>
+                                    <span style={{ padding: 8, background: "#e0f2fe", color: "#0284c7", borderRadius: 12, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                                        <span className="material-symbols-outlined" style={{ fontSize: 20 }}>map</span>
+                                    </span>
+                                    Learning Path
+                                </h2>
+                                <p style={{ color: "#64748b", fontSize: 14, marginTop: 4, marginLeft: 56 }}>Your personalized curriculum to mastery</p>
+                            </div>
+                            <span style={{ fontSize: 12, fontWeight: 700, color: "#0369a1", background: "#f0f9ff", border: "1px solid #e0f2fe", padding: "6px 16px", borderRadius: 999, boxShadow: "0 1px 2px rgba(0,0,0,0.05)" }}>Recommended Path</span>
                         </div>
-                        <span className="text-xs font-bold text-sky-700 bg-sky-50 border border-sky-100 px-4 py-1.5 rounded-full shadow-sm">Recommended Path</span>
-                    </div>
 
-                    <div className="relative min-w-[600px] pt-4 pb-12 px-2 overflow-x-auto hide-scrollbar">
-                        {/* Connecting line */}
-                        <div className="absolute top-[3.5rem] left-8 right-8 roadmap-line-gradient z-0" />
+                        <div style={{ position: "relative", minWidth: 600, paddingTop: 16, paddingBottom: 48, paddingLeft: 8, paddingRight: 8, overflowX: "auto" }} className="hide-scrollbar">
+                            {/* Connecting line */}
+                            <div style={{ position: "absolute", top: 56, left: 32, right: 32, height: 3, borderRadius: 99, background: "linear-gradient(90deg, #38bdf8 0%, #818cf8 50%, #e2e8f0 100%)", boxShadow: "0 0 10px rgba(56,189,248,0.3)" }} />
 
-                        <div className="flex justify-between relative z-10">
-                            {ROADMAP.map((node, i) => (
-                                <div key={i} className={`flex flex-col items-center group w-32 relative ${node.status === "locked" ? "cursor-not-allowed opacity-50 hover:opacity-80" : "cursor-pointer"} transition-opacity`}>
-                                    <div className={`relative mb-4 ${node.status === "active" ? "" : node.status === "locked" ? "grayscale" : ""} transition-transform duration-300 group-hover:-translate-y-2`}>
-                                        {/* Active spinning rings */}
-                                        {node.status === "active" && (
-                                            <>
-                                                <div className="absolute -inset-4 rounded-full border border-sky-400/30 animate-[spin_10s_linear_infinite]" />
-                                                <div className="absolute -inset-4 rounded-full border-t-2 border-sky-500 animate-[spin_3s_linear_infinite]" />
-                                            </>
-                                        )}
+                            <div style={{ display: "flex", justifyContent: "space-between", position: "relative", zIndex: 10 }}>
+                                {ROADMAP.map((node, i) => (
+                                    <div key={i} style={{
+                                        display: "flex", flexDirection: "column", alignItems: "center", width: 128,
+                                        cursor: node.status === "locked" ? "not-allowed" : "pointer",
+                                        opacity: node.status === "locked" ? 0.5 : 1,
+                                        transition: "all 0.3s"
+                                    }}>
+                                        <div style={{ position: "relative", marginBottom: 16 }}>
+                                            {/* Active rings */}
+                                            {node.status === "active" && (
+                                                <>
+                                                    <div style={{ position: "absolute", inset: -16, borderRadius: "50%", border: "1px solid rgba(56,189,248,0.3)", animation: "spin10 10s linear infinite" }} />
+                                                    <div style={{ position: "absolute", inset: -16, borderRadius: "50%", borderTop: "2px solid #0ea5e9", borderRight: "2px solid transparent", borderBottom: "2px solid transparent", borderLeft: "2px solid transparent", animation: "spin3 3s linear infinite" }} />
+                                                </>
+                                            )}
 
-                                        <div className={`
-                                            ${node.status === "active" ? "w-24 h-24 -mt-2 neon-ring" : "w-20 h-20"}
-                                            rounded-full icon-3d-glass flex items-center justify-center relative z-20
-                                            ${node.status === "locked" ? "bg-slate-100/50" : ""}
-                                            ${node.status === "active" ? "transition-transform duration-300 group-hover:scale-105" : ""}
-                                        `}>
-                                            <span className={`material-symbols-outlined drop-shadow-sm
-                                                ${node.status === "active" ? "text-sky-600 text-4xl drop-shadow-md" : node.status === "done" ? "text-emerald-500 text-3xl" : "text-slate-400 text-3xl"}
-                                            `}>
-                                                {node.status === "done" ? "check_circle" : node.icon}
-                                            </span>
+                                            <div style={{
+                                                width: node.status === "active" ? 96 : 80,
+                                                height: node.status === "active" ? 96 : 80,
+                                                borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center",
+                                                background: node.status === "locked" ? "rgba(241,245,249,0.5)" : "linear-gradient(135deg, rgba(255,255,255,0.9), rgba(255,255,255,0.4))",
+                                                border: "1px solid rgba(255,255,255,0.9)",
+                                                boxShadow: node.status === "active"
+                                                    ? "0 0 15px rgba(14,165,233,0.4), inset 0 0 10px rgba(14,165,233,0.2), 6px 6px 12px rgba(164,194,244,0.2), -6px -6px 12px rgba(255,255,255,0.9)"
+                                                    : "6px 6px 12px rgba(164,194,244,0.2), -6px -6px 12px rgba(255,255,255,0.9), inset 2px 2px 4px rgba(255,255,255,0.9), inset -2px -2px 4px rgba(164,194,244,0.1)",
+                                                ...(node.status === "active" ? { marginTop: -8 } : {}),
+                                            }}>
+                                                <span className="material-symbols-outlined" style={{
+                                                    fontSize: node.status === "active" ? 36 : 28,
+                                                    color: node.status === "done" ? "#22c55e" : node.status === "active" ? "#0284c7" : "#94a3b8",
+                                                    ...(node.status === "active" ? { filter: "drop-shadow(0 1px 2px rgba(0,0,0,0.1))" } : {}),
+                                                }}>
+                                                    {node.status === "done" ? "check_circle" : node.icon}
+                                                </span>
+                                            </div>
+
+                                            {/* Glow */}
+                                            {node.status === "done" && <div style={{ position: "absolute", inset: 0, background: "rgba(34,197,94,0.2)", borderRadius: "50%", filter: "blur(20px)", zIndex: -1 }} />}
+                                            {node.status === "active" && <div style={{ position: "absolute", inset: 0, background: "rgba(14,165,233,0.3)", borderRadius: "50%", filter: "blur(32px)", zIndex: -1, animation: "pulse 2s ease-in-out infinite" }} />}
+
+                                            {/* Badges */}
+                                            {node.status === "active" && (
+                                                <div style={{ position: "absolute", top: -8, right: -8, background: "linear-gradient(to right, #0ea5e9, #6366f1)", borderRadius: "50%", padding: 8, border: "2px solid #fff", zIndex: 30, boxShadow: "0 10px 15px -3px rgba(0,0,0,0.1)", animation: "bounce 1s infinite" }}>
+                                                    <span className="material-symbols-outlined" style={{ color: "#fff", fontSize: 10, fontWeight: 700, display: "block" }}>play_arrow</span>
+                                                </div>
+                                            )}
+                                            {node.status === "locked" && (
+                                                <div style={{ position: "absolute", top: -4, right: -4, background: "#94a3b8", borderRadius: "50%", padding: 6, border: "2px solid #fff", zIndex: 20, boxShadow: "0 1px 2px rgba(0,0,0,0.05)" }}>
+                                                    <span className="material-symbols-outlined" style={{ color: "#fff", fontSize: 12, fontWeight: 700, display: "block" }}>lock</span>
+                                                </div>
+                                            )}
                                         </div>
 
-                                        {/* Glow behind */}
-                                        {node.status === "done" && <div className="absolute inset-0 bg-emerald-400/20 rounded-full blur-xl -z-10" />}
-                                        {node.status === "active" && <div className="absolute inset-0 bg-sky-500/30 rounded-full blur-2xl -z-10 animate-pulse" />}
+                                        <div style={{ textAlign: "center", ...(node.status === "active" ? { marginTop: 8 } : {}) }}>
+                                            {node.status === "active" ? (
+                                                <h4 style={{ fontWeight: 800, fontSize: 16, margin: "0 0 4px 0", background: "linear-gradient(to right, #0284c7, #4f46e5)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>{node.title}</h4>
+                                            ) : (
+                                                <h4 style={{ fontWeight: 700, fontSize: 14, margin: "0 0 4px 0", color: node.status === "locked" ? "#64748b" : "#1e293b" }}>{node.title}</h4>
+                                            )}
+                                            {node.status === "active" ? (
+                                                <span style={{ display: "inline-block", padding: "2px 8px", borderRadius: 999, background: "#e0f2fe", fontSize: 10, color: "#0369a1", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.05em", border: "1px solid #bae6fd" }}>In Progress</span>
+                                            ) : (
+                                                <p style={{ fontSize: 10, color: "#94a3b8", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.05em", margin: 0 }}>
+                                                    {node.status === "done" ? "Completed" : "Locked"}
+                                                </p>
+                                            )}
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
 
-                                        {/* Active play badge */}
-                                        {node.status === "active" && (
-                                            <div className="absolute -top-2 -right-2 bg-gradient-to-r from-sky-500 to-indigo-500 rounded-full p-2 border-2 border-white z-30 shadow-lg animate-bounce">
-                                                <span className="material-symbols-outlined text-white text-[10px] font-bold block">play_arrow</span>
-                                            </div>
-                                        )}
+                    {/* ── Filters ── */}
+                    <div style={{ ...glassCard, borderRadius: 16, padding: "8px 16px", display: "flex", flexWrap: "wrap", gap: 16, alignItems: "center", justifyContent: "space-between" }}>
+                        <div style={{ position: "relative", flex: 1, maxWidth: 400 }}>
+                            <span className="material-symbols-outlined" style={{ position: "absolute", left: 16, top: "50%", transform: "translateY(-50%)", color: "#94a3b8", fontSize: 18 }}>search</span>
+                            <input style={{ width: "100%", paddingLeft: 40, paddingRight: 16, paddingTop: 10, paddingBottom: 10, background: "rgba(255,255,255,0.5)", border: "1px solid #e2e8f0", borderRadius: 12, fontSize: 14, outline: "none" }} placeholder="Filter modules..." type="text" />
+                        </div>
+                        <div style={{ display: "flex", gap: 8 }}>
+                            {[
+                                { key: "all", label: "All", icon: "grid_view" },
+                                { key: "basics", label: "Basics", icon: "eco" },
+                                { key: "langs", label: "Langs", icon: "code" },
+                                { key: "comp", label: "Comp", icon: "trophy" },
+                            ].map((f) => (
+                                <button key={f.key} onClick={() => setFilter(f.key)} style={{
+                                    padding: "8px 20px", borderRadius: 12, fontSize: 12, fontWeight: 700, border: "none",
+                                    cursor: "pointer", display: "flex", alignItems: "center", gap: 8, transition: "all 0.2s",
+                                    ...(filter === f.key
+                                        ? { background: "#1e293b", color: "#fff", boxShadow: "0 10px 15px -3px rgba(0,0,0,0.1)" }
+                                        : { background: "#fff", color: "#475569", border: "1px solid #e2e8f0", boxShadow: "0 1px 2px rgba(0,0,0,0.05)" }),
+                                }}>
+                                    <span className="material-symbols-outlined" style={{ fontSize: 14 }}>{f.icon}</span> {f.label}
+                                </button>
+                            ))}
+                        </div>
+                    </div>
 
-                                        {/* Lock badge */}
-                                        {node.status === "locked" && (
-                                            <div className="absolute -top-1 -right-1 bg-slate-400 rounded-full p-1.5 border-2 border-white z-20 shadow-sm">
-                                                <span className="material-symbols-outlined text-white text-[12px] font-bold block">lock</span>
-                                            </div>
-                                        )}
+                    {/* ── Course Cards ── */}
+                    <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(320px, 1fr))", gap: 24 }}>
+                        {COURSES.map((c) => (
+                            <div key={c.id} style={{
+                                ...glassCard, borderRadius: 24, overflow: "hidden", transition: "all 0.3s",
+                                ...(c.status === "active" ? { boxShadow: "0 20px 25px -5px rgba(14,165,233,0.1), 0 10px 10px -5px rgba(14,165,233,0.04), inset 0 0 20px rgba(255,255,255,0.5)" } : {}),
+                                ...(c.status === "locked" ? { opacity: 0.7, borderStyle: "dashed", borderWidth: 2, borderColor: "#cbd5e1" } : {}),
+                            }}>
+                                {/* Top color bar */}
+                                <div style={{ height: 6, width: "100%", background: c.gradient }} />
+
+                                <div style={{ padding: 28 }}>
+                                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 20 }}>
+                                        <div style={{
+                                            width: 56, height: 56, borderRadius: 16, display: "flex", alignItems: "center", justifyContent: "center",
+                                            ...c.iconBg, color: c.iconColor,
+                                            boxShadow: c.status === "active" ? "0 10px 15px -3px rgba(14,165,233,0.3)" : "0 1px 2px rgba(0,0,0,0.05)",
+                                        }}>
+                                            <span className="material-symbols-outlined" style={{ fontSize: 28 }}>{c.icon}</span>
+                                        </div>
+                                        <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end" }}>
+                                            <span style={{ fontSize: 10, fontWeight: 700, color: "#94a3b8", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 4 }}>Status</span>
+                                            <span style={{
+                                                fontSize: 12, fontWeight: 700, padding: "4px 12px", borderRadius: 999,
+                                                background: c.statusBg, color: c.statusColor, border: `1px solid ${c.statusBorder}`,
+                                                display: "flex", alignItems: "center", gap: 6, boxShadow: "0 1px 2px rgba(0,0,0,0.05)"
+                                            }}>
+                                                {c.status === "active" && <span style={{ width: 8, height: 8, borderRadius: "50%", background: "#0ea5e9", display: "inline-block", animation: "pulse 2s ease-in-out infinite" }} />}
+                                                {c.status === "locked" && <span className="material-symbols-outlined" style={{ fontSize: 10 }}>lock</span>}
+                                                {c.status === "completed" ? "Completed" : c.status === "active" ? "In Progress" : "Locked"}
+                                            </span>
+                                        </div>
                                     </div>
 
-                                    <div className={`text-center ${node.status === "active" ? "mt-2" : ""}`}>
-                                        {node.status === "active" ? (
-                                            <h4 className="font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-sky-600 to-indigo-600 text-base mb-1">{node.title}</h4>
-                                        ) : (
-                                            <h4 className={`font-bold text-sm mb-1 ${node.status === "locked" ? "text-slate-500" : "text-slate-800"}`}>{node.title}</h4>
-                                        )}
-                                        {node.status === "active" ? (
-                                            <div className="inline-block px-2 py-0.5 rounded-full bg-sky-100 text-[10px] text-sky-700 font-bold uppercase tracking-wider border border-sky-200">In Progress</div>
-                                        ) : (
-                                            <p className="text-[10px] text-slate-400 font-semibold uppercase tracking-wider">
-                                                {node.status === "done" ? "Completed" : "Locked"}
-                                            </p>
-                                        )}
+                                    <h3 style={{ fontSize: 20, fontWeight: 700, marginBottom: 8, color: "#0f172a" }}>{c.title}</h3>
+                                    <p style={{ fontSize: 14, marginBottom: 24, lineHeight: 1.6, color: c.status === "locked" ? "#94a3b8" : "#64748b", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>{c.desc}</p>
+
+                                    <div style={{ display: "flex", gap: 12, marginBottom: 32 }}>
+                                        <span style={{ fontSize: 10, fontWeight: 700, padding: "6px 12px", borderRadius: 8, background: c.status === "active" ? "#fff" : "#f8fafc", color: c.status === "locked" ? "#94a3b8" : "#475569", border: "1px solid #e2e8f0" }}>{c.problems} Problems</span>
+                                        <span style={{ fontSize: 10, fontWeight: 700, padding: "6px 12px", borderRadius: 8, background: c.status === "active" ? "#fff" : "#f8fafc", color: c.status === "locked" ? "#94a3b8" : "#475569", border: "1px solid #e2e8f0" }}>{c.tag}</span>
+                                    </div>
+
+                                    <button disabled={c.status === "locked"} style={{
+                                        width: "100%", padding: "12px 0", borderRadius: 12, fontSize: 14, fontWeight: 700,
+                                        cursor: c.status === "locked" ? "not-allowed" : "pointer",
+                                        display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
+                                        transition: "all 0.2s", ...c.btnStyle,
+                                    }}>
+                                        <span className="material-symbols-outlined" style={{ fontSize: 18 }}>{c.btnIcon}</span>
+                                        {c.btnLabel}
+                                    </button>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+
+                {/* ═══ Right Sidebar ═══ */}
+                <div style={{ display: "flex", flexDirection: "column", gap: 32 }}>
+
+                    {/* Activity Overview */}
+                    <div style={{ ...glassCard, borderRadius: 32, padding: 24, position: "relative", overflow: "hidden" }}>
+                        <div style={{ position: "absolute", top: -40, right: -40, width: 128, height: 128, background: "#bae6fd", borderRadius: "50%", filter: "blur(48px)", opacity: 0.5 }} />
+                        <h2 style={{ fontSize: 14, fontWeight: 800, color: "#1e293b", display: "flex", alignItems: "center", gap: 8, marginBottom: 24, textTransform: "uppercase", letterSpacing: "0.05em", position: "relative", zIndex: 10 }}>
+                            <span className="material-symbols-outlined" style={{ color: "#0ea5e9", fontSize: 20 }}>timelapse</span>
+                            Activity Overview
+                        </h2>
+                        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16, marginBottom: 16, position: "relative", zIndex: 10 }}>
+                            <div style={{ padding: 16, background: "rgba(255,255,255,0.6)", borderRadius: 16, border: "1px solid rgba(255,255,255,0.8)", boxShadow: "0 1px 2px rgba(0,0,0,0.05)" }}>
+                                <div style={{ fontSize: 12, color: "#0284c7", fontWeight: 700, marginBottom: 4, textTransform: "uppercase", letterSpacing: "0.05em" }}>Time Spent</div>
+                                <div style={{ fontSize: 24, fontWeight: 900, color: "#1e293b" }}>4h 15m</div>
+                            </div>
+                            <div style={{ padding: 16, background: "rgba(255,255,255,0.6)", borderRadius: 16, border: "1px solid rgba(255,255,255,0.8)", boxShadow: "0 1px 2px rgba(0,0,0,0.05)" }}>
+                                <div style={{ fontSize: 12, color: "#0d9488", fontWeight: 700, marginBottom: 4, textTransform: "uppercase", letterSpacing: "0.05em" }}>XP Earned</div>
+                                <div style={{ fontSize: 24, fontWeight: 900, color: "#1e293b" }}>{progress.xp}</div>
+                            </div>
+                        </div>
+                        <div style={{ padding: 20, background: "linear-gradient(to bottom right, #fff7ed, rgba(255,237,213,0.5))", borderRadius: 16, border: "1px solid rgba(254,215,170,0.6)", display: "flex", alignItems: "center", justifyContent: "space-between", position: "relative", zIndex: 10, boxShadow: "0 1px 2px rgba(0,0,0,0.05)" }}>
+                            <div>
+                                <div style={{ fontSize: 10, color: "#ea580c", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 4 }}>Current Streak</div>
+                                <div style={{ fontSize: 20, fontWeight: 900, color: "#1e293b", display: "flex", alignItems: "center", gap: 6 }}>
+                                    {progress.streak} Days
+                                    <span className="material-symbols-outlined" style={{ color: "#f97316", fontSize: 18, animation: "pulse 2s ease-in-out infinite" }}>local_fire_department</span>
+                                </div>
+                            </div>
+                            <div style={{ position: "relative", width: 48, height: 48 }}>
+                                <svg style={{ width: "100%", height: "100%", transform: "rotate(-90deg)" }} viewBox="0 0 36 36">
+                                    <path d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="#fed7aa" strokeWidth="3" />
+                                    <path d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="#f97316" strokeDasharray={`${Math.min(progress.streak * 5, 100)}, 100`} strokeLinecap="round" strokeWidth="3" />
+                                </svg>
+                                <div style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 10, fontWeight: 700, color: "#ea580c" }}>{Math.min(progress.streak * 5, 100)}%</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Classmates */}
+                    <div style={{ ...glassCard, borderRadius: 32, padding: 24, position: "relative" }}>
+                        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 24 }}>
+                            <h2 style={{ fontWeight: 800, color: "#1e293b", fontSize: 14, textTransform: "uppercase", letterSpacing: "0.05em", display: "flex", alignItems: "center", gap: 8, margin: 0 }}>
+                                <span className="material-symbols-outlined" style={{ color: "#6366f1", fontSize: 20 }}>group</span>
+                                Classmates
+                            </h2>
+                            <span style={{ fontSize: 10, fontWeight: 700, color: "#6366f1", background: "#eef2ff", padding: "4px 12px", borderRadius: 999, cursor: "pointer" }}>View All</span>
+                        </div>
+                        <div style={{ display: "flex", flexDirection: "column", gap: 24, position: "relative" }}>
+                            {/* Timeline line */}
+                            <div style={{ position: "absolute", left: 19, top: 12, bottom: 12, width: 2, background: "#e2e8f0", zIndex: 0 }} />
+                            {CLASSMATES.map((c, i) => (
+                                <div key={i} style={{ display: "flex", alignItems: "flex-start", gap: 16, position: "relative", zIndex: 10, cursor: "pointer" }}>
+                                    <div style={{
+                                        width: 40, height: 40, borderRadius: "50%", flexShrink: 0,
+                                        background: "linear-gradient(to bottom right, #e0f2fe, #e0e7ff)",
+                                        color: "#0284c7", display: "flex", alignItems: "center", justifyContent: "center",
+                                        fontWeight: 700, fontSize: 12,
+                                        boxShadow: "0 0 0 4px #fff, 0 4px 6px -1px rgba(0,0,0,0.1)"
+                                    }}>
+                                        {c.initial}
+                                    </div>
+                                    <div style={{ flex: 1, minWidth: 0, background: "rgba(255,255,255,0.6)", padding: 12, borderRadius: 16, borderTopLeftRadius: 4, border: "1px solid transparent" }}>
+                                        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: 4 }}>
+                                            <p style={{ fontSize: 12, fontWeight: 700, color: "#0f172a", margin: 0 }}>{c.name}</p>
+                                            <span style={{ fontSize: 10, fontFamily: "monospace", color: "#94a3b8" }}>{c.time}</span>
+                                        </div>
+                                        <p style={{ fontSize: 12, color: "#64748b", lineHeight: 1.5, margin: 0 }} dangerouslySetInnerHTML={{ __html: c.msg }} />
                                     </div>
                                 </div>
                             ))}
                         </div>
                     </div>
-                </div>
 
-                {/* ── Search + Filters ── */}
-                <div className="flex flex-col sm:flex-row gap-5 items-center justify-between sticky top-[7.5rem] z-30 py-2 glass-card rounded-2xl px-4 mx-1">
-                    <div className="relative w-full sm:w-auto flex-1 max-w-md">
-                        <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-lg">search</span>
-                        <input className="w-full pl-10 pr-4 py-2.5 bg-white/50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-sky-200 focus:border-sky-400 outline-none shadow-inner transition-all hover:bg-white"
-                            placeholder="Filter modules..." type="text" />
-                    </div>
-                    <div className="flex gap-2 overflow-x-auto pb-2 sm:pb-0 w-full sm:w-auto hide-scrollbar">
-                        {[
-                            { key: "all", label: "All", icon: "grid_view", active: "bg-slate-800 text-white shadow-lg hover:bg-slate-700" },
-                            { key: "basics", label: "Basics", icon: "eco", iconColor: "text-emerald-500", hover: "hover:border-emerald-300 hover:bg-emerald-50 hover:text-emerald-700" },
-                            { key: "langs", label: "Langs", icon: "code", iconColor: "text-sky-500", hover: "hover:border-sky-300 hover:bg-sky-50 hover:text-sky-700" },
-                            { key: "comp", label: "Comp", icon: "trophy", iconColor: "text-purple-500", hover: "hover:border-purple-300 hover:bg-purple-50 hover:text-purple-700" },
-                        ].map((f) => (
-                            <button key={f.key} onClick={() => setFilter(f.key)}
-                                className={`px-5 py-2 rounded-xl text-xs font-bold transition-all hover:-translate-y-0.5 whitespace-nowrap flex items-center gap-2
-                                ${filter === f.key
-                                        ? (f.active || "bg-slate-800 text-white shadow-lg")
-                                        : `bg-white text-slate-600 border border-slate-200 shadow-sm ${f.hover || ""}`
-                                    }`}>
-                                <span className={`material-symbols-outlined text-sm ${filter !== f.key ? (f.iconColor || "") : ""}`}>{f.icon}</span> {f.label}
-                            </button>
-                        ))}
-                    </div>
-                </div>
-
-                {/* ── Course Cards ── */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    {COURSES.map((c) => (
-                        <div key={c.id}
-                            className={`glass-card ${c.status !== "locked" ? "glass-card-hover" : ""} rounded-3xl overflow-hidden group transition-all duration-300
-                            ${c.status === "active" ? "relative ring-2 ring-sky-400/20 shadow-lg z-10 transform hover:-translate-y-1" : ""}
-                            ${c.status === "locked" ? "opacity-70 hover:opacity-100 hover:shadow-lg border-dashed border-2 border-slate-300" : "iridescent-border"}
-                            `}>
-                            {/* Active card inner glow */}
-                            {c.status === "active" && <div className="absolute inset-0 bg-gradient-to-br from-sky-50/50 to-transparent pointer-events-none" />}
-
-                            {/* Top color bar */}
-                            <div className={`h-1.5 w-full ${c.gradient ? `bg-gradient-to-r ${c.gradient}` : "bg-slate-300"}`} />
-
-                            <div className={`p-7 ${c.status === "active" ? "relative" : ""}`}>
-                                <div className="flex justify-between items-start mb-5">
-                                    <div className={`w-14 h-14 rounded-2xl ${c.iconBg} border flex items-center justify-center ${c.iconColor} shadow-sm group-hover:scale-110 group-hover:rotate-3 transition-all duration-300 ${c.status === "active" ? "shadow-lg shadow-sky-500/30" : ""}`}>
-                                        <span className="material-symbols-outlined text-3xl">{c.icon}</span>
-                                    </div>
-                                    <div className="flex flex-col items-end">
-                                        <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Status</span>
-                                        <span className={`text-xs font-bold px-3 py-1 rounded-full border shadow-sm flex items-center gap-1.5 ${c.statusColor}`}>
-                                            {c.status === "active" && (
-                                                <span className="relative flex h-2 w-2">
-                                                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-sky-400 opacity-75" />
-                                                    <span className="relative inline-flex rounded-full h-2 w-2 bg-sky-500" />
-                                                </span>
-                                            )}
-                                            {c.status === "locked" && <span className="material-symbols-outlined text-[10px]">lock</span>}
-                                            {c.status === "completed" ? "Completed" : c.status === "active" ? "In Progress" : "Locked"}
-                                        </span>
-                                    </div>
-                                </div>
-
-                                <h3 className={`text-xl font-bold mb-2 transition-colors ${c.status === "locked" ? "text-slate-700" : `text-slate-900 ${c.hoverTitle}`}`}>{c.title}</h3>
-                                <p className={`text-sm mb-6 line-clamp-2 leading-relaxed ${c.status === "locked" ? "text-slate-400" : "text-slate-500"}`}>{c.desc}</p>
-
-                                <div className="flex items-center gap-3 mb-8">
-                                    <span className={`text-[10px] font-bold px-3 py-1.5 rounded-lg border ${c.status === "active" ? "bg-white text-slate-600 border-slate-200 shadow-sm" : "bg-slate-50 text-slate-600 border-slate-200"} ${c.status === "locked" ? "text-slate-400" : ""}`}>{c.problems} Problems</span>
-                                    <span className={`text-[10px] font-bold px-3 py-1.5 rounded-lg border ${c.status === "active" ? "bg-white text-slate-600 border-slate-200 shadow-sm" : "bg-slate-50 text-slate-600 border-slate-200"} ${c.status === "locked" ? "text-slate-400" : ""}`}>{c.tag}</span>
-                                </div>
-
-                                <button disabled={c.status === "locked"}
-                                    className={`w-full py-3 rounded-xl text-sm font-bold transition-all flex items-center justify-center gap-2 group-hover:shadow-md ${c.btnClass}`}>
-                                    <span className="material-symbols-outlined text-lg">{c.status === "locked" ? "lock" : c.status === "active" ? "play_arrow" : "rocket_launch"}</span>
-                                    {c.status === "completed" ? "Review Course" : c.status === "active" ? "Continue Learning" : "Start Learning"}
-                                </button>
+                    {/* AI Mentor CTA */}
+                    <div style={{
+                        position: "relative", overflow: "hidden", borderRadius: 32,
+                        background: "linear-gradient(to bottom right, #7c3aed, #4338ca)", padding: 32,
+                        color: "#fff", boxShadow: "0 25px 50px -12px rgba(99,102,241,0.3)", cursor: "pointer",
+                        transition: "transform 0.2s",
+                    }}>
+                        <div style={{ position: "absolute", right: -48, top: -48, width: 192, height: 192, borderRadius: "50%", background: "rgba(255,255,255,0.1)", filter: "blur(48px)" }} />
+                        <div style={{ position: "absolute", left: -48, bottom: -48, width: 160, height: 160, borderRadius: "50%", background: "rgba(168,85,247,0.3)", filter: "blur(48px)" }} />
+                        <div style={{ position: "relative", zIndex: 10 }}>
+                            <div style={{ marginBottom: 12, display: "inline-flex", alignItems: "center", gap: 8, borderRadius: 999, background: "rgba(255,255,255,0.1)", padding: "4px 12px", fontSize: 10, fontWeight: 700, textTransform: "uppercase", border: "1px solid rgba(255,255,255,0.1)" }}>
+                                <span style={{ width: 8, height: 8, borderRadius: "50%", background: "#facc15", display: "inline-block", animation: "pulse 2s ease-in-out infinite" }} />
+                                Pro Feature
+                            </div>
+                            <h3 style={{ marginBottom: 8, fontWeight: 700, fontSize: 20, letterSpacing: "-0.02em" }}>Unlock AI Mentor</h3>
+                            <p style={{ fontSize: 12, color: "#c7d2fe", marginBottom: 24, lineHeight: 1.6, opacity: 0.9 }}>Get instant, intelligent help with your code anytime. Your personal coding assistant.</p>
+                            <div style={{ fontSize: 12, fontWeight: 700, color: "#fff", background: "rgba(255,255,255,0.2)", width: "fit-content", padding: "8px 16px", borderRadius: 12, display: "flex", alignItems: "center", gap: 8 }}>
+                                Upgrade Now <span className="material-symbols-outlined" style={{ fontSize: 14 }}>arrow_forward</span>
                             </div>
                         </div>
-                    ))}
+                        <span className="material-symbols-outlined" style={{ position: "absolute", bottom: 16, right: 16, fontSize: 80, color: "rgba(255,255,255,0.05)", transform: "rotate(12deg)" }}>smart_toy</span>
+                    </div>
                 </div>
             </div>
-
-            {/* ═══ Right Sidebar ═══ */}
-            <aside className="lg:col-span-3 flex flex-col gap-8 sticky top-32 h-fit">
-
-                {/* ── Activity Overview ── */}
-                <div className="glass-card rounded-[2rem] p-6 relative overflow-hidden backdrop-blur-md">
-                    <div className="absolute -top-10 -right-10 w-32 h-32 bg-sky-200 rounded-full blur-3xl opacity-50" />
-                    <h2 className="text-sm font-extrabold text-slate-800 flex items-center gap-2 mb-6 uppercase tracking-wider relative z-10">
-                        <span className="material-symbols-outlined text-sky-500 text-xl">timelapse</span>
-                        Activity Overview
-                    </h2>
-                    <div className="grid grid-cols-2 gap-4 mb-4 relative z-10">
-                        <div className="p-4 bg-white/60 rounded-2xl border border-white/80 shadow-sm backdrop-blur-sm">
-                            <div className="text-xs text-sky-600 font-bold mb-1 uppercase tracking-wide">Time Spent</div>
-                            <div className="text-2xl font-black text-slate-800">4h 15m</div>
-                        </div>
-                        <div className="p-4 bg-white/60 rounded-2xl border border-white/80 shadow-sm backdrop-blur-sm">
-                            <div className="text-xs text-teal-600 font-bold mb-1 uppercase tracking-wide">XP Earned</div>
-                            <div className="text-2xl font-black text-slate-800">{progress.xp}</div>
-                        </div>
-                    </div>
-                    <div className="p-5 bg-gradient-to-br from-orange-50 to-orange-100/50 rounded-2xl border border-orange-100/60 flex items-center justify-between relative z-10 shadow-sm">
-                        <div>
-                            <div className="text-[10px] text-orange-600 font-bold uppercase tracking-wider mb-1">Current Streak</div>
-                            <div className="text-xl font-black text-slate-800 flex items-center gap-1.5">
-                                {progress.streak} Days
-                                <span className="material-symbols-outlined text-orange-500 text-lg animate-pulse">local_fire_department</span>
-                            </div>
-                        </div>
-                        <div className="relative w-12 h-12">
-                            <svg className="w-full h-full -rotate-90 transform drop-shadow-sm" viewBox="0 0 36 36">
-                                <path className="text-orange-200" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" strokeWidth="3" />
-                                <path className="text-orange-500" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" strokeDasharray={`${Math.min(progress.streak * 5, 100)}, 100`} strokeLinecap="round" strokeWidth="3" />
-                            </svg>
-                            <div className="absolute inset-0 flex items-center justify-center text-[10px] font-bold text-orange-600">
-                                {Math.min(progress.streak * 5, 100)}%
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                {/* ── Classmates ── */}
-                <div className="glass-card rounded-[2rem] p-6 relative">
-                    <div className="flex items-center justify-between mb-6">
-                        <h2 className="font-extrabold text-slate-800 text-sm uppercase tracking-wider flex items-center gap-2">
-                            <span className="material-symbols-outlined text-indigo-500 text-xl">group</span>
-                            Classmates
-                        </h2>
-                        <span className="text-[10px] font-bold text-indigo-500 bg-indigo-50 px-3 py-1 rounded-full cursor-pointer hover:bg-indigo-100 transition-colors">View All</span>
-                    </div>
-                    <div className="space-y-6 relative">
-                        {/* Timeline line */}
-                        <div className="absolute left-[1.15rem] top-3 bottom-3 w-0.5 bg-slate-200 -z-0" />
-
-                        {CLASSMATES.map((c, i) => (
-                            <div key={i} className="flex items-start gap-4 relative z-10 group cursor-pointer">
-                                <div className="relative">
-                                    {c.hasAvatar ? (
-                                        <div className="w-10 h-10 rounded-full bg-gradient-to-br from-sky-100 to-indigo-100 text-sky-600 flex items-center justify-center font-bold text-xs ring-4 ring-white shadow-md transition-transform group-hover:scale-110">
-                                            {c.name.charAt(0)}
-                                        </div>
-                                    ) : (
-                                        <div className="w-10 h-10 rounded-full bg-gradient-to-br from-indigo-100 to-purple-100 text-indigo-600 flex items-center justify-center font-bold text-xs ring-4 ring-white shadow-md">
-                                            {c.name.split(" ").map(w => w[0]).join("")}
-                                        </div>
-                                    )}
-                                </div>
-                                <div className="flex-1 min-w-0 bg-white/60 p-3 rounded-2xl rounded-tl-sm hover:bg-white hover:shadow-md transition-all border border-transparent hover:border-slate-100">
-                                    <div className="flex justify-between items-baseline mb-1">
-                                        <p className="text-xs font-bold text-slate-900">{c.name}</p>
-                                        <span className="text-[10px] font-mono text-slate-400">{c.time}</span>
-                                    </div>
-                                    {c.isBadge ? (
-                                        <div className="flex items-center gap-1.5 text-xs text-slate-500">
-                                            <span className="material-symbols-outlined text-[16px] text-yellow-500">military_tech</span>
-                                            {c.msg}
-                                        </div>
-                                    ) : (
-                                        <p className="text-xs text-slate-500 leading-snug" dangerouslySetInnerHTML={{ __html: c.msg }} />
-                                    )}
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-                </div>
-
-                {/* ── AI Mentor CTA ── */}
-                <div className="relative overflow-hidden rounded-[2rem] bg-gradient-to-br from-violet-600 to-indigo-700 p-8 text-white shadow-xl shadow-indigo-500/30 cursor-pointer group transform transition-transform hover:scale-[1.02]">
-                    <div className="absolute -right-12 -top-12 h-48 w-48 rounded-full bg-white/10 blur-3xl group-hover:bg-white/20 transition-all duration-700" />
-                    <div className="absolute -left-12 -bottom-12 h-40 w-40 rounded-full bg-purple-500/30 blur-3xl" />
-                    <div className="relative z-10">
-                        <div className="mb-3 inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1 text-[10px] font-bold uppercase backdrop-blur-md border border-white/10 shadow-sm">
-                            <span className="relative flex h-2 w-2">
-                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-yellow-400 opacity-75" />
-                                <span className="relative inline-flex rounded-full h-2 w-2 bg-yellow-400" />
-                            </span>
-                            Pro Feature
-                        </div>
-                        <h3 className="mb-2 font-bold text-xl tracking-tight">Unlock AI Mentor</h3>
-                        <p className="text-xs text-indigo-100 mb-6 leading-relaxed opacity-90">Get instant, intelligent help with your code anytime. Your personal coding assistant.</p>
-                        <div className="flex items-center gap-2 text-xs font-bold text-white bg-white/20 hover:bg-white/30 w-fit px-4 py-2 rounded-xl transition-all backdrop-blur-sm">
-                            Upgrade Now <span className="material-symbols-outlined text-sm group-hover:translate-x-1 transition-transform">arrow_forward</span>
-                        </div>
-                    </div>
-                    <span className="material-symbols-outlined absolute bottom-4 right-4 text-8xl text-white/5 rotate-12 group-hover:scale-110 group-hover:rotate-[15deg] transition-all duration-500">smart_toy</span>
-                </div>
-            </aside>
-        </div>
+        </>
     );
 }

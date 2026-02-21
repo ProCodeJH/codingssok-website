@@ -73,6 +73,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                         .eq("id", session.user.id)
                         .single();
 
+                    // Fetch XP/level/streak from user_progress
+                    const { data: progress } = await sb
+                        .from("user_progress")
+                        .select("xp, level, streak")
+                        .eq("user_id", session.user.id)
+                        .single();
+
                     const stored = loadUser();
                     const u: UserProfile = {
                         id: session.user.id,
@@ -81,9 +88,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                         grade: profile?.grade,
                         phone: profile?.phone,
                         avatar: profile?.avatar,
-                        level: stored?.level || 1,
-                        xp: stored?.xp || 0,
-                        streak: stored?.streak || 0,
+                        level: progress?.level ?? stored?.level ?? 1,
+                        xp: progress?.xp ?? stored?.xp ?? 0,
+                        streak: progress?.streak ?? stored?.streak ?? 0,
                         joinedAt: stored?.joinedAt || new Date().toISOString(),
                     };
                     setUser(u);

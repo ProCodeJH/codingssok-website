@@ -30,6 +30,9 @@ export default function JourneyPage() {
     const [userCourseProgress, setUserCourseProgress] = useState<any[]>([]);
     const [attendanceChecked, setAttendanceChecked] = useState(false);
     const [attendanceMsg, setAttendanceMsg] = useState("");
+    const [submissions, setSubmissions] = useState(0);
+    const [successRate, setSuccessRate] = useState(0);
+    const [recentActivity, setRecentActivity] = useState<any[]>([]);
 
     const supabase = useMemo(() => createClient(), []);
     const stats = useMemo(() => getCurriculumStats(), []);
@@ -50,6 +53,23 @@ export default function JourneyPage() {
                     const today = new Date().toISOString().split("T")[0];
                     const { data: att } = await supabase.from("attendance").select("id").eq("user_id", user.id).eq("check_date", today).maybeSingle();
                     if (att) setAttendanceChecked(true);
+                } catch { /* 테이블 없으면 무시 */ }
+
+                // 코드 제출 통계
+                try {
+                    const { data: subs } = await supabase.from("code_submissions").select("status").eq("user_id", user.id);
+                    if (subs) {
+                        setSubmissions(subs.length);
+                        const success = subs.filter((d: any) => d.status === "success").length;
+                        setSuccessRate(subs.length > 0 ? Math.round((success / subs.length) * 100) : 0);
+                    }
+                } catch { /* 테이블 없으면 무시 */ }
+
+                // 최근 활동
+                try {
+                    const { data: acts } = await supabase.from("xp_logs").select("*").eq("user_id", user.id)
+                        .order("created_at", { ascending: false }).limit(5);
+                    if (acts) setRecentActivity(acts);
                 } catch { /* 테이블 없으면 무시 */ }
             }
         }
@@ -198,6 +218,53 @@ export default function JourneyPage() {
                         </div>
                     </div>
 
+                    {/* ── 주간 XP + 최근 활동 (from stats) ── */}
+                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }} className="stats-grid-2">
+                        <style>{`@media (max-width: 767px) { .stats-grid-2 { grid-template-columns: 1fr !important; } }`}</style>
+                        {/* 주간 XP 차트 */}
+                        <div style={{ ...glassCard, borderRadius: 24, padding: 24 }}>
+                            <h3 style={{ fontWeight: 800, fontSize: 16, color: "#0f172a", marginBottom: 20 }}>📈 이번 주 XP</h3>
+                            <div style={{ display: "flex", alignItems: "flex-end", gap: 12, height: 120 }}>
+                                {[{ day: "월", xp: 120 }, { day: "화", xp: 85 }, { day: "수", xp: 200 },
+                                { day: "목", xp: 150 }, { day: "금", xp: 90 }, { day: "토", xp: 300 }, { day: "일", xp: 50 }]
+                                    .map((d, i, arr) => {
+                                        const max = Math.max(...arr.map(x => x.xp), 1);
+                                        return (
+                                            <div key={i} style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", gap: 4 }}>
+                                                <span style={{ fontSize: 10, fontWeight: 700, color: "#0ea5e9" }}>{d.xp}</span>
+                                                <div style={{ width: "100%", maxWidth: 32, height: `${(d.xp / max) * 80}px`, background: "linear-gradient(to top, #0ea5e9, #38bdf8)", borderRadius: "6px 6px 3px 3px", minHeight: 6 }} />
+                                                <span style={{ fontSize: 11, fontWeight: 600, color: "#64748b" }}>{d.day}</span>
+                                            </div>
+                                        );
+                                    })}
+                            </div>
+                        </div>
+
+                        {/* 최근 활동 */}
+                        <div style={{ ...glassCard, borderRadius: 24, padding: 24 }}>
+                            <h3 style={{ fontWeight: 800, fontSize: 16, color: "#0f172a", marginBottom: 16 }}>🕐 최근 활동</h3>
+                            {recentActivity.length === 0 ? (
+                                <div style={{ textAlign: "center", padding: 24, color: "#94a3b8" }}>
+                                    <span style={{ fontSize: 28, display: "block", marginBottom: 4 }}>📝</span>
+                                    아직 활동 기록이 없어요
+                                </div>
+                            ) : (
+                                <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+                                    {recentActivity.map((a: any, i: number) => (
+                                        <div key={i} style={{ display: "flex", alignItems: "center", gap: 10, padding: "8px 12px", borderRadius: 12, background: "#f8fafc" }}>
+                                            <div style={{ width: 32, height: 32, borderRadius: "50%", background: "linear-gradient(135deg, #0ea5e9, #6366f1)", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontSize: 13 }}>⭐</div>
+                                            <div style={{ flex: 1 }}>
+                                                <div style={{ fontSize: 12, fontWeight: 600, color: "#0f172a" }}>{a.reason || "경험치 획득"}</div>
+                                                <div style={{ fontSize: 10, color: "#94a3b8" }}>{new Date(a.created_at).toLocaleString("ko-KR", { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" })}</div>
+                                            </div>
+                                            <span style={{ fontSize: 13, fontWeight: 800, color: "#059669" }}>+{a.amount} XP</span>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
+                    </div>
+
                     {/* ── 코스 카드 그리드 ── */}
                     <div>
                         <h2 style={{ fontWeight: 800, fontSize: 20, color: "#0f172a", marginBottom: 20, display: "flex", alignItems: "center", gap: 10 }}>
@@ -280,9 +347,11 @@ export default function JourneyPage() {
                         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
                             {[
                                 { label: "🔥 연속 출석", value: `${progress?.streak || 0}일`, color: "#ef4444" },
-                                { label: "📊 정확도", value: `${progress?.accuracy || 0}%`, color: "#0ea5e9" },
+                                { label: "📊 성공률", value: `${successRate}%`, color: "#0ea5e9" },
+                                { label: "💻 코드 제출", value: `${submissions}회`, color: "#8b5cf6" },
                                 { label: "✅ 풀은 문제", value: `${progress?.totalProblems || 0}개`, color: "#22c55e" },
-                                { label: "⭐ 경험치", value: `${progress?.xp || 0}`, color: "#f59e0b" },
+                                { label: "⭐ 경험치", value: `${(progress?.xp || 0).toLocaleString()}`, color: "#f59e0b" },
+                                { label: "📈 레벨", value: `Lv.${calcLevel(progress?.xp || 0)}`, color: "#06b6d4" },
                             ].map((s) => (
                                 <div key={s.label} style={{ padding: 14, borderRadius: 16, background: "#f8fafc", textAlign: "center" }}>
                                     <div style={{ fontSize: 11, color: "#94a3b8", marginBottom: 4 }}>{s.label}</div>

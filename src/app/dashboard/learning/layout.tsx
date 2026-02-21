@@ -17,7 +17,6 @@ const NAV_ITEMS = [
     { icon: "emoji_events", label: "챌린지", href: "/dashboard/learning/challenges" },
     { icon: "chat", label: "채팅", href: "/dashboard/learning/chat" },
     { icon: "diversity_3", label: "리더보드", href: "/dashboard/learning/leaderboard" },
-    { icon: "sports_esports", label: "학습 통계", href: "/dashboard/learning/stats" },
     { icon: "storefront", label: "상점", href: "/dashboard/learning/store" },
     { icon: "menu_book", label: "수업자료", href: "/dashboard/learning/study" },
     { icon: "person", label: "프로필", href: "/dashboard/learning/profile" },

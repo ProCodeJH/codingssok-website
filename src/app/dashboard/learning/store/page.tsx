@@ -4,8 +4,8 @@ import { useState, useEffect, useMemo } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useUserProgress } from "@/hooks/useUserProgress";
 import { createClient } from "@/lib/supabase";
-import { motion } from "framer-motion";
-import { FadeIn, StaggerList, StaggerItem, ScaleOnHover } from "@/components/motion/motion";
+import { motion, AnimatePresence } from "framer-motion";
+import { FadeIn, StaggerList, StaggerItem, ScaleOnHover, HoverGlow } from "@/components/motion/motion";
 
 const glassCard: React.CSSProperties = {
     background: "rgba(255,255,255,0.7)", backdropFilter: "blur(12px)",
@@ -78,15 +78,21 @@ export default function StorePage() {
     return (
         <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
             {/* 토스트 */}
-            {toast && (
-                <div style={{
-                    position: "fixed", top: 20, right: 20, zIndex: 9999,
-                    padding: "14px 24px", borderRadius: 16, background: "#059669", color: "#fff",
-                    fontSize: 14, fontWeight: 700, boxShadow: "0 10px 30px rgba(0,0,0,0.2)",
-                    animation: "slideIn 0.3s ease",
-                }}>{toast}</div>
-            )}
-            <style>{`@keyframes slideIn { from { transform: translateX(100px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }`}</style>
+            <AnimatePresence>
+                {toast && (
+                    <motion.div
+                        initial={{ opacity: 0, x: 100, scale: 0.9 }}
+                        animate={{ opacity: 1, x: 0, scale: 1 }}
+                        exit={{ opacity: 0, x: 100, scale: 0.9 }}
+                        transition={{ type: "spring", stiffness: 500, damping: 30 }}
+                        style={{
+                            position: "fixed", top: 20, right: 20, zIndex: 9999,
+                            padding: "14px 24px", borderRadius: 16, background: "#059669", color: "#fff",
+                            fontSize: 14, fontWeight: 700, boxShadow: "0 10px 30px rgba(0,0,0,0.2)",
+                        }}
+                    >{toast}</motion.div>
+                )}
+            </AnimatePresence>
 
             {/* 헤더 */}
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 12 }}>
@@ -106,12 +112,16 @@ export default function StorePage() {
             {/* 카테고리 필터 */}
             <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
                 {CATEGORIES.map((c) => (
-                    <button key={c} onClick={() => setCategory(c)} style={{
-                        padding: "8px 18px", borderRadius: 12, border: "none", fontSize: 13, fontWeight: 700,
-                        background: category === c ? "#0f172a" : "rgba(255,255,255,0.7)",
-                        color: category === c ? "#fff" : "#64748b", cursor: "pointer",
-                        transition: "all 0.2s",
-                    }}>{c}</button>
+                    <motion.button key={c} onClick={() => setCategory(c)}
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                        transition={{ type: "spring", stiffness: 400, damping: 20 }}
+                        style={{
+                            padding: "8px 18px", borderRadius: 12, border: "none", fontSize: 13, fontWeight: 700,
+                            background: category === c ? "#0f172a" : "rgba(255,255,255,0.7)",
+                            color: category === c ? "#fff" : "#64748b", cursor: "pointer",
+                        }}
+                    >{c}</motion.button>
                 ))}
             </div>
 
@@ -123,46 +133,59 @@ export default function StorePage() {
                     const canBuy = progress.xp >= item.xp && !owned;
                     return (
                         <StaggerItem key={item.id}>
-                            <div key={item.id} style={{
-                                ...glassCard, borderRadius: 20, padding: 24, display: "flex", flexDirection: "column",
-                                position: "relative", overflow: "hidden",
-                                opacity: owned ? 0.6 : 1, transition: "all 0.3s",
-                            }}>
-                                {/* 레어리티 뱃지 */}
+                            <HoverGlow glowColor={`${rarity.color}22`}>
                                 <div style={{
-                                    position: "absolute", top: 12, right: 12,
-                                    padding: "3px 10px", borderRadius: 8, fontSize: 10, fontWeight: 800,
-                                    background: rarity.bg, color: rarity.color,
-                                }}>{rarity.label}</div>
-
-                                {/* 아이콘 */}
-                                <div style={{
-                                    width: 56, height: 56, borderRadius: 16, marginBottom: 16,
-                                    background: `linear-gradient(135deg, ${rarity.bg}, #fff)`,
-                                    display: "flex", alignItems: "center", justifyContent: "center",
-                                    fontSize: 28, boxShadow: "0 4px 12px rgba(0,0,0,0.05)",
-                                }}>{item.icon}</div>
-
-                                <h3 style={{ fontSize: 16, fontWeight: 800, color: "#0f172a", marginBottom: 4 }}>{item.name}</h3>
-                                <p style={{ fontSize: 13, color: "#64748b", flex: 1, marginBottom: 16 }}>{item.desc}</p>
-
-                                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-                                    <span style={{ fontSize: 15, fontWeight: 900, color: "#f59e0b" }}>⭐ {item.xp} XP</span>
-                                    <button
-                                        onClick={() => buyItem(item)}
-                                        disabled={!canBuy || buying === item.id}
+                                    ...glassCard, borderRadius: 20, padding: 24, display: "flex", flexDirection: "column",
+                                    position: "relative", overflow: "hidden",
+                                    opacity: owned ? 0.6 : 1,
+                                    borderTop: `3px solid ${rarity.color}33`,
+                                }}>
+                                    {/* 레어리티 뱃지 */}
+                                    <motion.div
+                                        animate={item.rarity === "legendary" ? { scale: [1, 1.1, 1] } : {}}
+                                        transition={{ repeat: Infinity, duration: 2 }}
                                         style={{
-                                            padding: "8px 20px", borderRadius: 12, border: "none", fontSize: 13, fontWeight: 700,
-                                            background: owned ? "#10b981" : canBuy ? "linear-gradient(135deg, #0ea5e9, #6366f1)" : "#e2e8f0",
-                                            color: owned ? "#fff" : canBuy ? "#fff" : "#94a3b8",
-                                            cursor: canBuy ? "pointer" : "not-allowed",
-                                            boxShadow: canBuy ? "0 4px 14px rgba(14,165,233,0.3)" : "none",
+                                            position: "absolute", top: 12, right: 12,
+                                            padding: "3px 10px", borderRadius: 8, fontSize: 10, fontWeight: 800,
+                                            background: rarity.bg, color: rarity.color,
                                         }}
-                                    >
-                                        {owned ? "✓ 보유 중" : buying === item.id ? "구매 중..." : canBuy ? "구매" : "XP 부족"}
-                                    </button>
+                                    >{rarity.label}</motion.div>
+
+                                    {/* 아이콘 */}
+                                    <motion.div
+                                        whileHover={{ rotate: [0, -10, 10, 0], scale: 1.1 }}
+                                        transition={{ duration: 0.4 }}
+                                        style={{
+                                            width: 56, height: 56, borderRadius: 16, marginBottom: 16,
+                                            background: `linear-gradient(135deg, ${rarity.bg}, #fff)`,
+                                            display: "flex", alignItems: "center", justifyContent: "center",
+                                            fontSize: 28, boxShadow: "0 4px 12px rgba(0,0,0,0.05)",
+                                        }}
+                                    >{item.icon}</motion.div>
+
+                                    <h3 style={{ fontSize: 16, fontWeight: 800, color: "#0f172a", marginBottom: 4 }}>{item.name}</h3>
+                                    <p style={{ fontSize: 13, color: "#64748b", flex: 1, marginBottom: 16 }}>{item.desc}</p>
+
+                                    <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                                        <span style={{ fontSize: 15, fontWeight: 900, color: "#f59e0b" }}>⭐ {item.xp} XP</span>
+                                        <motion.button
+                                            onClick={() => buyItem(item)}
+                                            disabled={!canBuy || buying === item.id}
+                                            whileHover={canBuy ? { scale: 1.05 } : {}}
+                                            whileTap={canBuy ? { scale: 0.95 } : {}}
+                                            style={{
+                                                padding: "8px 20px", borderRadius: 12, border: "none", fontSize: 13, fontWeight: 700,
+                                                background: owned ? "#10b981" : canBuy ? "linear-gradient(135deg, #0ea5e9, #6366f1)" : "#e2e8f0",
+                                                color: owned ? "#fff" : canBuy ? "#fff" : "#94a3b8",
+                                                cursor: canBuy ? "pointer" : "not-allowed",
+                                                boxShadow: canBuy ? "0 4px 14px rgba(14,165,233,0.3)" : "none",
+                                            }}
+                                        >
+                                            {owned ? "✓ 보유 중" : buying === item.id ? "구매 중..." : canBuy ? "구매" : "XP 부족"}
+                                        </motion.button>
+                                    </div>
                                 </div>
-                            </div>
+                            </HoverGlow>
                         </StaggerItem>
                     );
                 })}

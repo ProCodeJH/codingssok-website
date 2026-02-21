@@ -4,7 +4,7 @@ import { useState, useEffect, useRef, useMemo, useCallback } from "react";
 import { createClient } from "@/lib/supabase";
 import { useAuth } from "@/contexts/AuthContext";
 import { motion, AnimatePresence } from "framer-motion";
-import { FadeIn } from "@/components/motion/motion";
+import { FadeIn, ShimmerLoader } from "@/components/motion/motion";
 
 const glassCard: React.CSSProperties = {
     background: "rgba(255,255,255,0.7)", backdropFilter: "blur(12px)",
@@ -118,15 +118,20 @@ export default function ChatPage() {
             <div style={{ ...glassCard, borderRadius: 20, padding: 16, display: "flex", flexDirection: "column", gap: 6 }}>
                 <h3 style={{ fontSize: 14, fontWeight: 800, color: "#0f172a", marginBottom: 8, padding: "0 8px" }}>💬 채팅방</h3>
                 {CHANNELS.map((ch) => (
-                    <button key={ch.id} onClick={() => setChannel(ch.id)} style={{
-                        display: "flex", flexDirection: "column", gap: 2, padding: "10px 12px", borderRadius: 12,
-                        border: "none", cursor: "pointer", textAlign: "left", fontSize: 13, fontWeight: 600,
-                        background: channel === ch.id ? "#f0f9ff" : "transparent",
-                        color: channel === ch.id ? "#0369a1" : "#64748b",
-                    }}>
+                    <motion.button key={ch.id} onClick={() => setChannel(ch.id)}
+                        whileHover={{ scale: 1.02, x: 2 }}
+                        whileTap={{ scale: 0.98 }}
+                        transition={{ type: "spring", stiffness: 400, damping: 25 }}
+                        style={{
+                            display: "flex", flexDirection: "column", gap: 2, padding: "10px 12px", borderRadius: 12,
+                            border: "none", cursor: "pointer", textAlign: "left", fontSize: 13, fontWeight: 600,
+                            background: channel === ch.id ? "#f0f9ff" : "transparent",
+                            color: channel === ch.id ? "#0369a1" : "#64748b",
+                        }}
+                    >
                         <span>{ch.label}</span>
                         <span style={{ fontSize: 10, opacity: 0.6 }}>{ch.desc}</span>
-                    </button>
+                    </motion.button>
                 ))}
             </div>
 
@@ -140,42 +145,59 @@ export default function ChatPage() {
 
                 {/* 메시지 영역 */}
                 <div ref={scrollRef} style={{ flex: 1, overflowY: "auto", padding: "16px 20px", display: "flex", flexDirection: "column", gap: 12 }}>
-                    {loading && <div style={{ textAlign: "center", color: "#94a3b8", padding: 40 }}>로딩 중...</div>}
+                    {loading && <ShimmerLoader lines={5} style={{ padding: 20 }} />}
                     {!loading && messages.length === 0 && (
-                        <div style={{ textAlign: "center", color: "#94a3b8", padding: 60 }}>
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.9 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            style={{ textAlign: "center", color: "#94a3b8", padding: 60 }}
+                        >
                             <span style={{ fontSize: 40, display: "block", marginBottom: 12 }}>💬</span>
                             아직 메시지가 없어요. 첫 메시지를 보내보세요!
-                        </div>
+                        </motion.div>
                     )}
-                    {messages.map((msg) => {
-                        const isMe = msg.user_id === user?.id;
-                        return (
-                            <div key={msg.id} style={{ display: "flex", gap: 10, flexDirection: isMe ? "row-reverse" : "row" }}>
-                                <div style={{
-                                    width: 36, height: 36, borderRadius: "50%", flexShrink: 0,
-                                    background: isMe ? "linear-gradient(135deg, #0ea5e9, #6366f1)" : "linear-gradient(135deg, #f97316, #ef4444)",
-                                    display: "flex", alignItems: "center", justifyContent: "center",
-                                    color: "#fff", fontWeight: 700, fontSize: 13,
-                                }}>
-                                    {msg.display_name?.charAt(0)?.toUpperCase() || "?"}
-                                </div>
-                                <div style={{ maxWidth: "70%" }}>
-                                    <div style={{ fontSize: 11, color: "#94a3b8", marginBottom: 4, textAlign: isMe ? "right" : "left" }}>
-                                        {msg.display_name} · {new Date(msg.created_at).toLocaleTimeString("ko-KR", { hour: "2-digit", minute: "2-digit" })}
-                                    </div>
+                    <AnimatePresence initial={false}>
+                        {messages.map((msg) => {
+                            const isMe = msg.user_id === user?.id;
+                            return (
+                                <motion.div
+                                    key={msg.id}
+                                    initial={{ opacity: 0, y: 20, x: isMe ? 30 : -30, scale: 0.95 }}
+                                    animate={{ opacity: 1, y: 0, x: 0, scale: 1 }}
+                                    exit={{ opacity: 0, scale: 0.9 }}
+                                    transition={{ type: "spring", stiffness: 500, damping: 35 }}
+                                    style={{ display: "flex", gap: 10, flexDirection: isMe ? "row-reverse" : "row" }}
+                                >
                                     <div style={{
-                                        padding: "10px 16px", borderRadius: 16, fontSize: 14, lineHeight: 1.5,
-                                        background: isMe ? "linear-gradient(135deg, #0ea5e9, #6366f1)" : "#f1f5f9",
-                                        color: isMe ? "#fff" : "#1e293b",
-                                        borderBottomRightRadius: isMe ? 4 : 16,
-                                        borderBottomLeftRadius: isMe ? 16 : 4,
+                                        width: 36, height: 36, borderRadius: "50%", flexShrink: 0,
+                                        background: isMe ? "linear-gradient(135deg, #0ea5e9, #6366f1)" : "linear-gradient(135deg, #f97316, #ef4444)",
+                                        display: "flex", alignItems: "center", justifyContent: "center",
+                                        color: "#fff", fontWeight: 700, fontSize: 13,
                                     }}>
-                                        {msg.content}
+                                        {msg.display_name?.charAt(0)?.toUpperCase() || "?"}
                                     </div>
-                                </div>
-                            </div>
-                        );
-                    })}
+                                    <div style={{ maxWidth: "70%" }}>
+                                        <div style={{ fontSize: 11, color: "#94a3b8", marginBottom: 4, textAlign: isMe ? "right" : "left" }}>
+                                            {msg.display_name} · {new Date(msg.created_at).toLocaleTimeString("ko-KR", { hour: "2-digit", minute: "2-digit" })}
+                                        </div>
+                                        <motion.div
+                                            whileHover={{ scale: 1.01 }}
+                                            style={{
+                                                padding: "10px 16px", borderRadius: 16, fontSize: 14, lineHeight: 1.5,
+                                                background: isMe ? "linear-gradient(135deg, #0ea5e9, #6366f1)" : "#f1f5f9",
+                                                color: isMe ? "#fff" : "#1e293b",
+                                                borderBottomRightRadius: isMe ? 4 : 16,
+                                                borderBottomLeftRadius: isMe ? 16 : 4,
+                                                boxShadow: isMe ? "0 4px 12px rgba(14,165,233,0.2)" : "0 2px 8px rgba(0,0,0,0.04)",
+                                            }}
+                                        >
+                                            {msg.content}
+                                        </motion.div>
+                                    </div>
+                                </motion.div>
+                            );
+                        })}
+                    </AnimatePresence>
                 </div>
 
                 {/* 입력 영역 */}

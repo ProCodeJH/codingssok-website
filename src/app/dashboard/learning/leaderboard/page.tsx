@@ -5,7 +5,7 @@ import { createClient } from "@/lib/supabase";
 import { getTierInfo } from "@/lib/xp-engine";
 import { useAuth } from "@/contexts/AuthContext";
 import { motion } from "framer-motion";
-import { FadeIn, StaggerList, StaggerItem } from "@/components/motion/motion";
+import { FadeIn, StaggerList, StaggerItem, ShimmerLoader } from "@/components/motion/motion";
 
 const glassCard: React.CSSProperties = {
     background: "rgba(255,255,255,0.7)", backdropFilter: "blur(12px)",
@@ -79,11 +79,16 @@ export default function LeaderboardPage() {
                         { key: "streak" as const, label: "🔥 연속출석" },
                         { key: "problems" as const, label: "✅ 문제수" },
                     ].map((t) => (
-                        <button key={t.key} onClick={() => setTab(t.key)} style={{
-                            padding: "10px 20px", borderRadius: 12, border: "none", fontSize: 13, fontWeight: 700,
-                            background: tab === t.key ? "#0f172a" : "rgba(255,255,255,0.7)",
-                            color: tab === t.key ? "#fff" : "#64748b", cursor: "pointer",
-                        }}>{t.label}</button>
+                        <motion.button key={t.key} onClick={() => setTab(t.key)}
+                            whileHover={{ scale: 1.05 }}
+                            whileTap={{ scale: 0.95 }}
+                            transition={{ type: "spring", stiffness: 400, damping: 20 }}
+                            style={{
+                                padding: "10px 20px", borderRadius: 12, border: "none", fontSize: 13, fontWeight: 700,
+                                background: tab === t.key ? "#0f172a" : "rgba(255,255,255,0.7)",
+                                color: tab === t.key ? "#fff" : "#64748b", cursor: "pointer",
+                            }}
+                        >{t.label}</motion.button>
                     ))}
                 </div>
             </div>
@@ -141,7 +146,7 @@ export default function LeaderboardPage() {
                     <span style={{ fontSize: 12, color: "#94a3b8", marginLeft: "auto" }}>{players.length}명</span>
                 </div>
                 {loading ? (
-                    <div style={{ padding: 40, textAlign: "center", color: "#94a3b8" }}>로딩 중...</div>
+                    <ShimmerLoader lines={8} style={{ padding: 24 }} />
                 ) : (
                     <div>
                         {players.map((p, i) => {
@@ -153,11 +158,13 @@ export default function LeaderboardPage() {
                                     key={p.user_id || i}
                                     initial={{ opacity: 0, x: -20 }}
                                     animate={{ opacity: 1, x: 0 }}
+                                    whileHover={{ backgroundColor: isMe ? "#e0f2fe" : "#f8fafc", x: 4 }}
                                     transition={{ delay: i * 0.04, duration: 0.3 }}
                                     style={{
                                         display: "flex", alignItems: "center", gap: 14, padding: "14px 20px",
                                         borderBottom: "1px solid #f8fafc",
                                         background: isMe ? "#f0f9ff" : "transparent",
+                                        cursor: "default",
                                     }}>
                                     <span style={{
                                         width: 28, textAlign: "center", fontSize: 14, fontWeight: 800,

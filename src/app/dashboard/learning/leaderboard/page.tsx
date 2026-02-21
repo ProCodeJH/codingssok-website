@@ -4,6 +4,8 @@ import { useState, useEffect } from "react";
 import { createClient } from "@/lib/supabase";
 import { getTierInfo } from "@/lib/xp-engine";
 import { useAuth } from "@/contexts/AuthContext";
+import { motion } from "framer-motion";
+import { FadeIn, StaggerList, StaggerItem } from "@/components/motion/motion";
 
 const glassCard: React.CSSProperties = {
     background: "rgba(255,255,255,0.7)", backdropFilter: "blur(12px)",
@@ -88,39 +90,47 @@ export default function LeaderboardPage() {
 
             {/* 포디움 */}
             {top3.length >= 3 && (
-                <div style={{ ...glassCard, borderRadius: 28, padding: "32px 24px 0", display: "flex", justifyContent: "center", alignItems: "flex-end", gap: 16 }}>
-                    {PODIUM_ORDER.map((idx, vi) => {
-                        const p = top3[idx];
-                        if (!p) return null;
-                        const tier = getTierInfo(p.tier || "Iron");
-                        const value = tab === "xp" ? p.xp : tab === "streak" ? p.streak : p.total_problems;
-                        return (
-                            <div key={idx} style={{ display: "flex", flexDirection: "column", alignItems: "center", flex: 1, maxWidth: 160 }}>
-                                <div style={{ fontSize: 32, marginBottom: 8 }}>{PODIUM_MEDALS[vi]}</div>
-                                <div style={{
-                                    width: 56, height: 56, borderRadius: "50%", border: "3px solid #fff",
-                                    background: p.profiles?.avatar_url ? `url(${p.profiles.avatar_url}) center/cover` : tier.gradient,
-                                    display: "flex", alignItems: "center", justifyContent: "center",
-                                    color: "#fff", fontWeight: 800, fontSize: 18,
-                                    boxShadow: "0 8px 20px rgba(0,0,0,0.1)", marginBottom: 8,
-                                }}>
-                                    {!p.profiles?.avatar_url && (p.profiles?.display_name || p.profiles?.email || "?").charAt(0).toUpperCase()}
-                                </div>
-                                <div style={{ fontSize: 13, fontWeight: 800, color: "#0f172a", textAlign: "center" }}>{p.profiles?.display_name || p.profiles?.email?.split("@")[0]}</div>
-                                <div style={{ fontSize: 11, color: "#94a3b8" }}>{tier.icon} {tier.nameKo} · Lv.{p.level || 1}</div>
-                                <div style={{ fontSize: 16, fontWeight: 900, color: "#0ea5e9", marginTop: 4 }}>{value?.toLocaleString()}</div>
-                                <div style={{
-                                    width: "100%", height: PODIUM_HEIGHTS[vi], borderRadius: "12px 12px 0 0",
-                                    background: PODIUM_GRADS[vi], marginTop: 12,
-                                    display: "flex", alignItems: "center", justifyContent: "center",
-                                    color: "#fff", fontSize: 28, fontWeight: 900,
-                                }}>
-                                    {idx + 1}
-                                </div>
-                            </div>
-                        );
-                    })}
-                </div>
+                <FadeIn>
+                    <div style={{ ...glassCard, borderRadius: 28, padding: "32px 24px 0", display: "flex", justifyContent: "center", alignItems: "flex-end", gap: 16 }}>
+                        {PODIUM_ORDER.map((idx, vi) => {
+                            const p = top3[idx];
+                            if (!p) return null;
+                            const tier = getTierInfo(p.tier || "Iron");
+                            const value = tab === "xp" ? p.xp : tab === "streak" ? p.streak : p.total_problems;
+                            return (
+                                <motion.div
+                                    key={idx}
+                                    initial={{ opacity: 0, y: 40 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    transition={{ delay: vi * 0.15, duration: 0.5, ease: [0.25, 0.46, 0.45, 0.94] }}
+                                    style={{ display: "flex", flexDirection: "column", alignItems: "center", flex: 1, maxWidth: 160 }}
+                                >
+                                    <div style={{ fontSize: 32, marginBottom: 8 }}>{PODIUM_MEDALS[vi]}</div>
+                                    <div style={{
+                                        width: 56, height: 56, borderRadius: "50%", border: "3px solid #fff",
+                                        background: p.profiles?.avatar_url ? `url(${p.profiles.avatar_url}) center/cover` : tier.gradient,
+                                        display: "flex", alignItems: "center", justifyContent: "center",
+                                        color: "#fff", fontWeight: 800, fontSize: 18,
+                                        boxShadow: "0 8px 20px rgba(0,0,0,0.1)", marginBottom: 8,
+                                    }}>
+                                        {!p.profiles?.avatar_url && (p.profiles?.display_name || p.profiles?.email || "?").charAt(0).toUpperCase()}
+                                    </div>
+                                    <div style={{ fontSize: 13, fontWeight: 800, color: "#0f172a", textAlign: "center" }}>{p.profiles?.display_name || p.profiles?.email?.split("@")[0]}</div>
+                                    <div style={{ fontSize: 11, color: "#94a3b8" }}>{tier.icon} {tier.nameKo} · Lv.{p.level || 1}</div>
+                                    <div style={{ fontSize: 16, fontWeight: 900, color: "#0ea5e9", marginTop: 4 }}>{value?.toLocaleString()}</div>
+                                    <div style={{
+                                        width: "100%", height: PODIUM_HEIGHTS[vi], borderRadius: "12px 12px 0 0",
+                                        background: PODIUM_GRADS[vi], marginTop: 12,
+                                        display: "flex", alignItems: "center", justifyContent: "center",
+                                        color: "#fff", fontSize: 28, fontWeight: 900,
+                                    }}>
+                                        {idx + 1}
+                                    </div>
+                                </motion.div>
+                            );
+                        })}
+                    </div>
+                </FadeIn>
             )}
 
             {/* 순위표 */}
@@ -139,11 +149,16 @@ export default function LeaderboardPage() {
                             const isMe = p.user_id === user?.id;
                             const value = tab === "xp" ? p.xp : tab === "streak" ? p.streak : p.total_problems;
                             return (
-                                <div key={p.user_id || i} style={{
-                                    display: "flex", alignItems: "center", gap: 14, padding: "14px 20px",
-                                    borderBottom: "1px solid #f8fafc",
-                                    background: isMe ? "#f0f9ff" : "transparent",
-                                }}>
+                                <motion.div
+                                    key={p.user_id || i}
+                                    initial={{ opacity: 0, x: -20 }}
+                                    animate={{ opacity: 1, x: 0 }}
+                                    transition={{ delay: i * 0.04, duration: 0.3 }}
+                                    style={{
+                                        display: "flex", alignItems: "center", gap: 14, padding: "14px 20px",
+                                        borderBottom: "1px solid #f8fafc",
+                                        background: isMe ? "#f0f9ff" : "transparent",
+                                    }}>
                                     <span style={{
                                         width: 28, textAlign: "center", fontSize: 14, fontWeight: 800,
                                         color: i < 3 ? "#f59e0b" : "#94a3b8",
@@ -176,7 +191,7 @@ export default function LeaderboardPage() {
                                             {tab === "xp" ? "XP" : tab === "streak" ? "일" : "문제"}
                                         </div>
                                     </div>
-                                </div>
+                                </motion.div>
                             );
                         })}
                     </div>

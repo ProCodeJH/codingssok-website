@@ -3,8 +3,10 @@
 import { useEffect, useState, ReactNode } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { motion } from "framer-motion";
 import { AuthProvider, useAuth } from "@/contexts/AuthContext";
 import { getTierInfo } from "@/lib/xp-engine";
+import { PageTransition } from "@/components/motion/page-transition";
 
 /* ── Nav Items (한글화 + 새 메뉴) ── */
 const NAV_ITEMS = [
@@ -48,25 +50,43 @@ function LeftSidebar() {
         <aside style={{ display: "none" }} className="lg:!block lg:col-span-2">
             <div style={{ position: "sticky", top: 128, maxHeight: "calc(100vh - 10rem)", overflowY: "auto" }} className="hide-scrollbar">
                 <nav style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-                    {NAV_ITEMS.map((item) => (
-                        <Link key={item.href} href={item.href}
-                            style={{
-                                display: "flex", alignItems: "center", gap: 12, padding: "12px 18px",
-                                borderRadius: 14, fontSize: 13, fontWeight: isActive(item.href) ? 700 : 600,
-                                textDecoration: "none", transition: "all 0.2s",
-                                ...(isActive(item.href) ? {
-                                    background: "#f0f9ff", color: "#0369a1",
-                                    border: "1px solid #e0f2fe",
-                                    boxShadow: "0 1px 3px rgba(14,165,233,0.1), 0 0 0 1px rgba(186,230,253,0.5)"
-                                } : {
-                                    background: "transparent", color: "#64748b",
-                                    border: "1px solid transparent",
-                                })
-                            }}
+                    {NAV_ITEMS.map((item, i) => (
+                        <motion.div
+                            key={item.href}
+                            initial={{ opacity: 0, x: -20 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            transition={{ delay: i * 0.04, duration: 0.3 }}
                         >
-                            <span className="material-symbols-outlined" style={{ fontSize: 20 }}>{item.icon}</span>
-                            <span>{item.label}</span>
-                        </Link>
+                            <Link href={item.href}
+                                style={{
+                                    display: "flex", alignItems: "center", gap: 12, padding: "12px 18px",
+                                    borderRadius: 14, fontSize: 13, fontWeight: isActive(item.href) ? 700 : 600,
+                                    textDecoration: "none", transition: "all 0.2s", position: "relative",
+                                    ...(isActive(item.href) ? {
+                                        background: "#f0f9ff", color: "#0369a1",
+                                        border: "1px solid #e0f2fe",
+                                        boxShadow: "0 1px 3px rgba(14,165,233,0.1), 0 0 0 1px rgba(186,230,253,0.5)"
+                                    } : {
+                                        background: "transparent", color: "#64748b",
+                                        border: "1px solid transparent",
+                                    })
+                                }}
+                            >
+                                {isActive(item.href) && (
+                                    <motion.div
+                                        layoutId="sidebar-active"
+                                        style={{
+                                            position: "absolute", left: 0, top: "50%", transform: "translateY(-50%)",
+                                            width: 3, height: 20, borderRadius: 4,
+                                            background: "linear-gradient(to bottom, #0ea5e9, #6366f1)",
+                                        }}
+                                        transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                                    />
+                                )}
+                                <span className="material-symbols-outlined" style={{ fontSize: 20 }}>{item.icon}</span>
+                                <span>{item.label}</span>
+                            </Link>
+                        </motion.div>
                     ))}
                 </nav>
 
@@ -269,7 +289,9 @@ export default function LearningLayout({ children }: { children: ReactNode }) {
                         `}</style>
                         <LeftSidebar />
                         <div className="lg:col-span-10">
-                            {children}
+                            <PageTransition>
+                                {children}
+                            </PageTransition>
                         </div>
                     </main>
                 </div>

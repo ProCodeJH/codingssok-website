@@ -3,6 +3,8 @@
 import { useState, useEffect } from "react";
 import { createClient } from "@/lib/supabase";
 import { useAuth } from "@/contexts/AuthContext";
+import { motion } from "framer-motion";
+import { FadeIn, StaggerList, StaggerItem, AnimatedBar } from "@/components/motion/motion";
 
 const glassCard: React.CSSProperties = {
     background: "rgba(255,255,255,0.7)", backdropFilter: "blur(12px)",
@@ -67,43 +69,45 @@ export default function MissionsPage() {
                     <h2 style={{ fontWeight: 800, fontSize: 20, color: "#0f172a", marginBottom: 8 }}>📋 오늘의 미션</h2>
                     <p style={{ color: "#64748b", fontSize: 13, marginBottom: 24 }}>미션을 완료하면 경험치를 획득할 수 있어요!</p>
 
-                    <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+                    <StaggerList style={{ display: "flex", flexDirection: "column", gap: 12 }}>
                         {missions.filter(m => m.mission_type === "daily").map((m) => {
                             const done = completedMissionIds.includes(m.id);
                             const userM = userMissions.find(um => um.mission_id === m.id);
                             return (
-                                <div key={m.id} style={{
-                                    display: "flex", alignItems: "center", gap: 16, padding: "16px 20px",
-                                    borderRadius: 16, background: done ? "#f0fdf4" : "#f8fafc",
-                                    border: `1px solid ${done ? "#bbf7d0" : "#e2e8f0"}`,
-                                }}>
+                                <StaggerItem key={m.id}>
                                     <div style={{
-                                        width: 44, height: 44, borderRadius: 14, display: "flex", alignItems: "center", justifyContent: "center",
-                                        background: done ? "#dcfce7" : "#e0f2fe", fontSize: 20,
+                                        display: "flex", alignItems: "center", gap: 16, padding: "16px 20px",
+                                        borderRadius: 16, background: done ? "#f0fdf4" : "#f8fafc",
+                                        border: `1px solid ${done ? "#bbf7d0" : "#e2e8f0"}`,
                                     }}>
-                                        <span className="material-symbols-outlined" style={{ color: done ? "#16a34a" : "#0284c7" }}>
-                                            {done ? "check_circle" : m.icon}
-                                        </span>
+                                        <div style={{
+                                            width: 44, height: 44, borderRadius: 14, display: "flex", alignItems: "center", justifyContent: "center",
+                                            background: done ? "#dcfce7" : "#e0f2fe", fontSize: 20,
+                                        }}>
+                                            <span className="material-symbols-outlined" style={{ color: done ? "#16a34a" : "#0284c7" }}>
+                                                {done ? "check_circle" : m.icon}
+                                            </span>
+                                        </div>
+                                        <div style={{ flex: 1 }}>
+                                            <div style={{ fontSize: 14, fontWeight: 700, color: done ? "#16a34a" : "#0f172a" }}>{m.title}</div>
+                                            <div style={{ fontSize: 12, color: "#94a3b8" }}>{m.description}</div>
+                                            {!done && userM && (
+                                                <div style={{ marginTop: 6, height: 4, background: "#e2e8f0", borderRadius: 999, overflow: "hidden", width: 120 }}>
+                                                    <div style={{ width: `${Math.min((userM.progress / m.condition_value) * 100, 100)}%`, height: "100%", background: "#0ea5e9", borderRadius: 999 }} />
+                                                </div>
+                                            )}
+                                        </div>
+                                        <div style={{
+                                            padding: "6px 14px", borderRadius: 10, fontSize: 12, fontWeight: 700,
+                                            background: done ? "#dcfce7" : "#fef3c7", color: done ? "#16a34a" : "#b45309",
+                                        }}>
+                                            {done ? "완료 ✓" : `+${m.xp_reward} XP`}
+                                        </div>
                                     </div>
-                                    <div style={{ flex: 1 }}>
-                                        <div style={{ fontSize: 14, fontWeight: 700, color: done ? "#16a34a" : "#0f172a" }}>{m.title}</div>
-                                        <div style={{ fontSize: 12, color: "#94a3b8" }}>{m.description}</div>
-                                        {!done && userM && (
-                                            <div style={{ marginTop: 6, height: 4, background: "#e2e8f0", borderRadius: 999, overflow: "hidden", width: 120 }}>
-                                                <div style={{ width: `${Math.min((userM.progress / m.condition_value) * 100, 100)}%`, height: "100%", background: "#0ea5e9", borderRadius: 999 }} />
-                                            </div>
-                                        )}
-                                    </div>
-                                    <div style={{
-                                        padding: "6px 14px", borderRadius: 10, fontSize: 12, fontWeight: 700,
-                                        background: done ? "#dcfce7" : "#fef3c7", color: done ? "#16a34a" : "#b45309",
-                                    }}>
-                                        {done ? "완료 ✓" : `+${m.xp_reward} XP`}
-                                    </div>
-                                </div>
+                                </StaggerItem>
                             );
                         })}
-                    </div>
+                    </StaggerList>
 
                     {/* 주간 미션 */}
                     {missions.filter(m => m.mission_type === "weekly").length > 0 && (

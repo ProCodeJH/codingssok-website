@@ -51,7 +51,7 @@ export default function AdminPage() {
         if (!user) return;
         supabase.from("profiles").select("role").eq("id", user.id).single()
             .then(({ data }) => {
-                if (data?.role === "admin") { setIsAdmin(true); }
+                if (data?.role === "admin" || data?.role === "teacher") { setIsAdmin(true); }
                 else { router.replace("/dashboard/learning"); }
                 setLoading(false);
             });

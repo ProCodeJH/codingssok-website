@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import { createClient } from "@/lib/supabase";
 
 /*
@@ -37,7 +37,7 @@ export default function HomeworkPage() {
     const [saving, setSaving] = useState(false);
     const [editingNoteId, setEditingNoteId] = useState<string | null>(null);
 
-    const supabase = createClient();
+    const supabase = useMemo(() => createClient(), []);
 
     useEffect(() => {
         supabase.auth.getUser().then(({ data }) => {

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useUserProgress } from "@/hooks/useUserProgress";
 import { createClient } from "@/lib/supabase";
@@ -37,11 +37,20 @@ const CATEGORIES = ["전체", "테마", "뱃지", "부스터", "프리미엄", "
 export default function StorePage() {
     const { user } = useAuth();
     const { progress } = useUserProgress();
-    const supabase = createClient();
+    const supabase = useMemo(() => createClient(), []);
     const [category, setCategory] = useState("전체");
     const [purchased, setPurchased] = useState<string[]>([]);
     const [buying, setBuying] = useState<string | null>(null);
     const [toast, setToast] = useState("");
+
+    // 구매 기록 로드
+    useEffect(() => {
+        if (!user) return;
+        supabase.from("store_purchases").select("item_id").eq("user_id", user.id)
+            .then(({ data }) => {
+                if (data) setPurchased(data.map((d: any) => d.item_id));
+            });
+    }, [user, supabase]);
 
     const filtered = category === "전체" ? STORE_ITEMS : STORE_ITEMS.filter((i) => i.category === category);
 

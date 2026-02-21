@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import { createClient } from "@/lib/supabase";
 import { useAuth } from "@/contexts/AuthContext";
 import { getTierInfo, getDisplayTier, calcLevel, xpForNextLevel } from "@/lib/xp-engine";
@@ -14,7 +14,7 @@ const glassCard: React.CSSProperties = {
 export default function ProfilePage() {
     const { user } = useAuth();
     const { progress } = useUserProgress();
-    const supabase = createClient();
+    const supabase = useMemo(() => createClient(), []);
 
     const [profile, setProfile] = useState<any>(null);
     const [displayName, setDisplayName] = useState("");

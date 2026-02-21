@@ -1,12 +1,13 @@
 "use client";
 import { useParams } from "next/navigation";
 import Link from "next/link";
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect, useCallback } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { createClient } from "@/lib/supabase";
-import { awardXP, XP_REWARDS } from "@/lib/xp-engine";
+import { awardXP, deductXP, XP_REWARDS, XP_PENALTIES } from "@/lib/xp-engine";
 import { getCourseById, getAllUnits } from "@/data/courses";
 import type { Unit, Quiz, Chapter as ChapterType } from "@/data/courses";
+import LevelUpModal from "@/components/ui/LevelUpModal";
 
 const glassCard = {
     background: "rgba(255,255,255,0.85)",
@@ -42,6 +43,11 @@ export default function CourseDetailPage() {
     const [xpMsg, setXpMsg] = useState("");
     const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null);
     const [quizResult, setQuizResult] = useState<"correct" | "wrong" | null>(null);
+    // 새로운 상태: 오답 횟수, 힌트, 레벨업, 흔들림
+    const [wrongCount, setWrongCount] = useState(0);
+    const [showHint, setShowHint] = useState(false);
+    const [levelUpInfo, setLevelUpInfo] = useState<{ level: number } | null>(null);
+    const [shaking, setShaking] = useState(false);
 
     // Supabase에서 이전 진행 데이터 로드
     useEffect(() => {
@@ -74,14 +80,37 @@ export default function CourseDetailPage() {
         });
     };
 
-    const checkAnswer = (quiz: Quiz, unit: Unit) => {
+    const checkAnswer = async (quiz: Quiz, unit: Unit) => {
         if (selectedAnswer === null) return;
         if (selectedAnswer === quiz.answer) {
+            // ✅ 정답!
             setQuizResult("correct");
-            setTimeout(() => completeUnit(unit), 1200);
+            setTimeout(() => completeUnit(unit), 1500);
         } else {
+            // ❌ 오답 — 흔들림 + XP 차감 + 정답 숨기기
             setQuizResult("wrong");
-            setTimeout(() => { setQuizResult(null); setSelectedAnswer(null); }, 2000);
+            setShaking(true);
+            const newWrongCount = wrongCount + 1;
+            setWrongCount(newWrongCount);
+
+            // XP 차감
+            if (user) {
+                deductXP(user.id, XP_PENALTIES.wrong_answer, `오답: ${unit.title}`);
+                setXpMsg(`-${XP_PENALTIES.wrong_answer} XP 😢`);
+                setTimeout(() => setXpMsg(""), 2500);
+            }
+
+            // 3번 틀리면 힌트 공개
+            if (newWrongCount >= 3) {
+                setShowHint(true);
+            }
+
+            // 흔들림 효과 후 리셋 (정답 안 보여줌!)
+            setTimeout(() => {
+                setShaking(false);
+                setQuizResult(null);
+                setSelectedAnswer(null);
+            }, 1500);
         }
     };
 
@@ -92,11 +121,18 @@ export default function CourseDetailPage() {
         setCompletedUnits(newCompleted);
         setSelectedAnswer(null);
         setQuizResult(null);
+        setWrongCount(0);
+        setShowHint(false);
 
         if (user) {
-            await awardXP(user.id, XP_REWARDS.lesson_complete, `학습 완료: ${unit.title}`, "book");
+            const result = await awardXP(user.id, XP_REWARDS.lesson_complete, `학습 완료: ${unit.title}`, "book");
             setXpMsg(`+${XP_REWARDS.lesson_complete} XP! 🎉`);
             setTimeout(() => setXpMsg(""), 3000);
+
+            // 레벨업 감지
+            if (result?.levelUp) {
+                setLevelUpInfo({ level: result.level });
+            }
 
             const prog = Math.round((newCompleted.size / allUnits.length) * 100);
             await supabase.from("user_course_progress").upsert({
@@ -115,14 +151,42 @@ export default function CourseDetailPage() {
 
     return (
         <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
-            {/* XP 토스트 */}
+            {/* 레벨업 모달 */}
+            {levelUpInfo && (
+                <LevelUpModal level={levelUpInfo.level} onClose={() => setLevelUpInfo(null)} />
+            )}
+
+            {/* XP 토스트 (정답: 초록, 오답: 빨강) */}
             {xpMsg && (
                 <div style={{
                     position: "fixed", top: 20, right: 20, zIndex: 9999,
-                    padding: "14px 24px", borderRadius: 16, background: "#059669", color: "#fff",
+                    padding: "14px 24px", borderRadius: 16,
+                    background: xpMsg.includes("-") ? "#dc2626" : "#059669",
+                    color: "#fff",
                     fontSize: 14, fontWeight: 700, boxShadow: "0 10px 30px rgba(0,0,0,0.2)",
+                    animation: xpMsg.includes("-") ? "shake 0.5s ease" : "none",
                 }}>{xpMsg}</div>
             )}
+
+            {/* CSS 애니메이션 */}
+            <style>{`
+                @keyframes shake {
+                    0%, 100% { transform: translateX(0); }
+                    20% { transform: translateX(-8px); }
+                    40% { transform: translateX(8px); }
+                    60% { transform: translateX(-5px); }
+                    80% { transform: translateX(5px); }
+                }
+                @keyframes confetti-pop {
+                    0% { transform: scale(0); opacity: 0; }
+                    50% { transform: scale(1.2); opacity: 1; }
+                    100% { transform: scale(1); opacity: 1; }
+                }
+                @keyframes pulse-green {
+                    0%, 100% { box-shadow: 0 0 0 0 rgba(16,185,129,0.4); }
+                    50% { box-shadow: 0 0 0 12px rgba(16,185,129,0); }
+                }
+            `}</style>
 
             <Link href="/dashboard/learning/courses" style={{ fontSize: 13, color: "#64748b", textDecoration: "none", display: "flex", alignItems: "center", gap: 4 }}>
                 ← 코스 목록으로
@@ -261,6 +325,9 @@ export default function CourseDetailPage() {
                                                             setActiveUnit(isActive ? null : unit.id);
                                                             setSelectedAnswer(null);
                                                             setQuizResult(null);
+                                                            setWrongCount(0);
+                                                            setShowHint(false);
+                                                            setShaking(false);
                                                         }
                                                     }}
                                                     style={{
@@ -295,9 +362,13 @@ export default function CourseDetailPage() {
                                                     {completed && <span style={{ fontSize: 10, color: "#10b981", fontWeight: 700 }}>완료 ✓</span>}
                                                 </div>
 
-                                                {/* 퀴즈 패널 */}
+                                                {/* 퀴즈 패널 — 개선된 UX */}
                                                 {isActive && !completed && unit.quiz && (
-                                                    <div style={{ padding: "20px 24px 24px 76px", background: "#f0f9ff", borderBottom: "1px solid #e0f2fe" }}>
+                                                    <div style={{
+                                                        padding: "20px 24px 24px 76px", background: "#f0f9ff",
+                                                        borderBottom: "1px solid #e0f2fe",
+                                                        animation: shaking ? "shake 0.5s ease" : "none",
+                                                    }}>
                                                         {/* 콘텐츠 미리보기 */}
                                                         {unit.content && (
                                                             <div style={{ marginBottom: 16, padding: "12px 16px", borderRadius: 12, background: "#fff", border: "1px solid #e2e8f0" }}>
@@ -308,15 +379,28 @@ export default function CourseDetailPage() {
                                                             </div>
                                                         )}
 
-                                                        <div style={{ marginBottom: 16 }}>
-                                                            <p style={{ fontSize: 13, fontWeight: 700, color: "#0369a1", marginBottom: 4 }}>🧪 확인 퀴즈</p>
-                                                            <p style={{ fontSize: 14, fontWeight: 600, color: "#0f172a", margin: 0 }}>{unit.quiz.question}</p>
+                                                        <div style={{ marginBottom: 16, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                                                            <div>
+                                                                <p style={{ fontSize: 13, fontWeight: 700, color: "#0369a1", marginBottom: 4 }}>🧪 확인 퀴즈</p>
+                                                                <p style={{ fontSize: 14, fontWeight: 600, color: "#0f172a", margin: 0 }}>{unit.quiz.question}</p>
+                                                            </div>
+                                                            {wrongCount > 0 && (
+                                                                <div style={{
+                                                                    padding: "4px 10px", borderRadius: 8,
+                                                                    background: wrongCount >= 3 ? "#fee2e2" : "#fef3c7",
+                                                                    fontSize: 11, fontWeight: 700,
+                                                                    color: wrongCount >= 3 ? "#dc2626" : "#d97706",
+                                                                }}>
+                                                                    {wrongCount}회 오답
+                                                                </div>
+                                                            )}
                                                         </div>
 
                                                         <div style={{ display: "flex", flexDirection: "column", gap: 8, marginBottom: 16 }}>
                                                             {unit.quiz.options.map((opt, oi) => {
                                                                 const isSelected = selectedAnswer === oi;
-                                                                const isCorrectAnswer = quizResult && oi === unit.quiz!.answer;
+                                                                // 정답일 때만 정답 표시, 오답일 때는 정답 숨김!
+                                                                const isCorrectAnswer = quizResult === "correct" && oi === unit.quiz!.answer;
                                                                 const isWrongSelection = quizResult === "wrong" && isSelected;
                                                                 return (
                                                                     <button
@@ -330,39 +414,73 @@ export default function CourseDetailPage() {
                                                                             cursor: quizResult ? "default" : "pointer",
                                                                             fontSize: 13, fontWeight: isSelected ? 700 : 500, color: "#0f172a",
                                                                             transition: "all 0.2s",
+                                                                            animation: isCorrectAnswer ? "confetti-pop 0.4s ease, pulse-green 1s ease infinite" : "none",
                                                                         }}
                                                                     >
                                                                         <span style={{ marginRight: 8, fontWeight: 700, color: "#94a3b8" }}>{String.fromCharCode(65 + oi)}.</span>
                                                                         {opt}
-                                                                        {isCorrectAnswer && " ✅"}
+                                                                        {isCorrectAnswer && " 🎉"}
                                                                         {isWrongSelection && " ❌"}
                                                                     </button>
                                                                 );
                                                             })}
                                                         </div>
 
+                                                        {/* 정답 피드백 */}
                                                         {quizResult === "correct" && (
-                                                            <div style={{ padding: "12px 16px", borderRadius: 12, background: "#dcfce7", border: "1px solid #86efac", marginBottom: 12 }}>
-                                                                <p style={{ fontSize: 14, fontWeight: 700, color: "#15803d", margin: 0 }}>🎉 정답입니다! +{XP_REWARDS.lesson_complete} XP</p>
-                                                                <p style={{ fontSize: 12, color: "#166534", margin: "4px 0 0" }}>{unit.quiz.explanation}</p>
+                                                            <div style={{
+                                                                padding: "14px 18px", borderRadius: 14,
+                                                                background: "linear-gradient(135deg, #dcfce7, #d1fae5)",
+                                                                border: "1px solid #86efac", marginBottom: 12,
+                                                                animation: "confetti-pop 0.4s ease",
+                                                            }}>
+                                                                <p style={{ fontSize: 15, fontWeight: 800, color: "#15803d", margin: 0 }}>
+                                                                    🎉 정답! +{XP_REWARDS.lesson_complete} XP
+                                                                </p>
+                                                                <p style={{ fontSize: 12, color: "#166534", margin: "6px 0 0", lineHeight: 1.5 }}>{unit.quiz.explanation}</p>
                                                             </div>
                                                         )}
+
+                                                        {/* 오답 피드백 — 정답 안 보여줌! */}
                                                         {quizResult === "wrong" && (
-                                                            <div style={{ padding: "12px 16px", borderRadius: 12, background: "#fee2e2", border: "1px solid #fca5a5", marginBottom: 12 }}>
-                                                                <p style={{ fontSize: 14, fontWeight: 700, color: "#dc2626", margin: 0 }}>❌ 틀렸습니다. 다시 시도해보세요!</p>
+                                                            <div style={{
+                                                                padding: "14px 18px", borderRadius: 14,
+                                                                background: "#fee2e2", border: "1px solid #fca5a5", marginBottom: 12,
+                                                            }}>
+                                                                <p style={{ fontSize: 14, fontWeight: 700, color: "#dc2626", margin: 0 }}>
+                                                                    ❌ 틀렸습니다! -{XP_PENALTIES.wrong_answer} XP
+                                                                </p>
+                                                                <p style={{ fontSize: 12, color: "#991b1b", margin: "4px 0 0" }}>
+                                                                    다시 도전해보세요! {wrongCount < 2 ? "" : `(${3 - wrongCount - 1 > 0 ? `${3 - wrongCount - 1}번 더 틀리면 힌트!` : "힌트가 곧 공개됩니다"}`}
+                                                                </p>
+                                                            </div>
+                                                        )}
+
+                                                        {/* 힌트 (3번 틀림 후) */}
+                                                        {showHint && unit.quiz.explanation && (
+                                                            <div style={{
+                                                                padding: "12px 16px", borderRadius: 12,
+                                                                background: "#fef3c7", border: "1px solid #fde68a", marginBottom: 12,
+                                                            }}>
+                                                                <p style={{ fontSize: 12, fontWeight: 700, color: "#d97706", margin: 0 }}>💡 힌트</p>
+                                                                <p style={{ fontSize: 12, color: "#92400e", margin: "4px 0 0" }}>{unit.quiz.explanation}</p>
                                                             </div>
                                                         )}
 
                                                         {!quizResult && selectedAnswer !== null && (
                                                             <button onClick={() => checkAnswer(unit.quiz!, unit)} style={{
-                                                                padding: "10px 24px", borderRadius: 12, border: "none", fontSize: 14, fontWeight: 700,
+                                                                padding: "12px 28px", borderRadius: 14, border: "none", fontSize: 14, fontWeight: 800,
                                                                 background: "linear-gradient(135deg, #0ea5e9, #6366f1)", color: "#fff",
-                                                                cursor: "pointer", boxShadow: "0 4px 14px rgba(14,165,233,0.3)",
-                                                            }}>✓ 정답 확인</button>
+                                                                cursor: "pointer", boxShadow: "0 6px 20px rgba(14,165,233,0.3)",
+                                                                transition: "all 0.2s",
+                                                            }}>🎯 정답 확인</button>
                                                         )}
 
                                                         {!quizResult && selectedAnswer === null && (
-                                                            <p style={{ fontSize: 12, color: "#94a3b8", margin: 0 }}>💡 보기를 선택한 후 &quot;정답 확인&quot; 버튼을 눌러주세요</p>
+                                                            <p style={{ fontSize: 12, color: "#94a3b8", margin: 0 }}>
+                                                                💡 보기를 선택한 후 &quot;정답 확인&quot; 버튼을 눌러주세요
+                                                                {wrongCount > 0 && ` (${wrongCount}회 시도)`}
+                                                            </p>
                                                         )}
                                                     </div>
                                                 )}

@@ -16,6 +16,11 @@ export const XP_REWARDS = {
     code_submit: 15,
 } as const;
 
+// ── XP 패널티 테이블 ──
+export const XP_PENALTIES = {
+    wrong_answer: 5,  // 오답 시 차감
+} as const;
+
 // ── 레벨 계산 ──
 export function calcLevel(xp: number): number {
     return Math.floor(Math.sqrt(xp / 100)) + 1;
@@ -139,6 +144,42 @@ export async function awardXP(userId: string, amount: number, action: string, ic
         });
         return { xp: amount, level: newLevel, levelUp: false };
     }
+}
+
+// ── XP 차감 함수 (오답 패널티) ──
+export async function deductXP(userId: string, amount: number, reason: string) {
+    const supabase = createClient();
+
+    // activity_log 기록
+    await supabase.from('activity_log').insert({
+        user_id: userId,
+        action: reason,
+        xp_earned: -amount,
+        icon: 'remove_circle',
+        icon_bg: '#fee2e2',
+        icon_color: '#dc2626',
+    });
+
+    // user_progress XP 차감
+    const { data: progress } = await supabase
+        .from('user_progress')
+        .select('xp, level')
+        .eq('user_id', userId)
+        .single();
+
+    if (progress) {
+        const newXp = Math.max(0, (progress.xp || 0) - amount);
+        const newLevel = calcLevel(newXp);
+
+        await supabase.from('user_progress').update({
+            xp: newXp,
+            level: newLevel,
+            updated_at: new Date().toISOString(),
+        }).eq('user_id', userId);
+
+        return { xp: newXp, level: newLevel };
+    }
+    return { xp: 0, level: 1 };
 }
 
 // ── 출석체크 ──

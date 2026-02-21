@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from "react";
 import { createClient } from "@/lib/supabase";
 import { useAuth } from "@/contexts/AuthContext";
 import { useRouter } from "next/navigation";
+import { COURSES } from "@/data/courses";
 
 const glassCard: React.CSSProperties = {
     background: "rgba(255,255,255,0.7)", backdropFilter: "blur(12px)",
@@ -14,6 +15,7 @@ const TABS = [
     { id: "dashboard", label: "📊 대시보드", icon: "dashboard" },
     { id: "users", label: "👥 사용자 관리", icon: "group" },
     { id: "courses", label: "📚 코스 관리", icon: "school" },
+    { id: "materials", label: "📂 수업자료", icon: "folder" },
     { id: "homework", label: "📝 숙제 관리", icon: "assignment" },
     { id: "announcements", label: "📢 공지사항", icon: "campaign" },
 ];
@@ -41,6 +43,10 @@ export default function AdminPage() {
     const [toast, setToast] = useState("");
     const showToast = (msg: string) => { setToast(msg); setTimeout(() => setToast(""), 3000); };
 
+    // 수업자료
+    const [materials, setMaterials] = useState<any[]>([]);
+    const [matForm, setMatForm] = useState({ title: "", description: "", file_url: "", file_type: "link", course_id: "" });
+
     useEffect(() => {
         if (!user) return;
         supabase.from("profiles").select("role").eq("id", user.id).single()
@@ -52,17 +58,19 @@ export default function AdminPage() {
     }, [user, supabase, router]);
 
     const fetchAll = useCallback(async () => {
-        const [usersRes, coursesRes, hwRes, announceRes, progressRes] = await Promise.all([
+        const [usersRes, coursesRes, hwRes, announceRes, progressRes, materialsRes] = await Promise.all([
             supabase.from("profiles").select("*").order("created_at", { ascending: false }).limit(100),
             supabase.from("courses").select("*").order("sort_order"),
             supabase.from("homework").select("*").order("due_date", { ascending: false }).limit(50),
             supabase.from("announcements").select("*").order("created_at", { ascending: false }).limit(20),
             supabase.from("user_progress").select("xp"),
+            supabase.from("study_materials").select("*").order("created_at", { ascending: false }).limit(50),
         ]);
         setUsers(usersRes.data || []);
         setCourses(coursesRes.data || []);
         setHomework(hwRes.data || []);
         setAnnouncements(announceRes.data || []);
+        setMaterials(materialsRes.data || []);
 
         const totalUsers = usersRes.data?.length || 0;
         const totalXp = (progressRes.data || []).reduce((s: number, p: any) => s + (p.xp || 0), 0);
@@ -374,6 +382,123 @@ export default function AdminPage() {
                             <p style={{ fontSize: 14, color: "#475569", lineHeight: 1.6, whiteSpace: "pre-wrap" }}>{a.content}</p>
                         </div>
                     ))}
+                </div>
+            )}
+
+            {/* ── 수업자료 관리 ── */}
+            {tab === "materials" && (
+                <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+                    {/* 자료 등록 폼 */}
+                    <div style={{ ...glassCard, borderRadius: 20, padding: 24 }}>
+                        <h3 style={{ fontSize: 15, fontWeight: 800, color: "#0f172a", marginBottom: 16 }}>➕ 수업자료 등록</h3>
+                        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+                            <input value={matForm.title} onChange={(e) => setMatForm({ ...matForm, title: e.target.value })}
+                                placeholder="자료 제목" style={{
+                                    padding: "10px 14px", borderRadius: 12, border: "1px solid #e2e8f0",
+                                    fontSize: 14, outline: "none", fontFamily: "inherit",
+                                }} />
+                            <select value={matForm.course_id} onChange={(e) => setMatForm({ ...matForm, course_id: e.target.value })} style={{
+                                padding: "10px 14px", borderRadius: 12, border: "1px solid #e2e8f0",
+                                fontSize: 14, outline: "none", fontFamily: "inherit", background: "#fff",
+                            }}>
+                                <option value="">전체 (코스 미지정)</option>
+                                {COURSES.map((c) => (
+                                    <option key={c.id} value={c.id}>{c.icon} {c.title}</option>
+                                ))}
+                            </select>
+                        </div>
+                        <input value={matForm.file_url} onChange={(e) => setMatForm({ ...matForm, file_url: e.target.value })}
+                            placeholder="파일 URL (링크, PDF, 이미지, 동영상 주소)" style={{
+                                width: "100%", padding: "10px 14px", borderRadius: 12, border: "1px solid #e2e8f0",
+                                fontSize: 14, outline: "none", fontFamily: "inherit", marginTop: 12, boxSizing: "border-box",
+                            }} />
+                        <textarea value={matForm.description} onChange={(e) => setMatForm({ ...matForm, description: e.target.value })}
+                            placeholder="설명 (선택)" style={{
+                                width: "100%", padding: "10px 14px", borderRadius: 12, border: "1px solid #e2e8f0",
+                                fontSize: 14, outline: "none", fontFamily: "inherit", resize: "none", minHeight: 60,
+                                marginTop: 12, boxSizing: "border-box",
+                            }} />
+                        <div style={{ display: "flex", gap: 8, marginTop: 12, alignItems: "center", flexWrap: "wrap" }}>
+                            <span style={{ fontSize: 12, color: "#64748b", fontWeight: 600 }}>파일 유형:</span>
+                            {["link", "pdf", "image", "video"].map(t => (
+                                <button key={t} onClick={() => setMatForm({ ...matForm, file_type: t })} style={{
+                                    padding: "6px 14px", borderRadius: 10, border: "none", fontSize: 12, fontWeight: 700,
+                                    background: matForm.file_type === t ? "#0f172a" : "#f1f5f9",
+                                    color: matForm.file_type === t ? "#fff" : "#64748b",
+                                    cursor: "pointer", transition: "all 0.2s",
+                                }}>
+                                    {({ link: "🔗 링크", pdf: "📄 PDF", image: "🖼️ 이미지", video: "🎬 동영상" } as Record<string, string>)[t]}
+                                </button>
+                            ))}
+                            <div style={{ flex: 1 }} />
+                            <button onClick={async () => {
+                                if (!matForm.title || !matForm.file_url) { showToast("❌ 제목과 URL을 입력해주세요"); return; }
+                                const { error } = await supabase.from("study_materials").insert({
+                                    title: matForm.title, description: matForm.description,
+                                    file_url: matForm.file_url, file_type: matForm.file_type,
+                                    course_id: matForm.course_id, created_by: user?.id,
+                                });
+                                if (error) showToast("❌ 등록 실패: " + error.message);
+                                else {
+                                    showToast("✅ 수업자료가 등록되었습니다!");
+                                    setMatForm({ title: "", description: "", file_url: "", file_type: "link", course_id: "" });
+                                    fetchAll();
+                                }
+                            }} style={{
+                                padding: "10px 24px", borderRadius: 12, border: "none",
+                                background: "linear-gradient(135deg, #6366f1, #0ea5e9)", color: "#fff",
+                                fontWeight: 700, fontSize: 14, cursor: "pointer",
+                                boxShadow: "0 4px 14px rgba(99,102,241,0.3)",
+                            }}>✅ 등록</button>
+                        </div>
+                    </div>
+
+                    {/* 등록된 자료 목록 */}
+                    <div style={{ ...glassCard, borderRadius: 20, overflow: "hidden" }}>
+                        <div style={{ padding: "16px 20px", borderBottom: "1px solid #f1f5f9" }}>
+                            <h3 style={{ fontWeight: 800, fontSize: 16, color: "#0f172a", margin: 0 }}>등록된 자료 ({materials.length}개)</h3>
+                        </div>
+                        {materials.length === 0 ? (
+                            <div style={{ padding: 40, textAlign: "center", color: "#94a3b8" }}>등록된 수업자료가 없습니다</div>
+                        ) : materials.map((m: any) => {
+                            const courseInfo = COURSES.find(c => c.id === m.course_id);
+                            return (
+                                <div key={m.id} style={{
+                                    display: "flex", alignItems: "center", gap: 12, padding: "14px 20px",
+                                    borderBottom: "1px solid #f8fafc",
+                                }}>
+                                    <div style={{
+                                        width: 36, height: 36, borderRadius: 10,
+                                        background: ({ pdf: "#fee2e2", image: "#ede9fe", video: "#dbeafe", link: "#cffafe" } as Record<string, string>)[m.file_type] || "#f1f5f9",
+                                        display: "flex", alignItems: "center", justifyContent: "center", fontSize: 18, flexShrink: 0,
+                                    }}>
+                                        {({ pdf: "📄", image: "🖼️", video: "🎬", link: "🔗" } as Record<string, string>)[m.file_type] || "📁"}
+                                    </div>
+                                    <div style={{ flex: 1, minWidth: 0 }}>
+                                        <div style={{ fontSize: 14, fontWeight: 700, color: "#0f172a" }}>{m.title}</div>
+                                        <div style={{ fontSize: 11, color: "#94a3b8", display: "flex", gap: 8, marginTop: 2 }}>
+                                            <span>{m.file_type.toUpperCase()}</span>
+                                            {courseInfo && <span>{courseInfo.icon} {courseInfo.title}</span>}
+                                            <span>{new Date(m.created_at).toLocaleDateString("ko-KR")}</span>
+                                        </div>
+                                    </div>
+                                    <a href={m.file_url} target="_blank" rel="noopener noreferrer" style={{
+                                        padding: "6px 12px", borderRadius: 8, border: "1px solid #e2e8f0",
+                                        background: "#fff", color: "#0ea5e9", fontSize: 11, fontWeight: 600,
+                                        textDecoration: "none",
+                                    }}>열기</a>
+                                    <button onClick={async () => {
+                                        if (!confirm("정말 삭제하시겠습니까?")) return;
+                                        await supabase.from("study_materials").delete().eq("id", m.id);
+                                        showToast("🗑️ 자료가 삭제되었습니다"); fetchAll();
+                                    }} style={{
+                                        padding: "6px 12px", borderRadius: 8, border: "none",
+                                        background: "#fee2e2", color: "#dc2626", fontSize: 11, fontWeight: 700, cursor: "pointer",
+                                    }}>삭제</button>
+                                </div>
+                            );
+                        })}
+                    </div>
                 </div>
             )}
         </div>

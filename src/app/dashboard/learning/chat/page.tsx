@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef, useMemo } from "react";
+import { useState, useEffect, useRef, useMemo, useCallback } from "react";
 import { createClient } from "@/lib/supabase";
 import { useAuth } from "@/contexts/AuthContext";
 
@@ -48,24 +48,62 @@ export default function ChatPage() {
         const sub = supabase.channel(`chat-${channel}`)
             .on("postgres_changes", { event: "INSERT", schema: "public", table: "chat_messages", filter: `channel=eq.${channel}` },
                 (payload) => {
-                    setMessages((prev) => [...prev, payload.new as ChatMsg]);
+                    const newMsg = payload.new as ChatMsg;
+                    // 중복 방지: 이미 optimistic으로 추가된 메시지는 ID로 교체
+                    setMessages((prev) => {
+                        const exists = prev.some(m => m.id === newMsg.id);
+                        if (exists) return prev;
+                        // optimistic 메시지(temp-로 시작)가 있으면 교체
+                        const tempIdx = prev.findIndex(m =>
+                            m.id.startsWith('temp-') &&
+                            m.user_id === newMsg.user_id &&
+                            m.content === newMsg.content
+                        );
+                        if (tempIdx >= 0) {
+                            const updated = [...prev];
+                            updated[tempIdx] = newMsg;
+                            return updated;
+                        }
+                        return [...prev, newMsg];
+                    });
                     setTimeout(() => scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" }), 100);
                 })
             .subscribe();
 
         return () => { supabase.removeChannel(sub); };
-    }, [channel]);
+    }, [channel, supabase]);
 
     const sendMessage = async () => {
         if (!input.trim() || !user) return;
         const displayName = user.name || user.email?.split("@")[0] || "익명";
-        await supabase.from("chat_messages").insert({
+        const content = input.trim();
+        setInput("");
+
+        // Optimistic UI: 즉시 화면에 표시
+        const optimisticMsg: ChatMsg = {
+            id: `temp-${Date.now()}`,
             user_id: user.id,
             display_name: displayName,
-            content: input.trim(),
+            avatar_url: null,
+            content,
+            channel,
+            created_at: new Date().toISOString(),
+        };
+        setMessages((prev) => [...prev, optimisticMsg]);
+        setTimeout(() => scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" }), 50);
+
+        // DB에 저장 (Realtime이 활성화되어 있으면 subscription이 실제 메시지로 교체)
+        const { error } = await supabase.from("chat_messages").insert({
+            user_id: user.id,
+            display_name: displayName,
+            content,
             channel,
         });
-        setInput("");
+
+        // DB 저장 실패 시 optimistic 메시지 제거
+        if (error) {
+            setMessages((prev) => prev.filter(m => m.id !== optimisticMsg.id));
+        }
     };
 
     const handleKeyDown = (e: React.KeyboardEvent) => {

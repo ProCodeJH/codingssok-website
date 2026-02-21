@@ -135,3 +135,46 @@ export function AnimatedBar({
         />
     );
 }
+
+/* ═══════════════════════════════════════════
+ *  ShimmerLoader — 스켈레톤 shimmer 로딩
+ * ═══════════════════════════════════════════ */
+export function ShimmerLoader({ lines = 3, style }: { lines?: number; style?: React.CSSProperties }) {
+    return (
+        <div style={{ display: "flex", flexDirection: "column", gap: 12, ...style }}>
+            {Array.from({ length: lines }).map((_, i) => (
+                <div
+                    key={i}
+                    className="shimmer-line"
+                    style={{
+                        height: i === 0 ? 24 : 16,
+                        width: i === lines - 1 ? "60%" : "100%",
+                        opacity: 1 - i * 0.15,
+                    }}
+                />
+            ))}
+        </div>
+    );
+}
+
+/* ═══════════════════════════════════════════
+ *  HoverGlow — 호버 시 글로우 + 리프트
+ * ═══════════════════════════════════════════ */
+export function HoverGlow({
+    children, glowColor = "rgba(14,165,233,0.15)", liftY = -6, className, style,
+}: { children: ReactNode; glowColor?: string; liftY?: number; className?: string; style?: React.CSSProperties }) {
+    return (
+        <motion.div
+            whileHover={{
+                y: liftY,
+                boxShadow: `0 20px 40px ${glowColor}, 0 0 0 1px ${glowColor}`,
+            }}
+            whileTap={{ scale: 0.98 }}
+            transition={{ type: "spring", stiffness: 400, damping: 25 }}
+            className={className}
+            style={{ ...style, cursor: "pointer" }}
+        >
+            {children}
+        </motion.div>
+    );
+}

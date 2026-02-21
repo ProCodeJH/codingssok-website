@@ -7,6 +7,7 @@ import { motion } from "framer-motion";
 import { AuthProvider, useAuth } from "@/contexts/AuthContext";
 import { getTierInfo } from "@/lib/xp-engine";
 import { PageTransition } from "@/components/motion/page-transition";
+import { GlowPulse } from "@/components/motion/motion";
 
 /* ── Nav Items (한글화 + 새 메뉴) ── */
 const NAV_ITEMS = [
@@ -107,14 +108,16 @@ function LeftSidebar() {
                             </div>
                             <h4 style={{ fontWeight: 700, fontSize: 16, color: "#fff", marginBottom: 6, letterSpacing: "-0.02em" }}>C언어 도전하기</h4>
                             <p style={{ fontSize: 12, color: "rgba(203,213,225,0.8)", marginBottom: 16, fontWeight: 300, lineHeight: 1.6 }}>매일 새로운 C언어 문제에 도전해보세요!</p>
-                            <Link href="/dashboard/learning/courses" style={{
-                                display: "flex", width: "100%", padding: "10px 0", justifyContent: "center", alignItems: "center", gap: 8,
-                                background: "linear-gradient(to right, #0ea5e9, #6366f1)", color: "#fff", borderRadius: 12, fontSize: 12, fontWeight: 700,
-                                textDecoration: "none", boxShadow: "0 10px 15px -3px rgba(14,165,233,0.25)"
-                            }}>
-                                도전 시작
-                                <span className="material-symbols-outlined" style={{ fontSize: 12 }}>arrow_forward</span>
-                            </Link>
+                            <GlowPulse color="rgba(99,102,241,0.5)">
+                                <Link href="/dashboard/learning/courses" style={{
+                                    display: "flex", width: "100%", padding: "10px 0", justifyContent: "center", alignItems: "center", gap: 8,
+                                    background: "linear-gradient(to right, #0ea5e9, #6366f1)", color: "#fff", borderRadius: 12, fontSize: 12, fontWeight: 700,
+                                    textDecoration: "none", boxShadow: "0 10px 15px -3px rgba(14,165,233,0.25)"
+                                }}>
+                                    도전 시작
+                                    <span className="material-symbols-outlined" style={{ fontSize: 12 }}>arrow_forward</span>
+                                </Link>
+                            </GlowPulse>
                         </div>
                     </div>
                 </div>
@@ -266,9 +269,9 @@ export default function LearningLayout({ children }: { children: ReactNode }) {
                     WebkitFontSmoothing: "antialiased",
                 }}>
                     {/* Floating orbs */}
-                    <div className="floating-orb" style={{ background: "#93c5fd", width: 384, height: 384, top: 0, left: 0, transform: "translate(-50%,-50%)" }} />
-                    <div className="floating-orb" style={{ background: "#e9d5ff", width: 500, height: 500, bottom: 0, right: 0, transform: "translate(33%,33%)" }} />
-                    <div className="floating-orb" style={{ background: "#a5f3fc", width: 256, height: 256, top: "33%", right: "25%", opacity: 0.4 }} />
+                    <div className="floating-orb floating-orb--1" style={{ background: "#93c5fd", width: 384, height: 384, top: 0, left: 0 }} />
+                    <div className="floating-orb floating-orb--2" style={{ background: "#e9d5ff", width: 500, height: 500, bottom: 0, right: 0 }} />
+                    <div className="floating-orb floating-orb--3" style={{ background: "#a5f3fc", width: 256, height: 256, top: "33%", right: "25%" }} />
 
                     <Navbar onMenuOpen={() => setSidebarOpen(true)} />
                     <MobileDrawer isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />

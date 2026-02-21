@@ -8,7 +8,7 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import { getTierInfo, getDisplayTier, calcLevel, xpForNextLevel, checkAttendance, TIERS } from "@/lib/xp-engine";
 import { COURSES, getCurriculumStats } from "@/data/courses";
-import { FadeIn, StaggerList, StaggerItem, ScaleOnHover, AnimatedBar } from "@/components/motion/motion";
+import { FadeIn, StaggerList, StaggerItem, ScaleOnHover, AnimatedBar, GlowPulse, HoverGlow } from "@/components/motion/motion";
 import { AnimatedCounter } from "@/components/motion/counter";
 import { TiltCard } from "@/components/motion/tilt-card";
 
@@ -138,16 +138,30 @@ export default function JourneyPage() {
                                     {attendanceMsg && (
                                         <span style={{ fontSize: 13, fontWeight: 700, color: "#059669", background: "#dcfce7", padding: "6px 14px", borderRadius: 12 }}>{attendanceMsg}</span>
                                     )}
-                                    <button onClick={handleAttendance} disabled={attendanceChecked} style={{
-                                        padding: "12px 24px", borderRadius: 14, border: "none", fontSize: 14, fontWeight: 700, cursor: attendanceChecked ? "default" : "pointer",
-                                        background: attendanceChecked ? "#f1f5f9" : "linear-gradient(135deg, #0ea5e9, #6366f1)",
-                                        color: attendanceChecked ? "#94a3b8" : "#fff",
-                                        boxShadow: attendanceChecked ? "none" : "0 8px 20px rgba(14,165,233,0.3)",
-                                        transition: "all 0.2s", display: "flex", alignItems: "center", gap: 8,
-                                    }}>
-                                        <span className="material-symbols-outlined" style={{ fontSize: 18 }}>{attendanceChecked ? "check_circle" : "login"}</span>
-                                        {attendanceChecked ? "출석 완료 ✓" : "출석체크"}
-                                    </button>
+                                    {!attendanceChecked && (
+                                        <GlowPulse color="rgba(14,165,233,0.4)">
+                                            <button onClick={handleAttendance} style={{
+                                                padding: "12px 24px", borderRadius: 14, border: "none", fontSize: 14, fontWeight: 700, cursor: "pointer",
+                                                background: "linear-gradient(135deg, #0ea5e9, #6366f1)",
+                                                color: "#fff",
+                                                boxShadow: "0 8px 20px rgba(14,165,233,0.3)",
+                                                transition: "all 0.2s", display: "flex", alignItems: "center", gap: 8,
+                                            }}>
+                                                <span className="material-symbols-outlined" style={{ fontSize: 18 }}>login</span>
+                                                출석체크
+                                            </button>
+                                        </GlowPulse>
+                                    )}
+                                    {attendanceChecked && (
+                                        <button disabled style={{
+                                            padding: "12px 24px", borderRadius: 14, border: "none", fontSize: 14, fontWeight: 700, cursor: "default",
+                                            background: "#f1f5f9", color: "#94a3b8",
+                                            transition: "all 0.2s", display: "flex", alignItems: "center", gap: 8,
+                                        }}>
+                                            <span className="material-symbols-outlined" style={{ fontSize: 18 }}>check_circle</span>
+                                            출석 완료 ✓
+                                        </button>
+                                    )}
                                 </div>
                             </div>
                         </div>
@@ -304,27 +318,29 @@ export default function JourneyPage() {
                                     const pct = Math.round((done / total) * 100);
                                     const color = COURSE_COLORS[i % COURSE_COLORS.length];
                                     return (
-                                        <Link key={c.title || i} href={`/dashboard/learning/courses/${c.id || i}`} style={{ textDecoration: "none" }}>
-                                            <div style={{ ...glassCard, borderRadius: 20, padding: 24, transition: "all 0.2s", cursor: "pointer", position: "relative", overflow: "hidden" }}>
-                                                <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 4, background: `linear-gradient(90deg, ${color}, ${color}66)` }} />
-                                                <div style={{ display: "flex", alignItems: "center", gap: 14, marginBottom: 12 }}>
-                                                    <div style={{ width: 44, height: 44, borderRadius: 14, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 22, background: `${color}15` }}>
-                                                        {c.icon}
+                                        <HoverGlow glowColor={`${color}22`}>
+                                            <Link key={c.title || i} href={`/dashboard/learning/courses/${c.id || i}`} style={{ textDecoration: "none", display: "block" }}>
+                                                <div style={{ ...glassCard, borderRadius: 20, padding: 24, position: "relative", overflow: "hidden" }}>
+                                                    <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 4, background: `linear-gradient(90deg, ${color}, ${color}66)` }} />
+                                                    <div style={{ display: "flex", alignItems: "center", gap: 14, marginBottom: 12 }}>
+                                                        <div style={{ width: 44, height: 44, borderRadius: 14, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 22, background: `${color}15` }}>
+                                                            {c.icon}
+                                                        </div>
+                                                        <div>
+                                                            <div style={{ fontSize: 15, fontWeight: 800, color: "#0f172a" }}>{c.title}</div>
+                                                            <div style={{ fontSize: 11, color: "#94a3b8" }}>{c.chapters.length}챕터 · {c.totalUnits}유닛</div>
+                                                        </div>
                                                     </div>
-                                                    <div>
-                                                        <div style={{ fontSize: 15, fontWeight: 800, color: "#0f172a" }}>{c.title}</div>
-                                                        <div style={{ fontSize: 11, color: "#94a3b8" }}>{c.chapters.length}챕터 · {c.totalUnits}유닛</div>
+                                                    <p style={{ fontSize: 12, color: "#64748b", marginBottom: 12, lineHeight: 1.5 }}>{c.description}</p>
+                                                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                                                        <div style={{ flex: 1, height: 6, background: "#f1f5f9", borderRadius: 999, marginRight: 12, overflow: "hidden" }}>
+                                                            <AnimatedBar width={`${pct}%`} color={color} height={6} delay={i * 0.1} />
+                                                        </div>
+                                                        <span style={{ fontSize: 12, fontWeight: 800, color }}>{pct}%</span>
                                                     </div>
                                                 </div>
-                                                <p style={{ fontSize: 12, color: "#64748b", marginBottom: 12, lineHeight: 1.5 }}>{c.description}</p>
-                                                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                                                    <div style={{ flex: 1, height: 6, background: "#f1f5f9", borderRadius: 999, marginRight: 12, overflow: "hidden" }}>
-                                                        <div style={{ width: `${pct}%`, height: "100%", borderRadius: 999, background: color, transition: "width 0.5s" }} />
-                                                    </div>
-                                                    <span style={{ fontSize: 12, fontWeight: 800, color }}>{pct}%</span>
-                                                </div>
-                                            </div>
-                                        </Link>
+                                            </Link>
+                                        </HoverGlow>
                                     );
                                 })}
                             </div>
@@ -406,16 +422,26 @@ export default function JourneyPage() {
                                     { label: "오늘의 챌린지", icon: "bolt", href: "/dashboard/learning/courses", color: "#f59e0b" },
                                     { label: "리더보드", icon: "diversity_3", href: "/dashboard/learning/leaderboard", color: "#14b8a6" },
                                     { label: "채팅방", icon: "chat", href: "/dashboard/learning/chat", color: "#6366f1" },
-                                ].map((q) => (
-                                    <Link key={q.label} href={q.href} style={{
-                                        display: "flex", alignItems: "center", gap: 12, padding: "10px 14px",
-                                        borderRadius: 14, background: "#f8fafc", textDecoration: "none",
-                                        transition: "all 0.2s", fontSize: 13, fontWeight: 600, color: "#475569",
-                                    }}>
-                                        <span className="material-symbols-outlined" style={{ fontSize: 18, color: q.color }}>{q.icon}</span>
-                                        {q.label}
-                                        <span className="material-symbols-outlined" style={{ fontSize: 14, color: "#cbd5e1", marginLeft: "auto" }}>chevron_right</span>
-                                    </Link>
+                                ].map((q, qi) => (
+                                    <motion.div
+                                        key={q.label}
+                                        whileHover={{ x: 4, backgroundColor: "#f0f9ff" }}
+                                        transition={{ type: "spring", stiffness: 400, damping: 25 }}
+                                    >
+                                        <Link href={q.href} style={{
+                                            display: "flex", alignItems: "center", gap: 12, padding: "10px 14px",
+                                            borderRadius: 14, background: "#f8fafc", textDecoration: "none",
+                                            transition: "all 0.2s", fontSize: 13, fontWeight: 600, color: "#475569",
+                                        }}>
+                                            <span className="material-symbols-outlined" style={{ fontSize: 18, color: q.color }}>{q.icon}</span>
+                                            {q.label}
+                                            <motion.span
+                                                className="material-symbols-outlined"
+                                                style={{ fontSize: 14, color: "#cbd5e1", marginLeft: "auto" }}
+                                                whileHover={{ x: 4 }}
+                                            >chevron_right</motion.span>
+                                        </Link>
+                                    </motion.div>
                                 ))}
                             </div>
                         </div>

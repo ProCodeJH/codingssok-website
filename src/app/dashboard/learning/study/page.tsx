@@ -6,7 +6,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import Link from "next/link";
 import { COURSES } from "@/data/courses";
 import { motion } from "framer-motion";
-import { FadeIn, StaggerList, StaggerItem } from "@/components/motion/motion";
+import { FadeIn, StaggerList, StaggerItem, ShimmerLoader, HoverGlow } from "@/components/motion/motion";
 
 const glassCard: React.CSSProperties = {
     background: "rgba(255,255,255,0.85)",
@@ -99,7 +99,7 @@ export default function StudyPage() {
 
             {/* 자료 그리드 */}
             {loading ? (
-                <div style={{ textAlign: "center", padding: 60, color: "#94a3b8", fontSize: 14 }}>불러오는 중...</div>
+                <ShimmerLoader lines={6} style={{ padding: 24 }} />
             ) : filtered.length === 0 ? (
                 <div style={{ textAlign: "center", padding: 60 }}>
                     <div style={{ fontSize: 48, marginBottom: 12 }}>📭</div>
@@ -116,68 +116,62 @@ export default function StudyPage() {
                         const course = courseMap[m.course_id];
                         return (
                             <StaggerItem key={m.id}>
-                                <a
-                                    key={m.id}
-                                    href={m.file_url}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    style={{
-                                        ...glassCard, borderRadius: 20, padding: 0, textDecoration: "none",
-                                        overflow: "hidden", transition: "all 0.3s", cursor: "pointer",
-                                        display: "flex", flexDirection: "column",
-                                    }}
-                                    onMouseEnter={e => {
-                                        (e.currentTarget as HTMLElement).style.transform = "translateY(-4px)";
-                                        (e.currentTarget as HTMLElement).style.boxShadow = "0 16px 40px rgba(0,0,0,0.12)";
-                                    }}
-                                    onMouseLeave={e => {
-                                        (e.currentTarget as HTMLElement).style.transform = "translateY(0)";
-                                        (e.currentTarget as HTMLElement).style.boxShadow = "0 8px 32px rgba(0,0,0,0.06)";
-                                    }}
-                                >
-                                    {/* 타입 배너 */}
-                                    <div style={{
-                                        padding: "20px 20px 16px",
-                                        background: typeInfo.bg,
-                                        display: "flex", alignItems: "center", gap: 12,
-                                    }}>
+                                <HoverGlow glowColor={`${typeInfo.color}22`}>
+                                    <a
+                                        key={m.id}
+                                        href={m.file_url}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        style={{
+                                            ...glassCard, borderRadius: 20, padding: 0, textDecoration: "none",
+                                            overflow: "hidden", cursor: "pointer",
+                                            display: "flex", flexDirection: "column",
+                                        }}
+                                    >
+                                        {/* 타입 배너 */}
                                         <div style={{
-                                            width: 44, height: 44, borderRadius: 12,
-                                            background: "#fff", display: "flex", alignItems: "center", justifyContent: "center",
-                                            fontSize: 22, boxShadow: "0 2px 8px rgba(0,0,0,0.08)",
+                                            padding: "20px 20px 16px",
+                                            background: typeInfo.bg,
+                                            display: "flex", alignItems: "center", gap: 12,
                                         }}>
-                                            {typeInfo.icon}
-                                        </div>
-                                        <div style={{ flex: 1 }}>
-                                            <div style={{ fontSize: 15, fontWeight: 800, color: "#0f172a" }}>{m.title}</div>
-                                            {course && (
-                                                <div style={{ fontSize: 11, color: "#64748b", marginTop: 2 }}>
-                                                    {course.icon} {course.title}
-                                                </div>
-                                            )}
-                                        </div>
-                                    </div>
-
-                                    {/* 설명 + 메타 */}
-                                    <div style={{ padding: "14px 20px 16px", flex: 1 }}>
-                                        {m.description && (
-                                            <p style={{ fontSize: 12, color: "#64748b", margin: "0 0 10px", lineHeight: 1.5 }}>
-                                                {m.description}
-                                            </p>
-                                        )}
-                                        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                                            <span style={{
-                                                padding: "3px 8px", borderRadius: 6, fontSize: 10, fontWeight: 700,
-                                                background: typeInfo.bg, color: typeInfo.color, textTransform: "uppercase",
+                                            <div style={{
+                                                width: 44, height: 44, borderRadius: 12,
+                                                background: "#fff", display: "flex", alignItems: "center", justifyContent: "center",
+                                                fontSize: 22, boxShadow: "0 2px 8px rgba(0,0,0,0.08)",
                                             }}>
-                                                {m.file_type}
-                                            </span>
-                                            <span style={{ fontSize: 10, color: "#cbd5e1" }}>
-                                                {new Date(m.created_at).toLocaleDateString("ko-KR")}
-                                            </span>
+                                                {typeInfo.icon}
+                                            </div>
+                                            <div style={{ flex: 1 }}>
+                                                <div style={{ fontSize: 15, fontWeight: 800, color: "#0f172a" }}>{m.title}</div>
+                                                {course && (
+                                                    <div style={{ fontSize: 11, color: "#64748b", marginTop: 2 }}>
+                                                        {course.icon} {course.title}
+                                                    </div>
+                                                )}
+                                            </div>
                                         </div>
-                                    </div>
-                                </a>
+
+                                        {/* 설명 + 메타 */}
+                                        <div style={{ padding: "14px 20px 16px", flex: 1 }}>
+                                            {m.description && (
+                                                <p style={{ fontSize: 12, color: "#64748b", margin: "0 0 10px", lineHeight: 1.5 }}>
+                                                    {m.description}
+                                                </p>
+                                            )}
+                                            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                                                <span style={{
+                                                    padding: "3px 8px", borderRadius: 6, fontSize: 10, fontWeight: 700,
+                                                    background: typeInfo.bg, color: typeInfo.color, textTransform: "uppercase",
+                                                }}>
+                                                    {m.file_type}
+                                                </span>
+                                                <span style={{ fontSize: 10, color: "#cbd5e1" }}>
+                                                    {new Date(m.created_at).toLocaleDateString("ko-KR")}
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </a>
+                                </HoverGlow>
                             </StaggerItem>
                         );
                     })}
@@ -189,15 +183,17 @@ export default function StudyPage() {
 
 function FilterChip({ label, active, onClick, count }: { label: string; active: boolean; onClick: () => void; count: number }) {
     return (
-        <button
+        <motion.button
             onClick={onClick}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            transition={{ type: "spring", stiffness: 400, damping: 20 }}
             style={{
                 padding: "6px 14px", borderRadius: 20, border: "none",
                 background: active ? "linear-gradient(135deg, #0ea5e9, #6366f1)" : "#f1f5f9",
                 color: active ? "#fff" : "#64748b",
                 fontSize: 12, fontWeight: 700, cursor: "pointer",
                 display: "flex", alignItems: "center", gap: 4,
-                transition: "all 0.2s",
             }}
         >
             {label}
@@ -208,6 +204,6 @@ function FilterChip({ label, active, onClick, count }: { label: string; active: 
             }}>
                 {count}
             </span>
-        </button>
+        </motion.button>
     );
 }

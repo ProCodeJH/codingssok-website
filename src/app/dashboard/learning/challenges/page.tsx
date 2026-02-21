@@ -3,7 +3,7 @@
 import { useState, useMemo } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { motion } from "framer-motion";
-import { FadeIn, StaggerList, StaggerItem } from "@/components/motion/motion";
+import { FadeIn, StaggerList, StaggerItem, HoverGlow } from "@/components/motion/motion";
 
 /* ── Sample Challenge Data ── */
 const CHALLENGES = [
@@ -118,17 +118,17 @@ export default function ChallengesPage() {
                             const isActive = ch.status === "active";
                             return (
                                 <StaggerItem key={ch.id}>
-                                    <div key={ch.id} style={{
-                                        position: "relative", padding: 28, borderRadius: 16,
-                                        background: isSolved ? "rgba(248,250,252,0.5)" : "rgba(255,255,255,0.7)",
-                                        backdropFilter: "blur(20px)", WebkitBackdropFilter: "blur(20px)",
-                                        border: `1px solid ${isActive ? cfg.borderColor : "rgba(255,255,255,0.6)"}`,
-                                        boxShadow: isActive ? "0 4px 30px rgba(17,82,212,0.1)" : "0 4px 30px rgba(0,0,0,0.05)",
-                                        opacity: isSolved ? 0.75 : 1, cursor: "pointer",
-                                        transition: "all 0.3s", transform: "translateY(0)",
-                                    }}
-                                        onMouseEnter={(e) => { if (!isSolved) { e.currentTarget.style.transform = "translateY(-4px)"; e.currentTarget.style.boxShadow = "0 8px 40px rgba(17,82,212,0.15)"; } }}
-                                        onMouseLeave={(e) => { e.currentTarget.style.transform = "translateY(0)"; e.currentTarget.style.boxShadow = isActive ? "0 4px 30px rgba(17,82,212,0.1)" : "0 4px 30px rgba(0,0,0,0.05)"; }}
+                                    <motion.div key={ch.id}
+                                        whileHover={!isSolved ? { y: -4, boxShadow: "0 8px 40px rgba(17,82,212,0.15)" } : {}}
+                                        transition={{ type: "spring", stiffness: 300, damping: 25 }}
+                                        style={{
+                                            position: "relative", padding: 28, borderRadius: 16,
+                                            background: isSolved ? "rgba(248,250,252,0.5)" : "rgba(255,255,255,0.7)",
+                                            backdropFilter: "blur(20px)", WebkitBackdropFilter: "blur(20px)",
+                                            border: `1px solid ${isActive ? cfg.borderColor : "rgba(255,255,255,0.6)"}`,
+                                            boxShadow: isActive ? "0 4px 30px rgba(17,82,212,0.1)" : "0 4px 30px rgba(0,0,0,0.05)",
+                                            opacity: isSolved ? 0.75 : 1, cursor: "pointer",
+                                        }}
                                     >
                                         {/* Active left bar */}
                                         {isActive && <div style={{ position: "absolute", top: 0, left: 0, width: 4, height: "100%", background: "#1152d4", borderRadius: "16px 0 0 16px" }} />}
@@ -182,22 +182,25 @@ export default function ChallengesPage() {
                                                     </span>
                                                 </div>
                                                 {!isSolved && (
-                                                    <button style={{
-                                                        width: 40, height: 40, borderRadius: 99, border: "none", cursor: "pointer",
-                                                        background: isActive ? "#1152d4" : "#f1f5f9",
-                                                        color: isActive ? "#fff" : "#94a3b8",
-                                                        display: "flex", alignItems: "center", justifyContent: "center",
-                                                        boxShadow: isActive ? "0 8px 20px rgba(17,82,212,0.3)" : "none",
-                                                        transition: "all 0.2s",
-                                                    }}>
+                                                    <motion.button
+                                                        whileHover={{ scale: 1.1, rotate: 10 }}
+                                                        whileTap={{ scale: 0.9 }}
+                                                        style={{
+                                                            width: 40, height: 40, borderRadius: 99, border: "none", cursor: "pointer",
+                                                            background: isActive ? "#1152d4" : "#f1f5f9",
+                                                            color: isActive ? "#fff" : "#94a3b8",
+                                                            display: "flex", alignItems: "center", justifyContent: "center",
+                                                            boxShadow: isActive ? "0 8px 20px rgba(17,82,212,0.3)" : "none",
+                                                        }}
+                                                    >
                                                         <span className="material-symbols-outlined">
                                                             {isActive ? "code" : ch.status === "hard" ? "lock_open" : "lock"}
                                                         </span>
-                                                    </button>
+                                                    </motion.button>
                                                 )}
                                             </div>
                                         </div>
-                                    </div>
+                                    </motion.div>
                                 </StaggerItem>
                             );
                         })}
@@ -224,12 +227,10 @@ export default function ChallengesPage() {
                             <span>{solved} / {CHALLENGES.length} 완료</span>
                         </div>
                         <div style={{ height: 8, width: "100%", background: "#e2e8f0", borderRadius: 99, overflow: "hidden" }}>
-                            <div style={{
+                            <motion.div initial={{ width: 0 }} animate={{ width: `${(solved / CHALLENGES.length) * 100}%` }} transition={{ duration: 1, ease: "easeOut" }} style={{
                                 height: "100%", borderRadius: 99,
                                 background: "linear-gradient(90deg, #1152d4, #6366f1)",
-                                width: `${(solved / CHALLENGES.length) * 100}%`,
                                 boxShadow: "0 0 10px rgba(17,82,212,0.5)",
-                                transition: "width 0.5s",
                             }} />
                         </div>
                     </div>
@@ -246,17 +247,21 @@ export default function ChallengesPage() {
                     </div>
 
                     {/* Action */}
-                    <button style={{
-                        position: "relative", overflow: "hidden", borderRadius: 16, border: "none", cursor: "pointer",
-                        padding: "14px 32px", fontWeight: 800, fontSize: 15, letterSpacing: "0.03em",
-                        background: "linear-gradient(135deg, #1152d4, #6366f1)",
-                        color: "#fff", boxShadow: "0 8px 25px rgba(17,82,212,0.3)",
-                        display: "flex", alignItems: "center", gap: 8, transition: "all 0.2s",
-                        flexShrink: 0,
-                    }}>
+                    <motion.button
+                        whileHover={{ scale: 1.05, boxShadow: "0 12px 30px rgba(17,82,212,0.4)" }}
+                        whileTap={{ scale: 0.95 }}
+                        style={{
+                            position: "relative", overflow: "hidden", borderRadius: 16, border: "none", cursor: "pointer",
+                            padding: "14px 32px", fontWeight: 800, fontSize: 15, letterSpacing: "0.03em",
+                            background: "linear-gradient(135deg, #1152d4, #6366f1)",
+                            color: "#fff", boxShadow: "0 8px 25px rgba(17,82,212,0.3)",
+                            display: "flex", alignItems: "center", gap: 8,
+                            flexShrink: 0,
+                        }}
+                    >
                         모든 문제 보기
                         <span className="material-symbols-outlined" style={{ fontSize: 18 }}>arrow_forward</span>
-                    </button>
+                    </motion.button>
                 </div>
             </div>
 

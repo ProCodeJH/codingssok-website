@@ -11,14 +11,15 @@ import { COURSES, getCurriculumStats } from "@/data/courses";
 import { FadeIn, AnimatedBar, GlowPulse, HoverGlow } from "@/components/motion/motion";
 import { AnimatedCounter } from "@/components/motion/counter";
 import { TiltCard } from "@/components/motion/tilt-card";
+import { TextReveal, MorphingGradient, FloatingCard, Spotlight } from "@/components/motion/premium";
 
 /* ── Styles ── */
 const glassCard: React.CSSProperties = {
-    background: "rgba(255,255,255,0.7)",
-    backdropFilter: "blur(12px)",
-    WebkitBackdropFilter: "blur(12px)",
-    border: "1px solid rgba(255,255,255,0.8)",
-    boxShadow: "0 4px 20px rgba(0,0,0,0.03)",
+    background: "rgba(255,255,255,0.65)",
+    backdropFilter: "blur(16px) saturate(180%)",
+    WebkitBackdropFilter: "blur(16px) saturate(180%)",
+    border: "1px solid rgba(255,255,255,0.7)",
+    boxShadow: "0 1px 3px rgba(0,0,0,0.03), 0 4px 20px rgba(0,0,0,0.03)",
 };
 
 /* ── GitHub-style Heatmap Component ── */
@@ -211,14 +212,16 @@ export default function JourneyPage() {
                     {/* ── Welcome + 출석체크 ── */}
                     <FadeIn>
                         <div style={{ ...glassCard, borderRadius: 28, padding: 28, position: "relative", overflow: "hidden" }}>
+                            <MorphingGradient colors={["#0ea5e9", "#6366f1", "#ec4899", "#14b8a6"]} speed={12} style={{ opacity: 0.4 }} />
                             <div style={{ position: "absolute", top: -40, right: -40, width: 180, height: 180, background: "rgba(14,165,233,0.06)", borderRadius: "50%", filter: "blur(40px)" }} />
                             <div style={{ position: "absolute", bottom: -30, left: -30, width: 120, height: 120, background: "rgba(99,102,241,0.05)", borderRadius: "50%", filter: "blur(30px)" }} />
                             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", position: "relative", zIndex: 10, flexWrap: "wrap", gap: 16 }}>
                                 <div>
-                                    <h1 style={{ fontWeight: 800, fontSize: 24, color: "#0f172a", margin: 0, display: "flex", alignItems: "center", gap: 12 }}>
-                                        <span style={{ fontSize: 28 }}>{tierInfo.icon}</span>
-                                        안녕하세요, {user?.email?.split("@")[0] || "학생"}님!
-                                    </h1>
+                                    <TextReveal
+                                        text={`${tierInfo.icon} 안녕하세요, ${user?.email?.split("@")[0] || "학생"}님!`}
+                                        style={{ fontWeight: 800, fontSize: 24, color: "#0f172a", margin: 0 }}
+                                        staggerDelay={0.05}
+                                    />
                                     <div style={{ display: "flex", alignItems: "center", gap: 12, marginTop: 10 }}>
                                         <span style={{
                                             fontSize: 11, fontWeight: 700, color: "#fff",
@@ -549,63 +552,76 @@ export default function JourneyPage() {
 
                     {/* 통계 카드 */}
                     <FadeIn delay={0.3} direction="right">
-                        <div style={{ ...glassCard, borderRadius: 24, padding: 24 }}>
-                            <h3 style={{ fontSize: 15, fontWeight: 800, color: "#0f172a", marginBottom: 16, display: "flex", alignItems: "center", gap: 8 }}>
-                                <span className="material-symbols-outlined" style={{ fontSize: 18, color: "#f59e0b" }}>bar_chart</span>
-                                나의 학습 현황
-                            </h3>
-                            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
-                                {[
-                                    { label: "🔥 연속 출석", value: `${progress?.streak || 0}일`, color: "#ef4444" },
-                                    { label: "📊 성공률", value: `${successRate}%`, color: "#0ea5e9" },
-                                    { label: "💻 코드 제출", value: `${submissions}회`, color: "#8b5cf6" },
-                                    { label: "✅ 풀은 문제", value: `${progress?.totalProblems || 0}개`, color: "#22c55e" },
-                                    { label: "⭐ 경험치", value: `${(progress?.xp || 0).toLocaleString()}`, color: "#f59e0b" },
-                                    { label: "📈 레벨", value: `Lv.${calcLevel(progress?.xp || 0)}`, color: "#06b6d4" },
-                                ].map((s, si) => (
-                                    <motion.div key={s.label}
-                                        initial={{ opacity: 0, scale: 0.8 }}
-                                        animate={{ opacity: 1, scale: 1 }}
-                                        transition={{ delay: 0.3 + si * 0.06 }}
-                                        whileHover={{ scale: 1.05, y: -2 }}
-                                        style={{ padding: 14, borderRadius: 16, background: "#f8fafc", textAlign: "center", cursor: "default" }}>
-                                        <div style={{ fontSize: 11, color: "#94a3b8", marginBottom: 4 }}>{s.label}</div>
-                                        <div style={{ fontSize: 18, fontWeight: 900, color: s.color }}>{s.value}</div>
-                                    </motion.div>
-                                ))}
+                        <Spotlight size={250} color="rgba(14,165,233,0.05)" style={{ borderRadius: 24 }}>
+                            <div style={{ ...glassCard, borderRadius: 24, padding: 24 }}>
+                                <h3 style={{ fontSize: 15, fontWeight: 800, color: "#0f172a", marginBottom: 16, display: "flex", alignItems: "center", gap: 8 }}>
+                                    <span className="material-symbols-outlined" style={{ fontSize: 18, color: "#f59e0b" }}>bar_chart</span>
+                                    나의 학습 현황
+                                </h3>
+                                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+                                    {[
+                                        { label: "🔥 연속 출석", value: `${progress?.streak || 0}일`, color: "#ef4444" },
+                                        { label: "📊 성공률", value: `${successRate}%`, color: "#0ea5e9" },
+                                        { label: "💻 코드 제출", value: `${submissions}회`, color: "#8b5cf6" },
+                                        { label: "✅ 풀은 문제", value: `${progress?.totalProblems || 0}개`, color: "#22c55e" },
+                                        { label: "⭐ 경험치", value: `${(progress?.xp || 0).toLocaleString()}`, color: "#f59e0b" },
+                                        { label: "📈 레벨", value: `Lv.${calcLevel(progress?.xp || 0)}`, color: "#06b6d4" },
+                                    ].map((s, si) => (
+                                        <motion.div key={s.label}
+                                            initial={{ opacity: 0, scale: 0.8 }}
+                                            animate={{ opacity: 1, scale: 1 }}
+                                            transition={{ delay: 0.3 + si * 0.06 }}
+                                            whileHover={{ scale: 1.06, y: -3, boxShadow: `0 8px 24px ${s.color}15` }}
+                                            style={{ padding: 14, borderRadius: 16, background: "linear-gradient(135deg, #f8fafc, #f0f9ff)", textAlign: "center", cursor: "default", border: "1px solid rgba(226,232,240,0.5)" }}>
+                                            <div style={{ fontSize: 11, color: "#94a3b8", marginBottom: 4 }}>{s.label}</div>
+                                            <div style={{ fontSize: 18, fontWeight: 900, color: s.color }}>{s.value}</div>
+                                        </motion.div>
+                                    ))}
+                                </div>
                             </div>
-                        </div>
+                        </Spotlight>
                     </FadeIn>
 
                     {/* 빠른 이동 */}
                     <FadeIn delay={0.4} direction="right">
-                        <div style={{ ...glassCard, borderRadius: 24, padding: 20 }}>
-                            <h3 style={{ fontSize: 15, fontWeight: 800, color: "#0f172a", marginBottom: 12 }}>⚡ 바로가기</h3>
-                            <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-                                {[
-                                    { label: "C 컴파일러", icon: "terminal", href: "/dashboard/learning/compiler", color: "#ec4899" },
-                                    { label: "오늘의 챌린지", icon: "bolt", href: "/dashboard/learning/courses", color: "#f59e0b" },
-                                    { label: "리더보드", icon: "diversity_3", href: "/dashboard/learning/leaderboard", color: "#14b8a6" },
-                                    { label: "채팅방", icon: "chat", href: "/dashboard/learning/chat", color: "#6366f1" },
-                                ].map((q) => (
-                                    <motion.div key={q.label}
-                                        whileHover={{ x: 4, backgroundColor: "#f0f9ff" }}
-                                        transition={{ type: "spring", stiffness: 400, damping: 25 }}>
-                                        <Link href={q.href} style={{
-                                            display: "flex", alignItems: "center", gap: 12, padding: "10px 14px",
-                                            borderRadius: 14, background: "#f8fafc", textDecoration: "none",
-                                            fontSize: 13, fontWeight: 600, color: "#475569",
-                                        }}>
-                                            <span className="material-symbols-outlined" style={{ fontSize: 18, color: q.color }}>{q.icon}</span>
-                                            {q.label}
-                                            <motion.span className="material-symbols-outlined"
-                                                style={{ fontSize: 14, color: "#cbd5e1", marginLeft: "auto" }}
-                                                whileHover={{ x: 4 }}>chevron_right</motion.span>
-                                        </Link>
-                                    </motion.div>
-                                ))}
+                        <Spotlight size={200} color="rgba(99,102,241,0.05)" style={{ borderRadius: 24 }}>
+                            <div style={{ ...glassCard, borderRadius: 24, padding: 20 }}>
+                                <h3 style={{ fontSize: 15, fontWeight: 800, color: "#0f172a", marginBottom: 12 }}>⚡ 바로가기</h3>
+                                <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+                                    {[
+                                        { label: "C 컴파일러", icon: "terminal", href: "/dashboard/learning/compiler", color: "#ec4899" },
+                                        { label: "오늘의 챌린지", icon: "bolt", href: "/dashboard/learning/courses", color: "#f59e0b" },
+                                        { label: "리더보드", icon: "diversity_3", href: "/dashboard/learning/leaderboard", color: "#14b8a6" },
+                                        { label: "채팅방", icon: "chat", href: "/dashboard/learning/chat", color: "#6366f1" },
+                                    ].map((q, qi) => (
+                                        <motion.div key={q.label}
+                                            initial={{ opacity: 0, x: 10 }}
+                                            animate={{ opacity: 1, x: 0 }}
+                                            transition={{ delay: 0.5 + qi * 0.05 }}
+                                            whileHover={{ x: 4, backgroundColor: "rgba(240,249,255,0.6)", boxShadow: `0 4px 16px ${q.color}10` }}
+                                            style={{ borderRadius: 14 }}
+                                        >
+                                            <Link href={q.href} style={{
+                                                display: "flex", alignItems: "center", gap: 12, padding: "10px 14px",
+                                                borderRadius: 14, background: "rgba(248,250,252,0.6)", textDecoration: "none",
+                                                fontSize: 13, fontWeight: 600, color: "#475569",
+                                                border: "1px solid rgba(226,232,240,0.3)",
+                                            }}>
+                                                <motion.span className="material-symbols-outlined"
+                                                    style={{ fontSize: 18, color: q.color }}
+                                                    whileHover={{ scale: 1.2, rotate: 10 }}
+                                                    transition={{ type: "spring", stiffness: 400 }}
+                                                >{q.icon}</motion.span>
+                                                {q.label}
+                                                <motion.span className="material-symbols-outlined"
+                                                    style={{ fontSize: 14, color: "#cbd5e1", marginLeft: "auto" }}
+                                                    whileHover={{ x: 4 }}>chevron_right</motion.span>
+                                            </Link>
+                                        </motion.div>
+                                    ))}
+                                </div>
                             </div>
-                        </div>
+                        </Spotlight>
                     </FadeIn>
                 </div>
             </div>

@@ -2,7 +2,8 @@
 
 import { useState, useEffect, useCallback, useMemo } from "react";
 import { createClient } from "@/lib/supabase";
-import { FadeIn, StaggerList, StaggerItem } from "@/components/motion/motion";
+import { motion } from "framer-motion";
+import { FadeIn, StaggerList, StaggerItem, ShimmerLoader } from "@/components/motion/motion";
 
 /*
   숙제 & 노트 시스템 — 화이트톤 (learning 레이아웃 통합)
@@ -129,15 +130,19 @@ export default function HomeworkPage() {
                 background: "#f8fafc",
             }}>
                 {(["homework", "notes"] as const).map((t) => (
-                    <button key={t} onClick={() => setTab(t)} style={{
-                        flex: 1, padding: "12px 0", border: "none", fontWeight: 700, fontSize: 14,
-                        cursor: "pointer", fontFamily: "inherit", transition: "all 0.2s",
-                        background: tab === t ? "#fff" : "transparent",
-                        color: tab === t ? "#0f172a" : "#94a3b8",
-                        boxShadow: tab === t ? "0 1px 3px rgba(0,0,0,0.06)" : "none",
-                    }}>
+                    <motion.button key={t} onClick={() => setTab(t)}
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
+                        style={{
+                            flex: 1, padding: "12px 0", border: "none", fontWeight: 700, fontSize: 14,
+                            cursor: "pointer", fontFamily: "inherit",
+                            background: tab === t ? "#fff" : "transparent",
+                            color: tab === t ? "#0f172a" : "#94a3b8",
+                            boxShadow: tab === t ? "0 1px 3px rgba(0,0,0,0.06)" : "none",
+                        }}
+                    >
                         {t === "homework" ? "📋 숙제" : "📓 수업 노트"}
-                    </button>
+                    </motion.button>
                 ))}
             </div>
 
@@ -145,7 +150,7 @@ export default function HomeworkPage() {
             {tab === "homework" && (
                 <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
                     {hwLoading ? (
-                        <p style={{ textAlign: "center", color: "#94a3b8", padding: 40 }}>숙제를 불러오는 중...</p>
+                        <ShimmerLoader lines={4} style={{ padding: 24 }} />
                     ) : homeworkList.length === 0 ? (
                         <div style={{
                             textAlign: "center", padding: "60px 24px", borderRadius: 20, ...glassCard,
@@ -161,10 +166,15 @@ export default function HomeworkPage() {
                         homeworkList.map((hw) => {
                             const sc = subjectColors[hw.subject] || { bg: "#f1f5f9", text: "#64748b", border: "#e2e8f0" };
                             return (
-                                <div key={hw.id} style={{
-                                    ...glassCard, borderRadius: 16, padding: "20px 24px",
-                                    display: "flex", alignItems: "center", justifyContent: "space-between", gap: 16,
-                                }}>
+                                <motion.div key={hw.id}
+                                    initial={{ opacity: 0, y: 16 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    whileHover={{ x: 4, boxShadow: "0 8px 24px rgba(0,0,0,0.08)" }}
+                                    style={{
+                                        ...glassCard, borderRadius: 16, padding: "20px 24px",
+                                        display: "flex", alignItems: "center", justifyContent: "space-between", gap: 16,
+                                    }}
+                                >
                                     <div>
                                         <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8 }}>
                                             <span style={{
@@ -182,14 +192,18 @@ export default function HomeworkPage() {
                                             background: "#dcfce7", color: "#15803d", border: "1px solid #bbf7d0", whiteSpace: "nowrap",
                                         }}>✅ 제출 완료</span>
                                     ) : (
-                                        <button onClick={() => submitHomework(hw.id)} style={{
-                                            padding: "8px 20px", borderRadius: 12, border: "none",
-                                            background: `linear-gradient(to right, ${PRIMARY}, #6366f1)`, color: "#fff",
-                                            fontWeight: 700, fontSize: 12, cursor: "pointer", whiteSpace: "nowrap",
-                                            boxShadow: "0 4px 14px rgba(14,165,233,0.3)",
-                                        }}>제출하기</button>
+                                        <motion.button onClick={() => submitHomework(hw.id)}
+                                            whileHover={{ scale: 1.05, boxShadow: "0 6px 20px rgba(14,165,233,0.4)" }}
+                                            whileTap={{ scale: 0.95 }}
+                                            style={{
+                                                padding: "8px 20px", borderRadius: 12, border: "none",
+                                                background: `linear-gradient(to right, ${PRIMARY}, #6366f1)`, color: "#fff",
+                                                fontWeight: 700, fontSize: 12, cursor: "pointer", whiteSpace: "nowrap",
+                                                boxShadow: "0 4px 14px rgba(14,165,233,0.3)",
+                                            }}
+                                        >제출하기</motion.button>
                                     )}
-                                </div>
+                                </motion.div>
                             );
                         })
                     )}
@@ -253,7 +267,7 @@ export default function HomeworkPage() {
 
                     {/* Notes list */}
                     {notesLoading ? (
-                        <p style={{ textAlign: "center", color: "#94a3b8", padding: 40 }}>노트를 불러오는 중...</p>
+                        <ShimmerLoader lines={4} style={{ padding: 24 }} />
                     ) : notes.length === 0 ? (
                         <div style={{
                             textAlign: "center", padding: "60px 24px", borderRadius: 20, ...glassCard,
@@ -267,7 +281,12 @@ export default function HomeworkPage() {
                         </div>
                     ) : (
                         notes.map((note) => (
-                            <div key={note.id} style={{ ...glassCard, borderRadius: 16, padding: "20px 24px" }}>
+                            <motion.div key={note.id}
+                                initial={{ opacity: 0, y: 12 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                whileHover={{ x: 4 }}
+                                style={{ ...glassCard, borderRadius: 16, padding: "20px 24px" }}
+                            >
                                 <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 8 }}>
                                     <h3 style={{ fontSize: 16, fontWeight: 700, color: "#0f172a" }}>{note.title}</h3>
                                     <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
@@ -287,7 +306,7 @@ export default function HomeworkPage() {
                                         ))}
                                     </div>
                                 )}
-                            </div>
+                            </motion.div>
                         ))
                     )}
                 </div>

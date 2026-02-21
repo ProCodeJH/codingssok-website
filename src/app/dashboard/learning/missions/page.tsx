@@ -54,12 +54,17 @@ export default function MissionsPage() {
                     { key: "missions" as const, label: "📋 데일리 미션", icon: "task_alt" },
                     { key: "achievements" as const, label: "🏅 업적", icon: "military_tech" },
                 ].map((t) => (
-                    <button key={t.key} onClick={() => setTab(t.key)} style={{
-                        padding: "12px 24px", borderRadius: 14, border: "none", fontSize: 14, fontWeight: 700,
-                        background: tab === t.key ? "linear-gradient(135deg, #0ea5e9, #6366f1)" : "rgba(255,255,255,0.7)",
-                        color: tab === t.key ? "#fff" : "#64748b", cursor: "pointer",
-                        boxShadow: tab === t.key ? "0 8px 20px rgba(14,165,233,0.2)" : "none",
-                    }}>{t.label}</button>
+                    <motion.button key={t.key} onClick={() => setTab(t.key)}
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                        transition={{ type: "spring", stiffness: 400, damping: 20 }}
+                        style={{
+                            padding: "12px 24px", borderRadius: 14, border: "none", fontSize: 14, fontWeight: 700,
+                            background: tab === t.key ? "linear-gradient(135deg, #0ea5e9, #6366f1)" : "rgba(255,255,255,0.7)",
+                            color: tab === t.key ? "#fff" : "#64748b", cursor: "pointer",
+                            boxShadow: tab === t.key ? "0 8px 20px rgba(14,165,233,0.2)" : "none",
+                        }}
+                    >{t.label}</motion.button>
                 ))}
             </div>
 
@@ -79,6 +84,7 @@ export default function MissionsPage() {
                                         display: "flex", alignItems: "center", gap: 16, padding: "16px 20px",
                                         borderRadius: 16, background: done ? "#f0fdf4" : "#f8fafc",
                                         border: `1px solid ${done ? "#bbf7d0" : "#e2e8f0"}`,
+                                        cursor: "default",
                                     }}>
                                         <div style={{
                                             width: 44, height: 44, borderRadius: 14, display: "flex", alignItems: "center", justifyContent: "center",
@@ -117,17 +123,22 @@ export default function MissionsPage() {
                                 {missions.filter(m => m.mission_type === "weekly").map((m) => {
                                     const done = completedMissionIds.includes(m.id);
                                     return (
-                                        <div key={m.id} style={{
-                                            display: "flex", alignItems: "center", gap: 16, padding: "16px 20px",
-                                            borderRadius: 16, background: "#f8fafc", border: "1px solid #e2e8f0",
-                                        }}>
+                                        <motion.div key={m.id}
+                                            initial={{ opacity: 0, y: 10 }}
+                                            animate={{ opacity: 1, y: 0 }}
+                                            whileHover={{ x: 4 }}
+                                            style={{
+                                                display: "flex", alignItems: "center", gap: 16, padding: "16px 20px",
+                                                borderRadius: 16, background: "#f8fafc", border: "1px solid #e2e8f0",
+                                            }}
+                                        >
                                             <span style={{ fontSize: 20 }}>{m.icon}</span>
                                             <div style={{ flex: 1 }}>
                                                 <div style={{ fontSize: 14, fontWeight: 700, color: "#0f172a" }}>{m.title}</div>
                                                 <div style={{ fontSize: 12, color: "#94a3b8" }}>{m.description}</div>
                                             </div>
                                             <span style={{ fontSize: 12, fontWeight: 700, color: "#b45309" }}>+{m.xp_reward} XP</span>
-                                        </div>
+                                        </motion.div>
                                     );
                                 })}
                             </div>
@@ -148,13 +159,19 @@ export default function MissionsPage() {
                             const earned = earnedAchievementIds.includes(a.id);
                             const r = RARITY_COLORS[a.rarity] || RARITY_COLORS.common;
                             return (
-                                <div key={a.id} style={{
-                                    padding: 20, borderRadius: 18,
-                                    background: earned ? r.bg : "#f8fafc",
-                                    border: `1px solid ${earned ? r.border : "#e2e8f0"}`,
-                                    opacity: earned ? 1 : 0.5,
-                                    position: "relative",
-                                }}>
+                                <motion.div key={a.id}
+                                    initial={{ opacity: 0, scale: 0.95 }}
+                                    animate={{ opacity: 1, scale: 1 }}
+                                    whileHover={earned ? { y: -4, boxShadow: `0 8px 24px ${r.color}30` } : {}}
+                                    transition={{ type: "spring", stiffness: 300, damping: 25 }}
+                                    style={{
+                                        padding: 20, borderRadius: 18,
+                                        background: earned ? r.bg : "#f8fafc",
+                                        border: `1px solid ${earned ? r.border : "#e2e8f0"}`,
+                                        opacity: earned ? 1 : 0.5,
+                                        position: "relative",
+                                    }}
+                                >
                                     {earned && (
                                         <span style={{
                                             position: "absolute", top: 10, right: 10, fontSize: 10, fontWeight: 700,
@@ -179,7 +196,7 @@ export default function MissionsPage() {
                                         <span>보상: +{a.xp_reward} XP</span>
                                         {earned && <span style={{ color: "#22c55e" }}>✓ 달성</span>}
                                     </div>
-                                </div>
+                                </motion.div>
                             );
                         })}
                     </div>

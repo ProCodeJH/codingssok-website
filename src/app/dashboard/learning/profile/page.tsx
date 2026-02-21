@@ -5,8 +5,8 @@ import { createClient } from "@/lib/supabase";
 import { useAuth } from "@/contexts/AuthContext";
 import { getTierInfo, getDisplayTier, calcLevel, xpForNextLevel } from "@/lib/xp-engine";
 import { useUserProgress } from "@/hooks/useUserProgress";
-import { motion } from "framer-motion";
-import { FadeIn, AnimatedBar } from "@/components/motion/motion";
+import { motion, AnimatePresence } from "framer-motion";
+import { FadeIn, AnimatedBar, ShimmerLoader, HoverGlow } from "@/components/motion/motion";
 import { TiltCard } from "@/components/motion/tilt-card";
 
 const glassCard: React.CSSProperties = {
@@ -105,21 +105,31 @@ export default function ProfilePage() {
     return (
         <div style={{ display: "flex", flexDirection: "column", gap: 24, maxWidth: 800, margin: "0 auto" }}>
             {/* 프로필 헤더 카드 */}
-            <div style={{
-                ...glassCard, borderRadius: 32, padding: 40, position: "relative", overflow: "hidden",
-            }}>
-                <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 120, background: tierInfo.gradient, opacity: 0.3 }} />
+            <motion.div
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] }}
+                style={{
+                    ...glassCard, borderRadius: 32, padding: 40, position: "relative", overflow: "hidden",
+                }}
+            >
+                <motion.div animate={{ opacity: [0.2, 0.4, 0.2] }} transition={{ repeat: Infinity, duration: 4 }} style={{ position: "absolute", top: 0, left: 0, right: 0, height: 120, background: tierInfo.gradient }} />
                 <div style={{ position: "relative", zIndex: 10, display: "flex", gap: 24, flexWrap: "wrap", alignItems: "center" }}>
                     {/* 아바타 */}
                     <div style={{ position: "relative" }}>
-                        <div style={{
-                            width: 100, height: 100, borderRadius: "50%", border: "4px solid #fff",
-                            background: profile?.avatar_url ? `url(${profile.avatar_url}) center/cover` : "linear-gradient(135deg, #0ea5e9, #6366f1)",
-                            display: "flex", alignItems: "center", justifyContent: "center",
-                            color: "#fff", fontSize: 36, fontWeight: 900, boxShadow: "0 10px 30px rgba(0,0,0,0.1)",
-                        }}>
+                        <motion.div
+                            whileHover={{ scale: 1.08, rotate: 3 }}
+                            transition={{ type: "spring", stiffness: 300, damping: 20 }}
+                            style={{
+                                width: 100, height: 100, borderRadius: "50%", border: "4px solid #fff",
+                                background: profile?.avatar_url ? `url(${profile.avatar_url}) center/cover` : "linear-gradient(135deg, #0ea5e9, #6366f1)",
+                                display: "flex", alignItems: "center", justifyContent: "center",
+                                color: "#fff", fontSize: 36, fontWeight: 900,
+                                boxShadow: "0 10px 30px rgba(0,0,0,0.15), 0 0 0 4px rgba(14,165,233,0.15)",
+                            }}
+                        >
                             {!profile?.avatar_url && (user?.email?.charAt(0) || "U").toUpperCase()}
-                        </div>
+                        </motion.div>
                         <button onClick={() => fileRef.current?.click()} style={{
                             position: "absolute", bottom: 0, right: 0, width: 32, height: 32, borderRadius: "50%",
                             background: "#0ea5e9", border: "3px solid #fff", color: "#fff", cursor: "pointer",
@@ -159,10 +169,10 @@ export default function ProfilePage() {
                         <span style={{ fontSize: 12, color: "#94a3b8" }}>{progress?.xp || 0} XP · 다음 레벨까지 {levelProgress.needed - levelProgress.current} XP</span>
                     </div>
                     <div style={{ height: 8, background: "#e2e8f0", borderRadius: 999, overflow: "hidden" }}>
-                        <div style={{ width: `${levelProgress.progress}%`, height: "100%", background: tierInfo.gradient, borderRadius: 999, transition: "width 0.5s" }} />
+                        <motion.div initial={{ width: 0 }} animate={{ width: `${levelProgress.progress}%` }} transition={{ duration: 1.2, ease: "easeOut" }} style={{ height: "100%", background: tierInfo.gradient, borderRadius: 999 }} />
                     </div>
                 </div>
-            </div>
+            </motion.div>
 
             {/* 탭 */}
             <div style={{ display: "flex", gap: 8 }}>
@@ -171,18 +181,25 @@ export default function ProfilePage() {
                     { key: "followers" as const, label: `👥 팔로워 (${followers.length})` },
                     { key: "following" as const, label: `💫 팔로잉 (${following.length})` },
                 ].map((t) => (
-                    <button key={t.key} onClick={() => setTab(t.key)} style={{
-                        padding: "10px 20px", borderRadius: 12, border: "none", fontSize: 13, fontWeight: 700,
-                        background: tab === t.key ? "#0f172a" : "rgba(255,255,255,0.7)",
-                        color: tab === t.key ? "#fff" : "#64748b", cursor: "pointer",
-                    }}>{t.label}</button>
+                    <motion.button key={t.key} onClick={() => setTab(t.key)}
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                        transition={{ type: "spring", stiffness: 400, damping: 20 }}
+                        style={{
+                            padding: "10px 20px", borderRadius: 12, border: "none", fontSize: 13, fontWeight: 700,
+                            background: tab === t.key ? "#0f172a" : "rgba(255,255,255,0.7)",
+                            color: tab === t.key ? "#fff" : "#64748b", cursor: "pointer",
+                        }}
+                    >{t.label}</motion.button>
                 ))}
             </div>
 
             {/* 프로필 편집 */}
             {tab === "info" && (
                 <div style={{ ...glassCard, borderRadius: 24, padding: 28 }}>
-                    {msg && <div style={{ padding: "12px 20px", borderRadius: 12, background: "#dcfce7", color: "#16a34a", fontSize: 14, fontWeight: 700, marginBottom: 20 }}>{msg}</div>}
+                    <AnimatePresence>
+                        {msg && <motion.div initial={{ opacity: 0, y: -10, scale: 0.95 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: -10, scale: 0.95 }} style={{ padding: "12px 20px", borderRadius: 12, background: "#dcfce7", color: "#16a34a", fontSize: 14, fontWeight: 700, marginBottom: 20 }}>{msg}</motion.div>}
+                    </AnimatePresence>
                     <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
                         <div>
                             <label style={{ fontSize: 13, fontWeight: 700, color: "#475569", marginBottom: 6, display: "block" }}>표시 이름</label>
@@ -205,11 +222,15 @@ export default function ProfilePage() {
                                 fontSize: 15, color: "#94a3b8", background: "#f1f5f9",
                             }} />
                         </div>
-                        <button onClick={saveProfile} disabled={saving} style={{
-                            padding: "16px 0", borderRadius: 16, border: "none", fontSize: 16, fontWeight: 800,
-                            background: "linear-gradient(135deg, #0ea5e9, #6366f1)", color: "#fff",
-                            cursor: "pointer", boxShadow: "0 10px 20px rgba(14,165,233,0.2)",
-                        }}>{saving ? "저장 중..." : "프로필 저장"}</button>
+                        <motion.button onClick={saveProfile} disabled={saving}
+                            whileHover={{ scale: 1.02, boxShadow: "0 12px 28px rgba(14,165,233,0.35)" }}
+                            whileTap={{ scale: 0.98 }}
+                            style={{
+                                padding: "16px 0", borderRadius: 16, border: "none", fontSize: 16, fontWeight: 800,
+                                background: "linear-gradient(135deg, #0ea5e9, #6366f1)", color: "#fff",
+                                cursor: "pointer", boxShadow: "0 10px 20px rgba(14,165,233,0.2)",
+                            }}
+                        >{saving ? "저장 중..." : "프로필 저장"}</motion.button>
                     </div>
                 </div>
             )}
@@ -230,10 +251,16 @@ export default function ProfilePage() {
                             {(tab === "followers" ? followers : following).map((f: any, i: number) => {
                                 const p = tab === "followers" ? f.profiles : f.profiles;
                                 return (
-                                    <div key={i} style={{
-                                        display: "flex", alignItems: "center", gap: 14, padding: "12px 16px",
-                                        borderRadius: 14, background: "#f8fafc",
-                                    }}>
+                                    <motion.div key={i}
+                                        initial={{ opacity: 0, x: -16 }}
+                                        animate={{ opacity: 1, x: 0 }}
+                                        transition={{ delay: i * 0.05, duration: 0.3 }}
+                                        whileHover={{ x: 4, backgroundColor: "#f0f9ff" }}
+                                        style={{
+                                            display: "flex", alignItems: "center", gap: 14, padding: "12px 16px",
+                                            borderRadius: 14, background: "#f8fafc", cursor: "default",
+                                        }}
+                                    >
                                         <div style={{
                                             width: 40, height: 40, borderRadius: "50%",
                                             background: p?.avatar_url ? `url(${p.avatar_url}) center/cover` : "linear-gradient(135deg, #0ea5e9, #6366f1)",
@@ -246,7 +273,7 @@ export default function ProfilePage() {
                                             <div style={{ fontSize: 14, fontWeight: 700, color: "#0f172a" }}>{p?.display_name || p?.email?.split("@")[0]}</div>
                                             <div style={{ fontSize: 11, color: "#94a3b8" }}>{p?.email}</div>
                                         </div>
-                                    </div>
+                                    </motion.div>
                                 );
                             })}
                         </div>

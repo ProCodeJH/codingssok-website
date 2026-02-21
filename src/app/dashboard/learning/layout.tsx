@@ -1,13 +1,14 @@
 "use client";
 
-import { useEffect, useState, ReactNode } from "react";
+import { useEffect, useState, ReactNode, useCallback } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { AuthProvider, useAuth } from "@/contexts/AuthContext";
 import { getTierInfo } from "@/lib/xp-engine";
 import { PageTransition } from "@/components/motion/page-transition";
 import { GlowPulse } from "@/components/motion/motion";
+import { Spotlight, MorphingGradient } from "@/components/motion/premium";
 
 /* ── Nav Items (한글화 + 새 메뉴) ── */
 const NAV_ITEMS = [
@@ -31,11 +32,26 @@ function AuthGate({ children }: { children: ReactNode }) {
     const { user, loading } = useAuth();
     useEffect(() => { if (!loading && !user) window.location.href = "/login"; }, [loading, user]);
     if (loading) return (
-        <div style={{ height: "100vh", display: "flex", alignItems: "center", justifyContent: "center", background: "linear-gradient(135deg,#f0f9ff,#e0f2fe)" }}>
-            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 16 }}>
-                <div style={{ width: 40, height: 40, border: "4px solid #0ea5e9", borderTopColor: "transparent", borderRadius: "50%", animation: "spin 1s linear infinite" }} />
-                <p style={{ fontSize: 14, color: "#64748b" }}>로딩 중...</p>
-            </div>
+        <div style={{ height: "100vh", display: "flex", alignItems: "center", justifyContent: "center", background: "linear-gradient(135deg,#f0f9ff,#e0f2fe)", position: "relative", overflow: "hidden" }}>
+            <MorphingGradient colors={["#0ea5e9", "#6366f1", "#ec4899", "#14b8a6"]} speed={6} />
+            <motion.div
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.5, ease: [0.25, 0.46, 0.45, 0.94] }}
+                style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 20, position: "relative", zIndex: 10 }}
+            >
+                <motion.div
+                    animate={{ rotate: 360 }}
+                    transition={{ duration: 1.2, repeat: Infinity, ease: "linear" }}
+                    style={{ width: 48, height: 48, border: "4px solid #0ea5e9", borderTopColor: "transparent", borderRadius: "50%" }}
+                />
+                <motion.p
+                    initial={{ opacity: 0, y: 8 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.3 }}
+                    style={{ fontSize: 15, color: "#475569", fontWeight: 600, letterSpacing: "-0.01em" }}
+                >코딩쏙 로딩 중...</motion.p>
+            </motion.div>
         </div>
     );
     if (!user) return null;
@@ -50,46 +66,64 @@ function LeftSidebar() {
     return (
         <aside style={{ display: "none" }} className="lg:!block lg:col-span-2">
             <div style={{ position: "sticky", top: 128, maxHeight: "calc(100vh - 10rem)", overflowY: "auto" }} className="hide-scrollbar">
-                <nav style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-                    {NAV_ITEMS.map((item, i) => (
-                        <motion.div
-                            key={item.href}
-                            initial={{ opacity: 0, x: -20 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            transition={{ delay: i * 0.04, duration: 0.3 }}
-                        >
-                            <Link href={item.href}
-                                style={{
-                                    display: "flex", alignItems: "center", gap: 12, padding: "12px 18px",
-                                    borderRadius: 14, fontSize: 13, fontWeight: isActive(item.href) ? 700 : 600,
-                                    textDecoration: "none", transition: "all 0.2s", position: "relative",
-                                    ...(isActive(item.href) ? {
-                                        background: "#f0f9ff", color: "#0369a1",
-                                        border: "1px solid #e0f2fe",
-                                        boxShadow: "0 1px 3px rgba(14,165,233,0.1), 0 0 0 1px rgba(186,230,253,0.5)"
-                                    } : {
-                                        background: "transparent", color: "#64748b",
-                                        border: "1px solid transparent",
-                                    })
-                                }}
+                <Spotlight size={200} color="rgba(14,165,233,0.04)" style={{ borderRadius: 20 }}>
+                    <nav style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+                        {NAV_ITEMS.map((item, i) => (
+                            <motion.div
+                                key={item.href}
+                                initial={{ opacity: 0, x: -20 }}
+                                animate={{ opacity: 1, x: 0 }}
+                                transition={{ delay: i * 0.03, duration: 0.3 }}
+                                whileHover={!isActive(item.href) ? { x: 4, backgroundColor: "rgba(240,249,255,0.5)" } : {}}
+                                style={{ borderRadius: 14 }}
                             >
-                                {isActive(item.href) && (
-                                    <motion.div
-                                        layoutId="sidebar-active"
-                                        style={{
-                                            position: "absolute", left: 0, top: "50%", transform: "translateY(-50%)",
-                                            width: 3, height: 20, borderRadius: 4,
-                                            background: "linear-gradient(to bottom, #0ea5e9, #6366f1)",
-                                        }}
-                                        transition={{ type: "spring", stiffness: 300, damping: 30 }}
-                                    />
-                                )}
-                                <span className="material-symbols-outlined" style={{ fontSize: 20 }}>{item.icon}</span>
-                                <span>{item.label}</span>
-                            </Link>
-                        </motion.div>
-                    ))}
-                </nav>
+                                <Link href={item.href}
+                                    style={{
+                                        display: "flex", alignItems: "center", gap: 12, padding: "11px 18px",
+                                        borderRadius: 14, fontSize: 13, fontWeight: isActive(item.href) ? 700 : 500,
+                                        textDecoration: "none", transition: "all 0.2s", position: "relative",
+                                        ...(isActive(item.href) ? {
+                                            background: "linear-gradient(135deg, rgba(14,165,233,0.08), rgba(99,102,241,0.06))",
+                                            color: "#0369a1",
+                                            border: "1px solid rgba(14,165,233,0.12)",
+                                            boxShadow: "0 2px 8px rgba(14,165,233,0.08), inset 0 1px 0 rgba(255,255,255,0.5)"
+                                        } : {
+                                            background: "transparent", color: "#64748b",
+                                            border: "1px solid transparent",
+                                        })
+                                    }}
+                                >
+                                    {isActive(item.href) && (
+                                        <motion.div
+                                            layoutId="sidebar-active"
+                                            style={{
+                                                position: "absolute", left: 0, top: "50%", transform: "translateY(-50%)",
+                                                width: 3, height: 20, borderRadius: 4,
+                                                background: "linear-gradient(to bottom, #0ea5e9, #6366f1)",
+                                                boxShadow: "0 0 8px rgba(14,165,233,0.4)",
+                                            }}
+                                            transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                                        />
+                                    )}
+                                    <motion.span
+                                        className="material-symbols-outlined"
+                                        style={{ fontSize: 20, color: isActive(item.href) ? "#0ea5e9" : undefined }}
+                                        whileHover={{ scale: 1.15, rotate: 5 }}
+                                        transition={{ type: "spring", stiffness: 400, damping: 15 }}
+                                    >{item.icon}</motion.span>
+                                    <span>{item.label}</span>
+                                    {isActive(item.href) && (
+                                        <motion.div
+                                            layoutId="sidebar-dot"
+                                            style={{ marginLeft: "auto", width: 6, height: 6, borderRadius: "50%", background: "#0ea5e9" }}
+                                            transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                                        />
+                                    )}
+                                </Link>
+                            </motion.div>
+                        ))}
+                    </nav>
+                </Spotlight>
 
                 {/* 오늘의 챌린지 카드 */}
                 <div style={{ marginTop: 32, padding: "0 8px" }}>
@@ -126,61 +160,98 @@ function LeftSidebar() {
     );
 }
 
-/* ── Top Navbar ── */
+/* ── Top Navbar (scroll-aware) ── */
 function Navbar({ onMenuOpen }: { onMenuOpen: () => void }) {
     const { user, signOut } = useAuth();
+    const [scrolled, setScrolled] = useState(false);
+
+    useEffect(() => {
+        const handleScroll = () => setScrolled(window.scrollY > 20);
+        window.addEventListener("scroll", handleScroll, { passive: true });
+        return () => window.removeEventListener("scroll", handleScroll);
+    }, []);
+
     return (
-        <nav style={{
-            position: "sticky", top: 0, zIndex: 50, width: "100%",
-            background: "rgba(255,255,255,0.7)", backdropFilter: "blur(20px)", WebkitBackdropFilter: "blur(20px)",
-            borderBottom: "1px solid rgba(255,255,255,0.4)", boxShadow: "0 1px 2px rgba(0,0,0,0.05)"
-        }}>
+        <motion.nav
+            initial={{ y: -20, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ duration: 0.4, ease: [0.25, 0.46, 0.45, 0.94] }}
+            style={{
+                position: "sticky", top: 0, zIndex: 50, width: "100%",
+                background: scrolled ? "rgba(255,255,255,0.85)" : "rgba(255,255,255,0.6)",
+                backdropFilter: scrolled ? "blur(24px) saturate(180%)" : "blur(12px)",
+                WebkitBackdropFilter: scrolled ? "blur(24px) saturate(180%)" : "blur(12px)",
+                borderBottom: `1px solid ${scrolled ? "rgba(226,232,240,0.5)" : "rgba(255,255,255,0.3)"}`,
+                boxShadow: scrolled ? "0 4px 20px rgba(0,0,0,0.06), 0 1px 3px rgba(0,0,0,0.04)" : "none",
+                transition: "background 0.3s, border-bottom 0.3s, box-shadow 0.3s, backdrop-filter 0.3s",
+            }}
+        >
             <div style={{ maxWidth: 1800, margin: "0 auto", padding: "0 24px" }}>
-                <div style={{ display: "flex", justifyContent: "space-between", height: 80, alignItems: "center" }}>
+                <div style={{ display: "flex", justifyContent: "space-between", height: 76, alignItems: "center" }}>
                     {/* Logo */}
-                    <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
-                        <div style={{
-                            width: 44, height: 44, borderRadius: 16, display: "flex", alignItems: "center", justifyContent: "center",
-                            background: "linear-gradient(to top right, #0ea5e9, #6366f1)", color: "#fff",
-                            boxShadow: "0 0 30px -5px rgba(14,165,233,0.4)"
-                        }}>
-                            <span className="material-symbols-outlined" style={{ fontSize: 24 }}>school</span>
-                        </div>
+                    <motion.div
+                        whileHover={{ scale: 1.02 }}
+                        transition={{ type: "spring", stiffness: 400, damping: 25 }}
+                        style={{ display: "flex", alignItems: "center", gap: 14, cursor: "pointer" }}
+                    >
+                        <motion.div
+                            whileHover={{ rotate: 8, scale: 1.1 }}
+                            transition={{ type: "spring", stiffness: 400, damping: 15 }}
+                            style={{
+                                width: 42, height: 42, borderRadius: 14, display: "flex", alignItems: "center", justifyContent: "center",
+                                background: "linear-gradient(135deg, #0ea5e9, #6366f1)", color: "#fff",
+                                boxShadow: "0 8px 24px -4px rgba(14,165,233,0.35)"
+                            }}
+                        >
+                            <span className="material-symbols-outlined" style={{ fontSize: 22 }}>school</span>
+                        </motion.div>
                         <div style={{ display: "flex", flexDirection: "column" }}>
-                            <span style={{ fontSize: 20, fontWeight: 800, letterSpacing: "-0.02em", color: "#0f172a" }}>
+                            <span style={{ fontSize: 19, fontWeight: 800, letterSpacing: "-0.02em", color: "#0f172a" }}>
                                 코딩<span style={{ color: "#0ea5e9" }}>쏙</span>
                             </span>
-                            <span style={{ fontSize: 10, fontWeight: 700, color: "#94a3b8", letterSpacing: "0.1em" }}>학습 대시보드</span>
+                            <span style={{ fontSize: 10, fontWeight: 600, color: "#94a3b8", letterSpacing: "0.08em", textTransform: "uppercase" }}>Learning Dashboard</span>
                         </div>
-                    </div>
+                    </motion.div>
 
                     {/* Right */}
-                    <div style={{ display: "flex", alignItems: "center", gap: 32 }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: 20 }}>
                         {/* Search */}
                         <div className="hidden md:flex" style={{ position: "relative" }}>
-                            <span className="material-symbols-outlined" style={{ position: "absolute", left: 16, top: "50%", transform: "translateY(-50%)", color: "#94a3b8", fontSize: 20 }}>search</span>
+                            <span className="material-symbols-outlined" style={{ position: "absolute", left: 14, top: "50%", transform: "translateY(-50%)", color: "#94a3b8", fontSize: 18 }}>search</span>
                             <input style={{
-                                paddingLeft: 48, paddingRight: 24, paddingTop: 10, paddingBottom: 10,
-                                background: "rgba(241,245,249,0.5)", border: "1px solid #e2e8f0", borderRadius: 999,
-                                fontSize: 14, width: 288, outline: "none", color: "#475569"
+                                paddingLeft: 42, paddingRight: 20, paddingTop: 9, paddingBottom: 9,
+                                background: scrolled ? "rgba(241,245,249,0.7)" : "rgba(241,245,249,0.4)",
+                                border: "1px solid rgba(226,232,240,0.6)", borderRadius: 999,
+                                fontSize: 13, width: 260, outline: "none", color: "#475569",
+                                transition: "all 0.3s",
                             }} placeholder="코스, 문제 검색..." type="text" />
                         </div>
 
                         {/* User */}
-                        <div className="hidden sm:flex" style={{ alignItems: "center", gap: 24, paddingLeft: 24, borderLeft: "1px solid rgba(226,232,240,0.6)" }}>
+                        <div className="hidden sm:flex" style={{ alignItems: "center", gap: 16, paddingLeft: 20, borderLeft: "1px solid rgba(226,232,240,0.5)" }}>
                             <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end" }}>
-                                <span style={{ fontSize: 14, fontWeight: 700, color: "#1e293b" }}>{user?.name || user?.email?.split("@")[0] || "학생"}</span>
-                                <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                                    <span style={{ width: 8, height: 8, borderRadius: "50%", background: "#22c55e", display: "inline-block" }} />
-                                    <span style={{ fontSize: 10, color: "#64748b", fontWeight: 600, letterSpacing: "0.05em" }}>접속 중</span>
+                                <span style={{ fontSize: 13, fontWeight: 700, color: "#1e293b" }}>{user?.name || user?.email?.split("@")[0] || "학생"}</span>
+                                <div style={{ display: "flex", alignItems: "center", gap: 5 }}>
+                                    <motion.span
+                                        animate={{ scale: [1, 1.2, 1] }}
+                                        transition={{ duration: 2, repeat: Infinity }}
+                                        style={{ width: 7, height: 7, borderRadius: "50%", background: "#22c55e", display: "inline-block", boxShadow: "0 0 6px rgba(34,197,94,0.4)" }}
+                                    />
+                                    <span style={{ fontSize: 10, color: "#64748b", fontWeight: 600 }}>접속 중</span>
                                 </div>
                             </div>
-                            <button onClick={signOut} title="로그아웃" style={{
-                                width: 44, height: 44, borderRadius: "50%", padding: 2,
-                                background: "linear-gradient(to bottom right, #7dd3fc, #a5b4fc)",
-                                boxShadow: "0 10px 15px -3px rgba(0,0,0,0.1)", cursor: "pointer", border: "none",
-                                display: "flex", alignItems: "center", justifyContent: "center"
-                            }}>
+                            <motion.button
+                                onClick={signOut} title="로그아웃"
+                                whileHover={{ scale: 1.08, boxShadow: "0 8px 24px rgba(14,165,233,0.2)" }}
+                                whileTap={{ scale: 0.95 }}
+                                transition={{ type: "spring", stiffness: 400, damping: 20 }}
+                                style={{
+                                    width: 42, height: 42, borderRadius: "50%", padding: 2,
+                                    background: "linear-gradient(135deg, #7dd3fc, #a5b4fc)",
+                                    boxShadow: "0 4px 12px rgba(0,0,0,0.08)", cursor: "pointer", border: "none",
+                                    display: "flex", alignItems: "center", justifyContent: "center"
+                                }}
+                            >
                                 <div style={{
                                     width: "100%", height: "100%", borderRadius: "50%",
                                     background: "#e0f2fe", display: "flex", alignItems: "center", justifyContent: "center",
@@ -188,57 +259,97 @@ function Navbar({ onMenuOpen }: { onMenuOpen: () => void }) {
                                 }}>
                                     {(user?.email?.charAt(0) || "U").toUpperCase()}
                                 </div>
-                            </button>
+                            </motion.button>
                         </div>
 
                         {/* Mobile menu */}
-                        <button onClick={onMenuOpen} className="lg:hidden" style={{
-                            padding: 8, color: "#64748b", background: "transparent", border: "none",
-                            borderRadius: 12, cursor: "pointer"
-                        }}>
+                        <motion.button
+                            onClick={onMenuOpen} className="lg:hidden"
+                            whileHover={{ scale: 1.1 }}
+                            whileTap={{ scale: 0.9 }}
+                            style={{
+                                padding: 8, color: "#64748b", background: "transparent", border: "none",
+                                borderRadius: 12, cursor: "pointer"
+                            }}
+                        >
                             <span className="material-symbols-outlined">menu</span>
-                        </button>
+                        </motion.button>
                     </div>
                 </div>
             </div>
-        </nav>
+        </motion.nav>
     );
 }
 
-/* ── Mobile Drawer ── */
+/* ── Mobile Drawer (AnimatePresence) ── */
 function MobileDrawer({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
     const pathname = usePathname();
     const isActive = (href: string) => href === "/dashboard/learning" ? pathname === href : pathname.startsWith(href);
-    if (!isOpen) return null;
     return (
-        <>
-            <div onClick={onClose} style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.4)", zIndex: 60 }} className="lg:hidden" />
-            <aside style={{
-                position: "fixed", top: 0, left: 0, zIndex: 70, width: 288, height: "100vh",
-                background: "rgba(255,255,255,0.95)", backdropFilter: "blur(20px)", padding: 24,
-                borderRight: "1px solid rgba(255,255,255,0.5)", boxShadow: "0 25px 50px -12px rgba(0,0,0,0.25)",
-                display: "flex", flexDirection: "column"
-            }} className="lg:hidden">
-                <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 32 }}>
-                    <div style={{ width: 36, height: 36, borderRadius: 12, background: "linear-gradient(to top right, #0ea5e9, #6366f1)", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff" }}>
-                        <span className="material-symbols-outlined" style={{ fontSize: 20 }}>school</span>
-                    </div>
-                    <span style={{ fontSize: 18, fontWeight: 800, color: "#0f172a" }}>코딩<span style={{ color: "#0ea5e9" }}>쏙</span></span>
-                </div>
-                <nav style={{ display: "flex", flexDirection: "column", gap: 6, flex: 1 }}>
-                    {NAV_ITEMS.map((item) => (
-                        <Link key={item.href} href={item.href} onClick={onClose} style={{
-                            display: "flex", alignItems: "center", gap: 12, padding: "12px 16px", borderRadius: 12,
-                            fontSize: 14, fontWeight: 600, textDecoration: "none",
-                            ...(isActive(item.href) ? { background: "#f0f9ff", color: "#0369a1", border: "1px solid #e0f2fe" } : { color: "#64748b", border: "1px solid transparent" })
-                        }}>
-                            <span className="material-symbols-outlined">{item.icon}</span>
-                            {item.label}
-                        </Link>
-                    ))}
-                </nav>
-            </aside>
-        </>
+        <AnimatePresence>
+            {isOpen && (
+                <>
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        transition={{ duration: 0.25 }}
+                        onClick={onClose}
+                        style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.5)", backdropFilter: "blur(4px)", zIndex: 60 }}
+                        className="lg:hidden"
+                    />
+                    <motion.aside
+                        initial={{ x: -300, opacity: 0 }}
+                        animate={{ x: 0, opacity: 1 }}
+                        exit={{ x: -300, opacity: 0 }}
+                        transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                        style={{
+                            position: "fixed", top: 0, left: 0, zIndex: 70, width: 288, height: "100vh",
+                            background: "rgba(255,255,255,0.95)", backdropFilter: "blur(24px)", padding: 24,
+                            borderRight: "1px solid rgba(255,255,255,0.5)", boxShadow: "0 25px 50px -12px rgba(0,0,0,0.25)",
+                            display: "flex", flexDirection: "column"
+                        }}
+                        className="lg:hidden"
+                    >
+                        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 28 }}>
+                            <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                                <div style={{ width: 36, height: 36, borderRadius: 12, background: "linear-gradient(135deg, #0ea5e9, #6366f1)", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff" }}>
+                                    <span className="material-symbols-outlined" style={{ fontSize: 20 }}>school</span>
+                                </div>
+                                <span style={{ fontSize: 18, fontWeight: 800, color: "#0f172a" }}>코딩<span style={{ color: "#0ea5e9" }}>쏙</span></span>
+                            </div>
+                            <motion.button
+                                onClick={onClose}
+                                whileHover={{ scale: 1.1, rotate: 90 }}
+                                whileTap={{ scale: 0.9 }}
+                                style={{ width: 32, height: 32, borderRadius: 10, border: "none", background: "#f1f5f9", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}
+                            >
+                                <span className="material-symbols-outlined" style={{ fontSize: 18, color: "#64748b" }}>close</span>
+                            </motion.button>
+                        </div>
+                        <nav style={{ display: "flex", flexDirection: "column", gap: 4, flex: 1 }}>
+                            {NAV_ITEMS.map((item, i) => (
+                                <motion.div
+                                    key={item.href}
+                                    initial={{ opacity: 0, x: -20 }}
+                                    animate={{ opacity: 1, x: 0 }}
+                                    transition={{ delay: i * 0.03 }}
+                                >
+                                    <Link href={item.href} onClick={onClose} style={{
+                                        display: "flex", alignItems: "center", gap: 12, padding: "11px 16px", borderRadius: 12,
+                                        fontSize: 14, fontWeight: 600, textDecoration: "none",
+                                        ...(isActive(item.href) ? { background: "linear-gradient(135deg, rgba(14,165,233,0.08), rgba(99,102,241,0.06))", color: "#0369a1", border: "1px solid rgba(14,165,233,0.12)" } : { color: "#64748b", border: "1px solid transparent" })
+                                    }}>
+                                        <span className="material-symbols-outlined" style={{ fontSize: 20 }}>{item.icon}</span>
+                                        {item.label}
+                                    </Link>
+                                </motion.div>
+                            ))}
+                        </nav>
+                    </motion.aside>
+                </>
+            )}
+        </AnimatePresence>
     );
 }
 

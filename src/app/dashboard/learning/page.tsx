@@ -40,13 +40,17 @@ export default function JourneyPage() {
             setCourses(COURSES.map(c => ({ ...c, total_lessons: c.totalUnits })));
 
             if (user) {
-                const { data: ucp } = await supabase.from("user_course_progress").select("*").eq("user_id", user.id);
-                if (ucp) setUserCourseProgress(ucp);
+                try {
+                    const { data: ucp } = await supabase.from("user_course_progress").select("*").eq("user_id", user.id);
+                    if (ucp) setUserCourseProgress(ucp);
+                } catch { /* 테이블 없으면 무시 */ }
 
-                // 오늘 출석 여부 확인
-                const today = new Date().toISOString().split("T")[0];
-                const { data: att } = await supabase.from("attendance").select("id").eq("user_id", user.id).eq("check_date", today).single();
-                if (att) setAttendanceChecked(true);
+                try {
+                    // 오늘 출석 여부 확인
+                    const today = new Date().toISOString().split("T")[0];
+                    const { data: att } = await supabase.from("attendance").select("id").eq("user_id", user.id).eq("check_date", today).maybeSingle();
+                    if (att) setAttendanceChecked(true);
+                } catch { /* 테이블 없으면 무시 */ }
             }
         }
         load();

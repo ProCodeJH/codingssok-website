@@ -45,13 +45,17 @@ export default function CourseDetailPage() {
     // Supabase에서 이전 진행 데이터 로드
     useEffect(() => {
         if (!user) return;
-        supabase.from("user_course_progress").select("completed_lessons")
-            .eq("user_id", user.id).eq("course_id", courseId).single()
-            .then(({ data }) => {
+        (async () => {
+            try {
+                const { data } = await supabase.from("user_course_progress").select("completed_lessons")
+                    .eq("user_id", user.id).eq("course_id", courseId).single();
                 if (data?.completed_lessons) {
                     setCompletedUnits(new Set(data.completed_lessons as string[]));
                 }
-            });
+            } catch (err) {
+                // 테이블이 없거나 데이터가 없을 수 있음 — 무시
+            }
+        })();
     }, [user, courseId, supabase]);
 
     // 첫 챕터 자동 확장

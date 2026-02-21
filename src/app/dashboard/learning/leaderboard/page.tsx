@@ -29,14 +29,36 @@ export default function LeaderboardPage() {
     useEffect(() => {
         setLoading(true);
         const orderCol = tab === "xp" ? "xp" : tab === "streak" ? "streak" : "total_problems";
-        supabase.from("user_progress")
-            .select("*, profiles!inner(display_name, avatar_url, email)")
-            .order(orderCol, { ascending: false })
-            .limit(50)
-            .then(({ data }) => {
-                if (data) setPlayers(data);
-                setLoading(false);
-            });
+
+        // 2-step fetch: user_progress + profiles separately (no FK join needed)
+        (async () => {
+            try {
+                const { data: progressData } = await supabase.from("user_progress")
+                    .select("*")
+                    .order(orderCol, { ascending: false })
+                    .limit(50);
+
+                if (progressData && progressData.length > 0) {
+                    const userIds = progressData.map((p: any) => p.user_id);
+                    const { data: profilesData } = await supabase.from("profiles")
+                        .select("id, display_name, avatar_url, email")
+                        .in("id", userIds);
+
+                    const profileMap = new Map((profilesData || []).map((p: any) => [p.id, p]));
+                    const merged = progressData.map((p: any) => ({
+                        ...p,
+                        profiles: profileMap.get(p.user_id) || { display_name: null, avatar_url: null, email: null },
+                    }));
+                    setPlayers(merged);
+                } else {
+                    setPlayers([]);
+                }
+            } catch (err) {
+                console.error("리더보드 로드 실패:", err);
+                setPlayers([]);
+            }
+            setLoading(false);
+        })();
     }, [tab, supabase]);
 
     const top3 = players.slice(0, 3);

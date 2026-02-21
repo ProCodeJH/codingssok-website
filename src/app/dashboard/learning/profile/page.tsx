@@ -37,13 +37,33 @@ export default function ProfilePage() {
                     setBio(data.bio || "");
                 }
             });
-        // 팔로워/팔로잉 로드
-        supabase.from("follows").select("follower_id, profiles!follows_follower_id_fkey(display_name, avatar_url, email)")
-            .eq("following_id", user.id)
-            .then(({ data }) => { if (data) setFollowers(data); });
-        supabase.from("follows").select("following_id, profiles!follows_following_id_fkey(display_name, avatar_url, email)")
-            .eq("follower_id", user.id)
-            .then(({ data }) => { if (data) setFollowing(data); });
+
+        // 팔로워/팔로잉 로드 — FK 없이 2단계 조회
+        (async () => {
+            try {
+                // 팔로워 (나를 팔로우하는 사람들)
+                const { data: followerRows } = await supabase.from("follows")
+                    .select("follower_id").eq("following_id", user.id);
+                if (followerRows && followerRows.length > 0) {
+                    const ids = followerRows.map((r: any) => r.follower_id);
+                    const { data: profs } = await supabase.from("profiles")
+                        .select("id, display_name, avatar_url, email").in("id", ids);
+                    setFollowers((profs || []).map((p: any) => ({ profiles: p })));
+                }
+
+                // 팔로잉 (내가 팔로우하는 사람들)
+                const { data: followingRows } = await supabase.from("follows")
+                    .select("following_id").eq("follower_id", user.id);
+                if (followingRows && followingRows.length > 0) {
+                    const ids = followingRows.map((r: any) => r.following_id);
+                    const { data: profs } = await supabase.from("profiles")
+                        .select("id, display_name, avatar_url, email").in("id", ids);
+                    setFollowing((profs || []).map((p: any) => ({ profiles: p })));
+                }
+            } catch (err) {
+                console.error("팔로워/팔로잉 로드 실패:", err);
+            }
+        })();
     }, [user, supabase]);
 
     const saveProfile = async () => {

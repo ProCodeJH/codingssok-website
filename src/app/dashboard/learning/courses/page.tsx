@@ -20,14 +20,26 @@ export default function CoursesPage() {
 
     useEffect(() => {
         if (!user) return;
-        supabase.from("user_course_progress").select("course_id, progress").eq("user_id", user.id)
-            .then(({ data }) => {
+        (async () => {
+            try {
+                const { data } = await supabase.from("user_course_progress")
+                    .select("course_id, completed_lessons, is_completed")
+                    .eq("user_id", user.id);
                 if (data) {
                     const m: Record<string, number> = {};
-                    data.forEach((p: any) => { m[p.course_id] = p.progress || 0; });
+                    data.forEach((p: any) => {
+                        // completed_lessons가 숫자이면 그대로, 배열이면 length 사용
+                        const completed = typeof p.completed_lessons === 'number' ? p.completed_lessons : (Array.isArray(p.completed_lessons) ? p.completed_lessons.length : 0);
+                        const course = COURSES.find(c => c.id === p.course_id);
+                        const total = course?.totalUnits || 1;
+                        m[p.course_id] = p.is_completed ? 100 : Math.round((completed / total) * 100);
+                    });
                     setProgress(m);
                 }
-            });
+            } catch (err) {
+                console.error("코스 진행률 로드 실패:", err);
+            }
+        })();
     }, [user, supabase]);
 
     const inProgress = COURSES.filter(c => progress[c.id] && progress[c.id] > 0 && progress[c.id] < 100);

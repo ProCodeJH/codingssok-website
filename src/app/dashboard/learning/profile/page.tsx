@@ -5,6 +5,9 @@ import { createClient } from "@/lib/supabase";
 import { useAuth } from "@/contexts/AuthContext";
 import { getTierInfo, getDisplayTier, calcLevel, xpForNextLevel } from "@/lib/xp-engine";
 import { useUserProgress } from "@/hooks/useUserProgress";
+import { motion } from "framer-motion";
+import { FadeIn, AnimatedBar } from "@/components/motion/motion";
+import { TiltCard } from "@/components/motion/tilt-card";
 
 const glassCard: React.CSSProperties = {
     background: "rgba(255,255,255,0.7)", backdropFilter: "blur(12px)",

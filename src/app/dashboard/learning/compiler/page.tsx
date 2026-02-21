@@ -5,6 +5,7 @@ import { createClient } from "@/lib/supabase";
 import { useAuth } from "@/contexts/AuthContext";
 import { awardXP, XP_REWARDS } from "@/lib/xp-engine";
 import dynamic from "next/dynamic";
+import { FadeIn } from "@/components/motion/motion";
 
 // Monaco를 SSR 없이 로드 (Next.js 필수)
 const Editor = dynamic(() => import("@monaco-editor/react"), { ssr: false });

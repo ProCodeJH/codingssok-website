@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback, useMemo } from "react";
 import { createClient } from "@/lib/supabase";
+import { FadeIn, StaggerList, StaggerItem } from "@/components/motion/motion";
 
 /*
   숙제 & 노트 시스템 — 화이트톤 (learning 레이아웃 통합)

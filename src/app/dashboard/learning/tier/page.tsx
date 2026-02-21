@@ -5,6 +5,9 @@ import { createClient } from "@/lib/supabase";
 import { useAuth } from "@/contexts/AuthContext";
 import { TIERS, getTierInfo, getDisplayTier, getPlacementTier, checkPromotion, getNextTier } from "@/lib/xp-engine";
 import { useUserProgress } from "@/hooks/useUserProgress";
+import { motion } from "framer-motion";
+import { FadeIn, StaggerList, StaggerItem, AnimatedBar } from "@/components/motion/motion";
+import { TiltCard } from "@/components/motion/tilt-card";
 
 /* ── Shared Styles ── */
 const glassPanel: React.CSSProperties = {

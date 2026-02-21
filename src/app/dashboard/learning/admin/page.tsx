@@ -5,6 +5,7 @@ import { createClient } from "@/lib/supabase";
 import { useAuth } from "@/contexts/AuthContext";
 import { useRouter } from "next/navigation";
 import { COURSES } from "@/data/courses";
+import { FadeIn, StaggerList, StaggerItem } from "@/components/motion/motion";
 
 const glassCard: React.CSSProperties = {
     background: "rgba(255,255,255,0.7)", backdropFilter: "blur(12px)",

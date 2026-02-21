@@ -4,6 +4,8 @@ import { useState, useEffect, useMemo } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useUserProgress } from "@/hooks/useUserProgress";
 import { createClient } from "@/lib/supabase";
+import { motion } from "framer-motion";
+import { FadeIn, StaggerList, StaggerItem, ScaleOnHover } from "@/components/motion/motion";
 
 const glassCard: React.CSSProperties = {
     background: "rgba(255,255,255,0.7)", backdropFilter: "blur(12px)",
@@ -114,55 +116,57 @@ export default function StorePage() {
             </div>
 
             {/* 아이템 그리드 */}
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))", gap: 16 }}>
+            <StaggerList style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))", gap: 16 }}>
                 {filtered.map((item) => {
                     const rarity = RARITY_STYLES[item.rarity];
                     const owned = purchased.includes(item.id);
                     const canBuy = progress.xp >= item.xp && !owned;
                     return (
-                        <div key={item.id} style={{
-                            ...glassCard, borderRadius: 20, padding: 24, display: "flex", flexDirection: "column",
-                            position: "relative", overflow: "hidden",
-                            opacity: owned ? 0.6 : 1, transition: "all 0.3s",
-                        }}>
-                            {/* 레어리티 뱃지 */}
-                            <div style={{
-                                position: "absolute", top: 12, right: 12,
-                                padding: "3px 10px", borderRadius: 8, fontSize: 10, fontWeight: 800,
-                                background: rarity.bg, color: rarity.color,
-                            }}>{rarity.label}</div>
+                        <StaggerItem key={item.id}>
+                            <div key={item.id} style={{
+                                ...glassCard, borderRadius: 20, padding: 24, display: "flex", flexDirection: "column",
+                                position: "relative", overflow: "hidden",
+                                opacity: owned ? 0.6 : 1, transition: "all 0.3s",
+                            }}>
+                                {/* 레어리티 뱃지 */}
+                                <div style={{
+                                    position: "absolute", top: 12, right: 12,
+                                    padding: "3px 10px", borderRadius: 8, fontSize: 10, fontWeight: 800,
+                                    background: rarity.bg, color: rarity.color,
+                                }}>{rarity.label}</div>
 
-                            {/* 아이콘 */}
-                            <div style={{
-                                width: 56, height: 56, borderRadius: 16, marginBottom: 16,
-                                background: `linear-gradient(135deg, ${rarity.bg}, #fff)`,
-                                display: "flex", alignItems: "center", justifyContent: "center",
-                                fontSize: 28, boxShadow: "0 4px 12px rgba(0,0,0,0.05)",
-                            }}>{item.icon}</div>
+                                {/* 아이콘 */}
+                                <div style={{
+                                    width: 56, height: 56, borderRadius: 16, marginBottom: 16,
+                                    background: `linear-gradient(135deg, ${rarity.bg}, #fff)`,
+                                    display: "flex", alignItems: "center", justifyContent: "center",
+                                    fontSize: 28, boxShadow: "0 4px 12px rgba(0,0,0,0.05)",
+                                }}>{item.icon}</div>
 
-                            <h3 style={{ fontSize: 16, fontWeight: 800, color: "#0f172a", marginBottom: 4 }}>{item.name}</h3>
-                            <p style={{ fontSize: 13, color: "#64748b", flex: 1, marginBottom: 16 }}>{item.desc}</p>
+                                <h3 style={{ fontSize: 16, fontWeight: 800, color: "#0f172a", marginBottom: 4 }}>{item.name}</h3>
+                                <p style={{ fontSize: 13, color: "#64748b", flex: 1, marginBottom: 16 }}>{item.desc}</p>
 
-                            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-                                <span style={{ fontSize: 15, fontWeight: 900, color: "#f59e0b" }}>⭐ {item.xp} XP</span>
-                                <button
-                                    onClick={() => buyItem(item)}
-                                    disabled={!canBuy || buying === item.id}
-                                    style={{
-                                        padding: "8px 20px", borderRadius: 12, border: "none", fontSize: 13, fontWeight: 700,
-                                        background: owned ? "#10b981" : canBuy ? "linear-gradient(135deg, #0ea5e9, #6366f1)" : "#e2e8f0",
-                                        color: owned ? "#fff" : canBuy ? "#fff" : "#94a3b8",
-                                        cursor: canBuy ? "pointer" : "not-allowed",
-                                        boxShadow: canBuy ? "0 4px 14px rgba(14,165,233,0.3)" : "none",
-                                    }}
-                                >
-                                    {owned ? "✓ 보유 중" : buying === item.id ? "구매 중..." : canBuy ? "구매" : "XP 부족"}
-                                </button>
+                                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                                    <span style={{ fontSize: 15, fontWeight: 900, color: "#f59e0b" }}>⭐ {item.xp} XP</span>
+                                    <button
+                                        onClick={() => buyItem(item)}
+                                        disabled={!canBuy || buying === item.id}
+                                        style={{
+                                            padding: "8px 20px", borderRadius: 12, border: "none", fontSize: 13, fontWeight: 700,
+                                            background: owned ? "#10b981" : canBuy ? "linear-gradient(135deg, #0ea5e9, #6366f1)" : "#e2e8f0",
+                                            color: owned ? "#fff" : canBuy ? "#fff" : "#94a3b8",
+                                            cursor: canBuy ? "pointer" : "not-allowed",
+                                            boxShadow: canBuy ? "0 4px 14px rgba(14,165,233,0.3)" : "none",
+                                        }}
+                                    >
+                                        {owned ? "✓ 보유 중" : buying === item.id ? "구매 중..." : canBuy ? "구매" : "XP 부족"}
+                                    </button>
+                                </div>
                             </div>
-                        </div>
+                        </StaggerItem>
                     );
                 })}
-            </div>
+            </StaggerList>
 
             {/* 하단 안내 */}
             <div style={{

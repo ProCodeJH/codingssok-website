@@ -3,6 +3,8 @@
 import { useState, useEffect, useRef, useMemo, useCallback } from "react";
 import { createClient } from "@/lib/supabase";
 import { useAuth } from "@/contexts/AuthContext";
+import { motion, AnimatePresence } from "framer-motion";
+import { FadeIn } from "@/components/motion/motion";
 
 const glassCard: React.CSSProperties = {
     background: "rgba(255,255,255,0.7)", backdropFilter: "blur(12px)",

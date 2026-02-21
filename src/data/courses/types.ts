@@ -58,4 +58,6 @@ export interface Course {
     totalProblems: number;
     estimatedHours: number;
     chapters: Chapter[];
+    /** 정적 HTML 콘텐츠 경로 (learning-platform 연동용) */
+    htmlPath?: string;
 }

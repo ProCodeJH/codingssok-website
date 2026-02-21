@@ -36,6 +36,7 @@ export default function CourseDetailPage() {
     const allUnits = useMemo(() => getAllUnits(courseId), [courseId]);
 
     const [completedUnits, setCompletedUnits] = useState<Set<string>>(new Set());
+    const [showHtmlContent, setShowHtmlContent] = useState(false);
     const [activeUnit, setActiveUnit] = useState<string | null>(null);
     const [expandedChapters, setExpandedChapters] = useState<Set<string>>(new Set());
     const [xpMsg, setXpMsg] = useState("");
@@ -150,8 +151,59 @@ export default function CourseDetailPage() {
                         <span>🧪 퀴즈 통과 필수</span>
                         <span>⏱ 약 {courseData.estimatedHours}시간</span>
                     </div>
+                    {courseData.htmlPath && (
+                        <button
+                            onClick={() => setShowHtmlContent(v => !v)}
+                            style={{
+                                marginTop: 16, padding: "14px 28px", borderRadius: 16, border: "none",
+                                background: showHtmlContent ? "#e2e8f0" : courseData.gradient,
+                                color: showHtmlContent ? "#475569" : "#fff",
+                                fontSize: 14, fontWeight: 800, cursor: "pointer",
+                                boxShadow: showHtmlContent ? "none" : "0 6px 20px rgba(14,165,233,0.25)",
+                                display: "flex", alignItems: "center", gap: 8, transition: "all 0.3s",
+                            }}
+                        >
+                            <span style={{ fontSize: 18 }}>{showHtmlContent ? "📋" : "🚀"}</span>
+                            {showHtmlContent ? "챕터 보기" : "문제풀이 학습 시작"}
+                        </button>
+                    )}
                 </div>
             </div>
+
+            {/* HTML 학습 콘텐츠 (iframe) */}
+            {showHtmlContent && courseData.htmlPath && (
+                <div style={{
+                    ...glassCard, borderRadius: 24, overflow: "hidden",
+                    border: "2px solid rgba(14,165,233,0.2)",
+                }}>
+                    <div style={{
+                        padding: "12px 20px", background: "linear-gradient(135deg, #f0f9ff, #e0f2fe)",
+                        display: "flex", justifyContent: "space-between", alignItems: "center",
+                        borderBottom: "1px solid rgba(14,165,233,0.15)",
+                    }}>
+                        <span style={{ fontSize: 13, fontWeight: 700, color: "#0369a1" }}>
+                            📚 {courseData.title} — 문제풀이 학습
+                        </span>
+                        <a
+                            href={courseData.htmlPath}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            style={{ fontSize: 12, color: "#0ea5e9", textDecoration: "none", fontWeight: 600 }}
+                        >
+                            새 탭에서 열기 ↗
+                        </a>
+                    </div>
+                    <iframe
+                        src={courseData.htmlPath}
+                        style={{
+                            width: "100%", height: "80vh", border: "none",
+                            background: "#fff",
+                        }}
+                        title={`${courseData.title} 학습 콘텐츠`}
+                        sandbox="allow-scripts allow-same-origin allow-popups"
+                    />
+                </div>
+            )}
 
             {/* 챕터 → 유닛 아코디언 */}
             <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>

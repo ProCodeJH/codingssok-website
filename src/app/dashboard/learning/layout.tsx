@@ -14,6 +14,7 @@ const NAV_ITEMS = [
     { icon: "assignment", label: "숙제 & 노트", href: "/dashboard/learning/homework" },
     { icon: "shield", label: "티어 & 승급", href: "/dashboard/learning/tier" },
     { icon: "task_alt", label: "미션 & 업적", href: "/dashboard/learning/missions" },
+    { icon: "emoji_events", label: "챌린지", href: "/dashboard/learning/challenges" },
     { icon: "chat", label: "채팅", href: "/dashboard/learning/chat" },
     { icon: "diversity_3", label: "리더보드", href: "/dashboard/learning/leaderboard" },
     { icon: "sports_esports", label: "학습 통계", href: "/dashboard/learning/stats" },

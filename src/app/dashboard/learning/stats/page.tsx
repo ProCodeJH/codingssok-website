@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useUserProgress } from "@/hooks/useUserProgress";
 import { createClient } from "@/lib/supabase";
-import { getTierInfo, calcLevel, xpForNextLevel } from "@/lib/xp-engine";
+import { getTierInfo, getDisplayTier, calcLevel, xpForNextLevel } from "@/lib/xp-engine";
 
 const glassCard: React.CSSProperties = {
     background: "rgba(255,255,255,0.7)", backdropFilter: "blur(12px)",
@@ -19,7 +19,7 @@ export default function StatsPage() {
     const [successRate, setSuccessRate] = useState(0);
     const [recentActivity, setRecentActivity] = useState<any[]>([]);
 
-    const tierInfo = getTierInfo(progress?.tier || "Iron");
+    const tierInfo = getDisplayTier(progress?.tier || "Iron", progress?.level || 1, progress?.placement_done);
     const level = calcLevel(progress?.xp || 0);
     const levelProg = xpForNextLevel(progress?.xp || 0);
 

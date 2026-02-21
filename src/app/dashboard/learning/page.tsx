@@ -1,11 +1,12 @@
 "use client";
 
 import { useUserProgress } from "@/hooks/useUserProgress";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { createClient } from "@/lib/supabase";
 import { useAuth } from "@/contexts/AuthContext";
 import Link from "next/link";
-import { getTierInfo, calcLevel, xpForNextLevel, checkAttendance, TIERS } from "@/lib/xp-engine";
+import { getTierInfo, getDisplayTier, calcLevel, xpForNextLevel, checkAttendance, TIERS } from "@/lib/xp-engine";
+import { COURSES, getCurriculumStats } from "@/data/courses";
 
 /* ── Styles ── */
 const glassCard: React.CSSProperties = {
@@ -16,14 +17,11 @@ const glassCard: React.CSSProperties = {
     boxShadow: "0 4px 20px rgba(0,0,0,0.03)",
 };
 
-/* ── Roadmap (한글) ── */
-const ROADMAP = [
-    { title: "코딩 기초", icon: "extension", status: "done" as const },
-    { title: "컴퓨팅 사고력", icon: "psychology", status: "done" as const },
-    { title: "C언어", icon: "code", status: "active" as const },
-    { title: "알고리즘", icon: "data_object", status: "locked" as const },
-    { title: "마스터", icon: "military_tech", status: "locked" as const },
-];
+/* ── Roadmap (새 데이터 기반) ── */
+const ROADMAP = COURSES.map((c, i) => ({
+    title: c.title, icon: c.icon, id: c.id,
+    status: (i === 0 ? "done" : i === 1 ? "active" : "locked") as "done" | "active" | "locked",
+}));
 
 export default function JourneyPage() {
     const { progress } = useUserProgress();
@@ -33,13 +31,13 @@ export default function JourneyPage() {
     const [attendanceChecked, setAttendanceChecked] = useState(false);
     const [attendanceMsg, setAttendanceMsg] = useState("");
 
-    const supabase = createClient();
+    const supabase = useMemo(() => createClient(), []);
+    const stats = useMemo(() => getCurriculumStats(), []);
 
-    // Fetch courses from Supabase
+    // Fetch user progress from Supabase
     useEffect(() => {
         async function load() {
-            const { data: c } = await supabase.from("courses").select("*").order("sort_order");
-            if (c) setCourses(c);
+            setCourses(COURSES.map(c => ({ ...c, total_lessons: c.totalUnits })));
 
             if (user) {
                 const { data: ucp } = await supabase.from("user_course_progress").select("*").eq("user_id", user.id);
@@ -66,12 +64,14 @@ export default function JourneyPage() {
         setTimeout(() => setAttendanceMsg(""), 3000);
     };
 
-    const tierInfo = getTierInfo(progress?.tier || "Iron");
+    const tierInfo = getDisplayTier(progress?.tier || "Iron", progress?.level || 1, progress?.placement_done);
     const levelProgress = xpForNextLevel(progress?.xp || 0);
 
     // 코스별 색상
-    const COURSE_COLORS = ["#8b5cf6", "#0ea5e9", "#ef4444", "#14b8a6", "#f59e0b", "#f97316", "#3b82f6", "#6366f1"];
-    const COURSE_ICONS = ["psychology", "code", "bolt", "web", "javascript", "data_object", "terminal", "account_tree"];
+    const COURSE_COLORS = COURSES.map(c => {
+        const m = c.gradient.match(/#[a-fA-F0-9]{6}/g);
+        return m?.[0] || "#0ea5e9";
+    });
 
     return (
         <>
@@ -132,18 +132,13 @@ export default function JourneyPage() {
                             과목별 학습 진행률
                         </h2>
                         <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
-                            {(courses.length > 0 ? courses : [
-                                { title: "컴퓨팅 사고력", total_lessons: 20, color: "#8b5cf6", icon: "🧠" },
-                                { title: "코딩 기초", total_lessons: 24, color: "#0ea5e9", icon: "💻" },
-                                { title: "C언어 프로그래밍", total_lessons: 28, color: "#ef4444", icon: "⚙️" },
-                                { title: "HTML/CSS 웹 기초", total_lessons: 20, color: "#14b8a6", icon: "🌐" },
-                            ]).map((c: any, i: number) => {
+                            {COURSES.map((c: any, i: number) => {
                                 const ucp = userCourseProgress.find((u) => u.course_id === c.id);
                                 const lessons = ucp?.completed_lessons;
                                 const done = Array.isArray(lessons) ? lessons.length : (typeof lessons === 'number' ? lessons : 0);
-                                const total = c.total_lessons || 1;
+                                const total = c.totalUnits || 1;
                                 const pct = Math.round((done / total) * 100);
-                                const color = c.color || COURSE_COLORS[i % COURSE_COLORS.length];
+                                const color = COURSE_COLORS[i % COURSE_COLORS.length];
                                 return (
                                     <div key={c.title || i}>
                                         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 6 }}>
@@ -183,7 +178,7 @@ export default function JourneyPage() {
                                             : node.status === "active" ? { background: "linear-gradient(135deg, #0ea5e9, #2563eb)", color: "#fff", boxShadow: "0 8px 20px rgba(14,165,233,0.3)" }
                                                 : { background: "#f1f5f9", color: "#94a3b8", border: "2px solid #e2e8f0" })
                                     }}>
-                                        <span className="material-symbols-outlined" style={{ fontSize: 24 }}>{node.status === "done" ? "check" : node.icon}</span>
+                                        <span style={{ fontSize: 24 }}>{node.status === "done" ? "✓" : node.icon}</span>
                                     </div>
                                     <div>
                                         <div style={{ fontSize: 13, fontWeight: 700, color: node.status === "locked" ? "#94a3b8" : "#0f172a" }}>{node.title}</div>
@@ -206,18 +201,13 @@ export default function JourneyPage() {
                             전체 코스
                         </h2>
                         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))", gap: 16 }}>
-                            {(courses.length > 0 ? courses : [
-                                { title: "컴퓨팅 사고력", description: "문제 분석 · 논리적 사고", icon: "🧠", color: "#8b5cf6", difficulty: "입문", total_lessons: 20 },
-                                { title: "코딩 기초", description: "변수, 반복문, 조건문", icon: "💻", color: "#0ea5e9", difficulty: "입문", total_lessons: 24 },
-                                { title: "C언어 프로그래밍", description: "포인터 · 메모리 관리", icon: "⚙️", color: "#ef4444", difficulty: "초급", total_lessons: 28 },
-                                { title: "HTML/CSS 웹 기초", description: "웹페이지 만들기", icon: "🌐", color: "#14b8a6", difficulty: "입문", total_lessons: 20 },
-                            ]).map((c: any, i: number) => {
+                            {COURSES.map((c: any, i: number) => {
                                 const ucp = userCourseProgress.find((u) => u.course_id === c.id);
                                 const lessons = ucp?.completed_lessons;
                                 const done = Array.isArray(lessons) ? lessons.length : (typeof lessons === 'number' ? lessons : 0);
-                                const total = c.total_lessons || 1;
+                                const total = c.totalUnits || 1;
                                 const pct = Math.round((done / total) * 100);
-                                const color = c.color || COURSE_COLORS[i % COURSE_COLORS.length];
+                                const color = COURSE_COLORS[i % COURSE_COLORS.length];
                                 return (
                                     <Link key={c.title || i} href={`/dashboard/learning/courses/${c.id || i}`} style={{ textDecoration: "none" }}>
                                         <div style={{ ...glassCard, borderRadius: 20, padding: 24, transition: "all 0.2s", cursor: "pointer", position: "relative", overflow: "hidden" }}>
@@ -228,7 +218,7 @@ export default function JourneyPage() {
                                                 </div>
                                                 <div>
                                                     <div style={{ fontSize: 15, fontWeight: 800, color: "#0f172a" }}>{c.title}</div>
-                                                    <div style={{ fontSize: 11, color: "#94a3b8" }}>{c.difficulty} · {c.total_lessons}개 레슨</div>
+                                                    <div style={{ fontSize: 11, color: "#94a3b8" }}>{c.chapters.length}챕터 · {c.totalUnits}유닛</div>
                                                 </div>
                                             </div>
                                             <p style={{ fontSize: 12, color: "#64748b", marginBottom: 12, lineHeight: 1.5 }}>{c.description}</p>

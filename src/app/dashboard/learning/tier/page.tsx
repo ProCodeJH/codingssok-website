@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { createClient } from "@/lib/supabase";
 import { useAuth } from "@/contexts/AuthContext";
-import { TIERS, getTierInfo, getPlacementTier, checkPromotion, getNextTier } from "@/lib/xp-engine";
+import { TIERS, getTierInfo, getDisplayTier, getPlacementTier, checkPromotion, getNextTier } from "@/lib/xp-engine";
 import { useUserProgress } from "@/hooks/useUserProgress";
 
 const glassCard: React.CSSProperties = {
@@ -23,7 +23,7 @@ export default function TierPage() {
     const [loading, setLoading] = useState(false);
     const [history, setHistory] = useState<any[]>([]);
 
-    const currentTier = getTierInfo(progress?.tier || "Iron");
+    const currentTier = getDisplayTier(progress?.tier || "Iron", progress?.level || 1, progress?.placement_done);
     const nextTier = getNextTier(progress?.tier || "Iron");
     const canPlacement = (progress?.level || 1) >= 30 && !progress?.placement_done;
     const canPromotion = progress?.placement_done && nextTier;

@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import { createClient } from "@/lib/supabase";
 import { useAuth } from "@/contexts/AuthContext";
-import { getTierInfo, calcLevel, xpForNextLevel } from "@/lib/xp-engine";
+import { getTierInfo, getDisplayTier, calcLevel, xpForNextLevel } from "@/lib/xp-engine";
 import { useUserProgress } from "@/hooks/useUserProgress";
 
 const glassCard: React.CSSProperties = {
@@ -76,7 +76,7 @@ export default function ProfilePage() {
         setTimeout(() => setMsg(""), 3000);
     };
 
-    const tierInfo = getTierInfo(progress?.tier || "Iron");
+    const tierInfo = getDisplayTier(progress?.tier || "Iron", progress?.level || 1, progress?.placement_done);
     const levelProgress = xpForNextLevel(progress?.xp || 0);
 
     return (

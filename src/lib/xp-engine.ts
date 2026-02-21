@@ -34,6 +34,12 @@ export function xpForNextLevel(currentXp: number): { current: number; needed: nu
     return { current: currentXp - currentLevelXp, needed: diff, progress: Math.min(progress, 100) };
 }
 
+// ── 배치 전 (Lv30 미만) ──
+export const UNRANKED_TIER = {
+    name: 'Unranked', nameKo: '배치 전', icon: '❓', color: '#94a3b8',
+    gradient: 'linear-gradient(135deg, #94a3b8, #cbd5e1)', order: 0,
+};
+
 // ── 티어 정의 ──
 export const TIERS = [
     { name: 'Iron', nameKo: '아이언', icon: '🪨', color: '#6b7280', gradient: 'linear-gradient(135deg, #6b7280, #9ca3af)', order: 1 },
@@ -48,6 +54,13 @@ export const TIERS = [
 
 export function getTierInfo(tierName: string) {
     return TIERS.find(t => t.name === tierName) || TIERS[0];
+}
+
+// 레벨 + 배치 완료 여부에 따라 표시용 티어 반환
+export function getDisplayTier(tierName: string, level: number, placementDone?: boolean) {
+    // 배치고사를 안 봤거나 Lv30 미만이면 '배치 전'
+    if (!placementDone && level < 30) return UNRANKED_TIER;
+    return getTierInfo(tierName);
 }
 
 export function getTierByOrder(order: number) {

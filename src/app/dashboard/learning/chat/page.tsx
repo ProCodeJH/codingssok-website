@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import { createClient } from "@/lib/supabase";
 import { useAuth } from "@/contexts/AuthContext";
 
@@ -27,7 +27,7 @@ interface ChatMsg {
 
 export default function ChatPage() {
     const { user } = useAuth();
-    const supabase = createClient();
+    const supabase = useMemo(() => createClient(), []);
     const [channel, setChannel] = useState("general");
     const [messages, setMessages] = useState<ChatMsg[]>([]);
     const [input, setInput] = useState("");
@@ -54,7 +54,7 @@ export default function ChatPage() {
             .subscribe();
 
         return () => { supabase.removeChannel(sub); };
-    }, [channel, supabase]);
+    }, [channel]);
 
     const sendMessage = async () => {
         if (!input.trim() || !user) return;

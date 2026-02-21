@@ -1,174 +1,167 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { createClient } from "@/lib/supabase";
 import { useAuth } from "@/contexts/AuthContext";
 import Link from "next/link";
+import { COURSES, getCurriculumStats } from "@/data/courses";
 
 const glassCard: React.CSSProperties = {
-    background: "rgba(255,255,255,0.7)", backdropFilter: "blur(12px)",
-    border: "1px solid rgba(255,255,255,0.8)", boxShadow: "0 4px 20px rgba(0,0,0,0.03)",
-};
-
-const COURSE_COLORS: Record<string, { gradient: string; icon: string }> = {
-    "컴퓨팅 사고력": { gradient: "linear-gradient(135deg, #6366f1, #8b5cf6)", icon: "🧠" },
-    "C언어 기초": { gradient: "linear-gradient(135deg, #f59e0b, #ef4444)", icon: "💻" },
-    "코딩 기초": { gradient: "linear-gradient(135deg, #10b981, #06b6d4)", icon: "🌱" },
-    "알고리즘 입문": { gradient: "linear-gradient(135deg, #ec4899, #f43f5e)", icon: "🧩" },
-    "HTML/CSS": { gradient: "linear-gradient(135deg, #0ea5e9, #3b82f6)", icon: "🎨" },
-    "JavaScript 기초": { gradient: "linear-gradient(135deg, #eab308, #f59e0b)", icon: "⚡" },
-    "Python 기초": { gradient: "linear-gradient(135deg, #3b82f6, #6366f1)", icon: "🐍" },
-    "데이터 구조": { gradient: "linear-gradient(135deg, #14b8a6, #059669)", icon: "📊" },
-};
-
-const DIFFICULTY: Record<string, { label: string; color: string; bg: string }> = {
-    beginner: { label: "입문", color: "#10b981", bg: "#dcfce7" },
-    intermediate: { label: "중급", color: "#f59e0b", bg: "#fef3c7" },
-    advanced: { label: "고급", color: "#ef4444", bg: "#fee2e2" },
+    background: "rgba(255,255,255,0.85)", backdropFilter: "blur(16px)",
+    border: "1px solid rgba(255,255,255,0.6)", boxShadow: "0 4px 24px rgba(0,0,0,0.06)",
 };
 
 export default function CoursesPage() {
     const { user } = useAuth();
-    const supabase = createClient();
-    const [courses, setCourses] = useState<any[]>([]);
+    const supabase = useMemo(() => createClient(), []);
     const [progress, setProgress] = useState<Record<string, number>>({});
-    const [loading, setLoading] = useState(true);
-    const [filter, setFilter] = useState("전체");
+
+    const stats = useMemo(() => getCurriculumStats(), []);
 
     useEffect(() => {
-        Promise.all([
-            supabase.from("courses").select("*").order("sort_order", { ascending: true }),
-            user ? supabase.from("user_course_progress").select("course_id, progress").eq("user_id", user.id) : Promise.resolve({ data: null }),
-        ]).then(([coursesRes, progRes]) => {
-            if (coursesRes.data) {
-                setCourses(coursesRes.data);
-            } else {
-                // fallback 데이터
-                setCourses([
-                    { id: "1", title: "컴퓨팅 사고력", description: "문제 해결 능력을 키우는 컴퓨팅 사고의 기초", category: "기초", difficulty: "beginner", total_lessons: 12, xp_reward: 500 },
-                    { id: "2", title: "C언어 기초", description: "변수, 배열, 포인터까지 C언어의 핵심 문법", category: "프로그래밍", difficulty: "beginner", total_lessons: 20, xp_reward: 800 },
-                    { id: "3", title: "코딩 기초", description: "프로그래밍의 기본 개념과 논리적 사고", category: "기초", difficulty: "beginner", total_lessons: 15, xp_reward: 600 },
-                    { id: "4", title: "알고리즘 입문", description: "정렬, 탐색, 재귀 등 기본 알고리즘", category: "알고리즘", difficulty: "intermediate", total_lessons: 18, xp_reward: 1000 },
-                    { id: "5", title: "HTML/CSS", description: "웹 페이지 구조와 스타일링의 기초", category: "웹", difficulty: "beginner", total_lessons: 14, xp_reward: 500 },
-                    { id: "6", title: "JavaScript 기초", description: "동적 웹 페이지를 만드는 JS 핵심 문법", category: "웹", difficulty: "intermediate", total_lessons: 16, xp_reward: 700 },
-                    { id: "7", title: "Python 기초", description: "데이터 분석과 자동화를 위한 Python 기초", category: "프로그래밍", difficulty: "beginner", total_lessons: 15, xp_reward: 600 },
-                    { id: "8", title: "데이터 구조", description: "스택, 큐, 트리, 그래프 자료구조 학습", category: "알고리즘", difficulty: "advanced", total_lessons: 22, xp_reward: 1200 },
-                ]);
-            }
-            if (progRes.data) {
-                const m: Record<string, number> = {};
-                progRes.data.forEach((p: any) => { m[p.course_id] = p.progress || 0; });
-                setProgress(m);
-            }
-            setLoading(false);
-        });
+        if (!user) return;
+        supabase.from("user_course_progress").select("course_id, progress").eq("user_id", user.id)
+            .then(({ data }) => {
+                if (data) {
+                    const m: Record<string, number> = {};
+                    data.forEach((p: any) => { m[p.course_id] = p.progress || 0; });
+                    setProgress(m);
+                }
+            });
     }, [user, supabase]);
 
-    const categories = ["전체", ...new Set(courses.map((c) => c.category).filter(Boolean))];
-    const filtered = filter === "전체" ? courses : courses.filter((c) => c.category === filter);
+    const inProgress = COURSES.filter(c => progress[c.id] && progress[c.id] > 0 && progress[c.id] < 100);
 
     return (
-        <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
+        <div style={{ display: "flex", flexDirection: "column", gap: 28 }}>
+            {/* 페이지 헤더 */}
             <div>
-                <h1 style={{ fontSize: 24, fontWeight: 900, color: "#0f172a", margin: 0 }}>📚 내 코스</h1>
-                <p style={{ fontSize: 13, color: "#64748b" }}>체계적으로 프로그래밍을 배워보세요</p>
+                <h1 style={{ fontSize: 26, fontWeight: 900, color: "#0f172a", margin: 0 }}>📚 코스 탐색</h1>
+                <p style={{ fontSize: 14, color: "#64748b", margin: "4px 0 0" }}>체계적인 커리큘럼으로 프로그래밍을 마스터하세요</p>
             </div>
 
-            {/* 필터 */}
-            <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
-                {categories.map((c) => (
-                    <button key={c} onClick={() => setFilter(c)} style={{
-                        padding: "8px 18px", borderRadius: 12, border: "none", fontSize: 13, fontWeight: 700,
-                        background: filter === c ? "#0f172a" : "rgba(255,255,255,0.7)",
-                        color: filter === c ? "#fff" : "#64748b", cursor: "pointer",
-                    }}>{c}</button>
-                ))}
+            {/* 커리큘럼 통계 배너 */}
+            <div style={{
+                ...glassCard, borderRadius: 24, padding: "20px 28px",
+                background: "linear-gradient(135deg, rgba(14,165,233,0.08), rgba(99,102,241,0.08))",
+                border: "1px solid rgba(14,165,233,0.15)",
+            }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14 }}>
+                    <span style={{ fontSize: 22 }}>🎯</span>
+                    <span style={{ fontSize: 15, fontWeight: 800, color: "#0f172a" }}>코딩쏙 커리큘럼</span>
+                </div>
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(110px, 1fr))", gap: 12 }}>
+                    {[
+                        { label: "코스", value: stats.totalCourses, icon: "📦", color: "#6366f1" },
+                        { label: "챕터", value: stats.totalChapters, icon: "📂", color: "#0ea5e9" },
+                        { label: "유닛", value: stats.totalUnits, icon: "📝", color: "#10b981" },
+                        { label: "문제", value: `${stats.totalProblems}+`, icon: "🧪", color: "#f59e0b" },
+                        { label: "학습시간", value: `${stats.totalHours}h`, icon: "⏱", color: "#ef4444" },
+                    ].map(s => (
+                        <div key={s.label} style={{
+                            padding: "12px 14px", borderRadius: 14, background: "#fff",
+                            border: "1px solid #f1f5f9", textAlign: "center",
+                        }}>
+                            <span style={{ fontSize: 18 }}>{s.icon}</span>
+                            <div style={{ fontSize: 20, fontWeight: 900, color: s.color, marginTop: 2 }}>{s.value}</div>
+                            <div style={{ fontSize: 11, fontWeight: 600, color: "#94a3b8" }}>{s.label}</div>
+                        </div>
+                    ))}
+                </div>
             </div>
 
-            {/* 진행 중인 코스 요약 */}
-            {Object.keys(progress).length > 0 && (
+            {/* 진행 중인 코스 */}
+            {inProgress.length > 0 && (
                 <div style={{ ...glassCard, borderRadius: 24, padding: 24 }}>
-                    <h3 style={{ fontSize: 15, fontWeight: 800, color: "#0f172a", marginBottom: 16 }}>🔥 진행 중인 코스</h3>
-                    <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
-                        {courses.filter((c) => progress[c.id] && progress[c.id] > 0 && progress[c.id] < 100).map((c) => {
-                            const colors = COURSE_COLORS[c.title] || { gradient: "linear-gradient(135deg, #64748b, #94a3b8)", icon: "📖" };
-                            return (
-                                <div key={c.id} style={{
-                                    display: "flex", alignItems: "center", gap: 12, padding: "10px 16px",
-                                    borderRadius: 14, background: "#f8fafc", flex: "1 1 200px",
+                    <h3 style={{ fontSize: 15, fontWeight: 800, color: "#0f172a", marginBottom: 16, margin: 0 }}>🔥 진행 중인 코스</h3>
+                    <div style={{ display: "flex", gap: 12, flexWrap: "wrap", marginTop: 14 }}>
+                        {inProgress.map(c => (
+                            <Link key={c.id} href={`/dashboard/learning/courses/${c.id}`} style={{ textDecoration: "none", flex: "1 1 220px" }}>
+                                <div style={{
+                                    display: "flex", alignItems: "center", gap: 12, padding: "12px 16px",
+                                    borderRadius: 14, background: "#f8fafc", border: "1px solid #f1f5f9",
+                                    cursor: "pointer", transition: "all 0.2s",
                                 }}>
-                                    <span style={{ fontSize: 24 }}>{colors.icon}</span>
+                                    <span style={{ fontSize: 26 }}>{c.icon}</span>
                                     <div style={{ flex: 1, minWidth: 0 }}>
                                         <div style={{ fontSize: 13, fontWeight: 700, color: "#0f172a" }}>{c.title}</div>
-                                        <div style={{ height: 6, background: "#e2e8f0", borderRadius: 999, marginTop: 4, overflow: "hidden" }}>
-                                            <div style={{ width: `${progress[c.id]}%`, height: "100%", background: colors.gradient, borderRadius: 999 }} />
+                                        <div style={{ height: 6, background: "#e2e8f0", borderRadius: 999, marginTop: 6, overflow: "hidden" }}>
+                                            <div style={{ width: `${progress[c.id]}%`, height: "100%", background: c.gradient, borderRadius: 999 }} />
                                         </div>
                                     </div>
                                     <span style={{ fontSize: 12, fontWeight: 800, color: "#0ea5e9" }}>{progress[c.id]}%</span>
                                 </div>
-                            );
-                        })}
+                            </Link>
+                        ))}
                     </div>
                 </div>
             )}
 
-            {/* 코스 그리드 */}
-            {loading ? (
-                <div style={{ textAlign: "center", padding: 60, color: "#94a3b8" }}>로딩 중...</div>
-            ) : (
-                <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))", gap: 16 }}>
-                    {filtered.map((course) => {
-                        const colors = COURSE_COLORS[course.title] || { gradient: "linear-gradient(135deg, #64748b, #94a3b8)", icon: "📖" };
-                        const diff = DIFFICULTY[course.difficulty] || DIFFICULTY.beginner;
-                        const prog = progress[course.id] || 0;
-                        return (
-                            <Link key={course.id} href={`/dashboard/learning/courses/${course.id}`} style={{ textDecoration: "none" }}>
+            {/* 코스 카드 그리드 */}
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))", gap: 20 }}>
+                {COURSES.map(course => {
+                    const prog = progress[course.id] || 0;
+                    return (
+                        <Link key={course.id} href={`/dashboard/learning/courses/${course.id}`} style={{ textDecoration: "none" }}>
+                            <div style={{
+                                ...glassCard, borderRadius: 22, overflow: "hidden",
+                                cursor: "pointer", transition: "all 0.3s",
+                            }}>
+                                {/* 그라디언트 배너 */}
                                 <div style={{
-                                    ...glassCard, borderRadius: 20, overflow: "hidden",
-                                    cursor: "pointer", transition: "all 0.3s",
+                                    height: 110, background: course.gradient, display: "flex",
+                                    alignItems: "center", justifyContent: "center", position: "relative",
                                 }}>
-                                    {/* 상단 그라디언트 배너 */}
+                                    <span style={{ fontSize: 44, filter: "drop-shadow(0 2px 8px rgba(0,0,0,0.2))" }}>{course.icon}</span>
+                                    {prog > 0 && (
+                                        <div style={{
+                                            position: "absolute", top: 12, right: 12,
+                                            padding: "4px 12px", borderRadius: 10, background: "rgba(255,255,255,0.95)",
+                                            fontSize: 11, fontWeight: 800, color: prog === 100 ? "#059669" : "#0ea5e9",
+                                            boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
+                                        }}>{prog === 100 ? "✅ 완료" : `${prog}%`}</div>
+                                    )}
+                                    {/* 챕터/유닛 뱃지 */}
                                     <div style={{
-                                        height: 100, background: colors.gradient, display: "flex",
-                                        alignItems: "center", justifyContent: "center", position: "relative",
+                                        position: "absolute", bottom: 10, left: 14,
+                                        display: "flex", gap: 6,
                                     }}>
-                                        <span style={{ fontSize: 40, opacity: 0.9 }}>{colors.icon}</span>
-                                        {prog > 0 && (
-                                            <div style={{
-                                                position: "absolute", top: 10, right: 10,
-                                                padding: "4px 10px", borderRadius: 8, background: "rgba(255,255,255,0.9)",
-                                                fontSize: 11, fontWeight: 800, color: "#059669",
-                                            }}>{prog === 100 ? "✅ 완료" : `${prog}%`}</div>
-                                        )}
-                                    </div>
-                                    {/* 하단 정보 */}
-                                    <div style={{ padding: 20 }}>
-                                        <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8 }}>
-                                            <span style={{
-                                                padding: "3px 8px", borderRadius: 6, fontSize: 10, fontWeight: 700,
-                                                background: diff.bg, color: diff.color,
-                                            }}>{diff.label}</span>
-                                            <span style={{ fontSize: 11, color: "#94a3b8" }}>{course.total_lessons || "?"}개 레슨</span>
-                                        </div>
-                                        <h3 style={{ fontSize: 16, fontWeight: 800, color: "#0f172a", marginBottom: 6 }}>{course.title}</h3>
-                                        <p style={{ fontSize: 13, color: "#64748b", lineHeight: 1.5, marginBottom: 12 }}>{course.description}</p>
-                                        {/* 프로그레스 바 */}
-                                        <div style={{ height: 6, background: "#e2e8f0", borderRadius: 999, overflow: "hidden", marginBottom: 8 }}>
-                                            <div style={{ width: `${prog}%`, height: "100%", background: colors.gradient, borderRadius: 999, transition: "width 0.5s" }} />
-                                        </div>
-                                        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                                            <span style={{ fontSize: 12, fontWeight: 700, color: "#f59e0b" }}>⭐ +{course.xp_reward || 0} XP</span>
-                                            <span style={{ fontSize: 12, fontWeight: 700, color: "#0ea5e9" }}>
-                                                {prog === 0 ? "시작하기 →" : prog === 100 ? "복습하기" : "이어하기 →"}
-                                            </span>
-                                        </div>
+                                        <span style={{
+                                            padding: "3px 10px", borderRadius: 8, fontSize: 10, fontWeight: 800,
+                                            background: "rgba(255,255,255,0.9)", color: "#475569",
+                                        }}>{course.chapters.length}개 챕터</span>
+                                        <span style={{
+                                            padding: "3px 10px", borderRadius: 8, fontSize: 10, fontWeight: 800,
+                                            background: "rgba(255,255,255,0.9)", color: "#475569",
+                                        }}>{course.totalUnits}개 유닛</span>
                                     </div>
                                 </div>
-                            </Link>
-                        );
-                    })}
-                </div>
-            )}
+
+                                {/* 하단 정보 */}
+                                <div style={{ padding: "18px 22px 20px" }}>
+                                    <h3 style={{ fontSize: 17, fontWeight: 800, color: "#0f172a", margin: "0 0 6px" }}>{course.title}</h3>
+                                    <p style={{ fontSize: 13, color: "#64748b", lineHeight: 1.6, margin: "0 0 14px", minHeight: 42 }}>{course.description}</p>
+
+                                    {/* 프로그레스 바 */}
+                                    <div style={{ height: 7, background: "#e2e8f0", borderRadius: 999, overflow: "hidden", marginBottom: 10 }}>
+                                        <div style={{ width: `${prog}%`, height: "100%", background: course.gradient, borderRadius: 999, transition: "width 0.5s" }} />
+                                    </div>
+
+                                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                                        <div style={{ display: "flex", gap: 10, fontSize: 11, color: "#94a3b8" }}>
+                                            <span>⏱ {course.estimatedHours}시간</span>
+                                            <span>🧪 {course.totalProblems}문제</span>
+                                        </div>
+                                        <span style={{ fontSize: 12, fontWeight: 700, color: "#0ea5e9" }}>
+                                            {prog === 0 ? "시작하기 →" : prog === 100 ? "복습하기" : "이어하기 →"}
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </Link>
+                    );
+                })}
+            </div>
         </div>
     );
 }

@@ -200,12 +200,11 @@ export function MorphingGradient({
     className?: string;
 }) {
     const [c] = useState(colors);
-    const id = useRef(`mg-${Math.random().toString(36).slice(2, 8)}`).current;
 
     return (
         <>
             <style>{`
-                @keyframes ${id}-move {
+                @keyframes mg-morph-move {
                     0% { transform: translate(0%, 0%) rotate(0deg) scale(1); }
                     25% { transform: translate(30%, -20%) rotate(90deg) scale(1.1); }
                     50% { transform: translate(-10%, 30%) rotate(180deg) scale(0.95); }
@@ -232,7 +231,7 @@ export function MorphingGradient({
                             background: `radial-gradient(circle, ${color}40 0%, transparent 70%)`,
                             borderRadius: "50%",
                             filter: "blur(60px)",
-                            animation: `${id}-move ${speed + i * 2}s ease-in-out infinite`,
+                            animation: `mg-morph-move ${speed + i * 2}s ease-in-out infinite`,
                             animationDelay: `${-i * (speed / c.length)}s`,
                         }}
                     />

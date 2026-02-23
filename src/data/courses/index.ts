@@ -4,9 +4,16 @@
  */
 
 import type { Course } from './types';
-import { C_LANG_CH01_07 } from './c-lang-ch01-07';
-import { C_LANG_CH08_17 } from './c-lang-ch08-17';
-import { C_LANG_CH18_28 } from './c-lang-ch18-28';
+import { C_LANG_PART1 } from './c-lang-part1';
+import { C_LANG_PART2 } from './c-lang-part2';
+import { C_LANG_PART3 } from './c-lang-part3';
+import { C_LANG_PART4 } from './c-lang-part4';
+import { C_LANG_PART5 } from './c-lang-part5';
+import { C_LANG_PART6 } from './c-lang-part6';
+import { C_LANG_PART7 } from './c-lang-part7';
+import { C_LANG_PART8 } from './c-lang-part8';
+import { C_LANG_PART9 } from './c-lang-part9';
+import { C_LANG_PART10 } from './c-lang-part10';
 import { COMPUTATIONAL_THINKING_CHAPTERS } from './computational-thinking';
 import { CODING_BASICS_CHAPTERS } from './coding-basics';
 import { PYTHON_CHAPTERS } from './python';
@@ -15,6 +22,20 @@ import { PCCE_CHAPTERS } from './pcce';
 import { COS_CHAPTERS } from './cos';
 import { COS_PRO_CHAPTERS } from './cos-pro';
 import { WORD_PROCESSOR_CHAPTERS } from './word-processor';
+
+// ── C언어 전체 챕터 (10개 파트 → 13 챕터, 85 유닛) ──
+const C_LANG_ALL_CHAPTERS = [
+    ...C_LANG_PART1,
+    ...C_LANG_PART2,
+    ...C_LANG_PART3,
+    ...C_LANG_PART4,
+    ...C_LANG_PART5,
+    ...C_LANG_PART6,
+    ...C_LANG_PART7,
+    ...C_LANG_PART8,
+    ...C_LANG_PART9,
+    ...C_LANG_PART10,
+];
 
 // ── 코스 정의 ──
 
@@ -37,11 +58,11 @@ export const COURSES: Course[] = [
         title: 'C언어 기초',
         icon: '💻',
         gradient: 'linear-gradient(135deg, #f59e0b, #ef4444)',
-        description: 'C언어의 기초부터 자료구조, 알고리즘, 실전 모의고사까지 28개 챕터, 68개 유닛으로 완벽 마스터합니다.',
-        totalUnits: 68,
-        totalProblems: 880,
-        estimatedHours: 60,
-        chapters: [...C_LANG_CH01_07, ...C_LANG_CH08_17, ...C_LANG_CH18_28],
+        description: 'C언어의 기초부터 구조체, 함수, 파일I/O, 실전 프로젝트까지 13개 챕터, 85개 유닛으로 완벽 마스터합니다.',
+        totalUnits: 85,
+        totalProblems: 950,
+        estimatedHours: 80,
+        chapters: C_LANG_ALL_CHAPTERS,
         htmlPath: '/learn/C언어/index.html',
     },
     {
@@ -163,4 +184,4 @@ export function getCurriculumStats() {
 }
 
 // Re-export types
-export type { Course, Chapter, Unit, Quiz, CodeProblem } from './types';
+export type { Course, Chapter, Unit, Quiz, CodeProblem, Page } from './types';

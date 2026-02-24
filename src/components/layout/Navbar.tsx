@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback, useRef } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { motion, AnimatePresence, useMotionValue, useSpring } from "framer-motion";
 
 /*
@@ -212,21 +213,15 @@ export default function Navbar() {
             >
                 <div className="site-head__inner">
                     {/* ── Logo ── */}
-                    <Link href="/" className="s__logo" style={{ display: "inline-flex", alignItems: "center", gap: 10 }}>
-                        <div
-                            style={{
-                                width: 36,
-                                height: 36,
-                                background: "var(--color-black)",
-                                borderRadius: 10,
-                                display: "flex",
-                                alignItems: "center",
-                                justifyContent: "center",
-                            }}
-                        >
-                            <span style={{ color: "#fff", fontWeight: 700, fontSize: 18 }}>쏙</span>
-                        </div>
-                        <span style={{ fontWeight: 600, fontSize: 18, color: "var(--color-black)" }}>코딩쏙</span>
+                    <Link href="/" className="s__logo" style={{ display: "inline-flex", alignItems: "center", gap: 0 }}>
+                        <Image
+                            src="/images/promo/logo-codingssok.png"
+                            alt="코딩쏙"
+                            width={140}
+                            height={48}
+                            style={{ objectFit: "contain", height: 36, width: "auto" }}
+                            priority
+                        />
                     </Link>
 
                     {/* ── Desktop nav-main ── */}

@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 
 /*
   Footer — exact nodcoding site-foot pattern
@@ -32,6 +33,13 @@ export default function Footer() {
                 {/* CTA row */}
                 <div className="s__cta">
                     <div className="s__cta__content">
+                        <Image
+                            src="/images/promo/logo-wide-tagline.png"
+                            alt="코딩쏙 - 머리에 쏙쏙 들어오는 코딩교육"
+                            width={360}
+                            height={100}
+                            style={{ objectFit: "contain", height: 60, width: "auto", marginBottom: 20 }}
+                        />
                         <h2 className="s__cta__title t-h-2xs">
                             코딩의 시작,
                             <br />

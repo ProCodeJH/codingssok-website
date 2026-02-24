@@ -127,14 +127,11 @@ export default function LoginPage() {
 
         {/* Brand Header */}
         <div style={{ textAlign: "center", marginBottom: 36 }}>
-          <div style={{
-            width: 64, height: 64, margin: "0 auto 20px", borderRadius: 20,
-            background: `linear-gradient(135deg, ${PRIMARY}, ${ACCENT})`,
-            display: "flex", alignItems: "center", justifyContent: "center",
-            boxShadow: `0 8px 24px rgba(99,102,241,0.3)`,
-          }}>
-            <span className="material-symbols-outlined" style={{ fontSize: 32, color: "#fff", fontWeight: 300 }}>school</span>
-          </div>
+          <img
+            src="/images/promo/logo-codingssok.png"
+            alt="코딩쏙"
+            style={{ height: 48, width: "auto", margin: "0 auto 20px", display: "block" }}
+          />
           <h1 style={{ fontSize: 28, fontWeight: 800, letterSpacing: -0.5, color: "#1e1b4b", margin: "0 0 8px" }}>
             코딩쏙 아카데미
           </h1>

@@ -10,6 +10,7 @@ import Hero from "@/components/sections/Hero";
 import VideoHighlight from "@/components/sections/VideoHighlight";
 import TechMarquee from "@/components/sections/TechMarquee";
 import WhyUs from "@/components/sections/WhyUs";
+import PromoShowcase from "@/components/sections/PromoShowcase";
 import Curriculum from "@/components/sections/Curriculum";
 import Schedule from "@/components/sections/Schedule";
 import Gallery from "@/components/sections/Gallery";
@@ -34,6 +35,7 @@ export default function Home() {
           <VideoHighlight />
           <TechMarquee />
           <WhyUs />
+          <PromoShowcase />
           <Curriculum />
           <Schedule />
           <Gallery />

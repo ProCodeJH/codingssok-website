@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useUserProgress } from "@/hooks/useUserProgress";
 import { useState, useEffect, useMemo, useCallback } from "react";
@@ -14,27 +14,13 @@ import { useWrongAnswers } from "@/hooks/useWrongAnswers";
 
 /* ═══════════════════════════════════════════
    Quantum-Spatial Enterprise Hub V2
-   Elevator Shaft · Learning Dashboard
+   Course Selection · Learning Dashboard
    ═══════════════════════════════════════════ */
 
 /* ── Material Icons shortcut ── */
 function MI({ icon, style, className }: { icon: string; style?: React.CSSProperties; className?: string }) {
     return <span className={`material-symbols-outlined ${className || ""}`} style={style}>{icon}</span>;
 }
-
-/* ── Roadmap status helper ── */
-function getStatusForCourse(courseIndex: number, userCourseProgress: any[], course: any) {
-    const ucp = userCourseProgress.find((u) => u.course_id === course.id);
-    const lessons = ucp?.completed_lessons;
-    const done = Array.isArray(lessons) ? lessons.length : (typeof lessons === "number" ? lessons : 0);
-    const total = course.totalUnits || 1;
-    const pct = Math.round((done / total) * 100);
-    if (pct >= 100) return "done";
-    if (pct > 0 || courseIndex === 0) return "active";
-    return "locked";
-}
-
-
 
 export default function JourneyPage() {
     const { progress } = useUserProgress();
@@ -90,7 +76,7 @@ export default function JourneyPage() {
                 if (acts) setRecentActivity(acts);
             } catch { }
             try {
-                const dayLabels = ["일", "월", "화", "수", "목", "금", "토"];
+                const dayLabels = ["\uC77C", "\uC6D4", "\uD654", "\uC218", "\uBAA9", "\uAE08", "\uD1A0"];
                 const weekStart = new Date();
                 weekStart.setDate(weekStart.getDate() - weekStart.getDay());
                 weekStart.setHours(0, 0, 0, 0);
@@ -104,7 +90,7 @@ export default function JourneyPage() {
                 });
                 setWeeklyXP(dayLabels.map(d => ({ day: d, xp: daily[d] })));
             } catch {
-                setWeeklyXP(["일", "월", "화", "수", "목", "금", "토"].map(d => ({ day: d, xp: 0 })));
+                setWeeklyXP(["\uC77C", "\uC6D4", "\uD654", "\uC218", "\uBAA9", "\uAE08", "\uD1A0"].map(d => ({ day: d, xp: 0 })));
             }
             try {
                 const ninetyDaysAgo = new Date();
@@ -125,8 +111,8 @@ export default function JourneyPage() {
     const handleAttendance = useCallback(async () => {
         if (!user || attendanceChecked) return;
         const result = await checkAttendance(user.id);
-        if (result.alreadyChecked) setAttendanceMsg("이미 오늘 출석했어요!");
-        else setAttendanceMsg(`출석 완료! +10 XP 🎉`);
+        if (result.alreadyChecked) setAttendanceMsg("\uC774\uBBF8 \uC624\uB298 \uCD9C\uC11D\uD588\uC5B4\uC694");
+        else setAttendanceMsg(`\uCD9C\uC11D \uC644\uB8CC! +10 XP \uD68D\uB4DD`);
         setAttendanceChecked(true);
         setTimeout(() => setAttendanceMsg(""), 3000);
     }, [user, attendanceChecked]);
@@ -134,60 +120,15 @@ export default function JourneyPage() {
     const tierInfo = getDisplayTier(progress?.tier || "Iron", progress?.level || 1, progress?.placement_done);
     const levelProgress = xpForNextLevel(progress?.xp || 0);
 
-    // ── Build roadmap ──
-    const roadmap = COURSES.map((c, i) => ({
-        ...c,
-
-        status: getStatusForCourse(i, userCourseProgress, c),
-        pct: (() => {
-            const ucp = userCourseProgress.find((u) => u.course_id === c.id);
-            const lessons = ucp?.completed_lessons;
-            const done = Array.isArray(lessons) ? lessons.length : (typeof lessons === "number" ? lessons : 0);
-            return Math.round((done / (c.totalUnits || 1)) * 100);
-        })(),
-    }));
-
-    const activeCourseIdx = roadmap.findIndex(r => r.status === "active");
-
     return (
         <>
             <style>{`
-                .elevator-shaft {
-                    position: absolute; left: 50%; top: 0; bottom: 0; width: 2px;
-                    background: linear-gradient(to bottom, rgba(14,165,233,0), rgba(14,165,233,0.3) 10%, rgba(14,165,233,0.3) 90%, rgba(14,165,233,0));
-                    transform: translateX(-50%); z-index: 0;
-                }
-                .floor-indicator {
-                    position: absolute; left: 50%; transform: translateX(-50%);
-                    width: 40px; height: 40px; background: white; border-radius: 50%;
-                    display: flex; align-items: center; justify-content: center;
-                    box-shadow: 0 0 0 4px rgba(255,255,255,0.8), 0 0 0 6px rgba(14,165,233,0.2); z-index: 10;
-                }
-                .marble-card {
-                    background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
-                    position: relative;
-                }
-                .marble-card::before {
-                    content: ''; position: absolute; inset: 0;
-                    background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3z' fill='%239C92AC' fill-opacity='0.03' fill-rule='evenodd'/%3E%3C/svg%3E");
-                    opacity: 0.6; pointer-events: none; border-radius: inherit;
-                }
-                .glass-orb {
-                    background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.9), rgba(200,230,255,0.4) 40%, rgba(56,189,248,0.1) 80%);
-                    box-shadow: inset -10px -10px 20px rgba(0,0,0,0.1), inset 10px 10px 20px rgba(255,255,255,0.8), 0 15px 30px rgba(14,165,233,0.2);
-                    backdrop-filter: blur(5px); border: 1px solid rgba(255,255,255,0.6);
-                }
-                @keyframes orbit-spin { to { transform: rotate(360deg); } }
-                @keyframes orbit-spin-rev { to { transform: rotate(-360deg); } }
-                .orbit-ring { animation: orbit-spin 20s linear infinite; }
-                .orbit-ring-rev { animation: orbit-spin-rev 25s linear infinite; }
                 @media (max-width: 900px) {
-                    .shaft-row { flex-direction: column !important; }
-                    .shaft-row > div { width: 100% !important; padding: 0 !important; }
-                    .elevator-shaft { display: none; }
-                    .floor-indicator { position: relative !important; left: auto !important; transform: none !important; margin: 0 auto 12px; }
-                    .shaft-cross-line { display: none !important; }
                     .zenith-bottom-grid { grid-template-columns: 1fr !important; }
+                    .course-grid { grid-template-columns: 1fr 1fr !important; }
+                }
+                @media (max-width: 600px) {
+                    .course-grid { grid-template-columns: 1fr !important; }
                 }
             `}</style>
 
@@ -226,11 +167,11 @@ export default function JourneyPage() {
                             {!attendanceChecked ? (
                                 <motion.button onClick={handleAttendance} whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}
                                     style={{ padding: "10px 20px", borderRadius: 12, border: "none", fontSize: 13, fontWeight: 700, cursor: "pointer", background: "linear-gradient(135deg, #3b82f6, #6366f1)", color: "#fff", boxShadow: "0 8px 20px rgba(59,130,246,0.3)", display: "flex", alignItems: "center", gap: 8 }}>
-                                    <MI icon="login" style={{ fontSize: 16 }} /> 출석체크
+                                    <MI icon="login" style={{ fontSize: 16 }} /> {"\uCD9C\uC11D\uCCB4\uD06C"}
                                 </motion.button>
                             ) : (
                                 <button disabled style={{ padding: "10px 20px", borderRadius: 12, border: "none", fontSize: 13, fontWeight: 700, background: "rgba(255,255,255,0.5)", color: "#94a3b8", display: "flex", alignItems: "center", gap: 8 }}>
-                                    <MI icon="check_circle" style={{ fontSize: 16 }} /> 출석 완료 ✓
+                                    <MI icon="check_circle" style={{ fontSize: 16 }} /> {"\uCD9C\uC11D \uC644\uB8CC \u2713"}
                                 </button>
                             )}
                         </motion.div>
@@ -276,12 +217,12 @@ export default function JourneyPage() {
                                 border: "1px solid #e2e8f0", textDecoration: "none",
                                 boxShadow: "0 2px 8px rgba(0,0,0,0.04)", transition: "border-color 0.2s",
                             }}>
-                                <span style={{ fontSize: 24 }}>📒</span>
+                                <span style={{ fontSize: 24 }}>{"\uD83D\uDCDD"}</span>
                                 <div>
-                                    <div style={{ fontWeight: 700, fontSize: 14, color: "#1e1b4b" }}>오답 노트</div>
-                                    <div style={{ fontSize: 12, color: "#94a3b8" }}>틀린 문제를 복습하세요</div>
+                                    <div style={{ fontWeight: 700, fontSize: 14, color: "#1e1b4b" }}>{"\uC624\uB2F5 \uB178\uD2B8"}</div>
+                                    <div style={{ fontSize: 12, color: "#94a3b8" }}>{"\uD2C0\uB9B0 \uBB38\uC81C\uB97C \uBCF5\uC2B5\uD558\uC138\uC694"}</div>
                                 </div>
-                                <span style={{ marginLeft: "auto", color: "#94a3b8", fontSize: 14 }}>→</span>
+                                <span style={{ marginLeft: "auto", color: "#94a3b8", fontSize: 14 }}>{"\u2192"}</span>
                             </Link>
                             <Link href="/trial" style={{
                                 display: "flex", alignItems: "center", gap: 12,
@@ -289,51 +230,24 @@ export default function JourneyPage() {
                                 border: "1px solid #FDE68A", textDecoration: "none",
                                 boxShadow: "0 2px 8px rgba(245,158,11,0.08)", transition: "border-color 0.2s",
                             }}>
-                                <span style={{ fontSize: 24 }}>🎮</span>
+                                <span style={{ fontSize: 24 }}>{"\uD83E\uDDEA"}</span>
                                 <div>
-                                    <div style={{ fontWeight: 700, fontSize: 14, color: "#92400E" }}>무료 체험</div>
-                                    <div style={{ fontSize: 12, color: "#B45309" }}>첫 유닛 무료로 체험해보세요</div>
+                                    <div style={{ fontWeight: 700, fontSize: 14, color: "#92400E" }}>{"\uBB34\uB8CC \uCCB4\uD5D8"}</div>
+                                    <div style={{ fontSize: 12, color: "#B45309" }}>{"\uCCAB \uB2E8\uACC4 \uBB34\uB8CC\uB85C \uCCB4\uD5D8\uD574\uBCF4\uC138\uC694"}</div>
                                 </div>
-                                <span style={{ marginLeft: "auto", color: "#B45309", fontSize: 14 }}>→</span>
+                                <span style={{ marginLeft: "auto", color: "#B45309", fontSize: 14 }}>{"\u2192"}</span>
                             </Link>
                         </div>
                     </div>
 
-                    {/* ═══ ELEVATOR SHAFT — Vertical Course Roadmap ═══ */}
-                    <div style={{ position: "relative", maxWidth: 1100, margin: "0 auto", paddingBottom: 80 }}>
-                        {/* Central shaft line */}
-                        <div className="elevator-shaft" />
-
-                        {roadmap.map((course, i) => {
-                            const isActive = course.status === "active" && i === (activeCourseIdx >= 0 ? activeCourseIdx : 0);
-                            const isDone = course.status === "done";
-                            const isLocked = course.status === "locked";
-                            const isEven = i % 2 === 0;
-                            const modId = String(i + 1).padStart(2, "0");
-
-                            if (isActive) {
-                                return (
-                                    <ActiveFloor key={course.id} course={course} modId={modId} pct={course.pct} />
-                                );
-                            }
-                            if (isDone) {
-                                return (
-                                    <CompletedFloor key={course.id} course={course} modId={modId} isEven={isEven} idx={i} />
-                                );
-                            }
-                            return (
-                                <LockedFloor key={course.id} course={course} modId={modId} isEven={isEven} idx={i} />
-                            );
-                        })}
-                    </div>
-
-                    {/* ═══ MY COURSES — Course Card Grid ═══ */}
+                    {/* ═══ COURSE SELECTION — Pick Your Course ═══ */}
                     <div style={{ maxWidth: 1100, margin: "0 auto", marginBottom: 48 }}>
                         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25, duration: 0.5 }}>
-                            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 20 }}>
-                                <h2 className="z-font-display" style={{ fontWeight: 800, fontSize: 20, color: "#1e293b", margin: 0, display: "flex", alignItems: "center", gap: 10 }}>
-                                    <MI icon="library_books" style={{ fontSize: 22, color: "#6366f1" }} /> 내 코스
+                            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 24 }}>
+                                <h2 className="z-font-display" style={{ fontWeight: 800, fontSize: 22, color: "#1e293b", margin: 0, display: "flex", alignItems: "center", gap: 10 }}>
+                                    <MI icon="school" style={{ fontSize: 24, color: "#6366f1" }} /> {"\uCF54\uC2A4 \uC120\uD0DD"}
                                 </h2>
+                                <span style={{ fontSize: 12, color: "#94a3b8" }}>{"\uC6D0\uD558\uB294 \uACFC\uBAA9\uC744 \uC120\uD0DD\uD558\uC138\uC694"}</span>
                             </div>
 
                             {/* In-Progress Courses */}
@@ -341,7 +255,7 @@ export default function JourneyPage() {
                                 const inProg = COURSES.filter(c => courseProgress[c.id] && courseProgress[c.id] > 0 && courseProgress[c.id] < 100); return inProg.length > 0 ? (
                                     <div className="z-glass-panel" style={{ borderRadius: 20, padding: 20, marginBottom: 20 }}>
                                         <h3 style={{ fontSize: 14, fontWeight: 800, color: "#0f172a", margin: "0 0 14px", display: "flex", alignItems: "center", gap: 8 }}>
-                                            <MI icon="play_circle" style={{ fontSize: 18, color: "#f59e0b" }} /> 진행 중
+                                            <MI icon="play_circle" style={{ fontSize: 18, color: "#f59e0b" }} /> {"\uC9C4\uD589 \uC911\uC778 \uCF54\uC2A4"}
                                         </h3>
                                         <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
                                             {inProg.map(c => (
@@ -364,40 +278,97 @@ export default function JourneyPage() {
                                 ) : null;
                             })()}
 
-                            {/* Course Card Grid */}
-                            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(240px, 1fr))", gap: 12 }}>
+                            {/* Course Selection Grid */}
+                            <div className="course-grid" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))", gap: 16 }}>
                                 {COURSES.map((course, idx) => {
                                     const prog = courseProgress[course.id] || 0;
                                     return (
                                         <Link key={course.id} href={`/dashboard/learning/courses/${course.id}`} style={{ textDecoration: "none" }}>
-                                            <motion.div whileHover={{ y: -3, boxShadow: "0 8px 24px rgba(0,0,0,0.1)" }}
-                                                initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 + idx * 0.03, duration: 0.3 }}
-                                                className="z-glass-panel" style={{ borderRadius: 16, overflow: "hidden", cursor: "pointer" }}>
-                                                {/* Gradient banner */}
-                                                <div style={{ height: 56, background: course.gradient, display: "flex", alignItems: "center", justifyContent: "center", position: "relative" }}>
-                                                    <CourseIcon courseId={course.id} size={36} style={{ filter: "drop-shadow(0 2px 6px rgba(0,0,0,0.2))" }} />
+                                            <motion.div
+                                                whileHover={{ y: -6, boxShadow: "0 20px 40px rgba(0,0,0,0.12)" }}
+                                                initial={{ opacity: 0, y: 16 }}
+                                                animate={{ opacity: 1, y: 0 }}
+                                                transition={{ delay: 0.15 + idx * 0.05, duration: 0.4, ease: [0.25, 0.46, 0.45, 0.94] }}
+                                                style={{
+                                                    borderRadius: 20, overflow: "hidden", cursor: "pointer",
+                                                    background: "#fff", border: "1px solid #e2e8f0",
+                                                    boxShadow: "0 4px 16px rgba(0,0,0,0.04)",
+                                                    transition: "all 0.3s ease",
+                                                }}
+                                            >
+                                                {/* Gradient banner with icon */}
+                                                <div style={{
+                                                    height: 100, background: course.gradient,
+                                                    display: "flex", alignItems: "center", justifyContent: "center",
+                                                    position: "relative", overflow: "hidden",
+                                                }}>
+                                                    {/* Decorative circles */}
+                                                    <div style={{ position: "absolute", right: -20, top: -20, width: 80, height: 80, borderRadius: "50%", background: "rgba(255,255,255,0.15)" }} />
+                                                    <div style={{ position: "absolute", left: -10, bottom: -10, width: 50, height: 50, borderRadius: "50%", background: "rgba(255,255,255,0.1)" }} />
+                                                    <CourseIcon courseId={course.id} size={48} style={{ filter: "drop-shadow(0 4px 12px rgba(0,0,0,0.2))" }} />
+                                                    {/* Progress badge */}
                                                     {prog > 0 && (
-                                                        <div style={{ position: "absolute", top: 6, right: 8, padding: "2px 8px", borderRadius: 6, background: "rgba(255,255,255,0.95)", fontSize: 9, fontWeight: 800, color: prog === 100 ? "#059669" : "#0ea5e9" }}>
-                                                            {prog === 100 ? "✅ 완료" : `${prog}%`}
+                                                        <div style={{
+                                                            position: "absolute", top: 10, right: 10,
+                                                            padding: "3px 10px", borderRadius: 8,
+                                                            background: "rgba(255,255,255,0.95)",
+                                                            fontSize: 10, fontWeight: 800,
+                                                            color: prog === 100 ? "#059669" : "#0ea5e9",
+                                                            boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
+                                                        }}>
+                                                            {prog === 100 ? "\uC644\uB8CC" : `${prog}%`}
                                                         </div>
                                                     )}
-                                                    <div style={{ position: "absolute", bottom: 5, left: 8, display: "flex", gap: 3 }}>
-                                                        <span style={{ padding: "1px 6px", borderRadius: 4, fontSize: 8, fontWeight: 800, background: "rgba(255,255,255,0.9)", color: "#475569" }}>{course.chapters.length}챕터</span>
-                                                        <span style={{ padding: "1px 6px", borderRadius: 4, fontSize: 8, fontWeight: 800, background: "rgba(255,255,255,0.9)", color: "#475569" }}>{course.totalUnits}유닛</span>
+                                                    {/* Chapter/Unit badges */}
+                                                    <div style={{ position: "absolute", bottom: 8, left: 10, display: "flex", gap: 4 }}>
+                                                        <span style={{ padding: "2px 8px", borderRadius: 6, fontSize: 9, fontWeight: 800, background: "rgba(255,255,255,0.9)", color: "#475569" }}>
+                                                            {course.chapters.length}{"\uCC55\uD130"}
+                                                        </span>
+                                                        <span style={{ padding: "2px 8px", borderRadius: 6, fontSize: 9, fontWeight: 800, background: "rgba(255,255,255,0.9)", color: "#475569" }}>
+                                                            {course.totalUnits}{"\uC720\uB2DB"}
+                                                        </span>
                                                     </div>
                                                 </div>
-                                                <div style={{ padding: "10px 14px 12px" }}>
-                                                    <h3 style={{ fontSize: 14, fontWeight: 800, color: "#0f172a", margin: "0 0 3px" }}>{course.title}</h3>
-                                                    <p style={{ fontSize: 11, color: "#64748b", lineHeight: 1.4, margin: "0 0 8px", overflow: "hidden", textOverflow: "ellipsis", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical" as const }}>{course.description}</p>
-                                                    <div style={{ height: 4, background: "#e2e8f0", borderRadius: 999, overflow: "hidden", marginBottom: 6 }}>
-                                                        <motion.div initial={{ width: 0 }} animate={{ width: `${prog}%` }} transition={{ delay: 0.5, duration: 0.8 }}
-                                                            style={{ height: "100%", background: course.gradient, borderRadius: 999 }} />
+
+                                                {/* Card body */}
+                                                <div style={{ padding: "14px 18px 16px" }}>
+                                                    <h3 style={{ fontSize: 16, fontWeight: 800, color: "#0f172a", margin: "0 0 6px" }}>{course.title}</h3>
+                                                    <p style={{
+                                                        fontSize: 12, color: "#64748b", lineHeight: 1.5, margin: "0 0 12px",
+                                                        overflow: "hidden", textOverflow: "ellipsis",
+                                                        display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical" as const,
+                                                    }}>{course.description}</p>
+
+                                                    {/* Progress bar */}
+                                                    <div style={{ height: 5, background: "#f1f5f9", borderRadius: 999, overflow: "hidden", marginBottom: 10 }}>
+                                                        <motion.div
+                                                            initial={{ width: 0 }}
+                                                            animate={{ width: `${prog}%` }}
+                                                            transition={{ delay: 0.5, duration: 0.8 }}
+                                                            style={{ height: "100%", background: course.gradient, borderRadius: 999 }}
+                                                        />
                                                     </div>
+
+                                                    {/* Footer */}
                                                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                                                        <span style={{ fontSize: 10, color: "#94a3b8" }}>⏱ {course.estimatedHours}h · 🧪 {course.totalProblems}문제</span>
-                                                        <span style={{ fontSize: 10, fontWeight: 700, color: "#6366f1" }}>
-                                                            {prog === 0 ? "시작 →" : prog === 100 ? "복습" : "이어하기 →"}
-                                                        </span>
+                                                        <div style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 11, color: "#94a3b8" }}>
+                                                            <span style={{ display: "flex", alignItems: "center", gap: 3 }}>
+                                                                <MI icon="schedule" style={{ fontSize: 13 }} /> {course.estimatedHours}h
+                                                            </span>
+                                                            <span style={{ display: "flex", alignItems: "center", gap: 3 }}>
+                                                                <MI icon="quiz" style={{ fontSize: 13 }} /> {course.totalProblems}{"\uBB38\uC81C"}
+                                                            </span>
+                                                        </div>
+                                                        <motion.span
+                                                            whileHover={{ x: 4 }}
+                                                            style={{
+                                                                fontSize: 12, fontWeight: 700, color: "#6366f1",
+                                                                display: "flex", alignItems: "center", gap: 4,
+                                                            }}
+                                                        >
+                                                            {prog === 0 ? "\uC2DC\uC791\uD558\uAE30" : prog === 100 ? "\uBCF5\uC2B5" : "\uC774\uC5B4\uD558\uAE30"}
+                                                            <MI icon="arrow_forward" style={{ fontSize: 14 }} />
+                                                        </motion.span>
                                                     </div>
                                                 </div>
                                             </motion.div>
@@ -414,7 +385,7 @@ export default function JourneyPage() {
                         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4, duration: 0.5 }}
                             className="z-glass-panel" style={{ borderRadius: 20, padding: 20 }}>
                             <h3 className="z-font-display" style={{ fontWeight: 700, fontSize: 15, color: "#1e293b", marginBottom: 16, display: "flex", alignItems: "center", gap: 8 }}>
-                                <MI icon="bar_chart" style={{ fontSize: 18, color: "#3b82f6" }} /> 이번 주 XP
+                                <MI icon="bar_chart" style={{ fontSize: 18, color: "#3b82f6" }} /> {"\uC774\uBC88 \uC8FC XP"}
                             </h3>
                             <div style={{ display: "flex", alignItems: "flex-end", gap: 8, height: 80 }}>
                                 {weeklyXP.map((d, i, arr) => {
@@ -432,47 +403,47 @@ export default function JourneyPage() {
                                     );
                                 })}
                             </div>
-                        </motion.div >
+                        </motion.div>
 
                         {/* Stats */}
-                        < motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5, duration: 0.5 }}
+                        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5, duration: 0.5 }}
                             className="z-glass-panel" style={{ borderRadius: 20, padding: 20 }}>
                             <h3 className="z-font-display" style={{ fontWeight: 700, fontSize: 15, color: "#1e293b", marginBottom: 12, display: "flex", alignItems: "center", gap: 8 }}>
-                                <MI icon="leaderboard" style={{ fontSize: 18, color: "#8b5cf6" }} /> 나의 현황
+                                <MI icon="leaderboard" style={{ fontSize: 18, color: "#8b5cf6" }} /> {"\uB098\uC758 \uD604\uD669"}
                             </h3>
                             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
                                 {[
-                                    { label: "🔥 연속 출석", val: `${progress?.streak || 0}일`, c: "#ef4444" },
-                                    { label: "📊 성공률", val: `${successRate}%`, c: "#3b82f6" },
-                                    { label: "💻 코드 제출", val: `${submissions}회`, c: "#8b5cf6" },
-                                    { label: "⭐ XP", val: `${(progress?.xp || 0).toLocaleString()}`, c: "#f59e0b" },
+                                    { label: "\uC5F0\uC18D \uCD9C\uC11D", val: `${progress?.streak || 0}\uC77C`, c: "#ef4444", icon: "local_fire_department" },
+                                    { label: "\uC131\uACF5\uB960", val: `${successRate}%`, c: "#3b82f6", icon: "trending_up" },
+                                    { label: "\uCF54\uB4DC \uC81C\uCD9C", val: `${submissions}\uD68C`, c: "#8b5cf6", icon: "terminal" },
+                                    { label: "XP", val: `${(progress?.xp || 0).toLocaleString()}`, c: "#f59e0b", icon: "star" },
                                 ].map((s) => (
                                     <motion.div key={s.label} whileHover={{ scale: 1.04, y: -2 }}
                                         style={{ padding: "10px 12px", borderRadius: 14, background: "rgba(248,250,252,0.6)", textAlign: "center", border: "1px solid rgba(226,232,240,0.4)" }}>
-                                        <div style={{ fontSize: 10, color: "#94a3b8", marginBottom: 2 }}>{s.label}</div>
+                                        <div style={{ fontSize: 10, color: "#94a3b8", marginBottom: 2, display: "flex", alignItems: "center", gap: 3 }}><MI icon={s.icon} style={{ fontSize: 12 }} />{s.label}</div>
                                         <div style={{ fontSize: 16, fontWeight: 800, color: s.c }}>{s.val}</div>
                                     </motion.div>
                                 ))}
                             </div>
-                        </motion.div >
+                        </motion.div>
 
                         {/* Recent Activity */}
-                        < motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.6, duration: 0.5 }}
+                        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.6, duration: 0.5 }}
                             className="z-glass-panel" style={{ borderRadius: 20, padding: 20 }}>
                             <h3 className="z-font-display" style={{ fontWeight: 700, fontSize: 15, color: "#1e293b", marginBottom: 12, display: "flex", alignItems: "center", gap: 8 }}>
-                                <MI icon="schedule" style={{ fontSize: 18, color: "#f59e0b" }} /> 최근 활동
+                                <MI icon="schedule" style={{ fontSize: 18, color: "#f59e0b" }} /> {"\uCD5C\uADFC \uD65C\uB3D9"}
                             </h3>
                             {
                                 recentActivity.length === 0 ? (
-                                    <div style={{ textAlign: "center", padding: 16, color: "#94a3b8", fontSize: 13 }}>📝 아직 활동 기록이 없어요</div>
+                                    <div style={{ textAlign: "center", padding: 16, color: "#94a3b8", fontSize: 13, display: "flex", alignItems: "center", justifyContent: "center", gap: 6 }}><MI icon="edit_note" style={{ fontSize: 16 }} /> {"\uC544\uC9C1 \uD65C\uB3D9 \uAE30\uB85D\uC774 \uC5C6\uC5B4\uC694"}</div>
                                 ) : (
                                     <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
                                         {recentActivity.slice(0, 4).map((a: any, i: number) => (
                                             <motion.div key={i} initial={{ opacity: 0, x: -8 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.7 + i * 0.06 }}
                                                 style={{ display: "flex", alignItems: "center", gap: 8, padding: "6px 10px", borderRadius: 10, background: "rgba(248,250,252,0.5)" }}>
-                                                <div style={{ width: 24, height: 24, borderRadius: "50%", background: "linear-gradient(135deg, #3b82f6, #6366f1)", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontSize: 11, flexShrink: 0 }}>⭐</div>
+                                                <div style={{ width: 24, height: 24, borderRadius: "50%", background: "linear-gradient(135deg, #3b82f6, #6366f1)", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontSize: 11, flexShrink: 0 }}><MI icon="star" style={{ fontSize: 14 }} /></div>
                                                 <div style={{ flex: 1, minWidth: 0 }}>
-                                                    <div style={{ fontSize: 11, fontWeight: 600, color: "#1e293b", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{a.reason || "경험치 획득"}</div>
+                                                    <div style={{ fontSize: 11, fontWeight: 600, color: "#1e293b", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{a.reason || "\uACBD\uD5D8\uCE58 \uD68D\uB4DD"}</div>
                                                 </div>
                                                 <span style={{ fontSize: 11, fontWeight: 800, color: "#059669", whiteSpace: "nowrap" }}>+{a.amount}</span>
                                             </motion.div>
@@ -480,10 +451,10 @@ export default function JourneyPage() {
                                     </div>
                                 )
                             }
-                        </motion.div >
-                    </div >
-                </div >
-            </div >
+                        </motion.div>
+                    </div>
+                </div>
+            </div>
         </>
     );
 }
@@ -506,308 +477,4 @@ function StatOrb({ icon, color, value, label }: { icon: string; color: string; v
 
 function VertDivider() {
     return <div style={{ height: 48, width: 1, background: "linear-gradient(to bottom, transparent, rgba(203,213,225,0.5), transparent)", flexShrink: 0 }} />;
-}
-
-/* ═══ ELEVATOR SHAFT — Floor Components ═══ */
-
-/* ── Active Floor — Full-width hero with glass orb ── */
-function ActiveFloor({ course, modId, pct }: { course: any; modId: string; pct: number }) {
-    return (
-        <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.7, ease: [0.25, 0.46, 0.45, 0.94] }}
-            style={{ position: "relative", zIndex: 20, width: "100%", marginBottom: 80 }}
-        >
-            {/* Floor indicator — pulsing blue */}
-            <div className="floor-indicator" style={{
-                top: "50%", width: 60, height: 60, transform: "translate(-50%, -50%)",
-                boxShadow: "0 0 40px rgba(14,165,233,0.3)", border: "none",
-            }}>
-                <div style={{ position: "absolute", inset: 0, borderRadius: "50%", border: "1px solid rgba(14,165,233,0.2)", animation: "pulse 2s infinite" }} />
-                <MI icon="hub" style={{ fontSize: 24, color: "#0ea5e9" }} />
-            </div>
-
-            {/* Two-column layout */}
-            <div className="shaft-row" style={{ display: "flex", alignItems: "center", gap: 32 }}>
-                {/* Left: Glass orb visual */}
-                <div style={{ width: "45%", display: "flex", justifyContent: "center", paddingRight: 48 }}>
-                    <div style={{ position: "relative", width: "100%", maxWidth: 320, aspectRatio: "4/3" }}>
-                        <div style={{
-                            position: "absolute", inset: 0,
-                            background: "linear-gradient(to bottom right, rgba(255,255,255,0.4), rgba(255,255,255,0.1))",
-                            backdropFilter: "blur(12px)", borderRadius: 32,
-                            border: "1px solid rgba(255,255,255,0.6)",
-                            boxShadow: "0 8px 32px rgba(31,38,135,0.15)",
-                            display: "flex", alignItems: "center", justifyContent: "center",
-                            overflow: "hidden", zIndex: 10,
-                        }}>
-                            {/* Glass orb */}
-                            <motion.div
-                                animate={{ y: [0, -20, 0] }}
-                                transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
-                                className="glass-orb"
-                                style={{
-                                    width: 120, height: 120, borderRadius: "50%",
-                                    display: "flex", alignItems: "center", justifyContent: "center",
-                                    position: "relative", zIndex: 20,
-                                }}
-                            >
-                                <MI icon={course.materialIcon} style={{ fontSize: 52, color: "rgba(14,165,233,0.8)", filter: "drop-shadow(0 4px 12px rgba(14,165,233,0.4))" }} />
-                            </motion.div>
-
-                            {/* Spinning orbit rings */}
-                            <div className="orbit-ring" style={{
-                                position: "absolute", width: 180, height: 180, borderRadius: "50%",
-                                border: "1px solid rgba(14,165,233,0.1)", borderTopColor: "rgba(14,165,233,0.4)",
-                            }} />
-                            <div className="orbit-ring-rev" style={{
-                                position: "absolute", width: 240, height: 240, borderRadius: "50%",
-                                border: "1px solid rgba(99,102,241,0.1)", borderBottomColor: "rgba(99,102,241,0.3)",
-                            }} />
-
-                            {/* Bottom stats */}
-                            <div style={{ position: "absolute", bottom: 16, left: 16, right: 16, display: "flex", justifyContent: "space-between", zIndex: 30 }}>
-                                <div className="z-glass-panel" style={{ padding: "6px 12px", borderRadius: 10 }}>
-                                    <div style={{ fontSize: 9, color: "#64748b", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 2 }}>진행률</div>
-                                    <div style={{ fontSize: 13, fontWeight: 700, color: "#0ea5e9", fontFamily: "monospace" }}>{pct}%</div>
-                                </div>
-                                <div className="z-glass-panel" style={{ padding: "6px 12px", borderRadius: 10 }}>
-                                    <div style={{ fontSize: 9, color: "#64748b", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 2 }}>유닛</div>
-                                    <div style={{ fontSize: 13, fontWeight: 700, color: "#059669", fontFamily: "monospace" }}>{course.totalUnits}</div>
-                                </div>
-                            </div>
-                        </div>
-                        {/* Shadow layer */}
-                        <div style={{ position: "absolute", inset: 16, background: "rgba(14,165,233,0.05)", borderRadius: 32, transform: "translateZ(-50px) translateY(32px)", filter: "blur(24px)" }} />
-                    </div>
-                </div>
-
-                {/* Right: Main card */}
-                <div style={{ width: "55%", paddingLeft: 48 }}>
-                    <motion.div
-                        whileHover={{ y: -4, boxShadow: "0 30px 60px -12px rgba(50,50,93,0.2), 0 18px 36px -18px rgba(0,0,0,0.15)" }}
-                        style={{
-                            background: "rgba(255,255,255,0.8)", backdropFilter: "blur(24px)",
-                            padding: 40, borderRadius: 32,
-                            boxShadow: "0 30px 60px -12px rgba(50,50,93,0.15), 0 18px 36px -18px rgba(0,0,0,0.1)",
-                            border: "1px solid rgba(255,255,255,0.9)",
-                            position: "relative", overflow: "hidden",
-                            transition: "box-shadow 0.5s, transform 0.5s",
-                        }}
-                    >
-                        {/* Top gradient bar */}
-                        <div style={{ position: "absolute", top: 0, left: 0, width: "100%", height: 3, background: "linear-gradient(to right, #0ea5e9, #818cf8, #0ea5e9)" }} />
-                        {/* Soft glow */}
-                        <div style={{ position: "absolute", right: -40, top: -40, width: 160, height: 160, background: "rgba(224,242,254,0.6)", borderRadius: "50%", filter: "blur(48px)", pointerEvents: "none" }} />
-
-                        <div style={{ position: "relative", zIndex: 10 }}>
-                            {/* Live badge */}
-                            <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 20 }}>
-                                <span style={{ position: "relative", display: "flex", width: 8, height: 8 }}>
-                                    <span style={{ position: "absolute", inset: 0, borderRadius: "50%", background: "#0ea5e9", animation: "ping 1.5s cubic-bezier(0, 0, 0.2, 1) infinite", opacity: 0.75 }} />
-                                    <span style={{ position: "relative", display: "inline-flex", borderRadius: "50%", width: 8, height: 8, background: "#0ea5e9" }} />
-                                </span>
-                                <span style={{ fontSize: 11, fontWeight: 700, color: "#0ea5e9", textTransform: "uppercase", letterSpacing: "0.2em" }}>
-                                    Live Session // MOD_{modId}
-                                </span>
-                            </div>
-
-                            <h2 className="z-font-display" style={{ fontWeight: 700, fontSize: 32, color: "#1e293b", marginBottom: 8, letterSpacing: "-0.02em", lineHeight: 1.2 }}>
-                                {course.title}
-                            </h2>
-                            <p style={{ color: "#64748b", lineHeight: 1.7, fontSize: 15, marginBottom: 28, fontWeight: 300 }}>
-                                {course.description}
-                            </p>
-
-                            {/* Progress + info grid */}
-                            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 28 }}>
-                                <div style={{ padding: 14, borderRadius: 16, background: "#f8fafc", border: "1px solid #f1f5f9" }}>
-                                    <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 8 }}>
-                                        <MI icon="memory" style={{ fontSize: 16, color: "#94a3b8" }} />
-                                        <span style={{ fontSize: 10, fontWeight: 700, color: "#475569", textTransform: "uppercase" }}>진행률</span>
-                                    </div>
-                                    <div style={{ height: 6, background: "#e2e8f0", borderRadius: 999, overflow: "hidden" }}>
-                                        <motion.div initial={{ width: 0 }} animate={{ width: `${pct}%` }} transition={{ delay: 0.3, duration: 0.8, ease: [0.25, 0.46, 0.45, 0.94] }}
-                                            style={{ height: "100%", background: "#0ea5e9", borderRadius: 999 }} />
-                                    </div>
-                                </div>
-                                <div style={{ padding: 14, borderRadius: 16, background: "#f8fafc", border: "1px solid #f1f5f9" }}>
-                                    <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 8 }}>
-                                        <MI icon="dataset" style={{ fontSize: 16, color: "#94a3b8" }} />
-                                        <span style={{ fontSize: 10, fontWeight: 700, color: "#475569", textTransform: "uppercase" }}>구성</span>
-                                    </div>
-                                    <div style={{ fontSize: 14, fontFamily: "monospace", color: "#334155", fontWeight: 600 }}>
-                                        {course.chapters.length}챕터 · {course.totalUnits}유닛
-                                    </div>
-                                </div>
-                            </div>
-
-                            {/* CTA */}
-                            <Link href={`/dashboard/learning/courses/${course.id}`} style={{ textDecoration: "none" }}>
-                                <motion.button whileHover={{ scale: 1.01, y: -2 }} whileTap={{ scale: 0.98 }}
-                                    style={{
-                                        width: "100%", padding: "16px 0", background: "#0f172a", color: "#fff",
-                                        border: "none", borderRadius: 16, fontWeight: 600, fontSize: 15, cursor: "pointer",
-                                        boxShadow: "0 10px 20px rgba(0,0,0,0.1)",
-                                        display: "flex", alignItems: "center", justifyContent: "center", gap: 10,
-                                        transition: "box-shadow 0.3s, transform 0.3s",
-                                    }}>
-                                    <span>학습 시작</span>
-                                    <MI icon="arrow_forward" style={{ fontSize: 16 }} />
-                                </motion.button>
-                            </Link>
-                        </div>
-                    </motion.div>
-                </div>
-            </div>
-        </motion.div>
-    );
-}
-
-/* ── Completed Floor — Alternating left/right marble card ── */
-function CompletedFloor({ course, modId, isEven, idx }: { course: any; modId: string; isEven: boolean; idx: number }) {
-    return (
-        <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 0.6 }}
-            whileHover={{ opacity: 1 }}
-            transition={{ delay: idx * 0.08, duration: 0.5 }}
-            style={{ position: "relative", zIndex: 10, width: "100%", marginBottom: 64, transition: "opacity 0.5s" }}
-        >
-            {/* Floor indicator — green check */}
-            <div className="floor-indicator" style={{ top: 32, background: "#f0fdf4", border: "2px solid #dcfce7" }}>
-                <MI icon="check" style={{ fontSize: 18, color: "#22c55e" }} />
-            </div>
-
-            <div className="shaft-row" style={{ display: "flex", alignItems: "center", gap: 48, flexDirection: isEven ? "row-reverse" : "row" }}>
-                {/* Cross line */}
-                <div className="shaft-cross-line" style={{
-                    position: "absolute", top: 50, [isEven ? "right" : "left"]: "50%",
-                    width: "48%", height: 1,
-                    background: isEven
-                        ? "linear-gradient(to right, transparent, rgba(226,232,240,0.5), transparent)"
-                        : "linear-gradient(to left, transparent, rgba(226,232,240,0.5), transparent)",
-                    zIndex: -1,
-                }} />
-
-                {/* Visual */}
-                <div style={{ width: "45%", display: "flex", justifyContent: isEven ? "flex-start" : "flex-end", padding: isEven ? "0 0 0 48px" : "0 48px 0 0" }}>
-                    <div style={{ position: "relative", width: 240, height: 180 }}>
-                        <div style={{ position: "absolute", inset: 0, background: "#fff", borderRadius: 20, boxShadow: "0 20px 40px -10px rgba(0,0,0,0.05), 0 0 2px rgba(0,0,0,0.05)", border: "1px solid rgba(241,245,249,0.5)" }} />
-                        <div style={{ position: "absolute", inset: 8, background: "#f8fafc", borderRadius: 14, display: "flex", alignItems: "center", justifyContent: "center", border: "1px solid #f1f5f9" }}>
-                            <MI icon={course.materialIcon} style={{ fontSize: 60, color: "#cbd5e1" }} />
-                        </div>
-                    </div>
-                </div>
-
-                {/* Card */}
-                <div style={{ width: "55%", display: "flex", justifyContent: isEven ? "flex-end" : "flex-start" }}>
-                    <motion.div
-                        whileHover={{ y: -4 }}
-                        transition={{ duration: 0.5 }}
-                        className="marble-card"
-                        style={{
-                            padding: 32, borderRadius: 24,
-                            boxShadow: "0 20px 40px -10px rgba(0,0,0,0.05), 0 0 2px rgba(0,0,0,0.05)",
-                            width: 400, maxWidth: "100%",
-                            border: "1px solid rgba(255,255,255,0.6)",
-                            transition: "transform 0.5s",
-                        }}
-                    >
-                        <div style={{ position: "relative", zIndex: 10 }}>
-                            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 12 }}>
-                                <div style={{ padding: "4px 12px", background: "#f0fdf4", borderRadius: 999, border: "1px solid #dcfce7" }}>
-                                    <span style={{ fontSize: 10, fontWeight: 700, color: "#16a34a", textTransform: "uppercase", letterSpacing: "0.08em" }}>Completed</span>
-                                </div>
-                                <span style={{ fontSize: 12, fontFamily: "monospace", color: "#94a3b8" }}>MOD_{modId}</span>
-                            </div>
-                            <h3 className="z-font-display" style={{ fontWeight: 700, fontSize: 22, color: "#1e293b", marginBottom: 8 }}>{course.title}</h3>
-                            <p style={{ fontSize: 13, color: "#64748b", lineHeight: 1.6, marginBottom: 20 }}>{course.description}</p>
-                            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", paddingTop: 16, borderTop: "1px solid #f1f5f9" }}>
-                                <div style={{ display: "flex", gap: -8 }}>
-                                    <div style={{ width: 24, height: 24, borderRadius: "50%", background: "#e2e8f0", border: "2px solid #fff" }} />
-                                    <div style={{ width: 24, height: 24, borderRadius: "50%", background: "#cbd5e1", border: "2px solid #fff", marginLeft: -8 }} />
-                                </div>
-                                <Link href={`/dashboard/learning/courses/${course.id}`} style={{ fontSize: 13, fontWeight: 500, color: "#94a3b8", textDecoration: "none" }}>
-                                    복습하기
-                                </Link>
-                            </div>
-                        </div>
-                    </motion.div>
-                </div>
-            </div>
-        </motion.div>
-    );
-}
-
-/* ── Locked Floor — Grayscale, lower opacity ── */
-function LockedFloor({ course, modId, isEven, idx }: { course: any; modId: string; isEven: boolean; idx: number }) {
-    return (
-        <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 0.4 }}
-            whileHover={{ opacity: 0.8 }}
-            transition={{ delay: idx * 0.08, duration: 0.5 }}
-            style={{ position: "relative", zIndex: 10, width: "100%", marginBottom: 64, transition: "opacity 0.5s" }}
-        >
-            {/* Floor indicator — lock */}
-            <div className="floor-indicator" style={{ top: 32, background: "#f8fafc", border: "2px solid #e2e8f0" }}>
-                <MI icon="lock" style={{ fontSize: 18, color: "#94a3b8" }} />
-            </div>
-
-            <div className="shaft-row" style={{ display: "flex", alignItems: "center", gap: 48, flexDirection: isEven ? "row" : "row-reverse" }}>
-                {/* Cross line */}
-                <div className="shaft-cross-line" style={{
-                    position: "absolute", top: 50, [isEven ? "left" : "right"]: "50%",
-                    width: "48%", height: 1,
-                    background: isEven
-                        ? "linear-gradient(to right, transparent, rgba(226,232,240,0.4), transparent)"
-                        : "linear-gradient(to left, transparent, rgba(226,232,240,0.4), transparent)",
-                    zIndex: -1,
-                }} />
-
-                {/* Card */}
-                <div style={{ width: "55%", display: "flex", justifyContent: isEven ? "flex-start" : "flex-end" }}>
-                    <motion.div
-                        whileHover={{ y: -4, filter: "grayscale(0)" }}
-                        className="marble-card"
-                        style={{
-                            padding: 32, borderRadius: 24,
-                            width: 400, maxWidth: "100%",
-                            border: "1px solid #e2e8f0",
-                            background: "rgba(248,250,252,0.5)",
-                            filter: "grayscale(0.3)",
-                            boxShadow: "none",
-                            transition: "all 0.5s",
-                        }}
-                    >
-                        <div style={{ position: "relative", zIndex: 10 }}>
-                            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 12 }}>
-                                <div style={{ padding: "4px 12px", background: "#f1f5f9", borderRadius: 999, border: "1px solid #e2e8f0" }}>
-                                    <span style={{ fontSize: 10, fontWeight: 700, color: "#64748b", textTransform: "uppercase", letterSpacing: "0.08em" }}>Locked</span>
-                                </div>
-                                <span style={{ fontSize: 12, fontFamily: "monospace", color: "#94a3b8" }}>MOD_{modId}</span>
-                            </div>
-                            <h3 className="z-font-display" style={{ fontWeight: 700, fontSize: 22, color: "#475569", marginBottom: 8 }}>{course.title}</h3>
-                            <p style={{ fontSize: 13, color: "#94a3b8", lineHeight: 1.6, marginBottom: 20 }}>{course.description}</p>
-                            <div style={{ height: 4, width: "100%", background: "#e2e8f0", borderRadius: 999, overflow: "hidden" }}>
-                                <div style={{ height: "100%", background: "#cbd5e1", width: 0 }} />
-                            </div>
-                        </div>
-                    </motion.div>
-                </div>
-
-                {/* Visual */}
-                <div style={{ width: "45%", display: "flex", justifyContent: isEven ? "flex-end" : "flex-start", padding: isEven ? "0 48px 0 0" : "0 0 0 48px" }}>
-                    <div style={{ position: "relative", width: 240, height: 180, opacity: 0.5 }}>
-                        <div style={{ position: "absolute", inset: 0, background: "#f1f5f9", borderRadius: 20, border: "1px solid #e2e8f0" }} />
-                        <div style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center" }}>
-                            <MI icon={course.materialIcon} style={{ fontSize: 52, color: "#cbd5e1" }} />
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </motion.div>
-    );
 }

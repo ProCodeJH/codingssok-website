@@ -4,51 +4,10 @@ import { useRef, useState } from "react";
 import { motion, useInView } from "framer-motion";
 
 /*
-  Contact — 무료 체험 상담 섹션
-  다크 테마 + 글래스모피즘 폼 + 2컬럼 그리드
-  홈페이지 디자인 톤 일치
+  Contact — Bionic Zenith 스타일
+  Spatial Inquiry Form + Massive Phone Display
+  코딩쏙 내용 유지하면서 디자인 템플릿 적용
 */
-
-const BENEFITS = [
-    {
-        label: "1:1 맞춤 커리큘럼",
-        icon: (
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" stroke="#EC5212" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                <polyline points="22 4 12 14.01 9 11.01" stroke="#EC5212" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
-        ),
-    },
-    {
-        label: "현직 IT 전문가 강사",
-        icon: (
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" stroke="#EC5212" strokeWidth="1.5" strokeLinecap="round" />
-                <circle cx="12" cy="7" r="4" stroke="#EC5212" strokeWidth="1.5" />
-            </svg>
-        ),
-    },
-    {
-        label: "주간 학습 리포트",
-        icon: (
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                <path d="M18 20V10M12 20V4M6 20v-6" stroke="#EC5212" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
-        ),
-    },
-    {
-        label: "무료 체험 수업",
-        icon: (
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                <path d="M20 12v10H4V12" stroke="#EC5212" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                <path d="M2 7h20v5H2V7z" stroke="#EC5212" strokeWidth="1.5" strokeLinejoin="round" />
-                <path d="M12 22V7" stroke="#EC5212" strokeWidth="1.5" />
-                <path d="M12 7c-1.5-2-3.5-3-5-3s-2.5 1-2 3" stroke="#EC5212" strokeWidth="1.5" strokeLinecap="round" />
-                <path d="M12 7c1.5-2 3.5-3 5-3s2.5 1 2 3" stroke="#EC5212" strokeWidth="1.5" strokeLinecap="round" />
-            </svg>
-        ),
-    },
-];
 
 const INTERESTS = ["C언어", "Python", "HTML/CSS", "블록코딩", "사고력수학"];
 
@@ -64,210 +23,142 @@ export default function Contact() {
         );
     };
 
+    const inputBase: React.CSSProperties = {
+        width: "100%", background: "transparent",
+        borderTop: "none", borderLeft: "none", borderRight: "none",
+        borderBottom: "2px solid rgba(255,255,255,0.1)",
+        padding: "12px 0", fontSize: 16, color: "#fff",
+        outline: "none", fontFamily: "inherit",
+        transition: "border-color 0.3s",
+    };
+
     return (
-        <section
-            ref={ref}
-            id="contact"
-            style={{
-                padding: "var(--section-spacing) 0",
-                background: "linear-gradient(135deg, #2a2420 0%, #1e1c1a 50%, #252320 100%)",
-                position: "relative",
-                overflow: "hidden",
-            }}
-        >
-            {/* Background orb */}
-            <div style={{
-                position: "absolute", top: "-20%", right: "-10%",
-                width: 500, height: 500, borderRadius: "50%",
-                background: "radial-gradient(circle, rgba(236,82,18,0.1) 0%, transparent 70%)",
-                pointerEvents: "none",
-            }} />
-            {/* Secondary orb */}
-            <div style={{
-                position: "absolute", bottom: "-15%", left: "-5%",
-                width: 400, height: 400, borderRadius: "50%",
-                background: "radial-gradient(circle, rgba(236,82,18,0.06) 0%, transparent 70%)",
-                pointerEvents: "none",
-            }} />
-
-            <div style={{ maxWidth: 1200, margin: "0 auto", padding: "0 clamp(16px, 3vw, 40px)" }}>
+        <>
+            {/* ═══════════════════════════════════════════════════
+                SECTION 1: Spatial Inquiry Form
+                ═══════════════════════════════════════════════════ */}
+            <section
+                ref={ref}
+                id="contact"
+                style={{
+                    padding: "clamp(60px, 8vw, 120px) 0",
+                    background: "linear-gradient(135deg, #0d131c 0%, #101822 50%, #0d131c 100%)",
+                    position: "relative", overflow: "hidden",
+                }}
+            >
+                {/* Background grid */}
                 <div style={{
-                    display: "grid",
-                    gridTemplateColumns: "1fr 1fr",
-                    gap: "clamp(32px, 5vw, 80px)",
-                    alignItems: "center",
-                }}>
-                    {/* ── Left Column: Info ── */}
-                    <motion.div
-                        initial={{ opacity: 0, x: -30 }}
-                        animate={isInView ? { opacity: 1, x: 0 } : {}}
-                        transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
-                    >
-                        <span style={{
-                            display: "inline-block", fontSize: 12, fontWeight: 700,
-                            color: "#EC5212", letterSpacing: "0.15em", textTransform: "uppercase",
-                            marginBottom: 16,
-                        }}>
-                            CONTACT US
-                        </span>
-                        <h2 style={{
-                            fontSize: "clamp(2rem, 4vw, 3.5rem)",
-                            fontWeight: 700, color: "#fff", lineHeight: 1.15, marginBottom: 20,
-                        }}>
-                            코딩의 시작,<br />코딩쏙에서.
-                        </h2>
-                        <p style={{
-                            fontSize: "clamp(0.9rem, 1.5vw, 1.1rem)",
-                            color: "rgba(255,255,255,0.6)", lineHeight: 1.7,
-                            marginBottom: 32, maxWidth: 400,
-                        }}>
-                            현직 IT 전문가의 소수 정예 코딩 교육.<br />무료 체험 수업으로 시작하세요.
-                        </p>
+                    position: "absolute", inset: 0,
+                    backgroundImage: "linear-gradient(rgba(61,138,245,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(61,138,245,0.04) 1px, transparent 1px)",
+                    backgroundSize: "40px 40px",
+                    pointerEvents: "none",
+                }} />
+                {/* Radial glow */}
+                <div style={{
+                    position: "absolute", top: 0, right: 0,
+                    width: "50%", height: "100%",
+                    background: "radial-gradient(ellipse at center, rgba(61,138,245,0.08) 0%, transparent 70%)",
+                    pointerEvents: "none",
+                }} />
 
-                        {/* Benefits grid */}
+                <div style={{ maxWidth: 900, margin: "0 auto", padding: "0 clamp(16px, 3vw, 40px)", position: "relative", zIndex: 1 }}>
+                    {/* Header */}
+                    <motion.div
+                        initial={{ opacity: 0, y: 30 }}
+                        animate={isInView ? { opacity: 1, y: 0 } : {}}
+                        transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+                        style={{ textAlign: "center", marginBottom: 48 }}
+                    >
+                        {/* Live badge */}
                         <div style={{
-                            display: "grid", gridTemplateColumns: "1fr 1fr",
-                            gap: 12, marginBottom: 32,
+                            display: "inline-flex", alignItems: "center", gap: 8,
+                            padding: "6px 14px", borderRadius: 99, marginBottom: 20,
+                            background: "rgba(61,138,245,0.1)", border: "1px solid rgba(61,138,245,0.2)",
                         }}>
-                            {BENEFITS.map((b, i) => (
-                                <motion.div
-                                    key={b.label}
-                                    initial={{ opacity: 0, y: 16 }}
-                                    animate={isInView ? { opacity: 1, y: 0 } : {}}
-                                    transition={{ delay: 0.1 + i * 0.08, duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-                                    style={{
-                                        display: "flex", alignItems: "center", gap: 10,
-                                        padding: "12px 16px", borderRadius: 12,
-                                        background: "rgba(255,255,255,0.04)",
-                                        border: "1px solid rgba(255,255,255,0.06)",
-                                    }}
-                                >
-                                    <span style={{ display: "flex", flexShrink: 0 }}>{b.icon}</span>
-                                    <span style={{ fontSize: 14, fontWeight: 600, color: "rgba(255,255,255,0.8)" }}>
-                                        {b.label}
-                                    </span>
-                                </motion.div>
-                            ))}
+                            <span style={{
+                                width: 8, height: 8, borderRadius: "50%",
+                                background: "#3d8af5",
+                                boxShadow: "0 0 8px rgba(61,138,245,0.6)",
+                                animation: "pulse 2s infinite",
+                            }} />
+                            <span style={{ fontSize: 11, fontWeight: 700, color: "#3d8af5", textTransform: "uppercase", letterSpacing: "0.12em" }}>
+                                상담 접수 가능
+                            </span>
                         </div>
 
-                        {/* CTA buttons */}
-                        <motion.div
-                            initial={{ opacity: 0, y: 16 }}
-                            animate={isInView ? { opacity: 1, y: 0 } : {}}
-                            transition={{ delay: 0.5, duration: 0.5 }}
-                            style={{ display: "flex", gap: 12, flexWrap: "wrap" }}
-                        >
-                            <a href="tel:010-7566-7229" style={{
-                                display: "flex", alignItems: "center", gap: 8,
-                                padding: "10px 20px", borderRadius: 32,
-                                background: "#EC5212", color: "#fff", textDecoration: "none",
-                                fontSize: 14, fontWeight: 700,
-                                boxShadow: "0 4px 16px rgba(236,82,18,0.4)",
-                                transition: "transform 0.2s",
-                            }}>
-                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
-                                    <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                                </svg>
-                                010-7566-7229
-                            </a>
-                            <a href="https://blog.naver.com/codingssok" target="_blank" rel="noopener noreferrer" style={{
-                                display: "flex", alignItems: "center", gap: 6,
-                                padding: "10px 20px", borderRadius: 32,
-                                background: "rgba(255,255,255,0.06)", color: "rgba(255,255,255,0.7)",
-                                textDecoration: "none", fontSize: 14, fontWeight: 600,
-                                border: "1px solid rgba(255,255,255,0.06)",
-                                transition: "all 0.2s",
-                            }}>
-                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
-                                    <path d="M12 20h9M16.5 3.5a2.12 2.12 0 013 3L7 19l-4 1 1-4L16.5 3.5z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                                </svg>
-                                네이버 블로그
-                            </a>
-                        </motion.div>
-                    </motion.div>
-
-                    {/* ── Right Column: Form ── */}
-                    <motion.div
-                        initial={{ opacity: 0, x: 30 }}
-                        animate={isInView ? { opacity: 1, x: 0 } : {}}
-                        transition={{ delay: 0.2, duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
-                        style={{
-                            background: "rgba(58, 52, 45, 0.8)",
-                            backdropFilter: "blur(20px)",
-                            borderRadius: 16,
-                            padding: "clamp(28px, 3vw, 40px)",
-                            border: "1px solid rgba(255,255,255,0.06)",
-                            boxShadow: "0 20px 60px rgba(0,0,0,0.3)",
-                        }}
-                    >
-                        <h3 style={{
-                            fontSize: 20, fontWeight: 700, color: "#fff",
-                            marginBottom: 8, display: "flex", alignItems: "center", gap: 10,
+                        <h2 style={{
+                            fontSize: "clamp(1.8rem, 3.5vw, 2.5rem)",
+                            fontWeight: 700, color: "#fff", lineHeight: 1.15, marginBottom: 12,
                         }}>
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" stroke="#EC5212" strokeWidth="1.5" strokeLinejoin="round" />
-                                <path d="M9 12l2 2 4-4" stroke="#EC5212" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                            </svg>
-                            무료 체험 상담
-                        </h3>
-                        <p style={{
-                            fontSize: 14, color: "rgba(255,255,255,0.5)",
-                            marginBottom: 24, lineHeight: 1.6,
-                        }}>
+                            Spatial Inquiries
+                        </h2>
+                        <p style={{ fontSize: 15, color: "rgba(255,255,255,0.45)", maxWidth: 420, margin: "0 auto" }}>
                             아이의 코딩 적성에 맞는 최적의 트랙을 추천해 드립니다.
                         </p>
+                    </motion.div>
 
-                        <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+                    {/* Form Card */}
+                    <motion.div
+                        initial={{ opacity: 0, y: 40 }}
+                        animate={isInView ? { opacity: 1, y: 0 } : {}}
+                        transition={{ delay: 0.15, duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+                        style={{
+                            background: "rgba(16,24,34,0.7)",
+                            backdropFilter: "blur(12px)",
+                            border: "1px solid rgba(255,255,255,0.05)",
+                            borderRadius: 16, padding: "clamp(28px, 4vw, 48px)",
+                            boxShadow: "0 24px 80px rgba(0,0,0,0.4)",
+                        }}
+                    >
+                        <div style={{
+                            display: "grid", gridTemplateColumns: "1fr 1fr",
+                            gap: "32px 40px",
+                        }}>
                             {/* 학생 이름 */}
                             <div>
-                                <label style={{ display: "block", fontSize: 12, fontWeight: 600, color: "rgba(255,255,255,0.5)", marginBottom: 6 }}>
+                                <label style={{ display: "block", fontSize: 12, fontWeight: 600, color: "rgba(255,255,255,0.5)", marginBottom: 8 }}>
                                     학생 이름
                                 </label>
                                 <input
-                                    type="text"
-                                    placeholder="이름을 입력하세요"
+                                    type="text" placeholder="이름을 입력하세요"
                                     value={formData.name}
                                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                                    style={{
-                                        width: "100%", height: 51, borderRadius: 12, border: "none",
-                                        background: "#252320", color: "#fff", padding: "0 16px",
-                                        fontSize: 14, outline: "none", fontFamily: "inherit", boxSizing: "border-box",
-                                    }}
+                                    style={{ ...inputBase }}
+                                    onFocus={(e) => e.currentTarget.style.borderBottomColor = "#3d8af5"}
+                                    onBlur={(e) => e.currentTarget.style.borderBottomColor = "rgba(255,255,255,0.1)"}
                                 />
                             </div>
 
                             {/* 연락처 */}
                             <div>
-                                <label style={{ display: "block", fontSize: 12, fontWeight: 600, color: "rgba(255,255,255,0.5)", marginBottom: 6 }}>
+                                <label style={{ display: "block", fontSize: 12, fontWeight: 600, color: "rgba(255,255,255,0.5)", marginBottom: 8 }}>
                                     연락처
                                 </label>
                                 <input
-                                    type="tel"
-                                    placeholder="010-0000-0000"
+                                    type="tel" placeholder="010-0000-0000"
                                     value={formData.phone}
                                     onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                                    style={{
-                                        width: "100%", height: 51, borderRadius: 12, border: "none",
-                                        background: "#252320", color: "#fff", padding: "0 16px",
-                                        fontSize: 14, outline: "none", fontFamily: "inherit", boxSizing: "border-box",
-                                    }}
+                                    style={{ ...inputBase }}
+                                    onFocus={(e) => e.currentTarget.style.borderBottomColor = "#3d8af5"}
+                                    onBlur={(e) => e.currentTarget.style.borderBottomColor = "rgba(255,255,255,0.1)"}
                                 />
                             </div>
 
                             {/* 학년 */}
                             <div>
-                                <label style={{ display: "block", fontSize: 12, fontWeight: 600, color: "rgba(255,255,255,0.5)", marginBottom: 6 }}>
+                                <label style={{ display: "block", fontSize: 12, fontWeight: 600, color: "rgba(255,255,255,0.5)", marginBottom: 8 }}>
                                     학년
                                 </label>
                                 <select
                                     value={formData.grade}
                                     onChange={(e) => setFormData({ ...formData, grade: e.target.value })}
                                     style={{
-                                        width: "100%", height: 51, borderRadius: 12, border: "none",
-                                        background: "#252320", color: "rgba(255,255,255,0.7)", padding: "0 16px",
-                                        fontSize: 14, outline: "none", fontFamily: "inherit", boxSizing: "border-box",
+                                        ...inputBase,
                                         appearance: "none" as const,
+                                        color: formData.grade ? "#fff" : "rgba(255,255,255,0.3)",
                                     }}
+                                    onFocus={(e) => e.currentTarget.style.borderBottomColor = "#3d8af5"}
+                                    onBlur={(e) => e.currentTarget.style.borderBottomColor = "rgba(255,255,255,0.1)"}
                                 >
                                     <option value="">학년 선택</option>
                                     <option value="초등 1~3">초등 1~3</option>
@@ -277,9 +168,12 @@ export default function Contact() {
                                 </select>
                             </div>
 
-                            {/* 관심 분야 */}
-                            <div>
-                                <label style={{ display: "block", fontSize: 12, fontWeight: 600, color: "rgba(255,255,255,0.5)", marginBottom: 6 }}>
+                            {/* 빈 칸 (그리드 정렬) */}
+                            <div />
+
+                            {/* 관심 분야 - 풀 너비 */}
+                            <div style={{ gridColumn: "1 / -1" }}>
+                                <label style={{ display: "block", fontSize: 12, fontWeight: 600, color: "rgba(255,255,255,0.5)", marginBottom: 12 }}>
                                     관심 분야
                                 </label>
                                 <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
@@ -290,11 +184,11 @@ export default function Contact() {
                                                 key={interest}
                                                 onClick={() => toggleInterest(interest)}
                                                 style={{
-                                                    padding: "8px 16px", borderRadius: 32,
-                                                    background: selected ? "rgba(236,82,18,0.2)" : "rgba(255,255,255,0.06)",
-                                                    color: selected ? "#EC5212" : "rgba(255,255,255,0.6)",
-                                                    fontSize: 13, fontWeight: 500, cursor: "pointer",
-                                                    border: selected ? "1px solid rgba(236,82,18,0.4)" : "1px solid rgba(255,255,255,0.06)",
+                                                    padding: "8px 18px", borderRadius: 99, cursor: "pointer",
+                                                    fontSize: 13, fontWeight: 500,
+                                                    background: selected ? "rgba(61,138,245,0.15)" : "rgba(255,255,255,0.04)",
+                                                    color: selected ? "#3d8af5" : "rgba(255,255,255,0.5)",
+                                                    border: selected ? "1px solid rgba(61,138,245,0.3)" : "1px solid rgba(255,255,255,0.06)",
                                                     transition: "all 0.2s",
                                                 }}
                                             >
@@ -304,40 +198,126 @@ export default function Contact() {
                                     })}
                                 </div>
                             </div>
+
+                            {/* Submit */}
+                            <div style={{ gridColumn: "1 / -1", display: "flex", justifyContent: "flex-end", marginTop: 8 }}>
+                                <motion.button
+                                    whileHover={{ boxShadow: "0 0 30px -5px rgba(61,138,245,0.6)" }}
+                                    whileTap={{ scale: 0.98 }}
+                                    style={{
+                                        padding: "14px 32px", borderRadius: 8, border: "none",
+                                        background: "#fff", color: "#0d131c",
+                                        fontWeight: 700, fontSize: 15, cursor: "pointer",
+                                        fontFamily: "inherit",
+                                        display: "flex", alignItems: "center", gap: 10,
+                                        transition: "all 0.3s",
+                                        position: "relative", overflow: "hidden",
+                                    }}
+                                >
+                                    무료 체험 신청하기
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                                        <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                                    </svg>
+                                </motion.button>
+                            </div>
                         </div>
 
-                        {/* Submit button */}
-                        <button
-                            style={{
-                                width: "100%", height: 47, borderRadius: 12, border: "none",
-                                background: "#EC5212", color: "#fff", fontWeight: 700, fontSize: 15,
-                                cursor: "pointer", marginTop: 24, fontFamily: "inherit",
-                                boxShadow: "0 4px 20px rgba(236,82,18,0.4)",
-                                transition: "all 0.2s",
-                                display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
-                            }}
-                        >
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                                <polyline points="22 4 12 14.01 9 11.01" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                            </svg>
-                            무료 체험 신청하기
-                        </button>
-                        <p style={{ fontSize: 12, color: "rgba(255,255,255,0.3)", textAlign: "center", marginTop: 12 }}>
+                        <p style={{ fontSize: 12, color: "rgba(255,255,255,0.25)", textAlign: "center", marginTop: 20 }}>
                             상담 신청 후 24시간 이내 연락 드립니다
                         </p>
                     </motion.div>
                 </div>
-            </div>
+            </section>
 
-            {/* ── Mobile responsive style ── */}
-            <style>{`
-                @media (max-width: 768px) {
-                    #contact > div > div {
-                        grid-template-columns: 1fr !important;
+            {/* ═══════════════════════════════════════════════════
+                SECTION 2: Massive Phone Display
+                ═══════════════════════════════════════════════════ */}
+            <section style={{
+                padding: "clamp(80px, 10vw, 160px) 0",
+                background: "#000", textAlign: "center",
+                position: "relative", overflow: "hidden",
+            }}>
+                {/* Grid bg */}
+                <div style={{
+                    position: "absolute", inset: 0, opacity: 0.15,
+                    backgroundImage: "linear-gradient(rgba(61,138,245,0.08) 1px, transparent 1px), linear-gradient(90deg, rgba(61,138,245,0.08) 1px, transparent 1px)",
+                    backgroundSize: "60px 60px",
+                    pointerEvents: "none",
+                }} />
+
+                <motion.div
+                    initial={{ opacity: 0, y: 40 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true, margin: "-100px" }}
+                    transition={{ duration: 0.8 }}
+                    style={{ position: "relative", zIndex: 1, maxWidth: 900, margin: "0 auto", padding: "0 24px" }}
+                >
+                    <p style={{
+                        fontSize: 12, fontWeight: 700, color: "#3d8af5",
+                        letterSpacing: "0.2em", textTransform: "uppercase", marginBottom: 24,
+                    }}>
+                        Direct Neural Link
+                    </p>
+
+                    {/* Massive phone number */}
+                    <a href="tel:010-7566-7229" style={{ textDecoration: "none" }}>
+                        <motion.h2
+                            initial={{ opacity: 0, scale: 0.95 }}
+                            whileInView={{ opacity: 1, scale: 1 }}
+                            viewport={{ once: true }}
+                            transition={{ delay: 0.2, duration: 0.6 }}
+                            style={{
+                                fontSize: "clamp(3rem, 10vw, 9rem)",
+                                fontWeight: 900, letterSpacing: "-0.05em",
+                                lineHeight: 0.9, marginBottom: 24,
+                                background: "linear-gradient(180deg, #fff 0%, rgba(255,255,255,0.4) 100%)",
+                                WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent",
+                            }}
+                        >
+                            010-7566-7229
+                        </motion.h2>
+                    </a>
+
+                    <p style={{ fontSize: "clamp(1rem, 2vw, 1.25rem)", color: "rgba(255,255,255,0.35)", fontWeight: 300 }}>
+                        코딩쏙 — 무료 상담 및 체험 수업 문의
+                    </p>
+
+                    {/* Action circles */}
+                    <div style={{ display: "flex", justifyContent: "center", gap: 16, marginTop: 40 }}>
+                        {[
+                            { href: "tel:010-7566-7229", icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg> },
+                            { href: "https://blog.naver.com/codingssok", icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M12 20h9M16.5 3.5a2.12 2.12 0 013 3L7 19l-4 1 1-4L16.5 3.5z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg> },
+                            { href: "#", icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z" stroke="currentColor" strokeWidth="1.5" /><circle cx="12" cy="10" r="3" stroke="currentColor" strokeWidth="1.5" /></svg> },
+                        ].map((item, i) => (
+                            <motion.a
+                                key={i}
+                                href={item.href}
+                                target={item.href.startsWith("http") ? "_blank" : undefined}
+                                rel={item.href.startsWith("http") ? "noopener noreferrer" : undefined}
+                                whileHover={{ scale: 1.1, background: "rgba(255,255,255,0.15)" }}
+                                style={{
+                                    width: 56, height: 56, borderRadius: "50%",
+                                    background: "rgba(255,255,255,0.06)",
+                                    backdropFilter: "blur(8px)",
+                                    border: "1px solid rgba(255,255,255,0.08)",
+                                    display: "flex", alignItems: "center", justifyContent: "center",
+                                    color: "#fff", textDecoration: "none",
+                                    transition: "all 0.2s",
+                                }}
+                            >
+                                {item.icon}
+                            </motion.a>
+                        ))}
+                    </div>
+                </motion.div>
+
+                <style>{`
+                    @keyframes pulse {
+                        0%, 100% { opacity: 1; }
+                        50% { opacity: 0.4; }
                     }
-                }
-            `}</style>
-        </section>
+                `}</style>
+            </section>
+        </>
     );
 }

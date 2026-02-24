@@ -5,12 +5,12 @@ interface ArrayBar { value: number; state: "default" | "comparing" | "swapping" 
 type Algorithm = "bubble" | "selection" | "insertion" | "quick" | "merge" | "binary-search";
 
 const ALGORITHMS: { id: Algorithm; name: string; icon: string; desc: string; complexity: string }[] = [
-    { id: "bubble", name: "Bubble Sort", icon: "", desc: "인접 요소 비교 교환", complexity: "O(n²)" },
-    { id: "selection", name: "Selection Sort", icon: "◎", desc: "최솟값 선택 후 교환", complexity: "O(n²)" },
-    { id: "insertion", name: "Insertion Sort", icon: "↓", desc: "삽입 위치에 배치", complexity: "O(n²)" },
-    { id: "quick", name: "Quick Sort", icon: "", desc: "피봇 기준 분할", complexity: "O(n log n)" },
-    { id: "merge", name: "Merge Sort", icon: "⇄", desc: "분할 후 병합", complexity: "O(n log n)" },
-    { id: "binary-search", name: "Binary Search", icon: "⌕", desc: "정렬 배열 이분 탐색", complexity: "O(log n)" },
+    { id: "bubble", name: "Bubble Sort", icon: "🫧", desc: "인접 요소 비교 교환", complexity: "O(n²)" },
+    { id: "selection", name: "Selection Sort", icon: "🎯", desc: "최솟값 선택 후 교환", complexity: "O(n²)" },
+    { id: "insertion", name: "Insertion Sort", icon: "📥", desc: "삽입 위치에 배치", complexity: "O(n²)" },
+    { id: "quick", name: "Quick Sort", icon: "⚡", desc: "피봇 기준 분할", complexity: "O(n log n)" },
+    { id: "merge", name: "Merge Sort", icon: "🔀", desc: "분할 후 병합", complexity: "O(n log n)" },
+    { id: "binary-search", name: "Binary Search", icon: "🔍", desc: "정렬 배열 이분 탐색", complexity: "O(log n)" },
 ];
 
 export function AlgorithmVisualizer() {
@@ -183,7 +183,7 @@ export function AlgorithmVisualizer() {
         <div style={{ height: "100%", display: "flex", flexDirection: "column", overflow: "hidden" }}>
             <div style={{ padding: "12px 16px", borderBottom: `1px solid ${border}`, background: "rgba(139,92,246,0.06)" }}>
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
-                    <span style={{ fontSize: 13, fontWeight: 600 }}>≡ 알고리즘 시각화</span>
+                    <span style={{ fontSize: 13, fontWeight: 600 }}>📊 알고리즘 시각화</span>
                     <span style={{ fontSize: 11, color: "rgba(255,255,255,0.4)" }}>Steps: {steps}</span>
                 </div>
                 <div style={{ display: "flex", gap: 4, flexWrap: "wrap" }}>
@@ -206,7 +206,7 @@ export function AlgorithmVisualizer() {
                 <button onClick={generateArray} disabled={running} style={{
                     padding: "6px 12px", borderRadius: 6, border: `1px solid ${border}`, background: "transparent",
                     color: "rgba(255,255,255,0.5)", fontSize: 11, cursor: running ? "default" : "pointer"
-                }}>↻ 새 배열</button>
+                }}>🔄 새 배열</button>
                 <div style={{ display: "flex", alignItems: "center", gap: 4, fontSize: 10, color: "rgba(255,255,255,0.35)" }}>
                     속도: <input type="range" min={5} max={200} value={200 - speed} onChange={e => setSpeed(200 - Number(e.target.value))} style={{ width: 60, accentColor: "#8b5cf6" }} />
                 </div>

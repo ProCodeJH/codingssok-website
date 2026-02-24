@@ -81,7 +81,7 @@ export default function TeacherLogin() {
                             fontSize: 28,
                         }}
                     >
-                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" stroke="#fff" strokeWidth="1.5" strokeLinecap="round" /><circle cx="12" cy="7" r="4" stroke="#fff" strokeWidth="1.5" /><path d="M2 12h3M19 12h3" stroke="#fff" strokeWidth="1.5" strokeLinecap="round" opacity="0.5" /></svg>
+                        👨‍🏫
                     </motion.div>
                     <h1 style={{ fontSize: 24, fontWeight: 800, color: "#1e1b4b", letterSpacing: "-0.03em" }}>
                         선생님 로그인
@@ -165,7 +165,7 @@ export default function TeacherLogin() {
                     marginTop: 24, padding: "12px 16px", borderRadius: 10,
                     background: "#F8FAFC", fontSize: 11, color: "#94a3b8", textAlign: "center",
                 }}>
-                    <span style={{ display: "inline-flex", alignItems: "center", gap: 4 }}><svg width="12" height="12" viewBox="0 0 24 24" fill="none"><rect x="3" y="11" width="18" height="11" rx="2" stroke="currentColor" strokeWidth="1.5" /><path d="M7 11V7a5 5 0 0110 0v4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" /></svg> 등록된 관리자 계정으로만 접근 가능합니다</span>
+                    🔒 등록된 관리자 계정으로만 접근 가능합니다
                 </div>
 
                 <div style={{ textAlign: "center", marginTop: 16 }}>

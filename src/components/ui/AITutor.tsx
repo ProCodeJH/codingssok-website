@@ -18,13 +18,13 @@ interface Message {
 
 // Preset answers for offline/demo mode
 const PRESET_RESPONSES: Record<string, string> = {
-    "변수": "변수(Variable)는 데이터를 저장하는 메모리 공간이에요!\n\n`int age = 10;` 이 코드에서:\n- `int`: 정수형 타입\n- `age`: 변수 이름\n- `10`: 저장할 값\n\n변수는 쉽게 말해 '이름이 붙은 상자'를 생각하면 돼요!",
-    "포인터": "포인터(Pointer)는 다른 변수의 메모리 주소를 저장하는 변수예요!\n\n```c\nint a = 10;\nint *p = &a;  // p는 a의 주소를 가리킴\n```\n\n- `&a`: a의 메모리 주소\n- `*p`: p가 가리키는 값 (10)\n\n포인터는 '집 주소를 적은 메모지'와 비슷해요!",
-    "배열": "배열(Array)은 같은 타입의 데이터를 연속으로 저장해요!\n\n```c\nint arr[5] = {1, 2, 3, 4, 5};\n```\n\n인덱스는 0부터 시작:\n- `arr[0]` → 1\n- `arr[4]` → 5\n\n배열은 '같은 크기의 서랍이 나란히 있는 서랍장'이라고 생각하세요!",
-    "반복문": "반복문은 같은 코드를 여러 번 실행해요!\n\n**for문:**\n```c\nfor (int i = 0; i < 5; i++) {\n    printf(\"%d \", i);\n}\n// 출력: 0 1 2 3 4\n```\n\n**while문:**\n```c\nint i = 0;\nwhile (i < 5) {\n    printf(\"%d \", i);\n    i++;\n}\n```\n\n세탁기 생각해봐요 — 설정된 횟수만큼 돌아가죠!",
-    "함수": "함수(Function)는 특정 작업을 수행하는 코드 블록이에요!\n\n```c\nint add(int a, int b) {\n    return a + b;\n}\n\nint result = add(3, 5);  // 8\n```\n\n- `int`: 반환 타입\n- `add`: 함수 이름\n- `(int a, int b)`: 매개변수\n- `return`: 결과 반환\n\n함수는 '자판기'처럼 입력을 넣으면 결과를 돌려줘요!",
-    "조건문": "조건문은 조건에 따라 다른 코드를 실행해요!\n\n```c\nint score = 85;\n\nif (score >= 90) {\n    printf(\"A등급\");\n} else if (score >= 80) {\n    printf(\"B등급\");\n} else {\n    printf(\"C등급\");\n}\n// 출력: B등급\n```\n\n신호등과 같아요 — 빨간불이면 멈추고, 초록불이면 가는 거죠!",
-    "default": "좋은 질문이에요!\n\n코딩에서 이 개념을 이해하려면:\n\n1. 먼저 기본 원리를 파악하기\n2. 간단한 예제 코드 직접 작성해보기\n3. 조금씩 변형하며 실험하기\n\n궁금한 점이 더 있으면 언제든 물어보세요!\n\n**Tip**: 코드를 직접 타이핑하면서 배우면 2배 빠르게 익힐 수 있어요!",
+    "변수": "변수(Variable)는 데이터를 저장하는 메모리 공간이에요! 📦\n\n`int age = 10;` 이 코드에서:\n- `int`: 정수형 타입\n- `age`: 변수 이름\n- `10`: 저장할 값\n\n변수는 쉽게 말해 '이름이 붙은 상자'를 생각하면 돼요!",
+    "포인터": "포인터(Pointer)는 다른 변수의 메모리 주소를 저장하는 변수예요! 🎯\n\n```c\nint a = 10;\nint *p = &a;  // p는 a의 주소를 가리킴\n```\n\n- `&a`: a의 메모리 주소\n- `*p`: p가 가리키는 값 (10)\n\n포인터는 '집 주소를 적은 메모지'와 비슷해요!",
+    "배열": "배열(Array)은 같은 타입의 데이터를 연속으로 저장해요! 📊\n\n```c\nint arr[5] = {1, 2, 3, 4, 5};\n```\n\n인덱스는 0부터 시작:\n- `arr[0]` → 1\n- `arr[4]` → 5\n\n배열은 '같은 크기의 서랍이 나란히 있는 서랍장'이라고 생각하세요!",
+    "반복문": "반복문은 같은 코드를 여러 번 실행해요! 🔄\n\n**for문:**\n```c\nfor (int i = 0; i < 5; i++) {\n    printf(\"%d \", i);\n}\n// 출력: 0 1 2 3 4\n```\n\n**while문:**\n```c\nint i = 0;\nwhile (i < 5) {\n    printf(\"%d \", i);\n    i++;\n}\n```\n\n세탁기 생각해봐요 — 설정된 횟수만큼 돌아가죠!",
+    "함수": "함수(Function)는 특정 작업을 수행하는 코드 블록이에요! 🧩\n\n```c\nint add(int a, int b) {\n    return a + b;\n}\n\nint result = add(3, 5);  // 8\n```\n\n- `int`: 반환 타입\n- `add`: 함수 이름\n- `(int a, int b)`: 매개변수\n- `return`: 결과 반환\n\n함수는 '자판기'처럼 입력을 넣으면 결과를 돌려줘요!",
+    "조건문": "조건문은 조건에 따라 다른 코드를 실행해요! 🔀\n\n```c\nint score = 85;\n\nif (score >= 90) {\n    printf(\"A등급\");\n} else if (score >= 80) {\n    printf(\"B등급\");\n} else {\n    printf(\"C등급\");\n}\n// 출력: B등급\n```\n\n신호등과 같아요 — 빨간불이면 멈추고, 초록불이면 가는 거죠!",
+    "default": "좋은 질문이에요! 🤔\n\n코딩에서 이 개념을 이해하려면:\n\n1. 먼저 기본 원리를 파악하기\n2. 간단한 예제 코드 직접 작성해보기\n3. 조금씩 변형하며 실험하기\n\n궁금한 점이 더 있으면 언제든 물어보세요!\n\n💡 **팁**: 코드를 직접 타이핑하면서 배우면 2배 빠르게 익힐 수 있어요!",
 };
 
 function findResponse(query: string): string {
@@ -78,7 +78,7 @@ export default function AITutor({ context }: { context?: string }) {
                     display: "flex", alignItems: "center", justifyContent: "center",
                 }}
             >
-                {isOpen ? "✕" : <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="18" height="18" rx="4" stroke="currentColor" strokeWidth="1.5" /><circle cx="9" cy="10" r="1.5" fill="currentColor" /><circle cx="15" cy="10" r="1.5" fill="currentColor" /><path d="M8 15c1 1.5 3 2.5 4 2.5s3-1 4-2.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" /></svg>}
+                {isOpen ? "✕" : "🤖"}
             </motion.button>
 
             {/* ── Chat Panel ── */}
@@ -110,7 +110,7 @@ export default function AITutor({ context }: { context?: string }) {
                                     display: "flex", alignItems: "center", justifyContent: "center",
                                     fontSize: 18,
                                 }}>
-                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="18" height="18" rx="4" stroke="#fff" strokeWidth="1.5" /><circle cx="9" cy="10" r="1.5" fill="#fff" /><circle cx="15" cy="10" r="1.5" fill="#fff" /><path d="M8 15c1 1.5 3 2.5 4 2.5s3-1 4-2.5" stroke="#fff" strokeWidth="1.5" strokeLinecap="round" /></svg>
+                                    🤖
                                 </div>
                                 <div>
                                     <div style={{ fontSize: 14, fontWeight: 700, color: "#fff" }}>AI 코딩 튜터</div>
@@ -129,7 +129,7 @@ export default function AITutor({ context }: { context?: string }) {
                         }}>
                             {messages.length === 0 && (
                                 <div style={{ textAlign: "center", padding: "20px 0", color: "#94a3b8" }}>
-                                    <div style={{ marginBottom: 8, display: "flex", alignItems: "center", justifyContent: "center" }}><svg width="32" height="32" viewBox="0 0 24 24" fill="none"><path d="M18.36 5.64a9 9 0 11-12.73 0" stroke="#94a3b8" strokeWidth="1.5" strokeLinecap="round" /><path d="M12 2v4" stroke="#94a3b8" strokeWidth="1.5" strokeLinecap="round" /><path d="M7 13l2 2 4-4" stroke="#94a3b8" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg></div>
+                                    <div style={{ fontSize: 32, marginBottom: 8 }}>👋</div>
                                     <div style={{ fontSize: 13, fontWeight: 600 }}>안녕하세요!</div>
                                     <div style={{ fontSize: 12, marginTop: 4 }}>코딩 관련 질문을 해보세요</div>
 

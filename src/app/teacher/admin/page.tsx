@@ -44,7 +44,7 @@ export default function TeacherAdmin() {
     const [newDay, setNewDay] = useState("");
     const [newGrade, setNewGrade] = useState("");
     const [newClass, setNewClass] = useState("");
-    const [newAvatar, setNewAvatar] = useState("");
+    const [newAvatar, setNewAvatar] = useState("🧒");
     const [addMsg, setAddMsg] = useState<{ ok: boolean; text: string } | null>(null);
     const [addLoading, setAddLoading] = useState(false);
 
@@ -105,13 +105,13 @@ export default function TeacherAdmin() {
                 birthday,
                 grade: newGrade || null,
                 class: newClass || null,
-                avatar: newAvatar || "",
+                avatar: newAvatar || "🧒",
             });
             if (error) throw error;
 
-            setAddMsg({ ok: true, text: `✓ "${trimmedName}" 학생이 추가되었습니다!` });
+            setAddMsg({ ok: true, text: `✅ "${trimmedName}" 학생이 추가되었습니다!` });
             setNewName(""); setNewYear(""); setNewMonth(""); setNewDay("");
-            setNewGrade(""); setNewClass(""); setNewAvatar("");
+            setNewGrade(""); setNewClass(""); setNewAvatar("🧒");
             fetchStudents();
         } catch (err: unknown) {
             const message = err instanceof Error ? err.message : String(err);
@@ -171,7 +171,7 @@ export default function TeacherAdmin() {
             }}>
                 <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
                     <Link href="/" style={{ fontSize: 13, color: "#94a3b8", textDecoration: "none" }}>← 홈</Link>
-                    <h1 style={{ fontSize: 18, fontWeight: 800, color: "#1e1b4b", display: "flex", alignItems: "center", gap: 6 }}><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" /><circle cx="12" cy="7" r="4" stroke="currentColor" strokeWidth="1.5" /><path d="M2 12h3M19 12h3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" opacity="0.5" /></svg> 선생님 관리 패널</h1>
+                    <h1 style={{ fontSize: 18, fontWeight: 800, color: "#1e1b4b" }}>👨‍🏫 선생님 관리 패널</h1>
                 </div>
                 <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                     <span style={{ fontSize: 12, color: "#64748b" }}>학생 {students.length}명</span>
@@ -183,10 +183,10 @@ export default function TeacherAdmin() {
                 {/* Tab navigation */}
                 <div style={{ display: "flex", gap: 4, marginBottom: 24, background: "#fff", borderRadius: 12, padding: 4, border: "1px solid #e2e8f0" }}>
                     {([
-                        { id: "students" as const, icon: "⊞", label: "학생 목록" },
-                        { id: "add" as const, icon: "+", label: "학생 추가" },
-                        { id: "content" as const, icon: "≡", label: "콘텐츠 관리" },
-                        { id: "notify" as const, icon: "▸", label: "알림 발송" },
+                        { id: "students" as const, icon: "👥", label: "학생 목록" },
+                        { id: "add" as const, icon: "➕", label: "학생 추가" },
+                        { id: "content" as const, icon: "📝", label: "콘텐츠 관리" },
+                        { id: "notify" as const, icon: "📢", label: "알림 발송" },
                     ]).map(tab => (
                         <button key={tab.id} onClick={() => setActiveTab(tab.id)} style={{
                             flex: 1, padding: "10px 16px", borderRadius: 10, border: "none", cursor: "pointer",
@@ -205,9 +205,9 @@ export default function TeacherAdmin() {
                         {/* Summary cards */}
                         <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 12, marginBottom: 24 }}>
                             {[
-                                { label: "전체 학생", value: students.length, icon: "⊞", color: "#4F46E5" },
-                                { label: "이번 달 추가", value: students.filter(s => new Date(s.created_at).getMonth() === new Date().getMonth()).length, icon: "↑", color: "#059669" },
-                                { label: "학년 분포", value: [...new Set(students.map(s => s.grade).filter(Boolean))].length + "개", icon: "≡", color: "#F59E0B" },
+                                { label: "전체 학생", value: students.length, icon: "👥", color: "#4F46E5" },
+                                { label: "이번 달 추가", value: students.filter(s => new Date(s.created_at).getMonth() === new Date().getMonth()).length, icon: "🆕", color: "#059669" },
+                                { label: "학년 분포", value: [...new Set(students.map(s => s.grade).filter(Boolean))].length + "개", icon: "📊", color: "#F59E0B" },
                             ].map(s => (
                                 <div key={s.label} style={{
                                     background: "#fff", borderRadius: 14, padding: "16px", border: "1px solid #e2e8f0",
@@ -244,7 +244,7 @@ export default function TeacherAdmin() {
                                         padding: "14px 20px", borderBottom: "1px solid #f1f5f9",
                                         alignItems: "center",
                                     }}>
-                                        <div style={{ fontSize: 20 }}>{student.avatar || ""}</div>
+                                        <div style={{ fontSize: 20 }}>{student.avatar || "🧒"}</div>
                                         <div style={{ fontWeight: 700, fontSize: 14, color: "#1e1b4b" }}>{student.name}</div>
                                         <div style={{ fontSize: 13, color: "#64748b" }}>{formatBirthday(student.birthday)}</div>
                                         <div style={{ fontSize: 13, color: "#6366F1", fontWeight: 600 }}>{student.grade || "—"}</div>
@@ -288,7 +288,7 @@ export default function TeacherAdmin() {
                             border: "1px solid #e2e8f0", maxWidth: 520, margin: "0 auto",
                         }}>
                             <h3 style={{ fontSize: 20, fontWeight: 800, color: "#1e1b4b", marginBottom: 8, textAlign: "center" }}>
-                                + 새 학생 추가
+                                ➕ 새 학생 추가
                             </h3>
                             <p style={{ fontSize: 13, color: "#94a3b8", textAlign: "center", marginBottom: 28 }}>
                                 학생 정보를 입력하면 로그인 계정이 자동 생성됩니다
@@ -298,7 +298,7 @@ export default function TeacherAdmin() {
                                 {/* 이름 */}
                                 <div>
                                     <label style={{ display: "block", fontSize: 13, fontWeight: 600, color: "#374151", marginBottom: 8 }}>
-                                        <span style={{ display: "inline-flex", alignItems: "center", gap: 4 }}><svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" /><circle cx="12" cy="7" r="4" stroke="currentColor" strokeWidth="1.5" /></svg> 이름 <span style={{ color: "#EF4444" }}>*</span></span>
+                                        👤 이름 <span style={{ color: "#EF4444" }}>*</span>
                                     </label>
                                     <input
                                         type="text" value={newName} onChange={e => setNewName(e.target.value)}
@@ -316,7 +316,7 @@ export default function TeacherAdmin() {
                                 {/* 생년월일 */}
                                 <div>
                                     <label style={{ display: "block", fontSize: 13, fontWeight: 600, color: "#374151", marginBottom: 8 }}>
-                                        <span style={{ display: "inline-flex", alignItems: "center", gap: 4 }}><svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M20 21v-8a2 2 0 00-2-2H6a2 2 0 00-2 2v8" stroke="currentColor" strokeWidth="1.5" /><path d="M4 16h16" stroke="currentColor" strokeWidth="1.5" /><path d="M12 7a3 3 0 100-6 3 3 0 000 6z" stroke="currentColor" strokeWidth="1.5" /></svg> 생년월일 <span style={{ color: "#EF4444" }}>*</span></span>
+                                        🎂 생년월일 <span style={{ color: "#EF4444" }}>*</span>
                                     </label>
                                     <div style={{ display: "flex", gap: 8 }}>
                                         {[
@@ -340,7 +340,7 @@ export default function TeacherAdmin() {
                                 <div style={{ display: "flex", gap: 12 }}>
                                     <div style={{ flex: 1 }}>
                                         <label style={{ display: "block", fontSize: 13, fontWeight: 600, color: "#374151", marginBottom: 8 }}>
-                                            <span style={{ display: "inline-flex", alignItems: "center", gap: 4 }}><svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M4 19.5A2.5 2.5 0 016.5 17H20" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" /><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z" stroke="currentColor" strokeWidth="1.5" /></svg> 학년</span>
+                                            📚 학년
                                         </label>
                                         <select value={newGrade} onChange={e => setNewGrade(e.target.value)} style={{
                                             display: "block", width: "100%", padding: "13px 10px",
@@ -355,7 +355,7 @@ export default function TeacherAdmin() {
                                     </div>
                                     <div style={{ flex: 1 }}>
                                         <label style={{ display: "block", fontSize: 13, fontWeight: 600, color: "#374151", marginBottom: 8 }}>
-                                            <span style={{ display: "inline-flex", alignItems: "center", gap: 4 }}><svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z" stroke="currentColor" strokeWidth="1.5" /><polyline points="9 22 9 12 15 12 15 22" stroke="currentColor" strokeWidth="1.5" /></svg> 반</span>
+                                            🏫 반
                                         </label>
                                         <select value={newClass} onChange={e => setNewClass(e.target.value)} style={{
                                             display: "block", width: "100%", padding: "13px 10px",
@@ -373,10 +373,10 @@ export default function TeacherAdmin() {
                                 {/* 아바타 선택 */}
                                 <div>
                                     <label style={{ display: "block", fontSize: 13, fontWeight: 600, color: "#374151", marginBottom: 8 }}>
-                                        <span style={{ display: "inline-flex", alignItems: "center", gap: 4 }}><svg width="12" height="12" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="1.5" /><path d="M8 14s1.5 2 4 2 4-2 4-2" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" /><line x1="9" y1="9" x2="9.01" y2="9" stroke="currentColor" strokeWidth="2" strokeLinecap="round" /><line x1="15" y1="9" x2="15.01" y2="9" stroke="currentColor" strokeWidth="2" strokeLinecap="round" /></svg> 아바타</span>
+                                        😊 아바타
                                     </label>
                                     <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-                                        {["", "", "", "", "", "", "", "", "", "", "", ""].map(emoji => (
+                                        {["🧒", "👦", "👧", "🧑", "👶", "🐱", "🐶", "🦊", "🐰", "🐻", "🐼", "🦁"].map(emoji => (
                                             <button
                                                 key={emoji} type="button"
                                                 onClick={() => setNewAvatar(emoji)}
@@ -416,7 +416,7 @@ export default function TeacherAdmin() {
                                         opacity: addLoading ? 0.7 : 1, width: "100%",
                                     }}
                                 >
-                                    {addLoading ? "추가 중..." : "학생 추가하기"}
+                                    {addLoading ? "추가 중..." : "✅ 학생 추가하기"}
                                 </button>
                             </form>
                         </div>
@@ -474,7 +474,7 @@ export default function TeacherAdmin() {
                                                             }}>{idx + 1}</span>
                                                             <span style={{ flex: 1, fontSize: 13, fontWeight: 500, color: "#334155" }}>{unit.title}</span>
                                                             <span style={{ fontSize: 11, color: "#94a3b8" }}>
-                                                                {unit.type === "이론" ? "강의" : "실습"} · {(unit.problems?.length || 0)}문제
+                                                                {unit.type === "이론" ? "📖 강의" : "✏️ 실습"} · {(unit.problems?.length || 0)}문제
                                                             </span>
                                                         </div>
                                                     ))}
@@ -497,14 +497,14 @@ export default function TeacherAdmin() {
                 {activeTab === "notify" && (
                     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
                         <div style={{ background: "#fff", borderRadius: 16, padding: "24px", border: "1px solid #e2e8f0" }}>
-                            <h3 style={{ fontSize: 16, fontWeight: 700, color: "#1e1b4b", marginBottom: 16, display: "flex", alignItems: "center", gap: 6 }}><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /><path d="M13.73 21a2 2 0 01-3.46 0" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" /></svg> 전체 공지</h3>
+                            <h3 style={{ fontSize: 16, fontWeight: 700, color: "#1e1b4b", marginBottom: 16 }}>📢 전체 공지</h3>
 
                             <div style={{ display: "flex", gap: 6, marginBottom: 16, flexWrap: "wrap" }}>
                                 {[
-                                    "오늘 숙제 잊지 마세요!",
-                                    "이번 주 수업 잘했어요!",
-                                    "내일 수업이 있습니다",
-                                    "코딩 대회 참가 안내",
+                                    "📚 오늘 숙제 잊지 마세요!",
+                                    "🎉 이번 주 수업 잘했어요!",
+                                    "⏰ 내일 수업이 있습니다",
+                                    "🏆 코딩 대회 참가 안내",
                                 ].map(tmpl => (
                                     <button key={tmpl} onClick={() => setNotifyMsg(tmpl)} style={{
                                         padding: "6px 12px", borderRadius: 8, border: "1px solid #e2e8f0",
@@ -550,7 +550,7 @@ export default function TeacherAdmin() {
                                     width: "100%",
                                 }}
                             >
-                                {notifySent ? "발송 완료!" : "전체 학생에게 발송"}
+                                {notifySent ? "✅ 발송 완료!" : "📤 전체 학생에게 발송"}
                             </button>
                         </div>
                     </motion.div>
@@ -563,6 +563,6 @@ export default function TeacherAdmin() {
                     to { transform: rotate(360deg); }
                 }
             `}</style>
-        </div >
+        </div>
     );
 }

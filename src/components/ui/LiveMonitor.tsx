@@ -18,14 +18,14 @@ interface LiveEvent {
 }
 
 const ACTIONS = [
-    { action: "유닛 완료", emoji: "✓", color: "#059669" },
-    { action: "퀴즈 정답", emoji: "◎", color: "#4F46E5" },
-    { action: "퀴즈 오답", emoji: "✗", color: "#DC2626" },
-    { action: "코드 실행", emoji: "▶", color: "#0EA5E9" },
-    { action: "로그인", emoji: "○", color: "#F59E0B" },
-    { action: "배지 획득", emoji: "★", color: "#8B5CF6" },
-    { action: "스트릭 체크인", emoji: "↑", color: "#EF4444" },
-    { action: "레벨업!", emoji: "↑", color: "#6366F1" },
+    { action: "유닛 완료", emoji: "✅", color: "#059669" },
+    { action: "퀴즈 정답", emoji: "🎯", color: "#4F46E5" },
+    { action: "퀴즈 오답", emoji: "❌", color: "#DC2626" },
+    { action: "코드 실행", emoji: "▶️", color: "#0EA5E9" },
+    { action: "로그인", emoji: "👋", color: "#F59E0B" },
+    { action: "배지 획득", emoji: "🏅", color: "#8B5CF6" },
+    { action: "스트릭 체크인", emoji: "🔥", color: "#EF4444" },
+    { action: "레벨업!", emoji: "⬆️", color: "#6366F1" },
 ];
 
 const NAMES = ["김민수", "이서연", "박지호", "최수아", "정하은"];
@@ -96,7 +96,7 @@ export default function LiveMonitor() {
                         color: isLive ? "#DC2626" : "#059669", cursor: "pointer",
                     }}
                 >
-                    {isLive ? "⏸ 일시정지" : "▶ 재개"}
+                    {isLive ? "⏸ 일시정지" : "▶️ 재개"}
                 </button>
             </div>
 

@@ -154,9 +154,8 @@ export default function CodeVisualizer({ steps }: { steps: ExecutionStep[] }) {
                 borderBottom: "1px solid #e2e8f0",
                 display: "flex", alignItems: "center", justifyContent: "space-between",
             }}>
-                <span style={{ fontSize: 12, fontWeight: 700, color: "#4F46E5", display: "inline-flex", alignItems: "center", gap: 4 }}>
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="8" stroke="currentColor" strokeWidth="2" /><path d="M21 21l-4.35-4.35" stroke="currentColor" strokeWidth="2" strokeLinecap="round" /></svg>
-                    메모리 시각화
+                <span style={{ fontSize: 12, fontWeight: 700, color: "#4F46E5" }}>
+                    🔍 메모리 시각화
                 </span>
                 <span style={{ fontSize: 11, color: "#94a3b8" }}>
                     Step {currentStep + 1} / {steps.length}
@@ -170,10 +169,7 @@ export default function CodeVisualizer({ steps }: { steps: ExecutionStep[] }) {
                     fontSize: 12, color: "#4F46E5", fontWeight: 600, marginBottom: 12,
                     fontFamily: "JetBrains Mono, monospace",
                 }}>
-                    <span style={{ display: "inline-flex", alignItems: "center", gap: 4 }}>
-                        <svg width="10" height="10" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="4" fill="currentColor" /><path d="M12 2v4M12 18v4M2 12h4M18 12h4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" /></svg>
-                        Line {step.line}: {step.label}
-                    </span>
+                    📍 Line {step.line}: {step.label}
                 </div>
 
                 {/* Variables */}

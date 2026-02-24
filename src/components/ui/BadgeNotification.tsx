@@ -37,7 +37,7 @@ export default function BadgeNotification() {
                     </motion.div>
                     <div>
                         <div style={{ fontSize: 10, fontWeight: 700, color: RARITY_COLORS[newBadge.rarity], textTransform: "uppercase", letterSpacing: "0.1em" }}>
-                            NEW! 배지 획득!
+                            🎉 배지 획득!
                         </div>
                         <div style={{ fontSize: 16, fontWeight: 800, color: "#1e1b4b" }}>
                             {newBadge.name}

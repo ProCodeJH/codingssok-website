@@ -26,8 +26,7 @@ function AuthGate({ children }: { children: ReactNode }) {
     const { user, loading } = useAuth();
     useEffect(() => { if (!loading && !user) window.location.href = "/login"; }, [loading, user]);
     if (loading) return (
-        <div style={{ height: "100vh", display: "flex", alignItems: "center", justifyContent: "center", background: "linear-gradient(135deg,#f0f9ff,#e0f2fe)", position: "relative", overflow: "hidden" }}>
-            <MorphingGradient colors={["#0ea5e9", "#6366f1", "#ec4899", "#14b8a6"]} speed={6} />
+        <div style={{ height: "100vh", display: "flex", alignItems: "center", justifyContent: "center", background: "#fff", position: "relative", overflow: "hidden" }}>
             <motion.div
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
@@ -37,7 +36,7 @@ function AuthGate({ children }: { children: ReactNode }) {
                 <motion.div
                     animate={{ scale: [1, 1.08, 1] }}
                     transition={{ duration: 1.8, repeat: Infinity, ease: "easeInOut" }}
-                    style={{ width: 80, height: 80, borderRadius: 20, overflow: "hidden", boxShadow: "0 8px 32px rgba(79,70,229,0.25)" }}
+                    style={{ width: 80, height: 80, borderRadius: 20, overflow: "hidden", boxShadow: "0 8px 32px rgba(0,0,0,0.1)" }}
                 >
                     <img src="/images/logo-codingssok.png" alt="코딩쏙" width={80} height={80} style={{ width: "100%", height: "100%", objectFit: "contain" }} />
                 </motion.div>

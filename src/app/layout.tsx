@@ -36,8 +36,8 @@ export const viewport: Viewport = {
   initialScale: 1,
   maximumScale: 5,
   themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#0066FF" },
-    { media: "(prefers-color-scheme: dark)", color: "#0A0A0F" },
+    { media: "(prefers-color-scheme: light)", color: "#4F46E5" },
+    { media: "(prefers-color-scheme: dark)", color: "#1E1B4B" },
   ],
 };
 
@@ -49,6 +49,11 @@ export default function RootLayout({
   return (
     <html lang="ko" suppressHydrationWarning>
       <head>
+        <link rel="manifest" href="/manifest.json" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+        <meta name="apple-mobile-web-app-title" content="코딩쏙" />
+        <link rel="apple-touch-icon" href="/icon-192.png" />
         <link rel="preconnect" href="https://cdn.jsdelivr.net" crossOrigin="anonymous" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
@@ -61,6 +66,14 @@ export default function RootLayout({
           본문으로 바로가기
         </a>
         {children}
+        <script dangerouslySetInnerHTML={{
+          __html: `
+          if ('serviceWorker' in navigator) {
+            window.addEventListener('load', function() {
+              navigator.serviceWorker.register('/sw.js');
+            });
+          }
+        ` }} />
       </body>
     </html>
   );

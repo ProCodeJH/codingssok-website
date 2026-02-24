@@ -13,12 +13,12 @@ const glassCard: React.CSSProperties = {
 };
 
 const TABS = [
-    { id: "dashboard", label: "📊 대시보드", icon: "dashboard" },
-    { id: "users", label: "👥 사용자 관리", icon: "group" },
-    { id: "courses", label: "📚 코스 관리", icon: "school" },
-    { id: "materials", label: "📂 수업자료", icon: "folder" },
-    { id: "homework", label: "📝 숙제 관리", icon: "assignment" },
-    { id: "announcements", label: "📢 공지사항", icon: "campaign" },
+    { id: "dashboard", label: "대시보드", icon: "dashboard" },
+    { id: "users", label: "사용자 관리", icon: "group" },
+    { id: "courses", label: "코스 관리", icon: "school" },
+    { id: "materials", label: "수업자료", icon: "folder" },
+    { id: "homework", label: "숙제 관리", icon: "assignment" },
+    { id: "announcements", label: "공지사항", icon: "campaign" },
 ];
 
 export default function AdminPage() {
@@ -133,11 +133,11 @@ export default function AdminPage() {
             {/* 헤더 */}
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 12 }}>
                 <div>
-                    <h1 style={{ fontSize: 24, fontWeight: 900, color: "#0f172a", margin: 0 }}>🛡️ 관리자 패널</h1>
+                    <h1 style={{ fontSize: 24, fontWeight: 900, color: "#0f172a", margin: 0 }}>관리자 패널</h1>
                     <p style={{ fontSize: 13, color: "#64748b" }}>코딩쏙 아카데미 운영 관리</p>
                 </div>
                 <div style={{ padding: "8px 16px", borderRadius: 12, background: "#fee2e2", color: "#dc2626", fontSize: 12, fontWeight: 700 }}>
-                    🔒 ADMIN ONLY
+                    ADMIN ONLY
                 </div>
             </div>
 
@@ -157,13 +157,13 @@ export default function AdminPage() {
                 <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
                     <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))", gap: 12 }}>
                         {[
-                            { icon: "👥", label: "전체 사용자", value: stats.totalUsers, color: "#6366f1" },
-                            { icon: "🟢", label: "오늘 활성", value: stats.activeToday, color: "#10b981" },
-                            { icon: "📝", label: "숙제 수", value: stats.totalSubmissions, color: "#f59e0b" },
-                            { icon: "⭐", label: "평균 XP", value: stats.avgXp, color: "#0ea5e9" },
+                            { icon: "group", label: "전체 사용자", value: stats.totalUsers, color: "#6366f1" },
+                            { icon: "circle", label: "오늘 활성", value: stats.activeToday, color: "#10b981" },
+                            { icon: "edit_note", label: "숙제 수", value: stats.totalSubmissions, color: "#f59e0b" },
+                            { icon: "star", label: "평균 XP", value: stats.avgXp, color: "#0ea5e9" },
                         ].map((s) => (
                             <div key={s.label} style={{ ...glassCard, borderRadius: 20, padding: 20, textAlign: "center" }}>
-                                <span style={{ fontSize: 28, display: "block", marginBottom: 8 }}>{s.icon}</span>
+                                <span className="material-symbols-outlined" style={{ fontSize: 28, display: "block", marginBottom: 8, color: s.color }}>{s.icon}</span>
                                 <div style={{ fontSize: 28, fontWeight: 900, color: s.color }}>{s.value}</div>
                                 <div style={{ fontSize: 12, color: "#94a3b8", marginTop: 4 }}>{s.label}</div>
                             </div>
@@ -172,7 +172,7 @@ export default function AdminPage() {
 
                     {/* 최근 가입자 */}
                     <div style={{ ...glassCard, borderRadius: 20, padding: 20 }}>
-                        <h3 style={{ fontSize: 15, fontWeight: 800, color: "#0f172a", marginBottom: 12 }}>👋 최근 가입자</h3>
+                        <h3 style={{ fontSize: 15, fontWeight: 800, color: "#0f172a", marginBottom: 12 }}>최근 가입자</h3>
                         {users.slice(0, 5).map((u) => (
                             <div key={u.id} style={{
                                 display: "flex", alignItems: "center", gap: 12, padding: "10px 0",
@@ -273,7 +273,7 @@ export default function AdminPage() {
                 <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
                     {/* 숙제 생성 */}
                     <div style={{ ...glassCard, borderRadius: 20, padding: 24 }}>
-                        <h3 style={{ fontSize: 15, fontWeight: 800, color: "#0f172a", marginBottom: 16 }}>➕ 새 숙제 등록</h3>
+                        <h3 style={{ fontSize: 15, fontWeight: 800, color: "#0f172a", marginBottom: 16 }}>새 숙제 등록</h3>
                         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
                             <input value={hwForm.title} onChange={(e) => setHwForm({ ...hwForm, title: e.target.value })}
                                 placeholder="숙제 제목" style={{
@@ -306,7 +306,7 @@ export default function AdminPage() {
                                 background: "linear-gradient(135deg, #10b981, #059669)", color: "#fff",
                                 fontWeight: 700, fontSize: 14, cursor: "pointer",
                                 boxShadow: "0 4px 14px rgba(16,185,129,0.3)",
-                            }}>✅ 등록</button>
+                            }}>등록</button>
                         </div>
                     </div>
 
@@ -347,7 +347,7 @@ export default function AdminPage() {
                 <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
                     {/* 공지 작성 */}
                     <div style={{ ...glassCard, borderRadius: 20, padding: 24 }}>
-                        <h3 style={{ fontSize: 15, fontWeight: 800, color: "#0f172a", marginBottom: 16 }}>📢 새 공지 작성</h3>
+                        <h3 style={{ fontSize: 15, fontWeight: 800, color: "#0f172a", marginBottom: 16 }}>새 공지 작성</h3>
                         <input value={announcement.title} onChange={(e) => setAnnouncement({ ...announcement, title: e.target.value })}
                             placeholder="공지 제목" style={{
                                 width: "100%", padding: "10px 14px", borderRadius: 12, border: "1px solid #e2e8f0",
@@ -365,7 +365,7 @@ export default function AdminPage() {
                                 background: "linear-gradient(135deg, #6366f1, #8b5cf6)", color: "#fff",
                                 fontWeight: 700, fontSize: 14, cursor: "pointer",
                                 boxShadow: "0 4px 14px rgba(99,102,241,0.3)",
-                            }}>📢 등록</button>
+                            }}>등록</button>
                         </div>
                     </div>
 
@@ -391,7 +391,7 @@ export default function AdminPage() {
                 <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
                     {/* 자료 등록 폼 */}
                     <div style={{ ...glassCard, borderRadius: 20, padding: 24 }}>
-                        <h3 style={{ fontSize: 15, fontWeight: 800, color: "#0f172a", marginBottom: 16 }}>➕ 수업자료 등록</h3>
+                        <h3 style={{ fontSize: 15, fontWeight: 800, color: "#0f172a", marginBottom: 16 }}>수업자료 등록</h3>
                         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
                             <input value={matForm.title} onChange={(e) => setMatForm({ ...matForm, title: e.target.value })}
                                 placeholder="자료 제목" style={{
@@ -404,7 +404,7 @@ export default function AdminPage() {
                             }}>
                                 <option value="">전체 (코스 미지정)</option>
                                 {COURSES.map((c) => (
-                                    <option key={c.id} value={c.id}>{c.icon} {c.title}</option>
+                                    <option key={c.id} value={c.id}>{c.title}</option>
                                 ))}
                             </select>
                         </div>
@@ -428,7 +428,7 @@ export default function AdminPage() {
                                     color: matForm.file_type === t ? "#fff" : "#64748b",
                                     cursor: "pointer", transition: "all 0.2s",
                                 }}>
-                                    {({ link: "🔗 링크", pdf: "📄 PDF", image: "🖼️ 이미지", video: "🎬 동영상" } as Record<string, string>)[t]}
+                                    {({ link: "링크", pdf: "PDF", image: "이미지", video: "동영상" } as Record<string, string>)[t]}
                                 </button>
                             ))}
                             <div style={{ flex: 1 }} />
@@ -450,7 +450,7 @@ export default function AdminPage() {
                                 background: "linear-gradient(135deg, #6366f1, #0ea5e9)", color: "#fff",
                                 fontWeight: 700, fontSize: 14, cursor: "pointer",
                                 boxShadow: "0 4px 14px rgba(99,102,241,0.3)",
-                            }}>✅ 등록</button>
+                            }}>등록</button>
                         </div>
                     </div>
 
@@ -473,13 +473,13 @@ export default function AdminPage() {
                                         background: ({ pdf: "#fee2e2", image: "#ede9fe", video: "#dbeafe", link: "#cffafe" } as Record<string, string>)[m.file_type] || "#f1f5f9",
                                         display: "flex", alignItems: "center", justifyContent: "center", fontSize: 18, flexShrink: 0,
                                     }}>
-                                        {({ pdf: "📄", image: "🖼️", video: "🎬", link: "🔗" } as Record<string, string>)[m.file_type] || "📁"}
+                                        {({ pdf: "PDF", image: "IMG", video: "VID", link: "LINK" } as Record<string, string>)[m.file_type] || "FILE"}
                                     </div>
                                     <div style={{ flex: 1, minWidth: 0 }}>
                                         <div style={{ fontSize: 14, fontWeight: 700, color: "#0f172a" }}>{m.title}</div>
                                         <div style={{ fontSize: 11, color: "#94a3b8", display: "flex", gap: 8, marginTop: 2 }}>
                                             <span>{m.file_type.toUpperCase()}</span>
-                                            {courseInfo && <span>{courseInfo.icon} {courseInfo.title}</span>}
+                                            {courseInfo && <span>{courseInfo.title}</span>}
                                             <span>{new Date(m.created_at).toLocaleDateString("ko-KR")}</span>
                                         </div>
                                     </div>

@@ -31,7 +31,7 @@ export interface GoalProgress {
     current: number;
 }
 
-const PROGRESS_KEY = "elite_user_progress";
+const PROGRESS_KEY = "codingssok_progress";
 
 const DEFAULT_PROGRESS: UserProgress = {
     xp: 0,

@@ -76,6 +76,15 @@ export default function Footer() {
                             <Link href="#contact">상담</Link>
                         </li>
                         <li>
+                            <Link href="/parent">학부모</Link>
+                        </li>
+                        <li>
+                            <Link href="/teacher/login">선생님</Link>
+                        </li>
+                        <li>
+                            <Link href="/trial">무료 체험</Link>
+                        </li>
+                        <li>
                             <a href="tel:010-7566-7229">📞 010-7566-7229</a>
                         </li>
                     </ul>

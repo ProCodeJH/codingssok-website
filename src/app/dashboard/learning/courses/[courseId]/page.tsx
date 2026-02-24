@@ -1,5 +1,5 @@
 "use client";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { useState, useMemo, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -18,6 +18,7 @@ const accordionVariants = { collapsed: { height: 0, opacity: 0, overflow: "hidde
 
 export default function CourseDetailPage() {
     const params = useParams();
+    const router = useRouter();
     const courseId = params.courseId as string;
     const { user } = useAuth();
     const supabase = useMemo(() => createClient(), []);
@@ -25,7 +26,13 @@ export default function CourseDetailPage() {
     const courseData = useMemo(() => getCourseById(courseId), [courseId]);
     const allUnits = useMemo(() => getAllUnits(courseId), [courseId]);
 
-    const [completedUnits, setCompletedUnits] = useState<Set<string>>(new Set());
+    const [completedUnits, setCompletedUnits] = useState<Set<string>>(() => {
+        if (typeof window === 'undefined') return new Set<string>();
+        try {
+            const saved = localStorage.getItem(`codingssok_completed_${courseId}`);
+            return saved ? new Set<string>(JSON.parse(saved)) : new Set<string>();
+        } catch { return new Set<string>(); }
+    });
     const [showHtmlContent, setShowHtmlContent] = useState(false);
     const [activeUnit, setActiveUnit] = useState<string | null>(null);
     const [activePage, setActivePage] = useState<Page | null>(null);
@@ -112,6 +119,8 @@ export default function CourseDetailPage() {
     const completeUnit = async (unit: Unit) => {
         if (completedUnits.has(unit.id)) return;
         const newCompleted = new Set(completedUnits); newCompleted.add(unit.id); setCompletedUnits(newCompleted);
+        // Persist to localStorage
+        try { localStorage.setItem(`codingssok_completed_${courseId}`, JSON.stringify(Array.from(newCompleted))); } catch { }
         setSelectedAnswer(null); setQuizResult(null); setWrongCount(0); setShowHint(false);
         if (user) {
             const result = await awardXP(user.id, XP_REWARDS.lesson_complete, `학습 완료: ${unit.title}`, "book");
@@ -272,7 +281,16 @@ export default function CourseDetailPage() {
                                             return (
                                                 <div key={unit.id}>
                                                     <motion.div onClick={() => {
-                                                        if (!isLocked) { setActiveUnit(isActive ? null : unit.id); setActivePage(null); setSelectedAnswer(null); setQuizResult(null); setWrongCount(0); setShowHint(false); setShaking(false); setShowProblemAnswer({}); }
+                                                        if (isLocked) return;
+                                                        // Navigate to dedicated page if unit has pages with content
+                                                        const hasPageContent = unit.pages && unit.pages.some(p => p.content || p.quiz || p.problems);
+                                                        if (hasPageContent && unit.pages && unit.pages.length > 0) {
+                                                            const firstContentPage = unit.pages.find(p => p.content || p.quiz || p.problems) || unit.pages[0];
+                                                            const unitIdx = allUnits.indexOf(unit) + 1;
+                                                            router.push(`/dashboard/learning/courses/${courseId}/units/${unitIdx}/pages/${firstContentPage.id}`);
+                                                            return;
+                                                        }
+                                                        setActiveUnit(isActive ? null : unit.id); setActivePage(null); setSelectedAnswer(null); setQuizResult(null); setWrongCount(0); setShowHint(false); setShaking(false); setShowProblemAnswer({});
                                                     }} whileHover={!isLocked ? { x: 4, backgroundColor: isActive ? "#f0f9ff" : "rgba(14,165,233,0.02)" } : {}}
                                                         style={{
                                                             display: "flex", alignItems: "center", gap: 14, padding: "16px 28px 16px 52px",
@@ -294,6 +312,9 @@ export default function CourseDetailPage() {
                                                             </div>
                                                         </div>
                                                         {completed && <span style={{ fontSize: 10, color: "#10b981", fontWeight: 800, padding: "3px 10px", borderRadius: 8, background: "rgba(16,185,129,0.1)" }}>완료 ✓</span>}
+                                                        {!completed && !(unit.pages && unit.pages.some(p => p.content || p.quiz || p.problems)) && !unit.content && (
+                                                            <span style={{ fontSize: 9, color: "#94a3b8", fontWeight: 700, padding: "3px 10px", borderRadius: 8, background: "#f1f5f9", border: "1px solid #e2e8f0" }}>📝 준비 중</span>
+                                                        )}
                                                     </motion.div>
 
                                                     {/* Page content & Quiz/Problem panels */}

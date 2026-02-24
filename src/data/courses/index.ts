@@ -1,9 +1,9 @@
 /**
  * 코딩쏙 아카데미 — 전체 커리큘럼 인덱스
- * 총 9개 코스 / 200+ 유닛 / learning-platform 연동
+ * 7개 코스 / C언어만 실 콘텐츠, 나머지 껍데기
  */
 
-import type { Course } from './types';
+import type { Course, Chapter } from './types';
 import { C_LANG_PART1 } from './c-lang-part1';
 import { C_LANG_PART2 } from './c-lang-part2';
 import { C_LANG_PART3 } from './c-lang-part3';
@@ -14,14 +14,6 @@ import { C_LANG_PART7 } from './c-lang-part7';
 import { C_LANG_PART8 } from './c-lang-part8';
 import { C_LANG_PART9 } from './c-lang-part9';
 import { C_LANG_PART10 } from './c-lang-part10';
-import { COMPUTATIONAL_THINKING_CHAPTERS } from './computational-thinking';
-import { CODING_BASICS_CHAPTERS } from './coding-basics';
-import { PYTHON_CHAPTERS } from './python';
-import { KOI_CHAPTERS } from './koi';
-import { PCCE_CHAPTERS } from './pcce';
-import { COS_CHAPTERS } from './cos';
-import { COS_PRO_CHAPTERS } from './cos-pro';
-import { WORD_PROCESSOR_CHAPTERS } from './word-processor';
 
 // ── C언어 전체 챕터 (10개 파트 → 13 챕터, 85 유닛) ──
 const C_LANG_ALL_CHAPTERS = [
@@ -37,25 +29,64 @@ const C_LANG_ALL_CHAPTERS = [
     ...C_LANG_PART10,
 ];
 
-// ── 코스 정의 ──
+// ── 빈 챕터 (준비 중 코스용) ──
+const EMPTY_CHAPTERS: Chapter[] = [
+    {
+        id: 'coming-soon',
+        chapterNumber: 0,
+        title: '준비 중',
+        icon: '🔜',
+        description: '콘텐츠를 준비하고 있습니다.',
+        units: [{
+            id: 'placeholder',
+            unitNumber: 0,
+            title: '콘텐츠 준비 중입니다',
+            type: '이론' as const,
+            problems: [],
+            pages: [],
+        }],
+    },
+];
+
+// ── 코스 정의 (7개) ──
 
 export const COURSES: Course[] = [
-    // ── 기존 4개 코스 (인라인 콘텐츠 + HTML 연동) ──
     {
         id: '1',
-        title: '컴퓨팅 사고력',
-        icon: '🧠',
-        gradient: 'linear-gradient(135deg, #6366f1, #8b5cf6)',
-        description: '분해, 패턴 인식, 추상화, 알고리즘 설계의 4가지 핵심 사고력을 체계적으로 학습합니다.',
-        totalUnits: 36,
-        totalProblems: 327,
-        estimatedHours: 18,
-        chapters: COMPUTATIONAL_THINKING_CHAPTERS,
-        htmlPath: '/learn/컴퓨팅사고력/index.html',
+        title: '코딩 기초',
+        icon: '🌱',
+        gradient: 'linear-gradient(135deg, #10b981, #06b6d4)',
+        description: '프로그래밍의 기본 개념, 논리적 사고, 알고리즘 기초를 배우는 입문 코스입니다.',
+        totalUnits: 0,
+        totalProblems: 0,
+        estimatedHours: 0,
+        chapters: EMPTY_CHAPTERS,
     },
     {
         id: '2',
-        title: 'C언어 기초',
+        title: '피지컬 컴퓨팅',
+        icon: '🤖',
+        gradient: 'linear-gradient(135deg, #f59e0b, #f97316)',
+        description: '아두이노, 센서, LED를 활용한 피지컬 컴퓨팅과 IoT 프로젝트를 실습합니다.',
+        totalUnits: 0,
+        totalProblems: 0,
+        estimatedHours: 0,
+        chapters: EMPTY_CHAPTERS,
+    },
+    {
+        id: '3',
+        title: '파이썬',
+        icon: '🐍',
+        gradient: 'linear-gradient(135deg, #3b82f6, #6366f1)',
+        description: '파이썬의 기초 문법부터 자료구조, 함수, 클래스까지 체계적으로 학습합니다.',
+        totalUnits: 0,
+        totalProblems: 0,
+        estimatedHours: 0,
+        chapters: EMPTY_CHAPTERS,
+    },
+    {
+        id: '4',
+        title: 'C언어',
         icon: '💻',
         gradient: 'linear-gradient(135deg, #f59e0b, #ef4444)',
         description: 'C언어의 기초부터 구조체, 함수, 파일I/O, 실전 프로젝트까지 13개 챕터, 85개 유닛으로 완벽 마스터합니다.',
@@ -66,90 +97,37 @@ export const COURSES: Course[] = [
         htmlPath: '/learn/C언어/index.html',
     },
     {
-        id: '3',
-        title: '코딩 기초',
-        icon: '🌱',
-        gradient: 'linear-gradient(135deg, #10b981, #06b6d4)',
-        description: '논리적 사고, 수학적 사고, 순서도, 문제해결 전략, 이산수학 기초를 배웁니다.',
-        totalUnits: 15,
-        totalProblems: 150,
-        estimatedHours: 8,
-        chapters: CODING_BASICS_CHAPTERS,
-        htmlPath: '/learn/코딩기초/index.html',
-    },
-    {
-        id: '7',
-        title: '파이썬 기초',
-        icon: '🐍',
-        gradient: 'linear-gradient(135deg, #3b82f6, #6366f1)',
-        description: '파이썬의 기초 문법부터 자료구조, 함수, 파일 처리, 클래스까지 체계적으로 학습합니다.',
-        totalUnits: 18,
-        totalProblems: 187,
-        estimatedHours: 15,
-        chapters: PYTHON_CHAPTERS,
-        htmlPath: '/learn/파이썬/index.html',
-    },
-
-    // ── 신규 5개 코스 (learning-platform 연동) ──
-    {
-        id: '4',
-        title: 'KOI 기출',
-        icon: '🏆',
-        gradient: 'linear-gradient(135deg, #f97316, #eab308)',
-        description: '한국정보올림피아드 2019~2025년 초·중·고 기출문제를 연도별로 풀어봅니다.',
-        totalUnits: 11,
-        totalProblems: 100,
-        estimatedHours: 20,
-        chapters: KOI_CHAPTERS,
-        htmlPath: '/learn/KOI기출/index.html',
-    },
-    {
         id: '5',
-        title: 'PCCE',
-        icon: '📋',
-        gradient: 'linear-gradient(135deg, #14b8a6, #0ea5e9)',
-        description: '프로그래밍 언어 활용 능력 시험(PCCE) 대비 핵심 개념과 실전 모의고사를 학습합니다.',
-        totalUnits: 6,
-        totalProblems: 85,
-        estimatedHours: 10,
-        chapters: PCCE_CHAPTERS,
-        htmlPath: '/learn/PCCE/index.html',
+        title: 'CosPro',
+        icon: '🏅',
+        gradient: 'linear-gradient(135deg, #ec4899, #f43f5e)',
+        description: 'COS-Pro 1급·2급 자격증 대비 알고리즘, 자료구조, 실전 구현 연습을 합니다.',
+        totalUnits: 0,
+        totalProblems: 0,
+        estimatedHours: 0,
+        chapters: EMPTY_CHAPTERS,
     },
     {
         id: '6',
-        title: 'COS',
-        icon: '🎯',
+        title: '프로그래밍 대회',
+        icon: '🏆',
+        gradient: 'linear-gradient(135deg, #f97316, #eab308)',
+        description: 'KOI, USACO 등 프로그래밍 대회 준비를 위한 알고리즘 문제풀이 코스입니다.',
+        totalUnits: 0,
+        totalProblems: 0,
+        estimatedHours: 0,
+        chapters: EMPTY_CHAPTERS,
+    },
+    {
+        id: '7',
+        title: '자격증',
+        icon: '📋',
         gradient: 'linear-gradient(135deg, #8b5cf6, #d946ef)',
-        description: 'Coding Specialist 자격증 대비 프로그래밍 기본과 실전 문제풀이를 학습합니다.',
-        totalUnits: 4,
-        totalProblems: 70,
-        estimatedHours: 8,
-        chapters: COS_CHAPTERS,
-        htmlPath: '/learn/COS/index.html',
-    },
-    {
-        id: '8',
-        title: 'COS-Pro',
-        icon: '🏅',
-        gradient: 'linear-gradient(135deg, #ec4899, #f43f5e)',
-        description: 'COS-Pro 1급·2급 자격증 대비 고급 알고리즘, 자료구조, 실전 구현 연습을 합니다.',
-        totalUnits: 4,
-        totalProblems: 55,
-        estimatedHours: 12,
-        chapters: COS_PRO_CHAPTERS,
-        htmlPath: '/learn/COS-Pro/index.html',
-    },
-    {
-        id: '9',
-        title: '워드프로세서',
-        icon: '📄',
-        gradient: 'linear-gradient(135deg, #64748b, #475569)',
-        description: '워드프로세서 필기 자격증 대비 7대 영역 핵심 이론과 70문항 모의고사를 제공합니다.',
-        totalUnits: 7,
-        totalProblems: 70,
-        estimatedHours: 6,
-        chapters: WORD_PROCESSOR_CHAPTERS,
-        htmlPath: '/learn/워드프로세서/index.html',
+        description: '정보처리기능사, 워드프로세서 등 IT 자격증 대비 이론 및 모의고사를 제공합니다.',
+        totalUnits: 0,
+        totalProblems: 0,
+        estimatedHours: 0,
+        chapters: EMPTY_CHAPTERS,
     },
 ];
 

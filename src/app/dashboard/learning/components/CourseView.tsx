@@ -1,17 +1,17 @@
 "use client";
 import { useState, useRef, useEffect } from "react";
 import { motion } from "framer-motion";
-import { createClient } from "@/lib/supabase";
+import { CourseIcon } from "@/components/icons/CourseIcons";
 
 interface Props {
-    courseId: string; courseName: string; courseIcon: string; courseColor: string;
+    courseId: string; courseName: string; courseColor: string;
     htmlPath: string;
     onBack: () => void;
     onOpenNotes: () => void;
     onXpEarned?: (xp: number) => void;
 }
 
-export function CourseView({ courseId, courseName, courseIcon, courseColor, htmlPath, onBack, onOpenNotes, onXpEarned }: Props) {
+export function CourseView({ courseId, courseName, courseColor, htmlPath, onBack, onOpenNotes, onXpEarned }: Props) {
     const iframeRef = useRef<HTMLIFrameElement>(null);
     const [isLoading, setIsLoading] = useState(true);
     const [sidePanel, setSidePanel] = useState<"none" | "notes" | "timer">("none");
@@ -55,7 +55,7 @@ export function CourseView({ courseId, courseName, courseIcon, courseColor, html
                         fontSize: 12, fontWeight: 600, cursor: "pointer", color: "#2563eb",
                     }}>← 돌아가기</button>
                     <div style={{ width: 1, height: 24, background: "#e2e8f0" }} />
-                    <span style={{ fontSize: 20 }}>{courseIcon}</span>
+                    <CourseIcon courseId={courseId} size={24} />
                     <span style={{ fontSize: 15, fontWeight: 800, color: "#1e293b" }}>{courseName}</span>
                     <div style={{ flex: 1 }} />
 
@@ -114,18 +114,16 @@ export function CourseView({ courseId, courseName, courseIcon, courseColor, html
                     src={htmlPath}
                     onLoad={async () => {
                         setIsLoading(false);
-                        // Forward auth token to Elite pages via postMessage
+                        // Forward auth token to iframe via postMessage
                         try {
-                            const sb = createClient();
-                            const { data: { session } } = await sb.auth.getSession();
-                            if (session && iframeRef.current?.contentWindow) {
+                            const stored = localStorage.getItem('codingssok_user');
+                            if (stored && iframeRef.current?.contentWindow) {
                                 iframeRef.current.contentWindow.postMessage({
-                                    type: 'elite-auth',
-                                    token: session.access_token,
-                                    user: session.user,
+                                    type: 'codingssok-auth',
+                                    user: JSON.parse(stored),
                                 }, '*');
                             }
-                        } catch (e) { /* auth forwarding optional */ }
+                        } catch (e) { console.error('[CourseView] auth forwarding failed:', e); }
                     }}
                     style={{
                         flex: 1, width: "100%", border: "none", background: "#fff",

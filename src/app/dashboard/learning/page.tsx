@@ -8,6 +8,9 @@ import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { getTierInfo, getDisplayTier, calcLevel, xpForNextLevel, checkAttendance } from "@/lib/xp-engine";
 import { COURSES, getCurriculumStats } from "@/data/courses";
+import { CourseIcon } from "@/components/icons/CourseIcons";
+import StreakWidget from "@/components/ui/StreakWidget";
+import { useWrongAnswers } from "@/hooks/useWrongAnswers";
 
 /* ═══════════════════════════════════════════
    Quantum-Spatial Enterprise Hub V2
@@ -31,17 +34,13 @@ function getStatusForCourse(courseIndex: number, userCourseProgress: any[], cour
     return "locked";
 }
 
-/* ── Material icon from course topic ── */
-const COURSE_MATERIAL_ICONS: Record<string, string> = {
-    "🧠": "psychology", "💻": "terminal", "🌱": "eco", "🐍": "code",
-    "🏆": "emoji_events", "📋": "assignment", "🎯": "gps_fixed",
-    "🏅": "military_tech", "📄": "description",
-};
+
 
 export default function JourneyPage() {
     const { progress } = useUserProgress();
     const { user } = useAuth();
     const [userCourseProgress, setUserCourseProgress] = useState<any[]>([]);
+    const [courseProgress, setCourseProgress] = useState<Record<string, number>>({});
     const [attendanceChecked, setAttendanceChecked] = useState(false);
     const [attendanceMsg, setAttendanceMsg] = useState("");
     const [submissions, setSubmissions] = useState(0);
@@ -58,7 +57,20 @@ export default function JourneyPage() {
         async function load() {
             if (!user) return;
             const uid = user.id;
-            try { const { data: ucp } = await supabase.from("user_course_progress").select("*").eq("user_id", uid); if (ucp) setUserCourseProgress(ucp); } catch { }
+            try {
+                const { data: ucp } = await supabase.from("user_course_progress").select("*").eq("user_id", uid);
+                if (ucp) {
+                    setUserCourseProgress(ucp);
+                    const m: Record<string, number> = {};
+                    ucp.forEach((p: any) => {
+                        const completed = typeof p.completed_lessons === 'number' ? p.completed_lessons : (Array.isArray(p.completed_lessons) ? p.completed_lessons.length : 0);
+                        const course = COURSES.find(c => c.id === p.course_id);
+                        const total = course?.totalUnits || 1;
+                        m[p.course_id] = p.is_completed ? 100 : Math.round((completed / total) * 100);
+                    });
+                    setCourseProgress(m);
+                }
+            } catch { }
             try {
                 const today = new Date().toISOString().split("T")[0];
                 const { data: att } = await supabase.from("attendance").select("id").eq("user_id", uid).eq("check_date", today).maybeSingle();
@@ -125,7 +137,7 @@ export default function JourneyPage() {
     // ── Build roadmap ──
     const roadmap = COURSES.map((c, i) => ({
         ...c,
-        materialIcon: COURSE_MATERIAL_ICONS[c.icon] || "school",
+
         status: getStatusForCourse(i, userCourseProgress, c),
         pct: (() => {
             const ucp = userCourseProgress.find((u) => u.course_id === c.id);
@@ -254,6 +266,39 @@ export default function JourneyPage() {
                         </motion.div>
                     </div>
 
+                    {/* ── Streak + Quick Links Row ── */}
+                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16, maxWidth: 1100, margin: "0 auto 32px", alignItems: "start" }}>
+                        <StreakWidget />
+                        <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+                            <Link href="/dashboard/learning/review" style={{
+                                display: "flex", alignItems: "center", gap: 12,
+                                background: "#fff", borderRadius: 16, padding: "16px 20px",
+                                border: "1px solid #e2e8f0", textDecoration: "none",
+                                boxShadow: "0 2px 8px rgba(0,0,0,0.04)", transition: "border-color 0.2s",
+                            }}>
+                                <span style={{ fontSize: 24 }}>📒</span>
+                                <div>
+                                    <div style={{ fontWeight: 700, fontSize: 14, color: "#1e1b4b" }}>오답 노트</div>
+                                    <div style={{ fontSize: 12, color: "#94a3b8" }}>틀린 문제를 복습하세요</div>
+                                </div>
+                                <span style={{ marginLeft: "auto", color: "#94a3b8", fontSize: 14 }}>→</span>
+                            </Link>
+                            <Link href="/trial" style={{
+                                display: "flex", alignItems: "center", gap: 12,
+                                background: "linear-gradient(135deg, #FFFBEB, #FEF3C7)", borderRadius: 16, padding: "16px 20px",
+                                border: "1px solid #FDE68A", textDecoration: "none",
+                                boxShadow: "0 2px 8px rgba(245,158,11,0.08)", transition: "border-color 0.2s",
+                            }}>
+                                <span style={{ fontSize: 24 }}>🎮</span>
+                                <div>
+                                    <div style={{ fontWeight: 700, fontSize: 14, color: "#92400E" }}>무료 체험</div>
+                                    <div style={{ fontSize: 12, color: "#B45309" }}>첫 유닛 무료로 체험해보세요</div>
+                                </div>
+                                <span style={{ marginLeft: "auto", color: "#B45309", fontSize: 14 }}>→</span>
+                            </Link>
+                        </div>
+                    </div>
+
                     {/* ═══ ELEVATOR SHAFT — Vertical Course Roadmap ═══ */}
                     <div style={{ position: "relative", maxWidth: 1100, margin: "0 auto", paddingBottom: 80 }}>
                         {/* Central shaft line */}
@@ -282,6 +327,87 @@ export default function JourneyPage() {
                         })}
                     </div>
 
+                    {/* ═══ MY COURSES — Course Card Grid ═══ */}
+                    <div style={{ maxWidth: 1100, margin: "0 auto", marginBottom: 48 }}>
+                        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25, duration: 0.5 }}>
+                            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 20 }}>
+                                <h2 className="z-font-display" style={{ fontWeight: 800, fontSize: 20, color: "#1e293b", margin: 0, display: "flex", alignItems: "center", gap: 10 }}>
+                                    <MI icon="library_books" style={{ fontSize: 22, color: "#6366f1" }} /> 내 코스
+                                </h2>
+                            </div>
+
+                            {/* In-Progress Courses */}
+                            {(() => {
+                                const inProg = COURSES.filter(c => courseProgress[c.id] && courseProgress[c.id] > 0 && courseProgress[c.id] < 100); return inProg.length > 0 ? (
+                                    <div className="z-glass-panel" style={{ borderRadius: 20, padding: 20, marginBottom: 20 }}>
+                                        <h3 style={{ fontSize: 14, fontWeight: 800, color: "#0f172a", margin: "0 0 14px", display: "flex", alignItems: "center", gap: 8 }}>
+                                            <MI icon="play_circle" style={{ fontSize: 18, color: "#f59e0b" }} /> 진행 중
+                                        </h3>
+                                        <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
+                                            {inProg.map(c => (
+                                                <Link key={c.id} href={`/dashboard/learning/courses/${c.id}`} style={{ textDecoration: "none", flex: "1 1 220px", maxWidth: 340 }}>
+                                                    <motion.div whileHover={{ y: -2, boxShadow: "0 8px 24px rgba(0,0,0,0.08)" }}
+                                                        style={{ display: "flex", alignItems: "center", gap: 12, padding: "12px 16px", borderRadius: 14, background: "#f8fafc", border: "1px solid #f1f5f9", cursor: "pointer", transition: "all 0.2s" }}>
+                                                        <CourseIcon courseId={c.id} size={30} />
+                                                        <div style={{ flex: 1, minWidth: 0 }}>
+                                                            <div style={{ fontSize: 13, fontWeight: 700, color: "#0f172a" }}>{c.title}</div>
+                                                            <div style={{ height: 6, background: "#e2e8f0", borderRadius: 999, marginTop: 6, overflow: "hidden" }}>
+                                                                <div style={{ width: `${courseProgress[c.id]}%`, height: "100%", background: c.gradient, borderRadius: 999 }} />
+                                                            </div>
+                                                        </div>
+                                                        <span style={{ fontSize: 12, fontWeight: 800, color: "#0ea5e9" }}>{courseProgress[c.id]}%</span>
+                                                    </motion.div>
+                                                </Link>
+                                            ))}
+                                        </div>
+                                    </div>
+                                ) : null;
+                            })()}
+
+                            {/* Course Card Grid */}
+                            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(240px, 1fr))", gap: 12 }}>
+                                {COURSES.map((course, idx) => {
+                                    const prog = courseProgress[course.id] || 0;
+                                    return (
+                                        <Link key={course.id} href={`/dashboard/learning/courses/${course.id}`} style={{ textDecoration: "none" }}>
+                                            <motion.div whileHover={{ y: -3, boxShadow: "0 8px 24px rgba(0,0,0,0.1)" }}
+                                                initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 + idx * 0.03, duration: 0.3 }}
+                                                className="z-glass-panel" style={{ borderRadius: 16, overflow: "hidden", cursor: "pointer" }}>
+                                                {/* Gradient banner */}
+                                                <div style={{ height: 56, background: course.gradient, display: "flex", alignItems: "center", justifyContent: "center", position: "relative" }}>
+                                                    <CourseIcon courseId={course.id} size={36} style={{ filter: "drop-shadow(0 2px 6px rgba(0,0,0,0.2))" }} />
+                                                    {prog > 0 && (
+                                                        <div style={{ position: "absolute", top: 6, right: 8, padding: "2px 8px", borderRadius: 6, background: "rgba(255,255,255,0.95)", fontSize: 9, fontWeight: 800, color: prog === 100 ? "#059669" : "#0ea5e9" }}>
+                                                            {prog === 100 ? "✅ 완료" : `${prog}%`}
+                                                        </div>
+                                                    )}
+                                                    <div style={{ position: "absolute", bottom: 5, left: 8, display: "flex", gap: 3 }}>
+                                                        <span style={{ padding: "1px 6px", borderRadius: 4, fontSize: 8, fontWeight: 800, background: "rgba(255,255,255,0.9)", color: "#475569" }}>{course.chapters.length}챕터</span>
+                                                        <span style={{ padding: "1px 6px", borderRadius: 4, fontSize: 8, fontWeight: 800, background: "rgba(255,255,255,0.9)", color: "#475569" }}>{course.totalUnits}유닛</span>
+                                                    </div>
+                                                </div>
+                                                <div style={{ padding: "10px 14px 12px" }}>
+                                                    <h3 style={{ fontSize: 14, fontWeight: 800, color: "#0f172a", margin: "0 0 3px" }}>{course.title}</h3>
+                                                    <p style={{ fontSize: 11, color: "#64748b", lineHeight: 1.4, margin: "0 0 8px", overflow: "hidden", textOverflow: "ellipsis", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical" as const }}>{course.description}</p>
+                                                    <div style={{ height: 4, background: "#e2e8f0", borderRadius: 999, overflow: "hidden", marginBottom: 6 }}>
+                                                        <motion.div initial={{ width: 0 }} animate={{ width: `${prog}%` }} transition={{ delay: 0.5, duration: 0.8 }}
+                                                            style={{ height: "100%", background: course.gradient, borderRadius: 999 }} />
+                                                    </div>
+                                                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                                                        <span style={{ fontSize: 10, color: "#94a3b8" }}>⏱ {course.estimatedHours}h · 🧪 {course.totalProblems}문제</span>
+                                                        <span style={{ fontSize: 10, fontWeight: 700, color: "#6366f1" }}>
+                                                            {prog === 0 ? "시작 →" : prog === 100 ? "복습" : "이어하기 →"}
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            </motion.div>
+                                        </Link>
+                                    );
+                                })}
+                            </div>
+                        </motion.div>
+                    </div>
+
                     {/* ═══ Bottom Info Row ═══ */}
                     <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 16, maxWidth: 1100, margin: "0 auto" }} className="zenith-bottom-grid">
                         {/* Weekly XP */}
@@ -306,10 +432,10 @@ export default function JourneyPage() {
                                     );
                                 })}
                             </div>
-                        </motion.div>
+                        </motion.div >
 
                         {/* Stats */}
-                        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5, duration: 0.5 }}
+                        < motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5, duration: 0.5 }}
                             className="z-glass-panel" style={{ borderRadius: 20, padding: 20 }}>
                             <h3 className="z-font-display" style={{ fontWeight: 700, fontSize: 15, color: "#1e293b", marginBottom: 12, display: "flex", alignItems: "center", gap: 8 }}>
                                 <MI icon="leaderboard" style={{ fontSize: 18, color: "#8b5cf6" }} /> 나의 현황
@@ -328,34 +454,36 @@ export default function JourneyPage() {
                                     </motion.div>
                                 ))}
                             </div>
-                        </motion.div>
+                        </motion.div >
 
                         {/* Recent Activity */}
-                        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.6, duration: 0.5 }}
+                        < motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.6, duration: 0.5 }}
                             className="z-glass-panel" style={{ borderRadius: 20, padding: 20 }}>
                             <h3 className="z-font-display" style={{ fontWeight: 700, fontSize: 15, color: "#1e293b", marginBottom: 12, display: "flex", alignItems: "center", gap: 8 }}>
                                 <MI icon="schedule" style={{ fontSize: 18, color: "#f59e0b" }} /> 최근 활동
                             </h3>
-                            {recentActivity.length === 0 ? (
-                                <div style={{ textAlign: "center", padding: 16, color: "#94a3b8", fontSize: 13 }}>📝 아직 활동 기록이 없어요</div>
-                            ) : (
-                                <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-                                    {recentActivity.slice(0, 4).map((a: any, i: number) => (
-                                        <motion.div key={i} initial={{ opacity: 0, x: -8 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.7 + i * 0.06 }}
-                                            style={{ display: "flex", alignItems: "center", gap: 8, padding: "6px 10px", borderRadius: 10, background: "rgba(248,250,252,0.5)" }}>
-                                            <div style={{ width: 24, height: 24, borderRadius: "50%", background: "linear-gradient(135deg, #3b82f6, #6366f1)", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontSize: 11, flexShrink: 0 }}>⭐</div>
-                                            <div style={{ flex: 1, minWidth: 0 }}>
-                                                <div style={{ fontSize: 11, fontWeight: 600, color: "#1e293b", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{a.reason || "경험치 획득"}</div>
-                                            </div>
-                                            <span style={{ fontSize: 11, fontWeight: 800, color: "#059669", whiteSpace: "nowrap" }}>+{a.amount}</span>
-                                        </motion.div>
-                                    ))}
-                                </div>
-                            )}
-                        </motion.div>
-                    </div>
-                </div>
-            </div>
+                            {
+                                recentActivity.length === 0 ? (
+                                    <div style={{ textAlign: "center", padding: 16, color: "#94a3b8", fontSize: 13 }}>📝 아직 활동 기록이 없어요</div>
+                                ) : (
+                                    <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+                                        {recentActivity.slice(0, 4).map((a: any, i: number) => (
+                                            <motion.div key={i} initial={{ opacity: 0, x: -8 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.7 + i * 0.06 }}
+                                                style={{ display: "flex", alignItems: "center", gap: 8, padding: "6px 10px", borderRadius: 10, background: "rgba(248,250,252,0.5)" }}>
+                                                <div style={{ width: 24, height: 24, borderRadius: "50%", background: "linear-gradient(135deg, #3b82f6, #6366f1)", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontSize: 11, flexShrink: 0 }}>⭐</div>
+                                                <div style={{ flex: 1, minWidth: 0 }}>
+                                                    <div style={{ fontSize: 11, fontWeight: 600, color: "#1e293b", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{a.reason || "경험치 획득"}</div>
+                                                </div>
+                                                <span style={{ fontSize: 11, fontWeight: 800, color: "#059669", whiteSpace: "nowrap" }}>+{a.amount}</span>
+                                            </motion.div>
+                                        ))}
+                                    </div>
+                                )
+                            }
+                        </motion.div >
+                    </div >
+                </div >
+            </div >
         </>
     );
 }

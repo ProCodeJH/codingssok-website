@@ -5,6 +5,7 @@ import { createClient } from "@/lib/supabase";
 import { useAuth } from "@/contexts/AuthContext";
 import Link from "next/link";
 import { COURSES } from "@/data/courses";
+import { CourseIcon } from "@/components/icons/CourseIcons";
 import { motion } from "framer-motion";
 import { FadeIn, StaggerList, StaggerItem, ShimmerLoader, HoverGlow } from "@/components/motion/motion";
 
@@ -26,10 +27,10 @@ interface Material {
 }
 
 const TYPE_ICONS: Record<string, { icon: string; color: string; bg: string }> = {
-    pdf: { icon: "📄", color: "#dc2626", bg: "#fee2e2" },
-    image: { icon: "🖼️", color: "#7c3aed", bg: "#ede9fe" },
-    video: { icon: "🎬", color: "#2563eb", bg: "#dbeafe" },
-    link: { icon: "🔗", color: "#0891b2", bg: "#cffafe" },
+    pdf: { icon: "picture_as_pdf", color: "#dc2626", bg: "#fee2e2" },
+    image: { icon: "image", color: "#7c3aed", bg: "#ede9fe" },
+    video: { icon: "movie", color: "#2563eb", bg: "#dbeafe" },
+    link: { icon: "link", color: "#0891b2", bg: "#cffafe" },
 };
 
 export default function StudyPage() {
@@ -66,7 +67,7 @@ export default function StudyPage() {
                     height: 100, background: "linear-gradient(135deg, #6366f1, #0ea5e9, #10b981)",
                     display: "flex", alignItems: "center", padding: "0 32px", gap: 16,
                 }}>
-                    <span style={{ fontSize: 40 }}>📚</span>
+                    <span className="material-symbols-outlined" style={{ fontSize: 40, color: "#fff" }}>menu_book</span>
                     <div>
                         <h1 style={{ fontSize: 22, fontWeight: 900, color: "#fff", margin: 0, textShadow: "0 2px 6px rgba(0,0,0,0.2)" }}>학습 공간</h1>
                         <p style={{ fontSize: 13, color: "rgba(255,255,255,0.8)", margin: 0 }}>선생님이 올린 수업 자료를 확인하세요</p>
@@ -87,7 +88,7 @@ export default function StudyPage() {
                         return (
                             <FilterChip
                                 key={c.id}
-                                label={`${c.icon} ${c.title}`}
+                                label={c.title}
                                 active={filter === c.id}
                                 onClick={() => setFilter(c.id)}
                                 count={count}
@@ -102,7 +103,7 @@ export default function StudyPage() {
                 <ShimmerLoader lines={6} style={{ padding: 24 }} />
             ) : filtered.length === 0 ? (
                 <div style={{ textAlign: "center", padding: 60 }}>
-                    <div style={{ fontSize: 48, marginBottom: 12 }}>📭</div>
+                    <span className="material-symbols-outlined" style={{ fontSize: 48, opacity: 0.3 }}>inbox</span>
                     <p style={{ color: "#94a3b8", fontSize: 14 }}>아직 등록된 자료가 없어요</p>
                 </div>
             ) : (
@@ -139,13 +140,13 @@ export default function StudyPage() {
                                                 background: "#fff", display: "flex", alignItems: "center", justifyContent: "center",
                                                 fontSize: 22, boxShadow: "0 2px 8px rgba(0,0,0,0.08)",
                                             }}>
-                                                {typeInfo.icon}
+                                                <span className="material-symbols-outlined" style={{ fontSize: 22, color: typeInfo.color }}>{typeInfo.icon}</span>
                                             </div>
                                             <div style={{ flex: 1 }}>
                                                 <div style={{ fontSize: 15, fontWeight: 800, color: "#0f172a" }}>{m.title}</div>
                                                 {course && (
                                                     <div style={{ fontSize: 11, color: "#64748b", marginTop: 2 }}>
-                                                        {course.icon} {course.title}
+                                                        {course.title}
                                                     </div>
                                                 )}
                                             </div>

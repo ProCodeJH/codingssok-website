@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect, useCallback } from "react";
 import { motion, useInView } from "framer-motion";
 
 /*
@@ -15,32 +15,61 @@ const reasons = [
         title: "월 5회/8회 시스템",
         desc: "한 달 4회는 진도 나가기 바쁩니다. 코딩쏙은 4번의 프로젝트와 1번의 '플러스 쏙(1:1 보완)'으로 배움을 완성합니다.",
         icon: "📅",
-        gradient: "linear-gradient(135deg, #FFF5EB, #FFE8D6)",
-        accentColor: "#EC5212",
+        gradient: "linear-gradient(135deg, #EEF2FF, #E0E7FF)",
+        accentColor: "#4F46E5",
         statNum: "5+",
         statLabel: "회 / 월",
+        countTo: 5,
+        countSuffix: "+",
     },
     {
         number: "02",
         title: "90분 몰입 수업",
         desc: "초등학생 집중력이 가장 높은 90분 수업. 더 자주, 더 즐겁게 만나며 코딩 습관을 만듭니다.",
         icon: "⏱️",
-        gradient: "linear-gradient(135deg, #E6F7F2, #D4F0E7)",
-        accentColor: "#77C6B3",
+        gradient: "linear-gradient(135deg, #ECFDF5, #D1FAE5)",
+        accentColor: "#34D399",
         statNum: "90",
         statLabel: "분 / 회",
+        countTo: 90,
+        countSuffix: "",
     },
     {
         number: "03",
         title: "1:6 소수 정예",
         desc: "선생님의 기준이 아닌 아이의 속도에 맞춘 밀착 코칭과 매주 발송되는 성장 리포트로 안심을 더합니다.",
         icon: "👨‍🏫",
-        gradient: "linear-gradient(135deg, #F0F0FF, #E3E3F5)",
-        accentColor: "#70A2E1",
+        gradient: "linear-gradient(135deg, #EEF2FF, #E0E7FF)",
+        accentColor: "#818CF8",
         statNum: "1:6",
         statLabel: "밀착 코칭",
+        countTo: 0,
+        countSuffix: "",
     },
 ];
+
+/* ── CountUp hook ── */
+function useCountUp(target: number, isInView: boolean, duration = 1600) {
+    const [value, setValue] = useState(0);
+    useEffect(() => {
+        if (!isInView || target <= 0) { setValue(target); return; }
+        let startTime: number;
+        const step = (ts: number) => {
+            if (!startTime) startTime = ts;
+            const progress = Math.min((ts - startTime) / duration, 1);
+            const eased = 1 - Math.pow(1 - progress, 3); // easeOutCubic
+            setValue(Math.round(eased * target));
+            if (progress < 1) requestAnimationFrame(step);
+        };
+        requestAnimationFrame(step);
+    }, [isInView, target, duration]);
+    return value;
+}
+
+function CountUpValue({ target, suffix, isInView }: { target: number; suffix: string; isInView: boolean }) {
+    const val = useCountUp(target, isInView);
+    return <>{val}{suffix}</>;
+}
 
 function FeatureCard({ r, i, isInView }: { r: typeof reasons[0]; i: number; isInView: boolean }) {
     const [hover, setHover] = useState(false);
@@ -117,10 +146,10 @@ function FeatureCard({ r, i, isInView }: { r: typeof reasons[0]; i: number; isIn
                     </motion.div>
                 </div>
 
-                {/* Stat */}
+                {/* Stat with CountUp */}
                 <div style={{ marginBottom: 16 }}>
                     <span style={{ fontSize: "clamp(36px, 5vw, 48px)", fontWeight: 800, color: "#1a1a1a", letterSpacing: "-0.03em", lineHeight: 1 }}>
-                        {r.statNum}
+                        {r.countTo > 0 ? <CountUpValue target={r.countTo} suffix={r.countSuffix} isInView={isInView} /> : r.statNum}
                     </span>
                     <span style={{ fontSize: 14, color: "#999", marginLeft: 8, fontWeight: 500 }}>
                         {r.statLabel}

@@ -13,18 +13,12 @@ import { Spotlight, MorphingGradient } from "@/components/motion/premium";
 /* ── Nav Items (한글화 + 새 메뉴) ── */
 const NAV_ITEMS = [
     { icon: "dashboard", label: "대시보드", href: "/dashboard/learning" },
-    { icon: "library_books", label: "내 코스", href: "/dashboard/learning/courses" },
     { icon: "terminal", label: "C 컴파일러", href: "/dashboard/learning/compiler" },
     { icon: "assignment", label: "숙제 & 노트", href: "/dashboard/learning/homework" },
     { icon: "shield", label: "티어 & 승급", href: "/dashboard/learning/tier" },
     { icon: "task_alt", label: "미션 & 업적", href: "/dashboard/learning/missions" },
-    { icon: "emoji_events", label: "챌린지", href: "/dashboard/learning/challenges" },
-    { icon: "chat", label: "채팅", href: "/dashboard/learning/chat" },
     { icon: "diversity_3", label: "리더보드", href: "/dashboard/learning/leaderboard" },
-    { icon: "storefront", label: "상점", href: "/dashboard/learning/store" },
-    { icon: "menu_book", label: "수업자료", href: "/dashboard/learning/study" },
     { icon: "person", label: "프로필", href: "/dashboard/learning/profile" },
-    { icon: "admin_panel_settings", label: "관리자", href: "/dashboard/learning/admin" },
 ];
 
 /* ── Auth Guard ── */
@@ -209,7 +203,7 @@ function Navbar({ onMenuOpen }: { onMenuOpen: () => void }) {
                             <span style={{ fontSize: 19, fontWeight: 800, letterSpacing: "-0.02em", color: "#0f172a" }}>
                                 코딩<span style={{ color: "#0ea5e9" }}>쏙</span>
                             </span>
-                            <span style={{ fontSize: 10, fontWeight: 600, color: "#94a3b8", letterSpacing: "0.08em", textTransform: "uppercase" }}>Learning Dashboard</span>
+                            <span style={{ fontSize: 10, fontWeight: 600, color: "#94a3b8", letterSpacing: "0.08em" }}>학습 대시보드</span>
                         </div>
                     </motion.div>
 
@@ -230,7 +224,7 @@ function Navbar({ onMenuOpen }: { onMenuOpen: () => void }) {
                         {/* User */}
                         <div className="hidden sm:flex" style={{ alignItems: "center", gap: 16, paddingLeft: 20, borderLeft: "1px solid rgba(226,232,240,0.5)" }}>
                             <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end" }}>
-                                <span style={{ fontSize: 13, fontWeight: 700, color: "#1e293b" }}>{user?.name || user?.email?.split("@")[0] || "학생"}</span>
+                                <span style={{ fontSize: 13, fontWeight: 700, color: "#1e293b" }}>{user?.name || "학생"}</span>
                                 <div style={{ display: "flex", alignItems: "center", gap: 5 }}>
                                     <motion.span
                                         animate={{ scale: [1, 1.2, 1] }}
@@ -257,7 +251,7 @@ function Navbar({ onMenuOpen }: { onMenuOpen: () => void }) {
                                     background: "#e0f2fe", display: "flex", alignItems: "center", justifyContent: "center",
                                     color: "#0369a1", fontWeight: 700, fontSize: 14, border: "2px solid #fff"
                                 }}>
-                                    {(user?.email?.charAt(0) || "U").toUpperCase()}
+                                    {(user?.name?.charAt(0) || "?").toUpperCase()}
                                 </div>
                             </motion.button>
                         </div>

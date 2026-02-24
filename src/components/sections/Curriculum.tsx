@@ -5,11 +5,12 @@ import { motion, useInView, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 
 /*
-  커리큘럼 인터랙티브 타임라인
-  수직 타임라인 + 확장형 카드 + SVG 아이콘 + 3D 효과
+  커리큘럼 5단계 성장 로드맵 — Ultra-Premium
+  학습 대시보드 코스 데이터와 연동
+  수직 타임라인 + 확장형 카드 + SVG + 고급 애니메이션
 */
 
-/* ── Custom SVG Icons for each step ── */
+/* ── Custom SVG Icons ── */
 function MathIcon({ color }: { color: string }) {
     return (
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
@@ -17,7 +18,7 @@ function MathIcon({ color }: { color: string }) {
             <path d="M7 8h4M9 6v4" stroke={color} strokeWidth="1.5" strokeLinecap="round" />
             <path d="M7 16h4" stroke={color} strokeWidth="1.5" strokeLinecap="round" />
             <path d="M14.5 7.5l3 3M17.5 7.5l-3 3" stroke={color} strokeWidth="1.5" strokeLinecap="round" />
-            <path d="M15 15h0M17 15h0M16 14v0M16 16v0" stroke={color} strokeWidth="2" strokeLinecap="round" />
+            <circle cx="16" cy="16" r="1" fill={color} />
         </svg>
     );
 }
@@ -66,17 +67,36 @@ function CertIcon({ color }: { color: string }) {
 
 const stepIcons = [MathIcon, CodeIcon, HardwareIcon, ProjectIcon, CertIcon];
 
+/* ── Course badges that link to dashboard ── */
+interface CourseBadge {
+    name: string;
+    id: string;
+    color: string;
+    units?: number;
+    status: "active" | "coming";
+}
+
 const tracks = [
     {
         id: "thinking-math",
         step: 1,
         label: "STEP 1",
         title: "사고력 수학",
-        desc: "코딩으로 수학 개념을 직접 구현하며 문제해결의 원리를 깨우칩니다.",
-        details: "수학은 코딩의 기초 체력. 수학적 논리를 직접 코드로 구현하며 진짜 이해하는 수학을 배웁니다.",
+        headline: "코딩으로 수학 개념을 직접 구현하며 문제해결의 원리를 깨우칩니다.",
+        details: "수학은 코딩의 기초 체력입니다. 연산, 패턴, 분류 등 수학적 논리를 직접 코드로 구현하며 '왜 이게 필요한지'를 체감합니다. 단순 암기가 아닌 원리 학습을 통해 학교 수학 성적까지 자연스럽게 올라갑니다.",
         target: "초등 1~4학년",
         format: "주 2회 / 90분",
-        skills: ["연산 자동화", "패턴 인식", "문제 분해"],
+        capacity: "1:4 소수정예",
+        skills: ["연산 자동화", "패턴 인식", "문제 분해", "수열 탐구", "도형 코딩"],
+        courses: [
+            { name: "코딩 기초", id: "1", color: "#10b981", units: 0, status: "coming" as const },
+        ],
+        progression: [
+            { week: "1~4주", content: "숫자와 연산 (덧셈·뺄셈 자동화)" },
+            { week: "5~8주", content: "패턴과 반복 (별찍기, 피보나치)" },
+            { week: "9~12주", content: "분류와 정렬 (나만의 정렬 알고리즘)" },
+            { week: "13~16주", content: "도형과 좌표 (거북이 그래픽)" },
+        ],
         color: "#818CF8",
     },
     {
@@ -84,11 +104,22 @@ const tracks = [
         step: 2,
         label: "STEP 2",
         title: "소프트웨어",
-        desc: "블록코딩부터 파이썬까지, 논리적 사고의 기초 체력을 기릅니다.",
-        details: "Scratch로 시작해 Python, C까지. 단계별 사다리를 올라가며 자신감과 실력을 동시에 키웁니다.",
+        headline: "블록코딩부터 파이썬, C언어까지. 논리적 사고의 기초 체력을 기릅니다.",
+        details: "Scratch 블록코딩으로 프로그래밍 사고력을 기른 후, 파이썬으로 텍스트 코딩에 진입합니다. 이후 C언어까지 체계적으로 학습하며, 변수·조건·반복·함수의 핵심 4대 개념을 완벽히 마스터합니다.",
         target: "초등 3학년 ~ 중등",
         format: "주 2회 / 90분",
-        skills: ["파이썬 기초", "알고리즘", "자료구조"],
+        capacity: "1:6 밀착 코칭",
+        skills: ["파이썬 문법", "C언어 기초", "자료구조", "알고리즘 설계", "디버깅"],
+        courses: [
+            { name: "파이썬", id: "3", color: "#3b82f6", units: 0, status: "coming" as const },
+            { name: "C언어", id: "4", color: "#f59e0b", units: 85, status: "active" as const },
+        ],
+        progression: [
+            { week: "1~4주", content: "변수, 입출력, 기본 자료형" },
+            { week: "5~8주", content: "조건문, 반복문 마스터" },
+            { week: "9~16주", content: "함수, 배열, 문자열 처리" },
+            { week: "17~24주", content: "포인터, 구조체, 파일 I/O" },
+        ],
         color: "#4F46E5",
     },
     {
@@ -96,11 +127,21 @@ const tracks = [
         step: 3,
         label: "STEP 3",
         title: "하드웨어",
-        desc: "아두이노와 센서를 연결해 상상을 현실로 만드는 발명가 교육입니다.",
-        details: "LED, 센서, 모터, 디스플레이까지. 디지털과 물리를 넘나들며 창작의 즐거움을 경험합니다.",
+        headline: "아두이노와 센서를 연결해 상상을 현실로 만드는 발명가 교육입니다.",
+        details: "LED 깜빡이기부터 시작해 온습도 센서, 초음파 거리측정, 서보모터 제어까지. 코드가 실제 장치를 움직이는 경험은 아이에게 강력한 동기부여가 됩니다. IoT 미니 프로젝트로 마무리합니다.",
         target: "초등 3학년 이상",
         format: "주 1~2회 / 90분",
-        skills: ["아두이노", "전자 회로", "IoT"],
+        capacity: "1:4 실습 중심",
+        skills: ["아두이노", "전자 회로", "센서 활용", "IoT", "3D 프린팅"],
+        courses: [
+            { name: "피지컬 컴퓨팅", id: "2", color: "#f59e0b", units: 0, status: "coming" as const },
+        ],
+        progression: [
+            { week: "1~3주", content: "LED, 버저 — 기본 출력 제어" },
+            { week: "4~6주", content: "센서 입력 (온도, 거리, 빛)" },
+            { week: "7~9주", content: "모터, 서보 — 움직이는 장치" },
+            { week: "10~12주", content: "IoT 미니 프로젝트 완성" },
+        ],
         color: "#34D399",
     },
     {
@@ -108,11 +149,19 @@ const tracks = [
         step: 4,
         label: "STEP 4",
         title: "프로젝트 스튜디오",
-        desc: "나만의 게임과 앱을 기획하고 완성하며 성취감을 맛봅니다.",
-        details: "기획서 작성부터 개발, 발표까지. 실제 프로젝트 경험이 아이를 진정한 크리에이터로 성장시킵니다.",
+        headline: "나만의 게임과 앱을 기획하고 완성하며 성취감을 맛봅니다.",
+        details: "기획서 작성 → 와이어프레임 → 개발 → 테스트 → 발표. 실제 소프트웨어 개발 프로세스를 경험합니다. 완성된 프로젝트는 포트폴리오로 관리되며, 학교 발표나 대회 출품에 직접 활용할 수 있습니다.",
         target: "전연령",
         format: "맞춤 일정",
-        skills: ["앱 개발", "게임 제작", "UI 설계"],
+        capacity: "1:2~4 프로젝트 팀",
+        skills: ["앱 개발", "게임 제작", "UI 설계", "발표 스킬", "팀워크"],
+        courses: [] as CourseBadge[],
+        progression: [
+            { week: "1~2주", content: "아이디어 브레인스토밍 & 기획서" },
+            { week: "3~4주", content: "와이어프레임 & 디자인" },
+            { week: "5~8주", content: "개발 스프린트 (MVP 제작)" },
+            { week: "9~10주", content: "테스트, 개선, 발표 준비" },
+        ],
         color: "#F59E0B",
     },
     {
@@ -120,11 +169,23 @@ const tracks = [
         step: 5,
         label: "STEP 5",
         title: "자격증 트랙",
-        desc: "컴활, 프로그래밍 기능사 등 목표를 세우고 달성하는 자신감.",
-        details: "명확한 목표는 동기부여의 핵심. 검증된 자격증 취득으로 실력을 객관적으로 인정받습니다.",
+        headline: "컴활, 프로그래밍 기능사, COS-Pro 등 목표를 세우고 달성하는 자신감.",
+        details: "명확한 목표는 동기부여의 핵심입니다. 시험 유형별 집중 학습과 실전 모의고사를 통해 합격률을 극대화합니다. 초등학생도 도전 가능한 COS-Pro부터 정보처리기능사까지 단계별 자격증 로드맵을 제공합니다.",
         target: "중등 ~ 고등",
         format: "시험 일정 맞춤",
-        skills: ["COS-Pro", "PCCE", "KOI"],
+        capacity: "1:4 집중 코칭",
+        skills: ["COS-Pro", "PCCE", "KOI", "정보처리기능사", "컴활"],
+        courses: [
+            { name: "CosPro", id: "5", color: "#ec4899", units: 0, status: "coming" as const },
+            { name: "프로그래밍 대회", id: "6", color: "#f97316", units: 0, status: "coming" as const },
+            { name: "자격증", id: "7", color: "#8b5cf6", units: 0, status: "coming" as const },
+        ],
+        progression: [
+            { week: "1~4주", content: "기출 분석 & 핵심 개념 정리" },
+            { week: "5~8주", content: "유형별 문제 풀이 특훈" },
+            { week: "9~11주", content: "실전 모의고사 3회 이상" },
+            { week: "시험 직전", content: "취약 단원 집중 보완" },
+        ],
         color: "#FB923C",
     },
 ];
@@ -143,29 +204,38 @@ function TimelineCard({ t, i, isInView }: { t: typeof tracks[0]; i: number; isIn
             {/* ── Vertical Line + Step Circle ── */}
             <div style={{ display: "flex", flexDirection: "column", alignItems: "center", flexShrink: 0, width: 48 }}>
                 <motion.div
-                    animate={isInView ? { scale: [0.8, 1.1, 1] } : {}}
-                    transition={{ delay: i * 0.12, duration: 0.5 }}
+                    animate={isInView ? { scale: [0.6, 1.15, 1] } : {}}
+                    transition={{ delay: i * 0.12, duration: 0.6, type: "spring" }}
                     style={{
                         width: 48, height: 48, borderRadius: "50%",
-                        background: t.color, color: "#fff",
+                        background: `linear-gradient(135deg, ${t.color}, ${t.color}cc)`,
+                        color: "#fff",
                         display: "flex", alignItems: "center", justifyContent: "center",
                         fontSize: 14, fontWeight: 800,
                         zIndex: 2, position: "relative",
-                        boxShadow: `0 4px 16px ${t.color}44`,
+                        boxShadow: `0 4px 20px ${t.color}44`,
                     }}
                 >
+                    {/* Pulse ring */}
+                    <motion.div
+                        animate={isInView ? { scale: [1, 1.6, 1.6], opacity: [0.5, 0, 0] } : {}}
+                        transition={{ delay: i * 0.12 + 0.3, duration: 1.5, repeat: 2 }}
+                        style={{
+                            position: "absolute", inset: 0, borderRadius: "50%",
+                            border: `2px solid ${t.color}`,
+                        }}
+                    />
                     {t.step}
                 </motion.div>
                 {i < tracks.length - 1 && (
                     <motion.div
                         initial={{ scaleY: 0 }}
                         animate={isInView ? { scaleY: 1 } : {}}
-                        transition={{ delay: i * 0.12 + 0.2, duration: 0.5 }}
+                        transition={{ delay: i * 0.12 + 0.2, duration: 0.6, ease: "easeOut" }}
                         style={{
                             width: 2, height: 80,
-                            background: `linear-gradient(${t.color}, ${tracks[i + 1]?.color || t.color})`,
+                            background: `linear-gradient(${t.color}60, ${tracks[i + 1]?.color || t.color}60)`,
                             transformOrigin: "top center",
-                            opacity: 0.3,
                         }}
                     />
                 )}
@@ -174,35 +244,48 @@ function TimelineCard({ t, i, isInView }: { t: typeof tracks[0]; i: number; isIn
             {/* ── Card ── */}
             <motion.div
                 onClick={() => setExpanded(!expanded)}
-                whileHover={{ y: -4, boxShadow: `0 12px 32px ${t.color}15` }}
+                whileHover={{ y: -4, boxShadow: `0 16px 40px ${t.color}12` }}
                 style={{
                     flex: 1, background: "#fff", borderRadius: 16,
                     padding: "24px 28px", border: "1px solid #e2e8f0",
                     boxShadow: "0 2px 8px rgba(0,0,0,0.04)",
                     cursor: "pointer", transition: "all 0.3s ease",
-                    marginBottom: 0,
                 }}
             >
                 <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 8 }}>
-                    <div style={{
-                        width: 36, height: 36, borderRadius: 10,
-                        background: `${t.color}12`,
-                        display: "flex", alignItems: "center", justifyContent: "center",
-                    }}>
+                    <motion.div
+                        animate={isInView ? { rotate: [0, -8, 8, 0] } : {}}
+                        transition={{ delay: i * 0.12 + 0.3, duration: 0.6 }}
+                        style={{
+                            width: 40, height: 40, borderRadius: 12,
+                            background: `${t.color}10`,
+                            display: "flex", alignItems: "center", justifyContent: "center",
+                        }}
+                    >
                         <IconComp color={t.color} />
-                    </div>
+                    </motion.div>
                     <div style={{ flex: 1 }}>
                         <span style={{ fontSize: 11, color: t.color, fontWeight: 700, letterSpacing: "0.1em" }}>{t.label}</span>
                         <h3 style={{ fontSize: 18, fontWeight: 700, color: "#1e1b4b", marginTop: 2 }}>{t.title}</h3>
                     </div>
+                    {/* Info badges */}
+                    <div style={{ display: "flex", gap: 6, flexShrink: 0 }}>
+                        <span style={{
+                            padding: "3px 8px", borderRadius: 6,
+                            background: "#f1f5f9", fontSize: 10, fontWeight: 700, color: "#64748b",
+                        }}>
+                            {t.capacity}
+                        </span>
+                    </div>
                     <motion.span
                         animate={{ rotate: expanded ? 180 : 0 }}
-                        style={{ fontSize: 14, color: "#94a3b8", transition: "transform 0.2s" }}
+                        transition={{ duration: 0.2 }}
+                        style={{ color: "#94a3b8", flexShrink: 0 }}
                     >
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
                     </motion.span>
                 </div>
-                <p style={{ fontSize: 13, color: "#64748b", lineHeight: 1.6, marginBottom: 0 }}>{t.desc}</p>
+                <p style={{ fontSize: 13, color: "#64748b", lineHeight: 1.6, marginBottom: 0 }}>{t.headline}</p>
 
                 <AnimatePresence>
                     {expanded && (
@@ -210,42 +293,119 @@ function TimelineCard({ t, i, isInView }: { t: typeof tracks[0]; i: number; isIn
                             initial={{ height: 0, opacity: 0 }}
                             animate={{ height: "auto", opacity: 1 }}
                             exit={{ height: 0, opacity: 0 }}
-                            transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+                            transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
                             style={{ overflow: "hidden" }}
                         >
                             <div style={{ paddingTop: 16, borderTop: "1px solid #f1f5f9", marginTop: 16 }}>
+                                {/* Description */}
                                 <p style={{ fontSize: 13, color: "#475569", lineHeight: 1.7, marginBottom: 16 }}>{t.details}</p>
-                                <div style={{ display: "flex", gap: 6, flexWrap: "wrap", marginBottom: 12 }}>
-                                    {t.skills.map((skill) => (
-                                        <span key={skill} style={{
-                                            padding: "4px 12px", borderRadius: 10, fontSize: 11, fontWeight: 600,
-                                            background: `${t.color}10`, color: t.color, border: `1px solid ${t.color}20`,
-                                        }}>
-                                            {skill}
-                                        </span>
-                                    ))}
-                                </div>
-                                <div style={{ display: "flex", gap: 16, fontSize: 12, color: "#94a3b8" }}>
-                                    <span>
-                                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" style={{ verticalAlign: "middle", marginRight: 4 }}>
-                                            <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="1.5" />
-                                            <path d="M12 6v6l4 2" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-                                        </svg>
+
+                                {/* Meta info row */}
+                                <div style={{ display: "flex", gap: 16, fontSize: 12, color: "#94a3b8", marginBottom: 16 }}>
+                                    <span style={{ display: "inline-flex", alignItems: "center", gap: 4 }}>
+                                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="1.5" /><path d="M12 6v6l4 2" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" /></svg>
                                         {t.format}
                                     </span>
-                                    <span>
-                                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" style={{ verticalAlign: "middle", marginRight: 4 }}>
-                                            <path d="M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-                                            <circle cx="9" cy="7" r="4" stroke="currentColor" strokeWidth="1.5" />
-                                        </svg>
+                                    <span style={{ display: "inline-flex", alignItems: "center", gap: 4 }}>
+                                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" /><circle cx="9" cy="7" r="4" stroke="currentColor" strokeWidth="1.5" /></svg>
                                         {t.target}
                                     </span>
                                 </div>
-                                <Link href="/trial" style={{
+
+                                {/* Skills */}
+                                <div style={{ display: "flex", gap: 6, flexWrap: "wrap", marginBottom: 16 }}>
+                                    {t.skills.map((skill) => (
+                                        <motion.span
+                                            key={skill}
+                                            initial={{ opacity: 0, scale: 0.9 }}
+                                            animate={{ opacity: 1, scale: 1 }}
+                                            transition={{ duration: 0.2 }}
+                                            style={{
+                                                padding: "4px 12px", borderRadius: 10, fontSize: 11, fontWeight: 600,
+                                                background: `${t.color}10`, color: t.color, border: `1px solid ${t.color}20`,
+                                            }}
+                                        >
+                                            {skill}
+                                        </motion.span>
+                                    ))}
+                                </div>
+
+                                {/* Weekly progression timeline */}
+                                <div style={{
+                                    background: "#f8fafc", borderRadius: 12, padding: 16, marginBottom: 16,
+                                }}>
+                                    <p style={{ fontSize: 11, fontWeight: 700, color: "#94a3b8", marginBottom: 10, textTransform: "uppercase", letterSpacing: "0.08em" }}>
+                                        진행 커리큘럼
+                                    </p>
+                                    <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                                        {t.progression.map((p, pi) => (
+                                            <motion.div
+                                                key={pi}
+                                                initial={{ opacity: 0, x: -10 }}
+                                                animate={{ opacity: 1, x: 0 }}
+                                                transition={{ delay: pi * 0.06, duration: 0.3 }}
+                                                style={{
+                                                    display: "flex", alignItems: "center", gap: 10,
+                                                }}
+                                            >
+                                                <div style={{
+                                                    width: 6, height: 6, borderRadius: "50%",
+                                                    background: t.color, flexShrink: 0,
+                                                    boxShadow: `0 0 6px ${t.color}60`,
+                                                }} />
+                                                <span style={{ fontSize: 11, fontWeight: 700, color: t.color, minWidth: 56, flexShrink: 0 }}>
+                                                    {p.week}
+                                                </span>
+                                                <span style={{ fontSize: 12, color: "#475569" }}>
+                                                    {p.content}
+                                                </span>
+                                            </motion.div>
+                                        ))}
+                                    </div>
+                                </div>
+
+                                {/* Linked dashboard courses */}
+                                {t.courses.length > 0 && (
+                                    <div style={{ marginBottom: 16 }}>
+                                        <p style={{ fontSize: 11, fontWeight: 700, color: "#94a3b8", marginBottom: 8, textTransform: "uppercase", letterSpacing: "0.08em" }}>
+                                            학습 대시보드 코스
+                                        </p>
+                                        <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+                                            {t.courses.map((c) => (
+                                                <Link key={c.id} href={`/dashboard/learning/${c.id}`} onClick={(e) => e.stopPropagation()} style={{
+                                                    display: "inline-flex", alignItems: "center", gap: 6,
+                                                    padding: "6px 12px", borderRadius: 8,
+                                                    background: `${c.color}10`, border: `1px solid ${c.color}20`,
+                                                    fontSize: 12, fontWeight: 600, color: c.color,
+                                                    textDecoration: "none",
+                                                }}>
+                                                    <div style={{
+                                                        width: 8, height: 8, borderRadius: "50%",
+                                                        background: c.status === "active"
+                                                            ? `linear-gradient(135deg, ${c.color}, ${c.color}cc)`
+                                                            : "#cbd5e1",
+                                                    }} />
+                                                    {c.name}
+                                                    {(c.units ?? 0) > 0 && (
+                                                        <span style={{ fontSize: 10, opacity: 0.7 }}>({c.units}개 유닛)</span>
+                                                    )}
+                                                    {c.status === "coming" && (
+                                                        <span style={{ fontSize: 9, padding: "1px 5px", borderRadius: 4, background: "#f1f5f9", color: "#94a3b8" }}>준비 중</span>
+                                                    )}
+                                                </Link>
+                                            ))}
+                                        </div>
+                                    </div>
+                                )}
+
+                                {/* CTA Button */}
+                                <Link href="/trial" onClick={(e) => e.stopPropagation()} style={{
                                     display: "inline-flex", alignItems: "center", gap: 6,
-                                    marginTop: 16, padding: "8px 16px", borderRadius: 10,
-                                    background: t.color, color: "#fff", fontSize: 12, fontWeight: 700,
-                                    textDecoration: "none", boxShadow: `0 4px 12px ${t.color}30`,
+                                    padding: "10px 20px", borderRadius: 10,
+                                    background: `linear-gradient(135deg, ${t.color}, ${t.color}cc)`,
+                                    color: "#fff", fontSize: 13, fontWeight: 700,
+                                    textDecoration: "none", boxShadow: `0 4px 16px ${t.color}30`,
+                                    transition: "transform 0.2s",
                                 }}>
                                     무료 체험 신청
                                     <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
@@ -293,14 +453,40 @@ export default function Curriculum() {
                     </h2>
                     <p style={{
                         fontSize: "var(--font-size-t-md)", color: "var(--color-grey)",
-                        marginTop: 16, maxWidth: 500, margin: "16px auto 0",
+                        marginTop: 16, maxWidth: 520, margin: "16px auto 0", lineHeight: 1.7,
                     }}>
-                        아이의 단계에 맞춰 시작하세요.<br />각 단계를 클릭하면 자세한 내용을 볼 수 있습니다.
+                        아이의 단계에 맞춰 시작하세요.<br />각 단계를 클릭하면 자세한 커리큘럼, 진행 방식, 연결 코스를 확인할 수 있습니다.
                     </p>
+
+                    {/* Quick stats */}
+                    <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={isInView ? { opacity: 1, y: 0 } : {}}
+                        transition={{ delay: 0.3, duration: 0.6 }}
+                        style={{
+                            display: "inline-flex", gap: 24, marginTop: 28,
+                            padding: "14px 28px", borderRadius: 16,
+                            background: "rgba(255,255,255,0.8)", backdropFilter: "blur(10px)",
+                            border: "1px solid rgba(0,0,0,0.05)",
+                            boxShadow: "0 2px 8px rgba(0,0,0,0.03)",
+                        }}
+                    >
+                        {[
+                            { value: "5", label: "성장 단계" },
+                            { value: "7", label: "코스" },
+                            { value: "85+", label: "학습 유닛" },
+                            { value: "950+", label: "실습 문제" },
+                        ].map((stat) => (
+                            <div key={stat.label} style={{ textAlign: "center" }}>
+                                <div style={{ fontSize: 20, fontWeight: 800, color: "#4F46E5" }}>{stat.value}</div>
+                                <div style={{ fontSize: 10, color: "#94a3b8", fontWeight: 600, marginTop: 2 }}>{stat.label}</div>
+                            </div>
+                        ))}
+                    </motion.div>
                 </motion.div>
 
                 {/* Timeline */}
-                <div style={{ maxWidth: 640, margin: "0 auto" }}>
+                <div style={{ maxWidth: 680, margin: "0 auto" }}>
                     {tracks.map((t, i) => (
                         <TimelineCard key={t.id} t={t} i={i} isInView={isInView} />
                     ))}

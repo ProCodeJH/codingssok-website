@@ -484,7 +484,7 @@ export default function CompilerPage() {
                                     value={code}
                                     onChange={val => setCode(val || "")}
                                     onMount={handleEditorMount}
-                                    theme="vs-dark"
+                                    theme="vs"
                                     options={{
                                         fontSize: 14,
                                         fontFamily: "'JetBrains Mono', 'Fira Code', 'Consolas', monospace",
@@ -639,23 +639,23 @@ export default function CompilerPage() {
                         {/* Output Terminal (mini) */}
                         <div style={{
                             flex: 1, borderRadius: 20, overflow: "hidden",
-                            background: "#0a0e1a", display: "flex", flexDirection: "column",
-                            border: "1px solid #1e293b",
+                            background: "rgba(255,255,255,0.8)", backdropFilter: "blur(16px)", display: "flex", flexDirection: "column",
+                            border: "1px solid rgba(241,245,249,0.8)",
                         }}>
-                            <div style={{ padding: "8px 14px", background: "#0f172a", borderBottom: "1px solid #1e293b", display: "flex", alignItems: "center", gap: 6, fontSize: 10 }}>
-                                <MI icon="terminal" style={{ fontSize: 14, color: "#64748b" }} />
-                                <span style={{ color: "#94a3b8", fontWeight: 600 }}>터미널 출력</span>
+                            <div style={{ padding: "8px 14px", background: "rgba(248,250,252,0.9)", borderBottom: "1px solid #f1f5f9", display: "flex", alignItems: "center", gap: 6, fontSize: 10 }}>
+                                <MI icon="terminal" style={{ fontSize: 14, color: "#256af4" }} />
+                                <span style={{ color: "#334155", fontWeight: 600 }}>터미널 출력</span>
                                 <div style={{ flex: 1 }} />
                                 <AnimatePresence>
                                     {outputStatus !== "idle" && (
                                         <motion.span initial={{ opacity: 0, scale: 0.5 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0 }}
                                             style={{
                                                 fontSize: 8, fontWeight: 800, padding: "2px 8px", borderRadius: 20,
-                                                background: outputStatus === "success" ? "rgba(34,197,94,0.15)" : "rgba(239,68,68,0.15)",
-                                                color: outputStatus === "success" ? "#4ade80" : "#f87171",
+                                                background: outputStatus === "success" ? "#dcfce7" : "#fee2e2",
+                                                color: outputStatus === "success" ? "#15803d" : "#dc2626",
                                                 display: "flex", alignItems: "center", gap: 3,
                                             }}>
-                                            <span style={{ width: 4, height: 4, borderRadius: "50%", background: outputStatus === "success" ? "#4ade80" : "#f87171" }} />
+                                            <span style={{ width: 4, height: 4, borderRadius: "50%", background: outputStatus === "success" ? "#22c55e" : "#ef4444" }} />
                                             {outputStatus === "success" ? "SUCCESS" : "ERROR"}
                                         </motion.span>
                                     )}
@@ -665,13 +665,13 @@ export default function CompilerPage() {
                                 {running ? (
                                     <div style={{ display: "flex", alignItems: "center", gap: 8, color: "#64748b" }}>
                                         <motion.div animate={{ rotate: 360 }} transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-                                            style={{ width: 12, height: 12, border: "2px solid #334155", borderTopColor: "#0ea5e9", borderRadius: "50%" }} />
+                                            style={{ width: 12, height: 12, border: "2px solid #e2e8f0", borderTopColor: "#256af4", borderRadius: "50%" }} />
                                         <span style={{ fontSize: 11, fontFamily: "'JetBrains Mono', monospace" }}>컴파일 중...</span>
                                     </div>
                                 ) : rawOutput ? (
                                     <pre style={{
                                         margin: 0, fontFamily: "'JetBrains Mono', monospace", fontSize: 11, lineHeight: 1.6,
-                                        color: outputStatus === "error" ? "#f87171" : "#a7f3d0",
+                                        color: outputStatus === "error" ? "#dc2626" : "#0f172a",
                                         whiteSpace: "pre-wrap", wordBreak: "break-all",
                                     }}>
                                         <span style={{ color: "#475569", userSelect: "none" }}>{outputStatus === "success" ? "$ " : "stderr: "}</span>
@@ -682,9 +682,9 @@ export default function CompilerPage() {
                                         )}
                                     </pre>
                                 ) : (
-                                    <div style={{ color: "#334155", fontSize: 11, fontFamily: "'JetBrains Mono', monospace", lineHeight: 1.8 }}>
-                                        <span style={{ color: "#475569" }}>$</span> <span style={{ color: "#64748b" }}>코드를 실행하세요</span><br />
-                                        <span style={{ color: "#475569" }}>$</span> <motion.span animate={{ opacity: [1, 0] }} transition={{ repeat: Infinity, duration: 0.8 }} style={{ color: "#0ea5e9" }}>▌</motion.span>
+                                    <div style={{ color: "#64748b", fontSize: 11, fontFamily: "'JetBrains Mono', monospace", lineHeight: 1.8 }}>
+                                        <span style={{ color: "#94a3b8" }}>$</span> <span style={{ color: "#94a3b8" }}>코드를 실행하세요</span><br />
+                                        <span style={{ color: "#94a3b8" }}>$</span> <motion.span animate={{ opacity: [1, 0] }} transition={{ repeat: Infinity, duration: 0.8 }} style={{ color: "#256af4" }}>▌</motion.span>
                                     </div>
                                 )}
                             </div>

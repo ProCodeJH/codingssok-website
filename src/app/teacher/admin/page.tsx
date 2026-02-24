@@ -140,7 +140,7 @@ export default function TeacherAdmin() {
 
     /* ── 연도/월/일 옵션 ── */
     const currentYear = new Date().getFullYear();
-    const years = Array.from({ length: 15 }, (_, i) => String(currentYear - 6 - i));
+    const years = Array.from({ length: currentYear - 1950 + 1 }, (_, i) => String(currentYear - i));
     const months = Array.from({ length: 12 }, (_, i) => String(i + 1));
     const days = Array.from({ length: 31 }, (_, i) => String(i + 1));
 

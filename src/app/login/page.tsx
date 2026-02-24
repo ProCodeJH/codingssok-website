@@ -87,7 +87,7 @@ export default function LoginPage() {
 
   /* ── 연도/월/일 옵션 ── */
   const currentYear = new Date().getFullYear();
-  const years = Array.from({ length: 15 }, (_, i) => String(currentYear - 6 - i)); // 2020 ~ 2006
+  const years = Array.from({ length: currentYear - 1950 + 1 }, (_, i) => String(currentYear - i)); // current ~ 1950
   const months = Array.from({ length: 12 }, (_, i) => String(i + 1));
   const days = Array.from({ length: 31 }, (_, i) => String(i + 1));
 

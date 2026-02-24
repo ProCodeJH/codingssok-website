@@ -51,8 +51,8 @@ export default function MissionsPage() {
             {/* 탭 */}
             <div style={{ display: "flex", gap: 8 }}>
                 {[
-                    { key: "missions" as const, label: "📋 데일리 미션", icon: "task_alt" },
-                    { key: "achievements" as const, label: "🏅 업적", icon: "military_tech" },
+                    { key: "missions" as const, label: "≡ 데일리 미션", icon: "task_alt" },
+                    { key: "achievements" as const, label: "★ 업적", icon: "military_tech" },
                 ].map((t) => (
                     <motion.button key={t.key} onClick={() => setTab(t.key)}
                         whileHover={{ scale: 1.05 }}
@@ -71,7 +71,7 @@ export default function MissionsPage() {
             {/* 데일리 미션 */}
             {tab === "missions" && (
                 <div style={{ ...glassCard, borderRadius: 24, padding: 28 }}>
-                    <h2 style={{ fontWeight: 800, fontSize: 20, color: "#0f172a", marginBottom: 8 }}>📋 오늘의 미션</h2>
+                    <h2 style={{ fontWeight: 800, fontSize: 20, color: "#0f172a", marginBottom: 8 }}>≡ 오늘의 미션</h2>
                     <p style={{ color: "#64748b", fontSize: 13, marginBottom: 24 }}>미션을 완료하면 경험치를 획득할 수 있어요!</p>
 
                     <StaggerList style={{ display: "flex", flexDirection: "column", gap: 12 }}>
@@ -118,7 +118,7 @@ export default function MissionsPage() {
                     {/* 주간 미션 */}
                     {missions.filter(m => m.mission_type === "weekly").length > 0 && (
                         <>
-                            <h3 style={{ fontWeight: 800, fontSize: 16, color: "#0f172a", margin: "32px 0 16px" }}>📅 주간 미션</h3>
+                            <h3 style={{ fontWeight: 800, fontSize: 16, color: "#0f172a", margin: "32px 0 16px" }}> 주간 미션</h3>
                             <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
                                 {missions.filter(m => m.mission_type === "weekly").map((m) => {
                                     const done = completedMissionIds.includes(m.id);
@@ -150,7 +150,7 @@ export default function MissionsPage() {
             {/* 업적 */}
             {tab === "achievements" && (
                 <div style={{ ...glassCard, borderRadius: 24, padding: 28 }}>
-                    <h2 style={{ fontWeight: 800, fontSize: 20, color: "#0f172a", marginBottom: 8 }}>🏅 업적 컬렉션</h2>
+                    <h2 style={{ fontWeight: 800, fontSize: 20, color: "#0f172a", marginBottom: 8 }}>★ 업적 컬렉션</h2>
                     <p style={{ color: "#64748b", fontSize: 13, marginBottom: 24 }}>
                         획득: {earnedAchievementIds.length}/{achievements.length}
                     </p>

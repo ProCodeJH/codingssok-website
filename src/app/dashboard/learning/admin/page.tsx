@@ -91,8 +91,8 @@ export default function AdminPage() {
             title: hwForm.title, description: hwForm.description,
             subject: hwForm.subject, due_date: hwForm.due_date,
         });
-        if (error) showToast("❌ 생성 실패: " + error.message);
-        else { showToast("✅ 숙제가 생성되었습니다!"); setHwForm({ title: "", description: "", subject: "C언어", due_date: "" }); fetchAll(); }
+        if (error) showToast("✗ 생성 실패: " + error.message);
+        else { showToast("✓ 숙제가 생성되었습니다!"); setHwForm({ title: "", description: "", subject: "C언어", due_date: "" }); fetchAll(); }
     };
 
     const createAnnouncement = async () => {
@@ -100,20 +100,20 @@ export default function AdminPage() {
         const { error } = await supabase.from("announcements").insert({
             title: announcement.title, content: announcement.content, author_id: user?.id,
         });
-        if (error) showToast("❌ 공지 생성 실패");
-        else { showToast("✅ 공지사항이 등록되었습니다!"); setAnnouncement({ title: "", content: "" }); fetchAll(); }
+        if (error) showToast("✗ 공지 생성 실패");
+        else { showToast("✓ 공지사항이 등록되었습니다!"); setAnnouncement({ title: "", content: "" }); fetchAll(); }
     };
 
     const deleteHomework = async (id: string) => {
         if (!confirm("정말 삭제하시겠습니까?")) return;
         await supabase.from("homework").delete().eq("id", id);
-        showToast("🗑️ 숙제가 삭제되었습니다"); fetchAll();
+        showToast("× 숙제가 삭제되었습니다"); fetchAll();
     };
 
     const toggleUserRole = async (userId: string, currentRole: string) => {
         const newRole = currentRole === "admin" ? "student" : "admin";
         await supabase.from("profiles").update({ role: newRole }).eq("id", userId);
-        showToast(`✅ 역할이 ${newRole === "admin" ? "관리자" : "학생"}(으)로 변경되었습니다`);
+        showToast(`✓ 역할이 ${newRole === "admin" ? "관리자" : "학생"}(으)로 변경되었습니다`);
         fetchAll();
     };
 
@@ -254,7 +254,7 @@ export default function AdminPage() {
                                 background: "linear-gradient(135deg, #f59e0b, #ef4444)",
                                 display: "flex", alignItems: "center", justifyContent: "center",
                                 fontSize: 20, flexShrink: 0,
-                            }}>📚</div>
+                            }}></div>
                             <div style={{ flex: 1 }}>
                                 <div style={{ fontSize: 14, fontWeight: 700, color: "#0f172a" }}>{c.title}</div>
                                 <div style={{ fontSize: 12, color: "#94a3b8" }}>{c.description?.slice(0, 40)}</div>
@@ -433,15 +433,15 @@ export default function AdminPage() {
                             ))}
                             <div style={{ flex: 1 }} />
                             <button onClick={async () => {
-                                if (!matForm.title || !matForm.file_url) { showToast("❌ 제목과 URL을 입력해주세요"); return; }
+                                if (!matForm.title || !matForm.file_url) { showToast("✗ 제목과 URL을 입력해주세요"); return; }
                                 const { error } = await supabase.from("study_materials").insert({
                                     title: matForm.title, description: matForm.description,
                                     file_url: matForm.file_url, file_type: matForm.file_type,
                                     course_id: matForm.course_id, created_by: user?.id,
                                 });
-                                if (error) showToast("❌ 등록 실패: " + error.message);
+                                if (error) showToast("✗ 등록 실패: " + error.message);
                                 else {
-                                    showToast("✅ 수업자료가 등록되었습니다!");
+                                    showToast("✓ 수업자료가 등록되었습니다!");
                                     setMatForm({ title: "", description: "", file_url: "", file_type: "link", course_id: "" });
                                     fetchAll();
                                 }
@@ -491,7 +491,7 @@ export default function AdminPage() {
                                     <button onClick={async () => {
                                         if (!confirm("정말 삭제하시겠습니까?")) return;
                                         await supabase.from("study_materials").delete().eq("id", m.id);
-                                        showToast("🗑️ 자료가 삭제되었습니다"); fetchAll();
+                                        showToast("× 자료가 삭제되었습니다"); fetchAll();
                                     }} style={{
                                         padding: "6px 12px", borderRadius: 8, border: "none",
                                         background: "#fee2e2", color: "#dc2626", fontSize: 11, fontWeight: 700, cursor: "pointer",

@@ -6,16 +6,50 @@ import Link from "next/link";
 
 /*
   Contact — Coddy 스플릿 스크린 패턴 + 코딩쏙 브랜드
-  - 왼쪽: 정보 + 소셜 + 장점 카드
+  - 왼쪽: 정보 + 소셜 + 장점 카드 (SVG 아이콘)
   - 오른쪽: 문의 폼 카드 (16px radius)
   - 다크 섹션 배경 (Coddy 그라데이션)
 */
 
 const BENEFITS = [
-    { icon: "🎯", title: "1:1 맞춤 커리큘럼" },
-    { icon: "👨‍💻", title: "현직 IT 전문가 강사" },
-    { icon: "📊", title: "주간 학습 리포트" },
-    { icon: "🎁", title: "무료 체험 수업" },
+    {
+        title: "1:1 맞춤 커리큘럼",
+        icon: (
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" stroke="#EC5212" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                <polyline points="22 4 12 14.01 9 11.01" stroke="#EC5212" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+        ),
+    },
+    {
+        title: "현직 IT 전문가 강사",
+        icon: (
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" stroke="#EC5212" strokeWidth="1.5" strokeLinecap="round" />
+                <circle cx="12" cy="7" r="4" stroke="#EC5212" strokeWidth="1.5" />
+            </svg>
+        ),
+    },
+    {
+        title: "주간 학습 리포트",
+        icon: (
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                <path d="M18 20V10M12 20V4M6 20v-6" stroke="#EC5212" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+        ),
+    },
+    {
+        title: "무료 체험 수업",
+        icon: (
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                <path d="M20 12v10H4V12" stroke="#EC5212" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                <path d="M2 7h20v5H2V7z" stroke="#EC5212" strokeWidth="1.5" strokeLinejoin="round" />
+                <path d="M12 22V7" stroke="#EC5212" strokeWidth="1.5" />
+                <path d="M12 7c-1.5-2-3.5-3-5-3s-2.5 1-2 3" stroke="#EC5212" strokeWidth="1.5" strokeLinecap="round" />
+                <path d="M12 7c1.5-2 3.5-3 5-3s2.5 1 2 3" stroke="#EC5212" strokeWidth="1.5" strokeLinecap="round" />
+            </svg>
+        ),
+    },
 ];
 
 export default function Contact() {
@@ -104,7 +138,7 @@ export default function Contact() {
                                         border: "1px solid rgba(255,255,255,0.06)",
                                     }}
                                 >
-                                    <span style={{ fontSize: 22 }}>{b.icon}</span>
+                                    <span style={{ display: "flex", flexShrink: 0 }}>{b.icon}</span>
                                     <span style={{ fontSize: 14, fontWeight: 600, color: "rgba(255,255,255,0.8)" }}>{b.title}</span>
                                 </motion.div>
                             ))}
@@ -119,7 +153,8 @@ export default function Contact() {
                                 fontSize: 14, fontWeight: 700,
                                 boxShadow: "0 4px 16px rgba(236,82,18,0.4)",
                             }}>
-                                📞 010-7566-7229
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                                010-7566-7229
                             </Link>
                             <a href="https://blog.naver.com/codingssok" target="_blank" rel="noopener noreferrer" style={{
                                 display: "flex", alignItems: "center", gap: 6,
@@ -128,7 +163,8 @@ export default function Contact() {
                                 textDecoration: "none", fontSize: 14, fontWeight: 600,
                                 border: "1px solid rgba(255,255,255,0.06)",
                             }}>
-                                📝 네이버 블로그
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M12 20h9M16.5 3.5a2.12 2.12 0 013 3L7 19l-4 1 1-4L16.5 3.5z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                                네이버 블로그
                             </a>
                         </div>
                     </motion.div>
@@ -147,8 +183,12 @@ export default function Contact() {
                             boxShadow: "0 20px 60px rgba(0,0,0,0.3)",
                         }}
                     >
-                        <h3 style={{ fontSize: 20, fontWeight: 700, color: "#fff", marginBottom: 8 }}>
-                            🌸 무료 체험 상담
+                        <h3 style={{ fontSize: 20, fontWeight: 700, color: "#fff", marginBottom: 8, display: "flex", alignItems: "center", gap: 10 }}>
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" stroke="#EC5212" strokeWidth="1.5" strokeLinejoin="round" />
+                                <path d="M9 12l2 2 4-4" stroke="#EC5212" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                            </svg>
+                            무료 체험 상담
                         </h3>
                         <p style={{ fontSize: 14, color: "rgba(255,255,255,0.5)", marginBottom: 24, lineHeight: 1.6 }}>
                             아이의 코딩 적성에 맞는 최적의 트랙을 추천해 드립니다.
@@ -216,8 +256,13 @@ export default function Contact() {
                             fontFamily: "inherit",
                             boxShadow: "0 4px 20px rgba(236,82,18,0.4)",
                             transition: "all 0.2s",
+                            display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
                         }}>
-                            🎯 무료 체험 신청하기
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                                <polyline points="22 4 12 14.01 9 11.01" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                            </svg>
+                            무료 체험 신청하기
                         </button>
 
                         <p style={{

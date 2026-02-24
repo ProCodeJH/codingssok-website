@@ -27,14 +27,14 @@ const RARITY = {
 };
 
 const ACHIEVEMENT_DEFS = [
-    { id: "1", emoji: "🎯", name: "첫 번째 컴파일", description: "처음으로 코드를 컴파일했습니다", rarity: "common" as const, maxProgress: 1, xp: 50, statKey: "compileCount" },
-    { id: "2", emoji: "📝", name: "100줄 작성", description: "총 100줄의 코드를 작성했습니다", rarity: "common" as const, maxProgress: 100, xp: 100, statKey: "totalLines" },
-    { id: "3", emoji: "🔥", name: "컴파일 10회", description: "10번 컴파일을 달성했습니다", rarity: "rare" as const, maxProgress: 10, xp: 200, statKey: "compileCount" },
-    { id: "4", emoji: "📚", name: "500줄 작성", description: "총 500줄의 코드를 작성했습니다", rarity: "rare" as const, maxProgress: 500, xp: 300, statKey: "totalLines" },
+    { id: "1", emoji: "◎", name: "첫 번째 컴파일", description: "처음으로 코드를 컴파일했습니다", rarity: "common" as const, maxProgress: 1, xp: 50, statKey: "compileCount" },
+    { id: "2", emoji: "", name: "100줄 작성", description: "총 100줄의 코드를 작성했습니다", rarity: "common" as const, maxProgress: 100, xp: 100, statKey: "totalLines" },
+    { id: "3", emoji: "", name: "컴파일 10회", description: "10번 컴파일을 달성했습니다", rarity: "rare" as const, maxProgress: 10, xp: 200, statKey: "compileCount" },
+    { id: "4", emoji: "", name: "500줄 작성", description: "총 500줄의 코드를 작성했습니다", rarity: "rare" as const, maxProgress: 500, xp: 300, statKey: "totalLines" },
     { id: "5", emoji: "⭐", name: "챌린지 5개 완료", description: "5개의 챌린지를 완료했습니다", rarity: "epic" as const, maxProgress: 5, xp: 500, statKey: "challengesCompleted" },
-    { id: "6", emoji: "🧘", name: "집중 세션 3회", description: "집중 모드를 3회 완료했습니다", rarity: "epic" as const, maxProgress: 3, xp: 400, statKey: "focusSessions" },
-    { id: "7", emoji: "👑", name: "마스터 프로그래머", description: "모든 챌린지 20개를 완료했습니다", rarity: "legendary" as const, maxProgress: 20, xp: 1000, statKey: "challengesCompleted" },
-    { id: "8", emoji: "💎", name: "컴파일 100회", description: "100번 컴파일을 달성했습니다", rarity: "legendary" as const, maxProgress: 100, xp: 2000, statKey: "compileCount" },
+    { id: "6", emoji: "", name: "집중 세션 3회", description: "집중 모드를 3회 완료했습니다", rarity: "epic" as const, maxProgress: 3, xp: 400, statKey: "focusSessions" },
+    { id: "7", emoji: "", name: "마스터 프로그래머", description: "모든 챌린지 20개를 완료했습니다", rarity: "legendary" as const, maxProgress: 20, xp: 1000, statKey: "challengesCompleted" },
+    { id: "8", emoji: "", name: "컴파일 100회", description: "100번 컴파일을 달성했습니다", rarity: "legendary" as const, maxProgress: 100, xp: 2000, statKey: "compileCount" },
 ];
 
 export default function Achievements({ onClose, stats }: AchievementsProps) {
@@ -58,7 +58,7 @@ export default function Achievements({ onClose, stats }: AchievementsProps) {
     return (
         <div style={{ height: "100%", display: "flex", flexDirection: "column", background: "#1e1c1a", color: "#f5f0e8" }}>
             <div style={{ padding: "14px 16px", borderBottom: "1px solid #3a3632", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                <span style={{ fontSize: 14, fontWeight: 800 }}>🏆 도전과제</span>
+                <span style={{ fontSize: 14, fontWeight: 800 }}> 도전과제</span>
                 <button onClick={onClose} style={{ background: "none", border: "none", color: "#b0a898", fontSize: 16, cursor: "pointer" }}>✕</button>
             </div>
 
@@ -80,7 +80,7 @@ export default function Achievements({ onClose, stats }: AchievementsProps) {
 
             {/* Filters */}
             <div style={{ padding: "4px 12px 10px", display: "flex", gap: 4, flexWrap: "wrap" }}>
-                {[{ k: "all", l: "전체" }, { k: "unlocked", l: "✅ 달성" }, { k: "locked", l: "🔒 미달성" }].map(f => (
+                {[{ k: "all", l: "전체" }, { k: "unlocked", l: "✓ 달성" }, { k: "locked", l: " 미달성" }].map(f => (
                     <button key={f.k} onClick={() => setFilter(f.k)} style={{
                         padding: "4px 10px", borderRadius: 12, border: "none", fontSize: 10, fontWeight: 600, cursor: "pointer",
                         background: filter === f.k ? "#EC5212" : "#2d2a26", color: filter === f.k ? "#fff" : "#b0a898",
@@ -111,7 +111,7 @@ export default function Achievements({ onClose, stats }: AchievementsProps) {
                                 </div>
                                 <div style={{ textAlign: "right", flexShrink: 0 }}>
                                     <div style={{ fontSize: 12, fontWeight: 700, color: "#FCAD00" }}>+{ach.xp} XP</div>
-                                    {unlocked && <div style={{ fontSize: 9, color: "#22c55e", marginTop: 2 }}>✅ 달성</div>}
+                                    {unlocked && <div style={{ fontSize: 9, color: "#22c55e", marginTop: 2 }}>✓ 달성</div>}
                                 </div>
                             </div>
                             {/* Progress Bar */}

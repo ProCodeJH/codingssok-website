@@ -12,7 +12,7 @@ interface CheatSection { id: string; title: string; icon: string; items: CheatIt
 
 const sections: CheatSection[] = [
     {
-        id: "types", title: "자료형", icon: "📦", items: [
+        id: "types", title: "자료형", icon: "", items: [
             { code: "int a = 10;", desc: "정수형 (4bytes, -2^31 ~ 2^31-1)" },
             { code: "float f = 3.14f;", desc: "실수형 (4bytes, 소수점 6~7자리)" },
             { code: "double d = 3.14159;", desc: "배정밀도 실수 (8bytes, 15~16자리)" },
@@ -23,7 +23,7 @@ const sections: CheatSection[] = [
         ]
     },
     {
-        id: "io", title: "입출력", icon: "📝", items: [
+        id: "io", title: "입출력", icon: "", items: [
             { code: 'printf("Hello %s\\n", name);', desc: "서식 출력 (%d, %f, %s, %c, %x)" },
             { code: 'scanf("%d", &num);', desc: "서식 입력 (주소 연산자 & 필수)" },
             { code: "putchar('A');", desc: "문자 1개 출력" },
@@ -33,7 +33,7 @@ const sections: CheatSection[] = [
         ]
     },
     {
-        id: "control", title: "제어문", icon: "🔄", items: [
+        id: "control", title: "제어문", icon: "↻", items: [
             { code: "if (a > b) { ... } else if (...) { ... } else { ... }", desc: "조건문" },
             { code: "switch (val) { case 1: ...; break; default: ...; }", desc: "다중 분기" },
             { code: "for (int i = 0; i < n; i++) { ... }", desc: "반복문 (초기;조건;증감)" },
@@ -43,7 +43,7 @@ const sections: CheatSection[] = [
         ]
     },
     {
-        id: "pointer", title: "포인터", icon: "👆", items: [
+        id: "pointer", title: "포인터", icon: "", items: [
             { code: "int *p = &a;", desc: "포인터 선언 및 주소 대입" },
             { code: "*p = 42;", desc: "역참조로 값 변경" },
             { code: "int arr[] = {1,2,3}; int *p = arr;", desc: "배열과 포인터 관계" },
@@ -54,7 +54,7 @@ const sections: CheatSection[] = [
         ]
     },
     {
-        id: "struct", title: "구조체", icon: "🏗️", items: [
+        id: "struct", title: "구조체", icon: "", items: [
             { code: "struct Point { int x, y; };", desc: "구조체 정의" },
             { code: "struct Point p = {10, 20};", desc: "구조체 초기화" },
             { code: "p.x = 30;", desc: "멤버 접근 (dot)" },
@@ -63,7 +63,7 @@ const sections: CheatSection[] = [
         ]
     },
     {
-        id: "string", title: "문자열", icon: "📄", items: [
+        id: "string", title: "문자열", icon: "", items: [
             { code: 'char s[] = "Hello";', desc: "문자열 초기화 (배열)" },
             { code: "strlen(s)", desc: "문자열 길이 (\\0 제외)" },
             { code: "strcpy(dst, src)", desc: "문자열 복사" },
@@ -73,7 +73,7 @@ const sections: CheatSection[] = [
         ]
     },
     {
-        id: "file", title: "파일 I/O", icon: "💾", items: [
+        id: "file", title: "파일 I/O", icon: "", items: [
             { code: 'FILE *fp = fopen("data.txt", "r");', desc: "파일 열기 (r/w/a/rb/wb)" },
             { code: "fclose(fp);", desc: "파일 닫기" },
             { code: 'fprintf(fp, "%d", num);', desc: "파일에 서식 출력" },
@@ -83,7 +83,7 @@ const sections: CheatSection[] = [
         ]
     },
     {
-        id: "preprocessor", title: "전처리기", icon: "⚙️", items: [
+        id: "preprocessor", title: "전처리기", icon: "", items: [
             { code: "#include <stdio.h>", desc: "시스템 헤더 포함" },
             { code: '#include "myheader.h"', desc: "사용자 헤더 포함" },
             { code: "#define PI 3.14159", desc: "매크로 상수 정의" },
@@ -114,13 +114,13 @@ export default function CheatSheet({ onClose }: { onClose: () => void }) {
         <div style={{ height: "100%", display: "flex", flexDirection: "column", background: "#1e1c1a", color: "#f5f0e8" }}>
             {/* Header */}
             <div style={{ padding: "14px 16px", borderBottom: "1px solid #3a3632", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                <span style={{ fontSize: 14, fontWeight: 800 }}>📋 C언어 치트시트</span>
+                <span style={{ fontSize: 14, fontWeight: 800 }}>≡ C언어 치트시트</span>
                 <button onClick={onClose} style={{ background: "none", border: "none", color: "#b0a898", fontSize: 16, cursor: "pointer" }}>✕</button>
             </div>
 
             {/* Search */}
             <div style={{ padding: "8px 12px" }}>
-                <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="🔍 검색..." style={{
+                <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="⌕ 검색..." style={{
                     width: "100%", padding: "8px 12px", borderRadius: 8, border: "1px solid #3a3632",
                     background: "#252320", color: "#f5f0e8", fontSize: 12, outline: "none",
                 }} />
@@ -149,7 +149,7 @@ export default function CheatSheet({ onClose }: { onClose: () => void }) {
                                             <button onClick={() => handleCopy(item.code)} style={{
                                                 background: "none", border: "none", cursor: "pointer", fontSize: 12,
                                                 color: copied === item.code ? "#22c55e" : "#b0a898", marginLeft: 8, flexShrink: 0,
-                                            }}>{copied === item.code ? "✅" : "📋"}</button>
+                                            }}>{copied === item.code ? "✓" : "≡"}</button>
                                         </div>
                                         <div style={{ fontSize: 11, color: "#b0a898", marginTop: 4 }}>{item.desc}</div>
                                     </div>

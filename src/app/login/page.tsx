@@ -148,7 +148,7 @@ export default function LoginPage() {
               display: "block", fontSize: 13, fontWeight: 600, color: "#374151",
               marginBottom: 8, marginLeft: 4,
             }}>
-              👤 학생 이름
+              <span style={{ display: "inline-flex", alignItems: "center", gap: 4 }}><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" /><circle cx="12" cy="7" r="4" stroke="currentColor" strokeWidth="1.5" /></svg> 학생 이름</span>
             </label>
             <div style={{ position: "relative" }}>
               <div style={{
@@ -185,7 +185,7 @@ export default function LoginPage() {
               display: "block", fontSize: 13, fontWeight: 600, color: "#374151",
               marginBottom: 8, marginLeft: 4,
             }}>
-              🎂 생년월일
+              <span style={{ display: "inline-flex", alignItems: "center", gap: 4 }}><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M20 21v-8a2 2 0 00-2-2H6a2 2 0 00-2 2v8" stroke="currentColor" strokeWidth="1.5" /><path d="M4 16h16" stroke="currentColor" strokeWidth="1.5" /><path d="M12 7a3 3 0 100-6 3 3 0 000 6z" stroke="currentColor" strokeWidth="1.5" /></svg> 생년월일</span>
             </label>
             <div style={{ display: "flex", gap: 8 }}>
               <select

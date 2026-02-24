@@ -119,7 +119,7 @@ export default function HomeworkPage() {
             {/* Header */}
             <div>
                 <h1 style={{ fontSize: 24, fontWeight: 800, color: "#0f172a", letterSpacing: "-0.025em" }}>
-                    <span style={{ marginRight: 8 }}>📝</span>숙제 & 노트
+                    <span style={{ marginRight: 8 }}></span>숙제 & 노트
                 </h1>
                 <p style={{ fontSize: 14, color: "#64748b", marginTop: 4 }}>숙제 확인·제출, 수업 노트 관리</p>
             </div>
@@ -141,7 +141,7 @@ export default function HomeworkPage() {
                             boxShadow: tab === t ? "0 1px 3px rgba(0,0,0,0.06)" : "none",
                         }}
                     >
-                        {t === "homework" ? "📋 숙제" : "📓 수업 노트"}
+                        {t === "homework" ? "≡ 숙제" : " 수업 노트"}
                     </motion.button>
                 ))}
             </div>
@@ -156,7 +156,7 @@ export default function HomeworkPage() {
                             textAlign: "center", padding: "60px 24px", borderRadius: 20, ...glassCard,
                             border: "2px dashed #e2e8f0",
                         }}>
-                            <div style={{ fontSize: 64, marginBottom: 16 }}>📭</div>
+                            <div style={{ fontSize: 64, marginBottom: 16 }}></div>
                             <h3 style={{ fontSize: 18, fontWeight: 700, color: "#0f172a", marginBottom: 8 }}>아직 배정된 숙제가 없어요!</h3>
                             <p style={{ fontSize: 14, color: "#64748b", lineHeight: 1.6 }}>
                                 선생님이 새 숙제를 등록하면<br />여기에 자동으로 나타납니다.
@@ -190,7 +190,7 @@ export default function HomeworkPage() {
                                         <span style={{
                                             padding: "8px 16px", borderRadius: 12, fontSize: 12, fontWeight: 700,
                                             background: "#dcfce7", color: "#15803d", border: "1px solid #bbf7d0", whiteSpace: "nowrap",
-                                        }}>✅ 제출 완료</span>
+                                        }}>✓ 제출 완료</span>
                                     ) : (
                                         <motion.button onClick={() => submitHomework(hw.id)}
                                             whileHover={{ scale: 1.05, boxShadow: "0 6px 20px rgba(14,165,233,0.4)" }}
@@ -260,7 +260,7 @@ export default function HomeworkPage() {
                                     boxShadow: saving ? "none" : "0 4px 14px rgba(14,165,233,0.3)",
                                 }}
                             >
-                                {saving ? "저장 중..." : editingNoteId ? "✏️ 수정" : "💾 저장"}
+                                {saving ? "저장 중..." : editingNoteId ? " 수정" : " 저장"}
                             </button>
                         </div>
                     </div>
@@ -273,10 +273,10 @@ export default function HomeworkPage() {
                             textAlign: "center", padding: "60px 24px", borderRadius: 20, ...glassCard,
                             border: "2px dashed #e2e8f0",
                         }}>
-                            <div style={{ fontSize: 64, marginBottom: 16 }}>📓</div>
+                            <div style={{ fontSize: 64, marginBottom: 16 }}></div>
                             <h3 style={{ fontSize: 18, fontWeight: 700, color: "#0f172a", marginBottom: 8 }}>첫 노트를 작성해보세요!</h3>
                             <p style={{ fontSize: 14, color: "#64748b", lineHeight: 1.6 }}>
-                                위 입력칸에서 제목, 내용, 태그를 입력하고<br />💾 저장 버튼을 눌러주세요.
+                                위 입력칸에서 제목, 내용, 태그를 입력하고<br /> 저장 버튼을 눌러주세요.
                             </p>
                         </div>
                     ) : (
@@ -291,8 +291,8 @@ export default function HomeworkPage() {
                                     <h3 style={{ fontSize: 16, fontWeight: 700, color: "#0f172a" }}>{note.title}</h3>
                                     <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
                                         <span style={{ fontSize: 12, color: "#94a3b8" }}>{new Date(note.created_at).toLocaleDateString("ko-KR")}</span>
-                                        <button onClick={() => startEditNote(note)} style={{ border: "none", background: "none", cursor: "pointer", fontSize: 14 }}>✏️</button>
-                                        <button onClick={() => deleteNote(note.id)} style={{ border: "none", background: "none", cursor: "pointer", fontSize: 14 }}>🗑️</button>
+                                        <button onClick={() => startEditNote(note)} style={{ border: "none", background: "none", cursor: "pointer", fontSize: 14 }}></button>
+                                        <button onClick={() => deleteNote(note.id)} style={{ border: "none", background: "none", cursor: "pointer", fontSize: 14 }}>×</button>
                                     </div>
                                 </div>
                                 <p style={{ fontSize: 14, color: "#475569", lineHeight: 1.6, marginBottom: 8, whiteSpace: "pre-wrap" }}>{note.content}</p>

@@ -148,7 +148,7 @@ export default function ProfilePage() {
                             }}>{tierInfo.icon} {tierInfo.nameKo}</span>
                             <span style={{ fontSize: 13, color: "#64748b" }}>Lv.{progress?.level || 1}</span>
                             {profile?.role === "admin" && (
-                                <span style={{ padding: "4px 10px", borderRadius: 8, fontSize: 11, fontWeight: 700, background: "#fef2f2", color: "#dc2626" }}>🔧 관리자</span>
+                                <span style={{ padding: "4px 10px", borderRadius: 8, fontSize: 11, fontWeight: 700, background: "#fef2f2", color: "#dc2626" }}> 관리자</span>
                             )}
                         </div>
                         <div style={{ display: "flex", gap: 20, marginTop: 12 }}>
@@ -177,9 +177,9 @@ export default function ProfilePage() {
             {/* 탭 */}
             <div style={{ display: "flex", gap: 8 }}>
                 {[
-                    { key: "info" as const, label: "📝 프로필 편집" },
-                    { key: "followers" as const, label: `👥 팔로워 (${followers.length})` },
-                    { key: "following" as const, label: `💫 팔로잉 (${following.length})` },
+                    { key: "info" as const, label: " 프로필 편집" },
+                    { key: "followers" as const, label: `⊞ 팔로워 (${followers.length})` },
+                    { key: "following" as const, label: ` 팔로잉 (${following.length})` },
                 ].map((t) => (
                     <motion.button key={t.key} onClick={() => setTab(t.key)}
                         whileHover={{ scale: 1.05 }}
@@ -239,11 +239,11 @@ export default function ProfilePage() {
             {(tab === "followers" || tab === "following") && (
                 <div style={{ ...glassCard, borderRadius: 24, padding: 28 }}>
                     <h3 style={{ fontWeight: 800, fontSize: 18, color: "#0f172a", marginBottom: 16 }}>
-                        {tab === "followers" ? "👥 팔로워" : "💫 팔로잉"}
+                        {tab === "followers" ? "⊞ 팔로워" : " 팔로잉"}
                     </h3>
                     {(tab === "followers" ? followers : following).length === 0 ? (
                         <div style={{ textAlign: "center", padding: 40, color: "#94a3b8" }}>
-                            <span style={{ fontSize: 40, display: "block", marginBottom: 12 }}>👻</span>
+                            <span style={{ fontSize: 40, display: "block", marginBottom: 12 }}></span>
                             아직 {tab === "followers" ? "팔로워가" : "팔로잉이"} 없어요
                         </div>
                     ) : (

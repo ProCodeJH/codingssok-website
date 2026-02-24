@@ -282,7 +282,7 @@ export default function TierPage() {
                         background: passed ? "linear-gradient(90deg, #10b981, #059669)" : "linear-gradient(90deg, #ef4444, #dc2626)",
                         boxShadow: passed ? "0 0 20px rgba(16,185,129,0.4)" : "0 0 20px rgba(239,68,68,0.4)",
                     }} />
-                    <div style={{ fontSize: 72, marginBottom: 20 }}>{passed ? "🎉" : "😢"}</div>
+                    <div style={{ fontSize: 72, marginBottom: 20 }}>{passed ? "" : ""}</div>
                     <h2 style={{ fontWeight: 900, fontSize: 28, color: "#0f172a", marginBottom: 8 }}>
                         {examMode === "placement" ? "배치 완료!" : passed ? "승급 성공!" : "아쉽네요..."}
                     </h2>
@@ -426,7 +426,7 @@ export default function TierPage() {
                                     boxShadow: "0 0 20px -5px rgba(19,73,236,0.5)", transition: "all 0.2s",
                                 }}
                             >
-                                {loading ? "준비 중..." : canPlacement ? "🎯 배치고사 시작" : `⬆️ ${getTierInfo(nextTier!).nameKo} 승급심사`}
+                                {loading ? "준비 중..." : canPlacement ? "◎ 배치고사 시작" : `↑ ${getTierInfo(nextTier!).nameKo} 승급심사`}
                                 <span className="material-symbols-outlined" style={{ fontSize: 20 }}>arrow_forward</span>
                             </button>
                         )}
@@ -436,7 +436,7 @@ export default function TierPage() {
                                 background: "#f1f5f9", textAlign: "center",
                                 fontSize: 15, fontWeight: 600, color: "#94a3b8",
                             }}>
-                                🔒 {progress?.placement_done ? "현재 최고 티어에 도달했거나 승급 준비 중입니다" : `레벨 30 도달 시 배치고사 활성화 (Lv.${progress?.level || 1})`}
+                                 {progress?.placement_done ? "현재 최고 티어에 도달했거나 승급 준비 중입니다" : `레벨 30 도달 시 배치고사 활성화 (Lv.${progress?.level || 1})`}
                             </div>
                         )}
                         <p style={{ fontSize: 12, color: "#94a3b8", display: "flex", alignItems: "center", gap: 4 }}>

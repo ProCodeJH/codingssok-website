@@ -4,7 +4,7 @@ import { useStreak, getLastNDays } from "@/hooks/useStreak";
 
 /* ═══════════════════════════════════════
    스트릭 위젯 — 대시보드 상단 배치
-   🔥 연속일수 + 주간 히트맵 + 🧊 아이스
+   연속일수 + 주간 히트맵 + 아이스
    ═══════════════════════════════════════ */
 
 const DAYS_KO = ["일", "월", "화", "수", "목", "금", "토"];
@@ -26,7 +26,7 @@ export default function StreakWidget() {
                     transition={{ repeat: Infinity, duration: 1.5, ease: "easeInOut" }}
                     style={{ fontSize: 32 }}
                 >
-                    {streak.currentStreak > 0 ? "🔥" : "💤"}
+                    {streak.currentStreak > 0 ? <svg width="28" height="28" viewBox="0 0 24 24" fill="none"><path d="M12 22c-4-3-8-6.5-8-12a5 5 0 015-5 4.83 4.83 0 013 1 4.83 4.83 0 013-1 5 5 0 015 5c0 5.5-4 9-8 12z" fill="#EF4444" fillOpacity="0.8" stroke="#EF4444" strokeWidth="1" /></svg> : <svg width="28" height="28" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="#94a3b8" strokeWidth="1.5" /><path d="M9 16l.5-2.5L7 11l2.5-.5L12 8l2.5 2.5L17 11l-2.5 2.5L15 16l-3-1.5L9 16z" fill="#94a3b8" fillOpacity="0.3" /></svg>}
                 </motion.span>
                 <div style={{ flex: 1 }}>
                     <div style={{ fontWeight: 800, fontSize: 22, color: "#1e1b4b", letterSpacing: "-0.03em" }}>
@@ -72,7 +72,7 @@ export default function StreakWidget() {
                                     fontSize: 14,
                                 }}
                             >
-                                {isActive ? "✓" : isFrozen ? "🧊" : ""}
+                                {isActive ? "✓" : isFrozen ? "❄" : ""}
                             </motion.div>
                         </div>
                     );
@@ -89,7 +89,7 @@ export default function StreakWidget() {
                         display: "flex", alignItems: "center", gap: 10, marginBottom: 12,
                     }}
                 >
-                    <span style={{ fontSize: 18 }}>⚠️</span>
+                    <span style={{ fontSize: 18 }}></span>
                     <div style={{ flex: 1 }}>
                         <div style={{ fontSize: 12, fontWeight: 700, color: "#92400E" }}>스트릭 위험!</div>
                         <div style={{ fontSize: 11, color: "#B45309" }}>오늘 학습하지 않으면 스트릭이 초기화됩니다.</div>
@@ -104,7 +104,7 @@ export default function StreakWidget() {
                                 whiteSpace: "nowrap",
                             }}
                         >
-                            🧊 사용 ({streak.iceItems})
+                            ❄ 사용 ({streak.iceItems})
                         </button>
                     )}
                 </motion.div>
@@ -115,7 +115,7 @@ export default function StreakWidget() {
                 display: "flex", alignItems: "center", gap: 8,
                 padding: "8px 12px", borderRadius: 10, background: "#f8fafc",
             }}>
-                <span style={{ fontSize: 16 }}>🧊</span>
+                <span style={{ fontSize: 16 }}>❄</span>
                 <span style={{ fontSize: 12, color: "#64748b", fontWeight: 600 }}>
                     아이스 보유: {streak.iceItems}개
                 </span>

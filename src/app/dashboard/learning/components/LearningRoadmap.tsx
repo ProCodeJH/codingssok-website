@@ -93,7 +93,7 @@ export function LearningRoadmap({ nodes, onNodeClick }: Props) {
                                     />
                                 )}
                                 {node.status === "locked" && (
-                                    <div style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 20 }}>🔒</div>
+                                    <div style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 20 }}></div>
                                 )}
                             </motion.div>
 

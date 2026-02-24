@@ -56,9 +56,9 @@ const DIFF_STYLES: Record<string, { bg: string; color: string; label: string }> 
 
 // Leaderboard
 const LEADERBOARD = [
-    { rank: 1, name: "박지호", solved: 12, avgChars: 35, xp: 2100, badge: "🥇" },
-    { rank: 2, name: "김민수", solved: 10, avgChars: 42, xp: 1250, badge: "🥈" },
-    { rank: 3, name: "정하은", solved: 8, avgChars: 48, xp: 950, badge: "🥉" },
+    { rank: 1, name: "박지호", solved: 12, avgChars: 35, xp: 2100, badge: "" },
+    { rank: 2, name: "김민수", solved: 10, avgChars: 42, xp: 1250, badge: "" },
+    { rank: 3, name: "정하은", solved: 8, avgChars: 48, xp: 950, badge: "" },
     { rank: 4, name: "이서연", solved: 6, avgChars: 55, xp: 780, badge: "" },
     { rank: 5, name: "최수아", solved: 3, avgChars: 70, xp: 350, badge: "" },
 ];
@@ -80,7 +80,7 @@ export default function CodeGolfPage() {
             <div style={{ marginBottom: 24 }}>
                 <Link href="/dashboard/learning" style={{ fontSize: 13, color: "#94a3b8", textDecoration: "none" }}>← 대시보드</Link>
                 <h1 style={{ fontSize: 26, fontWeight: 800, color: "#1e1b4b", marginTop: 8 }}>
-                    ⛳ 코드 골프 대회
+                     코드 골프 대회
                 </h1>
                 <p style={{ fontSize: 13, color: "#64748b", marginTop: 4 }}>
                     가장 짧은 코드로 문제를 풀어보세요! 글자 수가 적을수록 높은 점수!
@@ -120,7 +120,7 @@ export default function CodeGolfPage() {
                                     </div>
                                     <p style={{ fontSize: 12, color: "#64748b", marginBottom: 8, lineHeight: 1.5 }}>{problem.description}</p>
                                     <div style={{ display: "flex", alignItems: "center", gap: 12, fontSize: 11 }}>
-                                        <span style={{ color: "#059669", fontWeight: 700 }}>🏆 최소 {problem.bestScore}자</span>
+                                        <span style={{ color: "#059669", fontWeight: 700 }}> 최소 {problem.bestScore}자</span>
                                         <span style={{ color: "#94a3b8" }}>by {problem.bestPlayer}</span>
                                     </div>
                                 </motion.div>
@@ -148,7 +148,7 @@ export default function CodeGolfPage() {
                                             코드 작성 — {selectedProblem.title}
                                         </span>
                                         <span style={{ fontSize: 12, fontWeight: 700, color: code.length <= selectedProblem.bestScore ? "#34D399" : "#F59E0B" }}>
-                                            {code.length}자 {code.length <= selectedProblem.bestScore ? "🏆 신기록!" : ""}
+                                            {code.length}자 {code.length <= selectedProblem.bestScore ? " 신기록!" : ""}
                                         </span>
                                     </div>
                                     <div style={{ padding: "4px" }}>
@@ -184,7 +184,7 @@ export default function CodeGolfPage() {
                                                 cursor: code.trim() ? "pointer" : "default",
                                             }}
                                         >
-                                            {submitted ? "✅ 제출됨!" : "⛳ 제출"}
+                                            {submitted ? "✓ 제출됨!" : " 제출"}
                                         </button>
                                     </div>
                                 </div>
@@ -199,7 +199,7 @@ export default function CodeGolfPage() {
                     border: "1px solid #e2e8f0", position: "sticky", top: 20,
                 }}>
                     <h3 style={{ fontSize: 15, fontWeight: 700, color: "#1e1b4b", marginBottom: 16 }}>
-                        🏆 리더보드
+                         리더보드
                     </h3>
                     {LEADERBOARD.map((player, i) => (
                         <div key={player.rank} style={{
@@ -231,8 +231,8 @@ export default function CodeGolfPage() {
                         background: "linear-gradient(135deg, #EEF2FF, #F5F3FF)",
                         fontSize: 11, color: "#4F46E5", textAlign: "center", lineHeight: 1.6,
                     }}>
-                        🎁 <strong>보상</strong><br />
-                        🥇 500 XP · 🥈 300 XP · 🥉 200 XP
+                         <strong>보상</strong><br />
+                         500 XP ·  300 XP ·  200 XP
                     </div>
                 </div>
             </div>

@@ -19,7 +19,7 @@ const PODIUM_GRADS = [
     "linear-gradient(to top, #f59e0b, #fbbf24)",
     "linear-gradient(to top, #b45309, #d97706)",
 ];
-const PODIUM_MEDALS = ["🥈", "🥇", "🥉"];
+const PODIUM_MEDALS = ["", "", ""];
 
 export default function LeaderboardPage() {
     const { user } = useAuth();
@@ -70,14 +70,14 @@ export default function LeaderboardPage() {
         <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 12 }}>
                 <div>
-                    <h1 style={{ fontSize: 24, fontWeight: 900, color: "#0f172a", margin: 0 }}>🏆 리더보드</h1>
+                    <h1 style={{ fontSize: 24, fontWeight: 900, color: "#0f172a", margin: 0 }}> 리더보드</h1>
                     <p style={{ fontSize: 13, color: "#64748b" }}>누가 가장 열심히 학습하고 있을까요?</p>
                 </div>
                 <div style={{ display: "flex", gap: 6 }}>
                     {[
                         { key: "xp" as const, label: "⭐ 경험치" },
-                        { key: "streak" as const, label: "🔥 연속출석" },
-                        { key: "problems" as const, label: "✅ 문제수" },
+                        { key: "streak" as const, label: " 연속출석" },
+                        { key: "problems" as const, label: "✓ 문제수" },
                     ].map((t) => (
                         <motion.button key={t.key} onClick={() => setTab(t.key)}
                             whileHover={{ scale: 1.05 }}
@@ -170,7 +170,7 @@ export default function LeaderboardPage() {
                                         width: 28, textAlign: "center", fontSize: 14, fontWeight: 800,
                                         color: i < 3 ? "#f59e0b" : "#94a3b8",
                                     }}>
-                                        {i < 3 ? ["🥇", "🥈", "🥉"][i] : `#${i + 1}`}
+                                        {i < 3 ? ["", "", ""][i] : `#${i + 1}`}
                                     </span>
                                     <div style={{
                                         width: 36, height: 36, borderRadius: "50%", flexShrink: 0,

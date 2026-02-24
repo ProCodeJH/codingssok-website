@@ -7,7 +7,7 @@ import Image from "next/image";
 /*
   Events — 대회·공모전 타임라인 레이아웃
   *(yantra 좌우 교차 + heroines 이벤트 카드 + noah 스크롤 reveal)*
-  이미지↔텍스트 좌우 교차 배치 + 중앙 타임라인 라인
+  이미지텍스트 좌우 교차 배치 + 중앙 타임라인 라인
 */
 
 const events = [
@@ -17,7 +17,7 @@ const events = [
         desc: "코딩쏙 학생들이 한국정보올림피아드(KOI)에 참가하여 알고리즘 문제해결 능력을 증명했습니다.",
         date: "2025년 8월",
         location: "서울 코엑스",
-        badge: "🥇 금상 수상",
+        badge: "금상 수상",
         color: "#EC5212",
     },
     {
@@ -26,7 +26,7 @@ const events = [
         desc: "전국 단위 프로그래밍 경진대회에서 창의적인 소프트웨어 솔루션으로 두각을 나타냈습니다.",
         date: "2025년 11월",
         location: "대전 KAIST",
-        badge: "🏆 본선 진출",
+        badge: "본선 진출",
         color: "#77C6B3",
     },
     {
@@ -35,7 +35,7 @@ const events = [
         desc: "학생들의 창의적 프로젝트와 앱 개발 결과물을 발표하고 전문가 심사위원에게 인정받았습니다.",
         date: "2025년 12월",
         location: "온라인 개최",
-        badge: "🎖️ 우수상 수상",
+        badge: "우수상 수상",
         color: "#70A2E1",
     },
 ];
@@ -97,11 +97,12 @@ function EventContent({ event, align }: { event: typeof events[0]; align: "left"
     return (
         <div style={{ textAlign: align, padding: "clamp(16px, 2vw, 24px) 0" }}>
             <span style={{
-                display: "inline-block",
+                display: "inline-flex", alignItems: "center", gap: 6,
                 fontSize: 12, fontWeight: 700, color: "#fff",
                 background: event.color, padding: "4px 12px", borderRadius: 6,
                 marginBottom: 12, letterSpacing: "0.05em",
             }}>
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" fill="currentColor" opacity="0.3" /></svg>
                 {event.badge}
             </span>
             <h3 style={{ fontSize: "clamp(20px, 3vw, 26px)", fontWeight: 700, color: "#1a1a1a", marginBottom: 10, lineHeight: 1.2 }}>
@@ -111,8 +112,14 @@ function EventContent({ event, align }: { event: typeof events[0]; align: "left"
                 {event.desc}
             </p>
             <div style={{ display: "flex", gap: 16, fontSize: 13, color: "#999", justifyContent: align === "right" ? "flex-end" : "flex-start" }}>
-                <span>📅 {event.date}</span>
-                <span>📍 {event.location}</span>
+                <span style={{ display: "inline-flex", alignItems: "center", gap: 4 }}>
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><rect x="3" y="4" width="18" height="18" rx="2" stroke="currentColor" strokeWidth="1.5" /><path d="M16 2v4M8 2v4M3 10h18" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" /></svg>
+                    {event.date}
+                </span>
+                <span style={{ display: "inline-flex", alignItems: "center", gap: 4 }}>
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z" stroke="currentColor" strokeWidth="1.5" /><circle cx="12" cy="10" r="3" stroke="currentColor" strokeWidth="1.5" /></svg>
+                    {event.location}
+                </span>
             </div>
         </div>
     );

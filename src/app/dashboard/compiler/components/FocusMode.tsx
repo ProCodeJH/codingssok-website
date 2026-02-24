@@ -12,10 +12,10 @@ const QUOTES = [
 ];
 
 const AMBIENTS = [
-    { id: "night", name: "밤하늘", emoji: "🌙", bg: "radial-gradient(ellipse at 50% 0%, rgba(30,30,80,0.8), rgba(10,10,30,0.95))" },
-    { id: "forest", name: "숲", emoji: "🌲", bg: "radial-gradient(ellipse at 50% 100%, rgba(15,40,20,0.8), rgba(5,20,10,0.95))" },
-    { id: "ocean", name: "바다", emoji: "🌊", bg: "radial-gradient(ellipse at 50% 50%, rgba(10,30,60,0.8), rgba(5,15,35,0.95))" },
-    { id: "rain", name: "비", emoji: "🌧️", bg: "radial-gradient(ellipse at 50% 50%, rgba(15,20,30,0.8), rgba(8,12,20,0.95))" },
+    { id: "night", name: "밤하늘", emoji: "", bg: "radial-gradient(ellipse at 50% 0%, rgba(30,30,80,0.8), rgba(10,10,30,0.95))" },
+    { id: "forest", name: "숲", emoji: "", bg: "radial-gradient(ellipse at 50% 100%, rgba(15,40,20,0.8), rgba(5,20,10,0.95))" },
+    { id: "ocean", name: "바다", emoji: "", bg: "radial-gradient(ellipse at 50% 50%, rgba(10,30,60,0.8), rgba(5,15,35,0.95))" },
+    { id: "rain", name: "비", emoji: "", bg: "radial-gradient(ellipse at 50% 50%, rgba(15,20,30,0.8), rgba(8,12,20,0.95))" },
 ];
 
 const PRESETS = [
@@ -81,7 +81,7 @@ export function FocusMode({ isActive, onClose }: FocusModeProps) {
 
             {/* Session counter */}
             <div style={{ position: "absolute", top: 20, left: 20, fontSize: 12, color: "rgba(255,255,255,0.4)" }}>
-                🔥 세션: {sessions}
+                 세션: {sessions}
             </div>
 
             {/* Ambient selector */}
@@ -108,7 +108,7 @@ export function FocusMode({ isActive, onClose }: FocusModeProps) {
                 </svg>
                 <div style={{ position: "absolute", inset: 0, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
                     <div style={{ fontSize: 56, fontWeight: 300, color: "#fff", fontVariantNumeric: "tabular-nums", letterSpacing: "0.1em" }}>{formatTime()}</div>
-                    <div style={{ fontSize: 12, color: "rgba(255,255,255,0.3)", marginTop: 4 }}>{timerRunning ? "집중 중..." : timeLeft <= 0 ? "완료! 🎉" : "시작하세요"}</div>
+                    <div style={{ fontSize: 12, color: "rgba(255,255,255,0.3)", marginTop: 4 }}>{timerRunning ? "집중 중..." : timeLeft <= 0 ? "완료! " : "시작하세요"}</div>
                 </div>
             </div>
 
@@ -123,7 +123,7 @@ export function FocusMode({ isActive, onClose }: FocusModeProps) {
                 <button onClick={resetTimer} style={{
                     padding: "12px 20px", borderRadius: 12, border: "1px solid rgba(255,255,255,0.1)",
                     background: "rgba(0,0,0,0.2)", color: "rgba(255,255,255,0.6)", fontSize: 15, cursor: "pointer"
-                }}>🔄</button>
+                }}>↻</button>
             </div>
 
             {/* Presets */}

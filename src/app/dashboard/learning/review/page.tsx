@@ -34,7 +34,7 @@ export default function ReviewPage() {
     if (items.length === 0) {
         return (
             <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", minHeight: "60vh", gap: 16 }}>
-                <span style={{ fontSize: 72, opacity: 0.3 }}>🎉</span>
+                <span style={{ fontSize: 72, opacity: 0.3 }}></span>
                 <h2 style={{ fontSize: 22, fontWeight: 800, color: "#334155" }}>오답이 없습니다!</h2>
                 <p style={{ fontSize: 14, color: "#94a3b8" }}>퀴즈에서 틀린 문제가 자동으로 수집됩니다.</p>
                 <Link href="/dashboard/learning" style={{ color: "#4F46E5", fontWeight: 600, fontSize: 14, marginTop: 8 }}>
@@ -52,7 +52,7 @@ export default function ReviewPage() {
                     ← 학습 대시보드
                 </Link>
                 <h1 style={{ fontSize: 28, fontWeight: 800, color: "#1e1b4b", marginTop: 12, letterSpacing: "-0.03em" }}>
-                    📒 오답 노트
+                     오답 노트
                 </h1>
                 <p style={{ fontSize: 14, color: "#64748b", marginTop: 4 }}>
                     틀린 문제를 복습하고 완전히 이해하세요.
@@ -120,7 +120,7 @@ export default function ReviewPage() {
                                     width: 36, height: 36, borderRadius: 10, display: "flex", alignItems: "center", justifyContent: "center",
                                     background: w.mastered ? "#ecfdf5" : "#fef3c7", fontSize: 18,
                                 }}>
-                                    {w.mastered ? "✅" : "📝"}
+                                    {w.mastered ? "✓" : ""}
                                 </span>
                                 <div style={{ flex: 1, minWidth: 0 }}>
                                     <div style={{ fontSize: 14, fontWeight: 700, color: "#1e1b4b", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
@@ -172,19 +172,19 @@ export default function ReviewPage() {
                                                 {!showAnswer[w.id] ? (
                                                     <button onClick={() => { setShowAnswer(p => ({ ...p, [w.id]: true })); markReviewed(w.id); }}
                                                         style={{ padding: "8px 16px", borderRadius: 10, border: "none", background: "#4F46E5", color: "#fff", fontWeight: 700, fontSize: 12, cursor: "pointer" }}>
-                                                        💡 정답 보기
+                                                         정답 보기
                                                     </button>
                                                 ) : (
                                                     <>
                                                         {!w.mastered && (
                                                             <button onClick={() => markMastered(w.id)}
                                                                 style={{ padding: "8px 16px", borderRadius: 10, border: "none", background: "#34D399", color: "#fff", fontWeight: 700, fontSize: 12, cursor: "pointer" }}>
-                                                                ✅ 이해 완료
+                                                                ✓ 이해 완료
                                                             </button>
                                                         )}
                                                         <button onClick={() => removeItem(w.id)}
                                                             style={{ padding: "8px 16px", borderRadius: 10, border: "1px solid #fca5a5", background: "#fff", color: "#dc2626", fontWeight: 700, fontSize: 12, cursor: "pointer" }}>
-                                                            🗑 삭제
+                                                            × 삭제
                                                         </button>
                                                     </>
                                                 )}
@@ -200,7 +200,7 @@ export default function ReviewPage() {
 
             {filtered.length === 0 && (
                 <div style={{ textAlign: "center", padding: "40px 0" }}>
-                    <span style={{ fontSize: 48, opacity: 0.3 }}>{filter === "mastered" ? "📭" : "🎉"}</span>
+                    <span style={{ fontSize: 48, opacity: 0.3 }}>{filter === "mastered" ? "" : ""}</span>
                     <p style={{ fontSize: 14, color: "#94a3b8", marginTop: 12 }}>
                         {filter === "mastered" ? "아직 완료한 문제가 없습니다." : "복습할 문제가 없습니다!"}
                     </p>

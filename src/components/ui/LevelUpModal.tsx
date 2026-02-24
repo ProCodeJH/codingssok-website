@@ -100,7 +100,8 @@ export default function LevelUpModal({ level, onClose }: LevelUpModalProps) {
                     <div style={{
                         fontSize: 48, marginBottom: 8,
                         animation: "lvlup-burst 1s ease-out",
-                    }}>🎉</div>
+                        display: "flex", alignItems: "center", justifyContent: "center",
+                    }}><svg width="48" height="48" viewBox="0 0 24 24" fill="none"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 16.8l-6.2 4.5 2.4-7.4L2 9.4h7.6L12 2z" stroke="#fbbf24" strokeWidth="1.5" fill="#fbbf24" fillOpacity="0.3" /><circle cx="5" cy="5" r="1" fill="#f59e0b" /><circle cx="19" cy="4" r="1.5" fill="#ec4899" /><circle cx="20" cy="18" r="1" fill="#6366f1" /><circle cx="3" cy="17" r="1.5" fill="#10b981" /></svg></div>
 
                     <div style={{
                         fontSize: 16, fontWeight: 800, color: "#fbbf24",
@@ -125,7 +126,7 @@ export default function LevelUpModal({ level, onClose }: LevelUpModalProps) {
                         fontSize: 14, color: "rgba(255,255,255,0.7)",
                         marginTop: 16, fontWeight: 500,
                     }}>
-                        축하합니다! 새로운 레벨에 도달했어요 🚀
+                        축하합니다! 새로운 레벨에 도달했어요
                     </p>
                     <p style={{
                         fontSize: 11, color: "rgba(255,255,255,0.4)",

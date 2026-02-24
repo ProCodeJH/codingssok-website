@@ -112,7 +112,7 @@ export function ExecutionVisualizer({ code }: Props) {
         <div style={{ height: "100%", display: "flex", flexDirection: "column", overflow: "hidden" }}>
             <div style={{ padding: "12px 16px", borderBottom: `1px solid ${border}`, background: "rgba(34,197,94,0.06)" }}>
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                    <span style={{ fontSize: 13, fontWeight: 600 }}>▶️ 실행 시각화</span>
+                    <span style={{ fontSize: 13, fontWeight: 600 }}>▶ 실행 시각화</span>
                     <span style={{ fontSize: 10, color: "rgba(255,255,255,0.35)" }}>{steps.length > 0 ? `${current + 1} / ${steps.length}` : "0 steps"}</span>
                 </div>
             </div>
@@ -120,7 +120,7 @@ export function ExecutionVisualizer({ code }: Props) {
             {steps.length === 0 ? (
                 <div style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", color: "rgba(255,255,255,0.25)", fontSize: 12 }}>
                     <div style={{ textAlign: "center" }}>
-                        <div style={{ fontSize: 32, marginBottom: 8 }}>▶️</div>
+                        <div style={{ fontSize: 32, marginBottom: 8 }}>▶</div>
                         코드를 작성하면 실행 흐름을<br />단계별로 확인할 수 있습니다
                     </div>
                 </div>
@@ -146,7 +146,7 @@ export function ExecutionVisualizer({ code }: Props) {
                                 <div style={{ padding: 10, background: "rgba(34,197,94,0.1)", border: "1px solid rgba(34,197,94,0.2)", borderRadius: 8, marginBottom: 12 }}>
                                     <div style={{ fontSize: 10, color: "rgba(255,255,255,0.3)", marginBottom: 4 }}>Line {step.line}</div>
                                     <code style={{ fontSize: 12, color: "#a5d6ff", fontFamily: "monospace" }}>{step.code}</code>
-                                    <div style={{ fontSize: 11, color: "#86efac", marginTop: 6 }}>💡 {step.description}</div>
+                                    <div style={{ fontSize: 11, color: "#86efac", marginTop: 6 }}> {step.description}</div>
                                 </div>
 
                                 {/* Variables */}

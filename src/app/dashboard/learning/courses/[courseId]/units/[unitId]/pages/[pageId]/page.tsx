@@ -76,7 +76,7 @@ export default function LearningContentPage() {
         if (selectedAnswer === null) return;
         if (selectedAnswer === quiz.answer) {
             setQuizResult("correct");
-            // 🎉 Confetti celebration!
+            //  Confetti celebration!
             confetti({ particleCount: 200, spread: 80, origin: { y: 0.75 }, colors: ['#4F46E5', '#F59E0B', '#34D399', '#818CF8'] });
             if (user?.id) {
                 awardXP(user.id, XP_REWARDS.lesson_complete, "퀴즈 정답", "check_circle").then(r => {
@@ -140,7 +140,7 @@ export default function LearningContentPage() {
                 const isError = !!(data.compiler_error || data.program_error);
                 let outEl = wrapper?.querySelector(".lms-run-output") as HTMLDivElement;
                 if (!outEl) { outEl = document.createElement("div"); outEl.className = "lms-run-output"; wrapper?.appendChild(outEl); }
-                outEl.innerHTML = `<div class="status ${isError ? "error" : "success"}">${isError ? "❌ 에러" : "✅ 실행 완료"}</div><pre>${output}</pre>`;
+                outEl.innerHTML = `<div class="status ${isError ? "error" : "success"}">${isError ? "✗ 에러" : "✓ 실행 완료"}</div><pre>${output}</pre>`;
             } catch (e) { console.error('[Compile] __runCCode failed:', e); } finally { btn.disabled = false; btn.textContent = "▶ 실행"; }
         };
         return () => { delete (window as any).__runCCode; };
@@ -156,7 +156,7 @@ export default function LearningContentPage() {
                 if (pre.querySelector('.copy-btn')) return;
                 const btn = document.createElement('button');
                 btn.className = 'copy-btn';
-                btn.textContent = '📋 복사';
+                btn.textContent = '≡ 복사';
                 btn.title = '코드 복사';
                 Object.assign(btn.style, {
                     position: 'absolute', top: '6px', right: '6px', padding: '4px 10px',
@@ -172,9 +172,9 @@ export default function LearningContentPage() {
                     const code = pre.querySelector('code')?.textContent || pre.textContent || '';
                     try {
                         await navigator.clipboard.writeText(code);
-                        btn.textContent = '✅ 복사됨!';
-                        setTimeout(() => { btn.textContent = '📋 복사'; }, 1500);
-                    } catch { btn.textContent = '❌ 실패'; setTimeout(() => { btn.textContent = '📋 복사'; }, 1500); }
+                        btn.textContent = '✓ 복사됨!';
+                        setTimeout(() => { btn.textContent = '≡ 복사'; }, 1500);
+                    } catch { btn.textContent = '✗ 실패'; setTimeout(() => { btn.textContent = '≡ 복사'; }, 1500); }
                 });
                 pre.appendChild(btn);
             });
@@ -236,7 +236,7 @@ export default function LearningContentPage() {
     if (!courseData || !unit) {
         return (
             <div style={{ display: "flex", alignItems: "center", justifyContent: "center", minHeight: "60vh", flexDirection: "column", gap: 16 }}>
-                <span style={{ fontSize: 48, opacity: 0.3 }}>📭</span>
+                <span style={{ fontSize: 48, opacity: 0.3 }}></span>
                 <h2 style={{ fontSize: 20, fontWeight: 800, color: "#334155" }}>유닛을 찾을 수 없습니다</h2>
                 <Link href={`/dashboard/learning/courses/${courseId}`} style={{ color: "#0ea5e9", fontWeight: 600, fontSize: 14 }}>
                     ← 코스로 돌아가기
@@ -248,7 +248,7 @@ export default function LearningContentPage() {
     if (!currentPage) {
         return (
             <div style={{ display: "flex", alignItems: "center", justifyContent: "center", minHeight: "60vh", flexDirection: "column", gap: 16 }}>
-                <span style={{ fontSize: 48, opacity: 0.3 }}>📄</span>
+                <span style={{ fontSize: 48, opacity: 0.3 }}></span>
                 <h2 style={{ fontSize: 20, fontWeight: 800, color: "#334155" }}>페이지를 찾을 수 없습니다</h2>
                 <p style={{ fontSize: 13, color: "#94a3b8" }}>이 유닛에는 {pages.length}개의 페이지가 있습니다.</p>
                 {pages.length > 0 && (
@@ -263,7 +263,7 @@ export default function LearningContentPage() {
         );
     }
 
-    const pageIcon = currentPage.type === '퀴즈' ? '❓' : currentPage.type === '핵심정리' ? '📋' : currentPage.type === 'QnA' ? '💬' : '📄';
+    const pageIcon = currentPage.type === '퀴즈' ? '?' : currentPage.type === '핵심정리' ? '≡' : currentPage.type === 'QnA' ? '' : '';
 
     return (
         <div style={{ maxWidth: 960, margin: "0 auto", padding: "28px 16px 80px" }}>
@@ -296,7 +296,7 @@ export default function LearningContentPage() {
                 style={{ ...glassPanel, display: "flex", gap: 2, overflowX: "auto", marginBottom: 24, padding: 6, borderRadius: 18 }}>
                 {pages.map((pg, i) => {
                     const isActive = pg.id === pageIdParam;
-                    const icon = pg.type === '퀴즈' ? '❓' : pg.type === '핵심정리' ? '📋' : pg.type === 'QnA' ? '💬' : '📄';
+                    const icon = pg.type === '퀴즈' ? '?' : pg.type === '핵심정리' ? '≡' : pg.type === 'QnA' ? '' : '';
                     const hasContent = !!(pg.content || pg.quiz || pg.problems);
                     return (
                         <motion.button key={pg.id} whileHover={{ y: -1 }} whileTap={{ scale: 0.97 }}

@@ -21,11 +21,11 @@ export const cardFloating: React.CSSProperties = {
 };
 
 export const TYPE_STYLES: Record<string, { icon: string; color: string; bg: string }> = {
-    "이론": { icon: "📖", color: "#6366f1", bg: "#eef2ff" },
-    "실습": { icon: "💻", color: "#10b981", bg: "#dcfce7" },
-    "퀴즈": { icon: "❓", color: "#f59e0b", bg: "#fef3c7" },
-    "시험": { icon: "📝", color: "#ef4444", bg: "#fee2e2" },
-    "종합": { icon: "🏆", color: "#8b5cf6", bg: "#f5f3ff" },
+    "이론": { icon: "", color: "#6366f1", bg: "#eef2ff" },
+    "실습": { icon: "", color: "#10b981", bg: "#dcfce7" },
+    "퀴즈": { icon: "?", color: "#f59e0b", bg: "#fef3c7" },
+    "시험": { icon: "", color: "#ef4444", bg: "#fee2e2" },
+    "종합": { icon: "", color: "#8b5cf6", bg: "#f5f3ff" },
 };
 
 export const DIFF_LABELS = ["", "⭐", "⭐⭐", "⭐⭐⭐"];
@@ -44,7 +44,7 @@ export function QuizPanel({ quiz, unit, selectedAnswer, setSelectedAnswer, quizR
             <div style={{ marginBottom: 20, display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
                 <div>
                     <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8 }}>
-                        <span style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", width: 28, height: 28, borderRadius: 10, background: "linear-gradient(135deg, #0ea5e9, #6366f1)", color: "#fff", fontSize: 13 }}>🧪</span>
+                        <span style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", width: 28, height: 28, borderRadius: 10, background: "linear-gradient(135deg, #0ea5e9, #6366f1)", color: "#fff", fontSize: 13 }}></span>
                         <span style={{ fontSize: 10, fontWeight: 800, color: "#0ea5e9", letterSpacing: 1.5, textTransform: "uppercase" as const }}>확인 퀴즈</span>
                     </div>
                     <p style={{ fontSize: 15, fontWeight: 700, color: "#0f172a", margin: 0, lineHeight: 1.6 }}>{quiz.question}</p>
@@ -80,8 +80,8 @@ export function QuizPanel({ quiz, unit, selectedAnswer, setSelectedAnswer, quizR
                                 color: (isSelected || isCorrectAnswer || isWrongSelection) ? "#fff" : "#94a3b8", fontSize: 12, fontWeight: 800,
                             }}>{String.fromCharCode(65 + oi)}</span>
                             <span style={{ flex: 1 }}>{opt}</span>
-                            {isCorrectAnswer && <span>🎉</span>}
-                            {isWrongSelection && <span>❌</span>}
+                            {isCorrectAnswer && <span></span>}
+                            {isWrongSelection && <span>✗</span>}
                         </motion.button>
                     );
                 })}
@@ -91,14 +91,14 @@ export function QuizPanel({ quiz, unit, selectedAnswer, setSelectedAnswer, quizR
                 {quizResult === "correct" && (
                     <motion.div initial={{ opacity: 0, y: 10, scale: 0.95 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0 }}
                         style={{ padding: "18px 22px", borderRadius: 20, background: "linear-gradient(135deg, rgba(220,252,231,0.8), rgba(209,250,229,0.8))", border: "1px solid #86efac", marginBottom: 16, backdropFilter: "blur(8px)" }}>
-                        <p style={{ fontSize: 16, fontWeight: 800, color: "#15803d", margin: 0 }}>🎉 정답!</p>
+                        <p style={{ fontSize: 16, fontWeight: 800, color: "#15803d", margin: 0 }}> 정답!</p>
                         <p style={{ fontSize: 13, color: "#166534", margin: "8px 0 0", lineHeight: 1.6 }}>{quiz.explanation}</p>
                     </motion.div>
                 )}
                 {quizResult === "wrong" && (
                     <motion.div initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0 }}
                         style={{ padding: "18px 22px", borderRadius: 20, background: "linear-gradient(135deg, rgba(254,226,226,0.8), rgba(254,202,202,0.8))", border: "1px solid #fca5a5", marginBottom: 16 }}>
-                        <p style={{ fontSize: 15, fontWeight: 800, color: "#dc2626", margin: 0 }}>❌ 틀렸습니다!</p>
+                        <p style={{ fontSize: 15, fontWeight: 800, color: "#dc2626", margin: 0 }}>✗ 틀렸습니다!</p>
                         <p style={{ fontSize: 12, color: "#991b1b", margin: "6px 0 0" }}>다시 도전해보세요!</p>
                     </motion.div>
                 )}
@@ -107,7 +107,7 @@ export function QuizPanel({ quiz, unit, selectedAnswer, setSelectedAnswer, quizR
             {showHint && quiz.explanation && (
                 <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }}
                     style={{ padding: "14px 18px", borderRadius: 16, background: "linear-gradient(135deg, rgba(254,243,199,0.8), rgba(253,230,138,0.5))", border: "1px solid rgba(253,230,138,0.6)", marginBottom: 16 }}>
-                    <p style={{ fontSize: 12, fontWeight: 800, color: "#d97706", margin: 0 }}>💡 힌트</p>
+                    <p style={{ fontSize: 12, fontWeight: 800, color: "#d97706", margin: 0 }}> 힌트</p>
                     <p style={{ fontSize: 12, color: "#92400e", margin: "6px 0 0", lineHeight: 1.5 }}>{quiz.explanation}</p>
                 </motion.div>
             )}
@@ -115,11 +115,11 @@ export function QuizPanel({ quiz, unit, selectedAnswer, setSelectedAnswer, quizR
             {!quizResult && selectedAnswer !== null && (
                 <motion.button whileHover={{ scale: 1.02, y: -2 }} whileTap={{ scale: 0.97 }} onClick={onCheck}
                     style={{ padding: "14px 32px", borderRadius: 16, border: "none", fontSize: 14, fontWeight: 800, background: "linear-gradient(135deg, #0ea5e9, #6366f1)", color: "#fff", cursor: "pointer", boxShadow: "0 8px 24px rgba(14,165,233,0.25)", display: "flex", alignItems: "center", gap: 8 }}>
-                    <span>🎯</span> <span>정답 확인</span>
+                    <span>◎</span> <span>정답 확인</span>
                 </motion.button>
             )}
             {!quizResult && selectedAnswer === null && (
-                <p style={{ fontSize: 12, color: "#94a3b8", margin: 0, fontWeight: 500 }}>💡 보기를 선택한 후 &quot;정답 확인&quot; 버튼을 눌러주세요</p>
+                <p style={{ fontSize: 12, color: "#94a3b8", margin: 0, fontWeight: 500 }}> 보기를 선택한 후 &quot;정답 확인&quot; 버튼을 눌러주세요</p>
             )}
         </motion.div>
     );
@@ -140,7 +140,7 @@ export function CodeProblemCard({ prob, editorCode, setEditorCode, runResult, ru
             <div style={{ padding: "22px 24px 18px", display: "flex", justifyContent: "space-between", alignItems: "center", borderBottom: "1px solid rgba(241,245,249,0.8)" }}>
                 <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
                     <div style={{ width: 36, height: 36, borderRadius: 12, background: "linear-gradient(135deg, #6366f1, #0ea5e9)", display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 4px 12px rgba(99,102,241,0.25)" }}>
-                        <span style={{ fontSize: 16, color: "#fff" }}>💻</span>
+                        <span style={{ fontSize: 16, color: "#fff" }}></span>
                     </div>
                     <h5 style={{ fontSize: 15, fontWeight: 800, color: "#0f172a", margin: 0 }}>{prob.title}</h5>
                 </div>
@@ -205,7 +205,7 @@ export function CodeProblemCard({ prob, editorCode, setEditorCode, runResult, ru
                         padding: "11px 22px", borderRadius: 14, border: showProblemAnswer[prob.id] ? "1px solid rgba(14,165,233,0.3)" : "1px solid rgba(203,213,225,0.6)",
                         background: showProblemAnswer[prob.id] ? "rgba(224,242,254,0.6)" : "rgba(255,255,255,0.7)", fontSize: 13, fontWeight: 700, color: "#0369a1", cursor: "pointer"
                     }}>
-                    {showProblemAnswer[prob.id] ? "🙈 정답 숨기기" : "👀 정답 보기"}
+                    {showProblemAnswer[prob.id] ? " 정답 숨기기" : " 정답 보기"}
                 </motion.button>
             </div>
 

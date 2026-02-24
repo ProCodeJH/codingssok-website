@@ -267,7 +267,7 @@ export default function ParentDashboard() {
                     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}>
                         <div style={{ background: "#fff", borderRadius: 16, padding: "28px", border: "1px solid #e2e8f0" }}>
                             <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 24 }}>
-                                <span style={{ fontSize: 28 }}>📋</span>
+                                <span style={{ fontSize: 28 }}>≡</span>
                                 <div>
                                     <h3 style={{ fontSize: 17, fontWeight: 800, color: "#1e1b4b" }}>주간 리포트</h3>
                                     <p style={{ fontSize: 12, color: "#94a3b8" }}>
@@ -277,20 +277,20 @@ export default function ParentDashboard() {
                             </div>
 
                             <div style={{ fontSize: 14, color: "#334155", lineHeight: 2.2, background: "#f8fafc", borderRadius: 12, padding: "20px 24px" }}>
-                                <div>✅ <strong>출석</strong>: {child.streak}/7일 ({Math.round(child.streak / 7 * 100)}%)</div>
-                                <div>⏰ <strong>총 학습시간</strong>: {child.weeklyMinutes}분</div>
-                                <div>📚 <strong>완료 유닛</strong>: {child.recentUnits.length}개</div>
-                                <div>💡 <strong>퀴즈 정답률</strong>: {child.quizAccuracy}%</div>
-                                <div>🔥 <strong>현재 스트릭</strong>: {child.streak}일 연속</div>
-                                <div>📈 <strong>레벨</strong>: Lv.{Math.max(1, child.level - 1)} → Lv.{child.level}</div>
+                                <div>✓ <strong>출석</strong>: {child.streak}/7일 ({Math.round(child.streak / 7 * 100)}%)</div>
+                                <div> <strong>총 학습시간</strong>: {child.weeklyMinutes}분</div>
+                                <div> <strong>완료 유닛</strong>: {child.recentUnits.length}개</div>
+                                <div> <strong>퀴즈 정답률</strong>: {child.quizAccuracy}%</div>
+                                <div> <strong>현재 스트릭</strong>: {child.streak}일 연속</div>
+                                <div> <strong>레벨</strong>: Lv.{Math.max(1, child.level - 1)} → Lv.{child.level}</div>
                             </div>
 
                             <div style={{ marginTop: 20, padding: "16px 20px", borderRadius: 12, background: "#EEF2FF", border: "1px solid #C7D2FE" }}>
-                                <div style={{ fontSize: 12, fontWeight: 700, color: "#4F46E5", marginBottom: 6 }}>👨‍🏫 선생님 한마디</div>
+                                <div style={{ fontSize: 12, fontWeight: 700, color: "#4F46E5", marginBottom: 6 }}> 선생님 한마디</div>
                                 <p style={{ fontSize: 13, color: "#334155", lineHeight: 1.7 }}>
                                     &ldquo;{child.name} 학생이 이번 주에 많이 노력했습니다!
                                     변수와 상수 개념을 잘 이해하고 있어요.
-                                    다음 주에는 반복문에 도전해봐요! 화이팅! 🎉&rdquo;
+                                    다음 주에는 반복문에 도전해봐요! 화이팅! &rdquo;
                                 </p>
                             </div>
 
@@ -300,7 +300,7 @@ export default function ParentDashboard() {
                                 fontWeight: 700, fontSize: 13, color: "#4F46E5",
                                 display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
                             }}>
-                                📄 PDF로 다운로드 (준비 중)
+                                 PDF로 다운로드 (준비 중)
                             </button>
                         </div>
                     </motion.div>

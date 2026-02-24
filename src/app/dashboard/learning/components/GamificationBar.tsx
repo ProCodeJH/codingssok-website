@@ -10,25 +10,25 @@ interface UserProgress {
 
 const STORAGE_KEY = "codingssok-gamification";
 const LEVELS = [
-    { level: 1, xp: 0, title: "코딩 새싹 🌱", color: "#22c55e" },
-    { level: 2, xp: 100, title: "코딩 탐험가 🧭", color: "#3b82f6" },
-    { level: 3, xp: 300, title: "코딩 전사 ⚔️", color: "#8b5cf6" },
-    { level: 4, xp: 600, title: "코딩 마법사 🧙", color: "#f59e0b" },
-    { level: 5, xp: 1000, title: "코딩 영웅 🦸", color: "#ef4444" },
-    { level: 6, xp: 1500, title: "코딩 전설 👑", color: "#ec4899" },
-    { level: 7, xp: 2500, title: "코딩 신화 🌟", color: "#06b6d4" },
-    { level: 8, xp: 4000, title: "코딩 마스터 💎", color: "#2563eb" },
+    { level: 1, xp: 0, title: "코딩 새싹 ", color: "#22c55e" },
+    { level: 2, xp: 100, title: "코딩 탐험가 ", color: "#3b82f6" },
+    { level: 3, xp: 300, title: "코딩 전사 ", color: "#8b5cf6" },
+    { level: 4, xp: 600, title: "코딩 마법사 ", color: "#f59e0b" },
+    { level: 5, xp: 1000, title: "코딩 영웅 ", color: "#ef4444" },
+    { level: 6, xp: 1500, title: "코딩 전설 ", color: "#ec4899" },
+    { level: 7, xp: 2500, title: "코딩 신화 ", color: "#06b6d4" },
+    { level: 8, xp: 4000, title: "코딩 마스터 ", color: "#2563eb" },
 ];
 
 const BADGES = [
-    { id: "first-lesson", icon: "🌱", name: "첫 수업", desc: "첫 레슨 완료", condition: (p: UserProgress) => p.xp >= 10 },
-    { id: "streak-3", icon: "🔥", name: "3일 연속", desc: "3일 연속 학습", condition: (p: UserProgress) => p.streak >= 3 },
-    { id: "streak-7", icon: "⚡", name: "7일 연속", desc: "7일 연속 학습", condition: (p: UserProgress) => p.streak >= 7 },
-    { id: "xp-100", icon: "💯", name: "100 XP", desc: "XP 100 달성", condition: (p: UserProgress) => p.xp >= 100 },
-    { id: "xp-500", icon: "🏆", name: "500 XP", desc: "XP 500 달성", condition: (p: UserProgress) => p.xp >= 500 },
-    { id: "xp-1000", icon: "👑", name: "1000 XP", desc: "XP 1000 달성", condition: (p: UserProgress) => p.xp >= 1000 },
-    { id: "streak-30", icon: "🌟", name: "30일 연속", desc: "30일 연속 학습", condition: (p: UserProgress) => p.streak >= 30 },
-    { id: "explorer", icon: "🧭", name: "탐험가", desc: "3개 과목 학습", condition: () => false },
+    { id: "first-lesson", icon: "", name: "첫 수업", desc: "첫 레슨 완료", condition: (p: UserProgress) => p.xp >= 10 },
+    { id: "streak-3", icon: "", name: "3일 연속", desc: "3일 연속 학습", condition: (p: UserProgress) => p.streak >= 3 },
+    { id: "streak-7", icon: "", name: "7일 연속", desc: "7일 연속 학습", condition: (p: UserProgress) => p.streak >= 7 },
+    { id: "xp-100", icon: "", name: "100 XP", desc: "XP 100 달성", condition: (p: UserProgress) => p.xp >= 100 },
+    { id: "xp-500", icon: "", name: "500 XP", desc: "XP 500 달성", condition: (p: UserProgress) => p.xp >= 500 },
+    { id: "xp-1000", icon: "", name: "1000 XP", desc: "XP 1000 달성", condition: (p: UserProgress) => p.xp >= 1000 },
+    { id: "streak-30", icon: "", name: "30일 연속", desc: "30일 연속 학습", condition: (p: UserProgress) => p.streak >= 30 },
+    { id: "explorer", icon: "", name: "탐험가", desc: "3개 과목 학습", condition: () => false },
 ];
 
 const loadProgress = (): UserProgress => {
@@ -119,8 +119,8 @@ export function GamificationBar({ progress, compact = false }: Props) {
                     </div>
                 </div>
                 <div style={{ display: "flex", gap: 8, marginLeft: 8 }}>
-                    <span style={{ fontSize: 11, fontWeight: 700, color: "#f59e0b" }}>⚡{progress.xp}</span>
-                    <span style={{ fontSize: 11, fontWeight: 700, color: "#ef4444" }}>🔥{progress.streak}</span>
+                    <span style={{ fontSize: 11, fontWeight: 700, color: "#f59e0b" }}>{progress.xp}</span>
+                    <span style={{ fontSize: 11, fontWeight: 700, color: "#ef4444" }}>{progress.streak}</span>
                 </div>
             </motion.div>
         );
@@ -165,10 +165,10 @@ export function GamificationBar({ progress, compact = false }: Props) {
             {/* Stats row */}
             <div style={{ display: "flex", gap: 12, marginBottom: 20 }}>
                 {[
-                    { icon: "⚡", label: "총 XP", value: progress.xp, color: "#f59e0b" },
-                    { icon: "🔥", label: "연속일", value: progress.streak, color: "#ef4444" },
-                    { icon: "📅", label: "오늘 XP", value: todayXp, color: "#2563eb" },
-                    { icon: "🏅", label: "뱃지", value: progress.badges.length, color: "#8b5cf6" },
+                    { icon: "", label: "총 XP", value: progress.xp, color: "#f59e0b" },
+                    { icon: "", label: "연속일", value: progress.streak, color: "#ef4444" },
+                    { icon: "", label: "오늘 XP", value: todayXp, color: "#2563eb" },
+                    { icon: "★", label: "뱃지", value: progress.badges.length, color: "#8b5cf6" },
                 ].map(s => (
                     <div key={s.label} style={{
                         flex: 1, textAlign: "center", padding: "14px 8px", borderRadius: 14,
@@ -183,7 +183,7 @@ export function GamificationBar({ progress, compact = false }: Props) {
 
             {/* 7-day activity */}
             <div style={{ marginBottom: 20 }}>
-                <div style={{ fontSize: 12, fontWeight: 700, color: "#64748b", marginBottom: 8 }}>📊 최근 7일 활동</div>
+                <div style={{ fontSize: 12, fontWeight: 700, color: "#64748b", marginBottom: 8 }}>≡ 최근 7일 활동</div>
                 <div style={{ display: "flex", gap: 6 }}>
                     {last7.map(d => (
                         <div key={d.date} style={{ flex: 1, textAlign: "center" }}>
@@ -202,7 +202,7 @@ export function GamificationBar({ progress, compact = false }: Props) {
 
             {/* Badges */}
             <div>
-                <div style={{ fontSize: 12, fontWeight: 700, color: "#64748b", marginBottom: 8 }}>🏅 업적 뱃지</div>
+                <div style={{ fontSize: 12, fontWeight: 700, color: "#64748b", marginBottom: 8 }}>★ 업적 뱃지</div>
                 <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
                     {BADGES.map(badge => {
                         const earned = progress.badges.includes(badge.id);

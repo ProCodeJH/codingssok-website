@@ -35,10 +35,12 @@ function AuthGate({ children }: { children: ReactNode }) {
                 style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 20, position: "relative", zIndex: 10 }}
             >
                 <motion.div
-                    animate={{ rotate: 360 }}
-                    transition={{ duration: 1.2, repeat: Infinity, ease: "linear" }}
-                    style={{ width: 48, height: 48, border: "4px solid #0ea5e9", borderTopColor: "transparent", borderRadius: "50%" }}
-                />
+                    animate={{ scale: [1, 1.08, 1] }}
+                    transition={{ duration: 1.8, repeat: Infinity, ease: "easeInOut" }}
+                    style={{ width: 80, height: 80, borderRadius: 20, overflow: "hidden", boxShadow: "0 8px 32px rgba(79,70,229,0.25)" }}
+                >
+                    <img src="/images/logo-codingssok.png" alt="코딩쏙" width={80} height={80} style={{ width: "100%", height: "100%", objectFit: "contain" }} />
+                </motion.div>
                 <motion.p
                     initial={{ opacity: 0, y: 8 }}
                     animate={{ opacity: 1, y: 0 }}

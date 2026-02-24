@@ -70,12 +70,12 @@ export default function SnippetLibrary({ onInsert, onClose }: { onInsert: (code:
     return (
         <div style={{ height: "100%", display: "flex", flexDirection: "column", background: "#1e1c1a", color: "#f5f0e8" }}>
             <div style={{ padding: "14px 16px", borderBottom: "1px solid #3a3632", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                <span style={{ fontSize: 14, fontWeight: 800 }}>📂 스니펫 라이브러리</span>
+                <span style={{ fontSize: 14, fontWeight: 800 }}> 스니펫 라이브러리</span>
                 <button onClick={onClose} style={{ background: "none", border: "none", color: "#b0a898", fontSize: 16, cursor: "pointer" }}>✕</button>
             </div>
 
             <div style={{ padding: "8px 12px" }}>
-                <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="🔍 스니펫 검색..." style={{
+                <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="⌕ 스니펫 검색..." style={{
                     width: "100%", padding: "8px 12px", borderRadius: 8, border: "1px solid #3a3632", background: "#252320", color: "#f5f0e8", fontSize: 12, outline: "none",
                 }} />
             </div>
@@ -106,7 +106,7 @@ export default function SnippetLibrary({ onInsert, onClose }: { onInsert: (code:
                             <pre style={{ background: "#1e1c1a", borderRadius: 6, padding: 10, fontSize: 11, fontFamily: "monospace", color: "#fbbf24", overflowX: "auto", margin: 0, lineHeight: 1.5 }}>{snippet.code}</pre>
                             <div style={{ display: "flex", gap: 6, marginTop: 8 }}>
                                 <button onClick={() => handleCopy(snippet.code)} style={{ flex: 1, padding: "6px 0", borderRadius: 6, border: "1px solid #3a3632", background: "#2d2a26", color: "#b0a898", fontSize: 11, fontWeight: 600, cursor: "pointer" }}>
-                                    {copied === snippet.code ? "✅ 복사됨" : "📋 코드 복사"}
+                                    {copied === snippet.code ? "✓ 복사됨" : "≡ 코드 복사"}
                                 </button>
                                 <button onClick={() => onInsert(snippet.code)} style={{ flex: 1, padding: "6px 0", borderRadius: 6, border: "none", background: "#EC5212", color: "#fff", fontSize: 11, fontWeight: 700, cursor: "pointer" }}>
                                     ▶ 에디터에 삽입

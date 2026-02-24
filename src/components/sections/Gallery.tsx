@@ -300,7 +300,13 @@ export default function Gallery() {
                         cursor: "pointer",
                     }}
                 >
-                    {autoplay ? "⏸ 자동재생" : "▶ 재생"}
+                    <span style={{ display: "inline-flex", alignItems: "center", gap: 4 }}>
+                        {autoplay ? (
+                            <><svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="4" width="4" height="16" rx="1" /><rect x="14" y="4" width="4" height="16" rx="1" /></svg> 자동재생</>
+                        ) : (
+                            <><svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><polygon points="5,3 19,12 5,21" /></svg> 재생</>
+                        )}
+                    </span>
                 </button>
                 <button
                     onClick={() => setShowAll(!showAll)}
@@ -315,7 +321,13 @@ export default function Gallery() {
                         transition: "all 0.3s",
                     }}
                 >
-                    {showAll ? "✕ 닫기" : "📸 전체보기"}
+                    <span style={{ display: "inline-flex", alignItems: "center", gap: 4 }}>
+                        {showAll ? (
+                            <><svg width="10" height="10" viewBox="0 0 24 24" fill="none"><path d="M18 6L6 18M6 6l12 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" /></svg> 닫기</>
+                        ) : (
+                            <><svg width="10" height="10" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="18" height="18" rx="2" stroke="currentColor" strokeWidth="1.5" /><circle cx="8.5" cy="8.5" r="1.5" fill="currentColor" /><path d="M21 15l-5-5L5 21" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg> 전체보기</>
+                        )}
+                    </span>
                 </button>
             </div>
 

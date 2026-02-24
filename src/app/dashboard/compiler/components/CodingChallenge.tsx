@@ -96,7 +96,7 @@ export function CodingChallenge({ onLoadCode }: CodingChallengeProps) {
         <div style={{ height: "100%", display: "flex", flexDirection: "column", overflow: "hidden" }}>
             {/* Header */}
             <div style={{ padding: "12px 16px", borderBottom: `1px solid ${border}`, background: "rgba(245,158,11,0.06)", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                <span style={{ fontSize: 13, fontWeight: 600 }}>🏆 코딩 챌린지</span>
+                <span style={{ fontSize: 13, fontWeight: 600 }}> 코딩 챌린지</span>
                 <span style={{ padding: "4px 12px", background: "rgba(245,158,11,0.15)", border: "1px solid rgba(245,158,11,0.3)", borderRadius: 16, fontSize: 13, fontWeight: 700, color: "#f59e0b" }}>⭐ {totalPts} pts</span>
             </div>
 
@@ -119,13 +119,13 @@ export function CodingChallenge({ onLoadCode }: CodingChallengeProps) {
 
                     <div style={{ display: "flex", gap: 8, marginTop: 16 }}>
                         <button onClick={() => onLoadCode?.(sel.starterCode)} style={{ flex: 1, padding: 10, borderRadius: 8, border: "none", background: "linear-gradient(135deg,#f59e0b,#ea580c)", color: "#fff", fontWeight: 700, fontSize: 12, cursor: "pointer" }}>에디터에 로드</button>
-                        <button onClick={() => setShowHints(!showHints)} style={{ flex: 1, padding: 10, borderRadius: 8, border: `1px solid ${border}`, background: bg2, color: "#ccc", fontSize: 12, cursor: "pointer" }}>💡 힌트</button>
-                        <button onClick={() => setShowSol(!showSol)} style={{ flex: 1, padding: 10, borderRadius: 8, border: `1px solid ${border}`, background: bg2, color: "#ccc", fontSize: 12, cursor: "pointer" }}>👀 정답</button>
+                        <button onClick={() => setShowHints(!showHints)} style={{ flex: 1, padding: 10, borderRadius: 8, border: `1px solid ${border}`, background: bg2, color: "#ccc", fontSize: 12, cursor: "pointer" }}> 힌트</button>
+                        <button onClick={() => setShowSol(!showSol)} style={{ flex: 1, padding: 10, borderRadius: 8, border: `1px solid ${border}`, background: bg2, color: "#ccc", fontSize: 12, cursor: "pointer" }}> 정답</button>
                     </div>
 
                     {showHints && (
                         <div style={{ marginTop: 10, padding: 12, background: "rgba(59,130,246,0.1)", border: "1px solid rgba(59,130,246,0.2)", borderRadius: 8 }}>
-                            {sel.hints.map((h, i) => <div key={i} style={{ fontSize: 12, color: "#93c5fd", marginBottom: 6 }}>💡 {h}</div>)}
+                            {sel.hints.map((h, i) => <div key={i} style={{ fontSize: 12, color: "#93c5fd", marginBottom: 6 }}> {h}</div>)}
                         </div>
                     )}
                     {showSol && (
@@ -135,7 +135,7 @@ export function CodingChallenge({ onLoadCode }: CodingChallengeProps) {
                     )}
 
                     <button onClick={complete} disabled={completed.has(sel.id)} style={{ marginTop: 16, width: "100%", padding: 12, borderRadius: 8, border: "none", background: completed.has(sel.id) ? "#333" : "linear-gradient(135deg,#22c55e,#16a34a)", color: "#fff", fontWeight: 700, fontSize: 13, cursor: completed.has(sel.id) ? "default" : "pointer" }}>
-                        {completed.has(sel.id) ? "✅ 완료됨!" : "완료로 표시"}
+                        {completed.has(sel.id) ? "✓ 완료됨!" : "완료로 표시"}
                     </button>
                 </div>
             ) : (

@@ -12,9 +12,9 @@ const glassCard: React.CSSProperties = {
 };
 
 const CHANNELS = [
-    { id: "general", label: "🏠 전체 채팅", desc: "모두의 대화방" },
-    { id: "help", label: "❓ 질문방", desc: "코딩 질문 & 답변" },
-    { id: "random", label: "🎲 자유방", desc: "자유롭게 대화" },
+    { id: "general", label: " 전체 채팅", desc: "모두의 대화방" },
+    { id: "help", label: "? 질문방", desc: "코딩 질문 & 답변" },
+    { id: "random", label: " 자유방", desc: "자유롭게 대화" },
 ];
 
 interface ChatMsg {
@@ -116,7 +116,7 @@ export default function ChatPage() {
         <div style={{ display: "grid", gridTemplateColumns: "200px 1fr", gap: 16, height: "calc(100vh - 200px)", minHeight: 500 }}>
             {/* 채널 목록 */}
             <div style={{ ...glassCard, borderRadius: 20, padding: 16, display: "flex", flexDirection: "column", gap: 6 }}>
-                <h3 style={{ fontSize: 14, fontWeight: 800, color: "#0f172a", marginBottom: 8, padding: "0 8px" }}>💬 채팅방</h3>
+                <h3 style={{ fontSize: 14, fontWeight: 800, color: "#0f172a", marginBottom: 8, padding: "0 8px" }}> 채팅방</h3>
                 {CHANNELS.map((ch) => (
                     <motion.button key={ch.id} onClick={() => setChannel(ch.id)}
                         whileHover={{ scale: 1.02, x: 2 }}
@@ -152,7 +152,7 @@ export default function ChatPage() {
                             animate={{ opacity: 1, scale: 1 }}
                             style={{ textAlign: "center", color: "#94a3b8", padding: 60 }}
                         >
-                            <span style={{ fontSize: 40, display: "block", marginBottom: 12 }}>💬</span>
+                            <span style={{ fontSize: 40, display: "block", marginBottom: 12 }}></span>
                             아직 메시지가 없어요. 첫 메시지를 보내보세요!
                         </motion.div>
                     )}

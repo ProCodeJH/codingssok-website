@@ -41,13 +41,13 @@ export default function PageLoader() {
                         transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
                         style={{ textAlign: "center" }}
                     >
-                        <motion.span
-                            animate={{ rotate: [0, 10, -10, 0] }}
+                        <motion.div
+                            animate={{ scale: [1, 1.1, 1] }}
                             transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
-                            style={{ fontSize: 56, display: "block", marginBottom: 8 }}
+                            style={{ width: 56, height: 56, display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 8 }}
                         >
-                            🌸
-                        </motion.span>
+                            <img src="/images/logo-codingssok.png" alt="코딩쏙" style={{ width: 48, height: 48, objectFit: "contain" }} />
+                        </motion.div>
                         <h1 style={{ fontSize: 28, fontWeight: 800, color: "#383030", letterSpacing: "-0.02em" }}>
                             코딩쏙
                         </h1>

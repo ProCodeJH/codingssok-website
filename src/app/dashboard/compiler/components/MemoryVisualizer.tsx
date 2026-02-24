@@ -63,21 +63,21 @@ export function MemoryVisualizer({ code = "" }: { code?: string }) {
     return (
         <div style={{ height: "100%", display: "flex", flexDirection: "column", overflow: "hidden" }}>
             <div style={{ padding: "12px 16px", borderBottom: `1px solid ${border}`, background: "rgba(6,182,212,0.06)" }}>
-                <span style={{ fontSize: 13, fontWeight: 600 }}>🧠 메모리 시각화</span>
+                <span style={{ fontSize: 13, fontWeight: 600 }}> 메모리 시각화</span>
                 <span style={{ fontSize: 10, color: "rgba(255,255,255,0.3)", marginLeft: 8 }}>{blocks.length}개 블록 감지</span>
             </div>
 
             <div style={{ flex: 1, overflowY: "auto", padding: 12 }}>
                 {blocks.length === 0 ? (
                     <div style={{ textAlign: "center", padding: 32, color: "rgba(255,255,255,0.25)", fontSize: 12 }}>
-                        <div style={{ fontSize: 32, marginBottom: 8 }}>🧠</div>
+                        <div style={{ fontSize: 32, marginBottom: 8 }}></div>
                         코드에서 변수를 선언하면<br />메모리 레이아웃이 표시됩니다
                     </div>
                 ) : (
                     <div style={{ display: "flex", gap: 12 }}>
                         {/* Stack */}
                         <div style={{ flex: 1 }}>
-                            <div style={{ fontSize: 10, fontWeight: 600, color: "#06b6d4", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 8, textAlign: "center" }}>📥 Stack</div>
+                            <div style={{ fontSize: 10, fontWeight: 600, color: "#06b6d4", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 8, textAlign: "center" }}>↓ Stack</div>
                             <div style={{ border: "1px solid rgba(6,182,212,0.2)", borderRadius: 8, overflow: "hidden" }}>
                                 {stackBlocks.length === 0 ? (
                                     <div style={{ padding: 16, textAlign: "center", fontSize: 10, color: "rgba(255,255,255,0.2)" }}>비어 있음</div>
@@ -98,7 +98,7 @@ export function MemoryVisualizer({ code = "" }: { code?: string }) {
 
                         {/* Heap */}
                         <div style={{ flex: 1 }}>
-                            <div style={{ fontSize: 10, fontWeight: 600, color: "#f59e0b", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 8, textAlign: "center" }}>🌐 Heap</div>
+                            <div style={{ fontSize: 10, fontWeight: 600, color: "#f59e0b", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 8, textAlign: "center" }}> Heap</div>
                             <div style={{ border: "1px solid rgba(245,158,11,0.2)", borderRadius: 8, overflow: "hidden" }}>
                                 {heapBlocks.length === 0 ? (
                                     <div style={{ padding: 16, textAlign: "center", fontSize: 10, color: "rgba(255,255,255,0.2)" }}>비어 있음</div>
@@ -123,10 +123,10 @@ export function MemoryVisualizer({ code = "" }: { code?: string }) {
 
                 {/* Memory layout legend */}
                 <div style={{ marginTop: 16, padding: 10, background: "rgba(0,0,0,0.15)", borderRadius: 8, fontSize: 10, color: "rgba(255,255,255,0.3)", lineHeight: 1.8 }}>
-                    <div style={{ fontWeight: 600, marginBottom: 4, color: "rgba(255,255,255,0.5)" }}>📌 메모리 구조</div>
+                    <div style={{ fontWeight: 600, marginBottom: 4, color: "rgba(255,255,255,0.5)" }}> 메모리 구조</div>
                     <div>높은 주소 → Stack (지역 변수, 매개변수)</div>
                     <div>낮은 주소 → Heap (malloc/calloc 동적 할당)</div>
-                    <div style={{ marginTop: 4, color: "#ef4444" }}>⚠️ free() 후 메모리는 해제 표시됩니다</div>
+                    <div style={{ marginTop: 4, color: "#ef4444" }}> free() 후 메모리는 해제 표시됩니다</div>
                 </div>
             </div>
         </div>

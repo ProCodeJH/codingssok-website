@@ -13,18 +13,18 @@ const glassCard: React.CSSProperties = {
 };
 
 const STORE_ITEMS = [
-    { id: "theme_dark", icon: "🎨", name: "다크 테마", desc: "에디터와 대시보드를 다크모드로 변환하세요", xp: 500, category: "테마", rarity: "common" },
-    { id: "theme_neon", icon: "🌈", name: "네온 테마", desc: "화려한 네온 컬러 에디터 테마", xp: 800, category: "테마", rarity: "rare" },
+    { id: "theme_dark", icon: "", name: "다크 테마", desc: "에디터와 대시보드를 다크모드로 변환하세요", xp: 500, category: "테마", rarity: "common" },
+    { id: "theme_neon", icon: "", name: "네온 테마", desc: "화려한 네온 컬러 에디터 테마", xp: 800, category: "테마", rarity: "rare" },
     { id: "badge_star", icon: "⭐", name: "스타 뱃지", desc: "프로필에 빛나는 스타 뱃지를 달아보세요", xp: 300, category: "뱃지", rarity: "common" },
-    { id: "badge_fire", icon: "🔥", name: "파이어 뱃지", desc: "불타오르는 열정의 뱃지", xp: 500, category: "뱃지", rarity: "rare" },
-    { id: "badge_diamond", icon: "💎", name: "다이아몬드 뱃지", desc: "최상위 등급의 프리미엄 뱃지", xp: 1500, category: "뱃지", rarity: "legendary" },
-    { id: "boost_2x", icon: "⚡", name: "더블 XP 부스터", desc: "24시간 동안 XP 2배 획득!", xp: 200, category: "부스터", rarity: "common" },
-    { id: "boost_hint", icon: "💡", name: "힌트 팩 (10회)", desc: "챌린지에서 사용할 수 있는 힌트 10개", xp: 150, category: "부스터", rarity: "common" },
-    { id: "ai_review", icon: "🤖", name: "AI 코드 리뷰", desc: "AI가 코드를 심층 분석해드려요", xp: 400, category: "프리미엄", rarity: "rare" },
-    { id: "mentor_pass", icon: "🎓", name: "멘토 패스", desc: "1:1 멘토링 30분 이용권", xp: 1000, category: "프리미엄", rarity: "epic" },
-    { id: "title_coder", icon: "👑", name: "코딩 마스터 칭호", desc: "닉네임 옆에 '코딩 마스터' 표시", xp: 2000, category: "칭호", rarity: "legendary" },
-    { id: "frame_gold", icon: "🖼️", name: "황금 프로필 테두리", desc: "프로필 사진에 황금빛 테두리 적용", xp: 700, category: "꾸미기", rarity: "rare" },
-    { id: "emoji_custom", icon: "😎", name: "커스텀 이모지 팩", desc: "채팅에서 사용할 수 있는 특별 이모지 10종", xp: 350, category: "꾸미기", rarity: "common" },
+    { id: "badge_fire", icon: "", name: "파이어 뱃지", desc: "불타오르는 열정의 뱃지", xp: 500, category: "뱃지", rarity: "rare" },
+    { id: "badge_diamond", icon: "", name: "다이아몬드 뱃지", desc: "최상위 등급의 프리미엄 뱃지", xp: 1500, category: "뱃지", rarity: "legendary" },
+    { id: "boost_2x", icon: "", name: "더블 XP 부스터", desc: "24시간 동안 XP 2배 획득!", xp: 200, category: "부스터", rarity: "common" },
+    { id: "boost_hint", icon: "", name: "힌트 팩 (10회)", desc: "챌린지에서 사용할 수 있는 힌트 10개", xp: 150, category: "부스터", rarity: "common" },
+    { id: "ai_review", icon: "", name: "AI 코드 리뷰", desc: "AI가 코드를 심층 분석해드려요", xp: 400, category: "프리미엄", rarity: "rare" },
+    { id: "mentor_pass", icon: "", name: "멘토 패스", desc: "1:1 멘토링 30분 이용권", xp: 1000, category: "프리미엄", rarity: "epic" },
+    { id: "title_coder", icon: "", name: "코딩 마스터 칭호", desc: "닉네임 옆에 '코딩 마스터' 표시", xp: 2000, category: "칭호", rarity: "legendary" },
+    { id: "frame_gold", icon: "", name: "황금 프로필 테두리", desc: "프로필 사진에 황금빛 테두리 적용", xp: 700, category: "꾸미기", rarity: "rare" },
+    { id: "emoji_custom", icon: "", name: "커스텀 이모지 팩", desc: "채팅에서 사용할 수 있는 특별 이모지 10종", xp: 350, category: "꾸미기", rarity: "common" },
 ];
 
 const RARITY_STYLES: Record<string, { bg: string; color: string; label: string }> = {
@@ -70,7 +70,7 @@ export default function StorePage() {
         });
 
         setPurchased((prev) => [...prev, item.id]);
-        setToast(`✅ ${item.name}을(를) 구매했습니다! (-${item.xp} XP)`);
+        setToast(`✓ ${item.name}을(를) 구매했습니다! (-${item.xp} XP)`);
         setBuying(null);
         setTimeout(() => setToast(""), 4000);
     };
@@ -97,7 +97,7 @@ export default function StorePage() {
             {/* 헤더 */}
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 12 }}>
                 <div>
-                    <h1 style={{ fontSize: 24, fontWeight: 900, color: "#0f172a", margin: 0 }}>🏪 XP 상점</h1>
+                    <h1 style={{ fontSize: 24, fontWeight: 900, color: "#0f172a", margin: 0 }}> XP 상점</h1>
                     <p style={{ fontSize: 13, color: "#64748b" }}>경험치로 다양한 아이템을 구매하세요!</p>
                 </div>
                 <div style={{
@@ -196,7 +196,7 @@ export default function StorePage() {
                 ...glassCard, borderRadius: 20, padding: 24, textAlign: "center",
                 background: "linear-gradient(135deg, rgba(99,102,241,0.05), rgba(14,165,233,0.05))",
             }}>
-                <span style={{ fontSize: 28, display: "block", marginBottom: 8 }}>💫</span>
+                <span style={{ fontSize: 28, display: "block", marginBottom: 8 }}></span>
                 <p style={{ fontSize: 14, color: "#475569", fontWeight: 600 }}>
                     더 많은 아이템이 곧 추가됩니다! 챌린지와 미션을 완료하면 XP를 빠르게 모을 수 있어요.
                 </p>

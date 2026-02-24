@@ -77,8 +77,8 @@ export default function CourseDetailPage() {
                 const res = await fetch('/api/compile', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ code }) });
                 const data = await res.json();
                 const ok = data.success;
-                outputDiv.innerHTML = `<div class="status ${ok ? 'success' : 'error'}">${ok ? '✅ 실행 성공' : '❌ 실행 실패'}</div><pre>${data.stderr || data.error ? `[오류]\n${data.stderr || data.error}` : data.stdout || '(출력 없음)'}</pre>`;
-            } catch { outputDiv.innerHTML = '<div class="status error">❌ 네트워크 오류</div><pre>서버에 연결할 수 없습니다.</pre>'; }
+                outputDiv.innerHTML = `<div class="status ${ok ? 'success' : 'error'}">${ok ? '✓ 실행 성공' : '✗ 실행 실패'}</div><pre>${data.stderr || data.error ? `[오류]\n${data.stderr || data.error}` : data.stdout || '(출력 없음)'}</pre>`;
+            } catch { outputDiv.innerHTML = '<div class="status error">✗ 네트워크 오류</div><pre>서버에 연결할 수 없습니다.</pre>'; }
             finally { btn.disabled = false; btn.textContent = '▶ 실행하기'; }
         };
         return () => { delete (window as any).__runCCode; };
@@ -110,7 +110,7 @@ export default function CourseDetailPage() {
         } else {
             setQuizResult("wrong"); setShaking(true);
             const newWrongCount = wrongCount + 1; setWrongCount(newWrongCount);
-            if (user) { deductXP(user.id, XP_PENALTIES.wrong_answer, `오답: ${unit.title}`); setXpMsg(`-${XP_PENALTIES.wrong_answer} XP 😢`); setTimeout(() => setXpMsg(""), 2500); }
+            if (user) { deductXP(user.id, XP_PENALTIES.wrong_answer, `오답: ${unit.title}`); setXpMsg(`-${XP_PENALTIES.wrong_answer} XP `); setTimeout(() => setXpMsg(""), 2500); }
             if (newWrongCount >= 3) setShowHint(true);
             setTimeout(() => { setShaking(false); setQuizResult(null); setSelectedAnswer(null); }, 1500);
         }
@@ -124,7 +124,7 @@ export default function CourseDetailPage() {
         setSelectedAnswer(null); setQuizResult(null); setWrongCount(0); setShowHint(false);
         if (user) {
             const result = await awardXP(user.id, XP_REWARDS.lesson_complete, `학습 완료: ${unit.title}`, "book");
-            setXpMsg(`+${XP_REWARDS.lesson_complete} XP! 🎉`); setTimeout(() => setXpMsg(""), 3000);
+            setXpMsg(`+${XP_REWARDS.lesson_complete} XP! `); setTimeout(() => setXpMsg(""), 3000);
             if (result?.levelUp) setLevelUpInfo({ level: result.level });
             const prog = Math.round((newCompleted.size / allUnits.length) * 100);
             await supabase.from("user_course_progress").upsert({ user_id: user.id, course_id: courseId, progress: prog, completed_lessons: Array.from(newCompleted) }, { onConflict: "user_id,course_id" });
@@ -230,7 +230,7 @@ export default function CourseDetailPage() {
             {showHtmlContent && courseData.htmlPath && (
                 <div style={{ ...glassPanel, borderRadius: 24, overflow: "hidden", border: "2px solid rgba(14,165,233,0.2)" }}>
                     <div style={{ padding: "12px 20px", background: "linear-gradient(135deg, #f0f9ff, #e0f2fe)", display: "flex", justifyContent: "space-between", alignItems: "center", borderBottom: "1px solid rgba(14,165,233,0.15)" }}>
-                        <span style={{ fontSize: 13, fontWeight: 700, color: "#0369a1" }}>📚 {courseData.title} — 문제풀이 학습</span>
+                        <span style={{ fontSize: 13, fontWeight: 700, color: "#0369a1" }}> {courseData.title} — 문제풀이 학습</span>
                         <a href={courseData.htmlPath} target="_blank" rel="noopener noreferrer" style={{ fontSize: 12, color: "#0ea5e9", textDecoration: "none", fontWeight: 600 }}>새 탭에서 열기 ↗</a>
                     </div>
                     <iframe src={courseData.htmlPath} style={{ width: "100%", height: "80vh", border: "none", background: "#fff" }} title={`${courseData.title} 학습 콘텐츠`} sandbox="allow-scripts allow-same-origin allow-popups" />
@@ -302,7 +302,7 @@ export default function CourseDetailPage() {
                                                             width: 30, height: 30, borderRadius: "50%", flexShrink: 0,
                                                             background: completed ? "linear-gradient(135deg, #10b981, #059669)" : isLocked ? "#e2e8f0" : courseData.gradient,
                                                             display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontSize: 11, fontWeight: 800,
-                                                        }}>{completed ? "✓" : isLocked ? "🔒" : unit.unitNumber}</div>
+                                                        }}>{completed ? "✓" : isLocked ? "" : unit.unitNumber}</div>
                                                         <div style={{ flex: 1 }}>
                                                             <div style={{ fontSize: 13, fontWeight: completed ? 600 : 700, color: completed ? "#64748b" : "#0f172a" }}>{unit.title}</div>
                                                             <div style={{ display: "flex", gap: 6, marginTop: 4, flexWrap: "wrap" }}>
@@ -313,7 +313,7 @@ export default function CourseDetailPage() {
                                                         </div>
                                                         {completed && <span style={{ fontSize: 10, color: "#10b981", fontWeight: 800, padding: "3px 10px", borderRadius: 8, background: "rgba(16,185,129,0.1)" }}>완료 ✓</span>}
                                                         {!completed && !(unit.pages && unit.pages.some(p => p.content || p.quiz || p.problems)) && !unit.content && (
-                                                            <span style={{ fontSize: 9, color: "#94a3b8", fontWeight: 700, padding: "3px 10px", borderRadius: 8, background: "#f1f5f9", border: "1px solid #e2e8f0" }}>📝 준비 중</span>
+                                                            <span style={{ fontSize: 9, color: "#94a3b8", fontWeight: 700, padding: "3px 10px", borderRadius: 8, background: "#f1f5f9", border: "1px solid #e2e8f0" }}> 준비 중</span>
                                                         )}
                                                     </motion.div>
 
@@ -327,7 +327,7 @@ export default function CourseDetailPage() {
                                                                     <div className="hide-scrollbar" style={{ display: "flex", gap: 2, overflowX: "auto", borderBottom: "1px solid rgba(226,232,240,0.6)", background: "linear-gradient(180deg, #f8fafc, rgba(255,255,255,0.8))", paddingLeft: 52, paddingRight: 16 }}>
                                                                         {unit.pages?.map(pg => {
                                                                             const isPageActive = activePage?.id === pg.id;
-                                                                            const pageIcon = pg.type === '퀴즈' ? '❓' : pg.type === '핵심정리' ? '📋' : pg.type === 'QnA' ? '💬' : '📄';
+                                                                            const pageIcon = pg.type === '퀴즈' ? '?' : pg.type === '핵심정리' ? '≡' : pg.type === 'QnA' ? '' : '';
                                                                             return (
                                                                                 <motion.button key={pg.id} onClick={(e) => { e.stopPropagation(); setActivePage(isPageActive ? null : pg); setSelectedAnswer(null); setQuizResult(null); setWrongCount(0); setShowHint(false); setShowProblemAnswer({}); }}
                                                                                     whileHover={{ y: -1 }} style={{ padding: "10px 18px", border: "none", cursor: "pointer", background: "transparent", position: "relative", fontSize: 12, fontWeight: isPageActive ? 700 : 500, color: isPageActive ? "#0369a1" : "#64748b", whiteSpace: "nowrap", opacity: (pg.content || pg.quiz || pg.problems) ? 1 : 0.45 }}

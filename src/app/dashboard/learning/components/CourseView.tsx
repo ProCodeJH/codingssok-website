@@ -65,7 +65,7 @@ export function CourseView({ courseId, courseName, courseColor, htmlPath, onBack
                         background: timerActive ? "#eff6ff" : "#f8fafc", borderRadius: 10,
                         border: "1px solid #e2e8f0",
                     }}>
-                        <span style={{ fontSize: 12 }}>⏱️</span>
+                        <span style={{ fontSize: 12 }}>⏱</span>
                         <span style={{ fontSize: 13, fontWeight: 700, color: timerActive ? "#2563eb" : "#94a3b8", fontFamily: "monospace" }}>
                             {formatTime(timerSeconds)}
                         </span>
@@ -79,7 +79,7 @@ export function CourseView({ courseId, courseName, courseColor, htmlPath, onBack
                     <button onClick={onOpenNotes} style={{
                         padding: "6px 14px", borderRadius: 8, border: "1px solid #e2e8f0", background: "#fff",
                         fontSize: 12, fontWeight: 600, cursor: "pointer",
-                    }}>📝 메모</button>
+                    }}> 메모</button>
                     <button onClick={() => {
                         if (iframeRef.current) {
                             const el = iframeRef.current;
@@ -88,7 +88,7 @@ export function CourseView({ courseId, courseName, courseColor, htmlPath, onBack
                     }} style={{
                         padding: "6px 14px", borderRadius: 8, border: "1px solid #e2e8f0", background: "#fff",
                         fontSize: 12, fontWeight: 600, cursor: "pointer",
-                    }}>🔲 전체화면</button>
+                    }}> 전체화면</button>
                 </motion.div>
 
                 {/* Loading indicator */}
@@ -138,7 +138,7 @@ export function CourseView({ courseId, courseName, courseColor, htmlPath, onBack
                     background: "#fff", borderTop: "1px solid #e2e8f0",
                 }}>
                     <span style={{ fontSize: 12, color: "#64748b" }}>
-                        📚 {courseName} 학습 중
+                         {courseName} 학습 중
                     </span>
                     <div style={{ flex: 1 }} />
                     <span style={{ fontSize: 11, color: "#94a3b8" }}>
@@ -149,7 +149,7 @@ export function CourseView({ courseId, courseName, courseColor, htmlPath, onBack
                             initial={{ scale: 0 }} animate={{ scale: 1 }}
                             style={{ fontSize: 11, fontWeight: 700, color: "#22c55e" }}
                         >
-                            🎉 5분 이상 학습 중!
+                             5분 이상 학습 중!
                         </motion.span>
                     )}
                 </div>

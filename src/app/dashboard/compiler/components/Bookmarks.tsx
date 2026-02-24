@@ -45,7 +45,7 @@ export function Bookmarks({ code, onJumpToLine }: Props) {
         <div style={{ height: "100%", display: "flex", flexDirection: "column", overflow: "hidden" }}>
             <div style={{ padding: "12px 16px", borderBottom: `1px solid ${border}`, background: "rgba(59,130,246,0.06)" }}>
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                    <span style={{ fontSize: 13, fontWeight: 600 }}>🔖 북마크</span>
+                    <span style={{ fontSize: 13, fontWeight: 600 }}>☆ 북마크</span>
                     <span style={{ fontSize: 10, color: "rgba(255,255,255,0.3)" }}>{bookmarks.length}개</span>
                 </div>
             </div>
@@ -60,7 +60,7 @@ export function Bookmarks({ code, onJumpToLine }: Props) {
             <div style={{ flex: 1, overflowY: "auto", padding: 8 }}>
                 {bookmarks.length === 0 ? (
                     <div style={{ textAlign: "center", padding: 24, color: "rgba(255,255,255,0.2)", fontSize: 12 }}>
-                        <div style={{ fontSize: 24, marginBottom: 8 }}>🔖</div>
+                        <div style={{ fontSize: 24, marginBottom: 8 }}>☆</div>
                         라인 번호를 입력하여<br />북마크를 추가하세요
                     </div>
                 ) : (
@@ -79,7 +79,7 @@ export function Bookmarks({ code, onJumpToLine }: Props) {
             {/* Footer */}
             {bookmarks.length > 0 && (
                 <div style={{ padding: 8, borderTop: `1px solid ${border}` }}>
-                    <button onClick={clearAll} style={{ width: "100%", padding: 8, borderRadius: 6, border: `1px solid ${border}`, background: "transparent", color: "rgba(255,255,255,0.3)", fontSize: 10, cursor: "pointer" }}>🗑️ 전체 삭제</button>
+                    <button onClick={clearAll} style={{ width: "100%", padding: 8, borderRadius: 6, border: `1px solid ${border}`, background: "transparent", color: "rgba(255,255,255,0.3)", fontSize: 10, cursor: "pointer" }}>× 전체 삭제</button>
                 </div>
             )}
         </div>

@@ -72,7 +72,7 @@ export function CodingHeatmap({ isOpen, onClose }: Props) {
             <div onClick={e => e.stopPropagation()} style={{ background: "#252320", borderRadius: 16, border: `1px solid ${border}`, maxWidth: 700, width: "90%", maxHeight: "80vh", overflow: "hidden" }}>
                 {/* Header */}
                 <div style={{ padding: "16px 20px", borderBottom: `1px solid ${border}`, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                    <span style={{ fontSize: 14, fontWeight: 700 }}>📊 코딩 히트맵</span>
+                    <span style={{ fontSize: 14, fontWeight: 700 }}>≡ 코딩 히트맵</span>
                     <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
                         <button onClick={() => setYear(y => y - 1)} style={{ background: "transparent", border: `1px solid ${border}`, borderRadius: 4, color: "#ccc", cursor: "pointer", padding: "2px 8px" }}>◀</button>
                         <span style={{ fontSize: 13, fontWeight: 600, minWidth: 40, textAlign: "center" }}>{year}</span>

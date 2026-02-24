@@ -77,9 +77,7 @@ export default function PromoShowcase() {
                             width: "100%",
                             height: "auto",
                             display: "block",
-                            maxHeight: 500,
-                            objectFit: "cover",
-                            objectPosition: "center top",
+                            objectFit: "contain",
                         }}
                     />
                     {/* Subtle gradient overlay for blending */}
@@ -189,7 +187,7 @@ export default function PromoShowcase() {
                                         boxShadow: "0 4px 16px rgba(0,0,0,0.1)",
                                     }}
                                 >
-                                    🧪 무료 체험 시작 →
+                                    무료 체험 시작 →
                                 </motion.div>
                             </div>
                         </Link>

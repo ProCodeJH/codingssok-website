@@ -10,8 +10,8 @@ interface Note {
 
 const STORAGE_KEY = "codingssok-study-notes";
 const COLORS = ["#eff6ff", "#f0fdf4", "#fefce8", "#fdf2f8", "#f5f3ff", "#fff7ed", "#f0f9ff"];
-const EMOJIS = ["📝", "💡", "⚡", "🔥", "🎯", "🧩", "🌟", "📌", "🚀", "🎨", "📊", "🧠"];
-const STICKERS = ["⭐", "❤️", "🏆", "🎉", "💎", "🌈", "✨", "🎈", "🦋", "🌸", "🐱", "🎵"];
+const EMOJIS = ["", "", "", "", "◎", "", "", "", "", "", "≡", ""];
+const STICKERS = ["⭐", "", "", "", "", "", "", "", "", "", "", ""];
 
 const load = (): Note[] => {
     if (typeof window === "undefined") return [];
@@ -38,7 +38,7 @@ export function StudyNotes({ isOpen, onClose, currentCourseId, currentCourseName
             id: `note-${Date.now()}`, title: "", content: "",
             courseId: currentCourseId || "general", tags: [],
             color: COLORS[Math.floor(Math.random() * COLORS.length)],
-            emoji: "📝", createdAt: Date.now(), updatedAt: Date.now(), pinned: false,
+            emoji: "", createdAt: Date.now(), updatedAt: Date.now(), pinned: false,
         };
         setNotes(prev => [newNote, ...prev]);
         setActiveNote(newNote);
@@ -98,13 +98,13 @@ export function StudyNotes({ isOpen, onClose, currentCourseId, currentCourseName
                 <div style={{ width: 300, borderRight: "1px solid #e2e8f0", display: "flex", flexDirection: "column", background: "#f8fafc" }}>
                     <div style={{ padding: "16px 16px 12px", borderBottom: "1px solid #e2e8f0" }}>
                         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
-                            <h3 style={{ fontSize: 16, fontWeight: 800, color: "#1e293b", margin: 0 }}>📝 학습 노트</h3>
+                            <h3 style={{ fontSize: 16, fontWeight: 800, color: "#1e293b", margin: 0 }}> 학습 노트</h3>
                             <button onClick={createNote} style={{
                                 padding: "6px 14px", borderRadius: 8, border: "none", background: "#2563eb", color: "#fff",
                                 fontSize: 12, fontWeight: 700, cursor: "pointer",
                             }}>+ 새 노트</button>
                         </div>
-                        <input placeholder="🔍 노트 검색..." value={searchQuery} onChange={e => setSearchQuery(e.target.value)}
+                        <input placeholder="⌕ 노트 검색..." value={searchQuery} onChange={e => setSearchQuery(e.target.value)}
                             style={{
                                 width: "100%", padding: "8px 12px", borderRadius: 8, border: "1px solid #e2e8f0",
                                 fontSize: 12, outline: "none", background: "#fff",
@@ -124,7 +124,7 @@ export function StudyNotes({ isOpen, onClose, currentCourseId, currentCourseName
                     <div style={{ flex: 1, overflowY: "auto", padding: 8 }}>
                         {filtered.length === 0 ? (
                             <div style={{ textAlign: "center", padding: 40, color: "#94a3b8" }}>
-                                <div style={{ fontSize: 32, marginBottom: 8 }}>📝</div>
+                                <div style={{ fontSize: 32, marginBottom: 8 }}></div>
                                 <div style={{ fontSize: 12 }}>노트를 작성해보세요!</div>
                             </div>
                         ) : filtered.map(note => (
@@ -143,7 +143,7 @@ export function StudyNotes({ isOpen, onClose, currentCourseId, currentCourseName
                                     <span style={{ fontSize: 13, fontWeight: 700, color: "#1e293b", flex: 1, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                                         {note.title || "제목 없음"}
                                     </span>
-                                    {note.pinned && <span style={{ fontSize: 12 }}>📌</span>}
+                                    {note.pinned && <span style={{ fontSize: 12 }}></span>}
                                 </div>
                                 <div style={{ fontSize: 11, color: "#94a3b8", marginTop: 4, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                                     {note.content.substring(0, 60) || "내용을 입력하세요..."}
@@ -186,13 +186,13 @@ export function StudyNotes({ isOpen, onClose, currentCourseId, currentCourseName
                                 ))}
                                 <div style={{ width: 1, height: 20, background: "#e2e8f0", margin: "0 4px" }} />
                                 <button onClick={() => setShowStickerPicker(!showStickerPicker)}
-                                    style={{ padding: "4px 10px", borderRadius: 6, border: "1px solid #e2e8f0", background: "#fff", fontSize: 11, cursor: "pointer", fontWeight: 600 }}>🎨 스티커</button>
+                                    style={{ padding: "4px 10px", borderRadius: 6, border: "1px solid #e2e8f0", background: "#fff", fontSize: 11, cursor: "pointer", fontWeight: 600 }}> 스티커</button>
                                 <button onClick={() => togglePin(activeNote.id)}
                                     style={{ padding: "4px 10px", borderRadius: 6, border: "1px solid #e2e8f0", background: activeNote.pinned ? "#fef3c7" : "#fff", fontSize: 11, cursor: "pointer" }}>
-                                    {activeNote.pinned ? "📌 고정됨" : "📌 고정"}
+                                    {activeNote.pinned ? " 고정됨" : " 고정"}
                                 </button>
                                 <button onClick={() => deleteNote(activeNote.id)}
-                                    style={{ padding: "4px 10px", borderRadius: 6, border: "1px solid #fecaca", background: "#fff", color: "#ef4444", fontSize: 11, cursor: "pointer" }}>🗑️</button>
+                                    style={{ padding: "4px 10px", borderRadius: 6, border: "1px solid #fecaca", background: "#fff", color: "#ef4444", fontSize: 11, cursor: "pointer" }}>×</button>
                                 <button onClick={onClose}
                                     style={{ padding: "4px 10px", borderRadius: 6, border: "1px solid #e2e8f0", background: "#fff", fontSize: 14, cursor: "pointer", marginLeft: 4 }}>✕</button>
                             </div>
@@ -225,7 +225,7 @@ export function StudyNotes({ isOpen, onClose, currentCourseId, currentCourseName
 
                             {/* Content editor */}
                             <textarea value={activeNote.content} onChange={e => updateNote("content", e.target.value)}
-                                placeholder="학습 내용을 자유롭게 기록하세요... 📝&#10;&#10;💡 코드 메모, 핵심 개념 정리, 오답 노트 등&#10;🎨 스티커와 이모지로 꾸며보세요!"
+                                placeholder="학습 내용을 자유롭게 기록하세요... &#10;&#10; 코드 메모, 핵심 개념 정리, 오답 노트 등&#10; 스티커와 이모지로 꾸며보세요!"
                                 style={{
                                     flex: 1, padding: "8px 24px 24px", fontSize: 14, lineHeight: 1.8, border: "none", outline: "none",
                                     color: "#334155", background: "transparent", resize: "none", fontFamily: "'Pretendard', system-ui, sans-serif",
@@ -242,13 +242,13 @@ export function StudyNotes({ isOpen, onClose, currentCourseId, currentCourseName
                         </>
                     ) : (
                         <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", color: "#94a3b8" }}>
-                            <div style={{ fontSize: 48, marginBottom: 16 }}>📝</div>
+                            <div style={{ fontSize: 48, marginBottom: 16 }}></div>
                             <div style={{ fontSize: 16, fontWeight: 700, marginBottom: 8 }}>노트를 선택하거나 새로 만드세요</div>
                             <div style={{ fontSize: 12 }}>학습 내용을 기록하고 꾸며보세요!</div>
                             <button onClick={createNote} style={{
                                 marginTop: 20, padding: "10px 24px", borderRadius: 10, border: "none",
                                 background: "#2563eb", color: "#fff", fontSize: 13, fontWeight: 700, cursor: "pointer",
-                            }}>✨ 새 노트 만들기</button>
+                            }}> 새 노트 만들기</button>
                             <button onClick={onClose} style={{
                                 marginTop: 10, padding: "8px 20px", borderRadius: 8, border: "1px solid #e2e8f0",
                                 background: "#fff", fontSize: 12, cursor: "pointer", color: "#64748b",

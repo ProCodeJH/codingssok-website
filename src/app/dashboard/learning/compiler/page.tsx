@@ -13,7 +13,7 @@ const Editor = dynamic(() => import("@monaco-editor/react"), { ssr: false });
 const C_DEFAULT = `#include <stdio.h>
 
 int main() {
-    printf("Hello, 코딩쏙! 🌸\\n");
+    printf("Hello, 코딩쏙! \\n");
     
     int a = 10;
     int b = 20;
@@ -24,7 +24,7 @@ int main() {
     return 0;
 }`;
 
-const PYTHON_DEFAULT = `# 파이썬 코딩쏙 🐍
+const PYTHON_DEFAULT = `# 파이썬 코딩쏙 
 name = "코딩쏙"
 print(f"Hello, {name}!")
 
@@ -35,21 +35,21 @@ print(f"평균: {total / len(numbers):.1f}")`;
 
 const CODE_TEMPLATES: Record<string, { label: string; code: string; icon: string }[]> = {
     c: [
-        { label: "Hello World", icon: "👋", code: C_DEFAULT },
-        { label: "배열 & 반복문", icon: "🔄", code: `#include <stdio.h>\n\nint main() {\n    int arr[5] = {10, 20, 30, 40, 50};\n    int sum = 0;\n\n    for (int i = 0; i < 5; i++) {\n        printf("arr[%d] = %d\\n", i, arr[i]);\n        sum += arr[i];\n    }\n\n    printf("합계: %d\\n", sum);\n    printf("평균: %.1f\\n", (float)sum / 5);\n    return 0;\n}` },
-        { label: "포인터 기초", icon: "📍", code: `#include <stdio.h>\n\nint main() {\n    int x = 42;\n    int *p = &x;\n\n    printf("x의 값: %d\\n", x);\n    printf("x의 주소: %p\\n", (void*)&x);\n    printf("p가 가리키는 값: %d\\n", *p);\n\n    *p = 100;\n    printf("변경 후 x: %d\\n", x);\n    return 0;\n}` },
-        { label: "구조체", icon: "🏗️", code: `#include <stdio.h>\n\ntypedef struct {\n    char name[20];\n    int age;\n    float score;\n} Student;\n\nint main() {\n    Student s = {"홍길동", 18, 95.5};\n    printf("이름: %s\\n", s.name);\n    printf("나이: %d\\n", s.age);\n    printf("점수: %.1f\\n", s.score);\n    return 0;\n}` },
+        { label: "Hello World", icon: "", code: C_DEFAULT },
+        { label: "배열 & 반복문", icon: "↻", code: `#include <stdio.h>\n\nint main() {\n    int arr[5] = {10, 20, 30, 40, 50};\n    int sum = 0;\n\n    for (int i = 0; i < 5; i++) {\n        printf("arr[%d] = %d\\n", i, arr[i]);\n        sum += arr[i];\n    }\n\n    printf("합계: %d\\n", sum);\n    printf("평균: %.1f\\n", (float)sum / 5);\n    return 0;\n}` },
+        { label: "포인터 기초", icon: "", code: `#include <stdio.h>\n\nint main() {\n    int x = 42;\n    int *p = &x;\n\n    printf("x의 값: %d\\n", x);\n    printf("x의 주소: %p\\n", (void*)&x);\n    printf("p가 가리키는 값: %d\\n", *p);\n\n    *p = 100;\n    printf("변경 후 x: %d\\n", x);\n    return 0;\n}` },
+        { label: "구조체", icon: "", code: `#include <stdio.h>\n\ntypedef struct {\n    char name[20];\n    int age;\n    float score;\n} Student;\n\nint main() {\n    Student s = {"홍길동", 18, 95.5};\n    printf("이름: %s\\n", s.name);\n    printf("나이: %d\\n", s.age);\n    printf("점수: %.1f\\n", s.score);\n    return 0;\n}` },
     ],
     python: [
-        { label: "Hello World", icon: "👋", code: PYTHON_DEFAULT },
-        { label: "리스트 & 딕셔너리", icon: "📦", code: `# 리스트와 딕셔너리\nfruits = ["사과", "바나나", "딸기"]\nfor i, fruit in enumerate(fruits):\n    print(f"{i+1}. {fruit}")\n\nstudent = {"이름": "홍길동", "나이": 18, "점수": 95.5}\nfor key, value in student.items():\n    print(f"{key}: {value}")` },
-        { label: "함수 & 클래스", icon: "🎯", code: `# 함수 정의\ndef factorial(n):\n    if n <= 1:\n        return 1\n    return n * factorial(n - 1)\n\nfor i in range(1, 8):\n    print(f"{i}! = {factorial(i)}")\n\n# 클래스 정의\nclass Animal:\n    def __init__(self, name, sound):\n        self.name = name\n        self.sound = sound\n    def speak(self):\n        print(f"{self.name}: {self.sound}!")\n\ncat = Animal("고양이", "야옹")\ndog = Animal("강아지", "멍멍")\ncat.speak()\ndog.speak()` },
+        { label: "Hello World", icon: "", code: PYTHON_DEFAULT },
+        { label: "리스트 & 딕셔너리", icon: "", code: `# 리스트와 딕셔너리\nfruits = ["사과", "바나나", "딸기"]\nfor i, fruit in enumerate(fruits):\n    print(f"{i+1}. {fruit}")\n\nstudent = {"이름": "홍길동", "나이": 18, "점수": 95.5}\nfor key, value in student.items():\n    print(f"{key}: {value}")` },
+        { label: "함수 & 클래스", icon: "◎", code: `# 함수 정의\ndef factorial(n):\n    if n <= 1:\n        return 1\n    return n * factorial(n - 1)\n\nfor i in range(1, 8):\n    print(f"{i}! = {factorial(i)}")\n\n# 클래스 정의\nclass Animal:\n    def __init__(self, name, sound):\n        self.name = name\n        self.sound = sound\n    def speak(self):\n        print(f"{self.name}: {self.sound}!")\n\ncat = Animal("고양이", "야옹")\ndog = Animal("강아지", "멍멍")\ncat.speak()\ndog.speak()` },
     ],
 };
 
 const LANG_CONFIG: Record<string, { label: string; icon: string; compiler: string; monacoLang: string; color: string; options: Record<string, string> }> = {
-    c: { label: "C언어", icon: "💻", compiler: "gcc-head", monacoLang: "c", color: "#00599C", options: { options: "warning", "compiler-option-raw": "-std=c11" } },
-    python: { label: "Python", icon: "🐍", compiler: "cpython-3.12.0", monacoLang: "python", color: "#3776AB", options: {} },
+    c: { label: "C언어", icon: "", compiler: "gcc-head", monacoLang: "c", color: "#00599C", options: { options: "warning", "compiler-option-raw": "-std=c11" } },
+    python: { label: "Python", icon: "", compiler: "cpython-3.12.0", monacoLang: "python", color: "#3776AB", options: {} },
 };
 
 interface Submission { id: string; code: string; output: string; status: string; created_at: string; language?: string; }
@@ -419,7 +419,7 @@ export default function CompilerPage() {
                                 {showTemplates && (
                                     <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }}
                                         style={{ overflow: "hidden", borderBottom: "1px solid #f1f5f9", padding: "12px 16px", background: "rgba(255,255,255,0.5)" }}>
-                                        <div style={{ fontSize: 10, fontWeight: 800, color: "#d97706", marginBottom: 8, letterSpacing: 0.5 }}>📝 코드 템플릿</div>
+                                        <div style={{ fontSize: 10, fontWeight: 800, color: "#d97706", marginBottom: 8, letterSpacing: 0.5 }}> 코드 템플릿</div>
                                         <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
                                             {(CODE_TEMPLATES[lang] || []).map(t => (
                                                 <motion.button key={t.label} whileHover={{ scale: 1.03, y: -2 }} whileTap={{ scale: 0.97 }}
@@ -434,7 +434,7 @@ export default function CompilerPage() {
                                 {showStdin && (
                                     <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }}
                                         style={{ overflow: "hidden", borderBottom: "1px solid #f1f5f9", padding: "12px 16px", background: "rgba(255,255,255,0.5)" }}>
-                                        <div style={{ fontSize: 10, fontWeight: 800, color: "#6366f1", marginBottom: 6 }}>⌨️ 표준 입력 (stdin)</div>
+                                        <div style={{ fontSize: 10, fontWeight: 800, color: "#6366f1", marginBottom: 6 }}>⌨ 표준 입력 (stdin)</div>
                                         <textarea value={stdinInput} onChange={e => setStdinInput(e.target.value)} placeholder="입력값을 작성하세요..."
                                             style={{ width: "100%", minHeight: 60, padding: 10, borderRadius: 10, border: "1px solid #e2e8f0", fontFamily: "'JetBrains Mono', monospace", fontSize: 12, outline: "none", resize: "vertical", background: "#fafafa" }} />
                                     </motion.div>
@@ -442,7 +442,7 @@ export default function CompilerPage() {
                                 {showHistory && (
                                     <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }}
                                         style={{ overflow: "hidden", borderBottom: "1px solid #f1f5f9", padding: "12px 16px", background: "rgba(255,255,255,0.5)", maxHeight: 200, overflowY: "auto" }}>
-                                        <div style={{ fontSize: 10, fontWeight: 800, color: "#0ea5e9", marginBottom: 8 }}>📜 제출 기록</div>
+                                        <div style={{ fontSize: 10, fontWeight: 800, color: "#0ea5e9", marginBottom: 8 }}> 제출 기록</div>
                                         {history.length === 0 ? (
                                             <p style={{ fontSize: 12, color: "#94a3b8", textAlign: "center", padding: 16 }}>아직 제출 기록이 없어요</p>
                                         ) : (
@@ -459,7 +459,7 @@ export default function CompilerPage() {
                                                                 {sub.status === "success" ? "✓ 성공" : "✗ 에러"}
                                                             </span>
                                                             <span style={{ fontSize: 9, padding: "2px 6px", borderRadius: 4, background: "#f1f5f9", color: "#64748b", fontWeight: 600 }}>
-                                                                {LANG_CONFIG[sub.language || "c"]?.icon || "💻"}
+                                                                {LANG_CONFIG[sub.language || "c"]?.icon || ""}
                                                             </span>
                                                             <span style={{ fontSize: 10, color: "#64748b", fontFamily: "'JetBrains Mono', monospace", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", maxWidth: 200 }}>
                                                                 {sub.code.substring(0, 40)}...

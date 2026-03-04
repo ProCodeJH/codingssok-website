@@ -69,7 +69,7 @@ export default function Hero() {
             <div className="data-stream" style={{ top: '35%', right: 0, animationDelay: '1s', animationDirection: 'reverse', animationDuration: '6s' }} />
 
             <div
-                className="relative z-10 w-full min-h-[100vh] flex flex-col items-center justify-between pt-44 pb-12 pointer-events-none"
+                className="relative z-10 w-full min-h-[100vh] flex flex-col items-center justify-between pt-24 pb-16 pointer-events-none"
                 style={{
                     filter: `blur(${scrollProgress * 4}px)`,
                     opacity: 1 - scrollProgress * 0.5,
@@ -82,19 +82,16 @@ export default function Hero() {
                         src="/images/promo/logo-codingssok.png"
                         alt="코딩쏙"
                         style={{
-                            height: "clamp(100px, 16vw, 220px)",
+                            height: "clamp(80px, 14vw, 180px)",
                             objectFit: "contain",
                             animation: "logoFlip 1.2s cubic-bezier(0.16,1,0.3,1) both",
                             filter: "drop-shadow(0 4px 20px rgba(59,130,246,0.3))",
                         }}
                     />
-                    <p style={{ fontSize: "clamp(16px, 2.5vw, 24px)", fontWeight: 500, color: "#64748b", letterSpacing: "0.05em" }}>머리에 쏙쏙 들어오는 코딩교육</p>
+                    <p style={{ fontSize: "clamp(14px, 2vw, 20px)", fontWeight: 500, color: "#64748b", letterSpacing: "0.05em" }}>머리에 쏙쏙 들어오는 코딩교육</p>
                 </div>
 
-                {/* SPACER */}
-                <div style={{ minHeight: "55vh" }} />
-
-                {/* BOTTOM: Heading only */}
+                {/* BOTTOM: Heading */}
                 <div style={{
                     padding: "28px 48px",
                     background: "rgba(255,255,255,0.9)",

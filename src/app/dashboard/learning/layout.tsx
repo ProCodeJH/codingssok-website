@@ -38,7 +38,7 @@ function AuthGate({ children }: { children: ReactNode }) {
                     transition={{ duration: 1.8, repeat: Infinity, ease: "easeInOut" }}
                     style={{ width: 80, height: 80, borderRadius: 20, overflow: "hidden", boxShadow: "0 8px 32px rgba(0,0,0,0.1)" }}
                 >
-                    <img src="/images/logo-codingssok.png" alt="코딩쏙" width={80} height={80} style={{ width: "100%", height: "100%", objectFit: "contain" }} />
+                    <img src="/images/promo/logo-codingssok.png" alt="코딩쏙" width={80} height={80} style={{ width: "100%", height: "100%", objectFit: "contain" }} />
                 </motion.div>
                 <motion.p
                     initial={{ opacity: 0, y: 8 }}

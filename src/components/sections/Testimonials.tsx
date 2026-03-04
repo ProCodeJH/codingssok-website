@@ -236,9 +236,9 @@ export default function Testimonials() {
                             transition: 'all 0.7s cubic-bezier(0.34, 1.56, 0.64, 1)',
                             position: 'absolute',
                             width: '100%',
-                            maxWidth: '420px',
+                            maxWidth: '680px',
                             left: '50%',
-                            marginLeft: '-210px',
+                            marginLeft: '-340px',
                             pointerEvents: i === active ? 'auto' : 'none',
                         }}
                         onClick={() => i !== active && setActive(i)}
@@ -294,8 +294,8 @@ export default function Testimonials() {
 .ts-accent-num { color: #4F46E5; font-weight: 700; }
 
 /* ═══ 3D Carousel ═══ */
-.ts-carousel-3d { position: relative; z-index: 10; height: 620px; perspective: 1200px; margin: 0 auto; max-width: 900px; }
-@media (max-width: 640px) { .ts-carousel-3d { height: 640px; } .ts-carousel-card { max-width: 85vw !important; margin-left: -42.5vw !important; } }
+.ts-carousel-3d { position: relative; z-index: 10; height: 620px; perspective: 1200px; margin: 0 auto; max-width: 1200px; }
+@media (max-width: 768px) { .ts-carousel-3d { height: 640px; } .ts-carousel-card { max-width: 90vw !important; margin-left: -45vw !important; } }
 .ts-item { width: 100%; }
 
 /* Navigation */

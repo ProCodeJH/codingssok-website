@@ -16,7 +16,7 @@ const FEATURES = [
     { icon: "emoji_events", title: "대회·자격증 대비", desc: "정보올림피아드, COS-Pro 등 목표에 맞는 특화 프로그램을 운영합니다." },
 ];
 
-const INTERESTS = ["Python", "C/C++"];
+const INTERESTS = ["Python", "C/C++", "피지컬컴퓨팅", "사고력수학", "자격증"];
 
 export default function Contact() {
     const ref = useRef<HTMLElement>(null);

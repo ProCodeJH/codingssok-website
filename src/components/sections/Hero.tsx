@@ -182,7 +182,7 @@ export default function Hero() {
                         objectFit: "cover",
                         transition: "transform 0.1s ease-out",
                         filter: "saturate(0) contrast(1.2)",
-                        opacity: 0.12,
+                        opacity: 0.4,
                     }}
                 >
                     <source src="/videos/hero-globe.mp4" type="video/mp4" />

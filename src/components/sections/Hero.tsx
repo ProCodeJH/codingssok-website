@@ -192,6 +192,16 @@ export default function Hero() {
                     background: "radial-gradient(ellipse at center, transparent 30%, rgba(255,255,255,0.8) 100%)",
                     pointerEvents: "none",
                 }} />
+                {/* Bottom fade to white */}
+                <div style={{
+                    position: "absolute",
+                    bottom: 0,
+                    left: 0,
+                    width: "100%",
+                    height: "30%",
+                    background: "linear-gradient(to bottom, transparent, #ffffff)",
+                    pointerEvents: "none",
+                }} />
             </motion.div>
 
             {/* Data stream decorations */}

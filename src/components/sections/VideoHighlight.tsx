@@ -213,7 +213,7 @@ export default function VideoHighlight() {
                                 onEnded={() => setIsPlaying(false)}
                             >
                                 <source
-                                    src="/videos/codingssok-intro.mp4#t=0.5"
+                                    src="/videos/codingssok-intro-web.mp4#t=0.5"
                                     type="video/mp4"
                                 />
                             </video>

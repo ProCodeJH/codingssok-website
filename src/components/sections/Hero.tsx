@@ -181,6 +181,7 @@ export default function Hero() {
                         height: "auto",
                         objectFit: "cover",
                         transition: "transform 0.1s ease-out",
+                        mixBlendMode: "screen",
                     }}
                 >
                     <source src="/videos/hero-globe.mp4" type="video/mp4" />

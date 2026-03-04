@@ -1,20 +1,20 @@
-﻿"use client";
+"use client";
 
-/* ?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧??
-   Curriculum ??Holographic Exploded View Ultra V1.2
+/* ═══════════════════════════════════════════════════════════════
+   Curriculum — Holographic Exploded View Ultra V1.2
    Faithful 1:1 port from reference HTML
-   ?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧??*/
+   ═══════════════════════════════════════════════════════════════ */
 
 const cards = [
     {
         num: "01", tag: "Foundation", tagColor: "#3B82F6",
         icon: "functions", iconColor: "text-blue-500",
-        title: "Math & Fusion", titleKr: "?ш퀬???섑븰",
-        desc: "肄붾뵫?쇰줈 ?섑븰 媛쒕뀗??吏곸젒 援ы쁽?섎ŉ 臾몄젣?닿껐???먮━瑜?源⑥슦移⑸땲??",
-        skills: "?곗궛 ?먮룞??쨌 ?⑦꽩 ?몄떇 쨌 臾몄젣 遺꾪빐 쨌 ?섏뿴 ?먭뎄 쨌 ?꾪삎 肄붾뵫",
-        skill: "?섑븰 횞 肄붾뵫 ?듯빀", skillIcon: "psychology",
-        age: "珥덈벑 1~4?숇뀈 쨌 1:4 ?뚯닔?뺤삁", ageIcon: "school",
-        schedule: "二?2??90遺?,
+        title: "Math & Fusion", titleKr: "사고력 수학",
+        desc: "코딩으로 수학 개념을 직접 구현하며 문제해결의 원리를 깨우칩니다.",
+        skills: "연산 자동화 · 패턴 인식 · 문제 분해 · 수열 탐구 · 도형 코딩",
+        skill: "수학 × 코딩 융합", skillIcon: "psychology",
+        age: "초등 1~4학년 · 1:4 소수정예", ageIcon: "school",
+        schedule: "주 2회 90분",
         img: "https://lh3.googleusercontent.com/aida-public/AB6AXuBGyUvkoHf2VXnmX7um9_Gneh7M_6hCxzoF6wuS_iKfr3Bdq0P1yxemqv3Q2jeNSi-Wpfhvbij_LHWlQK6Wsf7bHLd9OoWa4R5RiJt2a78lEyUhf1uViIil8bEsAjZ1BTh8R4MUuUSp2JJDG9dGvKC7-hxz1-pDYGjSNoOX-YCtkJI1iesn53H4ogSaHgYGu-gHo_U-rcyhPTLZFaq9RHOxCLCvWbJx9-7QM86RC_F48MxlGW1WOpmEEPw460ocHUMa_3GU2EOhS46t",
         floatClass: "holo-float-1",
         hoverColor: "primary", glowColor: "rgba(59,130,246,0.3)",
@@ -23,12 +23,12 @@ const cards = [
     {
         num: "02", tag: "Core Logic", tagColor: "#0d9488",
         icon: "terminal", iconColor: "text-teal-600",
-        title: "Software Master", titleKr: "?뚰봽?몄썾??,
-        desc: "Scratch 釉붾줉肄붾뵫?쇰줈 ?ш퀬?μ쓣 湲곕Ⅸ ?? ?뚯씠??텰?몄뼱濡??띿뒪??肄붾뵫??吏꾩엯?⑸땲??",
-        skills: "?뚯씠??쨌 C?몄뼱 쨌 ?먮즺援ъ“ 쨌 ?뚭퀬由ъ쬁 ?ㅺ퀎 쨌 ?붾쾭源?,
-        skill: "釉붾줉 ???띿뒪??肄붾뵫", skillIcon: "code",
-        age: "珥덈벑 3~以묐벑 쨌 1:6 諛李?肄붿묶", ageIcon: "school",
-        schedule: "二?2??90遺?,
+        title: "Software Master", titleKr: "소프트웨어",
+        desc: "Scratch 블록코딩으로 사고력을 기른 후, 파이썬·C언어로 텍스트 코딩에 진입합니다.",
+        skills: "파이썬 · C언어 · 자료구조 · 알고리즘 설계 · 디버깅",
+        skill: "블록 → 텍스트 코딩", skillIcon: "code",
+        age: "초등 3~중등 · 1:6 밀착 코칭", ageIcon: "school",
+        schedule: "주 2회 90분",
         img: "https://lh3.googleusercontent.com/aida-public/AB6AXuAZPMcDnv6xVrp8ZtKOfeouajqsosePTu4Aj88KxOXpPN0hS05d3V39eXyzaUGEwxtNnO3gA8OXQ0_nNX9SL2eio0e6nN2qHiL8aRSlmGxmBFikIj8ntEFsJyc6J2Iqgh2wLhwu1QkumM6B9_CquoaLQl8hTjCDywGkzR2Nn_rp6huomk9OH3j1WR3UihoNc4Pi5h7tGnxZ9jSFWebTufyG7Gvm4kZ8kFTk73AssC-ZXrPobZzCfx-zJifHrC2Ukt15trf7RXl_nhL-",
         floatClass: "holo-float-2",
         hoverColor: "teal", glowColor: "rgba(45,212,191,0.3)",
@@ -37,12 +37,12 @@ const cards = [
     {
         num: "03", tag: "Hardware", tagColor: "#6366f1",
         icon: "memory", iconColor: "text-indigo-600",
-        title: "Arduino / IoT", titleKr: "?섎뱶?⑥뼱",
-        desc: "LED遺???쇱꽌, ?쒕낫紐⑦꽣 ?쒖뼱源뚯?. 肄붾뱶媛 ?ㅼ젣 ?μ튂瑜??吏곸씠??寃쏀뿕???좎궗?⑸땲??",
-        skills: "?꾨몢?대끂 쨌 ?꾩옄 ?뚮줈 쨌 ?쇱꽌 ?쒖슜 쨌 IoT 쨌 3D ?꾨┛??,
-        skill: "?쇱?而?而댄벂??, skillIcon: "developer_board",
-        age: "珥덈벑 3?숇뀈+ 쨌 1:4 ?ㅼ뒿 以묒떖", ageIcon: "engineering",
-        schedule: "二?1~2??90遺?,
+        title: "Arduino / IoT", titleKr: "하드웨어",
+        desc: "LED부터 센서, 서보모터 제어까지. 코드가 실제 장치를 움직이는 경험을 선사합니다.",
+        skills: "아두이노 · 전자 회로 · 센서 활용 · IoT · 3D 프린팅",
+        skill: "피지컬 컴퓨팅", skillIcon: "developer_board",
+        age: "초등 3학년+ · 1:4 실습 중심", ageIcon: "engineering",
+        schedule: "주 1~2회 90분",
         img: "https://lh3.googleusercontent.com/aida-public/AB6AXuBKBV9pIxjMZ0oJ3TMnNBRk1kBjP9LP5h9NiY1YdHVf1z4C0_4Pti8zuOY9jZbNP1No1gbvfTAqTWxcNnCYcVY-W7YiHXpnVkKVnYZrTrGcMqnZT3uqkQwKv6qVd5yor7LlCnPmcAEVPWjNW9qz_HAXHFPijAQEjkLA0diMQAya76GmQSSa0dQt5ptrrlr-6mCrxNEb9-0uRICCSWE-V2IaWVusIm3QARpkP0_QJN_asM__DmyfSnfyLc4d19g-jtA07MqP4X653dD7",
         floatClass: "holo-float-3",
         hoverColor: "indigo", glowColor: "rgba(99,102,241,0.3)",
@@ -51,12 +51,12 @@ const cards = [
     {
         num: "04", tag: "Innovation", tagColor: "#f97316",
         icon: "brush", iconColor: "text-orange-600",
-        title: "Creation Studio", titleKr: "?꾨줈?앺듃",
-        desc: "湲고쉷??????댁뼱?꾨젅????媛쒕컻 ???뚯뒪????諛쒗몴. ?ㅼ젣 媛쒕컻 ?꾨줈?몄뒪瑜?寃쏀뿕?⑸땲??",
-        skills: "??媛쒕컻 쨌 寃뚯엫 ?쒖옉 쨌 UI/UX ?ㅺ퀎 쨌 ?꾨젅?좏뀒?댁뀡 쨌 ? ?묒뾽",
-        skill: "李쎌옉 ?ㅽ뒠?붿삤", skillIcon: "rocket_launch",
-        age: "?꾩뿰??쨌 1:2~4 ?", ageIcon: "groups",
-        schedule: "留욎땄 ?쇱젙",
+        title: "Creation Studio", titleKr: "프로젝트",
+        desc: "기획서 → 와이어프레임 → 개발 → 테스트 → 발표. 실제 개발 프로세스를 경험합니다.",
+        skills: "앱 개발 · 게임 제작 · UI/UX 설계 · 프레젠테이션 · 팀 협업",
+        skill: "창작 스튜디오", skillIcon: "rocket_launch",
+        age: "전연령 · 1:2~4 팀", ageIcon: "groups",
+        schedule: "맞춤 일정",
         img: "https://lh3.googleusercontent.com/aida-public/AB6AXuBBBY_4zbi7hkFsTnV-bu1ciQhDQrxXIZg84zmvvw-PUHjgrsH2Ni-hCZZzb4Vtv9GdlH5qww4GVAWA0zQsn-DbD4p7qb2qWUMozOsoUq__KoRcGe5udjzYy1_zemmA5vW2RSCw42A_BnxXUsy4GsVyJTUX5jlYl0P1TIilLIQOGnG6XQzh-oFWkGfhncOBuY_qaWLWMUm1XZkzpDGjJdZPFE_zPpkoHIH0FxjXENQMqHDRkmQb0m3kZ1GhWKjqM9-aTVlSDtwd50KG",
         floatClass: "holo-float-4",
         hoverColor: "orange", glowColor: "rgba(249,115,22,0.3)",
@@ -65,12 +65,12 @@ const cards = [
     {
         num: "05", tag: "Expert", tagColor: "#9333ea",
         icon: "verified", iconColor: "text-purple-600",
-        title: "Pro Certification", titleKr: "?먭꺽利?,
-        desc: "?쒗뿕 ?좏삎蹂?吏묒쨷 ?숈뒿怨??ㅼ쟾 紐⑥쓽怨좎궗濡??⑷꺽瑜좎쓣 洹밸??뷀빀?덈떎.",
-        skills: "COS-Pro 쨌 PCCE 쨌 ?뺣낫?щ┝?쇱븘??쨌 ?꾨줈洹몃옒諛띻린?μ궗 쨌 而댄솢",
-        skill: "紐⑺몴 ?ъ꽦 ?몃옓", skillIcon: "workspace_premium",
-        age: "以?怨좊벑 쨌 1:4 吏묒쨷 肄붿묶", ageIcon: "school",
-        schedule: "?쒗뿕 留욎땄 ?쇱젙",
+        title: "Pro Certification", titleKr: "자격증",
+        desc: "시험 유형별 집중 학습과 실전 모의고사로 합격률을 극대화합니다.",
+        skills: "COS-Pro · PCCE · 정보올림피아드 · 프로그래밍기능사 · 컴활",
+        skill: "목표 달성 트랙", skillIcon: "workspace_premium",
+        age: "중~고등 · 1:4 집중 코칭", ageIcon: "school",
+        schedule: "시험 맞춤 일정",
         img: "https://lh3.googleusercontent.com/aida-public/AB6AXuBnoss8UpmSxOZxOikwQhAadRJ8NdLlBpwGpUlZyt1d3hjaOxEA0wTZ0JeXBeBTcTZn0k1azp3kRnBcp21VaJ16-H-EyqyIETL-xlbgvBJrRnXjx7i6InbQEVzs8mghloyqbVGiWG5naoIQgBsODQ2_IirJZF3DwgiWkhEzLLYi2j2jH4TY4GRhN0QwxtTbRzKSygyE3eBeisy8bF0X7A9Iyc151hTwIV1EtrNzAhbKxTRlu4Q60fLB0qNNyH6zodNcGQDB6Krj7xZr",
         floatClass: "holo-float-5",
         hoverColor: "purple", glowColor: "rgba(147,51,234,0.3)",
@@ -102,7 +102,7 @@ export default function Curriculum() {
                         </h2>
                         <h1 className="holo-main-title">CURRICULUM</h1>
                         <p className="holo-desc">
-                            5?④퀎 留덉뒪?곕━ 怨쇱젙???듯빐 泥닿퀎?곸쑝濡??깆옣?섏꽭?? 媛??④퀎瑜??대┃?섎㈃ ?곸꽭 而ㅻ━?섎읆???뺤씤?????덉뒿?덈떎.
+                            5단계 마스터리 과정을 통해 체계적으로 성장하세요. 각 단계를 클릭하면 상세 커리큘럼을 확인할 수 있습니다.
                         </p>
                     </header>
 
@@ -115,7 +115,7 @@ export default function Curriculum() {
                         </div>
                     </div>
 
-                    {/* ?먥븧??MONOLITH CARDS ?먥븧??*/}
+                    {/* ═══ MONOLITH CARDS ═══ */}
                     <div className="holo-grid">
                         {cards.map((c, i) => (
                             <div key={i} className={`holo-mono-wrap ${c.floatClass}`} tabIndex={0}>
@@ -184,10 +184,10 @@ export default function Curriculum() {
                 </div >
 
                 <style>{`
-/* ?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧??
-   HOLOGRAPHIC EXPLODED VIEW ??STYLES
+/* ═══════════════════════════════════
+   HOLOGRAPHIC EXPLODED VIEW — STYLES
    From reference HTML, 1:1
-   ?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧??*/
+   ═══════════════════════════════════ */
 .holo-section {
     position: relative; overflow: hidden;
     padding: clamp(60px, 8vw, 100px) 0;
@@ -196,7 +196,7 @@ export default function Curriculum() {
     color: #1e293b;
 }
 
-/* ?? BG ?? */
+/* ── BG ── */
 .holo-bg { position: absolute; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
 .holo-bg-grad { position: absolute; inset: 0; background: linear-gradient(180deg, #fff, #f8fafc, #f1f5f9); }
 .holo-cyber-grid {
@@ -217,7 +217,7 @@ export default function Curriculum() {
 .holo-flare-1 { top: -10%; left: 20%; width: 800px; height: 800px; background: radial-gradient(circle, rgba(59,130,246,0.15), transparent 70%); }
 .holo-flare-2 { bottom: -10%; right: 10%; width: 600px; height: 600px; background: radial-gradient(circle, rgba(59,130,246,0.1), transparent 70%); opacity: 0.6; }
 
-/* ?? Header ?? */
+/* ── Header ── */
 .holo-header { text-align: center; margin-bottom: clamp(48px, 6vw, 80px); position: relative; }
 .holo-watermark {
     position: absolute; top: -40px; left: 50%; transform: translateX(-50%);
@@ -240,7 +240,7 @@ export default function Curriculum() {
 }
 .holo-desc { color: #64748b; font-size: 16px; max-width: 560px; margin: 0 auto; line-height: 1.7; }
 
-/* ?? Connectors ?? */
+/* ── Connectors ── */
 .holo-connectors { position: absolute; top: 54%; left: 0; right: 0; height: 2px; display: none; pointer-events: none; z-index: 0; }
 @media (min-width: 1280px) { .holo-connectors { display: block; } }
 .holo-connector-inner { position: relative; max-width: 1600px; margin: 0 auto; padding: 0 64px; height: 100%; }
@@ -251,7 +251,7 @@ export default function Curriculum() {
     animation: holoEnergyPulse 3s infinite ease-in-out;
 }
 
-/* ?? Grid ?? */
+/* ── Grid ── */
 .holo-grid {
     display: grid;
     grid-template-columns: repeat(1, 1fr);
@@ -261,14 +261,14 @@ export default function Curriculum() {
 @media (min-width: 768px) { .holo-grid { grid-template-columns: repeat(2, 1fr); } }
 @media (min-width: 1280px) { .holo-grid { grid-template-columns: repeat(5, 1fr); gap: 28px; } }
 
-/* ?? Monolith Wrapper ?? */
+/* ── Monolith Wrapper ── */
 .holo-mono-wrap {
     perspective: 1200px; transform-style: preserve-3d;
     height: auto; min-height: 480px;
 }
 @media (min-width: 1280px) { .holo-mono-wrap { height: 620px; } }
 
-/* ?? Monolith Slab (THE card) ?? */
+/* ── Monolith Slab (THE card) ── */
 .holo-slab {
     background: linear-gradient(145deg, rgba(255,255,255,0.9), rgba(240,249,255,0.7));
     backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
@@ -309,7 +309,7 @@ export default function Curriculum() {
     transform: translateX(100%) skewX(-15deg);
 }
 
-/* ?? Depth layers ?? */
+/* ── Depth layers ── */
 .holo-depth-1 { transform: translateZ(20px); transition: transform 0.4s ease; }
 .holo-depth-2 { transform: translateZ(40px); transition: transform 0.5s ease; }
 .holo-depth-3 { transform: translateZ(60px); transition: transform 0.6s ease; }
@@ -317,14 +317,14 @@ export default function Curriculum() {
 .holo-mono-wrap:focus-within .holo-depth-2 { transform: translateZ(80px) translateY(-10px); }
 .holo-mono-wrap:focus-within .holo-depth-3 { transform: translateZ(120px) translateY(-15px); }
 
-/* ?? Card number ?? */
+/* ── Card number ── */
 .holo-num {
     position: absolute; top: 16px; right: 16px;
     font-family: 'Orbitron', sans-serif; font-size: 32px;
     font-weight: 700; color: #e2e8f0; user-select: none; z-index: 0;
 }
 
-/* ?? Image area ?? */
+/* ── Image area ── */
 .holo-img-wrap {
     position: relative; height: 180px; width: 100%;
     border-radius: 16px; overflow: visible; margin-bottom: 24px;
@@ -340,7 +340,7 @@ export default function Curriculum() {
 .group:hover .holo-img { transform: scale(1.1); }
 .holo-img-overlay { position: absolute; inset: 0; background: linear-gradient(to top, rgba(15,23,42,0.4), transparent); }
 
-/* ?? Etched Icon ?? */
+/* ── Etched Icon ── */
 .holo-etched-icon {
     position: absolute; bottom: -20px; left: 16px;
     width: 52px; height: 52px; border-radius: 16px;
@@ -353,7 +353,7 @@ export default function Curriculum() {
     border: 1px solid rgba(255,255,255,0.2);
 }
 
-/* ?? Body ?? */
+/* ── Body ── */
 .holo-body {
     padding: 0 20px 28px; display: flex; flex-direction: column;
     flex-grow: 1; position: relative;
@@ -399,7 +399,7 @@ export default function Curriculum() {
     animation: holoFlicker 3s infinite alternate;
 }
 
-/* ?? Meta ?? */
+/* ── Meta ── */
 .holo-meta {
     margin-top: auto; padding-top: 14px;
     border-top: 1px solid #e2e8f0;
@@ -412,7 +412,7 @@ export default function Curriculum() {
 }
 .group:hover .holo-meta-row { transform: translateX(4px); }
 
-/* ?? Bottom glow ?? */
+/* ── Bottom glow ── */
 .holo-bottom-glow {
     position: absolute; bottom: 0; left: 0; right: 0;
     height: 3px; opacity: 0; border-radius: 0 0 24px 24px;
@@ -420,7 +420,7 @@ export default function Curriculum() {
 }
 .group:hover .holo-bottom-glow { opacity: 1; }
 
-/* ?? Footer ?? */
+/* ── Footer ── */
 .holo-footer { margin-top: 80px; display: flex; flex-direction: column; align-items: center; }
 .holo-footer-line {
     height: 80px; width: 1px; margin-bottom: 20px;
@@ -433,7 +433,7 @@ export default function Curriculum() {
     color: #94a3b8; text-transform: uppercase; opacity: 0.7;
 }
 
-/* ?먥븧??KEYFRAMES ?먥븧??*/
+/* ═══ KEYFRAMES ═══ */
 @keyframes holoFloat {
     0%, 100% { transform: translateY(0) rotateX(0deg) rotateY(0deg); }
     50% { transform: translateY(-15px) rotateX(2deg) rotateY(-1deg); }

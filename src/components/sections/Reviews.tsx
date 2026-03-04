@@ -1,70 +1,70 @@
-﻿"use client";
+"use client";
 
 import { useRef } from "react";
 import { motion, useInView } from "framer-motion";
 
-/* ?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧??
-   Reviews ??Ultra-Nexus Prismatic Review Lab V3.0
-   Isometric logos 쨌 Liquid-fill bars 쨌 Tech-mono
-   ?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧??*/
+/* ═══════════════════════════════════════════
+   Reviews — Ultra-Nexus Prismatic Review Lab V3.0
+   Isometric logos · Liquid-fill bars · Tech-mono
+   ═══════════════════════════════════════════ */
 
 const REVIEWS = [
     {
         name: "Naver SmartPlace",
-        nameKo: "?ㅼ씠踰??ㅻ쭏?명뵆?덉씠??,
+        nameKo: "네이버 스마트플레이스",
         logo: "N",
         logoStyle: "rv-logo-naver",
-        nodeId: "?ㅼ씠踰??몄쬆",
+        nodeId: "네이버 인증",
         nodeStyle: { background: "rgba(3,199,90,0.1)", color: "#03C75A", border: "1px solid rgba(3,199,90,0.2)" },
-        subtext: "?숈썝 寃??1??,
+        subtext: "학원 검색 1위",
         score: 4.9,
         fill: 98,
         barGrad: "linear-gradient(to right, #03C75A, #4ade80)",
         glowBg: "rgba(34,197,94,0.1)",
         dotBg: "#22c55e",
-        integrity: "152嫄?,
-        latency: "理쒖떊",
-        status: "?몄쬆?꾨즺",
-        metaLabel1: "由щ럭 ??,
-        metaLabel2: "?낅뜲?댄듃",
+        integrity: "152건",
+        latency: "최신",
+        status: "인증완료",
+        metaLabel1: "리뷰 수",
+        metaLabel2: "업데이트",
     },
     {
         name: "Google Reviews",
-        nameKo: "援ш? 由щ럭",
+        nameKo: "구글 리뷰",
         logo: "G",
         logoStyle: "rv-logo-google",
-        nodeId: "湲濡쒕쾶 ?몄쬆",
+        nodeId: "글로벌 인증",
         nodeStyle: { background: "rgba(59,130,246,0.1)", color: "#2563eb", border: "1px solid rgba(59,130,246,0.2)" },
-        subtext: "?꾧뎅 肄붾뵫?숈썝 ?곸쐞",
+        subtext: "전국 코딩학원 상위",
         score: 4.8,
         fill: 96,
         barGrad: "linear-gradient(to right, #3b82f6, #6366f1)",
         glowBg: "rgba(59,130,246,0.1)",
         dotBg: "#3b82f6",
-        integrity: "89嫄?,
-        latency: "2.4泥?,
-        status: "?몄쬆?꾨즺",
-        metaLabel1: "由щ럭 ??,
-        metaLabel2: "議고쉶??,
+        integrity: "89건",
+        latency: "2.4천",
+        status: "인증완료",
+        metaLabel1: "리뷰 수",
+        metaLabel2: "조회수",
     },
     {
         name: "Daum Maps",
-        nameKo: "?ㅼ쓬 吏??,
+        nameKo: "다음 지도",
         logo: "Daum",
         logoStyle: "rv-logo-daum",
-        nodeId: "吏???몄쬆",
+        nodeId: "지역 인증",
         nodeStyle: { background: "rgba(6,182,212,0.1)", color: "#0891b2", border: "1px solid rgba(6,182,212,0.2)" },
-        subtext: "???肄붾뵫?숈썝 1??,
+        subtext: "대전 코딩학원 1위",
         score: 5.0,
         fill: 100,
         barGrad: "linear-gradient(to right, #06b6d4, #3b82f6)",
         glowBg: "rgba(6,182,212,0.1)",
         dotBg: "#06b6d4",
-        integrity: "留뚯젏",
-        latency: "理쒓렐",
-        status: "?몄쬆?꾨즺",
-        metaLabel1: "?됱젏",
-        metaLabel2: "?낅뜲?댄듃",
+        integrity: "만점",
+        latency: "최근",
+        status: "인증완료",
+        metaLabel1: "평점",
+        metaLabel2: "업데이트",
     },
 ];
 
@@ -95,10 +95,10 @@ export default function Reviews() {
                         <span className="rv-ping-wrap">
                             <span className="rv-ping" /><span className="rv-ping-dot" />
                         </span>
-                        <span className="rv-sys-text">?ㅼ떆媛?由щ럭 ?꾪솴</span>
+                        <span className="rv-sys-text">실시간 리뷰 현황</span>
                     </div>
-                    <h2 className="rv-title">?뚮옯??由щ럭</h2>
-                    <p className="rv-subtitle">?ㅼ씠踰?쨌 援ш? 쨌 ?ㅼ쓬 怨듭떇 ?몄쬆 由щ럭</p>
+                    <h2 className="rv-title">플랫폼 리뷰</h2>
+                    <p className="rv-subtitle">네이버 · 구글 · 다음 공식 인증 리뷰</p>
                 </motion.header>
 
                 {/* Cards */}
@@ -197,7 +197,7 @@ export default function Reviews() {
             </div>
 
             <style>{`
-/* ?먥븧??Section ?먥븧??*/
+/* ═══ Section ═══ */
 .rv-section { position: relative; overflow: hidden; padding: clamp(80px,10vw,140px) 0 clamp(60px,8vw,100px); background: #F8F7F4; font-family: 'Space Grotesk', sans-serif; color: #1e293b; }
 .rv-container { max-width: 900px; margin: 0 auto; padding: 0 clamp(16px,4vw,40px); position: relative; z-index: 10; }
 

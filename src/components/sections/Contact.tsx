@@ -1,22 +1,22 @@
-﻿"use client";
+"use client";
 
 import { useRef, useState } from "react";
 import { motion, useInView } from "framer-motion";
 import Image from "next/image";
 
-/* ?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧??
-   Contact ??Quantum Nexus Forge Ultra V3.2
-   Monolith-slab form 쨌 Code-shard BG 쨌 Flow-lines
+/* ═══════════════════════════════════════════
+   Contact — Quantum Nexus Forge Ultra V3.2
+   Monolith-slab form · Code-shard BG · Flow-lines
    Two-column: info left, glass form right
-   ?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧??*/
+   ═══════════════════════════════════════════ */
 
 const FEATURES = [
-    { icon: "school", title: "?뚯닔 ?뺤삁 援먯쑁", desc: "?숈깮 媛쒖씤 留욎땄??1:1 諛李?吏?꾨줈 ?뺤떎???ㅻ젰 ?μ긽??蹂댁옣?⑸땲??" },
-    { icon: "code", title: "?ㅼ쟾 肄붾뵫 ?섏뾽", desc: "C, Python, ?밴컻諛????ㅻТ 以묒떖 而ㅻ━?섎읆?쇰줈 諛붾줈 ?⑤㉨?????덈뒗 肄붾뵫??諛곗썎?덈떎." },
-    { icon: "emoji_events", title: "??뙿룹옄寃⑹쬆 ?鍮?, desc: "?뺣낫?щ┝?쇱븘?? COS-Pro ??紐⑺몴??留욌뒗 ?뱁솕 ?꾨줈洹몃옩???댁쁺?⑸땲??" },
+    { icon: "school", title: "소수 정예 교육", desc: "학생 개인 맞춤형 1:1 밀착 지도로 확실한 실력 향상을 보장합니다." },
+    { icon: "code", title: "실전 코딩 수업", desc: "C, Python, 웹개발 등 실무 중심 커리큘럼으로 바로 써먹을 수 있는 코딩을 배웁니다." },
+    { icon: "emoji_events", title: "대회·자격증 대비", desc: "정보올림피아드, COS-Pro 등 목표에 맞는 특화 프로그램을 운영합니다." },
 ];
 
-const INTERESTS = ["Python", "C/C++", "?밴컻諛?, "AI쨌癒몄떊?щ떇"];
+const INTERESTS = ["Python", "C/C++", "웹개발", "AI·머신러닝"];
 
 export default function Contact() {
     const ref = useRef<HTMLElement>(null);
@@ -54,7 +54,7 @@ export default function Contact() {
 
             <div className="ct-container">
                 <div className="ct-grid">
-                    {/* Left ??Info */}
+                    {/* Left — Info */}
                     <motion.div
                         initial={{ opacity: 0, x: -40 }}
                         animate={isInView ? { opacity: 1, x: 0 } : {}}
@@ -63,21 +63,21 @@ export default function Contact() {
                     >
                         <Image
                             src="/images/promo/logo-codingssok.png"
-                            alt="肄붾뵫??
+                            alt="코딩쏙"
                             width={160}
                             height={50}
                             style={{ objectFit: "contain", marginBottom: 24 }}
                         />
                         <div className="ct-proto-badge">
                             <span className="ct-proto-line" />
-                            <span className="ct-proto-text">臾대즺 ?곷떞 ?묒닔</span>
+                            <span className="ct-proto-text">무료 상담 접수</span>
                         </div>
                         <h2 className="ct-main-title">
-                            <span className="ct-title-dark">肄붾뵫 ?곷떞</span>
-                            <span className="ct-title-metallic">?좎껌?섍린</span>
+                            <span className="ct-title-dark">코딩 상담</span>
+                            <span className="ct-title-metallic">신청하기</span>
                         </h2>
                         <p className="ct-main-desc">
-                            ?꾩쭅 IT ?꾨Ц媛媛 吏곸젒 ?곷떞?대뱶由쎈땲?? ?꾩씠???섏?怨?紐⑺몴??留욌뒗 理쒖쟻???숈뒿 諛⑺뼢???덈궡?⑸땲??
+                            현직 IT 전문가가 직접 상담해드립니다. 아이의 수준과 목표에 맞는 최적의 학습 방향을 안내합니다.
                         </p>
 
                         <div className="ct-features">
@@ -101,7 +101,7 @@ export default function Contact() {
                         </div>
                     </motion.div>
 
-                    {/* Right ??Form */}
+                    {/* Right — Form */}
                     <motion.div
                         initial={{ opacity: 0, x: 40 }}
                         animate={isInView ? { opacity: 1, x: 0 } : {}}
@@ -116,24 +116,24 @@ export default function Contact() {
                         <div className="ct-slab">
                             <div className="ct-secure-badge">
                                 <span className="ct-secure-dot" />
-                                <span>?덉쟾???뺣낫 ?묒닔</span>
+                                <span>안전한 정보 접수</span>
                             </div>
 
                             <div className="ct-form-header">
-                                <h3 className="ct-form-title">?곷떞 ?좎껌</h3>
-                                <p className="ct-form-sub">?꾨옒 ?뺣낫瑜??낅젰?섏떆硫?鍮좊Ⅴ寃??곕씫?쒕━寃좎뒿?덈떎.</p>
+                                <h3 className="ct-form-title">상담 신청</h3>
+                                <p className="ct-form-sub">아래 정보를 입력하시면 빠르게 연락드리겠습니다.</p>
                             </div>
 
                             <form className="ct-form" onSubmit={e => e.preventDefault()}>
                                 <div className="ct-form-grid">
                                     <div className="ct-field group">
-                                        <label className="ct-label">?대쫫</label>
+                                        <label className="ct-label">이름</label>
                                         <div className="ct-slot">
-                                            <input type="text" placeholder="?대쫫" className="ct-input" />
+                                            <input type="text" placeholder="이름" className="ct-input" />
                                         </div>
                                     </div>
                                     <div className="ct-field group">
-                                        <label className="ct-label">?곕씫泥?/label>
+                                        <label className="ct-label">연락처</label>
                                         <div className="ct-slot">
                                             <input type="tel" placeholder="010-0000-0000" className="ct-input" />
                                         </div>
@@ -141,22 +141,22 @@ export default function Contact() {
                                 </div>
 
                                 <div className="ct-field group">
-                                    <label className="ct-label">?숇뀈</label>
+                                    <label className="ct-label">학년</label>
                                     <div className="ct-slot ct-select-wrap">
                                         <select className="ct-input ct-select">
-                                            <option disabled selected value="">?숇뀈 ?좏깮</option>
-                                            <option>珥덈벑?숈깮 (1~3?숇뀈)</option>
-                                            <option>珥덈벑?숈깮 (4~6?숇뀈)</option>
-                                            <option>以묓븰??/option>
-                                            <option>怨좊벑?숈깮</option>
-                                            <option>?깆씤</option>
+                                            <option disabled selected value="">학년 선택</option>
+                                            <option>초등학생 (1~3학년)</option>
+                                            <option>초등학생 (4~6학년)</option>
+                                            <option>중학생</option>
+                                            <option>고등학생</option>
+                                            <option>성인</option>
                                         </select>
                                         <span className="material-symbols-outlined ct-select-arrow">expand_more</span>
                                     </div>
                                 </div>
 
                                 <div className="ct-field">
-                                    <label className="ct-label">愿??怨쇰ぉ</label>
+                                    <label className="ct-label">관심 과목</label>
                                     <div className="ct-chips">
                                         {INTERESTS.map(int => (
                                             <button
@@ -175,7 +175,7 @@ export default function Contact() {
                                     <div className="ct-submit-bg" />
                                     <div className="ct-submit-shine" />
                                     <span className="ct-submit-text">
-                                        ?곷떞 ?좎껌?섍린
+                                        상담 신청하기
                                         <span className="material-symbols-outlined ct-submit-icon">send</span>
                                     </span>
                                 </button>
@@ -186,7 +186,7 @@ export default function Contact() {
             </div>
 
             <style>{`
-/* ?먥븧??Section ?먥븧??*/
+/* ═══ Section ═══ */
 .ct-section { position: relative; overflow: hidden; padding: clamp(80px,10vw,140px) 0; font-family: 'Noto Sans KR', sans-serif; color: #1e293b; min-height: 100vh; display: flex; align-items: center; }
 .ct-container { max-width: 1200px; margin: 0 auto; padding: 0 clamp(16px,4vw,40px); position: relative; z-index: 10; width: 100%; }
 

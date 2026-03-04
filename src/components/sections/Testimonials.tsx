@@ -1,81 +1,81 @@
-﻿"use client";
+"use client";
 
 import { useRef } from "react";
 import { motion, useInView } from "framer-motion";
 import TextReveal from "@/components/ui/TextReveal";
 
-/* ?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧??
-   ?섍컯???깃났 ?ㅽ넗由???Quantum Nexus Slider
-   Aero-glass cards 쨌 Horizontal Scroll 쨌 3D tilt
-   ?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧??*/
+/* ═══════════════════════════════════════════
+   수강생 성공 스토리 — Quantum Nexus Slider
+   Aero-glass cards · Horizontal Scroll · 3D tilt
+   ═══════════════════════════════════════════ */
 
 const STORIES = [
     {
-        name: "源O誘?,
-        initial: "源",
+        name: "김O민",
+        initial: "김",
         avatarStyle: { background: "linear-gradient(to bottom right, #3b82f6, #4f46e5)" } as React.CSSProperties,
         avatarShadow: "0 8px 20px rgba(79,70,229,0.3)",
         tagStyle: { background: "rgba(219,234,254,0.5)", border: "1px solid #bfdbfe", color: "#1d4ed8" } as React.CSSProperties,
         track: "Python Core",
         level: "Lv.3 Completed",
         stars: 1,
-        quote: "泥섏쓬????댄븨???섎뱾?댄뻽吏留? 3媛쒖썡 留뚯뿉 援ш뎄???뚭퀬由ъ쬁???ㅼ뒪濡??ㅺ퀎?덉뒿?덈떎. ?쇰━???ш퀬???뺤옣???덉뿉 蹂댁엯?덈떎.",
-        highlight: "援ш뎄???뚭퀬由ъ쬁",
+        quote: "처음엔 타이핑도 힘들어했지만, 3개월 만에 구구단 알고리즘을 스스로 설계했습니다. 논리적 사고의 확장이 눈에 보입니다.",
+        highlight: "구구단 알고리즘",
         hlStyle: { background: "#e0e7ff", color: "#4338ca" } as React.CSSProperties,
         achieveIcon: "trending_up",
         achieveIconStyle: { color: "#4f46e5", background: "#eef2ff" } as React.CSSProperties,
-        achievement: "?뺣낫?щ┝?쇱븘???덉꽑 ?듦낵",
+        achievement: "정보올림피아드 예선 통과",
         tags: ["#Algorithm", "#Python"],
     },
     {
-        name: "?큀以",
-        initial: "??,
+        name: "이O준",
+        initial: "이",
         avatarStyle: { background: "linear-gradient(to bottom right, #fb923c, #ef4444)" } as React.CSSProperties,
         avatarShadow: "0 8px 20px rgba(249,115,22,0.3)",
         tagStyle: { background: "rgba(255,237,213,0.5)", border: "1px solid #fed7aa", color: "#c2410c" } as React.CSSProperties,
         track: "C++ Master",
         level: "Lv.5 Completed",
         stars: 2,
-        quote: "?섑븰???ш린?섎젮???꾩씠媛 肄붾뵫 蹂?섎? 諛곗슦硫??⑥닔 媛쒕뀗???꾨꼍???댄빐?덉뒿?덈떎. 援먭낵 ?깆쟻源뚯? ?섏쭅 ?곸듅?덉뼱??",
-        highlight: "?⑥닔 媛쒕뀗",
+        quote: "수학을 포기하려던 아이가 코딩 변수를 배우며 함수 개념을 완벽히 이해했습니다. 교과 성적까지 수직 상승했어요.",
+        highlight: "함수 개념",
         hlStyle: { background: "#ffedd5", color: "#c2410c" } as React.CSSProperties,
         achieveIcon: "emoji_events",
         achieveIconStyle: { color: "#ea580c", background: "#fff7ed" } as React.CSSProperties,
-        achievement: "COS-Pro 2湲?理쒖뿰???⑷꺽",
+        achievement: "COS-Pro 2급 최연소 합격",
         tags: ["#C_Lang", "#Math_Link"],
     },
     {
-        name: "諛뷤??,
-        initial: "諛?,
+        name: "박O서",
+        initial: "박",
         avatarStyle: { background: "linear-gradient(to bottom right, #34d399, #14b8a6)" } as React.CSSProperties,
         avatarShadow: "0 8px 20px rgba(16,185,129,0.3)",
         tagStyle: { background: "rgba(209,250,229,0.5)", border: "1px solid #a7f3d0", color: "#047857" } as React.CSSProperties,
         track: "Block Logic",
         level: "Lv.2 Completed",
         stars: 1,
-        quote: "??숇뀈?대씪 嫄깆젙?덈뒗?? 釉붾줉肄붾뵫??寃뚯엫泥섎읆 利먭꺼?? 留ㅼ＜ ?ㅻ뒗 AI 遺꾩꽍 由ы룷?몃줈 ?꾩씠??愿?ъ궗瑜??뺥솗???뚯븙?덉뒿?덈떎.",
-        highlight: "AI 遺꾩꽍 由ы룷??,
+        quote: "저학년이라 걱정했는데, 블록코딩을 게임처럼 즐겨요. 매주 오는 AI 분석 리포트로 아이의 관심사를 정확히 파악했습니다.",
+        highlight: "AI 분석 리포트",
         hlStyle: { background: "#d1fae5", color: "#047857" } as React.CSSProperties,
         achieveIcon: "auto_awesome",
         achieveIconStyle: { color: "#059669", background: "#ecfdf5" } as React.CSSProperties,
-        achievement: "李쎌옉 寃뚯엫 3醫?異쒖떆",
+        achievement: "창작 게임 3종 출시",
         tags: ["#Logic", "#Creativity"],
     },
     {
-        name: "?뷤??,
-        initial: "??,
+        name: "정O현",
+        initial: "정",
         avatarStyle: { background: "linear-gradient(to bottom right, #a855f7, #d946ef)" } as React.CSSProperties,
         avatarShadow: "0 8px 20px rgba(168,85,247,0.3)",
         tagStyle: { background: "rgba(243,232,255,0.5)", border: "1px solid #e9d5ff", color: "#7c3aed" } as React.CSSProperties,
         track: "Web Dev",
         level: "Lv.6 Completed",
         stars: 3,
-        quote: "?숈썝?먯꽌 留뚮뱺 ?ы듃?대━?ㅻ줈 ?숆탳 諛쒗몴????곸쓣 諛쏆븯?댁슂. ??ㅽ깮 媛쒕컻?먮씪??援ъ껜?곸씤 轅덉쓣 媛吏寃??섏뿀?듬땲??",
-        highlight: "??ㅽ깮 媛쒕컻??,
+        quote: "학원에서 만든 포트폴리오로 학교 발표회 대상을 받았어요. 풀스택 개발자라는 구체적인 꿈을 가지게 되었습니다.",
+        highlight: "풀스택 개발자",
         hlStyle: { background: "#f3e8ff", color: "#7c3aed" } as React.CSSProperties,
         achieveIcon: "rocket_launch",
         achieveIconStyle: { color: "#9333ea", background: "#faf5ff" } as React.CSSProperties,
-        achievement: "??媛쒕컻 怨듬え???낆긽",
+        achievement: "앱 개발 공모전 입상",
         tags: ["#FullStack", "#Portfolio"],
     },
 ];
@@ -192,13 +192,13 @@ export default function Testimonials() {
                 >
                     <div className="ts-live-badge">
                         <span className="ts-live-dot" />
-                        <span>?섍컯???꾧린</span>
+                        <span>수강생 후기</span>
                     </div>
                     <TextReveal as="h2" className="text-center ts-main-title">
-                        ?섍컯???깃났 ?ㅽ넗由?
+                        수강생 성공 스토리
                     </TextReveal>
                     <p className="ts-main-sub">
-                        肄붾뵫???섍컯?앸뱾???ㅼ젣 ?깆옣 ?댁빞湲곕? ?뺤씤?섏꽭??
+                        코딩쏙 수강생들의 실제 성장 이야기를 확인하세요.
                     </p>
                 </motion.header>
             </div>
@@ -211,7 +211,7 @@ export default function Testimonials() {
             </div>
 
             <style>{`
-/* ?먥븧??Section ?먥븧??*/
+/* ═══ Section ═══ */
 .ts-section { position: relative; overflow: hidden; padding: clamp(80px,10vw,140px) 0 clamp(60px,8vw,100px); background: #F8F7F4; font-family: 'Pretendard', sans-serif; color: #1e293b; }
 .ts-container { max-width: 1200px; margin: 0 auto; padding: 0 clamp(16px,4vw,40px); position: relative; z-index: 10; }
 
@@ -236,7 +236,7 @@ export default function Testimonials() {
 .ts-main-sub { margin-top: 16px; font-size: 16px; color: #64748b; font-weight: 500; background: rgba(255,255,255,0.1); padding: 12px 20px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.2); backdrop-filter: blur(4px); display: inline-block; }
 .ts-accent-num { color: #4F46E5; font-weight: 700; }
 
-/* ?먥븧??Carousel ?먥븧??*/
+/* ═══ Carousel ═══ */
 .ts-carousel { display: flex; gap: 3rem; overflow-x: auto; scroll-snap-type: x mandatory; padding: 4rem 2rem; width: 100%; scrollbar-width: none; position: relative; z-index: 10; }
 .ts-carousel::-webkit-scrollbar { display: none; }
 .ts-item { scroll-snap-align: center; flex-shrink: 0; width: 420px; max-width: 85vw; }

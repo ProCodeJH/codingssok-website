@@ -1,14 +1,14 @@
-﻿"use client";
+"use client";
 
-/* ?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧??
-   Schedule ??Future Lab Scheduler Ultra V2
+/* ═══════════════════════════════════════════════════════════════
+   Schedule — Future Lab Scheduler Ultra V2
    Faithful 1:1 port from reference HTML
-   ?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧??*/
+   ═══════════════════════════════════════════════════════════════ */
 
 const steps = [
     {
-        num: "01", code: "PAYMENT", title: "寃곗젣 ?꾨즺",
-        desc: "留ㅼ썡 1???쒖뒪???먮룞 寃곗젣 泥섎━.",
+        num: "01", code: "PAYMENT", title: "결제 완료",
+        desc: "매월 1일 시스템 자동 결제 처리.",
         procId: "#PAY-01", progress: 100, progressLabel: "Proc.ID",
         icon: "credit_card",
         colorFrom: "from-blue-500", colorTo: "to-blue-600",
@@ -17,8 +17,8 @@ const steps = [
         glowColor: "#3b82f6", cardBorderColor: "border-blue-500",
     },
     {
-        num: "02", code: "FORM", title: "???섏떊",
-        desc: "?ㅼ?以??ㅼ젙 援ш? ???먮룞 諛쒖넚.",
+        num: "02", code: "FORM", title: "폼 수신",
+        desc: "스케줄 설정 구글 폼 자동 발송.",
         procId: "Active", progress: 66, progressLabel: "Status",
         icon: "mail",
         colorFrom: "from-cyan-500", colorTo: "to-cyan-600",
@@ -27,8 +27,8 @@ const steps = [
         glowColor: "#06b6d4", cardBorderColor: "border-cyan-500",
     },
     {
-        num: "03", code: "SYNC", title: "?쒓컙???뺤젙",
-        desc: "理쒖쟻?붾맂 留욎땄 ?쒓컙???먮룞 諛곗튂.",
+        num: "03", code: "SYNC", title: "시간표 확정",
+        desc: "최적화된 맞춤 시간표 자동 배치.",
         procId: "Complete", progress: 100, progressLabel: "Sync",
         icon: "check_circle",
         colorFrom: "from-violet-500", colorTo: "to-violet-600",
@@ -63,8 +63,8 @@ export default function Schedule() {
                         </div>
                         <h1 className="fls-title">
                             <span className="fls-title-watermark">LAB</span>
-                            ?꾩씠???ㅼ?以꾩뿉<br />
-                            <span className="fls-title-accent">援먯쑁??留욎땅?덈떎</span>
+                            아이의 스케줄에<br />
+                            <span className="fls-title-accent">교육을 맞춥니다</span>
                         </h1>
                         <p className="fls-subtitle">
                             <span className="fls-subtitle-line" />
@@ -145,10 +145,10 @@ export default function Schedule() {
                             </div>
                             <div className="fls-info-text">
                                 <div className="fls-info-title-row">
-                                    <h2 className="fls-info-title">?꾩슜 援ш? ???ㅼ?以꾨쭅</h2>
+                                    <h2 className="fls-info-title">전용 구글 폼 스케줄링</h2>
                                     <span className="fls-info-badge">Auto-Form v1.2</span>
                                 </div>
-                                <p className="fls-info-desc">留ㅼ썡 1??寃곗젣 ??諛쒖넚?섎뒗 ?꾩슜 援ш? ?쇱쓣 ?듯빐, ?꾩씠???섍탳 ?쒓컙怨?? ?숈썝 ?쇱젙??理쒖쟻?붾맂 ?쒓컙?쒕? 吏곸젒 ?ㅺ퀎?섏꽭??</p>
+                                <p className="fls-info-desc">매월 1일 결제 후 발송되는 전용 구글 폼을 통해, 아이의 하교 시간과 타 학원 일정에 최적화된 시간표를 직접 설계하세요.</p>
                             </div>
                             <div className="fls-info-stats">
                                 <div className="fls-stat">
@@ -170,11 +170,11 @@ export default function Schedule() {
                 </div>
 
                 <style>{`
-/* ?먥븧??SECTION ?먥븧??*/
+/* ═══ SECTION ═══ */
 .fls-section { position: relative; overflow: hidden; padding: clamp(60px,8vw,100px) 0; color: #1e293b; background: #f1f5f9; }
 .fls-main { position: relative; z-index: 10; }
 
-/* ?? BG ?? */
+/* ── BG ── */
 .fls-bg { position: absolute; inset: 0; pointer-events: none; z-index: 0; }
 .fls-hex-pattern { position: absolute; inset: 0; background-image: url("data:image/svg+xml,%3Csvg width='24' height='40' viewBox='0 0 24 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 40c5.523 0 10-4.477 10-10V10c0-5.523-4.477-10-10-10s-10 4.477-10 10v20c0 5.523 4.477 10 10 10zM12 40c5.523 0 10-4.477 10-10V10c0-5.523-4.477-10-10-10S2 4.477 2 10v20c0 5.523 4.477 10 10 10z' fill='%2394a3b8' fill-opacity='0.05' fill-rule='evenodd'/%3E%3C/svg%3E"); opacity: 0.6; }
 .fls-grad-bottom { position: absolute; bottom: 0; left: 0; width: 100%; height: 50%; background: linear-gradient(to top, rgba(226,232,240,0.5), transparent); }
@@ -182,7 +182,7 @@ export default function Schedule() {
 .fls-blob-1 { top: 20%; left: 10%; width: 600px; height: 600px; background: rgba(147,197,253,0.1); }
 .fls-blob-2 { bottom: 10%; right: 10%; width: 500px; height: 500px; background: rgba(103,232,249,0.1); }
 
-/* ?? Header ?? */
+/* ── Header ── */
 .fls-header { text-align: center; margin-bottom: clamp(48px,6vw,100px); }
 .fls-status-badge { display: inline-flex; align-items: center; justify-content: center; margin-bottom: 28px; position: relative; cursor: pointer; }
 .fls-badge-glow { position: absolute; inset: 0; background: linear-gradient(90deg, #60a5fa, #22d3ee); filter: blur(16px); opacity: 0.2; transition: opacity 0.5s; }
@@ -198,7 +198,7 @@ export default function Schedule() {
 .fls-subtitle-line { display: inline-block; height: 1px; width: 48px; background: #cbd5e1; }
 .fls-subtitle-text { font-family: 'JetBrains Mono', monospace; font-size: 13px; text-transform: uppercase; color: #94a3b8; }
 
-/* ?? Steps Area ?? */
+/* ── Steps Area ── */
 .fls-steps-area { position: relative; max-width: 1200px; margin: 0 auto 80px; }
 .fls-connector { display: none; position: absolute; top: 96px; left: 16%; width: 68%; height: 2px; z-index: 0; }
 @media (min-width: 1024px) { .fls-connector { display: block; } }
@@ -211,7 +211,7 @@ export default function Schedule() {
 @media (min-width: 768px) { .fls-steps-grid { grid-template-columns: repeat(3, 1fr); gap: 48px; } }
 @media (min-width: 1024px) { .fls-steps-grid { gap: 64px; } }
 
-/* ?? Iso Pod ?? */
+/* ── Iso Pod ── */
 .fls-step { position: relative; }
 .fls-pod { position: relative; width: 192px; height: 192px; margin: 0 auto 40px; cursor: pointer; transition: transform 0.5s cubic-bezier(0.4,0,0.2,1); }
 .fls-pod:hover { transform: scale(1.05) translateY(-8px); }
@@ -227,7 +227,7 @@ export default function Schedule() {
 .fls-pod-glow-bar { position: absolute; bottom: 24px; width: 48px; height: 4px; border-radius: 999px; filter: blur(2px); }
 .fls-pod-glass { position: absolute; inset: -10px; border-radius: 50%; z-index: 20; pointer-events: none; background: linear-gradient(135deg, rgba(255,255,255,0.08), transparent); border: 1px solid rgba(255,255,255,0.3); box-shadow: inset 0 0 20px rgba(14,165,233,0.05), 0 4px 6px rgba(0,0,0,0.03); }
 
-/* ?? Card ?? */
+/* ── Card ── */
 .fls-card { background: rgba(255,255,255,0.65); backdrop-filter: blur(8px); border: 1px solid rgba(255,255,255,0.5); border-bottom: 4px solid rgba(200,210,230,0.4); border-right: 4px solid rgba(200,210,230,0.4); box-shadow: 10px 10px 30px rgba(0,0,0,0.05), -5px -5px 15px rgba(255,255,255,0.8); border-radius: 16px; padding: 28px; position: relative; overflow: hidden; transition: background 0.3s; }
 .group:hover .fls-card { background: rgba(255,255,255,0.7); }
 .fls-card-dots { position: absolute; top: 16px; right: 16px; display: flex; gap: 4px; }
@@ -242,7 +242,7 @@ export default function Schedule() {
 .fls-progress-track { width: 100%; height: 4px; background: #e2e8f0; border-radius: 999px; margin-top: 6px; overflow: hidden; }
 .fls-progress-bar { height: 100%; border-radius: 999px; transition: width 1s ease; }
 
-/* ?? Info Slab ?? */
+/* ── Info Slab ── */
 .fls-info-slab { max-width: 960px; margin: 0 auto; background: rgba(255,255,255,0.65); backdrop-filter: blur(8px); border: 1px solid rgba(255,255,255,0.5); border-bottom: 4px solid rgba(200,210,230,0.4); border-right: 4px solid rgba(200,210,230,0.4); box-shadow: 10px 10px 30px rgba(0,0,0,0.05), -5px -5px 15px rgba(255,255,255,0.8), 0 25px 50px -12px rgba(0,0,0,0.15); border-radius: 20px; padding: clamp(32px,4vw,48px); position: relative; overflow: hidden; transition: transform 0.5s; }
 .fls-info-slab:hover { transform: scale(1.01); }
 .fls-info-decor { position: absolute; top: 0; right: 0; width: 256px; height: 256px; opacity: 0.1; background-image: url("data:image/svg+xml,%3Csvg fill='none' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M10 10 L 90 10 L 90 90' stroke='%230ea5e9' stroke-width='2'/%3E%3Ccircle cx='90' cy='90' fill='%230ea5e9' r='4'/%3E%3Cpath d='M30 30 L 70 30 L 70 70' stroke='%230ea5e9' stroke-width='2'/%3E%3Ccircle cx='70' cy='70' fill='%230ea5e9' r='3'/%3E%3C/svg%3E"); background-size: contain; background-repeat: no-repeat; }
@@ -264,7 +264,7 @@ export default function Schedule() {
 .fls-bar { width: 6px; border-radius: 2px; }
 .fls-stat-value { font-family: 'JetBrains Mono', monospace; font-size: 22px; font-weight: 700; color: #2563eb; text-align: right; }
 
-/* ?먥븧??Keyframes ?먥븧??*/
+/* ═══ Keyframes ═══ */
 @keyframes flsSpin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 @keyframes flsPulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
 @keyframes flsShimmer { 0% { transform: translateX(0); opacity: 0; } 10% { opacity: 1; } 90% { opacity: 1; } 100% { transform: translateX(800px); opacity: 0; } }

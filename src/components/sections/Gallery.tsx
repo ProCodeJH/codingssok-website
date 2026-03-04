@@ -4,10 +4,10 @@ import { useRef, useState, useEffect, useCallback } from "react";
 import { motion, useInView, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 
-/* ???????????????????????????????????????????
-   Gallery ? Quantum Horizon Nexus Ultra V2
+/* ═══════════════════════════════════════════
+   Gallery — Quantum Horizon Nexus Ultra V2
    WHITE-BLUE color scheme | REAL 3D depth
-   ??????????????????????????????????????????? */
+   ═══════════════════════════════════════════ */
 
 const ALL_PHOTOS = [
     "KakaoTalk_20250816_230722315.jpg",
@@ -188,7 +188,7 @@ export default function Gallery() {
                     </p>
                 </motion.div>
 
-                {/* ??? 3D Carousel ??? */}
+                {/* ═══ 3D Carousel ═══ */}
                 <div
                     className="gx-perspective-outer"
                     onMouseEnter={() => setHovered(true)}
@@ -202,7 +202,7 @@ export default function Gallery() {
                         <span className="material-symbols-outlined">chevron_right</span>
                     </button>
 
-                    {/* 3D stage ? preserve-3d applied here */}
+                    {/* 3D stage — preserve-3d applied here */}
                     <div className="gx-stage">
                         {/* Metal rings */}
                         <div className="gx-rings">
@@ -232,7 +232,7 @@ export default function Gallery() {
                             </div>
                         </div>
 
-                        {/* ??? MAIN CENTER CARD ??? */}
+                        {/* ═══ MAIN CENTER CARD ═══ */}
                         <div
                             className="gx-card gx-card-main group"
                             onClick={() => setLightbox(visible[2])}
@@ -359,7 +359,7 @@ export default function Gallery() {
                 </AnimatePresence>
 
                 <style>{`
-/* ??? SECTION ??? White-Blue Theme ??? */
+/* ═══ SECTION ═══ White-Blue Theme ═══ */
 .gx-section {
     position: relative;
     padding: clamp(40px,6vw,80px) 0 clamp(60px,8vw,100px);
@@ -387,7 +387,7 @@ export default function Gallery() {
 .gx-badge { position: relative; background: rgba(255,255,255,0.85); backdrop-filter: blur(8px); border: 1px solid #e2e8f0; padding: 8px 24px; border-radius: 999px; display: flex; align-items: center; gap: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.04); }
 .gx-badge-dot { width: 8px; height: 8px; background: #22c55e; border-radius: 50%; animation: gxPulse 2s infinite; box-shadow: 0 0 8px #22c55e; }
 .gx-badge-label { font-family: 'Orbitron', monospace; font-size: 11px; font-weight: 700; letter-spacing: 0.2em; color: #64748b; }
-/* Title ? blue gradient */
+/* Title — blue gradient */
 .gx-chrome-title {
     font-family: 'Orbitron'; font-size: clamp(2.4rem,5vw,4rem); font-weight: 900;
     letter-spacing: -0.02em; line-height: 1.2; margin-bottom: 8px;
@@ -400,7 +400,7 @@ export default function Gallery() {
 .gx-sub-dash { display: inline-block; height: 1px; width: 48px; background: #cbd5e1; }
 .gx-sub-text { font-family: 'Rajdhani'; font-size: 13px; color: #94a3b8; letter-spacing: 0.3em; text-transform: uppercase; }
 
-/* ??? 3D Carousel ??? */
+/* ═══ 3D Carousel ═══ */
 .gx-perspective-outer {
     position: relative;
     width: 100vw;
@@ -423,7 +423,7 @@ export default function Gallery() {
 .gx-ring-2 { width: 105%; height: 110%; top: -5%; left: -2.5%; border-left: 5px solid rgba(59,130,246,0.5); border-right: 5px solid rgba(59,130,246,0.5); border-top: 1px solid transparent; border-bottom: 1px solid transparent; box-shadow: 0 0 30px rgba(59,130,246,0.2); animation: gxSpinRev 25s linear infinite; }
 .gx-ring-glow { position: absolute; inset: -2%; border-radius: 50%; border: 24px solid rgba(59,130,246,0.06); filter: blur(8px); animation: gxPulse 3s infinite; }
 
-/* ??? Card Positions ??? */
+/* ═══ Card Positions ═══ */
 .gx-card { position: absolute; left: 50%; top: 50%; cursor: pointer; transition: all 0.6s cubic-bezier(0.4,0,0.2,1); }
 .gx-card-far-left {
     width: 400px; aspect-ratio: 16/9; border-radius: 12px; overflow: hidden;
@@ -477,7 +477,7 @@ export default function Gallery() {
 .gx-label-br { bottom: 16px; right: 16px; }
 .gx-side-label span { font-family: monospace; font-size: 10px; color: rgba(59,130,246,0.7); letter-spacing: 0.15em; }
 
-/* Corner brackets ? blue accents */
+/* Corner brackets — blue accents */
 .gx-bracket { position: absolute; width: 32px; height: 32px; z-index: 55; pointer-events: none; }
 .gx-br-tl { top: -1px; left: -1px; border-top: 2px solid #3b82f6; border-left: 2px solid #3b82f6; }
 .gx-br-br { bottom: -1px; right: -1px; border-bottom: 2px solid #3b82f6; border-right: 2px solid #3b82f6; }
@@ -505,7 +505,7 @@ export default function Gallery() {
 .gx-ring-progress { position: relative; width: 64px; height: 64px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
 .gx-ring-pct { position: absolute; font-family: monospace; font-size: 12px; font-weight: 700; color: #fff; }
 
-/* Arrows ? glass style */
+/* Arrows — glass style */
 .gx-arrow { position: absolute; top: 50%; transform: translateY(-50%); z-index: 55; padding: 16px; border-radius: 50%; border: 1px solid rgba(255,255,255,0.15); background: rgba(255,255,255,0.08); backdrop-filter: blur(12px); cursor: pointer; transition: all 0.3s; box-shadow: 0 4px 20px rgba(0,0,0,0.3); }
 .gx-arrow:hover { background: rgba(255,255,255,0.15); border-color: rgba(59,130,246,0.5); box-shadow: 0 0 24px rgba(59,130,246,0.3); }
 .gx-arrow span { font-size: 30px; color: rgba(255,255,255,0.6); transition: all 0.3s; }
@@ -558,7 +558,7 @@ export default function Gallery() {
 .gx-lb-img { position: relative; width: min(90vw,1100px); height: min(80vh,850px); border-radius: 12px; overflow: hidden; cursor: default; }
 .gx-lb-counter { position: absolute; bottom: 28px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.5); padding: 6px 18px; border-radius: 999px; color: rgba(255,255,255,0.8); font-size: 13px; font-weight: 600; }
 
-/* ??? Responsive ??? */
+/* ═══ Responsive ═══ */
 @media (max-width: 1024px) {
     .gx-card-far-left, .gx-card-far-right { display: none; }
     .gx-card-side-left { width: 320px; transform: translate(-50%,-50%) translateX(-100%) translateZ(-150px) rotateY(30deg); }
@@ -571,7 +571,7 @@ export default function Gallery() {
     .gx-rings { display: none; }
 }
 
-/* ??? Keyframes ??? */
+/* ═══ Keyframes ═══ */
 @keyframes gxSpin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 @keyframes gxSpinRev { from { transform: rotate(360deg); } to { transform: rotate(0deg); } }
 @keyframes gxPulse { 0%,100% { opacity: 1; } 50% { opacity: 0.4; } }

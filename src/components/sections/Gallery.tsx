@@ -1,13 +1,13 @@
-ï»¿"use client";
+"use client";
 
 import { useRef, useState, useEffect, useCallback } from "react";
 import { motion, useInView, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 
-/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-   Gallery â€” Quantum Horizon Nexus Ultra V2
+/* ???????????????????????????????????????????
+   Gallery ? Quantum Horizon Nexus Ultra V2
    WHITE-BLUE color scheme | REAL 3D depth
-   â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
+   ??????????????????????????????????????????? */
 
 const ALL_PHOTOS = [
     "KakaoTalk_20250816_230722315.jpg",
@@ -152,9 +152,7 @@ export default function Gallery() {
 
     return (
         <>
-            <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&family=Rajdhani:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
-            <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
-
+                        
             <section ref={sectionRef} id="gallery-section" className="gx-section">
                 {/* BG */}
                 <div className="gx-bg">
@@ -181,30 +179,30 @@ export default function Gallery() {
                             <span className="gx-badge-label">NEXUS GALLERY V2.0</span>
                         </div>
                     </div>
-                    <h1 className="gx-chrome-title">í•™ì› ë‘˜ëŸ¬ë³´ê¸°</h1>
+                    <h1 className="gx-chrome-title">ÇĞ¿ø µÑ·¯º¸±â</h1>
                     <div className="gx-title-line" />
                     <p className="gx-sub">
                         <span className="gx-sub-dash" />
-                        <span className="gx-sub-text">ì½”ë”©ì™ì˜ ìƒìƒí•œ ìˆ˜ì—… í˜„ì¥ Â· ì´ {total}ì¥</span>
+                        <span className="gx-sub-text">ÄÚµù½ïÀÇ »ı»ıÇÑ ¼ö¾÷ ÇöÀå ¡¤ ÃÑ {total}Àå</span>
                         <span className="gx-sub-dash" />
                     </p>
                 </motion.div>
 
-                {/* â•â•â• 3D Carousel â•â•â• */}
+                {/* ??? 3D Carousel ??? */}
                 <div
                     className="gx-perspective-outer"
                     onMouseEnter={() => setHovered(true)}
                     onMouseLeave={() => setHovered(false)}
                 >
                     {/* Arrows */}
-                    <button className="gx-arrow gx-arrow-l" onClick={() => go(-1)} aria-label="ì´ì „">
+                    <button className="gx-arrow gx-arrow-l" onClick={() => go(-1)} aria-label="ÀÌÀü">
                         <span className="material-symbols-outlined">chevron_left</span>
                     </button>
-                    <button className="gx-arrow gx-arrow-r" onClick={() => go(1)} aria-label="ë‹¤ìŒ">
+                    <button className="gx-arrow gx-arrow-r" onClick={() => go(1)} aria-label="´ÙÀ½">
                         <span className="material-symbols-outlined">chevron_right</span>
                     </button>
 
-                    {/* 3D stage â€” preserve-3d applied here */}
+                    {/* 3D stage ? preserve-3d applied here */}
                     <div className="gx-stage">
                         {/* Metal rings */}
                         <div className="gx-rings">
@@ -219,7 +217,7 @@ export default function Gallery() {
                             onClick={() => setCurrent(visible[0])}
                         >
                             <div className="gx-card-dim" />
-                            <Image src={src(ALL_PHOTOS[visible[0]])} alt={`í•™ì› ì‚¬ì§„ ${visible[0] + 1}`} fill style={{ objectFit: "cover" }} sizes="400px" quality={40} loading="lazy" />
+                            <Image src={src(ALL_PHOTOS[visible[0]])} alt={`ÇĞ¿ø »çÁø ${visible[0] + 1}`} fill style={{ objectFit: "cover" }} sizes="400px" quality={40} loading="lazy" />
                         </div>
 
                         {/* side-left */}
@@ -228,13 +226,13 @@ export default function Gallery() {
                             onClick={() => setCurrent(visible[1])}
                         >
                             <div className="gx-card-side-overlay-left" />
-                            <Image src={src(ALL_PHOTOS[visible[1]])} alt={`í•™ì› ì‚¬ì§„ ${visible[1] + 1}`} fill style={{ objectFit: "cover" }} sizes="480px" quality={60} loading="lazy" />
+                            <Image src={src(ALL_PHOTOS[visible[1]])} alt={`ÇĞ¿ø »çÁø ${visible[1] + 1}`} fill style={{ objectFit: "cover" }} sizes="480px" quality={60} loading="lazy" />
                             <div className="gx-side-label gx-label-bl">
                                 <span>PREV_MODULE</span>
                             </div>
                         </div>
 
-                        {/* â•â•â• MAIN CENTER CARD â•â•â• */}
+                        {/* ??? MAIN CENTER CARD ??? */}
                         <div
                             className="gx-card gx-card-main group"
                             onClick={() => setLightbox(visible[2])}
@@ -249,7 +247,7 @@ export default function Gallery() {
                                 <div className="gx-main-grad" />
                                 <Image
                                     src={src(ALL_PHOTOS[visible[2]])}
-                                    alt={`í•™ì› ì‚¬ì§„ ${visible[2] + 1}`}
+                                    alt={`ÇĞ¿ø »çÁø ${visible[2] + 1}`}
                                     fill style={{ objectFit: "cover" }}
                                     className="gx-main-img"
                                     sizes="(max-width:768px) 90vw, 850px"
@@ -269,7 +267,7 @@ export default function Gallery() {
                                 {/* HUD bottom */}
                                 <div className="gx-hud-bottom">
                                     <div className="gx-hud-info">
-                                        <h2 className="gx-hud-title">ì½”ë”©ì™ ì•„ì¹´ë°ë¯¸</h2>
+                                        <h2 className="gx-hud-title">ÄÚµù½ï ¾ÆÄ«µ¥¹Ì</h2>
                                         <div className="gx-hud-tags">
                                             <span className="gx-hud-badge">PHOTO {current + 1}</span>
                                             <span className="gx-hud-sub">IMMERSIVE LEARNING MODULE</span>
@@ -292,7 +290,7 @@ export default function Gallery() {
                             onClick={() => setCurrent(visible[3])}
                         >
                             <div className="gx-card-side-overlay-right" />
-                            <Image src={src(ALL_PHOTOS[visible[3]])} alt={`í•™ì› ì‚¬ì§„ ${visible[3] + 1}`} fill style={{ objectFit: "cover" }} sizes="480px" quality={60} loading="lazy" />
+                            <Image src={src(ALL_PHOTOS[visible[3]])} alt={`ÇĞ¿ø »çÁø ${visible[3] + 1}`} fill style={{ objectFit: "cover" }} sizes="480px" quality={60} loading="lazy" />
                             <div className="gx-side-label gx-label-br">
                                 <span>NEXT_MODULE</span>
                             </div>
@@ -304,7 +302,7 @@ export default function Gallery() {
                             onClick={() => setCurrent(visible[4])}
                         >
                             <div className="gx-card-dim" />
-                            <Image src={src(ALL_PHOTOS[visible[4]])} alt={`í•™ì› ì‚¬ì§„ ${visible[4] + 1}`} fill style={{ objectFit: "cover" }} sizes="400px" quality={40} loading="lazy" />
+                            <Image src={src(ALL_PHOTOS[visible[4]])} alt={`ÇĞ¿ø »çÁø ${visible[4] + 1}`} fill style={{ objectFit: "cover" }} sizes="400px" quality={40} loading="lazy" />
                         </div>
                     </div>
                 </div>
@@ -337,7 +335,7 @@ export default function Gallery() {
                             <div className="gx-full-grid">
                                 {ALL_PHOTOS.map((name, i) => (
                                     <motion.div key={name} initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: Math.min(i * 0.02, 1), duration: 0.3 }} onClick={() => setLightbox(i)} className={`gx-grid-item ${current === i ? "gx-grid-active" : ""}`}>
-                                        <Image src={src(name)} alt={`ì‚¬ì§„ ${i + 1}`} fill style={{ objectFit: "cover" }} sizes="180px" quality={50} loading="lazy" />
+                                        <Image src={src(name)} alt={`»çÁø ${i + 1}`} fill style={{ objectFit: "cover" }} sizes="180px" quality={50} loading="lazy" />
                                     </motion.div>
                                 ))}
                             </div>
@@ -353,7 +351,7 @@ export default function Gallery() {
                             <button onClick={(e) => { e.stopPropagation(); setLightbox((p) => (p! - 1 + total) % total); }} className="gx-lb-arr gx-lb-prev">{"\u2039"}</button>
                             <button onClick={(e) => { e.stopPropagation(); setLightbox((p) => (p! + 1) % total); }} className="gx-lb-arr gx-lb-next">{"\u203A"}</button>
                             <motion.div key={lightbox} initial={{ scale: 0.85, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.85, opacity: 0 }} transition={{ type: "spring", damping: 25 }} onClick={(e) => e.stopPropagation()} className="gx-lb-img">
-                                <Image src={src(ALL_PHOTOS[lightbox])} alt={`ì‚¬ì§„ ${lightbox + 1}`} fill style={{ objectFit: "contain" }} quality={90} sizes="90vw" priority />
+                                <Image src={src(ALL_PHOTOS[lightbox])} alt={`»çÁø ${lightbox + 1}`} fill style={{ objectFit: "contain" }} quality={90} sizes="90vw" priority />
                             </motion.div>
                             <div className="gx-lb-counter">{lightbox + 1} / {total}</div>
                         </motion.div>
@@ -361,7 +359,7 @@ export default function Gallery() {
                 </AnimatePresence>
 
                 <style>{`
-/* â•â•â• SECTION â•â•â• White-Blue Theme â•â•â• */
+/* ??? SECTION ??? White-Blue Theme ??? */
 .gx-section {
     position: relative;
     padding: clamp(40px,6vw,80px) 0 clamp(60px,8vw,100px);
@@ -371,7 +369,7 @@ export default function Gallery() {
     font-family: 'Rajdhani', sans-serif;
 }
 
-/* â”€â”€ Background Atmosphere â”€â”€ */
+/* ¦¡¦¡ Background Atmosphere ¦¡¦¡ */
 .gx-bg { position: absolute; inset: 0; pointer-events: none; z-index: 0; overflow: hidden; }
 .gx-bg-radial { position: absolute; inset: 0; background: radial-gradient(circle at 50% 20%, rgba(59,130,246,0.08), transparent 60%); }
 .gx-beam { position: absolute; top: -20%; width: 250px; height: 150%; background: linear-gradient(to bottom, rgba(59,130,246,0.06), transparent); filter: blur(50px); }
@@ -381,7 +379,7 @@ export default function Gallery() {
 .gx-floor-grid-mask { position: absolute; bottom: 0; width: 100%; height: 50%; mask-image: linear-gradient(to bottom, transparent, black); }
 .gx-floor-grid { width: 100%; height: 100%; background-image: linear-gradient(0deg, transparent 24%, rgba(59,130,246,.06) 25%, rgba(59,130,246,.06) 26%, transparent 27%, transparent 74%, rgba(59,130,246,.06) 75%, rgba(59,130,246,.06) 76%, transparent 77%), linear-gradient(90deg, transparent 24%, rgba(59,130,246,.06) 25%, rgba(59,130,246,.06) 26%, transparent 27%, transparent 74%, rgba(59,130,246,.06) 75%, rgba(59,130,246,.06) 76%, transparent 77%); background-size: 50px 50px; transform: perspective(500px) rotateX(60deg) scale(2); opacity: 0.4; }
 
-/* â”€â”€ Header â”€â”€ */
+/* ¦¡¦¡ Header ¦¡¦¡ */
 .gx-header { text-align: center; margin-bottom: clamp(40px,5vw,72px); position: relative; z-index: 10; }
 .gx-badge-wrap { display: inline-flex; position: relative; margin-bottom: 24px; cursor: pointer; }
 .gx-badge-glow { position: absolute; inset: -4px; background: linear-gradient(90deg, #60a5fa, #06b6d4); filter: blur(16px); opacity: 0.2; transition: opacity 0.5s; border-radius: 999px; }
@@ -389,7 +387,7 @@ export default function Gallery() {
 .gx-badge { position: relative; background: rgba(255,255,255,0.85); backdrop-filter: blur(8px); border: 1px solid #e2e8f0; padding: 8px 24px; border-radius: 999px; display: flex; align-items: center; gap: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.04); }
 .gx-badge-dot { width: 8px; height: 8px; background: #22c55e; border-radius: 50%; animation: gxPulse 2s infinite; box-shadow: 0 0 8px #22c55e; }
 .gx-badge-label { font-family: 'Orbitron', monospace; font-size: 11px; font-weight: 700; letter-spacing: 0.2em; color: #64748b; }
-/* Title â€” blue gradient */
+/* Title ? blue gradient */
 .gx-chrome-title {
     font-family: 'Orbitron'; font-size: clamp(2.4rem,5vw,4rem); font-weight: 900;
     letter-spacing: -0.02em; line-height: 1.2; margin-bottom: 8px;
@@ -402,7 +400,7 @@ export default function Gallery() {
 .gx-sub-dash { display: inline-block; height: 1px; width: 48px; background: #cbd5e1; }
 .gx-sub-text { font-family: 'Rajdhani'; font-size: 13px; color: #94a3b8; letter-spacing: 0.3em; text-transform: uppercase; }
 
-/* â•â•â• 3D Carousel â•â•â• */
+/* ??? 3D Carousel ??? */
 .gx-perspective-outer {
     position: relative;
     width: 100vw;
@@ -425,7 +423,7 @@ export default function Gallery() {
 .gx-ring-2 { width: 105%; height: 110%; top: -5%; left: -2.5%; border-left: 5px solid rgba(59,130,246,0.5); border-right: 5px solid rgba(59,130,246,0.5); border-top: 1px solid transparent; border-bottom: 1px solid transparent; box-shadow: 0 0 30px rgba(59,130,246,0.2); animation: gxSpinRev 25s linear infinite; }
 .gx-ring-glow { position: absolute; inset: -2%; border-radius: 50%; border: 24px solid rgba(59,130,246,0.06); filter: blur(8px); animation: gxPulse 3s infinite; }
 
-/* â•â•â• Card Positions â•â•â• */
+/* ??? Card Positions ??? */
 .gx-card { position: absolute; left: 50%; top: 50%; cursor: pointer; transition: all 0.6s cubic-bezier(0.4,0,0.2,1); }
 .gx-card-far-left {
     width: 400px; aspect-ratio: 16/9; border-radius: 12px; overflow: hidden;
@@ -479,7 +477,7 @@ export default function Gallery() {
 .gx-label-br { bottom: 16px; right: 16px; }
 .gx-side-label span { font-family: monospace; font-size: 10px; color: rgba(59,130,246,0.7); letter-spacing: 0.15em; }
 
-/* Corner brackets â€” blue accents */
+/* Corner brackets ? blue accents */
 .gx-bracket { position: absolute; width: 32px; height: 32px; z-index: 55; pointer-events: none; }
 .gx-br-tl { top: -1px; left: -1px; border-top: 2px solid #3b82f6; border-left: 2px solid #3b82f6; }
 .gx-br-br { bottom: -1px; right: -1px; border-bottom: 2px solid #3b82f6; border-right: 2px solid #3b82f6; }
@@ -507,7 +505,7 @@ export default function Gallery() {
 .gx-ring-progress { position: relative; width: 64px; height: 64px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
 .gx-ring-pct { position: absolute; font-family: monospace; font-size: 12px; font-weight: 700; color: #fff; }
 
-/* Arrows â€” glass style */
+/* Arrows ? glass style */
 .gx-arrow { position: absolute; top: 50%; transform: translateY(-50%); z-index: 55; padding: 16px; border-radius: 50%; border: 1px solid rgba(255,255,255,0.15); background: rgba(255,255,255,0.08); backdrop-filter: blur(12px); cursor: pointer; transition: all 0.3s; box-shadow: 0 4px 20px rgba(0,0,0,0.3); }
 .gx-arrow:hover { background: rgba(255,255,255,0.15); border-color: rgba(59,130,246,0.5); box-shadow: 0 0 24px rgba(59,130,246,0.3); }
 .gx-arrow span { font-size: 30px; color: rgba(255,255,255,0.6); transition: all 0.3s; }
@@ -515,7 +513,7 @@ export default function Gallery() {
 .gx-arrow-l { left: clamp(12px,3vw,48px); }
 .gx-arrow-r { right: clamp(12px,3vw,48px); }
 
-/* â”€â”€ Hologram Floor Controls â”€â”€ */
+/* ¦¡¦¡ Hologram Floor Controls ¦¡¦¡ */
 .gx-holo-wrap { display: flex; justify-content: center; margin-top: 40px; position: relative; z-index: 50; }
 .gx-holo-glow { position: absolute; bottom: -40px; left: 50%; transform: translateX(-50%); width: 90%; height: 20px; background: rgba(59,130,246,0.15); filter: blur(20px); border-radius: 50%; }
 .gx-holo-bar {
@@ -545,14 +543,14 @@ export default function Gallery() {
 .gx-counter-num { font-family: 'Orbitron'; font-size: 32px; font-weight: 900; color: #2563eb; text-shadow: 0 0 20px rgba(59,130,246,0.2); }
 .gx-counter-of { font-family: 'Rajdhani'; font-size: 14px; color: #94a3b8; }
 
-/* â”€â”€ Grid â”€â”€ */
+/* ¦¡¦¡ Grid ¦¡¦¡ */
 .gx-full-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 8px; padding: 0 clamp(16px,3vw,40px); max-width: 1200px; margin: 0 auto; }
 .gx-grid-item { position: relative; aspect-ratio: 4/3; border-radius: 10px; overflow: hidden; cursor: zoom-in; border: 1px solid #e2e8f0; transition: all 0.2s; }
 .gx-grid-item:hover { border-color: #93c5fd; box-shadow: 0 4px 16px rgba(59,130,246,0.15); }
 .gx-grid-active { border: 2px solid #3b82f6; box-shadow: 0 0 12px rgba(59,130,246,0.2); }
 
-/* â”€â”€ Lightbox â”€â”€ */
-.gx-lightbox { position: fixed; inset: 0; z-index: 9999; background: rgba(15,23,42,0.92); backdrop-filter: blur(16px); display: flex; align-items: center; justify-content: center; cursor: zoom-out; }
+/* ¦¡¦¡ Lightbox ¦¡¦¡ */
+.gx-lightbox { position: fixed; inset: 0; z-index: 9999; background: rgba(15,23,42,0.92); backdrop-filter: blur(8px); display: flex; align-items: center; justify-content: center; cursor: zoom-out; }
 .gx-lb-close { position: absolute; top: 20px; right: 20px; width: 44px; height: 44px; border-radius: 50%; border: 1px solid rgba(255,255,255,0.2); background: rgba(0,0,0,0.4); color: #fff; font-size: 20px; cursor: pointer; z-index: 10; display: flex; align-items: center; justify-content: center; }
 .gx-lb-arr { position: absolute; top: 50%; transform: translateY(-50%); width: 52px; height: 52px; border-radius: 50%; border: 1px solid rgba(255,255,255,0.15); background: rgba(0,0,0,0.4); color: #fff; font-size: 24px; cursor: pointer; z-index: 10; display: flex; align-items: center; justify-content: center; }
 .gx-lb-prev { left: 20px; }
@@ -560,7 +558,7 @@ export default function Gallery() {
 .gx-lb-img { position: relative; width: min(90vw,1100px); height: min(80vh,850px); border-radius: 12px; overflow: hidden; cursor: default; }
 .gx-lb-counter { position: absolute; bottom: 28px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.5); padding: 6px 18px; border-radius: 999px; color: rgba(255,255,255,0.8); font-size: 13px; font-weight: 600; }
 
-/* â•â•â• Responsive â•â•â• */
+/* ??? Responsive ??? */
 @media (max-width: 1024px) {
     .gx-card-far-left, .gx-card-far-right { display: none; }
     .gx-card-side-left { width: 320px; transform: translate(-50%,-50%) translateX(-100%) translateZ(-150px) rotateY(30deg); }
@@ -573,7 +571,7 @@ export default function Gallery() {
     .gx-rings { display: none; }
 }
 
-/* â•â•â• Keyframes â•â•â• */
+/* ??? Keyframes ??? */
 @keyframes gxSpin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 @keyframes gxSpinRev { from { transform: rotate(360deg); } to { transform: rotate(0deg); } }
 @keyframes gxPulse { 0%,100% { opacity: 1; } 50% { opacity: 0.4; } }

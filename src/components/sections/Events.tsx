@@ -5,40 +5,40 @@ import { motion, useInView, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 import TextReveal from "@/components/ui/TextReveal";
 
-/* ═══════════════════════════════════════════════════════
-   Events — Ultra-Nexus 3D Infinite Continuum  v2.0
+/* ?�═?�═?�═?�═?�═?�═?�═?�═?�═?�═?�═?�═?�═?�═?�═?�═?�═?�═?�═?�═?�═?�═?�═?�═?�═?�═?�═??
+   Events ??Ultra-Nexus 3D Infinite Continuum  v2.0
    Aero-glass   ·   Fiber-core timeline   ·   3D depth
-   ═══════════════════════════════════════════════════════ */
+   ?�═?�═?�═?�═?�═?�═?�═?�═?�═?�═?�═?�═?�═?�═?�═?�═?�═?�═?�═?�═?�═?�═?�═?�═?�═?�═?�═??*/
 
 const events = [
     {
         image: "/images/events/competition-1.jpg",
-        title: "정보올림피아드 대회",
-        desc: "코딩쏙 학생들이 한국정보올림피아드(KOI)에 참가하여 알고리즘 문제해결 능력을 증명했습니다. C/C++ 기반의 고급 알고리즘 실력으로 전국 상위권에 진입하는 쾌거를 달성했습니다.",
-        date: "2025년 8월",
-        location: "서울 코엑스",
-        badge: "🥇 금상 수상",
-        participants: "48명 참가",
+        title: "?�보?�림?�아???�??,
+        desc: "코딩???�생?�이 ?�국?�보?�림?�아??KOI)??참�??�여 ?�고리즘 문제?�결 ?�력??증명?�습?�다. C/C++ 기반??고급 ?�고리즘 ?�력?�로 ?�국 ?�위권에 진입?�는 쾌거�??�성?�습?�다.",
+        date: "2025??8??,
+        location: "?�울 코엑??,
+        badge: "?�� 금상 ?�상",
+        participants: "48�?참�?",
         status: "upcoming" as const,
     },
     {
         image: "/images/events/competition-2.jpg",
-        title: "전국 프로그래밍 경진대회",
-        desc: "전국 단위 프로그래밍 경진대회에서 창의적인 소프트웨어 솔루션으로 두각을 나타냈습니다. 팀 프로젝트 부문에서 혁신적인 AI 활용 솔루션을 선보였습니다.",
-        date: "2025년 11월",
-        location: "대전 KAIST",
-        badge: "🏆 본선 진출",
-        participants: "2,400명 경쟁",
+        title: "?�국 ?�로그래�?경진?�??,
+        desc: "?�국 ?�위 ?�로그래�?경진?�?�에??창의?�인 ?�프?�웨???�루?�으�??�각???��??�습?�다. ?� ?�로?�트 부문에???�신?�인 AI ?�용 ?�루?�을 ?�보?�?�니??",
+        date: "2025??11??,
+        location: "?�??KAIST",
+        badge: "?�� 본선 진출",
+        participants: "2,400�?경쟁",
         status: "live" as const,
     },
     {
         image: "/images/events/competition-3.png",
-        title: "SW 코딩 공모전",
-        desc: "학생들의 창의적 프로젝트와 앱 개발 결과물을 발표하고 전문가 심사위원에게 인정받았습니다.",
-        date: "2025년 12월",
-        location: "온라인 개최",
-        badge: "🎖️ 우수상 수상",
-        participants: "320팀 참가",
+        title: "SW 코딩 공모??,
+        desc: "?�생?�의 창의???�로?�트?� ??개발 결과물을 발표?�고 ?�문가 ?�사?�원?�게 ?�정받았?�니??",
+        date: "2025??12??,
+        location: "?�라??개최",
+        badge: "?���??�수???�상",
+        participants: "320?� 참�?",
         status: "archived" as const,
     },
 ];
@@ -46,41 +46,41 @@ const events = [
 const pastEvents = [
     {
         image: "/images/events/competition-2.jpg",
-        title: "전국 청소년 코딩 챌린지",
-        desc: "초·중·고등학생 대상 전국 코딩 챌린지에서 Python 부문 최우수 팀으로 선정되었습니다. 실시간 코딩 배틀에서 압도적인 실력을 선보였습니다.",
-        date: "2024년 9월",
-        location: "부산 벡스코",
-        badge: "🥈 은상 수상",
-        participants: "1,800명 참가",
+        title: "?�국 �?��??코딩 챌린지",
+        desc: "초·중·고등?�생 ?�???�국 코딩 챌린지?�서 Python 부�?최우???�?�로 ?�정?�었?�니?? ?�시�?코딩 배�??�서 ?�도?�인 ?�력???�보?�?�니??",
+        date: "2024??9??,
+        location: "부??벡스�?,
+        badge: "?�� ?�???�상",
+        participants: "1,800�?참�?",
     },
     {
         image: "/images/events/competition-1.jpg",
-        title: "AI 창의 융합 해커톤",
-        desc: "24시간 해커톤에서 AI를 활용한 교육용 챗봇을 개발하여 기술 혁신상을 수상했습니다. 학생들의 실전 프로젝트 능력이 빛을 발한 대회였습니다.",
-        date: "2024년 6월",
-        location: "서울 DDP",
-        badge: "💡 기술혁신상",
-        participants: "150팀 참가",
+        title: "AI 창의 ?�합 ?�커??,
+        desc: "24?�간 ?�커?�에??AI�??�용??교육??챗봇??개발?�여 기술 ?�신?�을 ?�상?�습?�다. ?�생?�의 ?�전 ?�로?�트 ?�력??빛을 발한 ?�?��??�니??",
+        date: "2024??6??,
+        location: "?�울 DDP",
+        badge: "?�� 기술?�신??,
+        participants: "150?� 참�?",
     },
     {
         image: "/images/events/competition-3.png",
-        title: "대한민국 SW 인재 축제",
-        desc: "과학기술정보통신부 주최 대한민국 SW 인재 축제에서 미래 IT 인재상을 수상하며 코딩쏙의 교육 성과를 증명했습니다.",
-        date: "2024년 3월",
-        location: "서울 코엑스",
-        badge: "🌟 미래인재상",
-        participants: "전국 500명",
+        title: "?�?��?�?SW ?�재 축제",
+        desc: "과학기술?�보?�신부 주최 ?�?��?�?SW ?�재 축제?�서 미래 IT ?�재?�을 ?�상?�며 코딩?�의 교육 ?�과�?증명?�습?�다.",
+        date: "2024??3??,
+        location: "?�울 코엑??,
+        badge: "?�� 미래?�재??,
+        participants: "?�국 500�?,
     },
 ];
 
 const stats = [
-    { label: "참가 대회", value: "24", suffix: "+", icon: "emoji_events" },
-    { label: "수상 실적", value: "15", suffix: "회", icon: "military_tech" },
-    { label: "참가 학생", value: "120", suffix: "명", icon: "groups" },
-    { label: "수상률", value: "87", suffix: "%", icon: "trending_up" },
+    { label: "참�? ?�??, value: "24", suffix: "+", icon: "emoji_events" },
+    { label: "?�상 ?�적", value: "15", suffix: "??, icon: "military_tech" },
+    { label: "참�? ?�생", value: "120", suffix: "�?, icon: "groups" },
+    { label: "?�상�?, value: "87", suffix: "%", icon: "trending_up" },
 ];
 
-/* ── Timeline Card ── */
+/* ?�?� Timeline Card ?�?� */
 function TimelineCard({
     event,
     index,
@@ -99,7 +99,7 @@ function TimelineCard({
 
     return (
         <div className="nx-entry group" style={{ perspective: 2000 }}>
-            {/* — Text — */}
+            {/* ??Text ??*/}
             <motion.div
                 initial={{ opacity: 0, x: isEven ? -80 : 80 }}
                 animate={isInView ? { opacity: 1, x: 0 } : {}}
@@ -135,7 +135,7 @@ function TimelineCard({
                 </div>
             </motion.div>
 
-            {/* — Node (absolute centered on fiber) — */}
+            {/* ??Node (absolute centered on fiber) ??*/}
             <motion.div
                 initial={{ scale: 0 }}
                 animate={isInView ? { scale: 1 } : {}}
@@ -149,7 +149,7 @@ function TimelineCard({
                 </div>
             </motion.div>
 
-            {/* — Image — */}
+            {/* ??Image ??*/}
             <motion.div
                 initial={{ opacity: 0, x: isEven ? 80 : -80, rotateY: isEven ? 12 : -12 }}
                 animate={isInView ? { opacity: 1, x: 0, rotateY: 0 } : {}}
@@ -191,7 +191,7 @@ function TimelineCard({
     );
 }
 
-/* ── Main Export ── */
+/* ?�?� Main Export ?�?� */
 export default function Events() {
     const ref = useRef<HTMLElement>(null);
     const isInView = useInView(ref, { once: true, margin: "-60px" });
@@ -201,10 +201,8 @@ export default function Events() {
 
     return (
         <section ref={ref} id="events" className="nx-section">
-            <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Noto+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
-            <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
-
-            {/* ── BG ── */}
+                        
+            {/* ?�?� BG ?�?� */}
             <div className="nx-bg" aria-hidden>
                 <div className="nx-grid-floor" />
                 <div className="nx-vol-light" />
@@ -214,7 +212,7 @@ export default function Events() {
             </div>
 
             <div className="nx-container">
-                {/* ── Header ── */}
+                {/* ?�?� Header ?�?� */}
                 <motion.div
                     initial={{ opacity: 0, y: 50, filter: "blur(10px)" }}
                     animate={isInView ? { opacity: 1, y: 0, filter: "blur(0px)" } : {}}
@@ -222,11 +220,11 @@ export default function Events() {
                     className="nx-header"
                 >
                     <div className="nx-sync-badge"><span className="nx-sync-dot" />CORE SYNC ACTIVE</div>
-                    <TextReveal as="h2" className="text-center nx-h2">대회 공모전 성과</TextReveal>
-                    <p className="nx-subtitle">코딩쏙 학생들의 도전과 성취를 기록합니다</p>
+                    <TextReveal as="h2" className="text-center nx-h2">?�??공모???�과</TextReveal>
+                    <p className="nx-subtitle">코딩???�생?�의 ?�전�??�취�?기록?�니??/p>
                 </motion.div>
 
-                {/* ── Stats ── */}
+                {/* ?�?� Stats ?�?� */}
                 <div className="nx-stats">
                     {stats.map((s, i) => (
                         <motion.div
@@ -245,7 +243,7 @@ export default function Events() {
                     ))}
                 </div>
 
-                {/* ── Timeline ── */}
+                {/* ?�?� Timeline ?�?� */}
                 <div className="nx-tl">
                     {/* Fiber-core */}
                     <motion.div
@@ -259,7 +257,7 @@ export default function Events() {
                         <TimelineCard key={i} event={ev} index={i} isInView={isInView} />
                     ))}
 
-                    {/* ── "Show Past Events" ── */}
+                    {/* ?�?� "Show Past Events" ?�?� */}
                     <div className="nx-past-gate">
                         <div className="nx-fiber-fade" />
                         <motion.button
@@ -276,11 +274,11 @@ export default function Events() {
                             <div className="nx-gate-glow" />
                         </motion.button>
                         <span className="nx-gate-label">
-                            {showPast ? "접기" : "이전 대회 보기"}
+                            {showPast ? "?�기" : "?�전 ?�??보기"}
                         </span>
                     </div>
 
-                    {/* ── Past Events ── */}
+                    {/* ?�?� Past Events ?�?� */}
                     <AnimatePresence>
                         {showPast && (
                             <motion.div
@@ -295,7 +293,7 @@ export default function Events() {
                                     <div className="nx-past-line" />
                                     <span className="nx-past-title">
                                         <span className="material-symbols-outlined" style={{ fontSize: 18 }}>schedule</span>
-                                        지난 대회 기록
+                                        지???�??기록
                                     </span>
                                     <div className="nx-past-line" />
                                 </div>
@@ -310,9 +308,9 @@ export default function Events() {
                 </div>
             </div>
 
-            {/* ═══════ CSS ═══════ */}
+            {/* ?�═?�═?�═??CSS ?�═?�═?�═??*/}
             <style>{`
-/* ═══ Section Shell ═══ */
+/* ?�═??Section Shell ?�═??*/
 .nx-section {
     position: relative; overflow: hidden;
     padding: clamp(80px, 10vw, 140px) 0;
@@ -321,7 +319,7 @@ export default function Events() {
 }
 .nx-container { max-width: 1200px; margin: 0 auto; padding: 0 clamp(16px,4vw,40px); position: relative; z-index: 10; }
 
-/* ═══ Background ═══ */
+/* ?�═??Background ?�═??*/
 .nx-bg { position: absolute; inset: 0; pointer-events: none; z-index: 0; overflow: hidden; perspective: 1000px; }
 .nx-grid-floor {
     position: absolute; inset: 0;
@@ -339,19 +337,19 @@ export default function Events() {
 .nx-s2 { width: 6px; height: 6px; bottom: 30%; right: 28%; background: #38bdf8; box-shadow: 0 0 12px #38bdf8; animation-duration: 7s; animation-delay: 2s; }
 .nx-s3 { width: 10px; height: 10px; top: 55%; left: 18%; background: #fff; box-shadow: 0 0 24px rgba(255,255,255,0.8); animation-duration: 5s; animation-delay: 1s; }
 
-/* ═══ Header ═══ */
+/* ?�═??Header ?�═??*/
 .nx-header { text-align: center; margin-bottom: clamp(40px, 6vw, 72px); }
-.nx-sync-badge { display: inline-flex; align-items: center; gap: 8px; padding: 8px 24px; border-radius: 999px; background: rgba(255,255,255,0.65); border: 2px solid rgba(255,255,255,0.85); backdrop-filter: blur(24px); font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.25em; color: #0ea5e9; margin-bottom: 28px; box-shadow: 0 8px 30px rgba(14,165,233,0.1); }
+.nx-sync-badge { display: inline-flex; align-items: center; gap: 8px; padding: 8px 24px; border-radius: 999px; background: rgba(255,255,255,0.65); border: 2px solid rgba(255,255,255,0.85); backdrop-filter: blur(8px); font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.25em; color: #0ea5e9; margin-bottom: 28px; box-shadow: 0 8px 30px rgba(14,165,233,0.1); }
 .nx-sync-dot { width: 10px; height: 10px; border-radius: 50%; background: #0ea5e9; box-shadow: 0 0 12px #0ea5e9; animation: nxBlink 1.2s ease-in-out infinite; }
 .nx-h2 { font-family: 'Space Grotesk', sans-serif !important; font-size: clamp(2.2rem, 5vw, 3.8rem) !important; font-weight: 800 !important; letter-spacing: -0.03em; }
 .nx-subtitle { font-size: 16px; color: #64748b; margin-top: 10px; font-weight: 500; letter-spacing: 0.03em; }
 
-/* ═══ Stats ═══ */
+/* ?�═??Stats ?�═??*/
 .nx-stats { display: grid; grid-template-columns: repeat(2,1fr); gap: 14px; margin-bottom: clamp(48px,8vw,88px); max-width: 940px; margin-left: auto; margin-right: auto; }
 @media (min-width: 640px) { .nx-stats { grid-template-columns: repeat(4,1fr); gap: 18px; } }
 .nx-stat {
     position: relative; overflow: hidden; cursor: crosshair;
-    background: rgba(255,255,255,0.45); backdrop-filter: blur(40px) saturate(160%);
+    background: rgba(255,255,255,0.45); backdrop-filter: blur(8px);
     border: 1px solid rgba(255,255,255,0.85); border-top: 2px solid #fff; border-left: 2px solid #fff;
     box-shadow: 0 10px 40px rgba(14,165,233,0.1), inset 0 0 30px rgba(255,255,255,0.7), -1px 0 0 rgba(255,0,0,0.12), 1px 0 0 rgba(0,255,255,0.12);
     border-radius: 24px; padding: 28px 20px;
@@ -368,10 +366,10 @@ export default function Events() {
 .nx-stat-glow { position: absolute; bottom: -40px; right: -40px; width: 120px; height: 120px; background: rgba(14,165,233,0.06); border-radius: 50%; filter: blur(30px); transition: background 0.3s; }
 .nx-stat:hover .nx-stat-glow { background: rgba(14,165,233,0.14); }
 
-/* ═══ Refraction Layer ═══ */
+/* ?�═??Refraction Layer ?�═??*/
 .nx-refraction { position: absolute; inset: 0; background: linear-gradient(135deg, rgba(255,255,255,0.75) 0%, transparent 40%, transparent 60%, rgba(255,255,255,0.35) 100%); pointer-events: none; z-index: 12; opacity: 0.6; mix-blend-mode: overlay; border-radius: inherit; }
 
-/* ═══ Timeline ═══ */
+/* ?�═??Timeline ?�═??*/
 .nx-tl { position: relative; max-width: 1100px; margin: 0 auto; padding-bottom: 40px; }
 
 /* Fiber-core */
@@ -385,7 +383,7 @@ export default function Events() {
     border-radius: 5px;
 }
 
-/* ── Entry ── */
+/* ?�?� Entry ?�?� */
 .nx-entry { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(24px,4vw,56px); align-items: center; margin-bottom: clamp(56px,7vw,100px); position: relative; }
 
 /* Text column */
@@ -414,7 +412,7 @@ export default function Events() {
 .nx-achieve-r { justify-content: flex-end; }
 .nx-achieve-pill { display: inline-block; padding: 6px 16px; border-radius: 999px; font-size: 13px; font-weight: 700; background: linear-gradient(135deg, rgba(14,165,233,0.08), rgba(56,189,248,0.08)); border: 1px solid rgba(14,165,233,0.15); color: #0369a1; backdrop-filter: blur(4px); }
 
-/* ── Node (absolute on fiber center) ── */
+/* ?�?� Node (absolute on fiber center) ?�?� */
 .nx-node-abs { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); z-index: 8; }
 .nx-node { position: relative; border-radius: 50%; transition: transform 0.5s ease-out; display: flex; align-items: center; justify-content: center; }
 .group:hover .nx-node { transform: scale(1.3); }
@@ -428,11 +426,11 @@ export default function Events() {
 .nx-n-arch .nx-n-inner { inset: 6px; background: #cbd5e1; }
 .group:hover .nx-n-arch .nx-n-inner { background: linear-gradient(135deg, #0ea5e9, #38bdf8); }
 
-/* ── Image / Aero-glass Card ── */
+/* ?�?� Image / Aero-glass Card ?�?� */
 .nx-img-col {}
 .nx-glass-card {
     position: relative; overflow: hidden;
-    background: rgba(255,255,255,0.45); backdrop-filter: blur(40px) saturate(150%);
+    background: rgba(255,255,255,0.45); backdrop-filter: blur(8px);
     border: 1px solid rgba(255,255,255,0.85); border-top: 2px solid #fff; border-left: 2px solid #fff;
     box-shadow: 0 10px 40px rgba(14,165,233,0.1), inset 0 0 30px rgba(255,255,255,0.7), -1px 0 0 rgba(255,0,0,0.12), 1px 0 0 rgba(0,255,255,0.12);
     border-radius: 24px; padding: 8px;
@@ -445,19 +443,19 @@ export default function Events() {
 .nx-img-gray { filter: grayscale(0.65); opacity: 0.75; transition: all 0.7s; }
 .group:hover .nx-img-gray { filter: grayscale(0); opacity: 1; }
 .nx-img-grad { position: absolute; inset: 0; background: linear-gradient(to top, rgba(15,23,42,0.35), transparent 55%); pointer-events: none; }
-.nx-tag { position: absolute; top: 16px; right: 16px; background: rgba(255,255,255,0.92); backdrop-filter: blur(16px); border: 1px solid #fff; color: #0ea5e9; font-size: 11px; font-weight: 800; padding: 8px 18px; border-radius: 12px; box-shadow: 0 6px 20px rgba(0,0,0,0.08); letter-spacing: 0.12em; }
+.nx-tag { position: absolute; top: 16px; right: 16px; background: rgba(255,255,255,0.92); backdrop-filter: blur(8px); border: 1px solid #fff; color: #0ea5e9; font-size: 11px; font-weight: 800; padding: 8px 18px; border-radius: 12px; box-shadow: 0 6px 20px rgba(0,0,0,0.08); letter-spacing: 0.12em; }
 .nx-bottom-info { position: absolute; bottom: 0; left: 0; right: 0; padding: 14px 16px; background: linear-gradient(to top, rgba(255,255,255,0.85), transparent); backdrop-filter: blur(4px); display: flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 800; color: #1e293b; letter-spacing: 0.12em; }
 .nx-center-badge-wrap { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; }
-.nx-center-badge { display: inline-flex; align-items: center; gap: 6px; background: rgba(255,255,255,0.85); backdrop-filter: blur(16px); padding: 10px 22px; border-radius: 16px; font-size: 13px; font-weight: 800; color: #1e293b; border: 1px solid #fff; box-shadow: 0 6px 20px rgba(0,0,0,0.08); transition: transform 0.3s; }
+.nx-center-badge { display: inline-flex; align-items: center; gap: 6px; background: rgba(255,255,255,0.85); backdrop-filter: blur(8px); padding: 10px 22px; border-radius: 16px; font-size: 13px; font-weight: 800; color: #1e293b; border: 1px solid #fff; box-shadow: 0 6px 20px rgba(0,0,0,0.08); transition: transform 0.3s; }
 .group:hover .nx-center-badge { transform: scale(1.1); }
 .nx-accent-bar { position: absolute; bottom: 0; left: 0; width: 100%; height: 3px; background: linear-gradient(to right, #0ea5e9, #38bdf8); box-shadow: 0 -4px 16px rgba(14,165,233,0.3); }
 
-/* ── Past Events Gate ── */
+/* ?�?� Past Events Gate ?�?� */
 .nx-past-gate { display: flex; flex-direction: column; align-items: center; margin: 20px 0 40px; position: relative; z-index: 10; }
 .nx-fiber-fade { width: 4px; height: 48px; background: linear-gradient(to bottom, #38bdf8, rgba(56,189,248,0.2)); border-radius: 99px; margin-bottom: 16px; }
 .nx-gate-btn {
     position: relative; width: 72px; height: 72px; border-radius: 50%; cursor: pointer; border: none;
-    background: rgba(255,255,255,0.5); backdrop-filter: blur(40px);
+    background: rgba(255,255,255,0.5); backdrop-filter: blur(8px);
     border: 2px solid rgba(255,255,255,0.9);
     box-shadow: 0 10px 30px rgba(14,165,233,0.12);
     transition: all 0.4s; display: flex; align-items: center; justify-content: center;
@@ -475,10 +473,10 @@ export default function Events() {
 .nx-past-line { flex: 1; max-width: 120px; height: 1px; background: linear-gradient(to right, transparent, rgba(14,165,233,0.2), transparent); }
 .nx-past-title { display: inline-flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 700; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.15em; }
 
-/* ── Bottom ── */
+/* ?�?� Bottom ?�?� */
 .nx-tl-bottom { display: flex; flex-direction: column; align-items: center; padding-top: 16px; }
 .nx-fiber-tail { width: 4px; height: 70px; background: linear-gradient(to bottom, #0ea5e9 0%, #38bdf8 50%, transparent 100%); opacity: 0.5; animation: nxBlink 2s ease-in-out infinite; border-radius: 99px; margin-bottom: 16px; }
-.nx-inf-btn { position: relative; width: 72px; height: 72px; border-radius: 50%; background: rgba(255,255,255,0.45); backdrop-filter: blur(40px); border: 1px solid rgba(255,255,255,0.85); border-top: 2px solid #fff; box-shadow: 0 10px 30px rgba(14,165,233,0.12); transition: all 0.5s; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+.nx-inf-btn { position: relative; width: 72px; height: 72px; border-radius: 50%; background: rgba(255,255,255,0.45); backdrop-filter: blur(8px); border: 1px solid rgba(255,255,255,0.85); border-top: 2px solid #fff; box-shadow: 0 10px 30px rgba(14,165,233,0.12); transition: all 0.5s; display: flex; align-items: center; justify-content: center; cursor: pointer; }
 .nx-inf-btn:hover { transform: scale(1.1); }
 .nx-inf-inner { position: absolute; inset: 8px; background: linear-gradient(135deg,#fff,#f0f9ff); border-radius: 50%; box-shadow: inset 0 2px 6px rgba(0,0,0,0.04); display: flex; align-items: center; justify-content: center; }
 .nx-inf-icon { font-size: 30px; color: #0ea5e9; }
@@ -486,7 +484,7 @@ export default function Events() {
 .nx-inf-glow { position: absolute; inset: -8px; border-radius: 50%; background: rgba(14,165,233,0.12); filter: blur(14px); opacity: 0; transition: opacity 0.4s; }
 .nx-inf-btn:hover .nx-inf-glow { opacity: 1; }
 
-/* ═══ Responsive ═══ */
+/* ?�═??Responsive ?�═??*/
 @media (max-width: 768px) {
     .nx-entry { grid-template-columns: 1fr !important; gap: 20px !important; }
     .nx-left, .nx-right { order: unset !important; }
@@ -499,7 +497,7 @@ export default function Events() {
     .nx-node-abs { left: 20px !important; transform: translate(-50%, -50%) !important; }
 }
 
-/* ═══ Keyframes ═══ */
+/* ?�═??Keyframes ?�═??*/
 @keyframes nxFloat { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-25px); } }
 @keyframes nxEmber { 0% { transform: translate(0,0) scale(1); opacity: 0.15; } 50% { opacity: 0.7; } 100% { transform: translate(30px,-50px) scale(1.5); opacity: 0; } }
 @keyframes nxBlink { 0%, 100% { opacity: 1; } 50% { opacity: 0.35; } }

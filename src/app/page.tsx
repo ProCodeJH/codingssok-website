@@ -1,6 +1,6 @@
 "use client";
 
-import MouseTracker from "@/components/effects/MouseTracker";
+
 import SmoothScroll from "@/components/effects/SmoothScroll";
 import ScrollProgress from "@/components/effects/ScrollProgress";
 import PageLoader from "@/components/effects/PageLoader";
@@ -26,7 +26,7 @@ import Contact from "@/components/sections/Contact";
 export default function Home() {
   return (
     <SmoothScroll>
-      <MouseTracker>
+      <>
         <PageLoader />
         <ScrollProgress />
         <main>
@@ -52,7 +52,7 @@ export default function Home() {
 
         </main>
 
-      </MouseTracker>
+      </>
     </SmoothScroll>
   );
 }

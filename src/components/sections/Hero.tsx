@@ -54,16 +54,6 @@ export default function Hero() {
                 >
                     <source src="/videos/hero-bg.mp4" type="video/mp4" />
                 </video>
-                {/* Bottom fade to white — smooth section transition */}
-                <div style={{
-                    position: "absolute",
-                    bottom: 0,
-                    left: 0,
-                    width: "100%",
-                    height: "30%",
-                    background: "linear-gradient(to bottom, transparent, #ffffff)",
-                    pointerEvents: "none",
-                }} />
             </motion.div>
 
             {/* Data stream decorations */}

@@ -157,7 +157,7 @@ export default function Hero() {
     }, []);
 
     return (
-        <section ref={sectionRef} id="hero" className="relative w-full text-slate-800" style={{ minHeight: "100vh", background: "#050a15" }}>
+        <section ref={sectionRef} id="hero" className="relative w-full text-slate-800" style={{ minHeight: "100vh", background: "#ffffff" }}>
 
             {/* VIDEO BACKGROUND — replaces Three.js Canvas */}
             <motion.div
@@ -181,24 +181,25 @@ export default function Hero() {
                         height: "auto",
                         objectFit: "cover",
                         transition: "transform 0.1s ease-out",
-                        mixBlendMode: "screen",
+                        filter: "saturate(0) contrast(1.2)",
+                        opacity: 0.12,
                     }}
                 >
                     <source src="/videos/hero-globe.mp4" type="video/mp4" />
                 </video>
-                {/* Dark overlay for text readability */}
+                {/* White vignette overlay */}
                 <div style={{
                     position: "absolute",
                     inset: 0,
-                    background: "radial-gradient(ellipse at center, rgba(5,10,21,0.2) 0%, rgba(5,10,21,0.6) 100%)",
+                    background: "radial-gradient(ellipse at center, transparent 30%, rgba(255,255,255,0.8) 100%)",
                     pointerEvents: "none",
                 }} />
             </motion.div>
 
             {/* Data stream decorations */}
             <style>{`
-                .data-stream { position:absolute; background:linear-gradient(90deg,transparent,#0ea5e9,transparent); height:1px; width:150px; opacity:0.6; filter:blur(0.5px); animation:stream 4s cubic-bezier(0.4,0,0.2,1) infinite; }
-                .data-stream-red { position:absolute; background:linear-gradient(90deg,transparent,#ef4444,transparent); height:1px; width:120px; opacity:0.4; filter:blur(0.5px); animation:stream 5s cubic-bezier(0.4,0,0.2,1) infinite; }
+                .data-stream { position:absolute; background:linear-gradient(90deg,transparent,#cbd5e1,transparent); height:1px; width:150px; opacity:0.3; filter:blur(0.5px); animation:stream 4s cubic-bezier(0.4,0,0.2,1) infinite; }
+                .data-stream-red { position:absolute; background:linear-gradient(90deg,transparent,#94a3b8,transparent); height:1px; width:120px; opacity:0.2; filter:blur(0.5px); animation:stream 5s cubic-bezier(0.4,0,0.2,1) infinite; }
                 @keyframes stream { 0%{transform:translateX(-200%) translateY(0);opacity:0} 10%{opacity:1} 90%{opacity:1} 100%{transform:translateX(120vw) translateY(50px);opacity:0} }
             `}</style>
 
@@ -224,10 +225,10 @@ export default function Hero() {
                             height: "clamp(100px, 16vw, 220px)",
                             objectFit: "contain",
                             animation: "logoFlip 1.2s cubic-bezier(0.16,1,0.3,1) both",
-                            filter: "drop-shadow(0 4px 20px rgba(14,165,233,0.4)) brightness(1.1)",
+                            filter: "drop-shadow(0 4px 20px rgba(59,130,246,0.3))",
                         }}
                     />
-                    <p style={{ fontSize: "clamp(16px, 2.5vw, 24px)", fontWeight: 500, color: "#cbd5e1", letterSpacing: "0.05em", textShadow: "0 0 20px rgba(0,0,0,0.5)" }}>머리에 쏙쏙 들어오는 코딩교육</p>
+                    <p style={{ fontSize: "clamp(16px, 2.5vw, 24px)", fontWeight: 500, color: "#64748b", letterSpacing: "0.05em" }}>머리에 쏙쏙 들어오는 코딩교육</p>
                 </div>
 
                 {/* SPACER */}
@@ -236,9 +237,10 @@ export default function Hero() {
                 {/* BOTTOM: Text effects */}
                 <div style={{
                     display: "flex", flexDirection: "column", alignItems: "center", gap: "20px", textAlign: "center", maxWidth: "1100px", padding: "24px 32px",
-                    background: "rgba(5,10,21,0.7)",
+                    background: "rgba(255,255,255,0.85)",
                     borderRadius: "24px",
-                    border: "1px solid rgba(56,189,248,0.15)",
+                    border: "1px solid rgba(59,130,246,0.1)",
+                    boxShadow: "0 8px 32px rgba(0,0,0,0.06)",
                 }}>
                     {/* Decorative accent line */}
                     <div style={{ display: "flex", alignItems: "center", gap: "12px", opacity: 0.6 }}>
@@ -256,7 +258,7 @@ export default function Hero() {
                     {/* Brief description */}
                     <p style={{
                         fontSize: "clamp(14px, 1.8vw, 18px)",
-                        color: "#94a3b8",
+                        color: "#64748b",
                         lineHeight: 1.7,
                         maxWidth: "600px",
                         opacity: 0.8,

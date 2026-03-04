@@ -50,26 +50,18 @@ export default function Hero() {
                         width: "auto",
                         height: "auto",
                         objectFit: "cover",
-                        opacity: 0.35,
                     }}
                 >
                     <source src="/videos/hero-bg.mp4" type="video/mp4" />
                 </video>
-                {/* White vignette overlay */}
-                <div style={{
-                    position: "absolute",
-                    inset: 0,
-                    background: "radial-gradient(ellipse at center, transparent 30%, rgba(255,255,255,0.8) 100%)",
-                    pointerEvents: "none",
-                }} />
-                {/* Bottom fade to white */}
+                {/* Bottom fade to white — smooth section transition */}
                 <div style={{
                     position: "absolute",
                     bottom: 0,
                     left: 0,
                     width: "100%",
-                    height: "50%",
-                    background: "linear-gradient(to bottom, transparent 0%, rgba(255,255,255,0.5) 40%, rgba(255,255,255,0.9) 70%, #ffffff 100%)",
+                    height: "30%",
+                    background: "linear-gradient(to bottom, transparent, #ffffff)",
                     pointerEvents: "none",
                 }} />
             </motion.div>

@@ -179,6 +179,26 @@ export default function Contact() {
                                         <span className="material-symbols-outlined ct-submit-icon">send</span>
                                     </span>
                                 </button>
+
+                                {/* Divider */}
+                                <div style={{ display: "flex", alignItems: "center", gap: 12, margin: "16px 0 8px" }}>
+                                    <div style={{ flex: 1, height: 1, background: "rgba(0,0,0,0.08)" }} />
+                                    <span style={{ fontSize: 12, color: "#94a3b8", fontWeight: 500 }}>또는</span>
+                                    <div style={{ flex: 1, height: 1, background: "rgba(0,0,0,0.08)" }} />
+                                </div>
+
+                                {/* KakaoTalk Channel Chat Button */}
+                                <a
+                                    href="https://pf.kakao.com/_CHANGE_ME/chat"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="ct-kakao-btn"
+                                >
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                                        <path d="M12 3C6.48 3 2 6.58 2 10.9c0 2.78 1.86 5.22 4.65 6.6-.15.56-.55 2.03-.63 2.35-.1.4.15.39.31.28.13-.08 2.04-1.38 2.87-1.94.59.09 1.2.13 1.8.13 5.52 0 10-3.58 10-7.9S17.52 3 12 3z" />
+                                    </svg>
+                                    카카오톡으로 상담하기
+                                </a>
                             </form>
                         </div>
                     </motion.div>
@@ -298,6 +318,10 @@ export default function Contact() {
 .ct-submit-icon { font-size: 20px; transition: transform 0.3s; }
 .ct-submit:hover .ct-submit-icon { transform: translateX(8px); }
 
+/* KakaoTalk Button */
+.ct-kakao-btn { display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%; padding: 16px; border-radius: 16px; background: #FEE500; color: #3A1D1D; font-size: 15px; font-weight: 700; text-decoration: none; transition: all 0.3s; border: none; cursor: pointer; }
+.ct-kakao-btn:hover { background: #F5DB00; transform: translateY(-2px); box-shadow: 0 8px 24px rgba(254,229,0,0.4); }
+.ct-kakao-btn:active { transform: translateY(0); }
 /* Keyframes */
 @keyframes ctFloat { 0%, 100% { transform: translateY(0) rotate(0); } 50% { transform: translateY(-15px) rotate(0.5deg); } }
 @keyframes ctShard { 0%, 100% { transform: translateY(0) scale(1); } 50% { transform: translateY(-20px) scale(1.05); } }

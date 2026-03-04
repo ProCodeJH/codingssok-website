@@ -22,6 +22,10 @@ export default function Contact() {
     const ref = useRef<HTMLElement>(null);
     const isInView = useInView(ref, { once: true, margin: "-60px" });
     const [selected, setSelected] = useState<string[]>([]);
+    const [name, setName] = useState("");
+    const [phone, setPhone] = useState("");
+    const [grade, setGrade] = useState("");
+    const [submitted, setSubmitted] = useState(false);
 
     const toggleInterest = (interest: string) => {
         setSelected(prev =>
@@ -29,6 +33,24 @@ export default function Contact() {
                 ? prev.filter(i => i !== interest)
                 : [...prev, interest]
         );
+    };
+
+    const handleSubmit = (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!name.trim() || !phone.trim()) {
+            alert("이름과 연락처를 입력해 주세요.");
+            return;
+        }
+        // Show confirmation
+        setSubmitted(true);
+        // Open KakaoTalk channel chat for follow-up
+        const msg = `[상담 신청]\n이름: ${name}\n연락처: ${phone}\n학년: ${grade || '미선택'}\n관심과목: ${selected.join(', ') || '미선택'}`;
+        window.open(`https://pf.kakao.com/_tNeen/chat`, '_blank');
+        // Reset after delay
+        setTimeout(() => {
+            setSubmitted(false);
+            setName(""); setPhone(""); setGrade(""); setSelected([]);
+        }, 3000);
     };
 
     return (
@@ -124,18 +146,18 @@ export default function Contact() {
                                 <p className="ct-form-sub">아래 정보를 입력하시면 빠르게 연락드리겠습니다.</p>
                             </div>
 
-                            <form className="ct-form" onSubmit={e => e.preventDefault()}>
+                            <form className="ct-form" onSubmit={handleSubmit}>
                                 <div className="ct-form-grid">
                                     <div className="ct-field group">
                                         <label className="ct-label">이름</label>
                                         <div className="ct-slot">
-                                            <input type="text" placeholder="이름" className="ct-input" />
+                                            <input type="text" placeholder="이름" className="ct-input" value={name} onChange={e => setName(e.target.value)} required />
                                         </div>
                                     </div>
                                     <div className="ct-field group">
                                         <label className="ct-label">연락처</label>
                                         <div className="ct-slot">
-                                            <input type="tel" placeholder="010-0000-0000" className="ct-input" />
+                                            <input type="tel" placeholder="010-0000-0000" className="ct-input" value={phone} onChange={e => setPhone(e.target.value)} required />
                                         </div>
                                     </div>
                                 </div>
@@ -143,7 +165,7 @@ export default function Contact() {
                                 <div className="ct-field group">
                                     <label className="ct-label">학년</label>
                                     <div className="ct-slot ct-select-wrap">
-                                        <select className="ct-input ct-select">
+                                        <select className="ct-input ct-select" value={grade} onChange={e => setGrade(e.target.value)}>
                                             <option disabled selected value="">학년 선택</option>
                                             <option>초등학생 (1~3학년)</option>
                                             <option>초등학생 (4~6학년)</option>
@@ -171,12 +193,12 @@ export default function Contact() {
                                     </div>
                                 </div>
 
-                                <button type="submit" className="ct-submit group">
+                                <button type="submit" className="ct-submit group" disabled={submitted}>
                                     <div className="ct-submit-bg" />
                                     <div className="ct-submit-shine" />
                                     <span className="ct-submit-text">
-                                        상담 신청하기
-                                        <span className="material-symbols-outlined ct-submit-icon">send</span>
+                                        {submitted ? "신청 완료! ✓" : "상담 신청하기"}
+                                        {!submitted && <span className="material-symbols-outlined ct-submit-icon">send</span>}
                                     </span>
                                 </button>
 

@@ -180,7 +180,7 @@ export default function Hero() {
                         width: "auto",
                         height: "auto",
                         objectFit: "cover",
-                        opacity: 1,
+                        opacity: 0.35,
                     }}
                 >
                     <source src="/videos/hero-bg.mp4" type="video/mp4" />

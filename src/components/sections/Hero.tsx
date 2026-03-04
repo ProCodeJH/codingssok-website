@@ -180,12 +180,10 @@ export default function Hero() {
                         width: "auto",
                         height: "auto",
                         objectFit: "cover",
-                        transition: "transform 0.1s ease-out",
-                        filter: "saturate(0) contrast(2.5) brightness(0.5)",
-                        opacity: 0.6,
+                        opacity: 1,
                     }}
                 >
-                    <source src="/videos/hero-globe.mp4" type="video/mp4" />
+                    <source src="/videos/hero-bg.mp4" type="video/mp4" />
                 </video>
                 {/* White vignette overlay */}
                 <div style={{

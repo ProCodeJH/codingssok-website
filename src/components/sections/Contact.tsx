@@ -189,7 +189,7 @@ export default function Contact() {
 
                                 {/* KakaoTalk Channel Chat Button */}
                                 <a
-                                    href="https://pf.kakao.com/_CHANGE_ME/chat"
+                                    href="https://pf.kakao.com/_tNeen/chat"
                                     target="_blank"
                                     rel="noopener noreferrer"
                                     className="ct-kakao-btn"

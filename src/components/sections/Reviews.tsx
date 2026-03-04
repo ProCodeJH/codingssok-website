@@ -262,7 +262,7 @@ export default function Reviews() {
 .rv-logo-shine { position: absolute; inset: 0; border-radius: inherit; background: linear-gradient(135deg, rgba(255,255,255,0.8) 0%, transparent 50%, rgba(0,0,0,0.05) 100%); pointer-events: none; }
 .rv-logo-naver { background: linear-gradient(135deg, #03C75A, #02b04e); color: #fff; }
 .rv-logo-google { background: #fff; color: #4285F4; font-size: 32px; }
-.rv-logo-daum { background: linear-gradient(135deg, #3d70ff, #345fdb); color: #fff; font-size: 18px; }
+.rv-logo-daum { background: #FEE500; color: #3C1E1E; font-size: 18px; }
 .rv-logo-text { position: relative; z-index: 2; font-family: 'Space Grotesk', sans-serif; }
 
 /* Content */

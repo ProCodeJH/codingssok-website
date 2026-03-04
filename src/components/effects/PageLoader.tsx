@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import Image from "next/image";
 
 /*
   PageLoader — 페이지 초기 로딩 애니메이션
@@ -39,19 +40,22 @@ export default function PageLoader() {
                         initial={{ scale: 0.5, opacity: 0 }}
                         animate={{ scale: 1, opacity: 1 }}
                         transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-                        style={{ textAlign: "center" }}
+                        style={{ textAlign: "center", display: "flex", flexDirection: "column", alignItems: "center" }}
                     >
-                        <motion.span
-                            animate={{ rotate: [0, 10, -10, 0] }}
+                        <motion.div
+                            animate={{ scale: [1, 1.05, 1] }}
                             transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
-                            style={{ fontSize: 56, display: "block", marginBottom: 8 }}
                         >
-                            🌸
-                        </motion.span>
-                        <h1 style={{ fontSize: 28, fontWeight: 800, color: "#383030", letterSpacing: "-0.02em" }}>
-                            코딩쏙
-                        </h1>
-                        <p style={{ fontSize: 13, color: "#888", marginTop: 4 }}>
+                            <Image
+                                src="/images/promo/logo-codingssok.png"
+                                alt="코딩쏙"
+                                width={180}
+                                height={60}
+                                style={{ objectFit: "contain" }}
+                                priority
+                            />
+                        </motion.div>
+                        <p style={{ fontSize: 13, color: "#888", marginTop: 12 }}>
                             코딩이 쏙쏙 들어오는 곳
                         </p>
                     </motion.div>

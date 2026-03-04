@@ -4,7 +4,7 @@ import MouseTracker from "@/components/effects/MouseTracker";
 import SmoothScroll from "@/components/effects/SmoothScroll";
 import ScrollProgress from "@/components/effects/ScrollProgress";
 import PageLoader from "@/components/effects/PageLoader";
-import BackToTop from "@/components/effects/BackToTop";
+
 import Navbar from "@/components/layout/Navbar";
 import Hero from "@/components/sections/Hero";
 import VideoHighlight from "@/components/sections/VideoHighlight";
@@ -54,7 +54,7 @@ export default function Home() {
             <Footer />
           </div>
         </main>
-        <BackToTop />
+
       </MouseTracker>
     </SmoothScroll>
   );

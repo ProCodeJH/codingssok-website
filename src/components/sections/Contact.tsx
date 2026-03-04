@@ -2,6 +2,7 @@
 
 import { useRef, useState } from "react";
 import { motion, useInView } from "framer-motion";
+import Image from "next/image";
 
 /* ═══════════════════════════════════════════
    Contact — Quantum Nexus Forge Ultra V3.2
@@ -10,12 +11,12 @@ import { motion, useInView } from "framer-motion";
    ═══════════════════════════════════════════ */
 
 const FEATURES = [
-    { icon: "hub", title: "Neural Network Logic", desc: "고급 알고리즘 사고 패턴을 머신러닝 원리에서 도출합니다." },
-    { icon: "code_blocks", title: "Quantum Syntax", desc: "다차원 코드 구조를 깔끔한 효율성으로 마스터합니다." },
-    { icon: "auto_graph", title: "Predictive Growth", desc: "독자적인 API를 활용한 실시간 스킬 궤적 매핑." },
+    { icon: "school", title: "소수 정예 교육", desc: "학생 개인 맞춤형 1:1 밀착 지도로 확실한 실력 향상을 보장합니다." },
+    { icon: "code", title: "실전 코딩 수업", desc: "C, Python, 웹개발 등 실무 중심 커리큘럼으로 바로 써먹을 수 있는 코딩을 배웁니다." },
+    { icon: "emoji_events", title: "대회·자격증 대비", desc: "정보올림피아드, COS-Pro 등 목표에 맞는 특화 프로그램을 운영합니다." },
 ];
 
-const INTERESTS = ["Python Core", "C++ Structure", "Web Stack", "AI Logic"];
+const INTERESTS = ["Python", "C/C++", "웹개발", "AI·머신러닝"];
 
 export default function Contact() {
     const ref = useRef<HTMLElement>(null);
@@ -62,16 +63,23 @@ export default function Contact() {
                         transition={{ duration: 0.8 }}
                         className="ct-info"
                     >
+                        <Image
+                            src="/images/promo/logo-codingssok.png"
+                            alt="코딩쏙"
+                            width={160}
+                            height={50}
+                            style={{ objectFit: "contain", marginBottom: 24 }}
+                        />
                         <div className="ct-proto-badge">
                             <span className="ct-proto-line" />
-                            <span className="ct-proto-text">Protocol V3.2 Enforced</span>
+                            <span className="ct-proto-text">무료 상담 접수</span>
                         </div>
                         <h2 className="ct-main-title">
-                            <span className="ct-title-dark">Quantum</span>
-                            <span className="ct-title-metallic">Nexus Forge</span>
+                            <span className="ct-title-dark">코딩 상담</span>
+                            <span className="ct-title-metallic">신청하기</span>
                         </h2>
                         <p className="ct-main-desc">
-                            Experience the nexus of coding education. Where hyper-detailed curriculum meets minimalist design philosophy in a 5D learning environment.
+                            현직 IT 전문가가 직접 상담해드립니다. 아이의 수준과 목표에 맞는 최적의 학습 방향을 안내합니다.
                         </p>
 
                         <div className="ct-features">
@@ -108,49 +116,49 @@ export default function Contact() {
                         <div className="ct-orbit ct-orbit3" />
 
                         <div className="ct-slab">
-                            {/* Secure badge */}
                             <div className="ct-secure-badge">
                                 <span className="ct-secure-dot" />
-                                <span>Secure Uplink v3.2</span>
+                                <span>안전한 정보 접수</span>
                             </div>
 
                             <div className="ct-form-header">
-                                <h3 className="ct-form-title">Initiate Contact</h3>
-                                <p className="ct-form-sub">Fill the parameters below to establish quantum connection.</p>
+                                <h3 className="ct-form-title">상담 신청</h3>
+                                <p className="ct-form-sub">아래 정보를 입력하시면 빠르게 연락드리겠습니다.</p>
                             </div>
 
                             <form className="ct-form" onSubmit={e => e.preventDefault()}>
                                 <div className="ct-form-grid">
                                     <div className="ct-field group">
-                                        <label className="ct-label">Identity</label>
+                                        <label className="ct-label">이름</label>
                                         <div className="ct-slot">
                                             <input type="text" placeholder="이름" className="ct-input" />
                                         </div>
                                     </div>
                                     <div className="ct-field group">
-                                        <label className="ct-label">Frequency</label>
+                                        <label className="ct-label">연락처</label>
                                         <div className="ct-slot">
-                                            <input type="tel" placeholder="연락처" className="ct-input" />
+                                            <input type="tel" placeholder="010-0000-0000" className="ct-input" />
                                         </div>
                                     </div>
                                 </div>
 
                                 <div className="ct-field group">
-                                    <label className="ct-label">Clearance Level</label>
+                                    <label className="ct-label">학년</label>
                                     <div className="ct-slot ct-select-wrap">
                                         <select className="ct-input ct-select">
                                             <option disabled selected value="">학년 선택</option>
-                                            <option>Novice (초등학생)</option>
-                                            <option>Apprentice (중학생)</option>
-                                            <option>Adept (고등학생)</option>
-                                            <option>Master (성인)</option>
+                                            <option>초등학생 (1~3학년)</option>
+                                            <option>초등학생 (4~6학년)</option>
+                                            <option>중학생</option>
+                                            <option>고등학생</option>
+                                            <option>성인</option>
                                         </select>
                                         <span className="material-symbols-outlined ct-select-arrow">expand_more</span>
                                     </div>
                                 </div>
 
                                 <div className="ct-field">
-                                    <label className="ct-label">Target Module</label>
+                                    <label className="ct-label">관심 과목</label>
                                     <div className="ct-chips">
                                         {INTERESTS.map(int => (
                                             <button
@@ -169,7 +177,7 @@ export default function Contact() {
                                     <div className="ct-submit-bg" />
                                     <div className="ct-submit-shine" />
                                     <span className="ct-submit-text">
-                                        Transmit Data
+                                        상담 신청하기
                                         <span className="material-symbols-outlined ct-submit-icon">send</span>
                                     </span>
                                 </button>

@@ -48,9 +48,9 @@ const REVIEWS = [
         metaLabel2: "조회수",
     },
     {
-        name: "Daum Maps",
-        nameKo: "다음 지도",
-        logo: "Daum",
+        name: "Kakao Map",
+        nameKo: "카카오맵",
+        logo: "K",
         logoStyle: "rv-logo-daum",
         nodeId: "지역 인증",
         nodeStyle: { background: "rgba(6,182,212,0.1)", color: "#0891b2", border: "1px solid rgba(6,182,212,0.2)" },
@@ -74,7 +74,7 @@ export default function Reviews() {
 
     return (
         <section ref={ref} id="reviews" className="rv-section">
-                        
+
             {/* BG */}
             <div className="rv-bg" aria-hidden>
                 <div className="rv-grid" />
@@ -186,12 +186,12 @@ export default function Reviews() {
                 {/* Footer status */}
                 <div className="rv-footer">
                     <div className="rv-footer-left">
-                        <span className="rv-footer-item"><span className="rv-footer-dot" /> SYSTEM OPTIMAL</span>
-                        <span className="rv-footer-item">SYNC_ID: 884-XJ</span>
+                        <span className="rv-footer-item"><span className="rv-footer-dot" />실시간 리뷰 현황</span>
+                        <span className="rv-footer-item">플랫폼 인증 리뷰</span>
                     </div>
                     <div className="rv-footer-right">
-                        <span>V3.0.0-RELEASE</span>
-                        <span>SECURE CONNECTION</span>
+                        <span>최종 업데이트</span>
+                        <span>인증 완료</span>
                     </div>
                 </div>
             </div>
@@ -220,10 +220,9 @@ export default function Reviews() {
 .rv-subtitle { font-family: 'JetBrains Mono', monospace; font-size: clamp(10px, 1.5vw, 14px); text-transform: uppercase; letter-spacing: 0.3em; color: #64748b; font-weight: 500; }
 
 /* Cards */
-.rv-cards { display: flex; flex-direction: column; gap: 36px; position: relative; padding: 0 12px 0 48px; }
-@media (min-width: 768px) { .rv-cards { padding-left: 80px; } }
-.rv-timeline-line { position: absolute; left: 39px; top: 0; bottom: 0; width: 1px; background: linear-gradient(to bottom, transparent, #cbd5e1, transparent); display: none; }
-@media (min-width: 768px) { .rv-timeline-line { display: block; left: 80px; } }
+.rv-cards { display: flex; flex-direction: column; gap: 36px; position: relative; padding: 0 12px; }
+@media (min-width: 768px) { .rv-cards { padding: 0 40px; } }
+.rv-timeline-line { position: absolute; left: 50%; top: 0; bottom: 0; width: 1px; transform: translateX(-50%); background: linear-gradient(to bottom, transparent, #cbd5e1, transparent); }
 
 .rv-card {
     position: relative; overflow: hidden;

@@ -217,7 +217,7 @@ export default function PromoShowcase() {
                         position: "relative",
                         borderRadius: 28,
                         overflow: "hidden",
-                        aspectRatio: "16 / 9",
+                        aspectRatio: "4 / 3",
                         background: "#e2e8f0",
                         boxShadow: "0 24px 80px rgba(59,130,246,0.12), 0 0 0 1px rgba(59,130,246,0.06)",
                         perspective: 1200,
@@ -284,29 +284,6 @@ export default function PromoShowcase() {
                                 }}>
                                     {slides[activeIndex].subtitle}
                                 </p>
-
-                                {/* CTA */}
-                                <Link href="#contact" style={{ textDecoration: "none" }}>
-                                    <motion.div
-                                        whileHover={{ scale: 1.05, x: 4 }}
-                                        whileTap={{ scale: 0.98 }}
-                                        transition={{ type: "spring", stiffness: 400, damping: 20 }}
-                                        style={{
-                                            display: "inline-flex", alignItems: "center", gap: 10,
-                                            padding: "12px 28px", borderRadius: 14,
-                                            background: "rgba(255,255,255,0.95)",
-                                            backdropFilter: "blur(12px)",
-                                            color: "#1e1b4b", fontSize: 14, fontWeight: 700,
-                                            boxShadow: "0 4px 20px rgba(0,0,0,0.15)",
-                                        }}
-                                    >
-                                        무료 상담 신청하기
-                                        <motion.span
-                                            animate={{ x: [0, 4, 0] }}
-                                            transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
-                                        >→</motion.span>
-                                    </motion.div>
-                                </Link>
                             </motion.div>
                         </motion.div>
                     </AnimatePresence>

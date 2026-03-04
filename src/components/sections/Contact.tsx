@@ -33,7 +33,7 @@ export default function Contact() {
 
     return (
         <section ref={ref} id="contact" className="ct-section">
-                        
+
             {/* BG */}
             <div className="ct-bg" aria-hidden>
                 <div className="ct-gradient-bg" />
@@ -247,7 +247,7 @@ export default function Contact() {
     transform-style: preserve-3d;
     transition: transform 0.5s;
     animation: ctSlabPulse 4s ease-in-out infinite;
-    overflow: hidden;
+    overflow: visible;
 }
 .ct-slab::before { content: ''; position: absolute; inset: -2px; border-radius: inherit; background: linear-gradient(45deg, transparent 40%, rgba(255,255,255,0.8) 50%, transparent 60%); z-index: 1; opacity: 0.25; pointer-events: none; mix-blend-mode: overlay; }
 .ct-slab::after { content: ''; position: absolute; inset: 0; border-radius: inherit; box-shadow: inset 3px 3px 6px rgba(255,255,255,0.2), inset -3px -3px 6px rgba(0,0,0,0.06); z-index: 2; pointer-events: none; }

@@ -1,4 +1,4 @@
-"use client";
+Ôªø"use client";
 
 import { useRef, useState, useEffect, useCallback } from "react";
 import { motion, useInView, AnimatePresence } from "framer-motion";
@@ -179,11 +179,11 @@ export default function Gallery() {
                             <span className="gx-badge-label">NEXUS GALLERY V2.0</span>
                         </div>
                     </div>
-                    <h1 className="gx-chrome-title">«–ø¯ µ—∑Ø∫∏±‚</h1>
+                    <h1 className="gx-chrome-title">ÌïôÏõê ÎëòÎü¨Î≥¥Í∏∞</h1>
                     <div className="gx-title-line" />
                     <p className="gx-sub">
                         <span className="gx-sub-dash" />
-                        <span className="gx-sub-text">ƒ⁄µ˘ΩÔ¿« ª˝ª˝«— ºˆæ˜ «ˆ¿Â °§ √— {total}¿Â</span>
+                        <span className="gx-sub-text">ÏΩîÎî©ÏèôÏùò ÏÉùÏÉùÌïú ÏàòÏóÖ ÌòÑÏû• ¬∑ Ï¥ù {total}Ïû•</span>
                         <span className="gx-sub-dash" />
                     </p>
                 </motion.div>
@@ -195,10 +195,10 @@ export default function Gallery() {
                     onMouseLeave={() => setHovered(false)}
                 >
                     {/* Arrows */}
-                    <button className="gx-arrow gx-arrow-l" onClick={() => go(-1)} aria-label="¿Ã¿¸">
+                    <button className="gx-arrow gx-arrow-l" onClick={() => go(-1)} aria-label="Ïù¥Ï†Ñ">
                         <span className="material-symbols-outlined">chevron_left</span>
                     </button>
-                    <button className="gx-arrow gx-arrow-r" onClick={() => go(1)} aria-label="¥Ÿ¿Ω">
+                    <button className="gx-arrow gx-arrow-r" onClick={() => go(1)} aria-label="Îã§Ïùå">
                         <span className="material-symbols-outlined">chevron_right</span>
                     </button>
 
@@ -217,7 +217,7 @@ export default function Gallery() {
                             onClick={() => setCurrent(visible[0])}
                         >
                             <div className="gx-card-dim" />
-                            <Image src={src(ALL_PHOTOS[visible[0]])} alt={`«–ø¯ ªÁ¡¯ ${visible[0] + 1}`} fill style={{ objectFit: "cover" }} sizes="400px" quality={40} loading="lazy" />
+                            <Image src={src(ALL_PHOTOS[visible[0]])} alt={`ÌïôÏõê ÏÇ¨ÏßÑ ${visible[0] + 1}`} fill style={{ objectFit: "cover" }} sizes="400px" quality={40} loading="lazy" />
                         </div>
 
                         {/* side-left */}
@@ -226,7 +226,7 @@ export default function Gallery() {
                             onClick={() => setCurrent(visible[1])}
                         >
                             <div className="gx-card-side-overlay-left" />
-                            <Image src={src(ALL_PHOTOS[visible[1]])} alt={`«–ø¯ ªÁ¡¯ ${visible[1] + 1}`} fill style={{ objectFit: "cover" }} sizes="480px" quality={60} loading="lazy" />
+                            <Image src={src(ALL_PHOTOS[visible[1]])} alt={`ÌïôÏõê ÏÇ¨ÏßÑ ${visible[1] + 1}`} fill style={{ objectFit: "cover" }} sizes="480px" quality={60} loading="lazy" />
                             <div className="gx-side-label gx-label-bl">
                                 <span>PREV_MODULE</span>
                             </div>
@@ -247,7 +247,7 @@ export default function Gallery() {
                                 <div className="gx-main-grad" />
                                 <Image
                                     src={src(ALL_PHOTOS[visible[2]])}
-                                    alt={`«–ø¯ ªÁ¡¯ ${visible[2] + 1}`}
+                                    alt={`ÌïôÏõê ÏÇ¨ÏßÑ ${visible[2] + 1}`}
                                     fill style={{ objectFit: "cover" }}
                                     className="gx-main-img"
                                     sizes="(max-width:768px) 90vw, 850px"
@@ -267,7 +267,7 @@ export default function Gallery() {
                                 {/* HUD bottom */}
                                 <div className="gx-hud-bottom">
                                     <div className="gx-hud-info">
-                                        <h2 className="gx-hud-title">ƒ⁄µ˘ΩÔ æ∆ƒ´µ•πÃ</h2>
+                                        <h2 className="gx-hud-title">ÏΩîÎî©Ïèô ÏïÑÏπ¥Îç∞ÎØ∏</h2>
                                         <div className="gx-hud-tags">
                                             <span className="gx-hud-badge">PHOTO {current + 1}</span>
                                             <span className="gx-hud-sub">IMMERSIVE LEARNING MODULE</span>
@@ -290,7 +290,7 @@ export default function Gallery() {
                             onClick={() => setCurrent(visible[3])}
                         >
                             <div className="gx-card-side-overlay-right" />
-                            <Image src={src(ALL_PHOTOS[visible[3]])} alt={`«–ø¯ ªÁ¡¯ ${visible[3] + 1}`} fill style={{ objectFit: "cover" }} sizes="480px" quality={60} loading="lazy" />
+                            <Image src={src(ALL_PHOTOS[visible[3]])} alt={`ÌïôÏõê ÏÇ¨ÏßÑ ${visible[3] + 1}`} fill style={{ objectFit: "cover" }} sizes="480px" quality={60} loading="lazy" />
                             <div className="gx-side-label gx-label-br">
                                 <span>NEXT_MODULE</span>
                             </div>
@@ -302,7 +302,7 @@ export default function Gallery() {
                             onClick={() => setCurrent(visible[4])}
                         >
                             <div className="gx-card-dim" />
-                            <Image src={src(ALL_PHOTOS[visible[4]])} alt={`«–ø¯ ªÁ¡¯ ${visible[4] + 1}`} fill style={{ objectFit: "cover" }} sizes="400px" quality={40} loading="lazy" />
+                            <Image src={src(ALL_PHOTOS[visible[4]])} alt={`ÌïôÏõê ÏÇ¨ÏßÑ ${visible[4] + 1}`} fill style={{ objectFit: "cover" }} sizes="400px" quality={40} loading="lazy" />
                         </div>
                     </div>
                 </div>
@@ -335,7 +335,7 @@ export default function Gallery() {
                             <div className="gx-full-grid">
                                 {ALL_PHOTOS.map((name, i) => (
                                     <motion.div key={name} initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: Math.min(i * 0.02, 1), duration: 0.3 }} onClick={() => setLightbox(i)} className={`gx-grid-item ${current === i ? "gx-grid-active" : ""}`}>
-                                        <Image src={src(name)} alt={`ªÁ¡¯ ${i + 1}`} fill style={{ objectFit: "cover" }} sizes="180px" quality={50} loading="lazy" />
+                                        <Image src={src(name)} alt={`ÏÇ¨ÏßÑ ${i + 1}`} fill style={{ objectFit: "cover" }} sizes="180px" quality={50} loading="lazy" />
                                     </motion.div>
                                 ))}
                             </div>
@@ -351,7 +351,7 @@ export default function Gallery() {
                             <button onClick={(e) => { e.stopPropagation(); setLightbox((p) => (p! - 1 + total) % total); }} className="gx-lb-arr gx-lb-prev">{"\u2039"}</button>
                             <button onClick={(e) => { e.stopPropagation(); setLightbox((p) => (p! + 1) % total); }} className="gx-lb-arr gx-lb-next">{"\u203A"}</button>
                             <motion.div key={lightbox} initial={{ scale: 0.85, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.85, opacity: 0 }} transition={{ type: "spring", damping: 25 }} onClick={(e) => e.stopPropagation()} className="gx-lb-img">
-                                <Image src={src(ALL_PHOTOS[lightbox])} alt={`ªÁ¡¯ ${lightbox + 1}`} fill style={{ objectFit: "contain" }} quality={90} sizes="90vw" priority />
+                                <Image src={src(ALL_PHOTOS[lightbox])} alt={`ÏÇ¨ÏßÑ ${lightbox + 1}`} fill style={{ objectFit: "contain" }} quality={90} sizes="90vw" priority />
                             </motion.div>
                             <div className="gx-lb-counter">{lightbox + 1} / {total}</div>
                         </motion.div>
@@ -369,7 +369,7 @@ export default function Gallery() {
     font-family: 'Rajdhani', sans-serif;
 }
 
-/* ¶°¶° Background Atmosphere ¶°¶° */
+/* ‚îÄ‚îÄ Background Atmosphere ‚îÄ‚îÄ */
 .gx-bg { position: absolute; inset: 0; pointer-events: none; z-index: 0; overflow: hidden; }
 .gx-bg-radial { position: absolute; inset: 0; background: radial-gradient(circle at 50% 20%, rgba(59,130,246,0.08), transparent 60%); }
 .gx-beam { position: absolute; top: -20%; width: 250px; height: 150%; background: linear-gradient(to bottom, rgba(59,130,246,0.06), transparent); filter: blur(50px); }
@@ -379,7 +379,7 @@ export default function Gallery() {
 .gx-floor-grid-mask { position: absolute; bottom: 0; width: 100%; height: 50%; mask-image: linear-gradient(to bottom, transparent, black); }
 .gx-floor-grid { width: 100%; height: 100%; background-image: linear-gradient(0deg, transparent 24%, rgba(59,130,246,.06) 25%, rgba(59,130,246,.06) 26%, transparent 27%, transparent 74%, rgba(59,130,246,.06) 75%, rgba(59,130,246,.06) 76%, transparent 77%), linear-gradient(90deg, transparent 24%, rgba(59,130,246,.06) 25%, rgba(59,130,246,.06) 26%, transparent 27%, transparent 74%, rgba(59,130,246,.06) 75%, rgba(59,130,246,.06) 76%, transparent 77%); background-size: 50px 50px; transform: perspective(500px) rotateX(60deg) scale(2); opacity: 0.4; }
 
-/* ¶°¶° Header ¶°¶° */
+/* ‚îÄ‚îÄ Header ‚îÄ‚îÄ */
 .gx-header { text-align: center; margin-bottom: clamp(40px,5vw,72px); position: relative; z-index: 10; }
 .gx-badge-wrap { display: inline-flex; position: relative; margin-bottom: 24px; cursor: pointer; }
 .gx-badge-glow { position: absolute; inset: -4px; background: linear-gradient(90deg, #60a5fa, #06b6d4); filter: blur(16px); opacity: 0.2; transition: opacity 0.5s; border-radius: 999px; }
@@ -513,7 +513,7 @@ export default function Gallery() {
 .gx-arrow-l { left: clamp(12px,3vw,48px); }
 .gx-arrow-r { right: clamp(12px,3vw,48px); }
 
-/* ¶°¶° Hologram Floor Controls ¶°¶° */
+/* ‚îÄ‚îÄ Hologram Floor Controls ‚îÄ‚îÄ */
 .gx-holo-wrap { display: flex; justify-content: center; margin-top: 40px; position: relative; z-index: 50; }
 .gx-holo-glow { position: absolute; bottom: -40px; left: 50%; transform: translateX(-50%); width: 90%; height: 20px; background: rgba(59,130,246,0.15); filter: blur(20px); border-radius: 50%; }
 .gx-holo-bar {
@@ -543,13 +543,13 @@ export default function Gallery() {
 .gx-counter-num { font-family: 'Orbitron'; font-size: 32px; font-weight: 900; color: #2563eb; text-shadow: 0 0 20px rgba(59,130,246,0.2); }
 .gx-counter-of { font-family: 'Rajdhani'; font-size: 14px; color: #94a3b8; }
 
-/* ¶°¶° Grid ¶°¶° */
+/* ‚îÄ‚îÄ Grid ‚îÄ‚îÄ */
 .gx-full-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 8px; padding: 0 clamp(16px,3vw,40px); max-width: 1200px; margin: 0 auto; }
 .gx-grid-item { position: relative; aspect-ratio: 4/3; border-radius: 10px; overflow: hidden; cursor: zoom-in; border: 1px solid #e2e8f0; transition: all 0.2s; }
 .gx-grid-item:hover { border-color: #93c5fd; box-shadow: 0 4px 16px rgba(59,130,246,0.15); }
 .gx-grid-active { border: 2px solid #3b82f6; box-shadow: 0 0 12px rgba(59,130,246,0.2); }
 
-/* ¶°¶° Lightbox ¶°¶° */
+/* ‚îÄ‚îÄ Lightbox ‚îÄ‚îÄ */
 .gx-lightbox { position: fixed; inset: 0; z-index: 9999; background: rgba(15,23,42,0.92); backdrop-filter: blur(8px); display: flex; align-items: center; justify-content: center; cursor: zoom-out; }
 .gx-lb-close { position: absolute; top: 20px; right: 20px; width: 44px; height: 44px; border-radius: 50%; border: 1px solid rgba(255,255,255,0.2); background: rgba(0,0,0,0.4); color: #fff; font-size: 20px; cursor: pointer; z-index: 10; display: flex; align-items: center; justify-content: center; }
 .gx-lb-arr { position: absolute; top: 50%; transform: translateY(-50%); width: 52px; height: 52px; border-radius: 50%; border: 1px solid rgba(255,255,255,0.15); background: rgba(0,0,0,0.4); color: #fff; font-size: 24px; cursor: pointer; z-index: 10; display: flex; align-items: center; justify-content: center; }

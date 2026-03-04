@@ -1,22 +1,22 @@
-"use client";
+﻿"use client";
 
 import { useRef, useState } from "react";
 import { motion, useInView } from "framer-motion";
 import Image from "next/image";
 
-/* ?�═?�═?�═?�═?�═?�═?�═?�═?�═?�═?�═?�═?�═?�═?�═?�═?�═?�═?�═?�═?�═??
+/* ?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧??
    Contact ??Quantum Nexus Forge Ultra V3.2
-   Monolith-slab form · Code-shard BG · Flow-lines
+   Monolith-slab form 쨌 Code-shard BG 쨌 Flow-lines
    Two-column: info left, glass form right
-   ?�═?�═?�═?�═?�═?�═?�═?�═?�═?�═?�═?�═?�═?�═?�═?�═?�═?�═?�═?�═?�═??*/
+   ?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧?먥븧??*/
 
 const FEATURES = [
-    { icon: "school", title: "?�수 ?�예 교육", desc: "?�생 개인 맞춤??1:1 밀�?지?�로 ?�실???�력 ?�상??보장?�니??" },
-    { icon: "code", title: "?�전 코딩 ?�업", desc: "C, Python, ?�개�????�무 중심 커리?�럼?�로 바로 ?�먹?????�는 코딩??배웁?�다." },
-    { icon: "emoji_events", title: "?�?�·자격증 ?��?, desc: "?�보?�림?�아?? COS-Pro ??목표??맞는 ?�화 ?�로그램???�영?�니??" },
+    { icon: "school", title: "?뚯닔 ?뺤삁 援먯쑁", desc: "?숈깮 媛쒖씤 留욎땄??1:1 諛李?吏?꾨줈 ?뺤떎???ㅻ젰 ?μ긽??蹂댁옣?⑸땲??" },
+    { icon: "code", title: "?ㅼ쟾 肄붾뵫 ?섏뾽", desc: "C, Python, ?밴컻諛????ㅻТ 以묒떖 而ㅻ━?섎읆?쇰줈 諛붾줈 ?⑤㉨?????덈뒗 肄붾뵫??諛곗썎?덈떎." },
+    { icon: "emoji_events", title: "??뙿룹옄寃⑹쬆 ?鍮?, desc: "?뺣낫?щ┝?쇱븘?? COS-Pro ??紐⑺몴??留욌뒗 ?뱁솕 ?꾨줈洹몃옩???댁쁺?⑸땲??" },
 ];
 
-const INTERESTS = ["Python", "C/C++", "?�개�?, "AI·머신?�닝"];
+const INTERESTS = ["Python", "C/C++", "?밴컻諛?, "AI쨌癒몄떊?щ떇"];
 
 export default function Contact() {
     const ref = useRef<HTMLElement>(null);
@@ -63,21 +63,21 @@ export default function Contact() {
                     >
                         <Image
                             src="/images/promo/logo-codingssok.png"
-                            alt="코딩??
+                            alt="肄붾뵫??
                             width={160}
                             height={50}
                             style={{ objectFit: "contain", marginBottom: 24 }}
                         />
                         <div className="ct-proto-badge">
                             <span className="ct-proto-line" />
-                            <span className="ct-proto-text">무료 ?�담 ?�수</span>
+                            <span className="ct-proto-text">臾대즺 ?곷떞 ?묒닔</span>
                         </div>
                         <h2 className="ct-main-title">
-                            <span className="ct-title-dark">코딩 ?�담</span>
-                            <span className="ct-title-metallic">?�청?�기</span>
+                            <span className="ct-title-dark">肄붾뵫 ?곷떞</span>
+                            <span className="ct-title-metallic">?좎껌?섍린</span>
                         </h2>
                         <p className="ct-main-desc">
-                            ?�직 IT ?�문가가 직접 ?�담?�드립니?? ?�이???��?�?목표??맞는 최적???�습 방향???�내?�니??
+                            ?꾩쭅 IT ?꾨Ц媛媛 吏곸젒 ?곷떞?대뱶由쎈땲?? ?꾩씠???섏?怨?紐⑺몴??留욌뒗 理쒖쟻???숈뒿 諛⑺뼢???덈궡?⑸땲??
                         </p>
 
                         <div className="ct-features">
@@ -116,24 +116,24 @@ export default function Contact() {
                         <div className="ct-slab">
                             <div className="ct-secure-badge">
                                 <span className="ct-secure-dot" />
-                                <span>?�전???�보 ?�수</span>
+                                <span>?덉쟾???뺣낫 ?묒닔</span>
                             </div>
 
                             <div className="ct-form-header">
-                                <h3 className="ct-form-title">?�담 ?�청</h3>
-                                <p className="ct-form-sub">?�래 ?�보�??�력?�시�?빠르�??�락?�리겠습?�다.</p>
+                                <h3 className="ct-form-title">?곷떞 ?좎껌</h3>
+                                <p className="ct-form-sub">?꾨옒 ?뺣낫瑜??낅젰?섏떆硫?鍮좊Ⅴ寃??곕씫?쒕━寃좎뒿?덈떎.</p>
                             </div>
 
                             <form className="ct-form" onSubmit={e => e.preventDefault()}>
                                 <div className="ct-form-grid">
                                     <div className="ct-field group">
-                                        <label className="ct-label">?�름</label>
+                                        <label className="ct-label">?대쫫</label>
                                         <div className="ct-slot">
-                                            <input type="text" placeholder="?�름" className="ct-input" />
+                                            <input type="text" placeholder="?대쫫" className="ct-input" />
                                         </div>
                                     </div>
                                     <div className="ct-field group">
-                                        <label className="ct-label">?�락�?/label>
+                                        <label className="ct-label">?곕씫泥?/label>
                                         <div className="ct-slot">
                                             <input type="tel" placeholder="010-0000-0000" className="ct-input" />
                                         </div>
@@ -141,22 +141,22 @@ export default function Contact() {
                                 </div>
 
                                 <div className="ct-field group">
-                                    <label className="ct-label">?�년</label>
+                                    <label className="ct-label">?숇뀈</label>
                                     <div className="ct-slot ct-select-wrap">
                                         <select className="ct-input ct-select">
-                                            <option disabled selected value="">?�년 ?�택</option>
-                                            <option>초등?�생 (1~3?�년)</option>
-                                            <option>초등?�생 (4~6?�년)</option>
-                                            <option>중학??/option>
-                                            <option>고등?�생</option>
-                                            <option>?�인</option>
+                                            <option disabled selected value="">?숇뀈 ?좏깮</option>
+                                            <option>珥덈벑?숈깮 (1~3?숇뀈)</option>
+                                            <option>珥덈벑?숈깮 (4~6?숇뀈)</option>
+                                            <option>以묓븰??/option>
+                                            <option>怨좊벑?숈깮</option>
+                                            <option>?깆씤</option>
                                         </select>
                                         <span className="material-symbols-outlined ct-select-arrow">expand_more</span>
                                     </div>
                                 </div>
 
                                 <div className="ct-field">
-                                    <label className="ct-label">관??과목</label>
+                                    <label className="ct-label">愿??怨쇰ぉ</label>
                                     <div className="ct-chips">
                                         {INTERESTS.map(int => (
                                             <button
@@ -175,7 +175,7 @@ export default function Contact() {
                                     <div className="ct-submit-bg" />
                                     <div className="ct-submit-shine" />
                                     <span className="ct-submit-text">
-                                        ?�담 ?�청?�기
+                                        ?곷떞 ?좎껌?섍린
                                         <span className="material-symbols-outlined ct-submit-icon">send</span>
                                     </span>
                                 </button>
@@ -186,7 +186,7 @@ export default function Contact() {
             </div>
 
             <style>{`
-/* ?�═??Section ?�═??*/
+/* ?먥븧??Section ?먥븧??*/
 .ct-section { position: relative; overflow: hidden; padding: clamp(80px,10vw,140px) 0; font-family: 'Noto Sans KR', sans-serif; color: #1e293b; min-height: 100vh; display: flex; align-items: center; }
 .ct-container { max-width: 1200px; margin: 0 auto; padding: 0 clamp(16px,4vw,40px); position: relative; z-index: 10; width: 100%; }
 

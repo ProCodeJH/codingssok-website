@@ -328,7 +328,7 @@ export default function Curriculum() {
 .holo-img-wrap {
     position: relative; height: 180px; width: 100%;
     border-radius: 16px; overflow: visible; margin-bottom: 24px;
-    background: #f1f5f9; box-shadow: inset 0 2px 4px rgba(0,0,0,0.06);
+    background: #fff; box-shadow: inset 0 2px 4px rgba(0,0,0,0.06);
     border: 1px solid rgba(255,255,255,0.5);
 }
 .holo-img-inner { border-radius: 16px; overflow: hidden; height: 100%; width: 100%; position: relative; }

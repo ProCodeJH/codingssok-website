@@ -145,7 +145,7 @@ export default function PromoShowcase() {
             id="promo-showcase"
             style={{
                 padding: "clamp(80px, 12vw, 140px) 0",
-                background: "linear-gradient(180deg, #fff 0%, #f0f7ff 20%, #e0ecff 50%, #f0f7ff 80%, #fff 100%)",
+                background: "#ffffff",
                 overflow: "hidden",
                 position: "relative",
             }}

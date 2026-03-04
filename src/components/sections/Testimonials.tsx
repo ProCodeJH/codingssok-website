@@ -212,7 +212,7 @@ export default function Testimonials() {
 
             <style>{`
 /* ═══ Section ═══ */
-.ts-section { position: relative; overflow: hidden; padding: clamp(80px,10vw,140px) 0 clamp(60px,8vw,100px); background: #F8F7F4; font-family: 'Pretendard', sans-serif; color: #1e293b; }
+.ts-section { position: relative; overflow: hidden; padding: clamp(80px,10vw,140px) 0 clamp(60px,8vw,100px); background: #fff; font-family: 'Pretendard', sans-serif; color: #1e293b; }
 .ts-container { max-width: 1200px; margin: 0 auto; padding: 0 clamp(16px,4vw,40px); position: relative; z-index: 10; }
 
 /* BG */

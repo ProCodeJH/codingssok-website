@@ -181,8 +181,8 @@ export default function Hero() {
                         height: "auto",
                         objectFit: "cover",
                         transition: "transform 0.1s ease-out",
-                        filter: "saturate(0) contrast(1.2)",
-                        opacity: 0.4,
+                        filter: "saturate(0) contrast(2.5) brightness(0.5)",
+                        opacity: 0.6,
                     }}
                 >
                     <source src="/videos/hero-globe.mp4" type="video/mp4" />
@@ -234,52 +234,37 @@ export default function Hero() {
                 {/* SPACER */}
                 <div style={{ minHeight: "55vh" }} />
 
-                {/* BOTTOM: Text effects */}
+                {/* BOTTOM: Clean text */}
                 <div style={{
-                    display: "flex", flexDirection: "column", alignItems: "center", gap: "20px", textAlign: "center", maxWidth: "1100px", padding: "24px 32px",
-                    background: "rgba(255,255,255,0.85)",
+                    display: "flex", flexDirection: "column", alignItems: "center", gap: "16px", textAlign: "center", maxWidth: "800px", padding: "32px 40px",
+                    background: "rgba(255,255,255,0.9)",
                     borderRadius: "24px",
-                    border: "1px solid rgba(59,130,246,0.1)",
+                    border: "1px solid rgba(0,0,0,0.06)",
                     boxShadow: "0 8px 32px rgba(0,0,0,0.06)",
+                    backdropFilter: "blur(12px)",
                 }}>
-                    {/* Decorative accent line */}
-                    <div style={{ display: "flex", alignItems: "center", gap: "12px", opacity: 0.6 }}>
-                        <div style={{ width: "40px", height: "1px", background: "linear-gradient(90deg, transparent, #0ea5e9)" }} />
-                        <div style={{ width: "6px", height: "6px", borderRadius: "50%", background: "#0ea5e9", boxShadow: "0 0 8px #0ea5e9" }} />
-                        <span style={{ fontSize: "11px", fontWeight: 700, letterSpacing: "0.3em", color: "#0ea5e9", textTransform: "uppercase" as const }}>Codingssok Academy</span>
-                        <div style={{ width: "6px", height: "6px", borderRadius: "50%", background: "#0ea5e9", boxShadow: "0 0 8px #0ea5e9" }} />
-                        <div style={{ width: "40px", height: "1px", background: "linear-gradient(270deg, transparent, #0ea5e9)" }} />
-                    </div>
-
-                    <GlitchDecode text="AI 시대, 진짜 코딩을 배우세요" delay={800} />
-
-                    <StaggerText text="Think → Code → Create → Launch" delay={2000} />
-
-                    {/* Brief description */}
+                    <p style={{
+                        fontSize: "clamp(28px, 4vw, 44px)",
+                        fontWeight: 700,
+                        color: "#0f172a",
+                        lineHeight: 1.3,
+                        letterSpacing: "-0.02em",
+                    }}>
+                        AI 시대,{" "}
+                        <span style={{ background: "linear-gradient(135deg, #3b82f6, #6366f1)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>
+                            진짜 코딩
+                        </span>을 배우세요
+                    </p>
                     <p style={{
                         fontSize: "clamp(14px, 1.8vw, 18px)",
                         color: "#64748b",
                         lineHeight: 1.7,
-                        maxWidth: "600px",
-                        opacity: 0.8,
-                        animation: "fadeSlideUp 1s ease 2.5s both",
+                        maxWidth: "500px",
                     }}>
-                        단순 암기가 아닌, <span style={{ color: "#38bdf8", fontWeight: 600 }}>AI와 함께 사고하는 코딩</span>을<br />
-                        기초부터 실전 프로젝트까지 체계적으로 배워보세요.
+                        단순 암기가 아닌, 기초부터 실전 프로젝트까지<br />
+                        체계적으로 배워보세요.
                     </p>
-
-                    <TypeWriter lines={[
-                        "const future = await learn('coding');",
-                        "student.skills.push('React', 'AI', 'Web3');",
-                        "console.log('Welcome to 코딩쏙! 🚀');",
-                    ]} delay={3000} />
-
-                    {/* CTA hint */}
-                    <div style={{
-                        display: "flex", gap: "8px", alignItems: "center",
-                        animation: "fadeSlideUp 1s ease 4s both",
-                        opacity: 0.5,
-                    }}>
+                    <div style={{ display: "flex", gap: "8px", alignItems: "center", opacity: 0.4, marginTop: 8 }}>
                         <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 3v10M5 10l3 3 3-3" stroke="#94a3b8" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
                         <span style={{ fontSize: "12px", color: "#94a3b8", letterSpacing: "0.1em" }}>SCROLL TO EXPLORE</span>
                         <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 3v10M5 10l3 3 3-3" stroke="#94a3b8" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>

@@ -198,7 +198,7 @@ export default function Reviews() {
 
             <style>{`
 /* ═══ Section ═══ */
-.rv-section { position: relative; overflow: hidden; padding: clamp(80px,10vw,140px) 0 clamp(60px,8vw,100px); background: #F8F7F4; font-family: 'Space Grotesk', sans-serif; color: #1e293b; }
+.rv-section { position: relative; overflow: hidden; padding: clamp(80px,10vw,140px) 0 clamp(60px,8vw,100px); background: #fff; font-family: 'Space Grotesk', sans-serif; color: #1e293b; }
 .rv-container { max-width: 900px; margin: 0 auto; padding: 0 clamp(16px,4vw,40px); position: relative; z-index: 10; }
 
 /* BG */

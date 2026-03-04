@@ -171,7 +171,7 @@ export default function Schedule() {
 
                 <style>{`
 /* ═══ SECTION ═══ */
-.fls-section { position: relative; overflow: hidden; padding: clamp(60px,8vw,100px) 0; color: #1e293b; background: #f1f5f9; }
+.fls-section { position: relative; overflow: hidden; padding: clamp(60px,8vw,100px) 0; color: #1e293b; background: #fff; }
 .fls-main { position: relative; z-index: 10; }
 
 /* ── BG ── */

@@ -433,7 +433,7 @@ export default function NexusPlanet() {
             </div>
 
             <style>{`
-.nx-planet-section { position: relative; width: 100%; overflow: hidden; background: #eef2fb; }
+.nx-planet-section { position: relative; width: 100%; overflow: hidden; background: #fff; }
 .nx-planet-container { position: relative; width: 100%; height: 100vh; min-height: 600px; max-height: 900px; overflow: hidden; }
 .nx-bg-canvas { position: absolute; inset: 0; z-index: 0; pointer-events: none; }
 .nx-main-canvas { position: absolute; inset: 0; z-index: 2; display: block; width: 100%; height: 100%; }

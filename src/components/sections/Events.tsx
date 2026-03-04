@@ -439,7 +439,7 @@ export default function Events() {
 }
 .nx-glass-card:hover { background: rgba(255,255,255,0.7); box-shadow: 0 30px 60px rgba(14,165,233,0.2), 0 0 40px rgba(56,189,248,0.25), inset 0 0 40px #fff, -2px 0 0 rgba(255,0,0,0.18), 2px 0 0 rgba(0,255,255,0.18); transform: translateY(-10px) scale(1.02); }
 .nx-card-dim { background: rgba(255,255,255,0.25); }
-.nx-card-img { position: relative; border-radius: 16px; overflow: hidden; aspect-ratio: 4/3; background: #f1f5f9; box-shadow: inset 0 1px 10px rgba(0,0,0,0.04); }
+.nx-card-img { position: relative; border-radius: 16px; overflow: hidden; aspect-ratio: 4/3; background: #fff; box-shadow: inset 0 1px 10px rgba(0,0,0,0.04); }
 .nx-img-gray { filter: grayscale(0.65); opacity: 0.75; transition: all 0.7s; }
 .group:hover .nx-img-gray { filter: grayscale(0); opacity: 1; }
 .nx-img-grad { position: absolute; inset: 0; background: linear-gradient(to top, rgba(15,23,42,0.35), transparent 55%); pointer-events: none; }

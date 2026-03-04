@@ -1,8 +1,7 @@
 "use client";
 
-import { useRef } from "react";
-import { motion, useInView } from "framer-motion";
-import TextReveal from "@/components/ui/TextReveal";
+import { useRef, useState, useEffect, useCallback } from "react";
+import { motion, useInView, AnimatePresence } from "framer-motion";
 
 /* ═══════════════════════════════════════════
    수강생 성공 스토리 — Quantum Nexus Slider
@@ -168,11 +167,30 @@ function StoryCard({ story, index }: { story: typeof STORIES[0]; index: number }
 export default function Testimonials() {
     const ref = useRef<HTMLElement>(null);
     const isInView = useInView(ref, { once: true, margin: "-60px" });
-    const scrollRef = useRef<HTMLDivElement>(null);
+    const [active, setActive] = useState(0);
+    const [paused, setPaused] = useState(false);
+    const total = STORIES.length;
+
+    const next = useCallback(() => setActive(p => (p + 1) % total), [total]);
+    const prev = useCallback(() => setActive(p => (p - 1 + total) % total), [total]);
+
+    useEffect(() => {
+        if (paused) return;
+        const timer = setInterval(next, 4000);
+        return () => clearInterval(timer);
+    }, [paused, next]);
+
+    const getCardStyle = (i: number) => {
+        const diff = ((i - active) % total + total) % total;
+        if (diff === 0) return { transform: 'translateX(0) scale(1) rotateY(0deg)', opacity: 1, zIndex: 30, filter: 'blur(0px)' };
+        if (diff === 1 || diff === -(total - 1)) return { transform: 'translateX(70%) scale(0.85) rotateY(-15deg)', opacity: 0.6, zIndex: 20, filter: 'blur(2px)' };
+        if (diff === total - 1) return { transform: 'translateX(-70%) scale(0.85) rotateY(15deg)', opacity: 0.6, zIndex: 20, filter: 'blur(2px)' };
+        return { transform: 'translateX(0) scale(0.7)', opacity: 0, zIndex: 0, filter: 'blur(4px)' };
+    };
 
     return (
         <section ref={ref} id="testimonials" className="ts-section">
-                        
+
             {/* BG */}
             <div className="ts-bg" aria-hidden>
                 <div className="ts-grid" />
@@ -194,20 +212,59 @@ export default function Testimonials() {
                         <span className="ts-live-dot" />
                         <span>수강생 후기</span>
                     </div>
-                    <TextReveal as="h2" className="text-center ts-main-title">
+                    <h2 className="text-center ts-main-title">
                         수강생 성공 스토리
-                    </TextReveal>
+                    </h2>
                     <p className="ts-main-sub">
                         코딩쏙 수강생들의 실제 성장 이야기를 확인하세요.
                     </p>
                 </motion.header>
             </div>
 
-            {/* Carousel */}
-            <div className="ts-carousel" ref={scrollRef}>
+            {/* 3D Carousel */}
+            <div
+                className="ts-carousel-3d"
+                onMouseEnter={() => setPaused(true)}
+                onMouseLeave={() => setPaused(false)}
+            >
                 {STORIES.map((story, i) => (
-                    <StoryCard key={i} story={story} index={i} />
+                    <div
+                        key={i}
+                        className="ts-carousel-card"
+                        style={{
+                            ...getCardStyle(i),
+                            transition: 'all 0.7s cubic-bezier(0.34, 1.56, 0.64, 1)',
+                            position: 'absolute',
+                            width: '100%',
+                            maxWidth: '420px',
+                            left: '50%',
+                            marginLeft: '-210px',
+                            pointerEvents: i === active ? 'auto' : 'none',
+                        }}
+                        onClick={() => i !== active && setActive(i)}
+                    >
+                        <StoryCard story={story} index={i} />
+                    </div>
                 ))}
+            </div>
+
+            {/* Navigation */}
+            <div className="ts-nav">
+                <button className="ts-nav-btn" onClick={prev} aria-label="Previous">
+                    <span className="material-symbols-outlined">chevron_left</span>
+                </button>
+                <div className="ts-dots">
+                    {STORIES.map((_, i) => (
+                        <button
+                            key={i}
+                            className={`ts-dot ${i === active ? 'ts-dot-active' : ''}`}
+                            onClick={() => setActive(i)}
+                        />
+                    ))}
+                </div>
+                <button className="ts-nav-btn" onClick={next} aria-label="Next">
+                    <span className="material-symbols-outlined">chevron_right</span>
+                </button>
             </div>
 
             <style>{`
@@ -232,14 +289,22 @@ export default function Testimonials() {
 .ts-header-area { text-align: center; margin-bottom: clamp(32px,5vw,56px); }
 .ts-live-badge { display: inline-flex; align-items: center; gap: 8px; padding: 6px 18px; border-radius: 999px; background: rgba(255,255,255,0.4); backdrop-filter: blur(8px); border: 1px solid rgba(255,255,255,0.6); font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.2em; color: #312e81; margin-bottom: 24px; box-shadow: 0 4px 16px rgba(0,0,0,0.04); animation: tsPulseGlow 4s ease-in-out infinite; font-family: 'Orbitron', sans-serif; }
 .ts-live-dot { width: 8px; height: 8px; border-radius: 50%; background: #22c55e; box-shadow: 0 0 10px #22c55e; }
-.ts-main-title { font-family: 'Pretendard', sans-serif !important; font-size: clamp(2.5rem, 6vw, 5rem) !important; font-weight: 900 !important; letter-spacing: -0.04em; background: linear-gradient(to bottom, #475569 0%, #1e293b 50%, #0f172a 100%); -webkit-background-clip: text !important; -webkit-text-fill-color: transparent; }
+.ts-main-title { font-family: 'Pretendard', sans-serif !important; font-size: clamp(2.5rem, 6vw, 5rem) !important; font-weight: 900 !important; letter-spacing: -0.04em; color: #0f172a !important; -webkit-text-fill-color: #0f172a !important; }
 .ts-main-sub { margin-top: 16px; font-size: 16px; color: #64748b; font-weight: 500; background: rgba(255,255,255,0.1); padding: 12px 20px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.2); backdrop-filter: blur(4px); display: inline-block; }
 .ts-accent-num { color: #4F46E5; font-weight: 700; }
 
-/* ═══ Carousel ═══ */
-.ts-carousel { display: flex; gap: 3rem; overflow-x: auto; scroll-snap-type: x mandatory; padding: 4rem 2rem; width: 100%; scrollbar-width: none; position: relative; z-index: 10; }
-.ts-carousel::-webkit-scrollbar { display: none; }
-.ts-item { scroll-snap-align: center; flex-shrink: 0; width: 420px; max-width: 85vw; }
+/* ═══ 3D Carousel ═══ */
+.ts-carousel-3d { position: relative; z-index: 10; height: 620px; perspective: 1200px; margin: 0 auto; max-width: 900px; }
+@media (max-width: 640px) { .ts-carousel-3d { height: 640px; } .ts-carousel-card { max-width: 85vw !important; margin-left: -42.5vw !important; } }
+.ts-item { width: 100%; }
+
+/* Navigation */
+.ts-nav { display: flex; align-items: center; justify-content: center; gap: 16px; position: relative; z-index: 20; margin-top: 16px; }
+.ts-nav-btn { width: 44px; height: 44px; border-radius: 50%; border: 1px solid rgba(0,0,0,0.08); background: rgba(255,255,255,0.8); backdrop-filter: blur(8px); display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.3s; color: #475569; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+.ts-nav-btn:hover { background: #fff; box-shadow: 0 8px 24px rgba(0,0,0,0.1); transform: scale(1.1); }
+.ts-dots { display: flex; gap: 8px; }
+.ts-dot { width: 10px; height: 10px; border-radius: 50%; border: none; background: #cbd5e1; cursor: pointer; transition: all 0.3s; }
+.ts-dot-active { background: #4f46e5; transform: scale(1.3); box-shadow: 0 0 12px rgba(79,70,229,0.4); }
 
 /* Card */
 .ts-card-wrap { position: relative; height: 580px; }

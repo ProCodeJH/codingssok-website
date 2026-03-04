@@ -69,7 +69,7 @@ export default function Hero() {
             <div className="data-stream" style={{ top: '35%', right: 0, animationDelay: '1s', animationDirection: 'reverse', animationDuration: '6s' }} />
 
             <div
-                className="relative z-10 w-full min-h-[100vh] flex flex-col items-center justify-between pt-24 pb-16 pointer-events-none"
+                className="relative z-10 w-full min-h-[100vh] flex flex-col items-center justify-between pt-24 pb-32 pointer-events-none"
                 style={{
                     filter: `blur(${scrollProgress * 4}px)`,
                     opacity: 1 - scrollProgress * 0.5,

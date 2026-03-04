@@ -194,13 +194,13 @@ export default function Testimonials() {
                 >
                     <div className="ts-live-badge">
                         <span className="ts-live-dot" />
-                        <span>Live Success Metrics</span>
+                        <span>수강생 후기</span>
                     </div>
                     <TextReveal as="h2" className="text-center ts-main-title">
                         수강생 성공 스토리
                     </TextReveal>
                     <p className="ts-main-sub">
-                        Data-driven growth: <span className="ts-accent-num">4,102</span> verified student achievements initialized.
+                        코딩쏙 수강생들의 실제 성장 이야기를 확인하세요.
                     </p>
                 </motion.header>
             </div>

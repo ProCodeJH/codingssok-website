@@ -17,11 +17,11 @@ import Gallery from "@/components/sections/Gallery";
 import Events from "@/components/sections/Events";
 import Reviews from "@/components/sections/Reviews";
 import Testimonials from "@/components/sections/Testimonials";
-import NexusPlanet from "@/components/sections/NexusPlanet";
+
 import Pricing from "@/components/sections/Pricing";
 import FAQ from "@/components/sections/FAQ";
 import Contact from "@/components/sections/Contact";
-import Footer from "@/components/layout/Footer";
+
 
 export default function Home() {
   return (
@@ -44,15 +44,12 @@ export default function Home() {
             <Events />
             <Reviews />
             <Testimonials />
-            <NexusPlanet />
+
             <Pricing />
             <FAQ />
             <Contact />
           </div>
-          {/* Footer revealed underneath */}
-          <div className="sticky bottom-0 z-0">
-            <Footer />
-          </div>
+
         </main>
 
       </MouseTracker>

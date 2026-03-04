@@ -14,57 +14,57 @@ const REVIEWS = [
         nameKo: "네이버 스마트플레이스",
         logo: "N",
         logoStyle: "rv-logo-naver",
-        nodeId: "KR-NODE-01",
+        nodeId: "네이버 인증",
         nodeStyle: { background: "rgba(3,199,90,0.1)", color: "#03C75A", border: "1px solid rgba(3,199,90,0.2)" },
-        subtext: "Portal Sync",
+        subtext: "학원 검색 1위",
         score: 4.9,
         fill: 98,
         barGrad: "linear-gradient(to right, #03C75A, #4ade80)",
         glowBg: "rgba(34,197,94,0.1)",
         dotBg: "#22c55e",
-        integrity: "99.9%",
-        latency: "8ms",
-        status: "VERIFIED",
-        metaLabel1: "INTEGRITY",
-        metaLabel2: "LATENCY",
+        integrity: "152건",
+        latency: "최신",
+        status: "인증완료",
+        metaLabel1: "리뷰 수",
+        metaLabel2: "업데이트",
     },
     {
         name: "Google Reviews",
         nameKo: "구글 리뷰",
         logo: "G",
         logoStyle: "rv-logo-google",
-        nodeId: "GL-NODE-05",
+        nodeId: "글로벌 인증",
         nodeStyle: { background: "rgba(59,130,246,0.1)", color: "#2563eb", border: "1px solid rgba(59,130,246,0.2)" },
-        subtext: "Global Index",
+        subtext: "전국 코딩학원 상위",
         score: 4.8,
         fill: 96,
         barGrad: "linear-gradient(to right, #3b82f6, #6366f1)",
         glowBg: "rgba(59,130,246,0.1)",
         dotBg: "#3b82f6",
-        integrity: "HIGH",
-        latency: "2.4k",
-        status: "AGGREGATED",
-        metaLabel1: "VELOCITY",
-        metaLabel2: "SIZE",
+        integrity: "89건",
+        latency: "2.4천",
+        status: "인증완료",
+        metaLabel1: "리뷰 수",
+        metaLabel2: "조회수",
     },
     {
         name: "Daum Maps",
         nameKo: "다음 지도",
         logo: "Daum",
         logoStyle: "rv-logo-daum",
-        nodeId: "LOC-NODE-09",
+        nodeId: "지역 인증",
         nodeStyle: { background: "rgba(6,182,212,0.1)", color: "#0891b2", border: "1px solid rgba(6,182,212,0.2)" },
-        subtext: "Local Metrics",
+        subtext: "대전 코딩학원 1위",
         score: 5.0,
         fill: 100,
         barGrad: "linear-gradient(to right, #06b6d4, #3b82f6)",
         glowBg: "rgba(6,182,212,0.1)",
         dotBg: "#06b6d4",
-        integrity: "100%",
-        latency: "4ms",
-        status: "NATIVE",
-        metaLabel1: "RELEVANCE",
-        metaLabel2: "CACHE",
+        integrity: "만점",
+        latency: "최근",
+        status: "인증완료",
+        metaLabel1: "평점",
+        metaLabel2: "업데이트",
     },
 ];
 
@@ -97,10 +97,10 @@ export default function Reviews() {
                         <span className="rv-ping-wrap">
                             <span className="rv-ping" /><span className="rv-ping-dot" />
                         </span>
-                        <span className="rv-sys-text">SYSTEM STATUS: OPTIMAL</span>
+                        <span className="rv-sys-text">실시간 리뷰 현황</span>
                     </div>
-                    <h2 className="rv-title">Ultra-Nexus</h2>
-                    <p className="rv-subtitle">Prismatic Review Lab V3.0 • Educational Core</p>
+                    <h2 className="rv-title">플랫폼 리뷰</h2>
+                    <p className="rv-subtitle">네이버 · 구글 · 다음 공식 인증 리뷰</p>
                 </motion.header>
 
                 {/* Cards */}

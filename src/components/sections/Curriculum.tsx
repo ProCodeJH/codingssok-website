@@ -104,7 +104,7 @@ export default function Curriculum() {
                         </h2>
                         <h1 className="holo-main-title">CURRICULUM</h1>
                         <p className="holo-desc">
-                            5단계 마스터리 과정을 통해 성장하세요. 모노리스를 클릭하면 <span style={{ color: "#3B82F6", fontWeight: 500 }}>Exploded View</span> 분석 모드로 전환됩니다.
+                            5단계 마스터리 과정을 통해 체계적으로 성장하세요. 각 단계를 클릭하면 상세 커리큘럼을 확인할 수 있습니다.
                         </p>
                     </header>
 

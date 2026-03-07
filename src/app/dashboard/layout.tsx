@@ -31,7 +31,7 @@ const studentNav: NavItem[] = [
     { label: '대시보드', href: '/dashboard', icon: <LayoutDashboard size={20} /> },
     { label: '내 수업', href: '/dashboard/classes', icon: <BookOpen size={20} /> },
     { label: '숙제', href: '/dashboard/homework', icon: <ClipboardList size={20} /> },
-    { label: '학습 교재', href: '/dashboard/learning', icon: <GraduationCap size={20} /> },
+    { label: '학습 교재', href: '/dashboard/learn', icon: <GraduationCap size={20} /> },
     { label: 'C-Studio', href: '/dashboard/cstudio', icon: <Code2 size={20} /> },
 ]
 

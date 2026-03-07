@@ -5,13 +5,13 @@ import { revalidatePath } from 'next/cache'
 
 // ─── 교재 목록 (7트랙) ──────────────────────────────────
 export const learningTracks = [
-    { id: 'python-entry', name: '파이썬 입문', icon: '🐍', color: '#3B82F6', totalLessons: 20 },
-    { id: 'c-basic', name: 'C언어 기초', icon: '⚙️', color: '#10B981', totalLessons: 25 },
-    { id: 'algo-think', name: '알고리즘 사고', icon: '🧠', color: '#8B5CF6', totalLessons: 15 },
-    { id: 'entry-coding', name: '엔트리 코딩', icon: '🎮', color: '#F59E0B', totalLessons: 18 },
-    { id: 'arduino', name: '아두이노', icon: '🔌', color: '#EF4444', totalLessons: 12 },
-    { id: 'web-basic', name: '웹 기초', icon: '🌐', color: '#06B6D4', totalLessons: 16 },
-    { id: 'cert-prep', name: '자격증 대비', icon: '📜', color: '#EC4899', totalLessons: 30 },
+    { id: 'python-entry', name: '파이썬 입문', color: '#3B82F6', totalLessons: 20 },
+    { id: 'c-basic', name: 'C언어 기초', color: '#10B981', totalLessons: 25 },
+    { id: 'algo-think', name: '알고리즘 사고', color: '#8B5CF6', totalLessons: 15 },
+    { id: 'entry-coding', name: '엔트리 코딩', color: '#F59E0B', totalLessons: 18 },
+    { id: 'arduino', name: '아두이노', color: '#EF4444', totalLessons: 12 },
+    { id: 'web-basic', name: '웹 기초', color: '#06B6D4', totalLessons: 16 },
+    { id: 'cert-prep', name: '자격증 대비', color: '#EC4899', totalLessons: 30 },
 ]
 
 // ─── 학생 진도 조회 ─────────────────────────────────────

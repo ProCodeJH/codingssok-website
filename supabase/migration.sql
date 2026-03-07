@@ -199,9 +199,94 @@ CREATE POLICY "Students view logs" ON session_logs FOR SELECT
     SELECT 1 FROM class_members WHERE class_id = session_logs.class_id AND student_id = auth.uid()
   ));
 
--- ─── 11. Storage Bucket ───────────────────────────────────────
+-- ─── 11. 상담 문의 ──────────────────────────────────────────
+CREATE TABLE IF NOT EXISTS contact_inquiries (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  name TEXT NOT NULL,
+  phone TEXT NOT NULL,
+  student_age TEXT,
+  interest_track TEXT,
+  message TEXT,
+  is_read BOOLEAN DEFAULT false,
+  created_at TIMESTAMPTZ DEFAULT now()
+);
+
+-- contact_inquiries: 누구나 INSERT(비로그인 포함), 선생님/관리자만 읽기
+ALTER TABLE contact_inquiries ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Anyone can submit inquiry" ON contact_inquiries FOR INSERT
+  WITH CHECK (true);
+CREATE POLICY "Teachers can view inquiries" ON contact_inquiries FOR SELECT
+  USING (EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND role IN ('teacher', 'admin')));
+CREATE POLICY "Teachers can update inquiries" ON contact_inquiries FOR UPDATE
+  USING (EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND role IN ('teacher', 'admin')));
+
+-- ─── 12. PC 세션 ────────────────────────────────────────────
+CREATE TABLE IF NOT EXISTS pc_sessions (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  pc_name TEXT NOT NULL,
+  student_id UUID REFERENCES profiles(id),
+  ip_address TEXT,
+  status TEXT DEFAULT 'offline' CHECK (status IN ('online', 'offline', 'locked')),
+  last_screenshot_at TIMESTAMPTZ,
+  created_at TIMESTAMPTZ DEFAULT now()
+);
+
+ALTER TABLE pc_sessions ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Teachers manage PC sessions" ON pc_sessions FOR ALL
+  USING (EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND role IN ('teacher', 'admin')));
+
+-- ─── 13. PC 활동 로그 ───────────────────────────────────────
+CREATE TABLE IF NOT EXISTS pc_activity_logs (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  pc_session_id UUID REFERENCES pc_sessions(id) ON DELETE CASCADE,
+  event_type TEXT NOT NULL,
+  app_name TEXT,
+  url TEXT,
+  created_at TIMESTAMPTZ DEFAULT now()
+);
+
+ALTER TABLE pc_activity_logs ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Teachers view PC logs" ON pc_activity_logs FOR SELECT
+  USING (EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND role IN ('teacher', 'admin')));
+
+-- ─── 14. homework에 status 컬럼 추가 (없으면) ──────────────
+DO $$ BEGIN
+  ALTER TABLE homework ADD COLUMN IF NOT EXISTS status TEXT DEFAULT 'active'
+    CHECK (status IN ('draft', 'active', 'closed'));
+EXCEPTION WHEN others THEN NULL;
+END $$;
+
+-- ─── 15. Storage Bucket ─────────────────────────────────────
 -- Supabase Dashboard > Storage에서 'homework-submissions' 버킷을 수동 생성하세요.
 -- Public 접근: ON (제출 파일 다운로드용)
+
+-- ─── 16. 학부모: 자녀의 정보 조회 허용 ─────────────────────
+CREATE POLICY "Parents view children profiles" ON profiles FOR SELECT
+  USING (EXISTS (
+    SELECT 1 FROM parent_children WHERE parent_id = auth.uid() AND child_id = profiles.id
+  ));
+CREATE POLICY "Parents view children classes" ON class_members FOR SELECT
+  USING (EXISTS (
+    SELECT 1 FROM parent_children WHERE parent_id = auth.uid() AND child_id = class_members.student_id
+  ));
+CREATE POLICY "Parents view children homework" ON submissions FOR SELECT
+  USING (EXISTS (
+    SELECT 1 FROM parent_children WHERE parent_id = auth.uid() AND child_id = submissions.student_id
+  ));
+CREATE POLICY "Parents view children activities" ON compiler_activities FOR SELECT
+  USING (EXISTS (
+    SELECT 1 FROM parent_children WHERE parent_id = auth.uid() AND child_id = compiler_activities.student_id
+  ));
+CREATE POLICY "Parents view children progress" ON learning_progress FOR SELECT
+  USING (EXISTS (
+    SELECT 1 FROM parent_children WHERE parent_id = auth.uid() AND child_id = learning_progress.student_id
+  ));
+CREATE POLICY "Parents view session logs" ON session_logs FOR SELECT
+  USING (EXISTS (
+    SELECT 1 FROM class_members cm
+    JOIN parent_children pc ON pc.child_id = cm.student_id
+    WHERE cm.class_id = session_logs.class_id AND pc.parent_id = auth.uid()
+  ));
 
 -- ═══════════════════════════════════════════════════════════════
 -- 완료! 모든 테이블, RLS 정책, 트리거가 생성되었습니다.

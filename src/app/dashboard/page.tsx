@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { createClient } from '@/lib/supabase/client'
+import { getStudentDashboardStats, getTeacherDashboardStats } from '@/lib/actions/dashboard'
 import Link from 'next/link'
 import {
     BookOpen,
@@ -25,110 +26,106 @@ interface WidgetCard {
     gradient: string
 }
 
-const studentWidgets: WidgetCard[] = [
-    {
-        title: '진행 중인 수업',
-        value: '—',
-        subtitle: '다음 수업을 확인하세요',
-        icon: <BookOpen size={24} />,
-        color: '#0066FF',
-        gradient: 'linear-gradient(135deg, rgba(0,102,255,0.2), rgba(0,229,255,0.1))',
-    },
-    {
-        title: '미제출 숙제',
-        value: '—',
-        subtitle: '기한 내 제출하세요',
-        icon: <ClipboardList size={24} />,
-        color: '#FF6B35',
-        gradient: 'linear-gradient(135deg, rgba(255,107,53,0.2), rgba(255,107,53,0.05))',
-    },
-    {
-        title: '코딩 활동',
-        value: '—',
-        subtitle: '이번 주 컴파일 횟수',
-        icon: <Code2 size={24} />,
-        color: '#10B981',
-        gradient: 'linear-gradient(135deg, rgba(16,185,129,0.2), rgba(16,185,129,0.05))',
-    },
-    {
-        title: '학습 진도',
-        value: '—',
-        subtitle: '전체 교재 진행률',
-        icon: <TrendingUp size={24} />,
-        color: '#7C3AED',
-        gradient: 'linear-gradient(135deg, rgba(124,58,237,0.2), rgba(124,58,237,0.05))',
-    },
-]
+function buildStudentWidgets(stats: { classCount: number; pendingHomework: number; codingCount: number; progressText: string } | null): WidgetCard[] {
+    return [
+        {
+            title: '진행 중인 수업',
+            value: stats ? `${stats.classCount}개` : '...',
+            subtitle: '다음 수업을 확인하세요',
+            icon: <BookOpen size={24} />,
+            color: '#0066FF',
+            gradient: 'linear-gradient(135deg, rgba(0,102,255,0.2), rgba(0,229,255,0.1))',
+        },
+        {
+            title: '미제출 숙제',
+            value: stats ? `${stats.pendingHomework}개` : '...',
+            subtitle: stats && stats.pendingHomework > 0 ? '기한 내 제출하세요' : '모두 제출 완료!',
+            icon: <ClipboardList size={24} />,
+            color: '#FF6B35',
+            gradient: 'linear-gradient(135deg, rgba(255,107,53,0.2), rgba(255,107,53,0.05))',
+        },
+        {
+            title: '코딩 활동',
+            value: stats ? `${stats.codingCount}회` : '...',
+            subtitle: '이번 주 컴파일 횟수',
+            icon: <Code2 size={24} />,
+            color: '#10B981',
+            gradient: 'linear-gradient(135deg, rgba(16,185,129,0.2), rgba(16,185,129,0.05))',
+        },
+        {
+            title: '학습 진도',
+            value: stats ? stats.progressText : '...',
+            subtitle: '완료/전체 교재',
+            icon: <TrendingUp size={24} />,
+            color: '#7C3AED',
+            gradient: 'linear-gradient(135deg, rgba(124,58,237,0.2), rgba(124,58,237,0.05))',
+        },
+    ]
+}
 
-const teacherWidgets: WidgetCard[] = [
-    {
-        title: '총 학생 수',
-        value: '—',
-        subtitle: '전체 등록 학생',
-        icon: <Users size={24} />,
-        color: '#0066FF',
-        gradient: 'linear-gradient(135deg, rgba(0,102,255,0.2), rgba(0,229,255,0.1))',
-    },
-    {
-        title: '오늘 수업',
-        value: '—',
-        subtitle: '오늘 예정된 수업',
-        icon: <Clock size={24} />,
-        color: '#10B981',
-        gradient: 'linear-gradient(135deg, rgba(16,185,129,0.2), rgba(16,185,129,0.05))',
-    },
-    {
-        title: '채점 대기',
-        value: '—',
-        subtitle: '미채점 제출물',
-        icon: <ClipboardList size={24} />,
-        color: '#FF6B35',
-        gradient: 'linear-gradient(135deg, rgba(255,107,53,0.2), rgba(255,107,53,0.05))',
-    },
-    {
-        title: 'PC 상태',
-        value: '—',
-        subtitle: '온라인 PC 수',
-        icon: <Monitor size={24} />,
-        color: '#7C3AED',
-        gradient: 'linear-gradient(135deg, rgba(124,58,237,0.2), rgba(124,58,237,0.05))',
-    },
-]
+function buildTeacherWidgets(stats: { studentCount: number; todayClasses: number; pendingGrading: number } | null): WidgetCard[] {
+    return [
+        {
+            title: '총 학생 수',
+            value: stats ? `${stats.studentCount}명` : '...',
+            subtitle: '전체 등록 학생',
+            icon: <Users size={24} />,
+            color: '#0066FF',
+            gradient: 'linear-gradient(135deg, rgba(0,102,255,0.2), rgba(0,229,255,0.1))',
+        },
+        {
+            title: '오늘 수업',
+            value: stats ? `${stats.todayClasses}개` : '...',
+            subtitle: '오늘 예정된 수업',
+            icon: <Clock size={24} />,
+            color: '#10B981',
+            gradient: 'linear-gradient(135deg, rgba(16,185,129,0.2), rgba(16,185,129,0.05))',
+        },
+        {
+            title: '채점 대기',
+            value: stats ? `${stats.pendingGrading}건` : '...',
+            subtitle: stats && stats.pendingGrading > 0 ? '미채점 제출물' : '모두 채점 완료!',
+            icon: <ClipboardList size={24} />,
+            color: '#FF6B35',
+            gradient: 'linear-gradient(135deg, rgba(255,107,53,0.2), rgba(255,107,53,0.05))',
+        },
+        {
+            title: 'PC 관리',
+            value: '-',
+            subtitle: 'PC 관리 페이지에서 확인',
+            icon: <Monitor size={24} />,
+            color: '#7C3AED',
+            gradient: 'linear-gradient(135deg, rgba(124,58,237,0.2), rgba(124,58,237,0.05))',
+        },
+    ]
+}
 
 const parentWidgets: WidgetCard[] = [
     {
         title: '자녀 학습 현황',
-        value: '—',
-        subtitle: '이번 주 학습 시간',
+        value: '...',
+        subtitle: '자녀 현황 페이지에서 확인',
         icon: <GraduationCap size={24} />,
         color: '#0066FF',
         gradient: 'linear-gradient(135deg, rgba(0,102,255,0.2), rgba(0,229,255,0.1))',
     },
     {
         title: '숙제 제출률',
-        value: '—',
-        subtitle: '최근 30일 기준',
+        value: '...',
+        subtitle: '자녀 현황 페이지에서 확인',
         icon: <BarChart3 size={24} />,
         color: '#10B981',
         gradient: 'linear-gradient(135deg, rgba(16,185,129,0.2), rgba(16,185,129,0.05))',
     },
     {
         title: '코딩 점수',
-        value: '—',
-        subtitle: '평균 컴파일 성공률',
+        value: '...',
+        subtitle: '자녀 현황 페이지에서 확인',
         icon: <Star size={24} />,
         color: '#FF6B35',
         gradient: 'linear-gradient(135deg, rgba(255,107,53,0.2), rgba(255,107,53,0.05))',
     },
 ]
-
-function getWidgetsByRole(role: string | null): WidgetCard[] {
-    switch (role) {
-        case 'teacher': return teacherWidgets
-        case 'parent': return parentWidgets
-        default: return studentWidgets
-    }
-}
 
 function getGreeting() {
     const hour = new Date().getHours()
@@ -195,6 +192,7 @@ export default function DashboardPage() {
     const [userName, setUserName] = useState<string>('')
     const [userRole, setUserRole] = useState<string | null>(null)
     const [userId, setUserId] = useState<string>('')
+    const [widgets, setWidgets] = useState<WidgetCard[]>([])
     const supabase = createClient()
 
     useEffect(() => {
@@ -202,14 +200,23 @@ export default function DashboardPage() {
             const { data: { user } } = await supabase.auth.getUser()
             if (user) {
                 setUserName(user.user_metadata?.name || user.email?.split('@')[0] || '사용자')
-                setUserRole(user.user_metadata?.role || 'student')
+                const role = user.user_metadata?.role || 'student'
+                setUserRole(role)
                 setUserId(user.id)
+
+                if (role === 'student') {
+                    const stats = await getStudentDashboardStats()
+                    setWidgets(buildStudentWidgets(stats))
+                } else if (role === 'teacher') {
+                    const stats = await getTeacherDashboardStats()
+                    setWidgets(buildTeacherWidgets(stats))
+                } else {
+                    setWidgets(parentWidgets)
+                }
             }
         }
         fetchUser()
     }, [supabase])
-
-    const widgets = getWidgetsByRole(userRole)
 
     return (
         <div className="max-w-6xl mx-auto space-y-8">
@@ -282,7 +289,7 @@ export default function DashboardPage() {
                         </p>
                     </Link>
                     <Link
-                        href="/dashboard/learning"
+                        href="/dashboard/learn"
                         className="glass-premium rounded-xl p-5 hover:-translate-y-1 transition-all duration-300 cursor-pointer block"
                     >
                         <BookOpen size={24} style={{ color: 'var(--color-primary)' }} />

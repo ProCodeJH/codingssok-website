@@ -5,6 +5,7 @@ import { createClient } from '@/lib/supabase/client'
 import { learningTracks } from '@/lib/actions/learning'
 import Link from 'next/link'
 import { Loader2, BookOpen, ChevronRight } from 'lucide-react'
+import { TrackIcon } from '@/components/icons/TrackIcons'
 
 interface ProgressEntry {
     track_id: string
@@ -74,7 +75,7 @@ export default function LearnPage() {
                             }}
                         >
                             <div className="flex items-start justify-between mb-3">
-                                <div className="text-3xl">{track.icon}</div>
+                                <TrackIcon trackId={track.id} size={36} />
                                 <ChevronRight
                                     size={18}
                                     className="group-hover:translate-x-1 transition-transform"

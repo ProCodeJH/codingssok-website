@@ -10,6 +10,7 @@ import {
     CheckCircle2,
     BookOpen,
 } from 'lucide-react'
+import { TrackIcon } from '@/components/icons/TrackIcons'
 
 export default function ContentViewerPage({ params }: { params: Promise<{ contentId: string }> }) {
     const { contentId } = use(params)
@@ -140,7 +141,7 @@ export default function ContentViewerPage({ params }: { params: Promise<{ conten
                         <ArrowLeft size={18} style={{ color: 'var(--color-text-secondary)' }} />
                     </Link>
                     <div className="flex items-center gap-2">
-                        <span className="text-xl">{track?.icon || '📚'}</span>
+                        {track ? <TrackIcon trackId={track.id} size={24} /> : <BookOpen size={20} />}
                         <h1 className="font-bold">{track?.name || contentId}</h1>
                     </div>
                 </div>

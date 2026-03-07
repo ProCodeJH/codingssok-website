@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { Send, Phone, MapPin, Clock, CheckCircle } from "lucide-react";
+import { Send, Phone, MapPin, Clock, CheckCircle, AlertCircle } from "lucide-react";
+import { submitContactForm } from "@/lib/actions/contact";
 
 export default function Contact() {
     const [formState, setFormState] = useState({
@@ -14,13 +15,27 @@ export default function Contact() {
     });
     const [isSubmitted, setIsSubmitted] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setIsSubmitting(true);
+        setErrorMsg(null);
 
-        // 실제 구현시 API 호출
-        await new Promise((resolve) => setTimeout(resolve, 1500));
+        const fd = new FormData();
+        fd.set('name', formState.name);
+        fd.set('phone', formState.phone);
+        fd.set('age', formState.age);
+        fd.set('track', formState.track);
+        fd.set('message', formState.message);
+
+        const result = await submitContactForm(fd);
+
+        if (result.error) {
+            setErrorMsg(result.error);
+            setIsSubmitting(false);
+            return;
+        }
 
         setIsSubmitted(true);
         setIsSubmitting(false);
@@ -148,6 +163,12 @@ export default function Contact() {
                             </motion.div>
                         ) : (
                             <form onSubmit={handleSubmit} className="glass rounded-3xl p-8 space-y-6">
+                                {errorMsg && (
+                                    <div className="flex items-center gap-2 px-4 py-3 rounded-xl bg-[#EF4444]/10 text-[#EF4444] text-sm">
+                                        <AlertCircle className="w-4 h-4 flex-shrink-0" />
+                                        {errorMsg}
+                                    </div>
+                                )}
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                     <div>
                                         <label className="block text-sm font-medium text-white/80 mb-2">

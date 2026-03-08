@@ -166,7 +166,7 @@ export default function Contact() {
                                     <label className="ct-label">학년</label>
                                     <div className="ct-slot ct-select-wrap">
                                         <select className="ct-input ct-select" value={grade} onChange={e => setGrade(e.target.value)}>
-                                            <option disabled selected value="">학년 선택</option>
+                                            <option disabled value="">학년 선택</option>
                                             <option>초등학생 (1~3학년)</option>
                                             <option>초등학생 (4~6학년)</option>
                                             <option>중학생</option>

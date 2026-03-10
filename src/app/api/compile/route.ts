@@ -43,8 +43,13 @@ export async function POST(req: NextRequest) {
             }),
         });
 
+        // Java → always use Piston (Godbolt Java needs matching filename)
+        if (language === 'java') {
+            return await pistonFallback(code, language, stdin);
+        }
+
         if (!res.ok) {
-            // Fallback: try Piston API for Python/JS/Java
+            // Fallback: try Piston API for Python/JS
             if (language !== 'c' && language !== 'cpp') {
                 return await pistonFallback(code, language, stdin);
             }
@@ -56,6 +61,11 @@ export async function POST(req: NextRequest) {
         const stdout = (data.stdout || []).map((l: { text: string }) => l.text).join('\n');
         const stderr = (data.stderr || []).map((l: { text: string }) => l.text).join('\n');
         const buildResult = (data.buildResult?.stderr || []).map((l: { text: string }) => l.text).join('\n');
+
+        // If Godbolt returned a build error for non-C, try Piston fallback
+        if (buildResult && language !== 'c' && language !== 'cpp') {
+            return await pistonFallback(code, language, stdin);
+        }
 
         return NextResponse.json({
             success: exitCode === 0 && !buildResult,

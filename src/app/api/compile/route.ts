@@ -12,7 +12,7 @@ const COMPILER_MAP: Record<string, { id: string; lang: string }> = {
 export async function POST(req: NextRequest) {
     try {
         const body = await req.json();
-        const code = body.code as string;
+        let code = body.code as string;
         const language = (body.language || 'c') as string;
         const stdin = (body.stdin || '') as string;
 
@@ -24,6 +24,12 @@ export async function POST(req: NextRequest) {
         }
 
         const compiler = COMPILER_MAP[language] || COMPILER_MAP.c;
+
+        // Java: Godbolt doesn't use filenames, so remove 'public' from class
+        // to avoid "should be declared in Main.java" error
+        if (language === 'java') {
+            code = code.replace(/public\s+class\s+/g, 'class ');
+        }
 
         const res = await fetch(`https://godbolt.org/api/compiler/${compiler.id}/compile`, {
             method: 'POST',
@@ -43,16 +49,7 @@ export async function POST(req: NextRequest) {
             }),
         });
 
-        // Java → always use Piston (Godbolt Java needs matching filename)
-        if (language === 'java') {
-            return await pistonFallback(code, language, stdin);
-        }
-
         if (!res.ok) {
-            // Fallback: try Piston API for Python/JS
-            if (language !== 'c' && language !== 'cpp') {
-                return await pistonFallback(code, language, stdin);
-            }
             return NextResponse.json({ success: false, error: `컴파일러 서버 오류 (${res.status})` }, { status: 502 });
         }
 
@@ -62,11 +59,6 @@ export async function POST(req: NextRequest) {
         const stderr = (data.stderr || []).map((l: { text: string }) => l.text).join('\n');
         const buildResult = (data.buildResult?.stderr || []).map((l: { text: string }) => l.text).join('\n');
 
-        // If Godbolt returned a build error for non-C, try Piston fallback
-        if (buildResult && language !== 'c' && language !== 'cpp') {
-            return await pistonFallback(code, language, stdin);
-        }
-
         return NextResponse.json({
             success: exitCode === 0 && !buildResult,
             exitCode,
@@ -75,47 +67,5 @@ export async function POST(req: NextRequest) {
         });
     } catch (err: any) {
         return NextResponse.json({ success: false, error: err?.message || '알 수 없는 오류' }, { status: 500 });
-    }
-}
-
-// Fallback: Piston API (emkc.org) for Python, JS, Java
-const PISTON_MAP: Record<string, { language: string; version: string }> = {
-    python:     { language: 'python',     version: '3.10.0' },
-    javascript: { language: 'javascript', version: '18.15.0' },
-    java:       { language: 'java',       version: '15.0.2' },
-};
-
-async function pistonFallback(code: string, language: string, stdin: string) {
-    const piston = PISTON_MAP[language];
-    if (!piston) {
-        return NextResponse.json({ success: false, error: `지원하지 않는 언어: ${language}` }, { status: 400 });
-    }
-
-    try {
-        const res = await fetch('https://emkc.org/api/v2/piston/execute', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                language: piston.language,
-                version: piston.version,
-                files: [{ name: `main.${language === 'python' ? 'py' : language === 'javascript' ? 'js' : 'java'}`, content: code }],
-                stdin,
-            }),
-        });
-
-        if (!res.ok) {
-            return NextResponse.json({ success: false, error: `실행 서버 오류 (${res.status})` }, { status: 502 });
-        }
-
-        const data = await res.json();
-        const run = data.run || {};
-        return NextResponse.json({
-            success: run.code === 0,
-            exitCode: run.code ?? -1,
-            stdout: run.stdout || '',
-            stderr: run.stderr || '',
-        });
-    } catch (err: any) {
-        return NextResponse.json({ success: false, error: err?.message || 'Piston API 오류' }, { status: 500 });
     }
 }

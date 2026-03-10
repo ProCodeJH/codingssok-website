@@ -11,6 +11,7 @@ import type { Unit, Quiz, Chapter as ChapterType, Page, CodeProblem } from "@/da
 import LevelUpModal from "@/components/ui/LevelUpModal";
 import { MI, glassPanel, QuizPanel, CodeProblemCard, TYPE_STYLES, DIFF_LABELS } from "./components";
 import { useStudyNotes } from "@/hooks/useStudyNotes";
+import { useStudyProgress } from "@/hooks/useStudyProgress";
 import StudyNotesEditor from "./StudyNotesEditor";
 
 /* ── Highlighter Colors ── */
@@ -49,10 +50,7 @@ export default function CourseDetailPage() {
     }, [courseId, router]);
 
     // ── State ──
-    const [completedUnits, setCompletedUnits] = useState<Set<string>>(() => {
-        if (typeof window === "undefined") return new Set<string>();
-        try { const s = localStorage.getItem(`codingssok_completed_${courseId}`); return s ? new Set<string>(JSON.parse(s)) : new Set<string>(); } catch { return new Set<string>(); }
-    });
+    const { completedUnits, toggleUnit } = useStudyProgress(user?.id, courseId);
     const [expandedChapters, setExpandedChapters] = useState<Set<string>>(new Set());
     const [selectedUnit, setSelectedUnit] = useState<Unit | null>(null);
     const [activePage, setActivePage] = useState<Page | null>(null);
@@ -75,7 +73,7 @@ export default function CourseDetailPage() {
     const [runLoading, setRunLoading] = useState<Record<number, boolean>>({});
 
     // Notes
-    const { saveNote, getNote } = useStudyNotes();
+    const { saveNote, getNote } = useStudyNotes(user?.id);
     const noteKey = `${user?.id || "anon"}_${courseId}_${selectedUnit?.id || ""}_${activePage?.id || ""}`;
     const existingNote = getNote(noteKey);
     const [noteText, setNoteText] = useState(existingNote?.content || "");
@@ -160,11 +158,26 @@ export default function CourseDetailPage() {
     // Highlight persistence key
     const hlStorageKey = `codingssok_hl_${user?.id || "anon"}_${courseId}_${selectedUnit?.id || ""}_${activePage?.id || ""}`;
 
-    // Save highlights to localStorage
+    // Save highlights to localStorage + Supabase
+    const hlDebounceRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
     const saveHighlights = useCallback(() => {
         if (!contentRef.current) return;
-        try { localStorage.setItem(hlStorageKey, contentRef.current.innerHTML); } catch {}
-    }, [hlStorageKey]);
+        const html = contentRef.current.innerHTML;
+        try { localStorage.setItem(hlStorageKey, html); } catch {}
+        // Sync to Supabase (debounced)
+        if (user?.id) {
+            if (hlDebounceRef.current) clearTimeout(hlDebounceRef.current);
+            hlDebounceRef.current = setTimeout(() => {
+                const pageKey = `${courseId}_${selectedUnit?.id || ''}_${activePage?.id || ''}`;
+                supabase.from('study_highlights').upsert({
+                    user_id: user.id,
+                    page_key: pageKey,
+                    html_content: html,
+                    updated_at: new Date().toISOString(),
+                }, { onConflict: 'user_id,page_key' }).then(() => {});
+            }, 1500);
+        }
+    }, [hlStorageKey, user, courseId, selectedUnit, activePage, supabase]);
 
     // Attach click-to-remove + persist on <mark> elements
     const attachMarkListeners = useCallback(() => {
@@ -181,15 +194,30 @@ export default function CourseDetailPage() {
         });
     }, [saveHighlights]);
 
-    // Restore highlights from localStorage after content renders
+    // Restore highlights from localStorage or Supabase after content renders
     useEffect(() => {
         if (!contentRef.current || !activePage) return;
         const saved = localStorage.getItem(hlStorageKey);
         if (saved) {
             contentRef.current.innerHTML = saved;
             attachMarkListeners();
+        } else if (user?.id) {
+            // Try loading from Supabase
+            const pageKey = `${courseId}_${selectedUnit?.id || ''}_${activePage?.id || ''}`;
+            supabase.from('study_highlights')
+                .select('html_content')
+                .eq('user_id', user.id)
+                .eq('page_key', pageKey)
+                .maybeSingle()
+                .then(({ data }) => {
+                    if (data?.html_content && contentRef.current) {
+                        contentRef.current.innerHTML = data.html_content;
+                        localStorage.setItem(hlStorageKey, data.html_content);
+                        attachMarkListeners();
+                    }
+                });
         }
-    }, [hlStorageKey, activePage, attachMarkListeners]);
+    }, [hlStorageKey, activePage, attachMarkListeners, user, courseId, selectedUnit, supabase]);
 
     // Highlight selected text in content
     const highlightSelection = useCallback((colorId: string) => {
@@ -228,15 +256,7 @@ export default function CourseDetailPage() {
         if (courseData?.chapters?.[0]) setExpandedChapters(new Set([courseData.chapters[0].id]));
     }, [courseData]);
 
-    useEffect(() => {
-        if (!user) return;
-        (async () => {
-            try {
-                const { data } = await supabase.from("user_course_progress").select("completed_lessons").eq("user_id", user.id).eq("course_id", courseId).single();
-                if (data?.completed_lessons) setCompletedUnits(new Set(data.completed_lessons as string[]));
-            } catch {}
-        })();
-    }, [user, courseId, supabase]);
+    // Progress now handled by useStudyProgress hook
 
     // ── Inject __runCCode ──
     useEffect(() => {
@@ -319,8 +339,8 @@ export default function CourseDetailPage() {
 
     const completeUnit = async (unit: Unit) => {
         if (completedUnits.has(unit.id)) return;
-        const nc = new Set(completedUnits); nc.add(unit.id); setCompletedUnits(nc);
-        try { localStorage.setItem(`codingssok_completed_${courseId}`, JSON.stringify(Array.from(nc))); } catch {}
+        toggleUnit(unit.id);
+        const nc = new Set(completedUnits); nc.add(unit.id);
         resetQuiz();
         if (user) {
             const result = await awardXP(user.id, XP_REWARDS.lesson_complete, `학습 완료: ${unit.title}`, "book");

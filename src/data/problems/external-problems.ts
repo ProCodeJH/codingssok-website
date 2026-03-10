@@ -7,8 +7,8 @@ export interface ExternalProblem {
     id: string;
     title: string;
     source: 'baekjoon' | 'koistudy' | 'programmers' | 'codeup';
-    sourceId: string;        // 원본 사이트 문제 번호
-    url: string;             // 외부 링크
+    sourceId: string;
+    url: string;
     difficulty: 'bronze' | 'silver' | 'gold' | 'platinum';
     category: string;
     tags: string[];
@@ -23,7 +23,6 @@ export interface ProblemSet {
     problems: ExternalProblem[];
 }
 
-// ── 색상 매핑 ──
 export const DIFFICULTY_COLORS: Record<string, { bg: string; text: string; label: string }> = {
     bronze:   { bg: 'rgba(205,127,50,0.1)',  text: '#CD7F32', label: '브론즈' },
     silver:   { bg: 'rgba(192,192,192,0.1)', text: '#808080', label: '실버' },
@@ -38,114 +37,246 @@ export const SOURCE_INFO: Record<string, { label: string; color: string; baseUrl
     codeup:      { label: '코드업',     color: '#2E8B57', baseUrl: 'https://codeup.kr/problem.php?id=' },
 };
 
-// ═══ 입출력 기초 ═══
+const B = 'baekjoon' as const, P = 'programmers' as const, K = 'koistudy' as const, CU = 'codeup' as const;
+const boj = (id:string,t:string,d:'bronze'|'silver'|'gold'|'platinum',c:string,tags:string[]):ExternalProblem=>({id:`boj-${id}`,title:t,source:B,sourceId:id,url:`https://www.acmicpc.net/problem/${id}`,difficulty:d,category:c,tags});
+const pgm = (id:string,t:string,d:'bronze'|'silver'|'gold'|'platinum',c:string,tags:string[]):ExternalProblem=>({id:`pgm-${id}`,title:t,source:P,sourceId:id,url:`https://school.programmers.co.kr/learn/courses/30/lessons/${id}`,difficulty:d,category:c,tags});
+const koi = (id:string,t:string,d:'bronze'|'silver'|'gold'|'platinum',c:string,tags:string[]):ExternalProblem=>({id:`koi-${id}`,title:t,source:K,sourceId:id,url:`https://koistudy.net/?mid=prob&prob=${id}`,difficulty:d,category:c,tags});
+const cu = (id:string,t:string,d:'bronze'|'silver'|'gold'|'platinum',c:string,tags:string[]):ExternalProblem=>({id:`cu-${id}`,title:t,source:CU,sourceId:id,url:`https://codeup.kr/problem.php?id=${id}`,difficulty:d,category:c,tags});
+
+// ═══ 1. 입출력 기초 (20문제) ═══
 const IO_BASICS: ExternalProblem[] = [
-    { id:'boj-1000', title:'A+B', source:'baekjoon', sourceId:'1000', url:'https://www.acmicpc.net/problem/1000', difficulty:'bronze', category:'입출력', tags:['입출력','기초'] },
-    { id:'boj-1001', title:'A-B', source:'baekjoon', sourceId:'1001', url:'https://www.acmicpc.net/problem/1001', difficulty:'bronze', category:'입출력', tags:['입출력','기초'] },
-    { id:'boj-10998', title:'A×B', source:'baekjoon', sourceId:'10998', url:'https://www.acmicpc.net/problem/10998', difficulty:'bronze', category:'입출력', tags:['입출력','기초'] },
-    { id:'boj-1008', title:'A/B', source:'baekjoon', sourceId:'1008', url:'https://www.acmicpc.net/problem/1008', difficulty:'bronze', category:'입출력', tags:['입출력','실수'] },
-    { id:'boj-2557', title:'Hello World', source:'baekjoon', sourceId:'2557', url:'https://www.acmicpc.net/problem/2557', difficulty:'bronze', category:'입출력', tags:['입출력','기초'] },
-    { id:'boj-10171', title:'고양이', source:'baekjoon', sourceId:'10171', url:'https://www.acmicpc.net/problem/10171', difficulty:'bronze', category:'입출력', tags:['입출력','출력'] },
-    { id:'boj-10172', title:'개', source:'baekjoon', sourceId:'10172', url:'https://www.acmicpc.net/problem/10172', difficulty:'bronze', category:'입출력', tags:['입출력','출력'] },
-    { id:'boj-11654', title:'아스키 코드', source:'baekjoon', sourceId:'11654', url:'https://www.acmicpc.net/problem/11654', difficulty:'bronze', category:'입출력', tags:['입출력','문자'] },
-    { id:'cu-1001', title:'Hello', source:'codeup', sourceId:'1001', url:'https://codeup.kr/problem.php?id=1001', difficulty:'bronze', category:'입출력', tags:['입출력','기초'] },
-    { id:'cu-1002', title:'Hello World', source:'codeup', sourceId:'1002', url:'https://codeup.kr/problem.php?id=1002', difficulty:'bronze', category:'입출력', tags:['입출력','기초'] },
-    { id:'cu-1008', title:'정수 입출력', source:'codeup', sourceId:'1008', url:'https://codeup.kr/problem.php?id=1008', difficulty:'bronze', category:'입출력', tags:['입출력','정수'] },
-    { id:'cu-1010', title:'정수 2개 입출력', source:'codeup', sourceId:'1010', url:'https://codeup.kr/problem.php?id=1010', difficulty:'bronze', category:'입출력', tags:['입출력','정수'] },
+    boj('2557','Hello World','bronze','입출력',['입출력','기초']),
+    boj('1000','A+B','bronze','입출력',['입출력','기초']),
+    boj('1001','A-B','bronze','입출력',['입출력','기초']),
+    boj('10998','A×B','bronze','입출력',['입출력','기초']),
+    boj('1008','A/B','bronze','입출력',['입출력','실수']),
+    boj('10171','고양이','bronze','입출력',['입출력','출력']),
+    boj('10172','개','bronze','입출력',['입출력','출력']),
+    boj('11654','아스키 코드','bronze','입출력',['입출력','문자']),
+    boj('11720','숫자의 합','bronze','입출력',['입출력','문자열']),
+    boj('11721','열 개씩 끊어 출력하기','bronze','입출력',['입출력','문자열']),
+    boj('10430','나머지','bronze','입출력',['입출력','수학']),
+    boj('2588','곱셈','bronze','입출력',['입출력','수학']),
+    boj('10926','??!','bronze','입출력',['입출력','문자열']),
+    boj('18108','1998년생인 내가 태어난 해','bronze','입출력',['입출력','수학']),
+    cu('1001','출력하기','bronze','입출력',['입출력','기초']),
+    cu('1002','출력하기 2','bronze','입출력',['입출력','기초']),
+    cu('1008','정수 입출력','bronze','입출력',['입출력','정수']),
+    cu('1010','정수 2개 입출력','bronze','입출력',['입출력','정수']),
+    cu('1013','실수 입출력','bronze','입출력',['입출력','실수']),
+    cu('1019','연월일 입출력','bronze','입출력',['입출력','형식']),
 ];
 
-// ═══ 조건문 ═══
+// ═══ 2. 조건문 (15문제) ═══
 const CONDITIONS: ExternalProblem[] = [
-    { id:'boj-1330', title:'두 수 비교하기', source:'baekjoon', sourceId:'1330', url:'https://www.acmicpc.net/problem/1330', difficulty:'bronze', category:'조건문', tags:['조건문','비교'] },
-    { id:'boj-9498', title:'시험 성적', source:'baekjoon', sourceId:'9498', url:'https://www.acmicpc.net/problem/9498', difficulty:'bronze', category:'조건문', tags:['조건문','등급'] },
-    { id:'boj-2753', title:'윤년', source:'baekjoon', sourceId:'2753', url:'https://www.acmicpc.net/problem/2753', difficulty:'bronze', category:'조건문', tags:['조건문','계산'] },
-    { id:'boj-14681', title:'사분면 고르기', source:'baekjoon', sourceId:'14681', url:'https://www.acmicpc.net/problem/14681', difficulty:'bronze', category:'조건문', tags:['조건문','좌표'] },
-    { id:'boj-2784', title:'알람 시계', source:'baekjoon', sourceId:'2884', url:'https://www.acmicpc.net/problem/2884', difficulty:'bronze', category:'조건문', tags:['조건문','시간'] },
-    { id:'cu-1065', title:'짝수 홀수', source:'codeup', sourceId:'1065', url:'https://codeup.kr/problem.php?id=1065', difficulty:'bronze', category:'조건문', tags:['조건문'] },
+    boj('1330','두 수 비교하기','bronze','조건문',['조건문','비교']),
+    boj('9498','시험 성적','bronze','조건문',['조건문','등급']),
+    boj('2753','윤년','bronze','조건문',['조건문','계산']),
+    boj('14681','사분면 고르기','bronze','조건문',['조건문','좌표']),
+    boj('2884','알람 시계','bronze','조건문',['조건문','시간']),
+    boj('2525','오븐 시계','bronze','조건문',['조건문','시간']),
+    boj('2480','주사위 세개','bronze','조건문',['조건문','게임']),
+    boj('10817','세 수','bronze','조건문',['조건문','정렬']),
+    boj('2420','사파리 월드','bronze','조건문',['조건문','절댓값']),
+    boj('2935','소음','bronze','조건문',['조건문','큰수']),
+    cu('1065','짝수 홀수','bronze','조건문',['조건문']),
+    cu('1066','3의 배수','bronze','조건문',['조건문','배수']),
+    cu('1067','정수 범위 판별','bronze','조건문',['조건문','범위']),
+    cu('1077','짝홀수 판단','bronze','조건문',['조건문']),
+    koi('1001','비교 연산','bronze','조건문',['조건문','기초']),
 ];
 
-// ═══ 반복문 ═══
+// ═══ 3. 반복문 (18문제) ═══
 const LOOPS: ExternalProblem[] = [
-    { id:'boj-2739', title:'구구단', source:'baekjoon', sourceId:'2739', url:'https://www.acmicpc.net/problem/2739', difficulty:'bronze', category:'반복문', tags:['반복문','기초'] },
-    { id:'boj-10950', title:'A+B - 3', source:'baekjoon', sourceId:'10950', url:'https://www.acmicpc.net/problem/10950', difficulty:'bronze', category:'반복문', tags:['반복문','입출력'] },
-    { id:'boj-8393', title:'합', source:'baekjoon', sourceId:'8393', url:'https://www.acmicpc.net/problem/8393', difficulty:'bronze', category:'반복문', tags:['반복문','합계'] },
-    { id:'boj-15552', title:'빠른 A+B', source:'baekjoon', sourceId:'15552', url:'https://www.acmicpc.net/problem/15552', difficulty:'bronze', category:'반복문', tags:['반복문','빠른IO'] },
-    { id:'boj-2438', title:'별 찍기 - 1', source:'baekjoon', sourceId:'2438', url:'https://www.acmicpc.net/problem/2438', difficulty:'bronze', category:'반복문', tags:['반복문','패턴'] },
-    { id:'boj-2439', title:'별 찍기 - 2', source:'baekjoon', sourceId:'2439', url:'https://www.acmicpc.net/problem/2439', difficulty:'bronze', category:'반복문', tags:['반복문','패턴'] },
-    { id:'boj-10871', title:'X보다 작은 수', source:'baekjoon', sourceId:'10871', url:'https://www.acmicpc.net/problem/10871', difficulty:'bronze', category:'반복문', tags:['반복문','배열'] },
-    { id:'cu-1099', title:'별 출력하기', source:'codeup', sourceId:'1099', url:'https://codeup.kr/problem.php?id=1099', difficulty:'bronze', category:'반복문', tags:['반복문','패턴'] },
+    boj('2739','구구단','bronze','반복문',['반복문','기초']),
+    boj('10950','A+B - 3','bronze','반복문',['반복문','입출력']),
+    boj('8393','합','bronze','반복문',['반복문','합계']),
+    boj('15552','빠른 A+B','bronze','반복문',['반복문','빠른IO']),
+    boj('2438','별 찍기 - 1','bronze','반복문',['반복문','패턴']),
+    boj('2439','별 찍기 - 2','bronze','반복문',['반복문','패턴']),
+    boj('2440','별 찍기 - 3','bronze','반복문',['반복문','패턴']),
+    boj('2441','별 찍기 - 4','bronze','반복문',['반복문','패턴']),
+    boj('2442','별 찍기 - 5','bronze','반복문',['반복문','패턴']),
+    boj('10871','X보다 작은 수','bronze','반복문',['반복문','배열']),
+    boj('10952','A+B - 5','bronze','반복문',['반복문','종료조건']),
+    boj('10951','A+B - 4','bronze','반복문',['반복문','EOF']),
+    boj('1110','더하기 사이클','bronze','반복문',['반복문','시뮬레이션']),
+    boj('11022','A+B - 8','bronze','반복문',['반복문','형식출력']),
+    cu('1099','별 찍기','bronze','반복문',['반복문','패턴']),
+    cu('1100','삼각형 별','bronze','반복문',['반복문','패턴']),
+    cu('1101','역삼각형','bronze','반복문',['반복문','패턴']),
+    koi('1002','별 출력','bronze','반복문',['반복문','패턴']),
 ];
 
-// ═══ 배열 & 함수 ═══
-const ARRAY_FUNC: ExternalProblem[] = [
-    { id:'boj-10818', title:'최소, 최대', source:'baekjoon', sourceId:'10818', url:'https://www.acmicpc.net/problem/10818', difficulty:'bronze', category:'배열', tags:['배열','최소최대'] },
-    { id:'boj-2562', title:'최댓값', source:'baekjoon', sourceId:'2562', url:'https://www.acmicpc.net/problem/2562', difficulty:'bronze', category:'배열', tags:['배열','최대'] },
-    { id:'boj-10807', title:'개수 세기', source:'baekjoon', sourceId:'10807', url:'https://www.acmicpc.net/problem/10807', difficulty:'bronze', category:'배열', tags:['배열','카운팅'] },
-    { id:'boj-5597', title:'과제 안 내신 분..?', source:'baekjoon', sourceId:'5597', url:'https://www.acmicpc.net/problem/5597', difficulty:'bronze', category:'배열', tags:['배열','체크'] },
-    { id:'boj-3052', title:'나머지', source:'baekjoon', sourceId:'3052', url:'https://www.acmicpc.net/problem/3052', difficulty:'bronze', category:'배열', tags:['배열','나머지'] },
-    { id:'pgm-12901', title:'2016년', source:'programmers', sourceId:'12901', url:'https://school.programmers.co.kr/learn/courses/30/lessons/12901', difficulty:'silver', category:'구현', tags:['구현','날짜'] },
-    { id:'pgm-12903', title:'가운데 글자 가져오기', source:'programmers', sourceId:'12903', url:'https://school.programmers.co.kr/learn/courses/30/lessons/12903', difficulty:'silver', category:'문자열', tags:['문자열'] },
-    { id:'pgm-12906', title:'같은 숫자는 싫어', source:'programmers', sourceId:'12906', url:'https://school.programmers.co.kr/learn/courses/30/lessons/12906', difficulty:'silver', category:'배열', tags:['배열','스택'] },
+// ═══ 4. 배열 & 문자열 (18문제) ═══
+const ARRAY_STR: ExternalProblem[] = [
+    boj('10818','최소, 최대','bronze','배열',['배열','최소최대']),
+    boj('2562','최댓값','bronze','배열',['배열','인덱스']),
+    boj('10807','개수 세기','bronze','배열',['배열','카운팅']),
+    boj('5597','과제 안 내신 분..?','bronze','배열',['배열','체크']),
+    boj('3052','나머지','bronze','배열',['배열','집합']),
+    boj('1546','평균','bronze','배열',['배열','평균']),
+    boj('8958','OX퀴즈','bronze','문자열',['문자열','연속']),
+    boj('4344','평균은 넘겠지','bronze','배열',['배열','평균']),
+    boj('10809','알파벳 찾기','bronze','문자열',['문자열','인덱스']),
+    boj('2675','문자열 반복','bronze','문자열',['문자열','반복']),
+    boj('1157','단어 공부','bronze','문자열',['문자열','카운팅']),
+    boj('1152','단어의 개수','bronze','문자열',['문자열','파싱']),
+    boj('2908','상수','bronze','문자열',['문자열','뒤집기']),
+    boj('5622','다이얼','bronze','문자열',['문자열','매핑']),
+    pgm('12901','2016년','silver','구현',['구현','날짜']),
+    pgm('12903','가운데 글자 가져오기','silver','문자열',['문자열']),
+    pgm('12906','같은 숫자는 싫어','silver','배열',['배열','스택']),
+    pgm('12910','나누어 떨어지는 숫자 배열','silver','배열',['배열','필터']),
 ];
 
-// ═══ 정렬 & 탐색 ═══
+// ═══ 5. 수학 (15문제) ═══
+const MATH: ExternalProblem[] = [
+    boj('1712','손익분기점','bronze','수학',['수학','부등식']),
+    boj('2292','벌집','bronze','수학',['수학','패턴']),
+    boj('1193','분수찾기','bronze','수학',['수학','규칙']),
+    boj('2869','달팽이는 올라가고 싶다','bronze','수학',['수학','계산']),
+    boj('10250','ACM 호텔','bronze','수학',['수학','나머지']),
+    boj('2775','부녀회장이 될테야','bronze','수학',['수학','DP']),
+    boj('2839','설탕 배달','bronze','수학',['수학','그리디']),
+    boj('10757','큰 수 A+B','bronze','수학',['수학','큰수']),
+    boj('1978','소수 찾기','bronze','수학',['수학','소수']),
+    boj('2581','소수','bronze','수학',['수학','소수']),
+    boj('1929','소수 구하기','silver','수학',['수학','에라토스테네스']),
+    boj('4948','베르트랑 공준','silver','수학',['수학','소수']),
+    boj('9020','골드바흐의 추측','silver','수학',['수학','소수']),
+    boj('1085','직사각형에서 탈출','bronze','수학',['수학','기하']),
+    boj('3009','네 번째 점','bronze','수학',['수학','기하']),
+];
+
+// ═══ 6. 정렬 & 탐색 (16문제) ═══
 const SORT_SEARCH: ExternalProblem[] = [
-    { id:'boj-2750', title:'수 정렬하기', source:'baekjoon', sourceId:'2750', url:'https://www.acmicpc.net/problem/2750', difficulty:'silver', category:'정렬', tags:['정렬','기초'] },
-    { id:'boj-2751', title:'수 정렬하기 2', source:'baekjoon', sourceId:'2751', url:'https://www.acmicpc.net/problem/2751', difficulty:'silver', category:'정렬', tags:['정렬','O(nlogn)'] },
-    { id:'boj-10989', title:'수 정렬하기 3', source:'baekjoon', sourceId:'10989', url:'https://www.acmicpc.net/problem/10989', difficulty:'silver', category:'정렬', tags:['정렬','카운팅정렬'] },
-    { id:'boj-1920', title:'수 찾기', source:'baekjoon', sourceId:'1920', url:'https://www.acmicpc.net/problem/1920', difficulty:'silver', category:'탐색', tags:['이진탐색'] },
-    { id:'boj-1654', title:'랜선 자르기', source:'baekjoon', sourceId:'1654', url:'https://www.acmicpc.net/problem/1654', difficulty:'silver', category:'탐색', tags:['이진탐색','매개변수탐색'] },
-    { id:'boj-2805', title:'나무 자르기', source:'baekjoon', sourceId:'2805', url:'https://www.acmicpc.net/problem/2805', difficulty:'silver', category:'탐색', tags:['이진탐색'] },
-    { id:'pgm-42746', title:'가장 큰 수', source:'programmers', sourceId:'42746', url:'https://school.programmers.co.kr/learn/courses/30/lessons/42746', difficulty:'silver', category:'정렬', tags:['정렬','비교함수'] },
-    { id:'pgm-42748', title:'K번째수', source:'programmers', sourceId:'42748', url:'https://school.programmers.co.kr/learn/courses/30/lessons/42748', difficulty:'silver', category:'정렬', tags:['정렬'] },
-    { id:'koi-2001', title:'정렬 연습', source:'koistudy', sourceId:'2001', url:'https://koistudy.net/?mid=prob&prob=2001', difficulty:'silver', category:'정렬', tags:['정렬'] },
+    boj('2750','수 정렬하기','silver','정렬',['정렬','기초']),
+    boj('2751','수 정렬하기 2','silver','정렬',['정렬','O(nlogn)']),
+    boj('10989','수 정렬하기 3','silver','정렬',['정렬','카운팅정렬']),
+    boj('2108','통계학','silver','정렬',['정렬','통계']),
+    boj('1427','소트인사이드','bronze','정렬',['정렬','내림차순']),
+    boj('11650','좌표 정렬하기','silver','정렬',['정렬','다중키']),
+    boj('11651','좌표 정렬하기 2','silver','정렬',['정렬','다중키']),
+    boj('1181','단어 정렬','silver','정렬',['정렬','문자열']),
+    boj('1920','수 찾기','silver','탐색',['이진탐색']),
+    boj('1654','랜선 자르기','silver','탐색',['이진탐색','매개변수']),
+    boj('2805','나무 자르기','silver','탐색',['이진탐색']),
+    boj('10816','숫자 카드 2','silver','탐색',['이진탐색','카운팅']),
+    pgm('42746','가장 큰 수','silver','정렬',['정렬','비교함수']),
+    pgm('42748','K번째수','silver','정렬',['정렬']),
+    pgm('42747','H-Index','silver','정렬',['정렬']),
+    koi('2001','정렬 연습','silver','정렬',['정렬']),
 ];
 
-// ═══ 스택 & 큐 ═══
+// ═══ 7. 스택 & 큐 & 덱 (16문제) ═══
 const STACK_QUEUE: ExternalProblem[] = [
-    { id:'boj-10828', title:'스택', source:'baekjoon', sourceId:'10828', url:'https://www.acmicpc.net/problem/10828', difficulty:'silver', category:'스택', tags:['스택','구현'] },
-    { id:'boj-10845', title:'큐', source:'baekjoon', sourceId:'10845', url:'https://www.acmicpc.net/problem/10845', difficulty:'silver', category:'큐', tags:['큐','구현'] },
-    { id:'boj-9012', title:'괄호', source:'baekjoon', sourceId:'9012', url:'https://www.acmicpc.net/problem/9012', difficulty:'silver', category:'스택', tags:['스택','괄호'] },
-    { id:'boj-4949', title:'균형잡힌 세상', source:'baekjoon', sourceId:'4949', url:'https://www.acmicpc.net/problem/4949', difficulty:'silver', category:'스택', tags:['스택','괄호'] },
-    { id:'boj-1874', title:'스택 수열', source:'baekjoon', sourceId:'1874', url:'https://www.acmicpc.net/problem/1874', difficulty:'silver', category:'스택', tags:['스택'] },
-    { id:'pgm-42586', title:'기능개발', source:'programmers', sourceId:'42586', url:'https://school.programmers.co.kr/learn/courses/30/lessons/42586', difficulty:'silver', category:'큐', tags:['큐','시뮬레이션'] },
-    { id:'pgm-42587', title:'프로세스', source:'programmers', sourceId:'42587', url:'https://school.programmers.co.kr/learn/courses/30/lessons/42587', difficulty:'silver', category:'큐', tags:['큐','우선순위'] },
+    boj('10828','스택','silver','스택',['스택','구현']),
+    boj('10845','큐','silver','큐',['큐','구현']),
+    boj('10866','덱','silver','덱',['덱','구현']),
+    boj('9012','괄호','silver','스택',['스택','괄호']),
+    boj('4949','균형잡힌 세상','silver','스택',['스택','괄호']),
+    boj('1874','스택 수열','silver','스택',['스택']),
+    boj('10773','제로','silver','스택',['스택']),
+    boj('1966','프린터 큐','silver','큐',['큐','시뮬레이션']),
+    boj('11866','요세푸스 문제 0','silver','큐',['큐','시뮬레이션']),
+    boj('2164','카드2','silver','큐',['큐']),
+    boj('18258','큐 2','silver','큐',['큐','구현']),
+    pgm('42586','기능개발','silver','큐',['큐','시뮬레이션']),
+    pgm('42587','프로세스','silver','큐',['큐','우선순위']),
+    pgm('42583','다리를 지나는 트럭','silver','큐',['큐','시뮬레이션']),
+    pgm('12909','올바른 괄호','silver','스택',['스택','괄호']),
+    koi('2002','스택 연습','silver','스택',['스택']),
 ];
 
-// ═══ 재귀 & DP ═══
+// ═══ 8. 재귀 & DP (18문제) ═══
 const RECURSION_DP: ExternalProblem[] = [
-    { id:'boj-10872', title:'팩토리얼', source:'baekjoon', sourceId:'10872', url:'https://www.acmicpc.net/problem/10872', difficulty:'bronze', category:'재귀', tags:['재귀','기초'] },
-    { id:'boj-10870', title:'피보나치 수 5', source:'baekjoon', sourceId:'10870', url:'https://www.acmicpc.net/problem/10870', difficulty:'bronze', category:'재귀', tags:['재귀','피보나치'] },
-    { id:'boj-1003', title:'피보나치 함수', source:'baekjoon', sourceId:'1003', url:'https://www.acmicpc.net/problem/1003', difficulty:'silver', category:'DP', tags:['DP','메모이제이션'] },
-    { id:'boj-1463', title:'1로 만들기', source:'baekjoon', sourceId:'1463', url:'https://www.acmicpc.net/problem/1463', difficulty:'silver', category:'DP', tags:['DP'] },
-    { id:'boj-9184', title:'신나는 함수 실행', source:'baekjoon', sourceId:'9184', url:'https://www.acmicpc.net/problem/9184', difficulty:'silver', category:'DP', tags:['DP','메모이제이션'] },
-    { id:'boj-11726', title:'2×n 타일링', source:'baekjoon', sourceId:'11726', url:'https://www.acmicpc.net/problem/11726', difficulty:'silver', category:'DP', tags:['DP'] },
-    { id:'boj-11727', title:'2×n 타일링 2', source:'baekjoon', sourceId:'11727', url:'https://www.acmicpc.net/problem/11727', difficulty:'silver', category:'DP', tags:['DP'] },
-    { id:'boj-1149', title:'RGB거리', source:'baekjoon', sourceId:'1149', url:'https://www.acmicpc.net/problem/1149', difficulty:'silver', category:'DP', tags:['DP'] },
-    { id:'pgm-42839', title:'소수 찾기', source:'programmers', sourceId:'42839', url:'https://school.programmers.co.kr/learn/courses/30/lessons/42839', difficulty:'silver', category:'완전탐색', tags:['완전탐색','소수'] },
+    boj('10872','팩토리얼','bronze','재귀',['재귀','기초']),
+    boj('10870','피보나치 수 5','bronze','재귀',['재귀','피보나치']),
+    boj('2447','별 찍기 - 10','silver','재귀',['재귀','프랙탈']),
+    boj('11729','하노이 탑 이동 순서','silver','재귀',['재귀']),
+    boj('1003','피보나치 함수','silver','DP',['DP','메모이제이션']),
+    boj('1463','1로 만들기','silver','DP',['DP']),
+    boj('9184','신나는 함수 실행','silver','DP',['DP','메모이제이션']),
+    boj('11726','2×n 타일링','silver','DP',['DP']),
+    boj('11727','2×n 타일링 2','silver','DP',['DP']),
+    boj('9461','파도반 수열','silver','DP',['DP']),
+    boj('1932','정수 삼각형','silver','DP',['DP']),
+    boj('2579','계단 오르기','silver','DP',['DP']),
+    boj('1912','연속합','silver','DP',['DP','카데인']),
+    boj('1149','RGB거리','silver','DP',['DP']),
+    boj('12865','평범한 배낭','gold','DP',['DP','배낭']),
+    boj('11053','가장 긴 증가하는 부분 수열','silver','DP',['DP','LIS']),
+    pgm('42839','소수 찾기','silver','완전탐색',['완전탐색','소수']),
+    pgm('43105','정수 삼각형','silver','DP',['DP']),
 ];
 
-// ═══ 그래프 & BFS/DFS ═══
+// ═══ 9. 그래프 & BFS/DFS (18문제) ═══
 const GRAPH: ExternalProblem[] = [
-    { id:'boj-1260', title:'DFS와 BFS', source:'baekjoon', sourceId:'1260', url:'https://www.acmicpc.net/problem/1260', difficulty:'silver', category:'그래프', tags:['DFS','BFS'] },
-    { id:'boj-2606', title:'바이러스', source:'baekjoon', sourceId:'2606', url:'https://www.acmicpc.net/problem/2606', difficulty:'silver', category:'그래프', tags:['DFS','BFS'] },
-    { id:'boj-1012', title:'유기농 배추', source:'baekjoon', sourceId:'1012', url:'https://www.acmicpc.net/problem/1012', difficulty:'silver', category:'그래프', tags:['DFS','BFS'] },
-    { id:'boj-2178', title:'미로 탐색', source:'baekjoon', sourceId:'2178', url:'https://www.acmicpc.net/problem/2178', difficulty:'silver', category:'그래프', tags:['BFS','최단경로'] },
-    { id:'boj-7576', title:'토마토', source:'baekjoon', sourceId:'7576', url:'https://www.acmicpc.net/problem/7576', difficulty:'gold', category:'그래프', tags:['BFS'] },
-    { id:'boj-2667', title:'단지번호붙이기', source:'baekjoon', sourceId:'2667', url:'https://www.acmicpc.net/problem/2667', difficulty:'silver', category:'그래프', tags:['DFS','BFS'] },
-    { id:'pgm-43162', title:'네트워크', source:'programmers', sourceId:'43162', url:'https://school.programmers.co.kr/learn/courses/30/lessons/43162', difficulty:'gold', category:'그래프', tags:['DFS','BFS'] },
-    { id:'pgm-43163', title:'단어 변환', source:'programmers', sourceId:'43163', url:'https://school.programmers.co.kr/learn/courses/30/lessons/43163', difficulty:'gold', category:'그래프', tags:['BFS'] },
-    { id:'koi-3001', title:'그래프 탐색', source:'koistudy', sourceId:'3001', url:'https://koistudy.net/?mid=prob&prob=3001', difficulty:'silver', category:'그래프', tags:['그래프'] },
+    boj('1260','DFS와 BFS','silver','그래프',['DFS','BFS']),
+    boj('2606','바이러스','silver','그래프',['DFS','BFS']),
+    boj('1012','유기농 배추','silver','그래프',['DFS','BFS']),
+    boj('2178','미로 탐색','silver','그래프',['BFS','최단경로']),
+    boj('7576','토마토','gold','그래프',['BFS']),
+    boj('2667','단지번호붙이기','silver','그래프',['DFS','BFS']),
+    boj('1697','숨바꼭질','silver','그래프',['BFS']),
+    boj('7569','토마토 3D','gold','그래프',['BFS','3차원']),
+    boj('1926','그림','silver','그래프',['BFS','영역']),
+    boj('2206','벽 부수고 이동하기','gold','그래프',['BFS','상태공간']),
+    boj('11724','연결 요소의 개수','silver','그래프',['DFS','연결요소']),
+    boj('2468','안전 영역','silver','그래프',['DFS','브루트포스']),
+    boj('10026','적록색약','gold','그래프',['BFS']),
+    pgm('43162','네트워크','gold','그래프',['DFS','BFS']),
+    pgm('43163','단어 변환','gold','그래프',['BFS']),
+    pgm('43164','여행경로','gold','그래프',['DFS','백트래킹']),
+    pgm('43165','타겟 넘버','silver','그래프',['DFS','완전탐색']),
+    koi('3001','그래프 탐색','silver','그래프',['그래프']),
 ];
 
-// ═══ 그리디 ═══
+// ═══ 10. 그리디 (14문제) ═══
 const GREEDY: ExternalProblem[] = [
-    { id:'boj-11047', title:'동전 0', source:'baekjoon', sourceId:'11047', url:'https://www.acmicpc.net/problem/11047', difficulty:'silver', category:'그리디', tags:['그리디'] },
-    { id:'boj-1931', title:'회의실 배정', source:'baekjoon', sourceId:'1931', url:'https://www.acmicpc.net/problem/1931', difficulty:'silver', category:'그리디', tags:['그리디','정렬'] },
-    { id:'boj-11399', title:'ATM', source:'baekjoon', sourceId:'11399', url:'https://www.acmicpc.net/problem/11399', difficulty:'silver', category:'그리디', tags:['그리디','정렬'] },
-    { id:'boj-1541', title:'잃어버린 괄호', source:'baekjoon', sourceId:'1541', url:'https://www.acmicpc.net/problem/1541', difficulty:'silver', category:'그리디', tags:['그리디','파싱'] },
-    { id:'pgm-42860', title:'조이스틱', source:'programmers', sourceId:'42860', url:'https://school.programmers.co.kr/learn/courses/30/lessons/42860', difficulty:'silver', category:'그리디', tags:['그리디'] },
-    { id:'pgm-42862', title:'체육복', source:'programmers', sourceId:'42862', url:'https://school.programmers.co.kr/learn/courses/30/lessons/42862', difficulty:'silver', category:'그리디', tags:['그리디'] },
+    boj('11047','동전 0','silver','그리디',['그리디']),
+    boj('1931','회의실 배정','silver','그리디',['그리디','정렬']),
+    boj('11399','ATM','silver','그리디',['그리디','정렬']),
+    boj('1541','잃어버린 괄호','silver','그리디',['그리디','파싱']),
+    boj('13305','주유소','silver','그리디',['그리디']),
+    boj('1744','수 묶기','gold','그리디',['그리디','정렬']),
+    boj('2217','로프','silver','그리디',['그리디']),
+    boj('1946','신입 사원','silver','그리디',['그리디','정렬']),
+    pgm('42860','조이스틱','silver','그리디',['그리디']),
+    pgm('42862','체육복','silver','그리디',['그리디']),
+    pgm('42883','큰 수 만들기','silver','그리디',['그리디','스택']),
+    pgm('42884','구명보트','silver','그리디',['그리디','투포인터']),
+    pgm('42885','섬 연결하기','gold','그리디',['그리디','크루스칼']),
+    koi('2003','탐욕 연습','silver','그리디',['그리디']),
+];
+
+// ═══ 11. 해시 & 집합 (10문제) ═══
+const HASH: ExternalProblem[] = [
+    boj('1764','듣보잡','silver','해시',['해시','집합']),
+    boj('10815','숫자 카드','silver','해시',['해시','이진탐색']),
+    boj('7785','회사에 있는 사람','silver','해시',['해시','집합']),
+    boj('1620','나는야 포켓몬 마스터','silver','해시',['해시','딕셔너리']),
+    boj('17219','비밀번호 찾기','silver','해시',['해시','딕셔너리']),
+    pgm('42576','완주하지 못한 선수','silver','해시',['해시']),
+    pgm('42577','전화번호 목록','silver','해시',['해시','정렬']),
+    pgm('42578','의상','silver','해시',['해시','조합']),
+    pgm('42579','베스트앨범','silver','해시',['해시','정렬']),
+    pgm('1845','폰켓몬','silver','해시',['해시','집합']),
+];
+
+// ═══ 12. 백트래킹 (10문제) ═══
+const BACKTRACKING: ExternalProblem[] = [
+    boj('15649','N과 M (1)','silver','백트래킹',['백트래킹','순열']),
+    boj('15650','N과 M (2)','silver','백트래킹',['백트래킹','조합']),
+    boj('15651','N과 M (3)','silver','백트래킹',['백트래킹','중복순열']),
+    boj('15652','N과 M (4)','silver','백트래킹',['백트래킹','중복조합']),
+    boj('9663','N-Queen','gold','백트래킹',['백트래킹']),
+    boj('2580','스도쿠','gold','백트래킹',['백트래킹']),
+    boj('14888','연산자 끼워넣기','silver','백트래킹',['백트래킹','완전탐색']),
+    boj('14889','스타트와 링크','silver','백트래킹',['백트래킹','브루트포스']),
+    boj('6603','로또','silver','백트래킹',['백트래킹','조합']),
+    pgm('87946','피로도','silver','백트래킹',['백트래킹','완전탐색']),
 ];
 
 // ═══ Problem Sets ═══
@@ -153,20 +284,21 @@ export const PROBLEM_SETS: ProblemSet[] = [
     { id:'io',     title:'입출력 기초',     description:'프로그래밍의 첫 걸음: 입출력 연습',          icon:'terminal',     color:'#6366f1', problems: IO_BASICS },
     { id:'cond',   title:'조건문',          description:'if/else로 판단하고 분기하기',                icon:'call_split',   color:'#f59e0b', problems: CONDITIONS },
     { id:'loop',   title:'반복문',          description:'for/while로 패턴과 합계 구하기',            icon:'loop',         color:'#10b981', problems: LOOPS },
-    { id:'array',  title:'배열 & 함수',     description:'배열 활용과 함수 분리',                      icon:'data_array',   color:'#3b82f6', problems: ARRAY_FUNC },
+    { id:'array',  title:'배열 & 문자열',   description:'배열 활용과 문자열 처리',                    icon:'data_array',   color:'#3b82f6', problems: ARRAY_STR },
+    { id:'math',   title:'수학',            description:'수학적 사고와 공식 활용',                    icon:'calculate',    color:'#a855f7', problems: MATH },
     { id:'sort',   title:'정렬 & 탐색',     description:'정렬 알고리즘과 이진 탐색',                 icon:'sort',         color:'#ec4899', problems: SORT_SEARCH },
-    { id:'stack',  title:'스택 & 큐',       description:'스택/큐 자료구조 활용',                      icon:'layers',       color:'#f97316', problems: STACK_QUEUE },
+    { id:'stack',  title:'스택 & 큐',       description:'스택/큐/덱 자료구조 활용',                  icon:'layers',       color:'#f97316', problems: STACK_QUEUE },
     { id:'dp',     title:'재귀 & DP',       description:'재귀 함수와 동적 프로그래밍',               icon:'account_tree', color:'#8b5cf6', problems: RECURSION_DP },
     { id:'graph',  title:'그래프 (BFS/DFS)', description:'그래프 탐색 알고리즘',                     icon:'hub',          color:'#ef4444', problems: GRAPH },
     { id:'greedy', title:'그리디',          description:'탐욕적 알고리즘으로 최적해 구하기',          icon:'trending_up',  color:'#14b8a6', problems: GREEDY },
+    { id:'hash',   title:'해시 & 집합',     description:'해시맵과 집합으로 효율적 탐색',              icon:'tag',          color:'#0ea5e9', problems: HASH },
+    { id:'bt',     title:'백트래킹',        description:'모든 경우의 수를 탐색하기',                 icon:'route',        color:'#e11d48', problems: BACKTRACKING },
 ];
 
-// Helper: get all problems flat
 export function getAllProblems(): ExternalProblem[] {
     return PROBLEM_SETS.flatMap(s => s.problems);
 }
 
-// Helper: get total count
 export function getTotalProblemCount(): number {
     return PROBLEM_SETS.reduce((sum, s) => sum + s.problems.length, 0);
 }

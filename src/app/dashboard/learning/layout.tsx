@@ -392,14 +392,11 @@ export default function LearningLayout({ children }: { children: ReactNode }) {
                             minHeight: "100vh", display: "flex", flexDirection: "column", position: "relative",
                             overflowX: "hidden", fontSize: 16,
                             fontFamily: "'Plus Jakarta Sans', sans-serif",
-                            background: "linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%)",
+                            background: "#ffffff",
                             backgroundAttachment: "fixed",
                             WebkitFontSmoothing: "antialiased",
                         }}>
-                            {/* Floating orbs */}
-                            <div className="floating-orb floating-orb--1" style={{ background: "#93c5fd", width: 384, height: 384, top: 0, left: 0 }} />
-                            <div className="floating-orb floating-orb--2" style={{ background: "#e9d5ff", width: 500, height: 500, bottom: 0, right: 0 }} />
-                            <div className="floating-orb floating-orb--3" style={{ background: "#a5f3fc", width: 256, height: 256, top: "33%", right: "25%" }} />
+
 
                             <Navbar onMenuOpen={() => setSidebarOpen(true)} />
                             <MobileDrawer isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />

@@ -64,6 +64,7 @@ export interface Course {
     title: string;
     icon: string;
     gradient: string;
+    cardImage?: string;
     description: string;
     totalUnits: number;
     totalProblems: number;

@@ -3,7 +3,7 @@ import { Chapter } from './types';
 /** C언어 Part 3 — CH5: 조건문 (U17-22), CH6: 비트연산/switch (U23-26) */
 export const C_LANG_PART3: Chapter[] = [
     {
-        id: 'c-ch05', chapterNumber: 5, title: '조건문', icon: '🔀',
+        id: 'c-ch05', chapterNumber: 5, title: '조건문', icon: '',
         description: 'if, else, else if, 삼항연산자, 논리연산자, bool',
         units: [
             {

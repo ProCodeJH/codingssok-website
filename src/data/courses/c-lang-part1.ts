@@ -1258,7 +1258,7 @@ const PAGE_45_CONTENT = BLOG_CSS + `
 
 export const C_LANG_PART1: Chapter[] = [
   {
-    id: 'c-ch01', chapterNumber: 1, title: '소개 & 기본문법', icon: '🚀',
+    id: 'c-ch01', chapterNumber: 1, title: '소개 & 기본문법', icon: '',
     description: 'C언어 소개, Hello world!, 기본 문법',
     units: [
       {

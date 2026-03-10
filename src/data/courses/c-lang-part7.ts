@@ -3,7 +3,7 @@ import { Chapter } from './types';
 /** C언어 Part 7 — CH10: 구조체/공용체/열거형 (U48-59) */
 export const C_LANG_PART7: Chapter[] = [
     {
-        id: 'c-ch10', chapterNumber: 10, title: '구조체 & 공용체 & 열거형', icon: '🏗️',
+        id: 'c-ch10', chapterNumber: 10, title: '구조체 & 공용체 & 열거형', icon: '',
         description: '구조체, 구조체 포인터, 멤버 정렬, 구조체 배열, 공용체, 열거형',
         units: [
             {

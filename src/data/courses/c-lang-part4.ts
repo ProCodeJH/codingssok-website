@@ -3,7 +3,7 @@ import { Chapter } from './types';
 /** C언어 Part 4 — CH7: 반복문 (U27-33) */
 export const C_LANG_PART4: Chapter[] = [
     {
-        id: 'c-ch07', chapterNumber: 7, title: '반복문', icon: '🔄',
+        id: 'c-ch07', chapterNumber: 7, title: '반복문', icon: '',
         description: 'for, while, do-while, break/continue, goto, 중첩루프, FizzBuzz',
         units: [
             {

@@ -3,69 +3,104 @@
 import { useState, useEffect, useRef } from "react";
 import { createClient } from "@/lib/supabase";
 
-/* ── 코딩쏙 아카데미 — 이름 + 생년월일 로그인 ── */
+/* ── 코딩쏙 아카데미 — 이름 + 4자리 비밀번호 로그인 ── */
 
 interface StudentRow {
   id: string;
   name: string;
-  birthday: string;
+  pin: string | null;
   grade: string | null;
   class: string | null;
   avatar: string | null;
 }
 
 const PRIMARY = "#6366f1";
-const PRIMARY_DARK = "#4f46e5";
 const ACCENT = "#8b5cf6";
 
 export default function LoginPage() {
   const [name, setName] = useState("");
-  const [birthYear, setBirthYear] = useState("");
-  const [birthMonth, setBirthMonth] = useState("");
-  const [birthDay, setBirthDay] = useState("");
+  const [pin, setPin] = useState("");
   const [loading, setLoading] = useState(false);
   const [msg, setMsg] = useState<{ ok: boolean; text: string } | null>(null);
-  const [matches, setMatches] = useState<StudentRow[] | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const pinRefs = [
+    useRef<HTMLInputElement>(null),
+    useRef<HTMLInputElement>(null),
+    useRef<HTMLInputElement>(null),
+    useRef<HTMLInputElement>(null),
+  ];
 
   useEffect(() => { inputRef.current?.focus(); }, []);
 
-  /* 생년월일 → YYYY-MM-DD */
-  const toBirthday = () => {
-    if (!birthYear || !birthMonth || !birthDay) return null;
-    return `${birthYear}-${birthMonth.padStart(2, "0")}-${birthDay.padStart(2, "0")}`;
+  /* ── PIN 입력 핸들러 (각 자리별) ── */
+  const handlePinDigit = (idx: number, value: string) => {
+    if (value && !/^\d$/.test(value)) return; // 숫자만 허용
+    const digits = pin.split("");
+    while (digits.length < 4) digits.push("");
+    digits[idx] = value;
+    const newPin = digits.join("");
+    setPin(newPin);
+    setMsg(null);
+    // 자동 포커스 이동
+    if (value && idx < 3) {
+      pinRefs[idx + 1].current?.focus();
+    }
   };
 
-  /* ── 이름 + 생년월일 검색 ── */
-  const handleSearch = async (e: React.FormEvent) => {
+  const handlePinKeyDown = (idx: number, e: React.KeyboardEvent) => {
+    if (e.key === "Backspace" && !pin[idx] && idx > 0) {
+      pinRefs[idx - 1].current?.focus();
+    }
+  };
+
+  /* ── 로그인/가입 처리 ── */
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const trimmed = name.trim();
     if (!trimmed) { setMsg({ ok: false, text: "이름을 입력해주세요" }); return; }
+    if (pin.length !== 4) { setMsg({ ok: false, text: "비밀번호 4자리를 입력해주세요" }); return; }
 
-    const birthday = toBirthday();
-    if (!birthday) { setMsg({ ok: false, text: "생년월일을 모두 선택해주세요" }); return; }
-
-    setLoading(true); setMsg(null); setMatches(null);
+    setLoading(true); setMsg(null);
 
     try {
       const sb = createClient();
+
+      // 1. 이름으로 검색
       const { data, error } = await sb
         .from("students")
-        .select("id, name, birthday, grade, class, avatar")
-        .ilike("name", trimmed)
-        .eq("birthday", birthday);
+        .select("id, name, pin, grade, class, avatar")
+        .ilike("name", trimmed);
 
       if (error) throw error;
 
       if (!data || data.length === 0) {
-        setMsg({ ok: false, text: `"${trimmed}" 학생을 찾을 수 없습니다.\n이름과 생년월일을 확인해주세요.` });
-      } else if (data.length === 1) {
-        loginAs(data[0] as StudentRow);
+        // ── 없으면 자동 가입 ──
+        const { data: newStudent, error: insertErr } = await sb
+          .from("students")
+          .insert({ name: trimmed, pin, grade: null, avatar: null })
+          .select("id, name, pin, grade, class, avatar")
+          .single();
+
+        if (insertErr) throw insertErr;
+
+        setMsg({ ok: true, text: `"${trimmed}" 님 가입 완료! 로그인 중...` });
+        setTimeout(() => loginAs(newStudent as StudentRow), 800);
       } else {
-        setMatches(data as StudentRow[]);
+        // ── 이름이 있음 → PIN 확인 ──
+        const matched = data.find((s: StudentRow) => s.pin === pin);
+
+        if (matched) {
+          loginAs(matched as StudentRow);
+        } else {
+          setMsg({ ok: false, text: "비밀번호가 틀렸습니다" });
+          // PIN 입력 초기화
+          setPin("");
+          pinRefs[0].current?.focus();
+        }
       }
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : String(err);
+      console.error("[Login] error:", err);
       setMsg({ ok: false, text: `오류: ${message}` });
     } finally { setLoading(false); }
   };
@@ -76,6 +111,7 @@ export default function LoginPage() {
       id: student.id,
       name: student.name,
       email: "",
+      role: "student" as const,
       grade: student.grade || undefined,
       avatar: student.avatar || undefined,
       level: 1, xp: 0, streak: 0,
@@ -85,21 +121,12 @@ export default function LoginPage() {
     window.location.href = "/dashboard/learning";
   };
 
-  /* ── 연도/월/일 옵션 ── */
-  const currentYear = new Date().getFullYear();
-  const years = Array.from({ length: currentYear - 1950 + 1 }, (_, i) => String(currentYear - i)); // current ~ 1950
-  const months = Array.from({ length: 12 }, (_, i) => String(i + 1));
-  const days = Array.from({ length: 31 }, (_, i) => String(i + 1));
-
-  const selectStyle: React.CSSProperties = {
-    flex: 1, padding: "14px 10px", border: "2px solid #e5e7eb",
-    borderRadius: 14, background: "rgba(255,255,255,0.8)", fontSize: 15,
-    color: "#1f2937", outline: "none", boxSizing: "border-box",
-    appearance: "none" as const, WebkitAppearance: "none" as const,
-    backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M3 5l3 3 3-3' fill='none' stroke='%239ca3af' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E")`,
-    backgroundRepeat: "no-repeat",
-    backgroundPosition: "right 12px center",
-    cursor: "pointer",
+  /* ── PIN digit style ── */
+  const pinDigitStyle: React.CSSProperties = {
+    width: 52, height: 60, textAlign: "center", fontSize: 24, fontWeight: 800,
+    border: "2px solid #e5e7eb", borderRadius: 16, background: "rgba(255,255,255,0.8)",
+    color: "#1f2937", outline: "none", transition: "all 0.2s", boxSizing: "border-box",
+    letterSpacing: 0, caretColor: PRIMARY,
   };
 
   return (
@@ -126,7 +153,7 @@ export default function LoginPage() {
       }}>
 
         {/* Brand Header */}
-        <div style={{ textAlign: "center", marginBottom: 36 }}>
+        <div style={{ textAlign: "center", marginBottom: 32 }}>
           <img
             src="/images/promo/logo-codingssok.png"
             alt="코딩쏙"
@@ -136,19 +163,19 @@ export default function LoginPage() {
             코딩쏙 아카데미
           </h1>
           <p style={{ fontSize: 14, color: "#6b7280", fontWeight: 400, margin: 0, lineHeight: 1.5 }}>
-            이름과 생년월일을 입력하면 바로 시작해요!
+            이름과 비밀번호를 입력하면 바로 시작해요!
           </p>
         </div>
 
         {/* Form */}
-        <form onSubmit={handleSearch} style={{ display: "flex", flexDirection: "column", gap: 18 }}>
+        <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: 20 }}>
           {/* 이름 입력 */}
           <div>
             <label htmlFor="student-name" style={{
               display: "block", fontSize: 13, fontWeight: 600, color: "#374151",
               marginBottom: 8, marginLeft: 4,
             }}>
-              👤 학생 이름
+              이름
             </label>
             <div style={{ position: "relative" }}>
               <div style={{
@@ -162,7 +189,7 @@ export default function LoginPage() {
                 id="student-name"
                 type="text"
                 value={name}
-                onChange={(e) => { setName(e.target.value); setMatches(null); setMsg(null); }}
+                onChange={(e) => { setName(e.target.value); setMsg(null); }}
                 required
                 autoComplete="off"
                 placeholder="홍길동"
@@ -179,36 +206,30 @@ export default function LoginPage() {
             </div>
           </div>
 
-          {/* 생년월일 입력 */}
+          {/* 4자리 비밀번호 */}
           <div>
             <label style={{
               display: "block", fontSize: 13, fontWeight: 600, color: "#374151",
               marginBottom: 8, marginLeft: 4,
             }}>
-              🎂 생년월일
+              비밀번호 (숫자 4자리)
             </label>
-            <div style={{ display: "flex", gap: 8 }}>
-              <select
-                value={birthYear} onChange={(e) => setBirthYear(e.target.value)}
-                style={selectStyle}
-              >
-                <option value="">년</option>
-                {years.map(y => <option key={y} value={y}>{y}년</option>)}
-              </select>
-              <select
-                value={birthMonth} onChange={(e) => setBirthMonth(e.target.value)}
-                style={selectStyle}
-              >
-                <option value="">월</option>
-                {months.map(m => <option key={m} value={m}>{m}월</option>)}
-              </select>
-              <select
-                value={birthDay} onChange={(e) => setBirthDay(e.target.value)}
-                style={selectStyle}
-              >
-                <option value="">일</option>
-                {days.map(d => <option key={d} value={d}>{d}일</option>)}
-              </select>
+            <div style={{ display: "flex", gap: 12, justifyContent: "center" }}>
+              {[0, 1, 2, 3].map((idx) => (
+                <input
+                  key={idx}
+                  ref={pinRefs[idx]}
+                  type="password"
+                  inputMode="numeric"
+                  maxLength={1}
+                  value={pin[idx] || ""}
+                  onChange={(e) => handlePinDigit(idx, e.target.value)}
+                  onKeyDown={(e) => handlePinKeyDown(idx, e)}
+                  onFocus={(e) => { e.target.style.borderColor = PRIMARY; e.target.style.boxShadow = `0 0 0 3px rgba(99,102,241,0.1)`; }}
+                  onBlur={(e) => { e.target.style.borderColor = "#e5e7eb"; e.target.style.boxShadow = "none"; }}
+                  style={pinDigitStyle}
+                />
+              ))}
             </div>
           </div>
 
@@ -219,52 +240,9 @@ export default function LoginPage() {
               background: msg.ok ? "rgba(16,185,129,0.08)" : "rgba(239,68,68,0.06)",
               color: msg.ok ? "#059669" : "#dc2626",
               border: `1px solid ${msg.ok ? "rgba(16,185,129,0.12)" : "rgba(239,68,68,0.1)"}`,
-              whiteSpace: "pre-line",
+              whiteSpace: "pre-line", textAlign: "center",
             }}>
               {msg.text}
-            </div>
-          )}
-
-          {/* 동명이인 선택 */}
-          {matches && matches.length > 1 && (
-            <div style={{
-              background: "rgba(99,102,241,0.03)", borderRadius: 16, padding: 16,
-              border: "1px solid rgba(99,102,241,0.08)",
-            }}>
-              <p style={{ fontSize: 12, color: "#6366f1", fontWeight: 700, margin: "0 0 12px", letterSpacing: 0.3 }}>
-                동명이인이 있어요. 본인을 선택해주세요:
-              </p>
-              <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-                {matches.map((s) => (
-                  <button
-                    key={s.id}
-                    type="button"
-                    onClick={() => loginAs(s)}
-                    style={{
-                      display: "flex", alignItems: "center", gap: 12, padding: "12px 16px",
-                      border: "1px solid #e5e7eb", borderRadius: 14, background: "#fff",
-                      cursor: "pointer", transition: "all 0.2s", textAlign: "left",
-                    }}
-                    onMouseEnter={(e) => { e.currentTarget.style.borderColor = PRIMARY; e.currentTarget.style.background = "rgba(99,102,241,0.02)"; }}
-                    onMouseLeave={(e) => { e.currentTarget.style.borderColor = "#e5e7eb"; e.currentTarget.style.background = "#fff"; }}
-                  >
-                    <div style={{
-                      width: 36, height: 36, borderRadius: 12,
-                      background: `linear-gradient(135deg, ${PRIMARY}, ${ACCENT})`,
-                      display: "flex", alignItems: "center", justifyContent: "center",
-                      color: "#fff", fontWeight: 800, fontSize: 14, flexShrink: 0,
-                    }}>
-                      {s.avatar || s.name[0]}
-                    </div>
-                    <div>
-                      <div style={{ fontSize: 14, fontWeight: 700, color: "#1f2937" }}>{s.name}</div>
-                      <div style={{ fontSize: 12, color: "#9ca3af" }}>
-                        {[s.grade, s.class].filter(Boolean).join(" · ") || "정보 없음"}
-                      </div>
-                    </div>
-                  </button>
-                ))}
-              </div>
             </div>
           )}
 
@@ -287,7 +265,7 @@ export default function LoginPage() {
             {loading ? (
               <>
                 <span className="material-symbols-outlined" style={{ fontSize: 18, animation: "spin 1s linear infinite" }}>progress_activity</span>
-                찾는 중...
+                로그인 중...
               </>
             ) : (
               <>
@@ -299,9 +277,13 @@ export default function LoginPage() {
         </form>
 
         {/* Footer */}
-        <p style={{ textAlign: "center", fontSize: 12, color: "#9ca3af", marginTop: 24 }}>
-          이름이 없나요? <span style={{ color: "#6366f1", fontWeight: 600 }}>선생님에게 말해주세요!</span>
-        </p>
+        <div style={{ textAlign: "center", marginTop: 24 }}>
+          <p style={{ fontSize: 12, color: "#9ca3af", margin: 0, lineHeight: 1.6 }}>
+            처음이라면 이름과 비밀번호를 정하면 자동으로 가입돼요!
+            <br />
+            <span style={{ color: "#6366f1", fontWeight: 600 }}>이미 있는 이름이면 비밀번호로 로그인해요</span>
+          </p>
+        </div>
       </div>
 
       <style>{`

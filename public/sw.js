@@ -7,8 +7,6 @@ const OFFLINE_URL = "/offline";
 
 const PRECACHE_URLS = [
     "/",
-    "/trial",
-    "/offline",
 ];
 
 // Install: pre-cache shell

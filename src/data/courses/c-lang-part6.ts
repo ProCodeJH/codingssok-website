@@ -3,7 +3,7 @@ import { Chapter } from './types';
 /** C언어 Part 6 — CH9: 문자열 (U39-47) */
 export const C_LANG_PART6: Chapter[] = [
     {
-        id: 'c-ch09', chapterNumber: 9, title: '문자열', icon: '📝',
+        id: 'c-ch09', chapterNumber: 9, title: '문자열', icon: '',
         description: '문자열 사용, 입력, 길이, 비교, 복사, 붙이기, 만들기, 변환, 배열',
         units: [
             {

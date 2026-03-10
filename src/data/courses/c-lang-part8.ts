@@ -3,7 +3,7 @@ import { Chapter } from './types';
 /** C언어 Part 8 — CH11: 함수 (U60-69) */
 export const C_LANG_PART8: Chapter[] = [
     {
-        id: 'c-ch11', chapterNumber: 11, title: '함수', icon: '🔧',
+        id: 'c-ch11', chapterNumber: 11, title: '함수', icon: '',
         description: '함수 선언/정의, 매개변수, 반환값, 재귀, 함수 포인터, 가변인자',
         units: [
             {

@@ -3,7 +3,7 @@ import { Chapter } from './types';
 /** C언어 Part 5 — CH8: 포인터/메모리/배열 (U34-38) */
 export const C_LANG_PART5: Chapter[] = [
     {
-        id: 'c-ch08', chapterNumber: 8, title: '포인터 & 메모리 & 배열', icon: '📍',
+        id: 'c-ch08', chapterNumber: 8, title: '포인터 & 메모리 & 배열', icon: '',
         description: '포인터, 메모리 할당, 1/2차원 배열, 포인터와 배열 응용',
         units: [
             {

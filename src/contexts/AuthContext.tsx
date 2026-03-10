@@ -10,6 +10,7 @@ export interface UserProfile {
     grade?: string;
     phone?: string;
     avatar?: string;
+    role?: "student" | "teacher";
     level: number;
     xp: number;
     streak: number;

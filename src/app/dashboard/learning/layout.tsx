@@ -21,6 +21,10 @@ const NAV_ITEMS = [
     { icon: "person", label: "프로필", href: "/dashboard/learning/profile" },
 ];
 
+const ADMIN_NAV_ITEMS = [
+    { icon: "admin_panel_settings", label: "학생 관리", href: "/dashboard/learning/admin" },
+];
+
 /* ── Auth Guard ── */
 function AuthGate({ children }: { children: ReactNode }) {
     const { user, loading } = useAuth();
@@ -56,14 +60,16 @@ function AuthGate({ children }: { children: ReactNode }) {
 /* ── Left Sidebar ── */
 function LeftSidebar() {
     const pathname = usePathname();
+    const { user } = useAuth();
     const isActive = (href: string) => href === "/dashboard/learning" ? pathname === href : pathname.startsWith(href);
+    const allItems = user?.role === "teacher" ? [...NAV_ITEMS, ...ADMIN_NAV_ITEMS] : NAV_ITEMS;
 
     return (
         <aside style={{ display: "none" }} className="lg:!block lg:col-span-2">
             <div style={{ position: "sticky", top: 128, maxHeight: "calc(100vh - 10rem)", overflowY: "auto" }} className="hide-scrollbar">
                 <Spotlight size={200} color="rgba(14,165,233,0.04)" style={{ borderRadius: 20 }}>
                     <nav style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-                        {NAV_ITEMS.map((item, i) => (
+                        {allItems.map((item, i) => (
                             <motion.div
                                 key={item.href}
                                 initial={{ opacity: 0, x: -20 }}
@@ -279,7 +285,9 @@ function Navbar({ onMenuOpen }: { onMenuOpen: () => void }) {
 /* ── Mobile Drawer (AnimatePresence) ── */
 function MobileDrawer({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
     const pathname = usePathname();
+    const { user } = useAuth();
     const isActive = (href: string) => href === "/dashboard/learning" ? pathname === href : pathname.startsWith(href);
+    const allItems = user?.role === "teacher" ? [...NAV_ITEMS, ...ADMIN_NAV_ITEMS] : NAV_ITEMS;
     return (
         <AnimatePresence>
             {isOpen && (
@@ -323,7 +331,7 @@ function MobileDrawer({ isOpen, onClose }: { isOpen: boolean; onClose: () => voi
                             </motion.button>
                         </div>
                         <nav style={{ display: "flex", flexDirection: "column", gap: 4, flex: 1 }}>
-                            {NAV_ITEMS.map((item, i) => (
+                            {allItems.map((item, i) => (
                                 <motion.div
                                     key={item.href}
                                     initial={{ opacity: 0, x: -20 }}
@@ -351,6 +359,12 @@ function MobileDrawer({ isOpen, onClose }: { isOpen: boolean; onClose: () => voi
 /* ── Layout ── */
 export default function LearningLayout({ children }: { children: ReactNode }) {
     const [sidebarOpen, setSidebarOpen] = useState(false);
+    const pathname = usePathname();
+
+    // 3D 대시보드 + 코스 상세 페이지에서는 레이아웃 크롬 없이 전체화면
+    const isMainDashboard = pathname === "/dashboard/learning";
+    const isCourseDetail = pathname.startsWith("/dashboard/learning/courses/");
+    const isFullscreen = isMainDashboard || isCourseDetail;
 
     return (
         <AuthProvider>
@@ -360,51 +374,62 @@ export default function LearningLayout({ children }: { children: ReactNode }) {
                 {/* eslint-disable-next-line @next/next/no-page-custom-font */}
                 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" />
 
-                <style>{`
-                    @keyframes spin { to { transform: rotate(360deg); } }
-                    .lg\\:!block { display: block !important; }
-                    @media (max-width: 1023px) { .lg\\:!block { display: none !important; } }
-                `}</style>
-
-                <div style={{
-                    minHeight: "100vh", display: "flex", flexDirection: "column", position: "relative",
-                    overflowX: "hidden", fontSize: 16,
-                    fontFamily: "'Plus Jakarta Sans', sans-serif",
-                    background: "linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%)",
-                    backgroundAttachment: "fixed",
-                    WebkitFontSmoothing: "antialiased",
-                }}>
-                    {/* Floating orbs */}
-                    <div className="floating-orb floating-orb--1" style={{ background: "#93c5fd", width: 384, height: 384, top: 0, left: 0 }} />
-                    <div className="floating-orb floating-orb--2" style={{ background: "#e9d5ff", width: 500, height: 500, bottom: 0, right: 0 }} />
-                    <div className="floating-orb floating-orb--3" style={{ background: "#a5f3fc", width: 256, height: 256, top: "33%", right: "25%" }} />
-
-                    <Navbar onMenuOpen={() => setSidebarOpen(true)} />
-                    <MobileDrawer isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
-
-                    {/* Main Grid */}
-                    <main style={{
-                        flex: 1, maxWidth: 1800, width: "100%", margin: "0 auto",
-                        padding: "40px 24px",
-                        display: "grid", gridTemplateColumns: "1fr",
-                        gap: 32, position: "relative", zIndex: 10,
-                    }} className="lg:!grid-cols-12">
+                {isFullscreen ? (
+                    /* 전체화면 모드 — 레이아웃 크롬 없음 */
+                    <div style={{ position: "fixed", inset: 0, overflow: "hidden" }}>
+                        {children}
+                    </div>
+                ) : (
+                    /* 서브페이지 — 기존 레이아웃 */
+                    <>
                         <style>{`
-                            @media (min-width: 1024px) {
-                                .lg\\:!grid-cols-12 { grid-template-columns: repeat(12, minmax(0, 1fr)) !important; }
-                                .lg\\:col-span-2 { grid-column: span 2 / span 2; }
-                                .lg\\:col-span-10 { grid-column: span 10 / span 10; }
-                            }
+                            @keyframes spin { to { transform: rotate(360deg); } }
+                            .lg\\:!block { display: block !important; }
+                            @media (max-width: 1023px) { .lg\\:!block { display: none !important; } }
                         `}</style>
-                        <LeftSidebar />
-                        <div className="lg:col-span-10">
-                            <PageTransition>
-                                {children}
-                            </PageTransition>
+
+                        <div style={{
+                            minHeight: "100vh", display: "flex", flexDirection: "column", position: "relative",
+                            overflowX: "hidden", fontSize: 16,
+                            fontFamily: "'Plus Jakarta Sans', sans-serif",
+                            background: "linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%)",
+                            backgroundAttachment: "fixed",
+                            WebkitFontSmoothing: "antialiased",
+                        }}>
+                            {/* Floating orbs */}
+                            <div className="floating-orb floating-orb--1" style={{ background: "#93c5fd", width: 384, height: 384, top: 0, left: 0 }} />
+                            <div className="floating-orb floating-orb--2" style={{ background: "#e9d5ff", width: 500, height: 500, bottom: 0, right: 0 }} />
+                            <div className="floating-orb floating-orb--3" style={{ background: "#a5f3fc", width: 256, height: 256, top: "33%", right: "25%" }} />
+
+                            <Navbar onMenuOpen={() => setSidebarOpen(true)} />
+                            <MobileDrawer isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
+
+                            {/* Main Grid */}
+                            <main style={{
+                                flex: 1, maxWidth: 1800, width: "100%", margin: "0 auto",
+                                padding: "40px 24px",
+                                display: "grid", gridTemplateColumns: "1fr",
+                                gap: 32, position: "relative", zIndex: 10,
+                            }} className="lg:!grid-cols-12">
+                                <style>{`
+                                    @media (min-width: 1024px) {
+                                        .lg\\:!grid-cols-12 { grid-template-columns: repeat(12, minmax(0, 1fr)) !important; }
+                                        .lg\\:col-span-2 { grid-column: span 2 / span 2; }
+                                        .lg\\:col-span-10 { grid-column: span 10 / span 10; }
+                                    }
+                                `}</style>
+                                <LeftSidebar />
+                                <div className="lg:col-span-10">
+                                    <PageTransition>
+                                        {children}
+                                    </PageTransition>
+                                </div>
+                            </main>
                         </div>
-                    </main>
-                </div>
+                    </>
+                )}
             </AuthGate>
         </AuthProvider>
     );
 }
+

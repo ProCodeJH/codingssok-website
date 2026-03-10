@@ -3,7 +3,7 @@ import { Chapter } from './types';
 /** C언어 Part 10 — CH13: 전처리기/헤더/실전 (U75-85) */
 export const C_LANG_PART10: Chapter[] = [
     {
-        id: 'c-ch13', chapterNumber: 13, title: '전처리기 & 헤더 & 실전', icon: '🛠️',
+        id: 'c-ch13', chapterNumber: 13, title: '전처리기 & 헤더 & 실전', icon: '',
         description: '전처리기, 매크로, 헤더 파일, 실전 프로젝트, 코딩 도장 총정리',
         units: [
             {

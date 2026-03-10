@@ -3,7 +3,7 @@ import { Chapter } from './types';
 /** C언어 Part 9 — CH12: 파일/정렬/연결리스트 (U70-74) */
 export const C_LANG_PART9: Chapter[] = [
     {
-        id: 'c-ch12', chapterNumber: 12, title: '파일 & 정렬 & 연결리스트', icon: '📂',
+        id: 'c-ch12', chapterNumber: 12, title: '파일 & 정렬 & 연결리스트', icon: '',
         description: '파일 처리, 버블/선택/삽입 정렬, 연결리스트',
         units: [
             {

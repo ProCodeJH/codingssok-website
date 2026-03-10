@@ -3,7 +3,7 @@ import { Chapter } from './types';
 /** C언어 Part 2 — CH3: 자료형 (U7-10), CH4: 입력/연산자 (U11-16) */
 export const C_LANG_PART2: Chapter[] = [
     {
-        id: 'c-ch03', chapterNumber: 3, title: '자료형', icon: '🔢',
+        id: 'c-ch03', chapterNumber: 3, title: '자료형', icon: '',
         description: '정수형, 실수형, 문자형, 상수',
         units: [
             {

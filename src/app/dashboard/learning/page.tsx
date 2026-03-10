@@ -421,6 +421,88 @@ export default function LearningDashboard() {
 
                 .pg-hints{display:flex;justify-content:center;gap:20;padding:8px 0 12px;z-index:10;opacity:0.4}
                 .pg-hint{font-size:10px;color:#94a3b8;display:flex;align-items:center;gap:4}
+
+                /* ═══ C-Studio Special Card ═══ */
+                @keyframes ide-code-rain{0%{transform:translateY(-100%);opacity:0}10%{opacity:0.6}90%{opacity:0.6}100%{transform:translateY(300%);opacity:0}}
+                @keyframes ide-scanline{0%{top:-10%}100%{top:110%}}
+                @keyframes ide-cursor-blink{0%,100%{opacity:1}50%{opacity:0}}
+                @keyframes ide-glow-pulse{0%,100%{box-shadow:0 0 30px rgba(99,102,241,0.15),0 0 60px rgba(99,102,241,0.05)}50%{box-shadow:0 0 40px rgba(99,102,241,0.25),0 0 80px rgba(99,102,241,0.1)}}
+                @keyframes ide-float{0%,100%{transform:translateY(0) rotateX(8deg) rotateY(-3deg)}50%{transform:translateY(-8px) rotateX(8deg) rotateY(-3deg)}}
+
+                .ide-card-wrap{perspective:1200px;z-index:10;cursor:pointer}
+                .ide-card{
+                    width:clamp(320px,42vw,560px);height:clamp(140px,16vw,200px);
+                    position:relative;border-radius:16px;overflow:hidden;
+                    background:linear-gradient(135deg,#0f0f23,#1a1a3e,#0f0f23);
+                    border:1px solid rgba(99,102,241,0.2);
+                    transform-style:preserve-3d;
+                    transform:rotateX(8deg) rotateY(-3deg);
+                    animation:ide-float 5s ease-in-out infinite,ide-glow-pulse 4s ease-in-out infinite;
+                    transition:transform 0.4s cubic-bezier(0.23,1,0.32,1),box-shadow 0.4s;
+                }
+                .ide-card:hover{
+                    transform:rotateX(2deg) rotateY(0deg) scale(1.04);
+                    box-shadow:0 20px 60px rgba(99,102,241,0.3),0 0 100px rgba(99,102,241,0.1)!important;
+                }
+                .ide-card::before{
+                    content:'';position:absolute;inset:0;z-index:1;
+                    background:linear-gradient(135deg,rgba(99,102,241,0.08),transparent 50%,rgba(6,182,212,0.06));
+                    pointer-events:none;
+                }
+                .ide-scanline{
+                    position:absolute;left:0;right:0;height:2px;z-index:5;pointer-events:none;
+                    background:linear-gradient(90deg,transparent,rgba(99,102,241,0.4),transparent);
+                    animation:ide-scanline 3.5s linear infinite;
+                }
+                .ide-rain{position:absolute;inset:0;overflow:hidden;z-index:0;opacity:0.12;pointer-events:none}
+                .ide-rain-col{
+                    position:absolute;top:0;
+                    font-family:'JetBrains Mono',monospace;font-size:10px;
+                    color:#818cf8;writing-mode:vertical-rl;
+                    animation:ide-code-rain linear infinite;white-space:nowrap;
+                }
+                .ide-monitor-frame{
+                    position:absolute;inset:0;border-radius:16px;z-index:2;pointer-events:none;
+                    border:2px solid rgba(99,102,241,0.15);
+                    box-shadow:inset 0 0 30px rgba(0,0,0,0.4),inset 0 1px 0 rgba(255,255,255,0.05);
+                }
+                .ide-screen-dots{
+                    position:absolute;top:10px;left:14px;z-index:10;display:flex;gap:5;
+                }
+                .ide-screen-dot{width:7px;height:7px;border-radius:50%;opacity:0.8}
+                .ide-content{position:relative;z-index:4;padding:16px 20px;display:flex;align-items:center;gap:clamp(16px,2vw,28px);height:100%}
+                .ide-code-preview{
+                    flex:1;font-family:'JetBrains Mono',monospace;font-size:clamp(9px,0.85vw,12px);
+                    line-height:1.7;color:rgba(205,214,244,0.7);overflow:hidden;
+                    max-height:100%;
+                }
+                .ide-code-kw{color:#c678dd}
+                .ide-code-fn{color:#61afef}
+                .ide-code-str{color:#98c379}
+                .ide-code-cm{color:#5c6370;font-style:italic}
+                .ide-code-num{color:#d19a66}
+                .ide-info{display:flex;flex-direction:column;align-items:flex-end;gap:6;flex-shrink:0;text-align:right}
+                .ide-title{font-size:clamp(18px,2vw,28px);font-weight:900;letter-spacing:-0.03em;line-height:1.1}
+                .ide-title-c{background:linear-gradient(135deg,#818cf8,#06b6d4);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+                .ide-subtitle{font-size:clamp(9px,0.8vw,12px);color:rgba(148,163,184,0.7);font-weight:500}
+                .ide-badge{
+                    display:inline-flex;align-items:center;gap:4;
+                    padding:4px 12px;border-radius:999px;font-size:9px;font-weight:800;
+                    background:linear-gradient(135deg,rgba(99,102,241,0.2),rgba(6,182,212,0.15));
+                    border:1px solid rgba(99,102,241,0.25);color:#a5b4fc;letter-spacing:0.5px;
+                }
+                .ide-enter-arrow{
+                    font-size:18px;color:#818cf8;
+                    transition:transform 0.3s;
+                }
+                .ide-card:hover .ide-enter-arrow{transform:translateX(4px)}
+
+                /* Reflection below card */
+                .ide-reflection{
+                    width:clamp(280px,36vw,480px);height:20px;margin:0 auto;
+                    background:radial-gradient(ellipse,rgba(99,102,241,0.12),transparent 70%);
+                    filter:blur(8px);pointer-events:none;
+                }
             `}</style>
 
             <div className="pg-bar">
@@ -446,6 +528,57 @@ export default function LearningDashboard() {
                     {COURSES.slice(4,8).map((c,i) => (
                         <BookCard key={c.id} course={c} progress={courseProgress[c.id]||0} index={i+4} onClick={() => go(c.id)} />
                     ))}
+                </div>
+
+                {/* ═══ C-Studio IDE Special Card ═══ */}
+                <div className="ide-card-wrap" onClick={() => router.push("/dashboard/learning/compiler")}>
+                    <div className="ide-card">
+                        {/* Scanline */}
+                        <div className="ide-scanline" />
+
+                        {/* Code Rain Background */}
+                        <div className="ide-rain">
+                            {["int main()", "#include", "printf()", "return 0;", "for(i=0)", "char *p;", "malloc()", "if(x>0)", "struct{}", "while(1)", "sizeof()", "break;"].map((txt, i) => (
+                                <div key={i} className="ide-rain-col" style={{ left: `${(i / 12) * 100}%`, animationDuration: `${6 + Math.random() * 8}s`, animationDelay: `${Math.random() * 5}s` }}>{txt}</div>
+                            ))}
+                        </div>
+
+                        {/* Monitor Frame */}
+                        <div className="ide-monitor-frame" />
+
+                        {/* Screen dots */}
+                        <div className="ide-screen-dots">
+                            <div className="ide-screen-dot" style={{ background: "#f38ba8" }} />
+                            <div className="ide-screen-dot" style={{ background: "#f9e2af" }} />
+                            <div className="ide-screen-dot" style={{ background: "#a6e3a1" }} />
+                        </div>
+
+                        {/* Content */}
+                        <div className="ide-content">
+                            {/* Code Preview */}
+                            <div className="ide-code-preview">
+                                <div><span className="ide-code-cm">{"// C-Studio Web IDE"}</span></div>
+                                <div><span className="ide-code-kw">{"#include"}</span>{" <stdio.h>"}</div>
+                                <div>&nbsp;</div>
+                                <div><span className="ide-code-kw">int</span> <span className="ide-code-fn">main</span>{"() {"}</div>
+                                <div>{"    "}<span className="ide-code-fn">printf</span>(<span className="ide-code-str">{'"Hello!"'}</span>);</div>
+                                <div>{"    "}<span className="ide-code-kw">return</span> <span className="ide-code-num">0</span>;</div>
+                                <div>{"}"}<span style={{ animation: "ide-cursor-blink 1s infinite", color: "#818cf8", fontWeight: 700 }}>▌</span></div>
+                            </div>
+
+                            {/* Title & Info */}
+                            <div className="ide-info">
+                                <div className="ide-title"><span className="ide-title-c">C-Studio</span></div>
+                                <div className="ide-subtitle">웹 기반 코드 에디터 & 컴파일러</div>
+                                <div className="ide-badge">
+                                    <span className="material-symbols-outlined" style={{ fontSize: 10 }}>terminal</span>
+                                    LAUNCH IDE
+                                    <span className="ide-enter-arrow material-symbols-outlined">arrow_forward</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div className="ide-reflection" />
                 </div>
             </div>
 

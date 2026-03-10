@@ -133,15 +133,13 @@ export default function LoginPage() {
     <div style={{
       minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center",
       fontFamily: "'Pretendard', 'Inter', sans-serif", color: "#0f172a",
-      background: "linear-gradient(135deg, #f0f0ff 0%, #e8e0ff 50%, #f0f4ff 100%)",
+      background: "#ffffff",
       position: "relative", overflow: "hidden",
     }}>
       <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" />
       <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" />
 
-      {/* Background decorations */}
-      <div style={{ position: "absolute", top: -120, left: -120, width: 400, height: 400, background: `radial-gradient(circle, rgba(99,102,241,0.15), transparent 70%)`, borderRadius: "50%", pointerEvents: "none" }} />
-      <div style={{ position: "absolute", bottom: -80, right: -80, width: 350, height: 350, background: `radial-gradient(circle, rgba(139,92,246,0.12), transparent 70%)`, borderRadius: "50%", pointerEvents: "none" }} />
+
 
       {/* Login Card */}
       <div style={{

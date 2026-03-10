@@ -27,7 +27,7 @@ export default function PageLoader() {
                         position: "fixed",
                         inset: 0,
                         zIndex: 99999,
-                        background: "linear-gradient(135deg, #fdfaf5, #fff5eb)",
+                        background: "#ffffff",
                         display: "flex",
                         flexDirection: "column",
                         alignItems: "center",

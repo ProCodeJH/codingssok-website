@@ -531,7 +531,7 @@ export default function LearningDashboard() {
                 </div>
 
                 {/* ═══ C-Studio IDE Special Card ═══ */}
-                <div className="ide-card-wrap" onClick={() => router.push("/dashboard/learning/compiler")}>
+                <div className="ide-card-wrap" onClick={() => router.push("/dashboard/compiler")}>
                     <div className="ide-card">
                         {/* Scanline */}
                         <div className="ide-scanline" />

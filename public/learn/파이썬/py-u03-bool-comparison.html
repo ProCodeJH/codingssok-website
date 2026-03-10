@@ -1,0 +1,1284 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<base href="file:///g:/내 드라이브/새 폴더/clawd/projects/book/">
+<title>코딩쏙 교재 — Chapter 01 불과 비교, 논리 연산자 — 참과 거짓의 세계</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  @page {
+    size: A4;
+    margin: 15mm 18mm 12mm 22mm;
+    @bottom-center {
+      content: counter(page);
+      font-family: 'Pretendard', sans-serif;
+      font-size: 9pt;
+      color: #BDC3C7;
+      letter-spacing: 0.5px;
+    }
+  }
+  @page :first {
+    @bottom-center { content: none; }
+  }
+
+  body {
+    font-family: 'Pretendard', sans-serif;
+    color: #2C3E50;
+    background: white;
+    font-size: 12pt;
+    line-height: 175%;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+    word-break: keep-all;
+    overflow-wrap: break-word;
+  }
+
+  /* ── 페이지 잘림 방지 ── */
+  .avoid-break { break-inside: avoid !important; page-break-inside: avoid !important; }
+  h2, h3 { break-after: avoid !important; page-break-after: avoid !important; }
+  .page-break-hint { break-before: page !important; page-break-before: always !important; height: 0; margin: 0; padding: 0; }
+  p { orphans: 3; widows: 3; }
+
+  /* ── 레슨 헤더 ── */
+  .lesson-header { margin-bottom: 4mm; padding-bottom: 2.5mm; border-bottom: 2.5px solid #FF6B6B; }
+  .lesson-number { font-size: 11pt; font-weight: 600; color: #FF6B6B; margin-bottom: 1.5mm; letter-spacing: 0.5px; }
+  .lesson-title { font-size: 22pt; font-weight: 800; line-height: 130%; color: #1a1a1a; }
+  .lesson-summary { font-size: 11pt; color: #7F8C8D; margin-top: 2mm; font-style: italic; }
+
+  /* ── 제목 계층 ── */
+  h2 { font-size: 15pt; font-weight: 700; margin: 4mm 0 2.5mm; padding-left: 4mm; border-left: 3.5px solid #FF6B6B; color: #1a1a1a; }
+  h3 { font-size: 13pt; font-weight: 600; color: #34495E; margin: 3.5mm 0 2mm; }
+  p { margin-bottom: 2.5mm; text-align: justify; line-height: 170%; }
+
+  /* ── 인라인 코드 ── */
+  code { font-family: 'JetBrains Mono', monospace; font-size: 10pt; background: #F0F0F0; padding: 0.3mm 1.5mm; border-radius: 3px; color: #E74C3C; border: 0.5px solid #E0E0E0; }
+
+  /* ── 코드 블록 ── */
+  .code-block { background: #1E1E1E; border-radius: 6px; padding: 3mm 4mm 3mm 0; margin: 2mm 0; box-shadow: 0 1px 3px rgba(0,0,0,0.12); }
+  .code-block-header { font-family: 'Pretendard'; font-size: 8.5pt; color: #999; padding: 0 0 2.5mm 4.5mm; border-bottom: 1px solid #333; margin-bottom: 2.5mm; letter-spacing: 0.3px; }
+  .code-table { width: 100%; border-collapse: collapse; }
+  .code-table td { vertical-align: top; padding: 0; }
+  .line-num { width: 9mm; text-align: right; padding-right: 2.5mm; font-family: 'JetBrains Mono'; font-size: 8.5pt; color: #555; line-height: 155%; user-select: none; }
+  .line-code { font-family: 'JetBrains Mono'; font-size: 10pt; color: #D4D4D4; line-height: 155%; padding-left: 2.5mm; border-left: 1px solid #333; white-space: pre; }
+  .line-highlight td { background: rgba(255,107,107,0.15) !important; }
+  .line-highlight .line-num { color: #FF6B6B !important; font-weight: 700; }
+
+  /* 신택스 컬러 */
+  .kw{color:#569CD6;font-weight:500} .str{color:#CE9178} .cmt{color:#6A9955;font-style:italic} .fn{color:#DCDCAA} .pp{color:#C586C0} .num{color:#B5CEA8} .type{color:#4EC9B0} .mc{color:#4FC1FF} .esc{color:#D7BA7D;font-weight:500} .fmt{color:#D7BA7D}
+
+  /* ── 실행 결과 ── */
+  .output-block { background: #F8F9FA; border: 1px solid #DEE2E6; border-radius: 6px; padding: 3mm 4mm; margin: 3mm 0; }
+  .output-label { font-family: 'Pretendard'; font-size: 8.5pt; color: #999; display: block; margin-bottom: 1.5mm; font-weight: 600; letter-spacing: 0.3px; }
+  .output-text { font-family: 'JetBrains Mono'; font-size: 10.5pt; line-height: 160%; }
+
+  /* ── 박스 (통합) ── */
+  .box { border-radius: 6px; padding: 2.5mm 4mm; margin: 2mm 0; }
+  .box-label { font-size: 10.5pt; font-weight: 700; margin-bottom: 1.5mm; display: block; }
+  .box-content { font-size: 11pt; line-height: 165%; }
+  .box-warning { border-left: 4px solid #E74C3C; background: #FFF5F5; } .box-warning .box-label { color: #E74C3C; }
+  .box-key { border-left: 4px solid #3498DB; background: #F0F7FF; } .box-key .box-label { color: #3498DB; }
+  .box-tip { border-left: 4px solid #F39C12; background: #FFFBF0; } .box-tip .box-label { color: #F39C12; }
+  .box-summary { border-left: 4px solid #27AE60; background: #F0FFF4; } .box-summary .box-label { color: #27AE60; }
+  .box-question { border-left: 4px solid #9B59B6; background: #F8F0FF; } .box-question .box-label { color: #9B59B6; }
+  .box-history { border-left: 4px solid #1ABC9C; background: #F0FFFE; } .box-history .box-label { color: #1ABC9C; }
+
+  /* ── 연습문제 ── */
+  .exercise { background: #FAFAFA; border: 1px solid #ECF0F1; border-radius: 6px; padding: 2.5mm 4mm; margin: 2mm 0; border-left: 4px solid #FF6B6B; }
+  .exercise-title { font-size: 13pt; font-weight: 700; color: #FF6B6B; margin-bottom: 2.5mm; }
+  .difficulty { display: inline-block; font-size: 8.5pt; padding: 0.3mm 2mm; border-radius: 3px; margin-left: 2mm; font-weight: 600; }
+  .diff-1 { background: #E8F8F5; color: #1ABC9C; } .diff-2 { background: #FEF9E7; color: #F39C12; } .diff-3 { background: #FDEDEC; color: #E74C3C; }
+  .memo-area { border: 1.5px dashed #D5D8DC; border-radius: 6px; padding: 2mm; min-height: 12mm; margin-top: 2mm; background: #FDFDFD; }
+  .memo-label { font-size: 8.5pt; color: #BDC3C7; font-style: italic; }
+
+  /* ── OX/Choice/Short 연습문제 ── */
+  .exercise-answer { font-size: 10pt; color: #27AE60; margin-top: 1.5mm; padding: 1mm 2mm; background: #F0FFF4; border-radius: 4px; }
+  .exercise-explain { font-size: 9.5pt; color: #7F8C8D; margin-top: 1mm; padding-left: 2mm; border-left: 2px solid #ECF0F1; }
+  .choice-list { padding-left: 6mm; margin: 1.5mm 0; }
+  .choice-list li { font-size: 10.5pt; margin-bottom: 1mm; }
+  .choice-list li.choice-correct { color: #27AE60; font-weight: 700; }
+
+  /* ── Before/After 비교 ── */
+  .compare { display: flex; gap: 2.5mm; margin: 2mm 0; overflow: hidden; }
+  .compare-bad { flex: 1; min-width: 0; background: #FFF5F5; border: 1px solid #FADBD8; border-radius: 6px; padding: 2mm 3mm; overflow: hidden; }
+  .compare-good { flex: 1; min-width: 0; background: #F0FFF4; border: 1px solid #ABEBC6; border-radius: 6px; padding: 2mm 3mm; overflow: hidden; }
+  .compare code { font-size: 9pt; word-break: break-all; overflow-wrap: break-word; display: block; background: rgba(0,0,0,0.04); padding: 1.5mm 2.5mm; border-radius: 3px; margin: 1mm 0; line-height: 150%; white-space: pre-wrap; }
+  .compare-label { font-size: 9.5pt; font-weight: 700; margin-bottom: 1.5mm; }
+  .compare-bad .compare-label { color: #E74C3C; } .compare-good .compare-label { color: #27AE60; }
+  .compare-msg-bad { font-size: 9pt; color: #E74C3C; } .compare-msg-good { font-size: 9pt; color: #27AE60; }
+
+  /* ── 챕터 시작 ── */
+  .chapter-start-box { margin-bottom: 2mm; }
+  .learning-goals { background: #F8F9FA; border-radius: 6px; padding: 2.5mm 4mm; margin-bottom: 2mm; border: 1px solid #ECF0F1; }
+  .learning-goals h3 { font-size: 12pt; font-weight: 700; color: #FF6B6B; margin: 0 0 2mm; border: none; padding: 0; }
+  .learning-goals ul { padding-left: 5mm; margin: 0; }
+  .learning-goals li { font-size: 11pt; margin-bottom: 1mm; line-height: 155%; }
+  .prereq-check { background: #FFFBF0; border-left: 4px solid #F39C12; border-radius: 6px; padding: 2.5mm 4mm; margin-bottom: 2mm; }
+  .prereq-check h3 { font-size: 11pt; font-weight: 700; color: #F39C12; margin: 0 0 1.5mm; border: none; padding: 0; }
+  .checklist { list-style: none; padding-left: 4mm; margin: 0; }
+  .checklist li { margin-bottom: 1mm; font-size: 10.5pt; }
+  .checklist li::before { content: '☐ '; font-size: 12pt; color: #BDC3C7; }
+  .progress-section { margin-top: 2mm; }
+  .progress-label { font-size: 9.5pt; color: #7F8C8D; }
+  .progress-bar { background: #ECF0F1; border-radius: 4px; height: 3mm; margin-top: 1.5mm; overflow: hidden; }
+  .progress-fill { background: linear-gradient(90deg, #FF6B6B, #FF8E8E); height: 100%; border-radius: 4px; transition: width 0.3s; }
+
+  /* ── Predict ── */
+  .predict-box { display: flex; gap: 3mm; background: #F8F0FF; border-left: 4px solid #9B59B6; border-radius: 6px; padding: 3mm 4.5mm; margin: 3mm 0; box-shadow: 0 1px 2px rgba(155,89,182,0.1); }
+  .predict-icon { width: 9mm; height: 9mm; background: #9B59B6; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 14pt; font-weight: 800; flex-shrink: 0; box-shadow: 0 1px 3px rgba(155,89,182,0.3); }
+  .predict-content { flex: 1; }
+  .predict-content p { font-size: 11pt; margin-bottom: 2mm; }
+
+  /* ── 다이어그램 ── */
+  .diagram-box { background: #F8F9FA; border: 1px solid #DEE2E6; border-radius: 6px; padding: 3.5mm; margin: 3mm 0; }
+  .diagram-title { font-size: 11pt; font-weight: 700; color: #FF6B6B; margin-bottom: 2.5mm; text-align: center; }
+  .diagram-content { font-size: 10.5pt; line-height: 165%; }
+  .diagram-content .d-row { display: flex; align-items: center; justify-content: center; gap: 3mm; margin: 1.5mm 0; }
+  .diagram-content .d-block { background: #2C3E50; color: white; padding: 1.5mm 3.5mm; border-radius: 4px; font-family: 'JetBrains Mono', monospace; font-size: 9.5pt; }
+  .diagram-content .d-block-highlight { background: #FF6B6B; color: white; padding: 1.5mm 3.5mm; border-radius: 4px; font-family: 'JetBrains Mono', monospace; font-size: 9.5pt; font-weight: 600; }
+  .diagram-content .d-arrow { color: #95A5A6; font-size: 12pt; }
+  .diagram-content .d-label { font-size: 8.5pt; color: #7F8C8D; }
+
+  /* ── Steps ── */
+  .steps-visual { margin: 2mm 0; }
+  .step-item { display: flex; align-items: flex-start; gap: 3mm; margin-bottom: 1mm; }
+  .step-num { width: 7mm; height: 7mm; background: #FF6B6B; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 10pt; font-weight: 700; flex-shrink: 0; margin-top: 0.5mm; }
+  .step-body { flex: 1; }
+  .step-title { font-size: 11pt; font-weight: 700; margin-bottom: 0.5mm; }
+  .step-desc { font-size: 10.5pt; color: #555; line-height: 155%; }
+  .step-connector { width: 2px; height: 3mm; background: #FF6B6B; margin-left: 3.2mm; opacity: 0.5; }
+
+  /* ── Modify ── */
+  .modify-box { background: #F0FFFF; border-left: 4px solid #00B4D8; border-radius: 6px; padding: 3mm 4.5mm; margin: 3mm 0; }
+  .modify-label { font-size: 10.5pt; font-weight: 700; color: #00B4D8; margin-bottom: 1.5mm; }
+  .modify-hint { font-size: 9.5pt; color: #7F8C8D; font-style: italic; margin: 1.5mm 0; }
+
+  /* ── Answers ── */
+  .answers-section { background: #FAFAFA; border: 1px solid #ECF0F1; border-radius: 6px; padding: 2.5mm 4mm; margin: 2mm 0; border-left: 4px solid #9C27B0; }
+  .answers-section h3 { font-size: 12pt; font-weight: 700; color: #9C27B0; margin: 0 0 2.5mm; border: none; padding: 0; }
+  .answer-item { margin-bottom: 0.5mm; font-size: 10pt; line-height: 145%; }
+  .answer-num { font-weight: 700; color: #FF6B6B; margin-right: 1.5mm; }
+  .answer-text { color: #2C3E50; }
+
+  /* ── Code Explain ── */
+  .code-explain { margin: 2.5mm 0; padding-left: 2mm; }
+  .code-explain-item { display: flex; align-items: flex-start; margin-bottom: 2.5mm; font-size: 11pt; line-height: 165%; }
+  .code-explain-line { font-family: 'JetBrains Mono'; font-size: 9.5pt; color: white; background: #FF6B6B; padding: 0.3mm 2mm; border-radius: 3px; margin-right: 2.5mm; flex-shrink: 0; font-weight: 600; }
+
+  /* ── Glossary ── */
+  .glossary { margin: 2mm 0; break-inside: avoid; }
+  .glossary-item { display: flex; margin-bottom: 1.5mm; font-size: 10pt; padding: 1.5mm 2mm; border-bottom: 0.5px solid #F0F0F0; }
+  .glossary-item:nth-child(odd) { background: #FAFCFF; }
+  .glossary-term { font-weight: 700; min-width: 25mm; flex-shrink: 0; color: #2C3E50; font-family: 'JetBrains Mono', 'Pretendard'; font-size: 9.5pt; }
+  .glossary-def { color: #555; line-height: 150%; }
+
+  /* ── Code Trace Table ── */
+  .trace-table { margin: 3mm 0; }
+  .trace-caption { font-size: 10.5pt; font-weight: 700; color: #FF6B6B; margin-bottom: 2mm; }
+  .trace-table table { width: 100%; border-collapse: collapse; font-size: 10pt; }
+  .trace-table th { background: #2C3E50; color: white; padding: 1.5mm 3mm; text-align: left; font-weight: 600; }
+  .trace-table td { padding: 1.5mm 3mm; border-bottom: 0.5px solid #ECF0F1; font-family: 'JetBrains Mono'; font-size: 9.5pt; }
+  .trace-table tr:nth-child(even) td { background: #FAFAFA; }
+
+  /* ── TOC ── */
+  .toc { margin: 5mm 0; }
+  .toc h2 { border: none; padding: 0; margin-bottom: 3mm; }
+  .toc ul { list-style: none; padding: 0; }
+  .toc-h2 { display: flex; align-items: baseline; margin-bottom: 1.5mm; font-size: 11pt; }
+  .toc-text { flex-shrink: 0; }
+  .toc-dots { flex: 1; border-bottom: 1px dotted #BDC3C7; margin: 0 2mm; min-width: 10mm; }
+  .toc-page { flex-shrink: 0; color: #7F8C8D; font-size: 10pt; }
+
+  /* ── Margin Note ── */
+  .margin-note { float: right; width: 30mm; font-size: 8.5pt; color: #7F8C8D; background: #FFFDE7; padding: 1.5mm 2mm; border-radius: 3px; margin: 0 -35mm 2mm 2mm; border-left: 2px solid #F39C12; }
+
+  /* ── Cross Reference ── */
+  .crossref { font-size: 9pt; color: #3498DB; font-style: italic; }
+
+  /* ── Image ── */
+  .image-block { margin: 3mm 0; text-align: center; }
+  .image-block img { max-width: 100%; border-radius: 4px; }
+  .image-caption { font-size: 9pt; color: #7F8C8D; margin-top: 1.5mm; font-style: italic; background: #F8F9FA; padding: 1mm 3mm; border-radius: 3px; display: inline-block; }
+
+  /* ── Mascot Speech (말풍선 가이드) ── */
+  .mascot-speech { display: flex; align-items: flex-start; gap: 3mm; margin: 3mm 0; }
+  .mascot-speech.right { flex-direction: row-reverse; }
+  .mascot-speech-img { flex-shrink: 0; width: 60px; height: 60px; object-fit: contain; filter: drop-shadow(0 1px 2px rgba(0,0,0,0.15)); }
+  .mascot-speech-img.small { width: 45px; height: 45px; }
+  .mascot-speech-img.large { width: 80px; height: 80px; }
+  .mascot-bubble {
+    position: relative; background: #F0F7FF; border: 1.5px solid #B3D9FF;
+    border-radius: 12px; padding: 3mm 4mm; font-size: 10pt; color: #333;
+    line-height: 1.5; flex: 1; max-width: 85%;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+  }
+  .mascot-bubble.warn { background: #FFF5F5; border-color: #FFB3B3; }
+  .mascot-bubble.success { background: #F0FFF4; border-color: #9AE6B4; }
+  .mascot-bubble.tip { background: #FFFDF0; border-color: #FFD666; }
+  .mascot-bubble::before {
+    content: ''; position: absolute; top: 12px; left: -8px;
+    border: 6px solid transparent; border-right-color: #B3D9FF;
+  }
+  .mascot-speech.right .mascot-bubble::before {
+    left: auto; right: -8px; border-right-color: transparent; border-left-color: #B3D9FF;
+  }
+  .mascot-bubble.warn::before { border-right-color: #FFB3B3; }
+  .mascot-speech.right .mascot-bubble.warn::before { border-right-color: transparent; border-left-color: #FFB3B3; }
+  .mascot-bubble.success::before { border-right-color: #9AE6B4; }
+  .mascot-speech.right .mascot-bubble.success::before { border-right-color: transparent; border-left-color: #9AE6B4; }
+  .mascot-bubble.tip::before { border-right-color: #FFD666; }
+  .mascot-speech.right .mascot-bubble.tip::before { border-right-color: transparent; border-left-color: #FFD666; }
+
+  /* ── Fact Bite (숫자/팩트 강조) ── */
+  .fact-bite {
+    display: flex; align-items: center; gap: 3mm; margin: 2.5mm 0;
+    background: linear-gradient(135deg, #FFF5F5 0%, #FFF0F6 100%);
+    border-radius: 10px; padding: 3mm 4mm; border: 1.5px solid #FFD6E0;
+  }
+  .fact-bite-number {
+    font: 800 26pt 'Pretendard'; color: #FF6B6B; white-space: nowrap; flex-shrink: 0;
+    text-shadow: 0 1px 2px rgba(255,107,107,0.2);
+  }
+  .fact-bite-text { font-size: 9.5pt; color: #555; line-height: 1.4; }
+
+  /* ── Visual Summary (비주얼 요약 카드) ── */
+  .visual-summary {
+    background: linear-gradient(135deg, #E8F5E9 0%, #F1F8E9 100%);
+    border: 1.5px solid #A5D6A7; border-radius: 12px; padding: 4mm;
+    margin: 3mm 0;
+  }
+  .visual-summary-title {
+    font: 700 11pt 'Pretendard'; color: #2E7D32; margin-bottom: 2mm;
+    display: flex; align-items: center; gap: 2mm;
+  }
+  .visual-summary-title::before { content: ''; display: inline-block; width: 3mm; height: 3mm; background: #4CAF50; border-radius: 50%; }
+  .visual-summary-items { display: flex; flex-direction: column; gap: 1.5mm; }
+  .visual-summary-item {
+    display: flex; align-items: baseline; gap: 2mm;
+    font-size: 10pt; color: #333;
+  }
+  .visual-summary-num {
+    background: #4CAF50; color: white; font: 700 8pt 'Pretendard';
+    width: 16px; height: 16px; border-radius: 50%; display: flex;
+    align-items: center; justify-content: center; flex-shrink: 0;
+  }
+
+  /* ── Section Color Coding (사이드바 컬러 구분) ── */
+  h2.section-concept { border-left: 5px solid #2196F3 !important; }
+  h2.section-code { border-left: 5px solid #4CAF50 !important; }
+  h2.section-error { border-left: 5px solid #F44336 !important; }
+  h2.section-practice { border-left: 5px solid #FF9800 !important; }
+  h2.section-review { border-left: 5px solid #9C27B0 !important; }
+
+  /* ── 인쇄 최적화 ── */
+  @media print {
+    body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .code-block { box-shadow: none; }
+    .mascot-bubble { box-shadow: none; }
+    a { color: inherit; text-decoration: none; }
+    .mascot-speech-img { filter: none; }
+    .fact-bite { border-width: 1px; }
+    .visual-summary { border-width: 1px; }
+  }
+
+</style>
+<script src="file:///g:/내 드라이브/새 폴더/clawd/node_modules/pagedjs/dist/paged.polyfill.js"></script>
+<script>
+  class PagedReadyHandler extends Paged.Handler {
+    constructor(chunker, polisher, caller) { super(chunker, polisher, caller); }
+    afterRendered(pages) {
+      document.body.setAttribute('data-paged-rendered', 'true');
+      document.body.setAttribute('data-page-count', pages.length);
+      // 빌드 통계
+      const stats = pages.map((p, i) => {
+        const area = p.area;
+        const content = area ? area.querySelector('.pagedjs_page_content') : null;
+        const h = content ? content.scrollHeight : 0;
+        return { page: i+1, contentHeight: h };
+      });
+      console.log('PAGED_READY:' + pages.length);
+      console.log('STATS:' + JSON.stringify(stats));
+    }
+  }
+  Paged.registerHandlers(PagedReadyHandler);
+</script>
+</head>
+<body data-section-title="Chapter 01 불과 비교, 논리 연산자 — 참과 거짓의 세계">
+<article id="content">
+
+  <header class="lesson-header" role="banner">
+    <div class="lesson-number">Lesson 1-3</div>
+    <h1 class="lesson-title">불과 비교, 논리 연산자 — 참과 거짓의 세계</h1>
+    <div class="lesson-summary">비교 연산자와 논리 연산자로 조건을 판단하는 방법을 배워요.</div>
+  </header>
+  <div class="chapter-start-box avoid-break">
+    <div class="learning-goals"><h3>이번에 배울 것</h3><ul><li>True와 False(불)의 의미를 이해해요.</li><li>비교 연산자 6개(==, !=, <, >, <=, >=)를 사용할 수 있어요.</li><li>논리 연산자 3개(and, or, not)를 사용할 수 있어요.</li><li>복합 조건을 만들어 판단할 수 있어요.</li><li>Truthy/Falsy 개념을 알아요.</li></ul></div>
+    <div class="prereq-check"><h3>시작 전 체크</h3><ul class="checklist"><li>변수에 값을 저장할 수 있다</li><li>print()와 input()을 사용할 수 있다</li><li>int, float, str 타입을 안다</li></ul></div>
+    <div class="progress-section"><span class="progress-label">Part 1 진행률: 6%</span><div class="progress-bar" role="progressbar" aria-valuenow="6" aria-valuemin="0" aria-valuemax="100"><div class="progress-fill" style="width:6%"></div></div></div>
+  </div>
+  <h2 class="section-concept">불(bool)이 뭘까?</h2>
+  <div class="mascot-speech  avoid-break">
+    <img class="mascot-speech-img " src="visuals/mascot-codingyi-hello.jpg" alt="마스코트" />
+    <div class="mascot-bubble ">안녕! 오늘은 <b>참</b>과 <b>거짓</b>을 배울 거야. 컴퓨터는 모든 판단을 '맞아' 아니면 '아니야'로 해. 이걸 <b>불(bool)</b>이라고 해!</div>
+  </div>
+  <p>우리가 매일 하는 판단을 생각해 봐요. '오늘 비가 와?' → 네/아니요. '나이가 13살 이상이야?' → 네/아니요. 이렇게 <b>네(True)</b> 아니면 <b>아니요(False)</b>로 대답할 수 있는 것을 프로그래밍에서는 <b>불(bool)</b>이라고 해요.</p>
+  <p>'불'이라는 이름은 영국 수학자 <b>조지 불(George Boole)</b>에게서 따왔어요. 참과 거짓으로 논리를 계산하는 '불 대수'를 만든 사람이에요.</p>
+  <div class="fact-bite avoid-break">
+    <div class="fact-bite-number">1854</div>
+    <div class="fact-bite-text">조지 불이 '사고의 법칙'이라는 책을 출판한 해예요. 이 책이 현대 컴퓨터의 논리 회로 기반이 됐어요.</div>
+  </div>
+  <div class="diagram-box avoid-break" role="figure" aria-label="불(bool) — True와 False">
+    <div class="diagram-title">불(bool) — True와 False</div>
+    <div class="diagram-content"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 560 145" style="width:100%;max-width:560px;margin:0 auto;display:block;font-family:Pretendard,sans-serif">
+    <text x="280" y="20" text-anchor="middle" font-size="14" font-weight="700" fill="#2C3E50">불(bool) — True와 False</text>
+    <!-- True side -->
+    <rect x="20" y="35" width="240" height="100" rx="12" fill="#2ECC71" opacity="0.12" stroke="#2ECC71" stroke-width="2"/>
+    <circle cx="70" cy="72" r="22" fill="#2ECC71" opacity="0.3" stroke="#2ECC71" stroke-width="2"/>
+    <text x="70" y="67" text-anchor="middle" font-size="16" fill="#F1C40F">💡</text>
+    <text x="70" y="82" text-anchor="middle" font-size="8" fill="#2ECC71" font-weight="600">ON</text>
+    <text x="170" y="60" text-anchor="middle" font-size="22" font-weight="800" fill="#2ECC71">True</text>
+    <text x="170" y="80" text-anchor="middle" font-size="11" fill="#7F8C8D">참 — 조건이 맞아요</text>
+    <text x="170" y="100" text-anchor="middle" font-size="10" fill="#7F8C8D">예: 5 &gt; 3 → True</text>
+    <text x="170" y="118" text-anchor="middle" font-size="10" fill="#7F8C8D">예: "hello" == "hello" → True</text>
+    <!-- False side -->
+    <rect x="300" y="35" width="240" height="100" rx="12" fill="#E74C3C" opacity="0.12" stroke="#E74C3C" stroke-width="2"/>
+    <circle cx="350" cy="72" r="22" fill="#7F8C8D" opacity="0.3" stroke="#7F8C8D" stroke-width="2"/>
+    <text x="350" y="70" text-anchor="middle" font-size="14" fill="#7F8C8D">○</text>
+    <text x="350" y="82" text-anchor="middle" font-size="8" fill="#7F8C8D" font-weight="600">OFF</text>
+    <text x="450" y="60" text-anchor="middle" font-size="22" font-weight="800" fill="#E74C3C">False</text>
+    <text x="450" y="80" text-anchor="middle" font-size="11" fill="#7F8C8D">거짓 — 조건이 안 맞아요</text>
+    <text x="450" y="100" text-anchor="middle" font-size="10" fill="#7F8C8D">예: 5 &lt; 3 → False</text>
+    <text x="450" y="118" text-anchor="middle" font-size="10" fill="#7F8C8D">예: 10 == 20 → False</text>
+    </svg></div>
+  </div>
+  <h2 class="">True와 False 사용하기</h2>
+  <div class="code-block avoid-break" role="figure" aria-label="bool_basic.py">
+    <div class="code-block-header">bool_basic.py</div>
+    <table class="code-table" aria-hidden="true">
+      <tr class=""><td class="line-num">1</td><td class="line-code"><span class="cmt"># True와 False — 파이썬의 불(bool) 값</span></td></tr>
+      <tr class=" line-highlight"><td class="line-num">2</td><td class="line-code">is_raining = <span class="mc">True</span></td></tr>
+      <tr class=" line-highlight"><td class="line-num">3</td><td class="line-code">is_sunny = <span class="mc">False</span></td></tr>
+      <tr class=""><td class="line-num">4</td><td class="line-code"></td></tr>
+      <tr class=""><td class="line-num">5</td><td class="line-code"><span class="fn">print</span>(is_raining)        <span class="cmt"># True</span></td></tr>
+      <tr class=""><td class="line-num">6</td><td class="line-code"><span class="fn">print</span>(is_sunny)          <span class="cmt"># False</span></td></tr>
+      <tr class=""><td class="line-num">7</td><td class="line-code"><span class="fn">print</span>(<span class="fn">type</span>(is_raining))  <span class="cmt"># &lt;class 'bool'&gt;</span></td></tr>
+    </table>
+  </div>
+  <div class="output-block avoid-break" role="figure" aria-label="실행 결과">
+    <span class="output-label">실행 결과</span>
+    <div class="output-text">True
+False
+<class 'bool'></div>
+  </div>
+  <div class="code-explain avoid-break">
+    <div class="code-explain-item">
+      <span class="code-explain-line">2줄</span>
+      <span><code>True</code> — 참. 첫 글자가 <b>대문자</b>예요! true가 아니라 True.</span>
+    </div>
+    <div class="code-explain-item">
+      <span class="code-explain-line">3줄</span>
+      <span><code>False</code> — 거짓. 마찬가지로 <b>대문자 F</b>로 시작해요.</span>
+    </div>
+    <div class="code-explain-item">
+      <span class="code-explain-line">7줄</span>
+      <span><code>type()</code>으로 확인하면 <code>bool</code> 타입이에요.</span>
+    </div>
+  </div>
+  <div class="box box-key" role="note">
+    <span class="box-label">[핵심] bool 타입</span>
+    <div class="box-content"><code>True</code> — 참 (조건이 맞을 때)<br><code>False</code> — 거짓 (조건이 안 맞을 때)<br><br>주의: 첫 글자가 <b>대문자</b>! <code>true</code>와 <code>false</code>는 에러예요.<br><br>bool은 int의 하위 타입이에요:<br><code>True</code> = <code>1</code>, <code>False</code> = <code>0</code></div>
+  </div>
+  <div class="code-block avoid-break" role="figure" aria-label="bool_is_int.py">
+    <div class="code-block-header">bool_is_int.py</div>
+    <table class="code-table" aria-hidden="true">
+      <tr class=""><td class="line-num">1</td><td class="line-code"><span class="cmt"># bool은 사실 숫자예요!</span></td></tr>
+      <tr class=" line-highlight"><td class="line-num">2</td><td class="line-code"><span class="fn">print</span>(<span class="mc">True</span> + <span class="mc">True</span>)   <span class="cmt"># 2 (1 + 1)</span></td></tr>
+      <tr class=" line-highlight"><td class="line-num">3</td><td class="line-code"><span class="fn">print</span>(<span class="mc">True</span> + <span class="mc">False</span>)  <span class="cmt"># 1 (1 + 0)</span></td></tr>
+      <tr class=""><td class="line-num">4</td><td class="line-code"><span class="fn">print</span>(<span class="mc">False</span> + <span class="mc">False</span>) <span class="cmt"># 0 (0 + 0)</span></td></tr>
+      <tr class=""><td class="line-num">5</td><td class="line-code"><span class="fn">print</span>(<span class="mc">True</span> * <span class="num">10</span>)     <span class="cmt"># 10</span></td></tr>
+    </table>
+  </div>
+  <div class="output-block avoid-break" role="figure" aria-label="실행 결과">
+    <span class="output-label">실행 결과</span>
+    <div class="output-text">2
+1
+0
+10</div>
+  </div>
+  <div class="mascot-speech right avoid-break">
+    <img class="mascot-speech-img small" src="visuals/mascot-thinking.jpg" alt="마스코트" />
+    <div class="mascot-bubble tip">True는 1이고 False는 0이에요. 그래서 True + True = 2가 돼요. 신기하죠? C언어에서도 1이 참, 0이 거짓이었던 거 기억나요?</div>
+  </div>
+  <h2 class="">비교 연산자 — 두 값 비교하기</h2>
+  <p>비교 연산자는 두 값을 비교해서 <b>True</b> 또는 <b>False</b>를 돌려줘요. 총 6개가 있어요.</p>
+  <div class="diagram-box avoid-break" role="figure" aria-label="파이썬 비교 연산자 6가지">
+    <div class="diagram-title">파이썬 비교 연산자 6가지</div>
+    <div class="diagram-content"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 560 240" style="width:100%;max-width:560px;margin:0 auto;display:block;font-family:Pretendard,sans-serif"><text x="280" y="22" text-anchor="middle" font-size="14" font-weight="700" fill="#2C3E50">파이썬 비교 연산자 6가지</text>
+    <rect x="10" y="32" width="540" height="30" rx="5" fill="#2C3E50"/>
+    <text x="50" y="52" text-anchor="middle" font-size="10" font-weight="700" fill="white">연산자</text>
+    <text x="120" y="52" text-anchor="middle" font-size="10" font-weight="700" fill="white">의미</text>
+    <text x="220" y="52" text-anchor="middle" font-size="10" font-weight="700" fill="white">True 예시</text>
+    <text x="320" y="52" text-anchor="middle" font-size="10" font-weight="700" fill="white">결과</text>
+    <text x="410" y="52" text-anchor="middle" font-size="10" font-weight="700" fill="white">False 예시</text>
+    <text x="510" y="52" text-anchor="middle" font-size="10" font-weight="700" fill="white">결과</text><rect x="10" y="67" width="540" height="28" fill="#F0FFF0"/>
+        <text x="50" y="85" text-anchor="middle" font-size="14" font-weight="700" fill="#FF6B6B" font-family="JetBrains Mono,monospace">==</text>
+        <text x="120" y="85" text-anchor="middle" font-size="11" fill="#2C3E50">같다</text>
+        <text x="220" y="85" text-anchor="middle" font-size="10" fill="#7F8C8D" font-family="JetBrains Mono,monospace">5 == 5</text>
+        <text x="320" y="85" text-anchor="middle" font-size="12" font-weight="700" fill="#2ECC71">True</text>
+        <text x="410" y="85" text-anchor="middle" font-size="10" fill="#7F8C8D" font-family="JetBrains Mono,monospace">5 == 3</text>
+        <text x="510" y="85" text-anchor="middle" font-size="12" font-weight="700" fill="#E74C3C">False</text><rect x="10" y="95" width="540" height="28" fill="#FFFFFF"/>
+        <text x="50" y="113" text-anchor="middle" font-size="14" font-weight="700" fill="#FF6B6B" font-family="JetBrains Mono,monospace">!=</text>
+        <text x="120" y="113" text-anchor="middle" font-size="11" fill="#2C3E50">다르다</text>
+        <text x="220" y="113" text-anchor="middle" font-size="10" fill="#7F8C8D" font-family="JetBrains Mono,monospace">5 != 3</text>
+        <text x="320" y="113" text-anchor="middle" font-size="12" font-weight="700" fill="#2ECC71">True</text>
+        <text x="410" y="113" text-anchor="middle" font-size="10" fill="#7F8C8D" font-family="JetBrains Mono,monospace">5 != 5</text>
+        <text x="510" y="113" text-anchor="middle" font-size="12" font-weight="700" fill="#E74C3C">False</text><rect x="10" y="123" width="540" height="28" fill="#F0FFF0"/>
+        <text x="50" y="141" text-anchor="middle" font-size="14" font-weight="700" fill="#FF6B6B" font-family="JetBrains Mono,monospace">&gt;</text>
+        <text x="120" y="141" text-anchor="middle" font-size="11" fill="#2C3E50">크다</text>
+        <text x="220" y="141" text-anchor="middle" font-size="10" fill="#7F8C8D" font-family="JetBrains Mono,monospace">5 &gt; 3</text>
+        <text x="320" y="141" text-anchor="middle" font-size="12" font-weight="700" fill="#2ECC71">True</text>
+        <text x="410" y="141" text-anchor="middle" font-size="10" fill="#7F8C8D" font-family="JetBrains Mono,monospace">3 &gt; 5</text>
+        <text x="510" y="141" text-anchor="middle" font-size="12" font-weight="700" fill="#E74C3C">False</text><rect x="10" y="151" width="540" height="28" fill="#FFFFFF"/>
+        <text x="50" y="169" text-anchor="middle" font-size="14" font-weight="700" fill="#FF6B6B" font-family="JetBrains Mono,monospace">&lt;</text>
+        <text x="120" y="169" text-anchor="middle" font-size="11" fill="#2C3E50">작다</text>
+        <text x="220" y="169" text-anchor="middle" font-size="10" fill="#7F8C8D" font-family="JetBrains Mono,monospace">3 &lt; 5</text>
+        <text x="320" y="169" text-anchor="middle" font-size="12" font-weight="700" fill="#2ECC71">True</text>
+        <text x="410" y="169" text-anchor="middle" font-size="10" fill="#7F8C8D" font-family="JetBrains Mono,monospace">5 &lt; 3</text>
+        <text x="510" y="169" text-anchor="middle" font-size="12" font-weight="700" fill="#E74C3C">False</text><rect x="10" y="179" width="540" height="28" fill="#F0FFF0"/>
+        <text x="50" y="197" text-anchor="middle" font-size="14" font-weight="700" fill="#FF6B6B" font-family="JetBrains Mono,monospace">&gt;=</text>
+        <text x="120" y="197" text-anchor="middle" font-size="11" fill="#2C3E50">크거나 같다</text>
+        <text x="220" y="197" text-anchor="middle" font-size="10" fill="#7F8C8D" font-family="JetBrains Mono,monospace">5 &gt;= 5</text>
+        <text x="320" y="197" text-anchor="middle" font-size="12" font-weight="700" fill="#2ECC71">True</text>
+        <text x="410" y="197" text-anchor="middle" font-size="10" fill="#7F8C8D" font-family="JetBrains Mono,monospace">3 &gt;= 5</text>
+        <text x="510" y="197" text-anchor="middle" font-size="12" font-weight="700" fill="#E74C3C">False</text><rect x="10" y="207" width="540" height="28" fill="#FFFFFF"/>
+        <text x="50" y="225" text-anchor="middle" font-size="14" font-weight="700" fill="#FF6B6B" font-family="JetBrains Mono,monospace">&lt;=</text>
+        <text x="120" y="225" text-anchor="middle" font-size="11" fill="#2C3E50">작거나 같다</text>
+        <text x="220" y="225" text-anchor="middle" font-size="10" fill="#7F8C8D" font-family="JetBrains Mono,monospace">3 &lt;= 5</text>
+        <text x="320" y="225" text-anchor="middle" font-size="12" font-weight="700" fill="#2ECC71">True</text>
+        <text x="410" y="225" text-anchor="middle" font-size="10" fill="#7F8C8D" font-family="JetBrains Mono,monospace">5 &lt;= 3</text>
+        <text x="510" y="225" text-anchor="middle" font-size="12" font-weight="700" fill="#E74C3C">False</text></svg></div>
+  </div>
+  <div class="code-block avoid-break" role="figure" aria-label="compare.py">
+    <div class="code-block-header">compare.py</div>
+    <table class="code-table" aria-hidden="true">
+      <tr class=""><td class="line-num">1</td><td class="line-code">x = <span class="num">10</span></td></tr>
+      <tr class=""><td class="line-num">2</td><td class="line-code">y = <span class="num">5</span></td></tr>
+      <tr class=""><td class="line-num">3</td><td class="line-code"></td></tr>
+      <tr class=" line-highlight"><td class="line-num">4</td><td class="line-code"><span class="fn">print</span>(x == y)   <span class="cmt"># False (10은 5와 같지 않아요)</span></td></tr>
+      <tr class=" line-highlight"><td class="line-num">5</td><td class="line-code"><span class="fn">print</span>(x != y)   <span class="cmt"># True  (10은 5와 다르죠)</span></td></tr>
+      <tr class=" line-highlight"><td class="line-num">6</td><td class="line-code"><span class="fn">print</span>(x &gt; y)    <span class="cmt"># True  (10은 5보다 커요)</span></td></tr>
+      <tr class=""><td class="line-num">7</td><td class="line-code"><span class="fn">print</span>(x &lt; y)    <span class="cmt"># False (10은 5보다 작지 않아요)</span></td></tr>
+      <tr class=""><td class="line-num">8</td><td class="line-code"><span class="fn">print</span>(x &gt;= <span class="num">10</span>)  <span class="cmt"># True  (10은 10 이상이에요)</span></td></tr>
+      <tr class=""><td class="line-num">9</td><td class="line-code"><span class="fn">print</span>(x &lt;= <span class="num">9</span>)   <span class="cmt"># False (10은 9 이하가 아니에요)</span></td></tr>
+    </table>
+  </div>
+  <div class="output-block avoid-break" role="figure" aria-label="실행 결과">
+    <span class="output-label">실행 결과</span>
+    <div class="output-text">False
+True
+True
+False
+True
+False</div>
+  </div>
+  <div class="diagram-box avoid-break" role="figure" aria-label="비교 연산의 결과: True 또는 False">
+    <div class="diagram-title">비교 연산의 결과: True 또는 False</div>
+    <div class="diagram-content"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 560 190" style="width:100%;max-width:560px;margin:0 auto;display:block;font-family:Pretendard,sans-serif">
+    <defs><marker id="ar5" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto"><polygon points="0 0,10 3.5,0 7" fill="#7F8C8D"/></marker></defs>
+    <text x="280" y="18" text-anchor="middle" font-size="13" font-weight="700" fill="#2C3E50">비교 연산의 결과: True 또는 False</text>
+    <!-- Input -->
+    <rect x="180" y="30" width="200" height="35" rx="8" fill="#1E1E1E" stroke="#569CD6" stroke-width="2"/>
+    <text x="280" y="53" text-anchor="middle" font-size="13" fill="#DCDCAA" font-family="JetBrains Mono,monospace">age = 15</text>
+    <line x1="280" y1="65" x2="280" y2="85" stroke="#7F8C8D" stroke-width="1.5" marker-end="url(#ar5)"/>
+    <!-- Comparison -->
+    <polygon points="280,90 380,120 280,150 180,120" fill="#F39C12" opacity="0.15" stroke="#F39C12" stroke-width="2"/>
+    <text x="280" y="118" text-anchor="middle" font-size="12" font-weight="700" fill="#F39C12">age &gt;= 13?</text>
+    <text x="280" y="132" text-anchor="middle" font-size="9" fill="#7F8C8D">비교 연산</text>
+    <!-- True branch -->
+    <line x1="380" y1="120" x2="440" y2="120" stroke="#2ECC71" stroke-width="2" marker-end="url(#ar5)"/>
+    <text x="410" y="112" font-size="9" fill="#2ECC71" font-weight="600">네!</text>
+    <rect x="448" y="102" width="90" height="36" rx="8" fill="#2ECC71" opacity="0.15" stroke="#2ECC71" stroke-width="2"/>
+    <text x="493" y="125" text-anchor="middle" font-size="14" font-weight="800" fill="#2ECC71">True</text>
+    <!-- False branch -->
+    <line x1="180" y1="120" x2="120" y2="120" stroke="#E74C3C" stroke-width="2" marker-end="url(#ar5)"/>
+    <text x="150" y="112" font-size="9" fill="#E74C3C" font-weight="600">아니요</text>
+    <rect x="22" y="102" width="90" height="36" rx="8" fill="#E74C3C" opacity="0.15" stroke="#E74C3C" stroke-width="2"/>
+    <text x="67" y="125" text-anchor="middle" font-size="14" font-weight="800" fill="#E74C3C">False</text>
+    <!-- Note -->
+    <rect x="120" y="158" width="320" height="22" rx="5" fill="#3498DB" opacity="0.1" stroke="#3498DB" stroke-width="1"/>
+    <text x="280" y="174" text-anchor="middle" font-size="10" fill="#3498DB" font-weight="600">비교 연산의 결과는 반드시 True 아니면 False!</text>
+    </svg></div>
+  </div>
+  <div class="box box-warning" role="note">
+    <span class="box-label">[주의] =와 ==의 차이</span>
+    <div class="box-content"><code>=</code> — <b>대입</b> (값을 넣어라!)<br><code>x = 10</code> → x에 10을 저장<br><br><code>==</code> — <b>비교</b> (같니?)<br><code>x == 10</code> → x가 10과 같으면 True<br><br>이 둘을 헷갈리면 큰일 나요! = 하나는 저장, == 두 개는 비교.</div>
+  </div>
+  <div class="compare avoid-break">
+    <div class="compare-bad">
+      <div class="compare-label">✕ 잘못된 코드</div>
+      <code>if x = 10:  # SyntaxError!</code><br>
+      <span class="compare-msg-bad">= 하나는 대입이에요. 비교가 아니에요!</span>
+    </div>
+    <div class="compare-good">
+      <div class="compare-label">✓ 올바른 코드</div>
+      <code>if x == 10:  # OK!</code><br>
+      <span class="compare-msg-good">== 두 개로 비교해야 해요</span>
+    </div>
+  </div>
+  <div class="mascot-speech  avoid-break">
+    <img class="mascot-speech-img small" src="visuals/mascot-eureka.jpg" alt="마스코트" />
+    <div class="mascot-bubble success">C언어에서도 =와 ==를 헷갈리는 게 초보자의 최대 실수였는데, 파이썬도 마찬가지예요. 비교할 때는 <b>반드시 ==</b>이에요!</div>
+  </div>
+  <h3>문자열과 실수도 비교할 수 있어요</h3>
+  <div class="code-block avoid-break" role="figure" aria-label="compare_str.py">
+    <div class="code-block-header">compare_str.py</div>
+    <table class="code-table" aria-hidden="true">
+      <tr class=""><td class="line-num">1</td><td class="line-code"><span class="cmt"># 문자열 비교 — 사전 순서</span></td></tr>
+      <tr class=""><td class="line-num">2</td><td class="line-code"><span class="fn">print</span>(<span class="str">"apple"</span> &lt; <span class="str">"banana"</span>)   <span class="cmt"># True (a가 b보다 앞)</span></td></tr>
+      <tr class=" line-highlight"><td class="line-num">3</td><td class="line-code"><span class="fn">print</span>(<span class="str">"hello"</span> == <span class="str">"Hello"</span>)   <span class="cmt"># False (대소문자 구별!)</span></td></tr>
+      <tr class=""><td class="line-num">4</td><td class="line-code"><span class="fn">print</span>(<span class="str">"abc"</span> &lt; <span class="str">"abd"</span>)        <span class="cmt"># True (c &lt; d)</span></td></tr>
+      <tr class=""><td class="line-num">5</td><td class="line-code"></td></tr>
+      <tr class=""><td class="line-num">6</td><td class="line-code"><span class="cmt"># 실수 비교</span></td></tr>
+      <tr class=""><td class="line-num">7</td><td class="line-code"><span class="fn">print</span>(<span class="num">3.14</span> &gt; <span class="num">3.0</span>)   <span class="cmt"># True</span></td></tr>
+      <tr class=" line-highlight"><td class="line-num">8</td><td class="line-code"><span class="fn">print</span>(<span class="num">1.0</span> == <span class="num">1</span>)     <span class="cmt"># True (int와 float 비교 가능!)</span></td></tr>
+    </table>
+  </div>
+  <div class="output-block avoid-break" role="figure" aria-label="실행 결과">
+    <span class="output-label">실행 결과</span>
+    <div class="output-text">True
+False
+True
+True
+True</div>
+  </div>
+  <div class="box box-tip" role="note">
+    <span class="box-label">[팁] 파이썬만의 비교 체이닝</span>
+    <div class="box-content">수학처럼 연속 비교가 가능해요!<br><br><code>1 < x < 10</code> — x가 1보다 크고 10보다 작은지<br><code>a <= b <= c</code> — a ≤ b ≤ c인지<br><br>C언어에서는 이게 안 됐는데, 파이썬은 돼요!</div>
+  </div>
+  <div class="code-block avoid-break" role="figure" aria-label="chaining.py">
+    <div class="code-block-header">chaining.py</div>
+    <table class="code-table" aria-hidden="true">
+      <tr class=""><td class="line-num">1</td><td class="line-code"><span class="cmt"># 비교 체이닝 — 파이썬만의 편리한 기능!</span></td></tr>
+      <tr class=""><td class="line-num">2</td><td class="line-code">age = <span class="num">15</span></td></tr>
+      <tr class=" line-highlight"><td class="line-num">3</td><td class="line-code"><span class="fn">print</span>(<span class="num">13</span> &lt;= age &lt;= <span class="num">19</span>)  <span class="cmt"># True — 청소년인지 확인!</span></td></tr>
+      <tr class=""><td class="line-num">4</td><td class="line-code"></td></tr>
+      <tr class=""><td class="line-num">5</td><td class="line-code">score = <span class="num">85</span></td></tr>
+      <tr class=" line-highlight"><td class="line-num">6</td><td class="line-code"><span class="fn">print</span>(<span class="num">80</span> &lt;= score &lt; <span class="num">90</span>)  <span class="cmt"># True — B학점 범위</span></td></tr>
+    </table>
+  </div>
+  <div class="output-block avoid-break" role="figure" aria-label="실행 결과">
+    <span class="output-label">실행 결과</span>
+    <div class="output-text">True
+True</div>
+  </div>
+  <h2 class="">논리 연산자 — 조건 합치기</h2>
+  <p>비교 연산자로 하나의 조건을 판단할 수 있었어요. 그런데 '나이가 13살 이상<b>이고</b> 19살 이하인가?'처럼 <b>여러 조건을 합쳐야</b> 할 때가 있어요. 이때 쓰는 게 <b>논리 연산자</b>예요.</p>
+  <div class="diagram-box avoid-break" role="figure" aria-label="논리 연산자 — and, or, not 진리표">
+    <div class="diagram-title">논리 연산자 — and, or, not 진리표</div>
+    <div class="diagram-content"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 560 170" style="width:100%;max-width:560px;margin:0 auto;display:block;font-family:Pretendard,sans-serif">
+    <text x="280" y="18" text-anchor="middle" font-size="14" font-weight="700" fill="#2C3E50">논리 연산자 — and, or, not</text>
+
+    <!-- AND table -->
+    <text x="95" y="42" text-anchor="middle" font-size="12" font-weight="700" fill="#3498DB">and (그리고)</text>
+    <rect x="15" y="48" width="160" height="22" rx="4" fill="#3498DB" opacity="0.9"/>
+    <text x="40" y="63" text-anchor="middle" font-size="9" font-weight="600" fill="white">A</text>
+    <text x="80" y="63" text-anchor="middle" font-size="9" font-weight="600" fill="white">B</text>
+    <text x="135" y="63" text-anchor="middle" font-size="9" font-weight="600" fill="white">A and B</text>
+    <rect x="15" y="70" width="160" height="18" fill="#F0F8FF"/>
+    <text x="40" y="83" text-anchor="middle" font-size="9" fill="#2ECC71" font-weight="600">True</text>
+    <text x="80" y="83" text-anchor="middle" font-size="9" fill="#2ECC71" font-weight="600">True</text>
+    <text x="135" y="83" text-anchor="middle" font-size="10" fill="#2ECC71" font-weight="700">True</text>
+    <rect x="15" y="88" width="160" height="18" fill="#FFFFFF"/>
+    <text x="40" y="101" text-anchor="middle" font-size="9" fill="#2ECC71" font-weight="600">True</text>
+    <text x="80" y="101" text-anchor="middle" font-size="9" fill="#E74C3C" font-weight="600">False</text>
+    <text x="135" y="101" text-anchor="middle" font-size="10" fill="#E74C3C" font-weight="700">False</text>
+    <rect x="15" y="106" width="160" height="18" fill="#F0F8FF"/>
+    <text x="40" y="119" text-anchor="middle" font-size="9" fill="#E74C3C" font-weight="600">False</text>
+    <text x="80" y="119" text-anchor="middle" font-size="9" fill="#2ECC71" font-weight="600">True</text>
+    <text x="135" y="119" text-anchor="middle" font-size="10" fill="#E74C3C" font-weight="700">False</text>
+    <rect x="15" y="124" width="160" height="18" fill="#FFFFFF"/>
+    <text x="40" y="137" text-anchor="middle" font-size="9" fill="#E74C3C" font-weight="600">False</text>
+    <text x="80" y="137" text-anchor="middle" font-size="9" fill="#E74C3C" font-weight="600">False</text>
+    <text x="135" y="137" text-anchor="middle" font-size="10" fill="#E74C3C" font-weight="700">False</text>
+    <text x="95" y="158" text-anchor="middle" font-size="9" fill="#3498DB" font-weight="600">둘 다 True여야 True!</text>
+
+    <!-- OR table -->
+    <text x="290" y="42" text-anchor="middle" font-size="12" font-weight="700" fill="#F39C12">or (또는)</text>
+    <rect x="210" y="48" width="160" height="22" rx="4" fill="#F39C12" opacity="0.9"/>
+    <text x="235" y="63" text-anchor="middle" font-size="9" font-weight="600" fill="white">A</text>
+    <text x="275" y="63" text-anchor="middle" font-size="9" font-weight="600" fill="white">B</text>
+    <text x="330" y="63" text-anchor="middle" font-size="9" font-weight="600" fill="white">A or B</text>
+    <rect x="210" y="70" width="160" height="18" fill="#FFFDF0"/>
+    <text x="235" y="83" text-anchor="middle" font-size="9" fill="#2ECC71" font-weight="600">True</text>
+    <text x="275" y="83" text-anchor="middle" font-size="9" fill="#2ECC71" font-weight="600">True</text>
+    <text x="330" y="83" text-anchor="middle" font-size="10" fill="#2ECC71" font-weight="700">True</text>
+    <rect x="210" y="88" width="160" height="18" fill="#FFFFFF"/>
+    <text x="235" y="101" text-anchor="middle" font-size="9" fill="#2ECC71" font-weight="600">True</text>
+    <text x="275" y="101" text-anchor="middle" font-size="9" fill="#E74C3C" font-weight="600">False</text>
+    <text x="330" y="101" text-anchor="middle" font-size="10" fill="#2ECC71" font-weight="700">True</text>
+    <rect x="210" y="106" width="160" height="18" fill="#FFFDF0"/>
+    <text x="235" y="119" text-anchor="middle" font-size="9" fill="#E74C3C" font-weight="600">False</text>
+    <text x="275" y="119" text-anchor="middle" font-size="9" fill="#2ECC71" font-weight="600">True</text>
+    <text x="330" y="119" text-anchor="middle" font-size="10" fill="#2ECC71" font-weight="700">True</text>
+    <rect x="210" y="124" width="160" height="18" fill="#FFFFFF"/>
+    <text x="235" y="137" text-anchor="middle" font-size="9" fill="#E74C3C" font-weight="600">False</text>
+    <text x="275" y="137" text-anchor="middle" font-size="9" fill="#E74C3C" font-weight="600">False</text>
+    <text x="330" y="137" text-anchor="middle" font-size="10" fill="#E74C3C" font-weight="700">False</text>
+    <text x="290" y="158" text-anchor="middle" font-size="9" fill="#F39C12" font-weight="600">하나만 True면 True!</text>
+
+    <!-- NOT table -->
+    <text x="480" y="42" text-anchor="middle" font-size="12" font-weight="700" fill="#9B59B6">not (부정)</text>
+    <rect x="405" y="48" width="150" height="22" rx="4" fill="#9B59B6" opacity="0.9"/>
+    <text x="440" y="63" text-anchor="middle" font-size="9" font-weight="600" fill="white">A</text>
+    <text x="515" y="63" text-anchor="middle" font-size="9" font-weight="600" fill="white">not A</text>
+    <rect x="405" y="70" width="150" height="18" fill="#F8F0FF"/>
+    <text x="440" y="83" text-anchor="middle" font-size="9" fill="#2ECC71" font-weight="600">True</text>
+    <text x="515" y="83" text-anchor="middle" font-size="10" fill="#E74C3C" font-weight="700">False</text>
+    <rect x="405" y="88" width="150" height="18" fill="#FFFFFF"/>
+    <text x="440" y="101" text-anchor="middle" font-size="9" fill="#E74C3C" font-weight="600">False</text>
+    <text x="515" y="101" text-anchor="middle" font-size="10" fill="#2ECC71" font-weight="700">True</text>
+    <text x="480" y="128" text-anchor="middle" font-size="9" fill="#9B59B6" font-weight="600">뒤집기!</text>
+    </svg></div>
+  </div>
+  <div class="box box-key" role="note">
+    <span class="box-label">[핵심] 논리 연산자 3개</span>
+    <div class="box-content"><code>A and B</code> — A<b>와</b> B <b>둘 다</b> True여야 True (그리고)<br><code>A or B</code> — A<b>나</b> B <b>하나만</b> True여도 True (또는)<br><code>not A</code> — A의 <b>반대</b>. True→False, False→True (부정)<br><br>C언어: <code>&&</code> <code>||</code> <code>!</code><br>파이썬: <code>and</code> <code>or</code> <code>not</code> (영어 단어!)</div>
+  </div>
+  <h3>and — 둘 다 참이어야 참</h3>
+  <div class="code-block avoid-break" role="figure" aria-label="and_example.py">
+    <div class="code-block-header">and_example.py</div>
+    <table class="code-table" aria-hidden="true">
+      <tr class=""><td class="line-num">1</td><td class="line-code">age = <span class="num">15</span></td></tr>
+      <tr class=""><td class="line-num">2</td><td class="line-code">has_id = <span class="mc">True</span></td></tr>
+      <tr class=""><td class="line-num">3</td><td class="line-code"></td></tr>
+      <tr class=""><td class="line-num">4</td><td class="line-code"><span class="cmt"># 놀이공원 탑승 조건: 13살 이상 AND 신분증 있음</span></td></tr>
+      <tr class=" line-highlight"><td class="line-num">5</td><td class="line-code">can_ride = age &gt;= <span class="num">13</span> <span class="kw">and</span> has_id</td></tr>
+      <tr class=""><td class="line-num">6</td><td class="line-code"><span class="fn">print</span>(f<span class="str">"탑승 가능? {can_ride}"</span>)  <span class="cmt"># True</span></td></tr>
+      <tr class=""><td class="line-num">7</td><td class="line-code"></td></tr>
+      <tr class=""><td class="line-num">8</td><td class="line-code"><span class="cmt"># 하나라도 False면 False</span></td></tr>
+      <tr class=""><td class="line-num">9</td><td class="line-code"><span class="fn">print</span>(<span class="mc">True</span> <span class="kw">and</span> <span class="mc">True</span>)    <span class="cmt"># True</span></td></tr>
+      <tr class=""><td class="line-num">10</td><td class="line-code"><span class="fn">print</span>(<span class="mc">True</span> <span class="kw">and</span> <span class="mc">False</span>)   <span class="cmt"># False</span></td></tr>
+      <tr class=""><td class="line-num">11</td><td class="line-code"><span class="fn">print</span>(<span class="mc">False</span> <span class="kw">and</span> <span class="mc">True</span>)   <span class="cmt"># False</span></td></tr>
+      <tr class=""><td class="line-num">12</td><td class="line-code"><span class="fn">print</span>(<span class="mc">False</span> <span class="kw">and</span> <span class="mc">False</span>)  <span class="cmt"># False</span></td></tr>
+    </table>
+  </div>
+  <div class="output-block avoid-break" role="figure" aria-label="실행 결과">
+    <span class="output-label">실행 결과</span>
+    <div class="output-text">탑승 가능? True
+True
+False
+False
+False</div>
+  </div>
+  <h3>or — 하나만 참이어도 참</h3>
+  <div class="code-block avoid-break" role="figure" aria-label="or_example.py">
+    <div class="code-block-header">or_example.py</div>
+    <table class="code-table" aria-hidden="true">
+      <tr class=""><td class="line-num">1</td><td class="line-code">is_weekend = <span class="mc">True</span></td></tr>
+      <tr class=""><td class="line-num">2</td><td class="line-code">is_holiday = <span class="mc">False</span></td></tr>
+      <tr class=""><td class="line-num">3</td><td class="line-code"></td></tr>
+      <tr class=""><td class="line-num">4</td><td class="line-code"><span class="cmt"># 주말이거나 공휴일이면 쉬는 날!</span></td></tr>
+      <tr class=" line-highlight"><td class="line-num">5</td><td class="line-code">is_day_off = is_weekend <span class="kw">or</span> is_holiday</td></tr>
+      <tr class=""><td class="line-num">6</td><td class="line-code"><span class="fn">print</span>(f<span class="str">"쉬는 날? {is_day_off}"</span>)  <span class="cmt"># True</span></td></tr>
+      <tr class=""><td class="line-num">7</td><td class="line-code"></td></tr>
+      <tr class=""><td class="line-num">8</td><td class="line-code"><span class="cmt"># 하나만 True여도 True</span></td></tr>
+      <tr class=""><td class="line-num">9</td><td class="line-code"><span class="fn">print</span>(<span class="mc">True</span> <span class="kw">or</span> <span class="mc">False</span>)   <span class="cmt"># True</span></td></tr>
+      <tr class=""><td class="line-num">10</td><td class="line-code"><span class="fn">print</span>(<span class="mc">False</span> <span class="kw">or</span> <span class="mc">True</span>)   <span class="cmt"># True</span></td></tr>
+      <tr class=""><td class="line-num">11</td><td class="line-code"><span class="fn">print</span>(<span class="mc">False</span> <span class="kw">or</span> <span class="mc">False</span>)  <span class="cmt"># False</span></td></tr>
+    </table>
+  </div>
+  <div class="output-block avoid-break" role="figure" aria-label="실행 결과">
+    <span class="output-label">실행 결과</span>
+    <div class="output-text">쉬는 날? True
+True
+True
+False</div>
+  </div>
+  <h3>not — 뒤집기</h3>
+  <div class="code-block avoid-break" role="figure" aria-label="not_example.py">
+    <div class="code-block-header">not_example.py</div>
+    <table class="code-table" aria-hidden="true">
+      <tr class=""><td class="line-num">1</td><td class="line-code">is_raining = <span class="mc">False</span></td></tr>
+      <tr class=""><td class="line-num">2</td><td class="line-code"></td></tr>
+      <tr class=""><td class="line-num">3</td><td class="line-code"><span class="cmt"># 비가 안 오면 산책 가능!</span></td></tr>
+      <tr class=" line-highlight"><td class="line-num">4</td><td class="line-code">can_walk = <span class="kw">not</span> is_raining</td></tr>
+      <tr class=""><td class="line-num">5</td><td class="line-code"><span class="fn">print</span>(f<span class="str">"산책 가능? {can_walk}"</span>)  <span class="cmt"># True</span></td></tr>
+      <tr class=""><td class="line-num">6</td><td class="line-code"></td></tr>
+      <tr class=""><td class="line-num">7</td><td class="line-code"><span class="fn">print</span>(<span class="kw">not</span> <span class="mc">True</span>)   <span class="cmt"># False</span></td></tr>
+      <tr class=""><td class="line-num">8</td><td class="line-code"><span class="fn">print</span>(<span class="kw">not</span> <span class="mc">False</span>)  <span class="cmt"># True</span></td></tr>
+    </table>
+  </div>
+  <div class="output-block avoid-break" role="figure" aria-label="실행 결과">
+    <span class="output-label">실행 결과</span>
+    <div class="output-text">산책 가능? True
+False
+True</div>
+  </div>
+  <h3>복합 조건 — 여러 조건 합치기</h3>
+  <div class="code-block avoid-break" role="figure" aria-label="complex_condition.py">
+    <div class="code-block-header">complex_condition.py</div>
+    <table class="code-table" aria-hidden="true">
+      <tr class=""><td class="line-num">1</td><td class="line-code">age = <span class="num">16</span></td></tr>
+      <tr class=""><td class="line-num">2</td><td class="line-code">score = <span class="num">85</span></td></tr>
+      <tr class=""><td class="line-num">3</td><td class="line-code">has_id = <span class="mc">True</span></td></tr>
+      <tr class=""><td class="line-num">4</td><td class="line-code"></td></tr>
+      <tr class=""><td class="line-num">5</td><td class="line-code"><span class="cmt"># 청소년(13~19) 이면서 점수 80 이상?</span></td></tr>
+      <tr class=" line-highlight"><td class="line-num">6</td><td class="line-code">is_teen_high = (<span class="num">13</span> &lt;= age &lt;= <span class="num">19</span>) <span class="kw">and</span> (score &gt;= <span class="num">80</span>)</td></tr>
+      <tr class=""><td class="line-num">7</td><td class="line-code"><span class="fn">print</span>(f<span class="str">"우수 청소년? {is_teen_high}"</span>)  <span class="cmt"># True</span></td></tr>
+      <tr class=""><td class="line-num">8</td><td class="line-code"></td></tr>
+      <tr class=""><td class="line-num">9</td><td class="line-code"><span class="cmt"># 어른이거나 신분증이 있으면 입장 가능?</span></td></tr>
+      <tr class=" line-highlight"><td class="line-num">10</td><td class="line-code">can_enter = (age &gt;= <span class="num">20</span>) <span class="kw">or</span> has_id</td></tr>
+      <tr class=""><td class="line-num">11</td><td class="line-code"><span class="fn">print</span>(f<span class="str">"입장 가능? {can_enter}"</span>)  <span class="cmt"># True (신분증 있으니까)</span></td></tr>
+    </table>
+  </div>
+  <div class="output-block avoid-break" role="figure" aria-label="실행 결과">
+    <span class="output-label">실행 결과</span>
+    <div class="output-text">우수 청소년? True
+입장 가능? True</div>
+  </div>
+  <div class="box box-tip" role="note">
+    <span class="box-label">[팁] 괄호로 읽기 쉽게</span>
+    <div class="box-content">복합 조건이 복잡해지면 <b>괄호</b>로 묶어서 읽기 쉽게 만드세요.<br><br><code>(age >= 13) and (score >= 80)</code> — 괄호가 있으니 명확!<br><code>age >= 13 and score >= 80</code> — 동작은 같지만 읽기 어려워요</div>
+  </div>
+  <div class="mascot-speech right avoid-break">
+    <img class="mascot-speech-img small" src="visuals/mascot-eureka.jpg" alt="마스코트" />
+    <div class="mascot-bubble success">C언어에서 <code>&&</code> <code>||</code> <code>!</code>를 썼다면, 파이썬은 <code>and</code> <code>or</code> <code>not</code>을 써요. 영어 단어라 훨씬 읽기 편하죠?</div>
+  </div>
+  <h2 class="">연산자 우선순위</h2>
+  <p>비교 연산자와 논리 연산자가 섞이면 어떤 순서로 계산될까요?</p>
+  <div class="box box-key" role="note">
+    <span class="box-label">[핵심] 연산자 우선순위 (높은 순)</span>
+    <div class="box-content">1. <code>( )</code> — 괄호 (가장 먼저!)<br>2. <code>**</code> — 거듭제곱<br>3. <code>+x -x ~x</code> — 부호<br>4. <code>* / // %</code> — 곱셈/나눗셈<br>5. <code>+ -</code> — 덧셈/뺄셈<br>6. <code>== != < > <= >=</code> — 비교<br>7. <code>not</code> — 논리 부정<br>8. <code>and</code> — 논리 곱<br>9. <code>or</code> — 논리 합<br><br>즉: 산술 → 비교 → not → and → or</div>
+  </div>
+  <div class="code-block avoid-break" role="figure" aria-label="priority.py">
+    <div class="code-block-header">priority.py</div>
+    <table class="code-table" aria-hidden="true">
+      <tr class=""><td class="line-num">1</td><td class="line-code"><span class="cmt"># not &gt; and &gt; or 순서!</span></td></tr>
+      <tr class=" line-highlight"><td class="line-num">2</td><td class="line-code"><span class="fn">print</span>(<span class="mc">True</span> <span class="kw">or</span> <span class="mc">True</span> <span class="kw">and</span> <span class="mc">False</span>)   <span class="cmt"># True (and 먼저!)</span></td></tr>
+      <tr class=""><td class="line-num">3</td><td class="line-code"><span class="cmt"># True or (True and False) → True or False → True</span></td></tr>
+      <tr class=""><td class="line-num">4</td><td class="line-code"></td></tr>
+      <tr class=" line-highlight"><td class="line-num">5</td><td class="line-code"><span class="fn">print</span>((<span class="mc">True</span> <span class="kw">or</span> <span class="mc">True</span>) <span class="kw">and</span> <span class="mc">False</span>)  <span class="cmt"># False (괄호 먼저!)</span></td></tr>
+      <tr class=""><td class="line-num">6</td><td class="line-code"><span class="cmt"># True and False → False</span></td></tr>
+      <tr class=""><td class="line-num">7</td><td class="line-code"></td></tr>
+      <tr class=""><td class="line-num">8</td><td class="line-code"><span class="cmt"># 비교 → 논리 순서</span></td></tr>
+      <tr class=""><td class="line-num">9</td><td class="line-code">x = <span class="num">5</span></td></tr>
+      <tr class=""><td class="line-num">10</td><td class="line-code"><span class="fn">print</span>(x &gt; <span class="num">3</span> <span class="kw">and</span> x &lt; <span class="num">10</span>)  <span class="cmt"># True</span></td></tr>
+      <tr class=""><td class="line-num">11</td><td class="line-code"><span class="cmt"># (x &gt; 3) and (x &lt; 10) → True and True → True</span></td></tr>
+    </table>
+  </div>
+  <div class="output-block avoid-break" role="figure" aria-label="실행 결과">
+    <span class="output-label">실행 결과</span>
+    <div class="output-text">True
+False
+True</div>
+  </div>
+  <div class="mascot-speech  avoid-break">
+    <img class="mascot-speech-img small" src="visuals/mascot-thinking.jpg" alt="마스코트" />
+    <div class="mascot-bubble tip">우선순위가 헷갈리면 그냥 <b>괄호를 쓰세요!</b> 괄호가 있으면 실수할 일이 없어요. 코드도 읽기 쉬워져요.</div>
+  </div>
+  <h2 class="">C언어와 뭐가 다를까?</h2>
+  <div class="compare avoid-break">
+    <div class="compare-bad">
+      <div class="compare-label">✕ 잘못된 코드</div>
+      <code>// C언어
+int x = 1;  // 참
+int y = 0;  // 거짓
+if (x && !y) { ... }</code><br>
+      <span class="compare-msg-bad">C: 1=참, 0=거짓, &&, ||, !</span>
+    </div>
+    <div class="compare-good">
+      <div class="compare-label">✓ 올바른 코드</div>
+      <code># 파이썬
+x = True
+y = False
+if x and not y: ...</code><br>
+      <span class="compare-msg-good">파이썬: True/False, and, or, not</span>
+    </div>
+  </div>
+  <div class="box box-key" role="note">
+    <span class="box-label">[핵심] C언어 vs 파이썬 논리 연산</span>
+    <div class="box-content"><b>C언어</b><br><code>&&</code> (and), <code>||</code> (or), <code>!</code> (not)<br>참=1, 거짓=0, bool 타입 없음(C99부터 _Bool)<br><br><b>파이썬</b><br><code>and</code>, <code>or</code>, <code>not</code> (영어 단어!)<br><code>True</code> / <code>False</code> (bool 타입 있음)<br><br>파이썬이 더 직관적이고 읽기 쉬워요!</div>
+  </div>
+  <h2 class="section-error">자주 하는 실수 TOP 5</h2>
+  <div class="mascot-speech  avoid-break">
+    <img class="mascot-speech-img small" src="visuals/mascot-debugging.jpg" alt="마스코트" />
+    <div class="mascot-bubble warn">불과 비교에서 실수하면 프로그램이 엉뚱한 결과를 내요. 에러도 안 나서 찾기 더 어려워요!</div>
+  </div>
+  <div class="compare avoid-break">
+    <div class="compare-bad">
+      <div class="compare-label">✕ 잘못된 코드</div>
+      <code>x = 10
+if x = 10:  # SyntaxError!</code><br>
+      <span class="compare-msg-bad">= 하나는 대입이에요!</span>
+    </div>
+    <div class="compare-good">
+      <div class="compare-label">✓ 올바른 코드</div>
+      <code>x = 10
+if x == 10:  # OK!</code><br>
+      <span class="compare-msg-good">비교할 때는 == 두 개!</span>
+    </div>
+  </div>
+  <div class="compare avoid-break">
+    <div class="compare-bad">
+      <div class="compare-label">✕ 잘못된 코드</div>
+      <code>is_ok = true  # NameError!</code><br>
+      <span class="compare-msg-bad">소문자 true는 없어요</span>
+    </div>
+    <div class="compare-good">
+      <div class="compare-label">✓ 올바른 코드</div>
+      <code>is_ok = True  # OK!</code><br>
+      <span class="compare-msg-good">첫 글자 대문자 True/False</span>
+    </div>
+  </div>
+  <div class="compare avoid-break">
+    <div class="compare-bad">
+      <div class="compare-label">✕ 잘못된 코드</div>
+      <code>x = 5
+x == 3 && x < 10  # SyntaxError!</code><br>
+      <span class="compare-msg-bad">&&는 C언어 문법이에요</span>
+    </div>
+    <div class="compare-good">
+      <div class="compare-label">✓ 올바른 코드</div>
+      <code>x = 5
+x == 3 and x < 10</code><br>
+      <span class="compare-msg-good">파이썬은 and/or/not을 써요</span>
+    </div>
+  </div>
+  <div class="compare avoid-break">
+    <div class="compare-bad">
+      <div class="compare-label">✕ 잘못된 코드</div>
+      <code>print(0.1 + 0.2 == 0.3)  # False!</code><br>
+      <span class="compare-msg-bad">실수 비교의 함정 — 부동소수점 오차</span>
+    </div>
+    <div class="compare-good">
+      <div class="compare-label">✓ 올바른 코드</div>
+      <code>print(abs(0.1 + 0.2 - 0.3) < 0.0001)</code><br>
+      <span class="compare-msg-good">오차 범위 안에 있는지 비교!</span>
+    </div>
+  </div>
+  <div class="compare avoid-break">
+    <div class="compare-bad">
+      <div class="compare-label">✕ 잘못된 코드</div>
+      <code>name = "자현"
+name == "자현" or "코딩이"  # 항상 True!</code><br>
+      <span class="compare-msg-bad">or 뒤에 문자열만 쓰면 항상 True (Truthy)</span>
+    </div>
+    <div class="compare-good">
+      <div class="compare-label">✓ 올바른 코드</div>
+      <code>name == "자현" or name == "코딩이"</code><br>
+      <span class="compare-msg-good">각 조건을 완전히 써야 해요</span>
+    </div>
+  </div>
+  <div class="box box-warning" role="note">
+    <span class="box-label">[주의] 실수(float) 비교의 함정</span>
+    <div class="box-content"><code>0.1 + 0.2</code>의 결과는 정확히 <code>0.3</code>이 아니에요!<br><code>0.30000000000000004</code>가 돼요. (부동소수점 오차)<br><br>그래서 <code>0.1 + 0.2 == 0.3</code>은 <b>False</b>예요!<br><br>실수를 비교할 때는 오차 범위를 정해서 비교하세요:<br><code>abs(a - b) < 0.0001</code></div>
+  </div>
+  <h2 class="">[심화] Truthy와 Falsy</h2>
+  <p>파이썬에서는 <code>True</code>/<code>False</code>뿐만 아니라, <b>다른 값들도</b> 참 또는 거짓으로 취급돼요. 이걸 Truthy(참처럼)와 Falsy(거짓처럼)라고 해요.</p>
+  <div class="diagram-box avoid-break" role="figure" aria-label="Truthy vs Falsy 기준표">
+    <div class="diagram-title">Truthy vs Falsy 기준표</div>
+    <div class="diagram-content"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 560 185" style="width:100%;max-width:560px;margin:0 auto;display:block;font-family:Pretendard,sans-serif">
+    <text x="280" y="20" text-anchor="middle" font-size="14" font-weight="700" fill="#2C3E50">Truthy vs Falsy — 참처럼/거짓처럼 취급되는 값</text>
+
+    <!-- Falsy side -->
+    <rect x="20" y="35" width="245" height="140" rx="10" fill="#E74C3C" opacity="0.08" stroke="#E74C3C" stroke-width="2"/>
+    <text x="143" y="55" text-anchor="middle" font-size="13" font-weight="700" fill="#E74C3C">Falsy (거짓으로 취급)</text>
+    <text x="60" y="78" font-size="12" fill="#1E1E1E" font-family="JetBrains Mono,monospace" font-weight="600">False</text>
+    <text x="160" y="78" font-size="10" fill="#7F8C8D">← 불 거짓</text>
+    <text x="60" y="98" font-size="12" fill="#1E1E1E" font-family="JetBrains Mono,monospace" font-weight="600">0</text>
+    <text x="160" y="98" font-size="10" fill="#7F8C8D">← 숫자 0</text>
+    <text x="60" y="118" font-size="12" fill="#1E1E1E" font-family="JetBrains Mono,monospace" font-weight="600">""</text>
+    <text x="160" y="118" font-size="10" fill="#7F8C8D">← 빈 문자열</text>
+    <text x="60" y="138" font-size="12" fill="#1E1E1E" font-family="JetBrains Mono,monospace" font-weight="600">None</text>
+    <text x="160" y="138" font-size="10" fill="#7F8C8D">← 값 없음</text>
+    <text x="60" y="158" font-size="12" fill="#1E1E1E" font-family="JetBrains Mono,monospace" font-weight="600">[]  {}  ()</text>
+    <text x="160" y="158" font-size="10" fill="#7F8C8D">← 빈 컬렉션</text>
+
+    <!-- Truthy side -->
+    <rect x="295" y="35" width="245" height="140" rx="10" fill="#2ECC71" opacity="0.08" stroke="#2ECC71" stroke-width="2"/>
+    <text x="418" y="55" text-anchor="middle" font-size="13" font-weight="700" fill="#2ECC71">Truthy (참으로 취급)</text>
+    <text x="335" y="78" font-size="12" fill="#1E1E1E" font-family="JetBrains Mono,monospace" font-weight="600">True</text>
+    <text x="435" y="78" font-size="10" fill="#7F8C8D">← 불 참</text>
+    <text x="335" y="98" font-size="12" fill="#1E1E1E" font-family="JetBrains Mono,monospace" font-weight="600">1, -5, 3.14</text>
+    <text x="455" y="98" font-size="10" fill="#7F8C8D">← 0이 아닌 숫자</text>
+    <text x="335" y="118" font-size="12" fill="#1E1E1E" font-family="JetBrains Mono,monospace" font-weight="600">"Hello"</text>
+    <text x="435" y="118" font-size="10" fill="#7F8C8D">← 비어있지 않은 문자열</text>
+    <text x="335" y="138" font-size="12" fill="#1E1E1E" font-family="JetBrains Mono,monospace" font-weight="600">[1, 2]</text>
+    <text x="435" y="138" font-size="10" fill="#7F8C8D">← 내용이 있는 리스트</text>
+    <text x="335" y="158" font-size="12" fill="#1E1E1E" font-family="JetBrains Mono,monospace" font-weight="600">{1: "a"}</text>
+    <text x="455" y="158" font-size="10" fill="#7F8C8D">← 내용이 있는 딕셔너리</text>
+    </svg></div>
+  </div>
+  <div class="code-block avoid-break" role="figure" aria-label="truthy_falsy.py">
+    <div class="code-block-header">truthy_falsy.py</div>
+    <table class="code-table" aria-hidden="true">
+      <tr class=""><td class="line-num">1</td><td class="line-code"><span class="cmt"># Falsy 값들 — bool()로 확인</span></td></tr>
+      <tr class=" line-highlight"><td class="line-num">2</td><td class="line-code"><span class="fn">print</span>(<span class="fn">bool</span>(<span class="num">0</span>))       <span class="cmt"># False</span></td></tr>
+      <tr class=" line-highlight"><td class="line-num">3</td><td class="line-code"><span class="fn">print</span>(<span class="fn">bool</span>(<span class="str">""</span>))      <span class="cmt"># False (빈 문자열)</span></td></tr>
+      <tr class=""><td class="line-num">4</td><td class="line-code"><span class="fn">print</span>(<span class="fn">bool</span>(<span class="mc">None</span>))    <span class="cmt"># False</span></td></tr>
+      <tr class=""><td class="line-num">5</td><td class="line-code"><span class="fn">print</span>(<span class="fn">bool</span>([]))      <span class="cmt"># False (빈 리스트)</span></td></tr>
+      <tr class=""><td class="line-num">6</td><td class="line-code"></td></tr>
+      <tr class=""><td class="line-num">7</td><td class="line-code"><span class="cmt"># Truthy 값들</span></td></tr>
+      <tr class=" line-highlight"><td class="line-num">8</td><td class="line-code"><span class="fn">print</span>(<span class="fn">bool</span>(<span class="num">1</span>))       <span class="cmt"># True</span></td></tr>
+      <tr class=""><td class="line-num">9</td><td class="line-code"><span class="fn">print</span>(<span class="fn">bool</span>(-<span class="num">5</span>))      <span class="cmt"># True (0이 아닌 숫자)</span></td></tr>
+      <tr class=" line-highlight"><td class="line-num">10</td><td class="line-code"><span class="fn">print</span>(<span class="fn">bool</span>(<span class="str">"Hello"</span>)) <span class="cmt"># True (비어있지 않은 문자열)</span></td></tr>
+      <tr class=""><td class="line-num">11</td><td class="line-code"><span class="fn">print</span>(<span class="fn">bool</span>([<span class="num">1</span>, <span class="num">2</span>]))  <span class="cmt"># True (내용이 있는 리스트)</span></td></tr>
+    </table>
+  </div>
+  <div class="output-block avoid-break" role="figure" aria-label="실행 결과">
+    <span class="output-label">실행 결과</span>
+    <div class="output-text">False
+False
+False
+False
+True
+True
+True
+True</div>
+  </div>
+  <div class="box box-key" role="note">
+    <span class="box-label">[핵심] Falsy 값 외우기</span>
+    <div class="box-content">Falsy(거짓 취급)는 딱 <b>6가지</b>만 외우면 돼요:<br><br><code>False</code>, <code>0</code>, <code>0.0</code>, <code>""</code>(빈 문자열), <code>None</code>, <code>[]</code>/<code>()</code>/<code>{}</code>(빈 컬렉션)<br><br><b>나머지는 전부 Truthy(참 취급)!</b></div>
+  </div>
+  <h3>단축 평가 (Short-circuit Evaluation)</h3>
+  <p><code>and</code>와 <code>or</code>는 결과가 확정되면 나머지를 계산하지 않아요. 이걸 <b>단축 평가</b>라고 해요.</p>
+  <div class="code-block avoid-break" role="figure" aria-label="short_circuit.py">
+    <div class="code-block-header">short_circuit.py</div>
+    <table class="code-table" aria-hidden="true">
+      <tr class=""><td class="line-num">1</td><td class="line-code"><span class="cmt"># and: 첫 번째가 False면 두 번째는 안 봐요</span></td></tr>
+      <tr class=""><td class="line-num">2</td><td class="line-code"><span class="fn">print</span>(<span class="mc">False</span> <span class="kw">and</span> <span class="fn">print</span>(<span class="str">"안 실행!"</span>))  <span class="cmt"># False</span></td></tr>
+      <tr class=""><td class="line-num">3</td><td class="line-code"></td></tr>
+      <tr class=""><td class="line-num">4</td><td class="line-code"><span class="cmt"># or: 첫 번째가 True면 두 번째는 안 봐요</span></td></tr>
+      <tr class=""><td class="line-num">5</td><td class="line-code"><span class="fn">print</span>(<span class="mc">True</span> <span class="kw">or</span> <span class="fn">print</span>(<span class="str">"안 실행!"</span>))   <span class="cmt"># True</span></td></tr>
+      <tr class=""><td class="line-num">6</td><td class="line-code"></td></tr>
+      <tr class=""><td class="line-num">7</td><td class="line-code"><span class="cmt"># 실전 활용: 0으로 나누기 방지</span></td></tr>
+      <tr class=""><td class="line-num">8</td><td class="line-code">x = <span class="num">0</span></td></tr>
+      <tr class=""><td class="line-num">9</td><td class="line-code">result = x != <span class="num">0</span> <span class="kw">and</span> <span class="num">10</span> / x  <span class="cmt"># x가 0이면 나누기 안 함!</span></td></tr>
+      <tr class=""><td class="line-num">10</td><td class="line-code"><span class="fn">print</span>(result)  <span class="cmt"># False (10/x 계산 안 함)</span></td></tr>
+    </table>
+  </div>
+  <div class="output-block avoid-break" role="figure" aria-label="실행 결과">
+    <span class="output-label">실행 결과</span>
+    <div class="output-text">False
+True
+False</div>
+  </div>
+  <div class="mascot-speech right avoid-break">
+    <img class="mascot-speech-img small" src="visuals/mascot-thinking.jpg" alt="마스코트" />
+    <div class="mascot-bubble tip">단축 평가는 지금 당장 외울 필요는 없어요. 나중에 조건문을 배우면 자연스럽게 이해될 거예요.</div>
+  </div>
+  <h2 class="">[심화] is와 ==의 차이</h2>
+  <div class="code-block avoid-break" role="figure" aria-label="is_vs_equal.py">
+    <div class="code-block-header">is_vs_equal.py</div>
+    <table class="code-table" aria-hidden="true">
+      <tr class=""><td class="line-num">1</td><td class="line-code"><span class="cmt"># == : 값이 같은지 비교</span></td></tr>
+      <tr class=""><td class="line-num">2</td><td class="line-code"><span class="cmt"># is : 같은 객체인지 비교 (메모리 주소)</span></td></tr>
+      <tr class=""><td class="line-num">3</td><td class="line-code"></td></tr>
+      <tr class=""><td class="line-num">4</td><td class="line-code">a = [<span class="num">1</span>, <span class="num">2</span>, <span class="num">3</span>]</td></tr>
+      <tr class=""><td class="line-num">5</td><td class="line-code">b = [<span class="num">1</span>, <span class="num">2</span>, <span class="num">3</span>]</td></tr>
+      <tr class=""><td class="line-num">6</td><td class="line-code">c = a</td></tr>
+      <tr class=""><td class="line-num">7</td><td class="line-code"></td></tr>
+      <tr class=" line-highlight"><td class="line-num">8</td><td class="line-code"><span class="fn">print</span>(a == b)  <span class="cmt"># True  (값이 같음)</span></td></tr>
+      <tr class=" line-highlight"><td class="line-num">9</td><td class="line-code"><span class="fn">print</span>(a <span class="kw">is</span> b)  <span class="cmt"># False (다른 객체)</span></td></tr>
+      <tr class=" line-highlight"><td class="line-num">10</td><td class="line-code"><span class="fn">print</span>(a <span class="kw">is</span> c)  <span class="cmt"># True  (같은 객체를 가리킴)</span></td></tr>
+    </table>
+  </div>
+  <div class="output-block avoid-break" role="figure" aria-label="실행 결과">
+    <span class="output-label">실행 결과</span>
+    <div class="output-text">True
+False
+True</div>
+  </div>
+  <div class="box box-key" role="note">
+    <span class="box-label">[핵심] == vs is</span>
+    <div class="box-content"><code>==</code> — <b>값</b>이 같은지 비교 (보통 이걸 쓰세요!)<br><code>is</code> — <b>같은 객체</b>인지 비교 (메모리 주소)<br><br><code>None</code>과 비교할 때만 <code>is</code>를 써요:<br><code>x is None</code> (O)<br><code>x == None</code> (동작은 하지만 비추천)</div>
+  </div>
+  <div class="fact-bite avoid-break">
+    <div class="fact-bite-number">is None</div>
+    <div class="fact-bite-text">파이썬에서 None인지 확인할 때는 == 대신 is를 쓰는 게 관례예요. PEP 8에서도 'x is None'을 권장해요.</div>
+  </div>
+  <h2 class="section-error">디버깅 — 비교/논리 연산 에러 잡기</h2>
+  <p>비교와 논리 연산에서 자주 만나는 에러를 실제 에러 메시지와 함께 살펴봐요.</p>
+  <div class="code-block avoid-break" role="figure" aria-label="debug_compare.py">
+    <div class="code-block-header">debug_compare.py</div>
+    <table class="code-table" aria-hidden="true">
+      <tr class=""><td class="line-num">1</td><td class="line-code"><span class="cmt"># 에러 1: = 대신 == 써야 하는데 실수</span></td></tr>
+      <tr class=""><td class="line-num">2</td><td class="line-code">x = <span class="num">10</span></td></tr>
+      <tr class=""><td class="line-num">3</td><td class="line-code"><span class="kw">if</span> x = <span class="num">10</span>:  <span class="cmt"># ← 대입을 조건에 쓰면?</span></td></tr>
+      <tr class=""><td class="line-num">4</td><td class="line-code">    <span class="fn">print</span>(<span class="str">"10이에요"</span>)</td></tr>
+    </table>
+  </div>
+  <div class="box box-key" role="note">
+    <span class="box-label">에러 메시지</span>
+    <div class="box-content"><code>File "debug_compare.py", line 3</code><br><code>    if x = 10:</code><br><code>         ^</code><br><code>SyntaxError: invalid syntax. Maybe you meant '==' or ':='?</code><br><br>파이썬이 친절하게 <b>'== 쓰려고 한 거 아니야?'</b>라고 물어봐요!<br><b>해결법:</b> <code>if x = 10:</code> → <code>if x == 10:</code></div>
+  </div>
+  <div class="code-block avoid-break" role="figure" aria-label="debug_bool_case.py">
+    <div class="code-block-header">debug_bool_case.py</div>
+    <table class="code-table" aria-hidden="true">
+      <tr class=""><td class="line-num">1</td><td class="line-code"><span class="cmt"># 에러 2: true/false 소문자 실수</span></td></tr>
+      <tr class=""><td class="line-num">2</td><td class="line-code">is_valid = true  <span class="cmt"># ← 소문자!</span></td></tr>
+    </table>
+  </div>
+  <div class="box box-key" role="note">
+    <span class="box-label">에러 메시지</span>
+    <div class="box-content"><code>NameError: name 'true' is not defined</code><br><br>파이썬에는 소문자 <code>true</code>가 없어요. <code>True</code>(대문자 T)로 써야 해요.<br><b>해결법:</b> <code>true</code> → <code>True</code>, <code>false</code> → <code>False</code></div>
+  </div>
+  <h3>복합 조건 실행 과정 추적</h3>
+  <div class="code-block avoid-break" role="figure" aria-label="trace_logic.py">
+    <div class="code-block-header">trace_logic.py</div>
+    <table class="code-table" aria-hidden="true">
+      <tr class=""><td class="line-num">1</td><td class="line-code">age = <span class="num">16</span></td></tr>
+      <tr class=""><td class="line-num">2</td><td class="line-code">score = <span class="num">45</span></td></tr>
+      <tr class=""><td class="line-num">3</td><td class="line-code">has_bonus = <span class="mc">True</span></td></tr>
+      <tr class=""><td class="line-num">4</td><td class="line-code"></td></tr>
+      <tr class=""><td class="line-num">5</td><td class="line-code">result = (age &gt;= <span class="num">13</span>) <span class="kw">and</span> (score &gt;= <span class="num">60</span> <span class="kw">or</span> has_bonus)</td></tr>
+      <tr class=""><td class="line-num">6</td><td class="line-code"><span class="fn">print</span>(result)</td></tr>
+    </table>
+  </div>
+  <div class="trace-table avoid-break" role="table" aria-label="복합 조건 평가 과정 추적"><div class="trace-caption">복합 조건 평가 과정 추적</div><table><thead><tr><th>단계</th><th>계산</th><th>결과</th></tr></thead><tbody><tr><td>1</td><td>age >= 13 → 16 >= 13</td><td>True</td></tr><tr><td>2</td><td>score >= 60 → 45 >= 60</td><td>False</td></tr><tr><td>3</td><td>has_bonus</td><td>True</td></tr><tr><td>4</td><td>False or True (단계2 or 단계3)</td><td>True</td></tr><tr><td>5</td><td>True and True (단계1 and 단계4)</td><td>True</td></tr></tbody></table></div>
+  <div class="output-block avoid-break" role="figure" aria-label="실행 결과">
+    <span class="output-label">실행 결과</span>
+    <div class="output-text">True</div>
+  </div>
+  <h2 class="">[KOI] 정보올림피아드 도전</h2>
+  <div class="mascot-speech  avoid-break">
+    <img class="mascot-speech-img small" src="visuals/mascot-eureka.jpg" alt="마스코트" />
+    <div class="mascot-bubble success">비교와 논리 연산자를 활용하는 실제 백준 문제를 풀어 봐요. 코딩 테스트의 기초 중의 기초예요!</div>
+  </div>
+  <div class="box box-key" role="note">
+    <span class="box-label">백준 5717 — 상근이의 친구들</span>
+    <div class="box-content"><b>문제:</b> 상근이의 남자 친구 수 M과 여자 친구 수 F가 주어져요.<br>남자 친구와 여자 친구가 모두 1명 이상이면 친구가 있다고 판단해요.<br>입력이 0 0이면 끝나요.<br><br><b>입력:</b> M F (0 ≤ M, F ≤ 500)<br><b>출력:</b> 전체 친구 수</div>
+  </div>
+  <div class="code-block avoid-break" role="figure" aria-label="boj_5717.py">
+    <div class="code-block-header">boj_5717.py</div>
+    <table class="code-table" aria-hidden="true">
+      <tr class=""><td class="line-num">1</td><td class="line-code"><span class="cmt"># 백준 5717 — 상근이의 친구들</span></td></tr>
+      <tr class=""><td class="line-num">2</td><td class="line-code"><span class="cmt"># 핵심: 입력이 0 0이 아닌 동안 반복 (비교+논리 연산 활용)</span></td></tr>
+      <tr class=""><td class="line-num">3</td><td class="line-code"></td></tr>
+      <tr class=""><td class="line-num">4</td><td class="line-code"><span class="kw">while</span> <span class="mc">True</span>:</td></tr>
+      <tr class=""><td class="line-num">5</td><td class="line-code">    m, f = <span class="fn">map</span>(int, <span class="fn">input</span>().<span class="fn">split</span>())</td></tr>
+      <tr class=""><td class="line-num">6</td><td class="line-code">    </td></tr>
+      <tr class=""><td class="line-num">7</td><td class="line-code">    <span class="cmt"># 종료 조건: 둘 다 0이면 끝</span></td></tr>
+      <tr class=" line-highlight"><td class="line-num">8</td><td class="line-code">    <span class="kw">if</span> m == <span class="num">0</span> <span class="kw">and</span> f == <span class="num">0</span>:  <span class="cmt"># ← and 연산자!</span></td></tr>
+      <tr class=""><td class="line-num">9</td><td class="line-code">        <span class="kw">break</span></td></tr>
+      <tr class=""><td class="line-num">10</td><td class="line-code">    </td></tr>
+      <tr class=""><td class="line-num">11</td><td class="line-code">    <span class="fn">print</span>(m + f)</td></tr>
+    </table>
+  </div>
+  <p><code>m == 0 and f == 0</code>이 이번 유닛의 핵심이에요. 두 조건이 <b>동시에</b> 참일 때만 종료해요. <code>or</code>로 쓰면 하나만 0이어도 끝나버려서 틀려요.</p>
+  <div class="trace-table avoid-break" role="table" aria-label="입력별 종료 조건 판단"><div class="trace-caption">입력별 종료 조건 판단</div><table><thead><tr><th>입력 (m, f)</th><th>m == 0</th><th>f == 0</th><th>m==0 and f==0</th><th>동작</th></tr></thead><tbody><tr><td>3 4</td><td>False</td><td>False</td><td>False</td><td>7 출력</td></tr><tr><td>0 2</td><td>True</td><td>False</td><td>False</td><td>2 출력</td></tr><tr><td>5 0</td><td>False</td><td>True</td><td>False</td><td>5 출력</td></tr><tr><td>0 0</td><td>True</td><td>True</td><td>True</td><td>종료!</td></tr></tbody></table></div>
+  <div class="box box-key" role="note">
+    <span class="box-label">백준 2480 — 주사위 세개</span>
+    <div class="box-content"><b>문제:</b> 주사위 3개를 던져서 상금을 계산해요.<br>- 같은 눈 3개: 10000 + 눈 × 1000<br>- 같은 눈 2개: 1000 + 눈 × 100<br>- 모두 다른 눈: 가장 큰 눈 × 100<br><br><b>입력:</b> 세 개의 주사위 눈 (1~6)<br><b>출력:</b> 상금</div>
+  </div>
+  <div class="code-block avoid-break" role="figure" aria-label="boj_2480.py">
+    <div class="code-block-header">boj_2480.py</div>
+    <table class="code-table" aria-hidden="true">
+      <tr class=""><td class="line-num">1</td><td class="line-code"><span class="cmt"># 백준 2480 — 주사위 세개</span></td></tr>
+      <tr class=""><td class="line-num">2</td><td class="line-code">a, b, c = <span class="fn">map</span>(int, <span class="fn">input</span>().<span class="fn">split</span>())</td></tr>
+      <tr class=""><td class="line-num">3</td><td class="line-code"></td></tr>
+      <tr class=""><td class="line-num">4</td><td class="line-code"><span class="cmt"># 비교 연산자로 같은 눈 판별</span></td></tr>
+      <tr class=" line-highlight"><td class="line-num">5</td><td class="line-code"><span class="kw">if</span> a == b == c:  <span class="cmt"># ← 비교 체이닝! 셋 다 같으면</span></td></tr>
+      <tr class=""><td class="line-num">6</td><td class="line-code">    <span class="fn">print</span>(<span class="num">10000</span> + a * <span class="num">1000</span>)</td></tr>
+      <tr class=" line-highlight"><td class="line-num">7</td><td class="line-code"><span class="kw">elif</span> a == b <span class="kw">or</span> a == c:  <span class="cmt"># a가 다른 하나와 같으면</span></td></tr>
+      <tr class=""><td class="line-num">8</td><td class="line-code">    <span class="fn">print</span>(<span class="num">1000</span> + a * <span class="num">100</span>)</td></tr>
+      <tr class=" line-highlight"><td class="line-num">9</td><td class="line-code"><span class="kw">elif</span> b == c:  <span class="cmt"># b와 c가 같으면</span></td></tr>
+      <tr class=""><td class="line-num">10</td><td class="line-code">    <span class="fn">print</span>(<span class="num">1000</span> + b * <span class="num">100</span>)</td></tr>
+      <tr class=""><td class="line-num">11</td><td class="line-code"><span class="kw">else</span>:  <span class="cmt"># 모두 다르면</span></td></tr>
+      <tr class=""><td class="line-num">12</td><td class="line-code">    <span class="fn">print</span>(<span class="fn">max</span>(a, b, c) * <span class="num">100</span>)</td></tr>
+    </table>
+  </div>
+  <p>이 문제의 핵심은 <code>a == b == c</code>(비교 체이닝)와 <code>a == b or a == c</code>(or 논리 연산)예요. 이번 유닛에서 배운 비교+논리 연산이 실전에서 어떻게 쓰이는지 보여주는 대표 문제예요.</p>
+  <div class="trace-table avoid-break" role="table" aria-label="입력 3 3 6일 때 실행 추적"><div class="trace-caption">입력 3 3 6일 때 실행 추적</div><table><thead><tr><th>줄</th><th>코드</th><th>계산</th><th>결과</th></tr></thead><tbody><tr><td>2</td><td>a, b, c = 3, 3, 6</td><td>—</td><td>a=3, b=3, c=6</td></tr><tr><td>5</td><td>a == b == c</td><td>3==3==6 → True and False</td><td>False → 건너뜀</td></tr><tr><td>7</td><td>a == b or a == c</td><td>3==3 or 3==6 → True or False</td><td>True → 실행!</td></tr><tr><td>8</td><td>1000 + a * 100</td><td>1000 + 300</td><td>1300 출력</td></tr></tbody></table></div>
+  <h2 class="">미니 프로젝트 — 합격 판별기</h2>
+  <p>지금까지 배운 것을 모아서 합격 여부를 판별하는 프로그램을 만들어 봐요!</p>
+  <div class="code-block avoid-break" role="figure" aria-label="pass_checker.py">
+    <div class="code-block-header">pass_checker.py</div>
+    <table class="code-table" aria-hidden="true">
+      <tr class=""><td class="line-num">1</td><td class="line-code"><span class="fn">print</span>(<span class="str">"="</span>* <span class="num">30</span>)</td></tr>
+      <tr class=""><td class="line-num">2</td><td class="line-code"><span class="fn">print</span>(<span class="str">"   합격 판별 프로그램"</span>)</td></tr>
+      <tr class=""><td class="line-num">3</td><td class="line-code"><span class="fn">print</span>(<span class="str">"="</span>* <span class="num">30</span>)</td></tr>
+      <tr class=""><td class="line-num">4</td><td class="line-code"></td></tr>
+      <tr class=""><td class="line-num">5</td><td class="line-code">kor = <span class="fn">int</span>(<span class="fn">input</span>(<span class="str">"국어 점수: "</span>))</td></tr>
+      <tr class=""><td class="line-num">6</td><td class="line-code">math = <span class="fn">int</span>(<span class="fn">input</span>(<span class="str">"수학 점수: "</span>))</td></tr>
+      <tr class=""><td class="line-num">7</td><td class="line-code">eng = <span class="fn">int</span>(<span class="fn">input</span>(<span class="str">"영어 점수: "</span>))</td></tr>
+      <tr class=""><td class="line-num">8</td><td class="line-code"></td></tr>
+      <tr class=""><td class="line-num">9</td><td class="line-code">avg = (kor + math + eng) / <span class="num">3</span></td></tr>
+      <tr class=" line-highlight"><td class="line-num">10</td><td class="line-code">all_pass = kor &gt;= <span class="num">40</span> <span class="kw">and</span> math &gt;= <span class="num">40</span> <span class="kw">and</span> eng &gt;= <span class="num">40</span></td></tr>
+      <tr class=" line-highlight"><td class="line-num">11</td><td class="line-code">avg_pass = avg &gt;= <span class="num">60</span></td></tr>
+      <tr class=""><td class="line-num">12</td><td class="line-code"></td></tr>
+      <tr class=""><td class="line-num">13</td><td class="line-code"><span class="fn">print</span>(f<span class="str">"<span class="esc">\n</span>평균: {avg:.1f}점"</span>)</td></tr>
+      <tr class=""><td class="line-num">14</td><td class="line-code"><span class="fn">print</span>(f<span class="str">"과목별 40점 이상? {all_pass}"</span>)</td></tr>
+      <tr class=""><td class="line-num">15</td><td class="line-code"><span class="fn">print</span>(f<span class="str">"평균 60점 이상? {avg_pass}"</span>)</td></tr>
+      <tr class=" line-highlight"><td class="line-num">16</td><td class="line-code"><span class="fn">print</span>(f<span class="str">"최종 합격? {all_pass and avg_pass}"</span>)</td></tr>
+    </table>
+  </div>
+  <div class="output-block avoid-break" role="figure" aria-label="실행 결과">
+    <span class="output-label">실행 결과</span>
+    <div class="output-text">==============================
+   합격 판별 프로그램
+==============================
+국어 점수: 70
+수학 점수: 85
+영어 점수: 55
+
+평균: 70.0점
+과목별 40점 이상? True
+평균 60점 이상? True
+최종 합격? True</div>
+  </div>
+  <div class="modify-box avoid-break">
+    <div class="modify-label">바꿔보기</div>
+    <p>합격 판별기를 확장해 보세요!</p>
+    <div class="modify-hint">- 과목 수를 4개로 늘려 보기<br>- '과락'인 과목 이름도 출력하기<br>- 등급(A/B/C/D/F)도 판별하기</div>
+  </div>
+  <h3>놀이공원 탑승 조건</h3>
+  <div class="code-block avoid-break" role="figure" aria-label="ride_checker.py">
+    <div class="code-block-header">ride_checker.py</div>
+    <table class="code-table" aria-hidden="true">
+      <tr class=""><td class="line-num">1</td><td class="line-code"><span class="fn">print</span>(<span class="str">"놀이공원 바이킹 탑승 조건 확인"</span>)</td></tr>
+      <tr class=""><td class="line-num">2</td><td class="line-code"><span class="fn">print</span>(<span class="str">"-"</span> * <span class="num">30</span>)</td></tr>
+      <tr class=""><td class="line-num">3</td><td class="line-code"></td></tr>
+      <tr class=""><td class="line-num">4</td><td class="line-code">age = <span class="fn">int</span>(<span class="fn">input</span>(<span class="str">"나이: "</span>))</td></tr>
+      <tr class=""><td class="line-num">5</td><td class="line-code">height = <span class="fn">float</span>(<span class="fn">input</span>(<span class="str">"키(cm): "</span>))</td></tr>
+      <tr class=" line-highlight"><td class="line-num">6</td><td class="line-code">has_parent = <span class="fn">input</span>(<span class="str">"보호자 동반? (y/n): "</span>) == <span class="str">"y"</span></td></tr>
+      <tr class=""><td class="line-num">7</td><td class="line-code"></td></tr>
+      <tr class=""><td class="line-num">8</td><td class="line-code"><span class="cmt"># 조건: (13세 이상 AND 140cm 이상) OR 보호자 동반</span></td></tr>
+      <tr class=" line-highlight"><td class="line-num">9</td><td class="line-code">can_ride = (age &gt;= <span class="num">13</span> <span class="kw">and</span> height &gt;= <span class="num">140</span>) <span class="kw">or</span> has_parent</td></tr>
+      <tr class=""><td class="line-num">10</td><td class="line-code"></td></tr>
+      <tr class=""><td class="line-num">11</td><td class="line-code"><span class="fn">print</span>(f<span class="str">"<span class="esc">\n</span>나이: {age}살, 키: {height}cm"</span>)</td></tr>
+      <tr class=""><td class="line-num">12</td><td class="line-code"><span class="fn">print</span>(f<span class="str">"보호자 동반: {has_parent}"</span>)</td></tr>
+      <tr class=""><td class="line-num">13</td><td class="line-code"><span class="fn">print</span>(f<span class="str">"탑승 가능: {can_ride}"</span>)</td></tr>
+    </table>
+  </div>
+  <div class="output-block avoid-break" role="figure" aria-label="실행 결과">
+    <span class="output-label">실행 결과</span>
+    <div class="output-text">놀이공원 바이킹 탑승 조건 확인
+------------------------------
+나이: 11
+키(cm): 135
+보호자 동반? (y/n): y
+
+나이: 11살, 키: 135.0cm
+보호자 동반: True
+탑승 가능: True</div>
+  </div>
+  <div class="page-break-hint"></div>
+  <h2 class="section-practice">연습문제</h2>
+  <div class="mascot-speech right avoid-break">
+    <img class="mascot-speech-img small" src="visuals/mascot-debugging.jpg" alt="마스코트" />
+    <div class="mascot-bubble tip">혼자 힘으로 풀어 보세요! 코드를 직접 타이핑하고 실행해 보는 게 중요해요.</div>
+  </div>
+  <div class="exercise" role="group" aria-label="문제 1">
+    <div class="exercise-title">문제 1 <span class="difficulty diff-1">★ 기본</span></div>
+    <div class="exercise-item">
+      <p><code>True</code>와 <code>False</code>의 타입은 뭘까요? <code>type(True)</code>의 결과를 예측해 보세요.</p>
+    </div>
+  </div>
+  <div class="exercise" role="group" aria-label="문제 2">
+    <div class="exercise-title">문제 2 <span class="difficulty diff-1">★ 기본</span></div>
+    <div class="exercise-item">
+      <p>다음 코드의 출력 결과를 예측하세요.<br><code>print(10 > 5)</code><br><code>print(3 == 3.0)</code><br><code>print("abc" != "ABC")</code></p>
+    </div>
+  </div>
+  <div class="exercise" role="group" aria-label="문제 3">
+    <div class="exercise-title">문제 3 <span class="difficulty diff-1">★ 기본</span></div>
+    <div class="exercise-item">
+      <p>다음 중 결과가 <code>True</code>인 것을 모두 고르세요.<br>A) <code>5 > 3 and 2 > 4</code><br>B) <code>5 > 3 or 2 > 4</code><br>C) <code>not False</code><br>D) <code>not (5 > 3)</code></p>
+    </div>
+  </div>
+  <div class="exercise" role="group" aria-label="문제 4">
+    <div class="exercise-title">문제 4 <span class="difficulty diff-2">★★ 도전</span></div>
+    <div class="exercise-item">
+      <p>나이를 입력받아 청소년(13~19세)인지 판별하는 프로그램을 작성하세요. 비교 체이닝을 사용하세요.</p>
+    </div>
+  </div>
+  <div class="exercise" role="group" aria-label="문제 5">
+    <div class="exercise-title">문제 5 <span class="difficulty diff-2">★★ 도전</span></div>
+    <div class="exercise-item">
+      <p>두 수를 입력받아 '같다', '첫 번째가 크다', '두 번째가 크다'를 출력하세요. (힌트: == , > , < 를 print에 직접 사용)</p>
+    </div>
+  </div>
+  <div class="exercise" role="group" aria-label="문제 6">
+    <div class="exercise-title">문제 6 <span class="difficulty diff-2">★★ 도전</span></div>
+    <div class="exercise-item">
+      <p>점수를 입력받아 Falsy인지 Truthy인지 출력하세요.<br><code>print(bool(score))</code>를 사용하세요.</p>
+    </div>
+  </div>
+  <div class="exercise" role="group" aria-label="문제 7">
+    <div class="exercise-title">문제 7 <span class="difficulty diff-3">★★★ 심화</span></div>
+    <div class="exercise-item">
+      <p><code>print(True + True + True)</code>의 결과를 예측하고, 왜 그런지 설명하세요.</p>
+    </div>
+  </div>
+  <div class="exercise" role="group" aria-label="문제 8">
+    <div class="exercise-title">문제 8 <span class="difficulty diff-3">★★★ 심화</span></div>
+    <div class="exercise-item">
+      <p><code>0.1 + 0.2 == 0.3</code>이 <code>False</code>인 이유를 설명하고, 올바르게 비교하는 방법을 쓰세요.</p>
+    </div>
+  </div>
+  <h2 class="section-review">정답</h2>
+  <div class="answers-section"><h3>정답</h3><div class="answer-item"><span class="answer-num">문제 1</span> <span class="answer-text"><code>&lt;class 'bool'&gt;</code> — True와 False는 bool 타입이에요.</span></div><div class="answer-item"><span class="answer-num">문제 2</span> <span class="answer-text">True<br>True (int와 float 비교 가능, 3 == 3.0은 True)<br>True (대소문자가 다르니까)</span></div><div class="answer-item"><span class="answer-num">문제 3</span> <span class="answer-text">B, C<br>A) True and False → False<br>B) True or False → True<br>C) not False → True<br>D) not True → False</span></div><div class="answer-item"><span class="answer-num">문제 4</span> <span class="answer-text">age = int(input("나이: "))<br>print(f"청소년? {13 <= age <= 19}")</span></div><div class="answer-item"><span class="answer-num">문제 5</span> <span class="answer-text">a = int(input("첫 번째: "))<br>b = int(input("두 번째: "))<br>print(f"같다: {a == b}")<br>print(f"첫째가 크다: {a > b}")<br>print(f"둘째가 크다: {a < b}")</span></div><div class="answer-item"><span class="answer-num">문제 6</span> <span class="answer-text">score = int(input("점수: "))<br>print(f"Truthy? {bool(score)}")  # 0이면 False, 나머지 True</span></div><div class="answer-item"><span class="answer-num">문제 7</span> <span class="answer-text">3 — True는 1이므로 1+1+1 = 3</span></div><div class="answer-item"><span class="answer-num">문제 8</span> <span class="answer-text">부동소수점 오차 때문. 0.1+0.2=0.30000000000000004<br>abs(0.1 + 0.2 - 0.3) < 1e-9 으로 비교</span></div>
+  </div>
+  <h2 class="section-review" style="break-after:auto !important;page-break-after:auto !important">용어 정리</h2>
+  <div class="glossary">
+    <div class="glossary-item">
+      <dt class="glossary-term">bool</dt>
+      <dd class="glossary-def">참(True)과 거짓(False) 두 가지 값만 가지는 데이터 타입.</dd>
+    </div>
+    <div class="glossary-item">
+      <dt class="glossary-term">비교 연산자</dt>
+      <dd class="glossary-def">두 값을 비교해서 True/False를 반환하는 연산자. ==, !=, <, >, <=, >=</dd>
+    </div>
+    <div class="glossary-item">
+      <dt class="glossary-term">논리 연산자</dt>
+      <dd class="glossary-def">여러 조건을 합치는 연산자. and(그리고), or(또는), not(부정)</dd>
+    </div>
+    <div class="glossary-item">
+      <dt class="glossary-term">Truthy</dt>
+      <dd class="glossary-def">bool()로 변환하면 True가 되는 값. 0이 아닌 숫자, 비어있지 않은 문자열 등.</dd>
+    </div>
+    <div class="glossary-item">
+      <dt class="glossary-term">Falsy</dt>
+      <dd class="glossary-def">bool()로 변환하면 False가 되는 값. 0, "", None, [], {}, () 등.</dd>
+    </div>
+    <div class="glossary-item">
+      <dt class="glossary-term">단축 평가</dt>
+      <dd class="glossary-def">and/or에서 결과가 확정되면 나머지를 계산하지 않는 것.</dd>
+    </div>
+    <div class="glossary-item">
+      <dt class="glossary-term">비교 체이닝</dt>
+      <dd class="glossary-def">1 < x < 10처럼 비교를 연결하는 파이썬만의 문법.</dd>
+    </div>
+    <div class="glossary-item">
+      <dt class="glossary-term">is</dt>
+      <dd class="glossary-def">두 변수가 같은 객체를 가리키는지 확인. ==와 다름.</dd>
+    </div>
+  </div>
+  <div class="visual-summary avoid-break">
+    <div class="visual-summary-title">이번 유닛 핵심 정리</div>
+    <div class="visual-summary-items"><div class="visual-summary-item"><div class="visual-summary-num">1</div><span>bool 타입: True(참)와 False(거짓) 두 가지 값</span></div><div class="visual-summary-item"><div class="visual-summary-num">2</div><span>비교 연산자 6개: ==, !=, <, >, <=, >=</span></div><div class="visual-summary-item"><div class="visual-summary-num">3</div><span>논리 연산자 3개: and(둘 다), or(하나만), not(뒤집기)</span></div><div class="visual-summary-item"><div class="visual-summary-num">4</div><span>=는 대입, ==는 비교! 헷갈리지 않기</span></div><div class="visual-summary-item"><div class="visual-summary-num">5</div><span>Falsy는 6가지(0, "", None, False, [], {}), 나머지는 Truthy</span></div></div></div>
+  <div class="box box-summary" role="note">
+    <span class="box-label">이 유닛에서 연결된 축</span>
+    <div class="box-content"><b>[Python]</b> bool, True/False, 비교 연산자, 논리 연산자, 비교 체이닝<br><b>[컴퓨팅 사고력]</b> 조건 판단 — 참/거짓으로 분기하기<br><b>[디버깅]</b> = vs == 혼동, SyntaxError/NameError 해결, 실수 비교 오차<br><b>[KOI]</b> 백준 5717 상근이의 친구들 (and 종료조건), 백준 2480 주사위 세개 (비교 체이닝+or)<br><b>[실생활]</b> 합격 판별, 놀이공원 탑승 조건, 로그인 확인<br><b>[코딩기초]</b> 괄호 사용 습관, 의미 있는 변수명(is_xxx, has_xxx)</div>
+  </div>
+  <div class="box box-history" role="note">
+    <span class="box-label">[실생활] 불(bool)이 쓰이는 곳</span>
+    <div class="box-content">신호등이 초록불인지(True) 빨간불인지(False), 비밀번호가 맞는지(True) 틀린지(False), 재고가 있는지(True) 없는지(False) — 컴퓨터의 모든 판단은 True/False로 이루어져요.</div>
+  </div>
+  <div class="box box-question" role="note">
+    <span class="box-label">[다음 유닛 미리보기]</span>
+    <div class="box-content">True/False를 판단하는 건 배웠는데, '점수가 60점 이상이면 합격, 미만이면 불합격'을 출력하려면 어떻게 할까요? <code>if</code>-<code>else</code> 조건문을 배우면 가능해요! 다음 유닛 'if 조건문'에서 알아봐요.</div>
+  </div>
+  <div class="mascot-speech  avoid-break">
+    <img class="mascot-speech-img " src="visuals/mascot-codingyi-hello.jpg" alt="마스코트" />
+    <div class="mascot-bubble success">참과 거짓의 세계를 탐험했어요! 비교하고, 논리로 합치고, Truthy/Falsy까지 배웠어요. 다음 유닛에서는 드디어 조건에 따라 다르게 동작하는 프로그램을 만들 거예요. 진짜 프로그래밍다운 프로그래밍이 시작돼요!</div>
+  </div>
+</article>
+</body>
+</html>

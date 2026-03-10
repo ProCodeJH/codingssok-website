@@ -15,6 +15,7 @@ import { C_LANG_PART8 } from './c-lang-part8';
 import { C_LANG_PART9 } from './c-lang-part9';
 import { C_LANG_PART10 } from './c-lang-part10';
 import { COMPUTER_BASICS } from './computer-basics';
+import { PYTHON_BASICS } from './python-basics';
 
 // ── C언어 전체 챕터 (10개 파트 → 13 챕터, 85 유닛) ──
 const C_LANG_ALL_CHAPTERS = [
@@ -95,10 +96,10 @@ export const COURSES: Course[] = [
         gradient: 'linear-gradient(135deg, #3b82f6, #6366f1)',
         cardImage: '/images/courses/python.jpg',
         description: '파이썬의 기초 문법부터 자료구조, 함수, 클래스까지 체계적으로 학습합니다.',
-        totalUnits: 0,
-        totalProblems: 0,
-        estimatedHours: 0,
-        chapters: EMPTY_CHAPTERS,
+        totalUnits: 4,
+        totalProblems: 4,
+        estimatedHours: 3,
+        chapters: PYTHON_BASICS,
     },
     {
         id: '4',

@@ -43,6 +43,11 @@ export default function CourseDetailPage() {
     const courseData = useMemo(() => getCourseById(courseId), [courseId]);
     const allUnits = useMemo(() => getAllUnits(courseId), [courseId]);
 
+    // CosPro (id:'5') → redirect to problem browser
+    useEffect(() => {
+        if (courseId === '5') router.replace('/dashboard/learning/problems');
+    }, [courseId, router]);
+
     // ── State ──
     const [completedUnits, setCompletedUnits] = useState<Set<string>>(() => {
         if (typeof window === "undefined") return new Set<string>();

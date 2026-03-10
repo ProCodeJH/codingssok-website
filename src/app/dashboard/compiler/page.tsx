@@ -145,7 +145,31 @@ export default function CompilerPage() {
   const handleMount=(editor:any,monaco:any)=>{
     editorRef.current=editor;
     // Pure black theme
-    monaco.editor.defineTheme("cs-black",{base:"vs-dark",inherit:true,rules:[{background:"000000"}],colors:{"editor.background":"#000000","editor.foreground":"#c8c8c8","editorLineNumber.foreground":"#333333","editorLineNumber.activeForeground":"#666666","editor.selectionBackground":"#1a3a6a","editor.lineHighlightBackground":"#0a0a0a","editorCursor.foreground":"#6d9fff","editorWhitespace.foreground":"#1a1a1a","editorIndentGuide.background":"#111111","editorIndentGuide.activeBackground":"#222222","editorWidget.background":"#0a0a0a","editorWidget.border":"#1a1a1a","editorSuggestWidget.background":"#0a0a0a","editorSuggestWidget.border":"#1a1a1a","editorSuggestWidget.selectedBackground":"#1a1a1a","minimap.background":"#000000","scrollbar.shadow":"#000000","scrollbarSlider.background":"#1a1a1a80","scrollbarSlider.hoverBackground":"#22222280","scrollbarSlider.activeBackground":"#33333380"}});
+    monaco.editor.defineTheme("cs-black",{base:"vs-dark",inherit:true,rules:[
+      {token:"",background:"000000",foreground:"e0e0e0"},
+      {token:"keyword",foreground:"c084fc",fontStyle:"bold"},
+      {token:"keyword.control",foreground:"c084fc"},
+      {token:"keyword.flow",foreground:"c084fc"},
+      {token:"type",foreground:"5eead4"},
+      {token:"type.identifier",foreground:"5eead4"},
+      {token:"string",foreground:"86efac"},
+      {token:"string.escape",foreground:"fcd34d"},
+      {token:"comment",foreground:"6b7280",fontStyle:"italic"},
+      {token:"number",foreground:"7dd3fc"},
+      {token:"number.float",foreground:"7dd3fc"},
+      {token:"number.hex",foreground:"7dd3fc"},
+      {token:"delimiter",foreground:"c8c8c8"},
+      {token:"delimiter.bracket",foreground:"c8c8c8"},
+      {token:"operator",foreground:"e0e0e0"},
+      {token:"identifier",foreground:"e0e0e0"},
+      {token:"variable",foreground:"e0e0e0"},
+      {token:"function",foreground:"fdba74"},
+      {token:"predefined",foreground:"67e8f9"},
+      {token:"tag",foreground:"f472b6"},
+      {token:"attribute.name",foreground:"fdba74"},
+      {token:"attribute.value",foreground:"86efac"},
+      {token:"metatag",foreground:"f472b6"},
+    ],colors:{"editor.background":"#000000","editor.foreground":"#e0e0e0","editorLineNumber.foreground":"#444444","editorLineNumber.activeForeground":"#888888","editor.selectionBackground":"#1a3a6a","editor.lineHighlightBackground":"#0a0a0a","editorCursor.foreground":"#7daaff","editorWhitespace.foreground":"#1a1a1a","editorIndentGuide.background":"#151515","editorIndentGuide.activeBackground":"#2a2a2a","editorWidget.background":"#0a0a0a","editorWidget.border":"#222","editorSuggestWidget.background":"#0a0a0a","editorSuggestWidget.border":"#222","editorSuggestWidget.selectedBackground":"#1a1a1a","minimap.background":"#000000","scrollbar.shadow":"#000000","scrollbarSlider.background":"#1a1a1a80","scrollbarSlider.hoverBackground":"#22222280","scrollbarSlider.activeBackground":"#33333380"}});
     monaco.editor.setTheme("cs-black");
     editor.addAction({id:"run",label:"Run",keybindings:[2048|3],run:()=>runCode()});
     editor.addAction({id:"bookmark",label:"Toggle Bookmark",keybindings:[2048|66],run:(ed:any)=>{const ln=ed.getPosition()?.lineNumber;if(ln){const mdl=ed.getModel();const text=mdl?.getLineContent(ln)||"";
@@ -192,12 +216,12 @@ export default function CompilerPage() {
 
   // Achievements
   const achievements=[
-    {icon:"🏁",title:"첫 컴파일",desc:"첫 코드를 컴파일하세요",done:compileCount>=1},
-    {icon:"🔥",title:"10회 컴파일",desc:"10번 컴파일하세요",done:compileCount>=10},
-    {icon:"⚡",title:"50회 컴파일",desc:"50번 컴파일하세요",done:compileCount>=50},
-    {icon:"🏆",title:"100회 컴파일",desc:"100번 컴파일하세요",done:compileCount>=100},
-    {icon:"📝",title:"5개 파일",desc:"5개 파일을 만드세요",done:tabCnt>5},
-    {icon:"✅",title:"첫 성공",desc:"컴파일 성공 1회",done:history.some(h=>h.status==="success")},
+    {icon:"1",title:"첫 컴파일",desc:"첫 코드를 컴파일하세요",done:compileCount>=1},
+    {icon:"10",title:"10회 컴파일",desc:"10번 컴파일하세요",done:compileCount>=10},
+    {icon:"50",title:"50회 컴파일",desc:"50번 컴파일하세요",done:compileCount>=50},
+    {icon:"100",title:"100회 컴파일",desc:"100번 컴파일하세요",done:compileCount>=100},
+    {icon:"5F",title:"5개 파일",desc:"5개 파일을 만드세요",done:tabCnt>5},
+    {icon:"OK",title:"첫 성공",desc:"컴파일 성공 1회",done:history.some(h=>h.status==="success")},
   ];
 
   // Challenges

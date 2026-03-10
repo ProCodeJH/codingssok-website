@@ -10,7 +10,7 @@ export const PYTHON_BASICS: Chapter[] = [
         id: 'py-ch1',
         chapterNumber: 1,
         title: '파이썬 시작하기',
-        icon: '🐍',
+        icon: '',
         description: '파이썬의 기초 문법과 출력, 변수, 입력을 배웁니다.',
         units: [
             {
@@ -75,7 +75,7 @@ export const PYTHON_BASICS: Chapter[] = [
         id: 'py-ch2',
         chapterNumber: 2,
         title: '조건과 논리',
-        icon: '🔀',
+        icon: '',
         description: '불(Bool) 자료형, 비교 연산자, 조건문을 배웁니다.',
         units: [
             {

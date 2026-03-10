@@ -11,12 +11,16 @@ const Editor = dynamic(() => import("@monaco-editor/react"), { ssr: false });
 /* ── Constants ── */
 const C_DEFAULT = `#include <stdio.h>\n\nint main() {\n    printf("Hello, 코딩쏙!\\n");\n    int a = 10, b = 20;\n    printf("%d + %d = %d\\n", a, b, a + b);\n    return 0;\n}`;
 const PY_DEFAULT = `# 파이썬 코딩쏙\nname = "코딩쏙"\nprint(f"Hello, {name}!")\nprint(f"합계: {sum([1,2,3,4,5])}")`;
+const JS_DEFAULT = `// JavaScript 코딩쏙\nconst name = "코딩쏙";\nconsole.log(\`Hello, \${name}!\`);\nconsole.log(\`합계: \${[1,2,3,4,5].reduce((a,b)=>a+b)}\`);`;
+const JAVA_DEFAULT = `public class Main {\n    public static void main(String[] args) {\n        System.out.println("Hello, 코딩쏙!");\n        int sum = 0;\n        for (int i = 1; i <= 5; i++) sum += i;\n        System.out.println("합계: " + sum);\n    }\n}`;
 
 interface FileTab { id: string; name: string; content: string; lang: string; modified: boolean; }
 
-const LANG_CFG: Record<string, { label: string; compiler: string; monaco: string; ext: string; opts: Record<string,string> }> = {
-  c: { label:"C", compiler:"gcc-head", monaco:"c", ext:".c", opts:{ options:"warning","compiler-option-raw":"-std=c11" }},
-  python: { label:"Python", compiler:"cpython-3.12.0", monaco:"python", ext:".py", opts:{} },
+const LANG_CFG: Record<string, { label: string; monaco: string; ext: string; defaultCode: string }> = {
+  c:          { label:"C",          monaco:"c",          ext:".c",    defaultCode: C_DEFAULT },
+  python:     { label:"Python",     monaco:"python",     ext:".py",   defaultCode: PY_DEFAULT },
+  javascript: { label:"JavaScript", monaco:"javascript", ext:".js",   defaultCode: JS_DEFAULT },
+  java:       { label:"Java",       monaco:"java",       ext:".java", defaultCode: JAVA_DEFAULT },
 };
 
 const SNIPPETS = [
@@ -28,6 +32,9 @@ const SNIPPETS = [
   { title:"동적 할당", lang:"c", code:`#include <stdio.h>\n#include <stdlib.h>\nint main() {\n    int *arr = (int*)malloc(5*sizeof(int));\n    for(int i=0;i<5;i++) arr[i]=i*10;\n    for(int i=0;i<5;i++) printf("%d ",arr[i]);\n    printf("\\n"); free(arr);\n    return 0;\n}` },
   { title:"리스트", lang:"python", code:`fruits=["사과","바나나","딸기"]\nfor i,f in enumerate(fruits): print(f"{i+1}. {f}")` },
   { title:"클래스", lang:"python", code:`class Animal:\n    def __init__(self,name,sound):\n        self.name=name;self.sound=sound\n    def speak(self): print(f"{self.name}: {self.sound}!")\nAnimal("고양이","야옹").speak()` },
+  { title:"배열 메서드", lang:"javascript", code:`const nums = [1,2,3,4,5];\nconsole.log("합계:", nums.reduce((a,b)=>a+b));\nconsole.log("짝수:", nums.filter(n=>n%2===0));\nconsole.log("2배:", nums.map(n=>n*2));` },
+  { title:"Promise", lang:"javascript", code:`async function fetchData() {\n  return new Promise(resolve => {\n    setTimeout(() => resolve("데이터 로드 완료!"), 100);\n  });\n}\nfetchData().then(console.log);` },
+  { title:"Hello Java", lang:"java", code:`public class Main {\n    public static void main(String[] args) {\n        for(int i=1;i<=5;i++)\n            System.out.println(i + ". Hello!");\n    }\n}` },
 ];
 
 const CHEATSHEET: Record<string,{title:string;items:{k:string;v:string}[]}[]> = {
@@ -39,6 +46,14 @@ const CHEATSHEET: Record<string,{title:string;items:{k:string;v:string}[]}[]> = 
   python: [
     { title:"자료형", items:[{k:"int",v:"정수"},{k:"float",v:"실수"},{k:"str",v:"문자열"},{k:"list",v:"리스트"},{k:"dict",v:"딕셔너리"}]},
     { title:"제어문", items:[{k:"if/elif/else",v:"조건"},{k:"for...in",v:"반복"},{k:"while",v:"조건 반복"},{k:"def",v:"함수 정의"},{k:"class",v:"클래스"}]},
+  ],
+  javascript: [
+    { title:"자료형", items:[{k:"number",v:"숫자"},{k:"string",v:"문자열"},{k:"boolean",v:"참/거짓"},{k:"array",v:"배열"},{k:"object",v:"객체"}]},
+    { title:"키워드", items:[{k:"let/const",v:"변수 선언"},{k:"function",v:"함수"},{k:"=>",v:"화살표 함수"},{k:"async/await",v:"비동기"},{k:"class",v:"클래스"}]},
+  ],
+  java: [
+    { title:"자료형", items:[{k:"int",v:"정수 (4B)"},{k:"double",v:"실수 (8B)"},{k:"String",v:"문자열"},{k:"boolean",v:"참/거짓"},{k:"char",v:"문자 (2B)"}]},
+    { title:"키워드", items:[{k:"public",v:"공개"},{k:"static",v:"정적"},{k:"void",v:"반환 없음"},{k:"class",v:"클래스"},{k:"extends",v:"상속"}]},
   ],
 };
 
@@ -124,20 +139,19 @@ export default function CompilerPage() {
   const updateCode=(v:string|undefined)=>{const val=v||"";setTabs(p=>p.map(t=>t.id===activeTabId?{...t,content:val,modified:true}:t));};
   const newFile=()=>{const id=String(tabCnt);setTabs(p=>[...p,{id,name:`Untitled-${tabCnt}.c`,content:C_DEFAULT,lang:"c",modified:false}]);setActiveTabId(id);setTabCnt(p=>p+1);};
   const closeTab=(id:string)=>{const idx=tabs.findIndex(t=>t.id===id);setTabs(p=>p.filter(t=>t.id!==id));if(activeTabId===id){const next=tabs[idx-1]||tabs[idx+1];if(next)setActiveTabId(next.id);}};
-  const switchLang=(l:string)=>{setTabs(p=>p.map(t=>t.id===activeTabId?{...t,lang:l,name:`main${LANG_CFG[l].ext}`,content:l==="c"?C_DEFAULT:PY_DEFAULT,modified:false}:t));setOutput("");setOutStatus("idle");};
+  const switchLang=(l:string)=>{const cfg=LANG_CFG[l];if(!cfg)return;setTabs(p=>p.map(t=>t.id===activeTabId?{...t,lang:l,name:`main${cfg.ext}`,content:cfg.defaultCode,modified:false}:t));setOutput("");setOutStatus("idle");};
 
   const runCode=useCallback(async()=>{
     if(!activeTab)return;setRunning(true);setOutput("");setOutStatus("idle");setExecTime(null);setShowTerminal(true);
-    const c=LANG_CFG[activeTab.lang];const t0=performance.now();let res="",stat="success";
+    const t0=performance.now();let res="",stat="success";
     try{
-      const r=await fetch("https://wandbox.org/api/compile.json",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({code:activeTab.content,compiler:c.compiler,...c.opts,stdin})});
+      const r=await fetch("/api/compile",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({code:activeTab.content,language:activeTab.lang,stdin})});
       const d=await r.json();
-      if(d.compiler_error){res=d.compiler_error;stat="compile_error";}
-      else if(d.program_error){res=d.program_error;stat="runtime_error";}
-      else{res=d.program_output||"(출력 없음)";stat="success";}
+      if(!d.success){res=d.stderr||d.error||"오류 발생";stat="error";}
+      else{res=d.stdout||"(출력 없음)";stat="success";}
     }catch{res="서버 연결 실패";stat="error";}
     setExecTime(Math.round(performance.now()-t0));setOutStatus(stat==="success"?"success":"error");setOutput(res);setRunning(false);setCompileCount(p=>p+1);
-    addNotif(stat==="success"?"success":"error",stat==="success"?`실행 완료 (${Math.round(performance.now()-t0)}ms)`:`컴파일 오류 발생`);
+    addNotif(stat==="success"?"success":"error",stat==="success"?`실행 완료 (${Math.round(performance.now()-t0)}ms)`:`오류 발생`);
     if(stat==="success"){const ps=Array.from({length:10},(_,i)=>({id:Date.now()+i,x:50+Math.random()*60,y:50+Math.random()*40,color:["#4ade80","#6d9fff","#22d3ee","#fbbf24"][i%4]}));setParticles(ps);setTimeout(()=>setParticles([]),900);}
     if(userId){try{await supabase.from("code_submissions").insert({user_id:userId,language:activeTab.lang,code:activeTab.content,output:res,status:stat});fetchHist();if(stat==="success"){await awardXP(userId,XP_REWARDS.code_submit,"코드 실행","terminal");setXpMsg(`+${XP_REWARDS.code_submit} XP`);setTimeout(()=>setXpMsg(""),3000);}}catch{}}
   },[activeTab,stdin,userId,supabase,fetchHist]);
@@ -410,7 +424,7 @@ export default function CompilerPage() {
               {rightTab==="stats"&&(<>
                 <div className="cs-right-section">
                   <div className="cs-right-title"><MI icon="bar_chart" s={11} c="var(--cs-accent)"/>코드 분석</div>
-                  {[{l:"언어",v:cfg.label,c:"var(--cs-accent)"},{l:"라인",v:`${lines}`,c:"var(--cs-yellow)"},{l:"크기",v:`${bytes} B`,c:"var(--cs-orange)"},{l:"컴파일러",v:cfg.compiler,c:"#555"},{l:"총 컴파일",v:`${compileCount}회`,c:"var(--cs-cyan)"},{l:"성공률",v:history.length?`${Math.round(history.filter(h=>h.status==="success").length/history.length*100)}%`:"—",c:"var(--cs-green)"}].map(i=>(<div key={i.l} style={{display:"flex",justifyContent:"space-between",marginBottom:4,fontSize:11}}><span style={{color:"#555"}}>{i.l}</span><span style={{color:i.c,fontFamily:"'JetBrains Mono'",fontWeight:600,fontSize:10}}>{i.v}</span></div>))}
+                  {[{l:"언어",v:cfg.label,c:"var(--cs-accent)"},{l:"라인",v:`${lines}`,c:"var(--cs-yellow)"},{l:"크기",v:`${bytes} B`,c:"var(--cs-orange)"},{l:"모드",v:lang,c:"#555"},{l:"총 컴파일",v:`${compileCount}회`,c:"var(--cs-cyan)"},{l:"성공률",v:history.length?`${Math.round(history.filter(h=>h.status==="success").length/history.length*100)}%`:"—",c:"var(--cs-green)"}].map(i=>(<div key={i.l} style={{display:"flex",justifyContent:"space-between",marginBottom:4,fontSize:11}}><span style={{color:"#555"}}>{i.l}</span><span style={{color:i.c,fontFamily:"'JetBrains Mono'",fontWeight:600,fontSize:10}}>{i.v}</span></div>))}
                 </div>
               </>)}
               {rightTab==="shortcuts"&&(<div className="cs-right-section"><div className="cs-right-title"><MI icon="keyboard" s={11} c="var(--cs-pink)"/>키보드 단축키</div>{SHORTCUTS.map(s=>(<div key={s.keys} style={{display:"flex",justifyContent:"space-between",marginBottom:5,fontSize:10}}><span style={{color:"#555"}}>{s.desc}</span><kbd style={{fontSize:9,padding:"1px 6px",borderRadius:3,background:"#0a0a0a",border:"1px solid #222",color:"#c8c8c8",fontFamily:"'JetBrains Mono'"}}>{s.keys}</kbd></div>))}</div>)}

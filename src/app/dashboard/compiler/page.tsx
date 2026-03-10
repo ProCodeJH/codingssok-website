@@ -50,14 +50,24 @@ const SHORTCUTS = [
 ];
 
 const CODE_RAIN = ["int main(){","printf()","#include","return 0;","for(i=0;","while(1)","if(x>0)","malloc()","sizeof()","struct{}","*ptr","break;"];
-type RTab = "snippets"|"cheatsheet"|"stats"|"shortcuts"|"memory"|"achievements"|"heatmap"|"challenge";
+type RTab = "snippets"|"cheatsheet"|"stats"|"shortcuts"|"memory"|"achievements"|"heatmap"|"challenge"|"algo"|"execution"|"bookmarks"|"review"|"focus"|"notifications";
 const RTABS:{id:RTab;icon:string;label:string}[] = [
   {id:"snippets",icon:"code",label:"스니펫"},{id:"cheatsheet",icon:"menu_book",label:"치트시트"},
   {id:"stats",icon:"bar_chart",label:"통계"},{id:"shortcuts",icon:"keyboard",label:"단축키"},
   {id:"memory",icon:"memory",label:"메모리"},{id:"achievements",icon:"emoji_events",label:"성취"},
   {id:"heatmap",icon:"grid_on",label:"히트맵"},{id:"challenge",icon:"flag",label:"챌린지"},
+  {id:"algo",icon:"account_tree",label:"알고리즘"},{id:"execution",icon:"play_circle",label:"실행추적"},
+  {id:"bookmarks",icon:"bookmark",label:"북마크"},{id:"review",icon:"rate_review",label:"코드리뷰"},
+  {id:"focus",icon:"center_focus_strong",label:"집중"},{id:"notifications",icon:"notifications",label:"알림"},
 ];
 type ActPanel = "files"|"search"|"templates"|null;
+
+const ALGO_LIST = [
+  {name:"버블 정렬",complexity:"O(n²)",desc:"인접 요소를 비교하며 정렬",code:`#include <stdio.h>\nvoid bubbleSort(int arr[], int n) {\n    for(int i=0;i<n-1;i++)\n        for(int j=0;j<n-i-1;j++)\n            if(arr[j]>arr[j+1]) {\n                int t=arr[j]; arr[j]=arr[j+1]; arr[j+1]=t;\n            }\n}\nint main() {\n    int arr[]={64,34,25,12,22,11,90};\n    int n=sizeof(arr)/sizeof(arr[0]);\n    bubbleSort(arr,n);\n    for(int i=0;i<n;i++) printf("%d ",arr[i]);\n    return 0;\n}`},
+  {name:"이진 탐색",complexity:"O(log n)",desc:"정렬된 배열에서 반씩 줄여 탐색",code:`#include <stdio.h>\nint binarySearch(int arr[],int l,int r,int x) {\n    while(l<=r) {\n        int m=l+(r-l)/2;\n        if(arr[m]==x) return m;\n        if(arr[m]<x) l=m+1; else r=m-1;\n    }\n    return -1;\n}\nint main() {\n    int arr[]={2,3,4,10,40};\n    int result=binarySearch(arr,0,4,10);\n    printf(result!=-1?"인덱스: %d\\n":"없음\\n",result);\n    return 0;\n}`},
+  {name:"피보나치",complexity:"O(n)",desc:"재귀/반복으로 피보나치 수열",code:`#include <stdio.h>\nint fib(int n) {\n    int a=0,b=1,c;\n    for(int i=2;i<=n;i++) { c=a+b; a=b; b=c; }\n    return n==0?a:b;\n}\nint main() {\n    for(int i=0;i<10;i++) printf("F(%d)=%d\\n",i,fib(i));\n    return 0;\n}`},
+  {name:"선택 정렬",complexity:"O(n²)",desc:"최솟값을 찾아 앞으로 이동",code:`#include <stdio.h>\nint main() {\n    int arr[]={29,10,14,37,13};\n    int n=5;\n    for(int i=0;i<n-1;i++) {\n        int min=i;\n        for(int j=i+1;j<n;j++) if(arr[j]<arr[min]) min=j;\n        int t=arr[min]; arr[min]=arr[i]; arr[i]=t;\n    }\n    for(int i=0;i<n;i++) printf("%d ",arr[i]);\n    return 0;\n}`},
+];
 
 function MI({icon,s,c}:{icon:string;s?:number;c?:string}){
   return <span className="material-symbols-outlined" style={{fontSize:s||14,color:c}}>{icon}</span>;
@@ -95,6 +105,12 @@ export default function CompilerPage() {
   const [minimap,setMinimap]=useState(true);
   const [cursorPos,setCursorPos]=useState({ln:1,col:1});
   const editorRef=useRef<any>(null);
+  const [zenMode,setZenMode]=useState(false);
+  const [showWelcome,setShowWelcome]=useState(()=>!localStorage.getItem("cs-welcomed"));
+  const [typingSound,setTypingSound]=useState(false);
+  const [bookmarks,setBookmarks]=useState<{ln:number;text:string}[]>([]);
+  const [notifications,setNotifications]=useState<{id:number;type:string;msg:string;time:string}[]>([]);
+  const addNotif=(type:string,msg:string)=>setNotifications(p=>[{id:Date.now(),type,msg,time:new Date().toLocaleTimeString("ko-KR",{hour:"2-digit",minute:"2-digit"})},...p].slice(0,20));
 
   const [history,setHistory]=useState<any[]>([]);
   useEffect(()=>{localStorage.setItem("cs-cc",String(compileCount))},[compileCount]);
@@ -121,11 +137,22 @@ export default function CompilerPage() {
       else{res=d.program_output||"(출력 없음)";stat="success";}
     }catch{res="서버 연결 실패";stat="error";}
     setExecTime(Math.round(performance.now()-t0));setOutStatus(stat==="success"?"success":"error");setOutput(res);setRunning(false);setCompileCount(p=>p+1);
+    addNotif(stat==="success"?"success":"error",stat==="success"?`실행 완료 (${Math.round(performance.now()-t0)}ms)`:`컴파일 오류 발생`);
     if(stat==="success"){const ps=Array.from({length:10},(_,i)=>({id:Date.now()+i,x:50+Math.random()*60,y:50+Math.random()*40,color:["#4ade80","#6d9fff","#22d3ee","#fbbf24"][i%4]}));setParticles(ps);setTimeout(()=>setParticles([]),900);}
     if(userId){try{await supabase.from("code_submissions").insert({user_id:userId,language:activeTab.lang,code:activeTab.content,output:res,status:stat});fetchHist();if(stat==="success"){await awardXP(userId,XP_REWARDS.code_submit,"코드 실행","terminal");setXpMsg(`+${XP_REWARDS.code_submit} XP`);setTimeout(()=>setXpMsg(""),3000);}}catch{}}
   },[activeTab,stdin,userId,supabase,fetchHist]);
 
-  const handleMount=(editor:any)=>{editorRef.current=editor;editor.addAction({id:"run",label:"Run",keybindings:[2048|3],run:()=>runCode()});editor.onDidChangeCursorPosition((e:any)=>setCursorPos({ln:e.position.lineNumber,col:e.position.column}));};
+  const handleMount=(editor:any,monaco:any)=>{
+    editorRef.current=editor;
+    // Pure black theme
+    monaco.editor.defineTheme("cs-black",{base:"vs-dark",inherit:true,rules:[{background:"000000"}],colors:{"editor.background":"#000000","editor.foreground":"#c8c8c8","editorLineNumber.foreground":"#333333","editorLineNumber.activeForeground":"#666666","editor.selectionBackground":"#1a3a6a","editor.lineHighlightBackground":"#0a0a0a","editorCursor.foreground":"#6d9fff","editorWhitespace.foreground":"#1a1a1a","editorIndentGuide.background":"#111111","editorIndentGuide.activeBackground":"#222222","editorWidget.background":"#0a0a0a","editorWidget.border":"#1a1a1a","editorSuggestWidget.background":"#0a0a0a","editorSuggestWidget.border":"#1a1a1a","editorSuggestWidget.selectedBackground":"#1a1a1a","minimap.background":"#000000","scrollbar.shadow":"#000000","scrollbarSlider.background":"#1a1a1a80","scrollbarSlider.hoverBackground":"#22222280","scrollbarSlider.activeBackground":"#33333380"}});
+    monaco.editor.setTheme("cs-black");
+    editor.addAction({id:"run",label:"Run",keybindings:[2048|3],run:()=>runCode()});
+    editor.addAction({id:"bookmark",label:"Toggle Bookmark",keybindings:[2048|66],run:(ed:any)=>{const ln=ed.getPosition()?.lineNumber;if(ln){const mdl=ed.getModel();const text=mdl?.getLineContent(ln)||"";
+      setBookmarks(p=>{const exists=p.find(b=>b.ln===ln);return exists?p.filter(b=>b.ln!==ln):[...p,{ln,text:text.trim()}];});}}})
+    editor.onDidChangeCursorPosition((e:any)=>setCursorPos({ln:e.position.lineNumber,col:e.position.column}));
+    if(typingSound){editor.onDidType(()=>{const a=new Audio();a.src="data:audio/wav;base64,UklGRl9vT19teleGZtdC";a.volume=0.02;a.play().catch(()=>{});});}
+  };
 
   useEffect(()=>{
     const h=(e:KeyboardEvent)=>{
@@ -312,8 +339,8 @@ export default function CompilerPage() {
           {/* Editor */}
           <div className="cs-editor-area">
             <div className="cs-code-rain">{rainCols.map((c,i)=>(<div key={i} className="cs-code-rain-col" style={{left:c.left,animationDuration:`${c.dur}s`,animationDelay:`${c.delay}s`}}>{c.text}</div>))}</div>
-            <Editor height="100%" language={cfg.monaco} value={activeTab?.content||""} onChange={updateCode} onMount={handleMount} theme="vs-dark"
-              options={{fontSize:14,fontFamily:"'JetBrains Mono','Fira Code','Consolas',monospace",fontLigatures:true,minimap:{enabled:minimap,maxColumn:60},scrollBeyondLastLine:false,lineNumbers:"on",renderLineHighlight:"all",padding:{top:12,bottom:12},automaticLayout:true,tabSize:4,bracketPairColorization:{enabled:true},guides:{bracketPairs:true,indentation:true},cursorBlinking:"expand",cursorSmoothCaretAnimation:"on",smoothScrolling:true,scrollbar:{verticalScrollbarSize:6,horizontalScrollbarSize:6}}}/>
+            <Editor height="100%" language={cfg.monaco} value={activeTab?.content||""} onChange={updateCode} onMount={handleMount} theme="cs-black"
+              options={{fontSize:14,fontFamily:"'JetBrains Mono','Fira Code','Consolas',monospace",fontLigatures:true,minimap:{enabled:minimap&&!zenMode,maxColumn:60},scrollBeyondLastLine:false,lineNumbers:zenMode?"off":"on",renderLineHighlight:"all",padding:{top:12,bottom:12},automaticLayout:true,tabSize:4,bracketPairColorization:{enabled:true},guides:{bracketPairs:true,indentation:true},cursorBlinking:"expand",cursorSmoothCaretAnimation:"on",smoothScrolling:true,scrollbar:{verticalScrollbarSize:6,horizontalScrollbarSize:6}}}/>
             {running&&<div className="cs-pipeline"><div className="cs-pipeline-bar"/></div>}
           </div>
 
@@ -367,6 +394,12 @@ export default function CompilerPage() {
               {rightTab==="achievements"&&(<div className="cs-right-section"><div className="cs-right-title"><MI icon="emoji_events" s={11} c="var(--cs-yellow)"/>성취</div>{achievements.map(a=>(<div key={a.title} style={{display:"flex",alignItems:"center",gap:8,marginBottom:8,padding:6,borderRadius:6,background:a.done?"rgba(74,222,128,0.04)":"var(--cs-surface)",border:`1px solid ${a.done?"rgba(74,222,128,0.15)":"var(--cs-border)"}`,opacity:a.done?1:0.5}}><span style={{fontSize:16}}>{a.icon}</span><div style={{flex:1}}><div style={{fontSize:11,fontWeight:700,color:a.done?"var(--cs-green)":"#555"}}>{a.title}</div><div style={{fontSize:9,color:"#555"}}>{a.desc}</div></div>{a.done&&<MI icon="check_circle" s={14} c="var(--cs-green)"/>}</div>))}</div>)}
               {rightTab==="heatmap"&&(<div className="cs-right-section"><div className="cs-right-title"><MI icon="grid_on" s={11} c="var(--cs-green)"/>코딩 히트맵 (12주)</div><div className="cs-heatmap">{heatmapData.map((v,i)=>(<div key={i} className="cs-heatmap-cell" style={{background:v===0?"#0a0a0a":v<3?"rgba(74,222,128,0.15)":v<5?"rgba(74,222,128,0.3)":"rgba(74,222,128,0.5)"}}/>))}</div><p style={{fontSize:9,color:"#555",marginTop:6}}>컴파일할수록 채워집니다</p></div>)}
               {rightTab==="challenge"&&(<div className="cs-right-section"><div className="cs-right-title"><MI icon="flag" s={11} c="var(--cs-orange)"/>코딩 챌린지</div>{challenges.map(ch=>(<div key={ch.title} className="cs-snippet" onClick={()=>updateCode(`// 챌린지: ${ch.title}\n// ${ch.desc}\n// 힌트: ${ch.hint}\n\n#include <stdio.h>\n\nint main() {\n    // 여기에 코드를 작성하세요\n    \n    return 0;\n}`)}><div className="cs-snippet-title">{ch.title}</div><div style={{fontSize:10,color:"#555"}}>{ch.desc}</div></div>))}</div>)}
+              {rightTab==="algo"&&(<div className="cs-right-section"><div className="cs-right-title"><MI icon="account_tree" s={11} c="var(--cs-accent2)"/>알고리즘 라이브러리</div>{ALGO_LIST.map(a=>(<div key={a.name} className="cs-snippet" onClick={()=>updateCode(a.code)}><div style={{display:"flex",justifyContent:"space-between",alignItems:"center"}}><div className="cs-snippet-title">{a.name}</div><span style={{fontSize:9,padding:"1px 6px",borderRadius:3,background:"rgba(167,139,250,0.1)",color:"var(--cs-accent2)",fontFamily:"'JetBrains Mono'"}}>{a.complexity}</span></div><div style={{fontSize:10,color:"#555",marginTop:2}}>{a.desc}</div></div>))}</div>)}
+              {rightTab==="execution"&&(<div className="cs-right-section"><div className="cs-right-title"><MI icon="play_circle" s={11} c="var(--cs-green)"/>실행 추적</div>{output?(<div><p style={{fontSize:10,color:"#555",marginBottom:6}}>마지막 실행 결과:</p><div style={{padding:8,borderRadius:6,background:"var(--cs-surface)",border:"1px solid var(--cs-border)",fontFamily:"'JetBrains Mono'",fontSize:10,color:outStatus==="success"?"var(--cs-green)":"var(--cs-red)",lineHeight:1.6,whiteSpace:"pre-wrap",maxHeight:200,overflow:"auto"}}>{output}</div>{execTime&&<div style={{marginTop:6,fontSize:9,color:"#555"}}>실행 시간: {execTime}ms</div>}</div>):<p style={{fontSize:10,color:"#555"}}>코드를 실행하면 결과가 여기에 표시됩니다</p>}</div>)}
+              {rightTab==="bookmarks"&&(<div className="cs-right-section"><div className="cs-right-title"><MI icon="bookmark" s={11} c="var(--cs-yellow)"/>북마크 (Ctrl+B)</div>{bookmarks.length===0?<p style={{fontSize:10,color:"#555"}}>에디터에서 Ctrl+B로 북마크 추가</p>:bookmarks.map(b=>(<div key={b.ln} className="cs-snippet" onClick={()=>{if(editorRef.current)editorRef.current.revealLineInCenter(b.ln);}}><div style={{display:"flex",justifyContent:"space-between"}}><span style={{fontSize:10,color:"var(--cs-yellow)"}}>Ln {b.ln}</span><button onClick={e=>{e.stopPropagation();setBookmarks(p=>p.filter(x=>x.ln!==b.ln));}} style={{background:"none",border:"none",color:"#555",cursor:"pointer",fontSize:10}}>✕</button></div><div style={{fontSize:9,color:"#555",fontFamily:"'JetBrains Mono'",marginTop:2,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{b.text}</div></div>))}</div>)}
+              {rightTab==="review"&&(<div className="cs-right-section"><div className="cs-right-title"><MI icon="rate_review" s={11} c="var(--cs-cyan)"/>코드 리뷰</div>{(()=>{const code=activeTab?.content||"";const issues:{type:string;msg:string;color:string}[]=[];if(code.includes("gets("))issues.push({type:"⚠",msg:"gets()는 보안 취약 → fgets() 권장",color:"var(--cs-red)"});if(!code.includes("free")&&code.includes("malloc"))issues.push({type:"⚠",msg:"malloc 후 free 누락 의심",color:"var(--cs-yellow)"});if(code.includes("// TODO")||code.includes("// FIXME"))issues.push({type:"ℹ",msg:"TODO/FIXME 주석 발견",color:"var(--cs-accent)"});if(code.split("\n").some(l=>l.length>120))issues.push({type:"💡",msg:"120자 이상 긴 줄 존재",color:"var(--cs-orange)"});if(issues.length===0)issues.push({type:"✅",msg:"특이사항 없음",color:"var(--cs-green)"});return issues.map((iss,i)=>(<div key={i} style={{display:"flex",gap:6,padding:"6px 8px",borderRadius:6,background:"var(--cs-surface)",border:"1px solid var(--cs-border)",marginBottom:4}}><span>{iss.type}</span><span style={{fontSize:10,color:iss.color}}>{iss.msg}</span></div>));})()}</div>)}
+              {rightTab==="focus"&&(<div className="cs-right-section"><div className="cs-right-title"><MI icon="center_focus_strong" s={11} c="var(--cs-pink)"/>집중 모드</div><p style={{fontSize:10,color:"#555",marginBottom:8}}>Zen 모드로 전환하면 에디터만 표시됩니다</p><button onClick={()=>{setZenMode(p=>!p);if(!zenMode){setActPanel(null);setShowRight(false);setShowTerminal(false);}else{setActPanel("files");setShowRight(true);setShowTerminal(true);}}} style={{width:"100%",padding:"8px 12px",borderRadius:6,border:"1px solid var(--cs-border)",background:zenMode?"rgba(244,114,182,0.1)":"var(--cs-surface)",color:zenMode?"var(--cs-pink)":"var(--cs-text)",cursor:"pointer",fontSize:11,fontWeight:700}}>{zenMode?"Zen 모드 해제":"Zen 모드 시작"}</button><div style={{marginTop:12}}><p style={{fontSize:10,color:"#555",marginBottom:4}}>타이핑 효과음</p><button onClick={()=>setTypingSound(p=>!p)} style={{padding:"6px 10px",borderRadius:4,border:"1px solid var(--cs-border)",background:typingSound?"rgba(74,222,128,0.1)":"var(--cs-surface)",color:typingSound?"var(--cs-green)":"#555",cursor:"pointer",fontSize:10}}>{typingSound?"🔊 ON":"🔈 OFF"}</button></div></div>)}
+              {rightTab==="notifications"&&(<div className="cs-right-section"><div className="cs-right-title"><MI icon="notifications" s={11} c="var(--cs-accent)"/>알림 센터</div>{notifications.length===0?<p style={{fontSize:10,color:"#555"}}>알림이 없습니다</p>:notifications.map(n=>(<div key={n.id} style={{padding:6,borderRadius:6,background:"var(--cs-surface)",border:"1px solid var(--cs-border)",marginBottom:4}}><div style={{display:"flex",justifyContent:"space-between",fontSize:9}}><span style={{color:n.type==="success"?"var(--cs-green)":n.type==="error"?"var(--cs-red)":"var(--cs-accent)",fontWeight:700}}>{n.type.toUpperCase()}</span><span style={{color:"#555"}}>{n.time}</span></div><div style={{fontSize:10,color:"var(--cs-text)",marginTop:2}}>{n.msg}</div></div>))}</div>)}
             </div>
           </div>
         )}

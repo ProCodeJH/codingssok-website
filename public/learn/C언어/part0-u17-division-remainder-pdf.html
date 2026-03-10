@@ -1,0 +1,1530 @@
+﻿<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<base href="/learn/C언어/">
+<title>코딩쏙 교재 — 나눗셈과 나머지</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+/* ═══════════════════════════════════════════════════════════════
+   코딩쏙 프리미엄 PDF 교재 스타일시트 v5.0
+   Paged.js + A4 인쇄 최적화 + 아동교육 디자인 시스템
+   ═══════════════════════════════════════════════════════════════ */
+
+/* ── 리셋 & 기본 ── */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --c-primary: #FF6B6B;
+  --c-primary-light: #FFE8E8;
+  --c-primary-dark: #E84545;
+  --c-accent: #4ECDC4;
+  --c-accent-light: #E8FFF9;
+  --c-blue: #3B82F6;
+  --c-blue-light: #EFF6FF;
+  --c-purple: #8B5CF6;
+  --c-purple-light: #F5F3FF;
+  --c-orange: #F59E0B;
+  --c-orange-light: #FFFBEB;
+  --c-green: #10B981;
+  --c-green-light: #ECFDF5;
+  --c-red: #EF4444;
+  --c-red-light: #FEF2F2;
+  --c-teal: #14B8A6;
+  --c-teal-light: #F0FDFA;
+  --c-pink: #EC4899;
+  --c-text: #1E293B;
+  --c-text-secondary: #64748B;
+  --c-text-muted: #94A3B8;
+  --c-border: #E2E8F0;
+  --c-bg-subtle: #F8FAFC;
+  --c-bg-warm: #FFFBF5;
+  --font-body: 'Pretendard', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-code: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --radius-xl: 18px;
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.08);
+  --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
+  --shadow-lg: 0 8px 24px rgba(0,0,0,0.10);
+}
+
+/* ── 페이지 설정 ── */
+@page {
+  size: A4;
+  margin: 18mm 17mm 15mm 22mm;
+  @bottom-center {
+    content: counter(page);
+    font-family: var(--font-body);
+    font-size: 9pt;
+    color: var(--c-text-muted);
+    letter-spacing: 1px;
+  }
+}
+@page :first { @bottom-center { content: none; } }
+
+body {
+  font-family: var(--font-body);
+  color: var(--c-text);
+  background: white;
+  font-size: 11.5pt;
+  line-height: 180%;
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+  word-break: keep-all;
+  overflow-wrap: break-word;
+}
+
+/* ── 페이지 제어 ── */
+.avoid-break { break-inside: avoid !important; page-break-inside: avoid !important; }
+h2, h3 { break-after: avoid !important; page-break-after: avoid !important; }
+.page-break-hint { break-before: page !important; page-break-before: always !important; height: 0; margin: 0; padding: 0; }
+p { orphans: 3; widows: 3; }
+
+/* ═══════════════════════════════════════
+   레슨 헤더 — 프리미엄 그래디언트 배너
+   ═══════════════════════════════════════ */
+.lesson-header {
+  margin-bottom: 6mm;
+  padding: 6mm 5mm 5mm;
+  background: linear-gradient(135deg, #FF6B6B 0%, #FF8E53 50%, #FEC89A 100%);
+  border-radius: var(--radius-xl);
+  color: white;
+  position: relative;
+  overflow: hidden;
+  box-shadow: var(--shadow-lg);
+}
+.lesson-header::before {
+  content: '';
+  position: absolute;
+  top: -30%;
+  right: -10%;
+  width: 140px;
+  height: 140px;
+  background: rgba(255,255,255,0.12);
+  border-radius: 50%;
+}
+.lesson-header::after {
+  content: '';
+  position: absolute;
+  bottom: -20%;
+  left: 15%;
+  width: 80px;
+  height: 80px;
+  background: rgba(255,255,255,0.08);
+  border-radius: 50%;
+}
+.lesson-number {
+  font-size: 10pt;
+  font-weight: 700;
+  color: rgba(255,255,255,0.85);
+  margin-bottom: 2mm;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  position: relative;
+  z-index: 1;
+}
+.lesson-title {
+  font-size: 24pt;
+  font-weight: 900;
+  line-height: 125%;
+  color: white;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.15);
+  position: relative;
+  z-index: 1;
+}
+.lesson-summary {
+  font-size: 11pt;
+  color: rgba(255,255,255,0.9);
+  margin-top: 2.5mm;
+  font-weight: 400;
+  position: relative;
+  z-index: 1;
+}
+
+/* ═══════════════════════════════════════
+   제목 계층 — 프리미엄 타이포그래피
+   ═══════════════════════════════════════ */
+h2 {
+  font-size: 16pt;
+  font-weight: 800;
+  margin: 6mm 0 3mm;
+  padding: 2mm 0 2mm 4.5mm;
+  border-left: 4.5px solid var(--c-primary);
+  color: var(--c-text);
+  background: linear-gradient(90deg, var(--c-primary-light) 0%, transparent 60%);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  letter-spacing: -0.3px;
+}
+h3 {
+  font-size: 13.5pt;
+  font-weight: 700;
+  color: #334155;
+  margin: 4mm 0 2.5mm;
+  padding-bottom: 1mm;
+  border-bottom: 2px solid #F1F5F9;
+}
+p {
+  margin-bottom: 2.5mm;
+  text-align: justify;
+  line-height: 175%;
+  font-size: 11.5pt;
+}
+
+/* ── 인라인 코드 ── */
+code {
+  font-family: var(--font-code);
+  font-size: 9.5pt;
+  background: linear-gradient(135deg, #FEF3C7, #FDE68A);
+  padding: 0.5mm 2mm;
+  border-radius: 4px;
+  color: #92400E;
+  border: 1px solid #FCD34D;
+  font-weight: 500;
+}
+
+/* ═══════════════════════════════════════
+   코드 블록 — 프리미엄 IDE 스타일
+   ═══════════════════════════════════════ */
+.code-block {
+  background: #0F172A;
+  border-radius: var(--radius-md);
+  padding: 0;
+  margin: 3mm 0;
+  box-shadow: var(--shadow-md), inset 0 1px 0 rgba(255,255,255,0.05);
+  overflow: hidden;
+  border: 1px solid #1E293B;
+}
+.code-block-header {
+  font-family: var(--font-body);
+  font-size: 8.5pt;
+  font-weight: 600;
+  color: #94A3B8;
+  padding: 2.5mm 4.5mm;
+  background: #1E293B;
+  border-bottom: 1px solid #334155;
+  letter-spacing: 0.5px;
+  display: flex;
+  align-items: center;
+  gap: 2mm;
+}
+.code-block-header::before {
+  content: '';
+  display: inline-flex;
+  width: 8px; height: 8px;
+  background: #EF4444;
+  border-radius: 50%;
+  box-shadow: 14px 0 0 #F59E0B, 28px 0 0 #22C55E;
+  flex-shrink: 0;
+}
+.code-table { width: 100%; border-collapse: collapse; table-layout: fixed; }
+.code-table td { vertical-align: top; padding: 0; }
+.line-num {
+  width: 12mm;
+  min-width: 12mm;
+  max-width: 12mm;
+  text-align: right;
+  padding: 0.5mm 3mm 0.5mm 2mm;
+  font-family: var(--font-code);
+  font-size: 8pt;
+  color: #475569;
+  line-height: 165%;
+  user-select: none;
+  background: rgba(0,0,0,0.15);
+  border-right: 1px solid rgba(255,255,255,0.06);
+}
+.line-code {
+  width: auto;
+  font-family: var(--font-code);
+  font-size: 10pt;
+  color: #E2E8F0;
+  line-height: 165%;
+  padding: 0.5mm 4mm 0.5mm 4mm;
+  white-space: pre;
+  overflow-x: auto;
+}
+.line-highlight td { background: rgba(59,130,246,0.12) !important; }
+.line-highlight .line-num { color: var(--c-blue) !important; font-weight: 700; }
+
+/* 신택스 컬러 — VS Code Dark+ 영감 */
+.kw { color: #C084FC; font-weight: 500; }
+.str { color: #86EFAC; }
+.cmt { color: #6B7280; font-style: italic; }
+.fn { color: #FDBA74; }
+.pp { color: #F472B6; font-weight: 600; }
+.num { color: #7DD3FC; }
+.type { color: #5EEAD4; font-weight: 500; }
+.mc { color: #67E8F9; }
+.esc { color: #FCD34D; font-weight: 600; }
+.fmt { color: #FCD34D; }
+
+/* ═══════════════════════════════════════
+   실행 결과 — 터미널 스타일
+   ═══════════════════════════════════════ */
+.output-block {
+  background: #F0FDF4;
+  border: 1.5px solid #86EFAC;
+  border-radius: var(--radius-md);
+  padding: 3mm 4mm;
+  margin: 3mm 0;
+  position: relative;
+}
+.output-label {
+  font-family: var(--font-body);
+  font-size: 8.5pt;
+  color: var(--c-green);
+  display: block;
+  margin-bottom: 1.5mm;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+.output-text {
+  font-family: var(--font-code);
+  font-size: 10.5pt;
+  line-height: 160%;
+  color: #166534;
+}
+
+/* ═══════════════════════════════════════
+   박스 시스템 — 프리미엄 카드 디자인
+   ═══════════════════════════════════════ */
+.box {
+  border-radius: var(--radius-md);
+  padding: 3.5mm 4.5mm;
+  margin: 3mm 0;
+  position: relative;
+  box-shadow: var(--shadow-sm);
+}
+.box-label {
+  font-size: 10.5pt;
+  font-weight: 800;
+  margin-bottom: 2mm;
+  display: flex;
+  align-items: center;
+  gap: 2mm;
+}
+.box-content { font-size: 11pt; line-height: 170%; overflow-wrap: break-word; word-break: keep-all; }
+.box-warning {
+  border-left: 5px solid var(--c-red);
+  background: linear-gradient(135deg, #FEF2F2 0%, #FFF1F2 100%);
+}
+.box-warning .box-label { color: var(--c-red); }
+.box-key {
+  border-left: 5px solid var(--c-blue);
+  background: linear-gradient(135deg, #EFF6FF 0%, #F0F9FF 100%);
+}
+.box-key .box-label { color: var(--c-blue); }
+.box-tip {
+  border-left: 5px solid var(--c-orange);
+  background: linear-gradient(135deg, #FFFBEB 0%, #FEF9C3 50%, #FFFBEB 100%);
+}
+.box-tip .box-label { color: var(--c-orange); }
+.box-summary {
+  border-left: 5px solid var(--c-green);
+  background: linear-gradient(135deg, #ECFDF5 0%, #D1FAE5 100%);
+  border: 1.5px solid #A7F3D0;
+  border-left: 5px solid var(--c-green);
+}
+.box-summary .box-label { color: var(--c-green); }
+.box-question {
+  border-left: 5px solid var(--c-purple);
+  background: linear-gradient(135deg, #F5F3FF 0%, #EDE9FE 100%);
+}
+.box-question .box-label { color: var(--c-purple); }
+.box-history {
+  border-left: 5px solid var(--c-teal);
+  background: linear-gradient(135deg, #F0FDFA 0%, #CCFBF1 100%);
+}
+.box-history .box-label { color: var(--c-teal); }
+
+/* ═══════════════════════════════════════
+   연습문제 — 프리미엄 카드
+   ═══════════════════════════════════════ */
+.exercise {
+  background: white;
+  border: 1.5px solid #E2E8F0;
+  border-radius: var(--radius-lg);
+  padding: 3.5mm 4.5mm;
+  margin: 3mm 0;
+  border-left: 5px solid var(--c-primary);
+  box-shadow: var(--shadow-sm);
+  position: relative;
+}
+.exercise-title {
+  font-size: 13pt;
+  font-weight: 800;
+  color: var(--c-primary);
+  margin-bottom: 2.5mm;
+  display: flex;
+  align-items: center;
+  gap: 2mm;
+}
+.difficulty {
+  display: inline-flex;
+  align-items: center;
+  font-size: 8pt;
+  padding: 0.5mm 2.5mm;
+  border-radius: 20px;
+  margin-left: 2mm;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+}
+.diff-1 { background: #D1FAE5; color: #059669; }
+.diff-2 { background: #FEF3C7; color: #D97706; }
+.diff-3 { background: #FEE2E2; color: #DC2626; }
+.memo-area {
+  border: 2px dashed #CBD5E1;
+  border-radius: var(--radius-md);
+  padding: 3mm;
+  min-height: 15mm;
+  margin-top: 2.5mm;
+  background: repeating-linear-gradient(
+    transparent, transparent 7mm, #F1F5F9 7mm, #F1F5F9 7.5mm
+  );
+}
+.memo-label { font-size: 8.5pt; color: var(--c-text-muted); font-style: italic; }
+
+/* ── OX/Choice/Short ── */
+.exercise-answer {
+  font-size: 10pt;
+  color: var(--c-green);
+  margin-top: 2mm;
+  padding: 1.5mm 3mm;
+  background: var(--c-green-light);
+  border-radius: var(--radius-sm);
+  font-weight: 600;
+  border: 1px solid #A7F3D0;
+}
+.exercise-explain {
+  font-size: 9.5pt;
+  color: var(--c-text-secondary);
+  margin-top: 1.5mm;
+  padding: 2mm 3mm;
+  background: #F8FAFC;
+  border-radius: var(--radius-sm);
+  border-left: 3px solid #E2E8F0;
+}
+.choice-list { padding-left: 6mm; margin: 2mm 0; }
+.choice-list li { font-size: 10.5pt; margin-bottom: 1.5mm; line-height: 150%; }
+.choice-list li.choice-correct { color: var(--c-green); font-weight: 700; }
+
+/* ═══════════════════════════════════════
+   Before/After 비교 — 프리미엄 2컬럼
+   ═══════════════════════════════════════ */
+.compare {
+  display: flex;
+  gap: 3mm;
+  margin: 3mm 0;
+  overflow: hidden;
+}
+.compare-bad {
+  flex: 1;
+  min-width: 0;
+  background: linear-gradient(135deg, #FEF2F2, #FFF1F2);
+  border: 1.5px solid #FECACA;
+  border-radius: var(--radius-md);
+  padding: 3mm;
+  overflow: hidden;
+}
+.compare-good {
+  flex: 1;
+  min-width: 0;
+  background: linear-gradient(135deg, #ECFDF5, #D1FAE5);
+  border: 1.5px solid #A7F3D0;
+  border-radius: var(--radius-md);
+  padding: 3mm;
+  overflow: hidden;
+}
+.compare code {
+  font-size: 9pt;
+  word-break: break-all;
+  overflow-wrap: break-word;
+  display: block;
+  background: rgba(0,0,0,0.05);
+  padding: 2mm 3mm;
+  border-radius: var(--radius-sm);
+  margin: 1.5mm 0;
+  line-height: 155%;
+  white-space: pre-wrap;
+  border: none;
+  color: inherit;
+}
+.compare-label { font-size: 9.5pt; font-weight: 800; margin-bottom: 1.5mm; }
+.compare-bad .compare-label { color: var(--c-red); }
+.compare-good .compare-label { color: var(--c-green); }
+.compare-msg-bad { font-size: 9pt; color: var(--c-red); }
+.compare-msg-good { font-size: 9pt; color: var(--c-green); }
+
+/* ═══════════════════════════════════════
+   챕터 시작 — 프리미엄 카드
+   ═══════════════════════════════════════ */
+.chapter-start-box { margin-bottom: 3mm; }
+.learning-goals {
+  background: linear-gradient(135deg, #FFF7ED 0%, #FFFBEB 100%);
+  border-radius: var(--radius-lg);
+  padding: 4mm 5mm;
+  margin-bottom: 3mm;
+  border: 1.5px solid #FED7AA;
+  box-shadow: var(--shadow-sm);
+}
+.learning-goals h3 {
+  font-size: 12pt;
+  font-weight: 800;
+  color: #EA580C;
+  margin: 0 0 2.5mm;
+  border: none;
+  padding: 0;
+}
+.learning-goals ul { padding-left: 5mm; margin: 0; }
+.learning-goals li { font-size: 11pt; margin-bottom: 1.5mm; line-height: 160%; color: #431407; }
+.prereq-check {
+  background: var(--c-blue-light);
+  border-left: 5px solid var(--c-blue);
+  border-radius: var(--radius-md);
+  padding: 3mm 4mm;
+  margin-bottom: 2.5mm;
+}
+.prereq-check h3 {
+  font-size: 11pt;
+  font-weight: 700;
+  color: var(--c-blue);
+  margin: 0 0 1.5mm;
+  border: none;
+  padding: 0;
+}
+.checklist { list-style: none; padding-left: 4mm; margin: 0; }
+.checklist li { margin-bottom: 1mm; font-size: 10.5pt; }
+.checklist li::before { content: '\2610  '; font-size: 12pt; color: var(--c-text-muted); }
+.progress-section { margin-top: 2.5mm; }
+.progress-label { font-size: 9.5pt; color: var(--c-text-secondary); font-weight: 600; }
+.progress-bar {
+  background: #E2E8F0;
+  border-radius: 6px;
+  height: 4mm;
+  margin-top: 1.5mm;
+  overflow: hidden;
+}
+.progress-fill {
+  background: linear-gradient(90deg, var(--c-primary), #FF8E53, #FEC89A);
+  height: 100%;
+  border-radius: 6px;
+}
+
+/* ═══════════════════════════════════════
+   Predict — 생각해보기 카드
+   ═══════════════════════════════════════ */
+.predict-box {
+  display: flex;
+  gap: 3.5mm;
+  background: linear-gradient(135deg, #F5F3FF 0%, #EDE9FE 100%);
+  border: 1.5px solid #C4B5FD;
+  border-radius: var(--radius-lg);
+  padding: 3.5mm 4.5mm;
+  margin: 3mm 0;
+  box-shadow: var(--shadow-sm);
+}
+.predict-icon {
+  width: 10mm; height: 10mm;
+  background: linear-gradient(135deg, var(--c-purple), #A78BFA);
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16pt;
+  font-weight: 900;
+  flex-shrink: 0;
+  box-shadow: 0 2px 6px rgba(139,92,246,0.3);
+}
+.predict-content { flex: 1; }
+.predict-content p { font-size: 11pt; margin-bottom: 2mm; }
+
+/* ═══════════════════════════════════════
+   다이어그램 — 프리미엄 컨테이너
+   ═══════════════════════════════════════ */
+.diagram-box {
+  background: var(--c-bg-subtle);
+  border: 1.5px solid var(--c-border);
+  border-radius: var(--radius-lg);
+  padding: 4mm;
+  margin: 3.5mm 0;
+  box-shadow: var(--shadow-sm);
+}
+.diagram-title {
+  font-size: 11pt;
+  font-weight: 800;
+  color: var(--c-primary);
+  margin-bottom: 3mm;
+  text-align: center;
+  letter-spacing: 0.3px;
+}
+.diagram-content { font-size: 10.5pt; line-height: 170%; }
+.diagram-content .d-row { display: flex; align-items: center; justify-content: center; gap: 3mm; margin: 2mm 0; }
+.diagram-content .d-block { background: #1E293B; color: white; padding: 2mm 4mm; border-radius: var(--radius-sm); font-family: var(--font-code); font-size: 9.5pt; font-weight: 500; }
+.diagram-content .d-block-highlight { background: linear-gradient(135deg, var(--c-primary), #FF8E53); color: white; padding: 2mm 4mm; border-radius: var(--radius-sm); font-family: var(--font-code); font-size: 9.5pt; font-weight: 700; }
+.diagram-content .d-arrow { color: var(--c-text-muted); font-size: 14pt; }
+.diagram-content .d-label { font-size: 8.5pt; color: var(--c-text-secondary); }
+
+/* ═══════════════════════════════════════
+   Steps — 프리미엄 타임라인
+   ═══════════════════════════════════════ */
+.steps-visual { margin: 3mm 0; }
+.step-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 3.5mm;
+  margin-bottom: 1.5mm;
+}
+.step-num {
+  width: 8mm; height: 8mm;
+  background: linear-gradient(135deg, var(--c-primary), #FF8E53);
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10pt;
+  font-weight: 800;
+  flex-shrink: 0;
+  margin-top: 0.5mm;
+  box-shadow: 0 2px 4px rgba(255,107,107,0.3);
+}
+.step-body { flex: 1; }
+.step-title { font-size: 11pt; font-weight: 700; margin-bottom: 0.5mm; color: var(--c-text); }
+.step-desc { font-size: 10.5pt; color: var(--c-text-secondary); line-height: 160%; }
+.step-connector { width: 2.5px; height: 4mm; background: linear-gradient(180deg, var(--c-primary), transparent); margin-left: 3.7mm; }
+
+/* ═══════════════════════════════════════
+   Modify — 바꿔보기 카드
+   ═══════════════════════════════════════ */
+.modify-box {
+  background: linear-gradient(135deg, #F0F9FF 0%, #E0F2FE 100%);
+  border: 1.5px solid #7DD3FC;
+  border-left: 5px solid #0EA5E9;
+  border-radius: var(--radius-md);
+  padding: 3.5mm 4.5mm;
+  margin: 3mm 0;
+}
+.modify-label { font-size: 10.5pt; font-weight: 800; color: #0284C7; margin-bottom: 2mm; }
+.modify-hint { font-size: 9.5pt; color: var(--c-text-secondary); font-style: italic; margin: 1.5mm 0; }
+
+/* ═══════════════════════════════════════
+   정답 섹션
+   ═══════════════════════════════════════ */
+.answers-section {
+  background: white;
+  border: 1.5px solid #E9D5FF;
+  border-radius: var(--radius-md);
+  padding: 3mm 4mm;
+  margin: 3mm 0;
+  border-left: 5px solid var(--c-purple);
+}
+.answers-section h3 {
+  font-size: 12pt;
+  font-weight: 800;
+  color: var(--c-purple);
+  margin: 0 0 2.5mm;
+  border: none;
+  padding: 0;
+}
+.answer-item { margin-bottom: 1mm; font-size: 10pt; line-height: 150%; }
+.answer-num { font-weight: 700; color: var(--c-primary); margin-right: 2mm; }
+.answer-text { color: var(--c-text); }
+
+/* ═══════════════════════════════════════
+   코드 설명 (라인별)
+   ═══════════════════════════════════════ */
+.code-explain { margin: 3mm 0; padding-left: 2mm; }
+.code-explain-item {
+  display: flex;
+  align-items: flex-start;
+  margin-bottom: 2.5mm;
+  font-size: 11pt;
+  line-height: 165%;
+}
+.code-explain-line {
+  font-family: var(--font-code);
+  font-size: 9pt;
+  color: white;
+  background: linear-gradient(135deg, var(--c-primary), #FF8E53);
+  padding: 0.5mm 2.5mm;
+  border-radius: 4px;
+  margin-right: 3mm;
+  flex-shrink: 0;
+  font-weight: 700;
+  box-shadow: 0 1px 3px rgba(255,107,107,0.3);
+}
+
+/* ═══════════════════════════════════════
+   용어 정리 — 프리미엄 테이블
+   ═══════════════════════════════════════ */
+.glossary { margin: 3mm 0; break-inside: avoid; display: block !important; width: 100% !important; clear: both; }
+.glossary-item {
+  display: flex;
+  margin-bottom: 0;
+  font-size: 10pt;
+  padding: 2mm 3mm;
+  border-bottom: 1px solid #F1F5F9;
+  width: 100%;
+}
+.glossary-item:nth-child(odd) { background: #F8FAFC; }
+.glossary-item:first-child { border-radius: var(--radius-sm) var(--radius-sm) 0 0; }
+.glossary-item:last-child { border-radius: 0 0 var(--radius-sm) var(--radius-sm); border-bottom: none; }
+.glossary-term {
+  font-weight: 700;
+  min-width: 28mm;
+  max-width: 35mm;
+  flex-shrink: 0;
+  color: var(--c-text);
+  font-family: var(--font-code);
+  font-size: 9.5pt;
+  word-break: keep-all;
+}
+.glossary-def { color: var(--c-text-secondary); line-height: 155%; flex: 1; min-width: 0; }
+
+/* ═══════════════════════════════════════
+   추적 테이블 — 프리미엄 데이터 테이블
+   ═══════════════════════════════════════ */
+.trace-table { margin: 3.5mm 0; }
+.trace-caption { font-size: 10.5pt; font-weight: 700; color: var(--c-primary); margin-bottom: 2mm; }
+.trace-table table { width: 100%; border-collapse: collapse; font-size: 10pt; border-radius: var(--radius-sm); overflow: hidden; }
+.trace-table th {
+  background: linear-gradient(135deg, #1E293B, #334155);
+  color: white;
+  padding: 2mm 3.5mm;
+  text-align: left;
+  font-weight: 700;
+  font-size: 9.5pt;
+}
+.trace-table td { padding: 2mm 3.5mm; border-bottom: 1px solid #F1F5F9; font-family: var(--font-code); font-size: 9.5pt; }
+.trace-table tr:nth-child(even) td { background: #F8FAFC; }
+
+/* ═══════════════════════════════════════
+   마스코트 말풍선 — 프리미엄 디자인
+   ═══════════════════════════════════════ */
+.mascot-speech {
+  display: flex;
+  align-items: flex-start;
+  gap: 3.5mm;
+  margin: 3.5mm 0;
+}
+.mascot-speech.right { flex-direction: row-reverse; }
+.mascot-speech-img {
+  flex-shrink: 0;
+  width: 60px;
+  height: 60px;
+  object-fit: contain;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.15));
+}
+.mascot-speech-img.small { width: 48px; height: 48px; }
+.mascot-speech-img.large { width: 80px; height: 80px; }
+.mascot-bubble {
+  position: relative;
+  background: linear-gradient(135deg, #EFF6FF 0%, #DBEAFE 100%);
+  border: 1.5px solid #93C5FD;
+  border-radius: var(--radius-lg);
+  padding: 3.5mm 4.5mm;
+  font-size: 10.5pt;
+  color: #1E3A5F;
+  line-height: 1.6;
+  flex: 1;
+  max-width: 85%;
+  box-shadow: var(--shadow-sm);
+}
+.mascot-bubble.warn {
+  background: linear-gradient(135deg, #FEF2F2, #FEE2E2);
+  border-color: #FCA5A5;
+  color: #7F1D1D;
+}
+.mascot-bubble.success {
+  background: linear-gradient(135deg, #ECFDF5, #D1FAE5);
+  border-color: #6EE7B7;
+  color: #14532D;
+}
+.mascot-bubble.tip {
+  background: linear-gradient(135deg, #FFFBEB, #FEF3C7);
+  border-color: #FCD34D;
+  color: #78350F;
+}
+.mascot-bubble::before {
+  content: '';
+  position: absolute;
+  top: 14px;
+  left: -9px;
+  border: 7px solid transparent;
+  border-right-color: #93C5FD;
+}
+.mascot-bubble::after {
+  content: '';
+  position: absolute;
+  top: 15px;
+  left: -7px;
+  border: 6px solid transparent;
+  border-right-color: #EFF6FF;
+}
+.mascot-speech.right .mascot-bubble::before {
+  left: auto; right: -9px;
+  border-right-color: transparent;
+  border-left-color: #93C5FD;
+}
+.mascot-speech.right .mascot-bubble::after {
+  left: auto; right: -7px;
+  border-right-color: transparent;
+  border-left-color: #EFF6FF;
+}
+.mascot-bubble.warn::before { border-right-color: #FCA5A5; }
+.mascot-bubble.warn::after { border-right-color: #FEF2F2; }
+.mascot-speech.right .mascot-bubble.warn::before { border-right-color: transparent; border-left-color: #FCA5A5; }
+.mascot-speech.right .mascot-bubble.warn::after { border-right-color: transparent; border-left-color: #FEF2F2; }
+.mascot-bubble.success::before { border-right-color: #6EE7B7; }
+.mascot-bubble.success::after { border-right-color: #ECFDF5; }
+.mascot-speech.right .mascot-bubble.success::before { border-right-color: transparent; border-left-color: #6EE7B7; }
+.mascot-speech.right .mascot-bubble.success::after { border-right-color: transparent; border-left-color: #ECFDF5; }
+.mascot-bubble.tip::before { border-right-color: #FCD34D; }
+.mascot-bubble.tip::after { border-right-color: #FFFBEB; }
+.mascot-speech.right .mascot-bubble.tip::before { border-right-color: transparent; border-left-color: #FCD34D; }
+.mascot-speech.right .mascot-bubble.tip::after { border-right-color: transparent; border-left-color: #FFFBEB; }
+
+/* ═══════════════════════════════════════
+   Fact Bite — 숫자/팩트 강조 카드
+   ═══════════════════════════════════════ */
+.fact-bite {
+  display: flex;
+  align-items: center;
+  gap: 4mm;
+  margin: 3mm 0;
+  background: linear-gradient(135deg, #FFF1F2 0%, #FFE4E6 50%, #FFF1F2 100%);
+  border-radius: var(--radius-lg);
+  padding: 3.5mm 5mm;
+  border: 1.5px solid #FECDD3;
+  box-shadow: var(--shadow-sm);
+}
+.fact-bite-number {
+  font: 900 18pt var(--font-body);
+  background: linear-gradient(135deg, var(--c-primary), #FF8E53);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  white-space: nowrap;
+  flex-shrink: 0;
+  max-width: 40%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.fact-bite-text { font-size: 10pt; color: var(--c-text-secondary); line-height: 1.5; flex: 1; min-width: 0; }
+
+/* ═══════════════════════════════════════
+   Visual Summary — 핵심 정리 카드
+   ═══════════════════════════════════════ */
+.visual-summary {
+  background: linear-gradient(135deg, #ECFDF5 0%, #D1FAE5 50%, #A7F3D0 100%);
+  border: 1.5px solid #6EE7B7;
+  border-radius: var(--radius-xl);
+  padding: 5mm;
+  margin: 4mm 0;
+  box-shadow: var(--shadow-md);
+  display: block !important;
+  width: 100% !important;
+  clear: both;
+}
+.visual-summary-title {
+  font-size: 14pt;
+  font-weight: 900;
+  color: #065F46;
+  text-align: center;
+  margin-bottom: 3mm;
+}
+.visual-summary-items { display: flex; flex-direction: column; gap: 2mm; }
+.visual-summary-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 3mm;
+  background: rgba(255,255,255,0.7);
+  padding: 2.5mm 3.5mm;
+  border-radius: var(--radius-md);
+  backdrop-filter: blur(4px);
+}
+.visual-summary-num {
+  width: 7mm; height: 7mm;
+  background: linear-gradient(135deg, #059669, #10B981);
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 9pt;
+  font-weight: 800;
+  flex-shrink: 0;
+  box-shadow: 0 1px 3px rgba(5,150,105,0.3);
+}
+
+/* ═══════════════════════════════════════
+   10축 매핑 전용 스타일
+   ═══════════════════════════════════════ */
+.axis-section {
+  background: linear-gradient(135deg, #F8FAFC 0%, #F1F5F9 100%);
+  border: 1.5px solid #CBD5E1;
+  border-radius: var(--radius-xl);
+  padding: 5mm;
+  margin: 5mm 0;
+  box-shadow: var(--shadow-md);
+  page-break-inside: avoid;
+}
+.axis-title {
+  font-size: 14pt;
+  font-weight: 900;
+  text-align: center;
+  margin-bottom: 4mm;
+  color: var(--c-text);
+  letter-spacing: -0.3px;
+}
+.axis-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2.5mm;
+}
+.axis-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 2mm;
+  padding: 2.5mm 3mm;
+  border-radius: var(--radius-md);
+  background: white;
+  border: 1px solid #E2E8F0;
+}
+.axis-badge {
+  font-size: 7.5pt;
+  font-weight: 800;
+  padding: 0.5mm 2.5mm;
+  border-radius: 20px;
+  flex-shrink: 0;
+  letter-spacing: 0.3px;
+  white-space: nowrap;
+}
+.axis-badge.c-lang { background: #DBEAFE; color: #1D4ED8; }
+.axis-badge.thinking { background: #E0E7FF; color: #4338CA; }
+.axis-badge.debug { background: #FEE2E2; color: #DC2626; }
+.axis-badge.koi { background: #FEF3C7; color: #B45309; }
+.axis-badge.basics { background: #D1FAE5; color: #059669; }
+.axis-badge.reallife { background: #CCFBF1; color: #0D9488; }
+.axis-badge.crosssubj { background: #E9D5FF; color: #7C3AED; }
+.axis-badge.project { background: #FFE4E6; color: #BE123C; }
+.axis-badge.ai { background: #FCE7F3; color: #DB2777; }
+.axis-badge.hardware { background: #CFFAFE; color: #0891B2; }
+.axis-text { font-size: 9.5pt; line-height: 150%; color: var(--c-text-secondary); }
+
+/* ── TOC ── */
+.toc { margin: 5mm 0; }
+.toc h2 { border: none; padding: 0; margin-bottom: 3mm; background: none; }
+.toc ul { list-style: none; padding: 0; }
+.toc-h2 { display: flex; align-items: baseline; margin-bottom: 1.5mm; font-size: 11pt; }
+.toc-text { flex-shrink: 0; }
+.toc-dots { flex: 1; border-bottom: 1.5px dotted #CBD5E1; margin: 0 2mm; min-width: 10mm; }
+.toc-page { flex-shrink: 0; color: var(--c-text-muted); font-size: 10pt; }
+
+/* ── Margin Note ── */
+.margin-note {
+  float: right;
+  width: 30mm;
+  font-size: 8.5pt;
+  color: var(--c-text-secondary);
+  background: linear-gradient(135deg, #FFFBEB, #FEF3C7);
+  padding: 2mm 2.5mm;
+  border-radius: var(--radius-sm);
+  margin: 0 -35mm 2mm 2mm;
+  border-left: 2.5px solid var(--c-orange);
+}
+
+/* ── Cross Reference ── */
+.crossref { font-size: 9pt; color: var(--c-blue); font-style: italic; font-weight: 500; }
+
+/* ── Image ── */
+.image-block { margin: 3.5mm 0; text-align: center; }
+.image-block img { max-width: 100%; border-radius: var(--radius-md); box-shadow: var(--shadow-sm); }
+.image-caption {
+  font-size: 9pt;
+  color: var(--c-text-secondary);
+  margin-top: 2mm;
+  font-style: italic;
+  background: var(--c-bg-subtle);
+  padding: 1.5mm 4mm;
+  border-radius: 20px;
+  display: inline-block;
+}
+
+/* ═══════════════════════════════════════
+   v7.0 — 80레이어 리서치 증강분
+   v5 프리미엄 기반 + TEXTBOOK-DESIGN-DEEP P1~P6 합성
+   ═══════════════════════════════════════ */
+
+/* ── Layer 26: 게슈탈트 근접성 강화 ── */
+h2 + p,
+h3 + p,
+h2 + .code-block,
+h3 + .code-block { margin-top: 1mm !important; }
+.code-block + .code-explain { margin-top: 0.5mm; }
+.code-block + .output-block { margin-top: 1mm; }
+.exercise + .exercise { margin-top: 1.5mm; }
+
+/* ── Layer 28: 마이크로 타이포그래피 ── */
+body {
+  font-kerning: auto;
+  font-variant-ligatures: common-ligatures;
+  hanging-punctuation: first last;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+.line-num { font-variant-numeric: tabular-nums; }
+.trace-table td { font-variant-numeric: tabular-nums; }
+
+/* ── Layer 29: 연습문제 유형별 스타일 ── */
+.exercise-item { margin-bottom: 2mm; font-size: 11pt; line-height: 165%; }
+.exercise-item p { margin-bottom: 1.5mm; }
+.exercise-blank { display: inline-block; min-width: 20mm; border-bottom: 2px solid var(--c-primary); margin: 0 1mm; }
+.exercise-ox-grid { display: flex; gap: 3mm; margin-top: 2mm; }
+.exercise-ox-item { flex: 1; padding: 2mm 3mm; border: 1px solid var(--c-border); border-radius: var(--radius-sm); font-size: 10pt; }
+.exercise-matching { display: grid; grid-template-columns: 1fr auto 1fr; gap: 1.5mm; font-size: 10pt; }
+.exercise-reorder { display: flex; flex-direction: column; gap: 1mm; font-family: var(--font-code); font-size: 9.5pt; }
+.exercise-reorder-item { background: var(--c-bg-subtle); padding: 1.5mm 3mm; border-radius: var(--radius-sm); border: 1px solid var(--c-border); }
+
+/* ── Layer 30: 교사용 에디션 ── */
+.teacher-only { background: #FFF5F5; border: 2px dashed #E74C3C; padding: 3mm; border-radius: var(--radius-md); }
+.teacher-note { font-size: 9pt; color: #C0392B; font-style: italic; }
+
+/* ── Layer 32: 디자인 토큰 — 인쇄용 간격 ── */
+article > * + * { margin-top: 2.5mm; }
+article > h2 { margin-top: 5mm; }
+article > h3 { margin-top: 3.5mm; }
+
+/* ── Layer 51: 황금비 타이포 ──
+   24pt / 16pt / 13.5pt / 11.5pt = 1:0.67:0.56:0.48 ≈ 피보나치 */
+
+/* ── Layer 55: 인지부하 최적화 — 시각 앵커 ── */
+h2::before {
+  /* 빈 블록으로 스크롤 앵커 역할 — Paged.js에서 러닝헤드 지원 */
+}
+
+/* ── Layer 56: 아이트래킹 — F패턴 강화 ── */
+.lesson-header .lesson-number { font-weight: 700; }
+.box-label::before {
+  content: '';
+  display: inline-block;
+  width: 3px; height: 14px;
+  border-radius: 2px;
+  margin-right: 1.5mm;
+  flex-shrink: 0;
+}
+.box-warning .box-label::before { background: var(--c-red); }
+.box-key .box-label::before { background: var(--c-blue); }
+.box-tip .box-label::before { background: var(--c-orange); }
+.box-summary .box-label::before { background: var(--c-green); }
+.box-question .box-label::before { background: var(--c-purple); }
+.box-history .box-label::before { background: var(--c-teal); }
+
+/* ── Layer 58: 색상 조화 60-30-10 강화 ── */
+/* 60% = white/neutral, 30% = brand gradient accents, 10% = c-primary strong */
+
+/* ── Layer 60: 코드 블록 — 브래킷 컬러링 (Layer 30 from Deep) ── */
+.brace-1 { color: #C084FC; font-weight: bold; }
+.brace-2 { color: #86EFAC; font-weight: bold; }
+.brace-3 { color: #FDBA74; font-weight: bold; }
+.brace-4 { color: #7DD3FC; font-weight: bold; }
+
+/* ── Layer 61: 인덴트 가이드 ── */
+.indent-guide { border-left: 1px solid rgba(255,255,255,0.08); }
+
+/* ── Layer 65: 10축 매핑 강화 ── */
+.axis-item { transition: none; }
+.axis-section .box-content { font-size: 10pt; }
+
+/* ── Layer 67: 자료구조 시각화 ── */
+.ds-visual { font-family: var(--font-code); font-size: 9pt; text-align: center; margin: 3mm 0; }
+.ds-array { display: flex; justify-content: center; gap: 0; }
+.ds-cell { width: 9mm; height: 9mm; border: 1.5px solid var(--c-blue); display: flex; align-items: center; justify-content: center; font-weight: 700; }
+.ds-cell:first-child { border-radius: var(--radius-sm) 0 0 var(--radius-sm); }
+.ds-cell:last-child { border-radius: 0 var(--radius-sm) var(--radius-sm) 0; }
+.ds-index { font-size: 7pt; color: var(--c-text-muted); text-align: center; margin-top: 0.5mm; }
+
+/* ── Layer 68: 학습 저널 공간 ── */
+.reflection-box {
+  background: var(--c-bg-warm);
+  border: 1.5px dashed #FCD34D;
+  border-radius: var(--radius-lg);
+  padding: 4mm;
+  margin: 4mm 0;
+}
+.reflection-prompt { font-size: 10pt; color: var(--c-orange); font-weight: 700; margin-bottom: 2mm; }
+.reflection-lines {
+  min-height: 20mm;
+  background: repeating-linear-gradient(transparent, transparent 7mm, #FEF3C7 7mm, #FEF3C7 7.5mm);
+}
+
+/* ── Layer 69: 루브릭/자기평가 ── */
+.rubric-table { width: 100%; border-collapse: collapse; font-size: 9pt; margin: 3mm 0; }
+.rubric-table th { background: var(--c-purple); color: white; padding: 2mm; text-align: center; }
+.rubric-table td { padding: 2mm; border: 1px solid var(--c-border); text-align: center; }
+.self-check { display: flex; gap: 5mm; justify-content: center; margin: 3mm 0; }
+.self-check-item { text-align: center; font-size: 18pt; }
+.self-check-label { font-size: 7.5pt; color: var(--c-text-secondary); }
+
+/* ── Layer 72: 교실 게임 보드 ── */
+.bingo-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 1px; background: var(--c-border); border-radius: var(--radius-md); overflow: hidden; margin: 3mm 0; }
+.bingo-cell { background: white; padding: 3mm; text-align: center; font-size: 8.5pt; font-family: var(--font-code); min-height: 10mm; display: flex; align-items: center; justify-content: center; }
+.bingo-free { background: var(--c-primary-light); font-weight: 800; color: var(--c-primary); }
+
+/* ── Layer 77: 북마크/읽기 가이드 ──  */
+.reading-ruler { border-top: 3px solid var(--c-primary); margin: 4mm 0; opacity: 0.3; }
+
+/* ── Layer 78: 고급 그리드 — 2컬럼 레이아웃 ── */
+.two-col { display: flex; gap: 4mm; }
+.two-col > * { flex: 1; min-width: 0; }
+.three-col { display: flex; gap: 3mm; }
+.three-col > * { flex: 1; min-width: 0; }
+
+/* ── Layer 80: 인쇄 품질 마커 ── */
+.print-crop-mark { display: none; }
+
+/* ═══════════════════════════════════════
+   인쇄 최적화 — 강화 버전 (Layer 77~80)
+   ═══════════════════════════════════════ */
+@media print {
+  body {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  .lesson-header,
+  .code-block,
+  .box,
+  .exercise,
+  .predict-box,
+  .compare-bad,
+  .compare-good,
+  .step-num,
+  .mascot-bubble,
+  .visual-summary,
+  .axis-section,
+  .trace-table th,
+  .progress-fill,
+  .code-explain-line,
+  .fact-bite,
+  .diff-1, .diff-2, .diff-3,
+  .diagram-box,
+  .modify-box,
+  .answers-section {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  .no-print { display: none !important; }
+  /* orphan/widow 강화 */
+  p { orphans: 3; widows: 3; }
+  h2, h3 { break-after: avoid; }
+  .avoid-break { break-inside: avoid; }
+}
+
+/* ═══════════════════════════════════════
+   레이아웃 겹침 방지 — 모든 주요 섹션 블록 강제
+   ═══════════════════════════════════════ */
+article > .glossary,
+article > .visual-summary,
+article > .box,
+article > .fact-bite,
+article > .exercise,
+article > .answers-section,
+article > .mascot-speech,
+article > .code-block,
+article > .output-block,
+article > .compare,
+article > .predict-box {
+  display: block !important;
+  width: 100% !important;
+  float: none !important;
+  clear: both !important;
+}
+
+/* 박스 내부 테이블 오버플로 방지 */
+.box-content table { width: 100%; table-layout: fixed; }
+.box-content td, .box-content th { word-break: keep-all; overflow-wrap: break-word; }
+
+/* 마스코트 버블 너비 제한 완화 */
+.mascot-bubble { max-width: 100%; }
+
+/* Paged.js 컬럼 방지 */
+article { column-count: 1 !important; columns: 1 !important; }
+
+</style>
+<script src="https://unpkg.com/pagedjs/dist/paged.polyfill.js"></script>
+<script>
+  class PagedReadyHandler extends Paged.Handler {
+    constructor(chunker, polisher, caller) { super(chunker, polisher, caller); }
+    afterRendered(pages) {
+      document.body.setAttribute('data-paged-rendered', 'true');
+      document.body.setAttribute('data-page-count', pages.length);
+      console.log('PAGED_READY:' + pages.length);
+    }
+  }
+  Paged.registerHandlers(PagedReadyHandler);
+</script>
+</head>
+<body data-section-title="나눗셈과 나머지">
+<article id="content">
+  <header class="lesson-header" role="banner">
+    <div class="lesson-number">Lesson 0-17</div>
+    <h1 class="lesson-title">나눗셈과 나머지</h1>
+    <div class="lesson-summary">정수 나눗셈의 몫과 나머지, 나머지 연산(%)으로 짝수/홀수 판별, 시계 산술을 배워요.</div>
+  </header>
+<div class="chapter-start-box avoid-break"><div class="learning-goals"><h3>📚 이번에 배울 것</h3><ul><li>나눗셈의 몫과 나머지를 구할 수 있어요.</li><li>나머지 연산(%)의 의미를 이해하고 활용할 수 있어요.</li><li>짝수/홀수 판별에 나머지를 사용할 수 있어요.</li><li>C에서 / (몫)과 % (나머지)를 사용할 수 있어요.</li><li>[심화] 음수의 나머지 연산 결과를 이해해요.</li><li>[심화] 나머지로 순환(wrap-around) 패턴을 구현할 수 있어요.</li><li>[심화 내용] 모듈러 산술의 수학적 성질을 이해해요.</li><li>[심화 내용] RSA 암호와 모듈러 산술의 관계를 알아요.</li><li>[심화 내용] 해시 함수에서 나머지의 역할을 이해해요.</li><li>[심화 내용] 나눗셈의 하드웨어 구현(restoring/non-restoring)을 알아요.</li></ul></div><div class="prereq-check"><h3>✅ 시작 전 체크</h3><ul class="checklist"><li>나눗셈 기본 (초등 3학년 이상)</li><li>변수 개념 (U16)</li></ul></div><div class="progress-section"><span class="progress-label">Part 1 진행률: 17%</span><div class="progress-bar"><div class="progress-fill" style="width:17%"></div></div></div></div>
+<h2>나눗셈의 두 가지 결과</h2>
+<div class="mascot-speech  avoid-break">
+        <img class="mascot-speech-img " src="svg-assets/mascot-thinking.svg" alt="마스코트" />
+        <div class="mascot-bubble thinking">사탕 7개를 3명에게 똑같이 나눠주면? 한 명에 2개씩, 그리고 1개가 남아! 이 '남는 것'이 바로 <b>나머지</b>야.</div>
+      </div>
+<p>7 ÷ 3을 계산하면 <b>몫은 2</b>이고 <b>나머지는 1</b>이에요. 왜냐하면 3 × 2 = 6이고, 7 - 6 = 1이니까요.</p>
+<div class="image-block avoid-break"><img src="visuals/part0-u17-division-visual.svg" alt="7 ÷ 3의 나눗셈 과정 시각화" style="max-width:100%"/><div class="image-caption">7 ÷ 3 = 몫 2, 나머지 1 — 사탕을 나눠 주는 것과 같아요!</div></div>
+<div class="box box-key avoid-break"><span class="box-label">[핵심] 나눗셈 공식</span><div class="box-content"><b>나누어지는 수 = 나누는 수 × 몫 + 나머지</b><br><br>7 = 3 × 2 + 1 ✓<br>10 = 3 × 3 + 1 ✓<br>15 = 4 × 3 + 3 ✓<br>20 = 6 × 3 + 2 ✓</div></div>
+<div class="trace-table avoid-break"><div class="trace-caption">나눗셈 연습</div><table><thead><tr><th>식</th><th>몫 (/)</th><th>나머지 (%)</th><th>검증</th></tr></thead><tbody><tr><td>7 ÷ 3</td><td>2</td><td>1</td><td>3×2+1=7 ✓</td></tr><tr><td>10 ÷ 4</td><td>2</td><td>2</td><td>4×2+2=10 ✓</td></tr><tr><td>15 ÷ 5</td><td>3</td><td>0</td><td>5×3+0=15 ✓</td></tr><tr><td>23 ÷ 7</td><td>3</td><td>2</td><td>7×3+2=23 ✓</td></tr><tr><td>100 ÷ 3</td><td>33</td><td>1</td><td>3×33+1=100 ✓</td></tr></tbody></table></div>
+<h2>C언어의 / 와 %</h2>
+<p>C언어에서는 나눗셈의 <b>몫</b>과 <b>나머지</b>를 따로따로 구할 수 있어요.</p>
+<div class="code-block avoid-break"><div class="code-block-header">div_mod.c</div>
+        <table class="code-table"><tr class=""><td class="line-num">1</td><td class="line-code"><span class="pp">#include</span> <span class="str">&lt;stdio.h&gt;</span></td></tr>
+<tr class=""><td class="line-num">2</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">3</td><td class="line-code"><span class="type">int</span> <span class="fn">main</span>(<span class="type">void</span>) {</td></tr>
+<tr class=""><td class="line-num">4</td><td class="line-code">    <span class="type">int</span> a = <span class="num">7</span>, b = <span class="num">3</span>;</td></tr>
+<tr class=""><td class="line-num">5</td><td class="line-code">    </td></tr>
+<tr class=""><td class="line-num">6</td><td class="line-code">    <span class="fn">printf</span>(<span class="str">"<span class="fmt">%d</span> / <span class="fmt">%d</span> = <span class="fmt">%d</span> (몫)<span class="esc">\n</span>"</span>, a, b, a / b);    <span class="cmt">// 2</span></td></tr>
+<tr class=""><td class="line-num">7</td><td class="line-code">    <span class="fn">printf</span>(<span class="str">"<span class="fmt">%d</span> <span class="fmt">%%</span> <span class="fmt">%d</span> = <span class="fmt">%d</span> (나머지)<span class="esc">\n</span>"</span>, a, b, a % b); <span class="cmt">// 1</span></td></tr>
+<tr class=""><td class="line-num">8</td><td class="line-code">    </td></tr>
+<tr class=""><td class="line-num">9</td><td class="line-code">    <span class="cmt">// 검증: 나누는수 × 몫 + 나머지 = 원래 수</span></td></tr>
+<tr class=""><td class="line-num">10</td><td class="line-code">    <span class="fn">printf</span>(<span class="str">"검증: <span class="fmt">%d</span> × <span class="fmt">%d</span> + <span class="fmt">%d</span> = <span class="fmt">%d</span><span class="esc">\n</span>"</span>, b, a/b, a%b, b*(a/b) + a%b);</td></tr>
+<tr class=""><td class="line-num">11</td><td class="line-code">    </td></tr>
+<tr class=""><td class="line-num">12</td><td class="line-code">    <span class="kw">return</span> <span class="num">0</span>;</td></tr>
+<tr class=""><td class="line-num">13</td><td class="line-code">}</td></tr></table></div>
+<div class="output-block avoid-break"><span class="output-label">실행 결과</span><div class="output-text">7 / 3 = 2 (몫)
+7 % 3 = 1 (나머지)
+검증: 3 × 2 + 1 = 7</div></div>
+<div class="box box-warning avoid-break"><span class="box-label">[주의] 정수 나눗셈은 소수점을 버린다!</span><div class="box-content">수학에서 7 ÷ 3 = 2.333...이지만<br>C언어에서 7 / 3 = <b>2</b> (소수점 아래를 버려요!)<br><br>이건 '버림(truncation)'이에요. 반올림이 아니에요!<br>9 / 5 = 1 (1.8이 아님!)<br>99 / 100 = 0 (0.99가 아님!)<br><br>이걸 모르면 KOI에서 틀릴 수 있어요!</div></div>
+<div class="mascot-speech right avoid-break">
+        <img class="mascot-speech-img small" src="svg-assets/mascot-debugging.svg" alt="마스코트" />
+        <div class="mascot-bubble debugging">99 / 100 = 0 이라고?! 맞아. C에서 정수끼리 나누면 소수점을 완전히 잘라버려. 이게 초보자가 제일 많이 당하는 함정이야!</div>
+      </div>
+<h2>나머지로 할 수 있는 마법</h2>
+<div class="mascot-speech right avoid-break">
+        <img class="mascot-speech-img " src="svg-assets/mascot-eureka.svg" alt="마스코트" />
+        <div class="mascot-bubble eureka">나머지 연산(%)은 프로그래밍에서 정말 많이 써! 짝수인지 홀수인지, 3의 배수인지... 전부 나머지로 알 수 있거든!</div>
+      </div>
+<div class="box box-key avoid-break"><span class="box-label">[핵심] 나머지의 마법</span><div class="box-content"><b>짝수/홀수 판별:</b> x % 2 == 0이면 짝수, x % 2 == 1이면 홀수<br><br><b>N의 배수 판별:</b> x % N == 0이면 x는 N의 배수<br>• x % 3 == 0 → 3의 배수<br>• x % 5 == 0 → 5의 배수<br>• x % 15 == 0 → 15의 배수 (3과 5의 공배수)</div></div>
+<div class="image-block avoid-break"><img src="visuals/part0-u17-even-odd-flow.svg" alt="짝수/홀수 판별 흐름도" style="max-width:100%"/><div class="image-caption">x % 2의 결과로 짝수와 홀수를 판별해요!</div></div>
+<h2>FizzBuzz — 나머지의 대표 문제</h2>
+<div class="code-block avoid-break"><div class="code-block-header">fizzbuzz.c</div>
+        <table class="code-table"><tr class=""><td class="line-num">1</td><td class="line-code"><span class="pp">#include</span> <span class="str">&lt;stdio.h&gt;</span></td></tr>
+<tr class=""><td class="line-num">2</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">3</td><td class="line-code"><span class="type">int</span> <span class="fn">main</span>(<span class="type">void</span>) {</td></tr>
+<tr class=""><td class="line-num">4</td><td class="line-code">    <span class="kw">for</span> (<span class="type">int</span> i = <span class="num">1</span>; i &lt;= <span class="num">15</span>; i++) {</td></tr>
+<tr class=""><td class="line-num">5</td><td class="line-code">        <span class="kw">if</span> (i % <span class="num">15</span> == <span class="num">0</span>)       <span class="fn">printf</span>(<span class="str">"FizzBuzz"</span>);</td></tr>
+<tr class=""><td class="line-num">6</td><td class="line-code">        <span class="kw">else</span> <span class="kw">if</span> (i % <span class="num">3</span> == <span class="num">0</span>)   <span class="fn">printf</span>(<span class="str">"Fizz"</span>);</td></tr>
+<tr class=""><td class="line-num">7</td><td class="line-code">        <span class="kw">else</span> <span class="kw">if</span> (i % <span class="num">5</span> == <span class="num">0</span>)   <span class="fn">printf</span>(<span class="str">"Buzz"</span>);</td></tr>
+<tr class=""><td class="line-num">8</td><td class="line-code">        <span class="kw">else</span>                   <span class="fn">printf</span>(<span class="str">"<span class="fmt">%d</span>"</span>, i);</td></tr>
+<tr class=""><td class="line-num">9</td><td class="line-code">        <span class="fn">printf</span>(<span class="str">" "</span>);</td></tr>
+<tr class=""><td class="line-num">10</td><td class="line-code">    }</td></tr>
+<tr class=""><td class="line-num">11</td><td class="line-code">    <span class="fn">printf</span>(<span class="str">"<span class="esc">\n</span>"</span>);</td></tr>
+<tr class=""><td class="line-num">12</td><td class="line-code">    <span class="kw">return</span> <span class="num">0</span>;</td></tr>
+<tr class=""><td class="line-num">13</td><td class="line-code">}</td></tr></table></div>
+<div class="output-block avoid-break"><span class="output-label">실행 결과</span><div class="output-text">1 2 Fizz 4 Buzz Fizz 7 8 Fizz Buzz 11 Fizz 13 14 FizzBuzz</div></div>
+<div class="box box-tip avoid-break"><span class="box-label">[팁] FizzBuzz의 비밀</span><div class="box-content">왜 i%15를 먼저 검사할까?<br><br>i%3과 i%5를 먼저 검사하면 15의 배수일 때 'Fizz'만 출력돼요!<br>15 = 3×5이므로 3의 배수이기도 하니까요.<br><br><b>순서가 중요해요!</b> 더 까다로운 조건을 먼저 검사해야 해요.</div></div>
+<h2>시계 산술 — 나머지의 일상</h2>
+<p>시계를 보세요. 12시 다음은 1시이지, 13시가 아니에요 (12시간제). 이것도 나머지예요!</p>
+<div class="image-block avoid-break"><img src="visuals/part0-u17-clock-arithmetic.svg" alt="시계 산술과 나머지의 관계" style="max-width:100%"/><div class="image-caption">시계는 12로 나눈 나머지로 돌아가요! 13시 → 13 % 12 = 1시</div></div>
+<div class="box box-key avoid-break"><span class="box-label">[예제] 시계로 이해하는 나머지</span><div class="box-content">지금 10시. 5시간 후는 몇 시?<br>(10 + 5) % 12 = 15 % 12 = <b>3시</b><br><br>지금 월요일(1). 10일 후 무슨 요일?<br>(1 + 10) % 7 = 11 % 7 = <b>4(목요일)</b><br><br>이런 '돌아가는 계산'을 <b>모듈러 산술</b>이라고 해요.</div></div>
+<h2>자릿수 분리</h2>
+<p>나머지와 몫을 조합하면 숫자의 각 자릿수를 분리할 수 있어요!</p>
+<div class="code-block avoid-break"><div class="code-block-header">digits.c</div>
+        <table class="code-table"><tr class=""><td class="line-num">1</td><td class="line-code"><span class="pp">#include</span> <span class="str">&lt;stdio.h&gt;</span></td></tr>
+<tr class=""><td class="line-num">2</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">3</td><td class="line-code"><span class="type">int</span> <span class="fn">main</span>(<span class="type">void</span>) {</td></tr>
+<tr class=""><td class="line-num">4</td><td class="line-code">    <span class="type">int</span> num = <span class="num">1234</span>;</td></tr>
+<tr class=""><td class="line-num">5</td><td class="line-code">    </td></tr>
+<tr class=""><td class="line-num">6</td><td class="line-code">    <span class="type">int</span> ones = num % <span class="num">10</span>;          <span class="cmt">// 4 (일의 자리)</span></td></tr>
+<tr class=""><td class="line-num">7</td><td class="line-code">    <span class="type">int</span> tens = (num / <span class="num">10</span>) % <span class="num">10</span>;   <span class="cmt">// 3 (십의 자리)</span></td></tr>
+<tr class=""><td class="line-num">8</td><td class="line-code">    <span class="type">int</span> hundreds = (num / <span class="num">100</span>) % <span class="num">10</span>; <span class="cmt">// 2 (백의 자리)</span></td></tr>
+<tr class=""><td class="line-num">9</td><td class="line-code">    <span class="type">int</span> thousands = num / <span class="num">1000</span>;   <span class="cmt">// 1 (천의 자리)</span></td></tr>
+<tr class=""><td class="line-num">10</td><td class="line-code">    </td></tr>
+<tr class=""><td class="line-num">11</td><td class="line-code">    <span class="fn">printf</span>(<span class="str">"<span class="fmt">%d</span>의 자릿수: <span class="fmt">%d</span> <span class="fmt">%d</span> <span class="fmt">%d</span> <span class="fmt">%d</span><span class="esc">\n</span>"</span>, num,</td></tr>
+<tr class=""><td class="line-num">12</td><td class="line-code">           thousands, hundreds, tens, ones);</td></tr>
+<tr class=""><td class="line-num">13</td><td class="line-code">    <span class="fn">printf</span>(<span class="str">"자릿수 합: <span class="fmt">%d</span><span class="esc">\n</span>"</span>, thousands + hundreds + tens + ones);</td></tr>
+<tr class=""><td class="line-num">14</td><td class="line-code">    </td></tr>
+<tr class=""><td class="line-num">15</td><td class="line-code">    <span class="kw">return</span> <span class="num">0</span>;</td></tr>
+<tr class=""><td class="line-num">16</td><td class="line-code">}</td></tr></table></div>
+<div class="output-block avoid-break"><span class="output-label">실행 결과</span><div class="output-text">1234의 자릿수: 1 2 3 4
+자릿수 합: 10</div></div>
+<div class="trace-table avoid-break"><div class="trace-caption">1234 자릿수 분리 과정</div><table><thead><tr><th>연산</th><th>결과</th><th>의미</th></tr></thead><tbody><tr><td>1234 % 10</td><td>4</td><td>일의 자리</td></tr><tr><td>1234 / 10 = 123, 123 % 10</td><td>3</td><td>십의 자리</td></tr><tr><td>1234 / 100 = 12, 12 % 10</td><td>2</td><td>백의 자리</td></tr><tr><td>1234 / 1000</td><td>1</td><td>천의 자리</td></tr></tbody></table></div>
+<div class="mascot-speech right avoid-break">
+        <img class="mascot-speech-img small" src="svg-assets/mascot-eureka.svg" alt="마스코트" />
+        <div class="mascot-bubble eureka">패턴이 보이지? % 10은 맨 끝 자리를 꺼내고, / 10은 맨 끝 자리를 잘라내! 이 두 가지를 반복하면 모든 자릿수를 분리할 수 있어!</div>
+      </div>
+<h2>[심화] 역수 만들기 (숫자 뒤집기)</h2>
+<div class="code-block avoid-break"><div class="code-block-header">reverse_num.c</div>
+        <table class="code-table"><tr class=""><td class="line-num">1</td><td class="line-code"><span class="pp">#include</span> <span class="str">&lt;stdio.h&gt;</span></td></tr>
+<tr class=""><td class="line-num">2</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">3</td><td class="line-code"><span class="type">int</span> <span class="fn">main</span>(<span class="type">void</span>) {</td></tr>
+<tr class=""><td class="line-num">4</td><td class="line-code">    <span class="type">int</span> num = <span class="num">12345</span>;</td></tr>
+<tr class=""><td class="line-num">5</td><td class="line-code">    <span class="type">int</span> reversed = <span class="num">0</span>;</td></tr>
+<tr class=""><td class="line-num">6</td><td class="line-code">    <span class="type">int</span> temp = num;</td></tr>
+<tr class=""><td class="line-num">7</td><td class="line-code">    </td></tr>
+<tr class=""><td class="line-num">8</td><td class="line-code">    <span class="kw">while</span> (temp &gt; <span class="num">0</span>) {</td></tr>
+<tr class=""><td class="line-num">9</td><td class="line-code">        reversed = reversed * <span class="num">10</span> + temp % <span class="num">10</span>;  <span class="cmt">// 끝자리 떼서 붙이기</span></td></tr>
+<tr class=""><td class="line-num">10</td><td class="line-code">        temp = temp / <span class="num">10</span>;                       <span class="cmt">// 끝자리 잘라내기</span></td></tr>
+<tr class=""><td class="line-num">11</td><td class="line-code">    }</td></tr>
+<tr class=""><td class="line-num">12</td><td class="line-code">    </td></tr>
+<tr class=""><td class="line-num">13</td><td class="line-code">    <span class="fn">printf</span>(<span class="str">"<span class="fmt">%d</span> → <span class="fmt">%d</span><span class="esc">\n</span>"</span>, num, reversed);</td></tr>
+<tr class=""><td class="line-num">14</td><td class="line-code">    <span class="kw">return</span> <span class="num">0</span>;</td></tr>
+<tr class=""><td class="line-num">15</td><td class="line-code">}</td></tr></table></div>
+<div class="output-block avoid-break"><span class="output-label">실행 결과</span><div class="output-text">12345 → 54321</div></div>
+<div class="trace-table avoid-break"><div class="trace-caption">12345 역수 만들기 추적</div><table><thead><tr><th>반복</th><th>temp</th><th>temp%10</th><th>reversed 계산</th><th>reversed</th></tr></thead><tbody><tr><td>1</td><td>12345</td><td>5</td><td>0×10+5</td><td>5</td></tr><tr><td>2</td><td>1234</td><td>4</td><td>5×10+4</td><td>54</td></tr><tr><td>3</td><td>123</td><td>3</td><td>54×10+3</td><td>543</td></tr><tr><td>4</td><td>12</td><td>2</td><td>543×10+2</td><td>5432</td></tr><tr><td>5</td><td>1</td><td>1</td><td>5432×10+1</td><td>54321</td></tr></tbody></table></div>
+<h2>[심화] 윤년 판별 — 나머지의 실전</h2>
+<div class="code-block avoid-break"><div class="code-block-header">leap_year.c</div>
+        <table class="code-table"><tr class=""><td class="line-num">1</td><td class="line-code"><span class="pp">#include</span> <span class="str">&lt;stdio.h&gt;</span></td></tr>
+<tr class=""><td class="line-num">2</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">3</td><td class="line-code"><span class="type">int</span> <span class="fn">is_leap</span>(<span class="type">int</span> year) {</td></tr>
+<tr class=""><td class="line-num">4</td><td class="line-code">    <span class="cmt">// 4로 나누어지고, 100으로 안 나누어지거나, 400으로 나누어지면 윤년</span></td></tr>
+<tr class=""><td class="line-num">5</td><td class="line-code">    <span class="kw">return</span> (year % <span class="num">4</span> == <span class="num">0</span> &amp;&amp; year % <span class="num">100</span> != <span class="num">0</span>) || (year % <span class="num">400</span> == <span class="num">0</span>);</td></tr>
+<tr class=""><td class="line-num">6</td><td class="line-code">}</td></tr>
+<tr class=""><td class="line-num">7</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">8</td><td class="line-code"><span class="type">int</span> <span class="fn">main</span>(<span class="type">void</span>) {</td></tr>
+<tr class=""><td class="line-num">9</td><td class="line-code">    <span class="type">int</span> years[] = {<span class="num">2000</span>, <span class="num">1900</span>, <span class="num">2024</span>, <span class="num">2025</span>, <span class="num">2100</span>};</td></tr>
+<tr class=""><td class="line-num">10</td><td class="line-code">    <span class="kw">for</span> (<span class="type">int</span> i = <span class="num">0</span>; i &lt; <span class="num">5</span>; i++) {</td></tr>
+<tr class=""><td class="line-num">11</td><td class="line-code">        <span class="fn">printf</span>(<span class="str">"<span class="fmt">%d</span>년: <span class="fmt">%s</span><span class="esc">\n</span>"</span>, years[i], <span class="fn">is_leap</span>(years[i]) ? <span class="str">"윤년"</span> : <span class="str">"평년"</span>);</td></tr>
+<tr class=""><td class="line-num">12</td><td class="line-code">    }</td></tr>
+<tr class=""><td class="line-num">13</td><td class="line-code">    <span class="kw">return</span> <span class="num">0</span>;</td></tr>
+<tr class=""><td class="line-num">14</td><td class="line-code">}</td></tr></table></div>
+<div class="output-block avoid-break"><span class="output-label">실행 결과</span><div class="output-text">2000년: 윤년
+1900년: 평년
+2024년: 윤년
+2025년: 평년
+2100년: 평년</div></div>
+<div class="box box-key avoid-break"><span class="box-label">[핵심] 윤년 규칙 (나머지 3단계)</span><div class="box-content">1. year % 4 == 0 → 윤년 후보<br>2. year % 100 == 0 → 아니야, 평년! (예: 1900)<br>3. year % 400 == 0 → 아냐, 역시 윤년! (예: 2000)<br><br>KOI, 수능 모두 출제되는 필수 문제!</div></div>
+<h2>[심화] 음수의 나머지</h2>
+<p>양수끼리의 나머지는 직관적이지만, 음수가 들어가면 복잡해져요.</p>
+<div class="code-block avoid-break"><div class="code-block-header">negative_mod.c</div>
+        <table class="code-table"><tr class=""><td class="line-num">1</td><td class="line-code"><span class="pp">#include</span> <span class="str">&lt;stdio.h&gt;</span></td></tr>
+<tr class=""><td class="line-num">2</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">3</td><td class="line-code"><span class="type">int</span> <span class="fn">main</span>(<span class="type">void</span>) {</td></tr>
+<tr class=""><td class="line-num">4</td><td class="line-code">    <span class="fn">printf</span>(<span class="str">"-7 / 3  = <span class="fmt">%d</span><span class="esc">\n</span>"</span>, -<span class="num">7</span> / <span class="num">3</span>);   <span class="cmt">// -2 (0방향 버림)</span></td></tr>
+<tr class=""><td class="line-num">5</td><td class="line-code">    <span class="fn">printf</span>(<span class="str">"-7 <span class="fmt">%%</span> 3 = <span class="fmt">%d</span><span class="esc">\n</span>"</span>, -<span class="num">7</span> % <span class="num">3</span>);   <span class="cmt">// -1 (음수!)</span></td></tr>
+<tr class=""><td class="line-num">6</td><td class="line-code">    <span class="fn">printf</span>(<span class="str">"7 / -3  = <span class="fmt">%d</span><span class="esc">\n</span>"</span>, <span class="num">7</span> / -<span class="num">3</span>);   <span class="cmt">// -2</span></td></tr>
+<tr class=""><td class="line-num">7</td><td class="line-code">    <span class="fn">printf</span>(<span class="str">"7 <span class="fmt">%%</span> -3 = <span class="fmt">%d</span><span class="esc">\n</span>"</span>, <span class="num">7</span> % -<span class="num">3</span>);   <span class="cmt">// 1</span></td></tr>
+<tr class=""><td class="line-num">8</td><td class="line-code">    </td></tr>
+<tr class=""><td class="line-num">9</td><td class="line-code">    <span class="cmt">// 검증: a == (a/b)*b + a%b</span></td></tr>
+<tr class=""><td class="line-num">10</td><td class="line-code">    <span class="cmt">// -7 == (-7/3)*3 + (-7%3)</span></td></tr>
+<tr class=""><td class="line-num">11</td><td class="line-code">    <span class="cmt">// -7 == (-2)*3 + (-1) = -6 + (-1) = -7 ✓</span></td></tr>
+<tr class=""><td class="line-num">12</td><td class="line-code">    </td></tr>
+<tr class=""><td class="line-num">13</td><td class="line-code">    <span class="kw">return</span> <span class="num">0</span>;</td></tr>
+<tr class=""><td class="line-num">14</td><td class="line-code">}</td></tr></table></div>
+<div class="output-block avoid-break"><span class="output-label">실행 결과</span><div class="output-text">-7 / 3  = -2
+-7 % 3 = -1
+7 / -3  = -2
+7 % -3 = 1</div></div>
+<div class="compare avoid-break"><div class="compare-bad"><div class="compare-label">✕ 잘못된 코드</div><code></code><br><span class="compare-msg-bad"></span></div><div class="compare-good"><div class="compare-label">✓ 올바른 코드</div><code></code><br><span class="compare-msg-good"></span></div></div>
+<div class="box box-warning avoid-break"><span class="box-label">[주의] 항상 양수 나머지가 필요하면</span><div class="box-content">C에서 음수 나머지가 나올 수 있으니, 항상 양수를 원하면:<br><code>int mod = ((a % b) + b) % b;</code><br><br>예: ((-7 % 3) + 3) % 3 = (-1 + 3) % 3 = 2 % 3 = 2</div></div>
+<h2>[심화] 실수 나눗셈 vs 정수 나눗셈</h2>
+<div class="code-block avoid-break"><div class="code-block-header">int_vs_float_div.c</div>
+        <table class="code-table"><tr class=""><td class="line-num">1</td><td class="line-code"><span class="pp">#include</span> <span class="str">&lt;stdio.h&gt;</span></td></tr>
+<tr class=""><td class="line-num">2</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">3</td><td class="line-code"><span class="type">int</span> <span class="fn">main</span>(<span class="type">void</span>) {</td></tr>
+<tr class=""><td class="line-num">4</td><td class="line-code">    <span class="cmt">// 정수 나눗셈 (소수점 버림)</span></td></tr>
+<tr class=""><td class="line-num">5</td><td class="line-code">    <span class="fn">printf</span>(<span class="str">"7 / 3 = <span class="fmt">%d</span><span class="esc">\n</span>"</span>, <span class="num">7</span> / <span class="num">3</span>);        <span class="cmt">// 2</span></td></tr>
+<tr class=""><td class="line-num">6</td><td class="line-code">    </td></tr>
+<tr class=""><td class="line-num">7</td><td class="line-code">    <span class="cmt">// 실수 나눗셈 (소수점 유지)</span></td></tr>
+<tr class=""><td class="line-num">8</td><td class="line-code">    <span class="fn">printf</span>(<span class="str">"7.0 / 3 = <span class="fmt">%f</span><span class="esc">\n</span>"</span>, <span class="num">7.0</span> / <span class="num">3</span>);    <span class="cmt">// 2.333333</span></td></tr>
+<tr class=""><td class="line-num">9</td><td class="line-code">    <span class="fn">printf</span>(<span class="str">"7 / 3.0 = <span class="fmt">%f</span><span class="esc">\n</span>"</span>, <span class="num">7</span> / <span class="num">3.0</span>);    <span class="cmt">// 2.333333</span></td></tr>
+<tr class=""><td class="line-num">10</td><td class="line-code">    </td></tr>
+<tr class=""><td class="line-num">11</td><td class="line-code">    <span class="cmt">// 캐스팅으로 실수 나눗셈</span></td></tr>
+<tr class=""><td class="line-num">12</td><td class="line-code">    <span class="type">int</span> a = <span class="num">7</span>, b = <span class="num">3</span>;</td></tr>
+<tr class=""><td class="line-num">13</td><td class="line-code">    <span class="fn">printf</span>(<span class="str">"(double)a / b = <span class="fmt">%f</span><span class="esc">\n</span>"</span>, (<span class="type">double</span>)a / b);  <span class="cmt">// 2.333333</span></td></tr>
+<tr class=""><td class="line-num">14</td><td class="line-code">    </td></tr>
+<tr class=""><td class="line-num">15</td><td class="line-code">    <span class="cmt">// 주의! 이건 정수 나눗셈 후 변환</span></td></tr>
+<tr class=""><td class="line-num">16</td><td class="line-code">    <span class="type">double</span> wrong = a / b;      <span class="cmt">// 2.0 (이미 2로 잘린 후 변환)</span></td></tr>
+<tr class=""><td class="line-num">17</td><td class="line-code">    <span class="type">double</span> right = (<span class="type">double</span>)a / b;  <span class="cmt">// 2.333...</span></td></tr>
+<tr class=""><td class="line-num">18</td><td class="line-code">    <span class="fn">printf</span>(<span class="str">"wrong: <span class="fmt">%f</span>, right: <span class="fmt">%f</span><span class="esc">\n</span>"</span>, wrong, right);</td></tr>
+<tr class=""><td class="line-num">19</td><td class="line-code">    </td></tr>
+<tr class=""><td class="line-num">20</td><td class="line-code">    <span class="kw">return</span> <span class="num">0</span>;</td></tr>
+<tr class=""><td class="line-num">21</td><td class="line-code">}</td></tr></table></div>
+<div class="output-block avoid-break"><span class="output-label">실행 결과</span><div class="output-text">7 / 3 = 2
+7.0 / 3 = 2.333333
+7 / 3.0 = 2.333333
+(double)a / b = 2.333333
+wrong: 2.000000, right: 2.333333</div></div>
+<div class="box box-key avoid-break"><span class="box-label">[핵심] 실수 나눗셈 받으려면</span><div class="box-content">피연산자 중 <b>하나라도 실수</b>이면 실수 나눗셈!<br><br>• 7 / 3 = 2 (정수÷정수 = 정수)<br>• 7.0 / 3 = 2.333... (실수÷정수 = 실수)<br>• (double)7 / 3 = 2.333... (캐스팅)<br><br>⚠️ double x = 7/3; → x = 2.0 (이미 잘린 후!)</div></div>
+<h2>[심화 내용] 나눗셈과 비트 연산</h2>
+<div class="box box-key avoid-break"><span class="box-label">[심화 내용] 2의 거듭제곱 나눗셈 = 비트 시프트</span><div class="box-content">2로 나누기 = 오른쪽으로 1비트 시프트!<br><br>x / 2 = x >> 1<br>x / 4 = x >> 2<br>x / 8 = x >> 3<br>x / 2^n = x >> n<br><br>x % 2 = x & 1 (마지막 비트만!)<br>x % 4 = x & 3<br>x % 8 = x & 7<br>x % 2^n = x & (2^n - 1)<br><br>비트 연산은 나눗셈보다 훨씬 빨라요!</div></div>
+<h2>[심화 내용] CPU의 나눗셈</h2>
+<p>나눗셈은 CPU에서 가장 느린 산술 연산이에요.</p>
+<div class="trace-table avoid-break"><div class="trace-caption">CPU 연산 속도 비교</div><table><thead><tr><th>연산</th><th>사이클 수</th><th>속도</th></tr></thead><tbody><tr><td>덧셈 (ADD)</td><td>1</td><td>매우 빠름</td></tr><tr><td>뺄셈 (SUB)</td><td>1</td><td>매우 빠름</td></tr><tr><td>곱셈 (MUL/IMUL)</td><td>3~5</td><td>보통</td></tr><tr><td>나눗셈 (DIV/IDIV)</td><td>20~90</td><td>매우 느림</td></tr><tr><td>비트 시프트 (SHR)</td><td>1</td><td>매우 빠름</td></tr></tbody></table></div>
+<div class="box box-tip avoid-break"><span class="box-label">[팁] 컴파일러의 마법</span><div class="box-content">컴파일러는 상수로 나누는 경우 나눗셈을 <b>곱셈+시프트</b>로 바꿔요!<br><br>x / 3을 x * 0xAAAAAAAB >> 33 으로 변환 (매직 넘버)<br><br>이걸 <b>강도 절감(strength reduction)</b>이라고 해요.<br>godbolt.org에서 확인해 보세요!</div></div>
+<h2>[심화 내용] 모듈러 산술과 암호학</h2>
+<p>나머지 연산(모듈러)은 암호학의 핵심이에요.</p>
+<div class="box box-key avoid-break"><span class="box-label">[심화 내용] RSA 암호의 핵심 = 모듈러 거듭제곱</span><div class="box-content">RSA 공개키 암호:<br>암호화: C = M^e mod n<br>복호화: M = C^d mod n<br><br>큰 수의 모듈러 거듭제곱은 빠르게 계산할 수 있지만,<br>n을 소인수분해하는 건 어려워요 → 이게 RSA의 안전성!<br><br>또한 해시 함수도 모듈러 사용:<br>hash(key) = key % table_size</div></div>
+<div class="box box-tip avoid-break"><span class="box-label">[팁] 모듈러 산술의 다양한 응용</span><div class="box-content">• <b>해시 테이블</b>: index = key % size<br>• <b>체크섬</b>: ISBN, 주민번호 검증<br>• <b>순환 버퍼</b>: next = (current + 1) % size<br>• <b>색상</b>: HSV 색상 각도 (0~359) → angle % 360<br>• <b>게임</b>: 캐릭터가 맵 끝에서 반대편으로 나타남</div></div>
+<h2>[심화 내용] 0으로 나누기</h2>
+<div class="code-block avoid-break"><div class="code-block-header">div_by_zero.c</div>
+        <table class="code-table"><tr class=""><td class="line-num">1</td><td class="line-code"><span class="pp">#include</span> <span class="str">&lt;stdio.h&gt;</span></td></tr>
+<tr class=""><td class="line-num">2</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">3</td><td class="line-code"><span class="type">int</span> <span class="fn">main</span>(<span class="type">void</span>) {</td></tr>
+<tr class=""><td class="line-num">4</td><td class="line-code">    <span class="cmt">// int x = 5 / 0;  // ❌ 정의되지 않은 동작! (프로그램 크래시)</span></td></tr>
+<tr class=""><td class="line-num">5</td><td class="line-code">    </td></tr>
+<tr class=""><td class="line-num">6</td><td class="line-code">    <span class="cmt">// 실수는 다름:</span></td></tr>
+<tr class=""><td class="line-num">7</td><td class="line-code">    <span class="fn">printf</span>(<span class="str">"5.0 / 0.0 = <span class="fmt">%f</span><span class="esc">\n</span>"</span>, <span class="num">5.0</span> / <span class="num">0.0</span>);    <span class="cmt">// inf (무한대)</span></td></tr>
+<tr class=""><td class="line-num">8</td><td class="line-code">    <span class="fn">printf</span>(<span class="str">"-5.0 / 0.0 = <span class="fmt">%f</span><span class="esc">\n</span>"</span>, -<span class="num">5.0</span> / <span class="num">0.0</span>);   <span class="cmt">// -inf</span></td></tr>
+<tr class=""><td class="line-num">9</td><td class="line-code">    <span class="fn">printf</span>(<span class="str">"0.0 / 0.0 = <span class="fmt">%f</span><span class="esc">\n</span>"</span>, <span class="num">0.0</span> / <span class="num">0.0</span>);     <span class="cmt">// nan (Not a Number)</span></td></tr>
+<tr class=""><td class="line-num">10</td><td class="line-code">    </td></tr>
+<tr class=""><td class="line-num">11</td><td class="line-code">    <span class="kw">return</span> <span class="num">0</span>;</td></tr>
+<tr class=""><td class="line-num">12</td><td class="line-code">}</td></tr></table></div>
+<div class="output-block avoid-break"><span class="output-label">실행 결과</span><div class="output-text">5.0 / 0.0 = inf
+-5.0 / 0.0 = -inf
+0.0 / 0.0 = nan</div></div>
+<div class="box box-warning avoid-break"><span class="box-label">[주의] 0으로 나누기</span><div class="box-content"><b>정수 / 0</b>: 정의되지 않은 동작 → 프로그램 크래시 (SIGFPE)<br><b>실수 / 0.0</b>: IEEE 754 규칙 → inf 또는 nan<br><br>항상 나누기 전에 <b>0인지 체크</b>하세요!<br><code>if (b != 0) result = a / b;</code></div></div>
+<h2>KOI 연결: 나머지 연산이 나오는 문제들</h2>
+<div class="box box-tip avoid-break"><span class="box-label">[KOI] 출제 빈도 TOP 5</span><div class="box-content">1. <b>FizzBuzz</b>: 배수 판별 (% 연산)<br>2. <b>윤년 판별</b>: %4, %100, %400 조합<br>3. <b>자릿수 분리/합</b>: %10, /10 반복<br>4. <b>요일 계산</b>: %7<br>5. <b>순환 구조</b>: 원형 큐, 조세퍼스 문제</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">0</div><div class="fact-bite-text">나머지가 0이 되는 순간이 중요해요! x % n == 0이면 x는 n으로 '딱 나누어진다'는 뜻이에요. 약수와 배수의 판별이 바로 이것!</div></div>
+<h2>OX 퀴즈</h2>
+<div class="exercise avoid-break"><div class="exercise-title">OX 퀴즈</div><div class="exercise-item"><p></p></div><div class="exercise-answer"><b>정답:</b> ❌ X</div></div>
+<h2>연습문제</h2>
+<div class="exercise avoid-break"><div class="exercise-title">문제 1 <span class="difficulty diff-1">★ 기본</span></div><div class="exercise-item"><p>13 ÷ 4의 몫과 나머지를 구하세요.</p></div><div class="memo-area"><span class="memo-label">여기에 답을 써 보세요</span></div></div>
+<div class="exercise avoid-break"><div class="exercise-title">문제 2 <span class="difficulty diff-1">★ 기본</span></div><div class="exercise-item"><p>C에서 17 / 5의 결과는? (1) 3.4 (2) 3 (3) 4 (4) 2</p></div><div class="memo-area"><span class="memo-label">여기에 답을 써 보세요</span></div></div>
+<div class="exercise avoid-break"><div class="exercise-title">문제 3 <span class="difficulty diff-1">★ 기본</span></div><div class="exercise-item"><p>37 % 10의 결과는?</p></div><div class="memo-area"><span class="memo-label">여기에 답을 써 보세요</span></div></div>
+<div class="exercise avoid-break"><div class="exercise-title">문제 4 <span class="difficulty diff-1">★ 기본</span></div><div class="exercise-item"><p>숫자 n이 짝수인지 확인하는 C 조건식을 쓰세요.</p></div><div class="memo-area"><span class="memo-label">여기에 답을 써 보세요</span></div></div>
+<div class="exercise avoid-break"><div class="exercise-title">문제 5 <span class="difficulty diff-1">★ 기본</span></div><div class="exercise-item"><p>지금 9시(12시간제). 20시간 후는 몇 시?</p></div><div class="memo-area"><span class="memo-label">여기에 답을 써 보세요</span></div></div>
+<div class="exercise avoid-break"><div class="exercise-title">문제 6 <span class="difficulty diff-2">★★ 도전</span></div><div class="exercise-item"><p>3자리 수 456의 백의 자리, 십의 자리, 일의 자리를 각각 / 와 %로 구하세요.</p></div><div class="memo-area"><span class="memo-label">여기에 답을 써 보세요</span></div></div>
+<div class="exercise avoid-break"><div class="exercise-title">문제 7 <span class="difficulty diff-2">★★ 도전</span></div><div class="exercise-item"><p>FizzBuzz에서 i%15를 i%3보다 먼저 검사해야 하는 이유를 설명하세요.</p></div><div class="memo-area"><span class="memo-label">여기에 답을 써 보세요</span></div></div>
+<div class="exercise avoid-break"><div class="exercise-title">문제 8 <span class="difficulty diff-2">★★ 도전</span></div><div class="exercise-item"><p>2024년이 윤년인지 나머지 연산으로 판별하세요.</p></div><div class="memo-area"><span class="memo-label">여기에 답을 써 보세요</span></div></div>
+<div class="exercise avoid-break"><div class="exercise-title">문제 9 <span class="difficulty diff-2">★★ 도전</span></div><div class="exercise-item"><p>double x = 7/3;의 결과가 2.0인 이유를 설명하세요.</p></div><div class="memo-area"><span class="memo-label">여기에 답을 써 보세요</span></div></div>
+<div class="exercise avoid-break"><div class="exercise-title">문제 10 <span class="difficulty diff-2">★★ 도전</span></div><div class="exercise-item"><p>12345를 뒤집어서 54321로 만드는 알고리즘을 설명하세요.</p></div><div class="memo-area"><span class="memo-label">여기에 답을 써 보세요</span></div></div>
+<div class="exercise avoid-break"><div class="exercise-title">문제 11 <span class="difficulty diff-3">★★★ 심화</span></div><div class="exercise-item"><p>[심화] C에서 -7 % 3의 결과가 -1인 이유를 검증 공식으로 설명하세요.</p></div><div class="memo-area"><span class="memo-label">여기에 답을 써 보세요</span></div></div>
+<div class="exercise avoid-break"><div class="exercise-title">문제 12 <span class="difficulty diff-3">★★★ 심화</span></div><div class="exercise-item"><p>[심화] C에서 항상 양수 나머지를 구하는 공식을 쓰세요.</p></div><div class="memo-area"><span class="memo-label">여기에 답을 써 보세요</span></div></div>
+<div class="exercise avoid-break"><div class="exercise-title">문제 13 <span class="difficulty diff-3">★★★ 심화</span></div><div class="exercise-item"><p>[심화] x / 8을 비트 시프트로 바꾸면? x % 8을 비트 AND로 바꾸면?</p></div><div class="memo-area"><span class="memo-label">여기에 답을 써 보세요</span></div></div>
+<div class="exercise avoid-break"><div class="exercise-title">문제 14 <span class="difficulty diff-3">★★★ 심화</span></div><div class="exercise-item"><p>[심화 내용] CPU에서 나눗셈이 덧셈보다 20~90배 느린 이유를 간단히 설명하세요.</p></div><div class="memo-area"><span class="memo-label">여기에 답을 써 보세요</span></div></div>
+<div class="exercise avoid-break"><div class="exercise-title">문제 15 <span class="difficulty diff-3">★★★ 심화</span></div><div class="exercise-item"><p>[심화 내용] 해시 테이블에서 hash(key) = key % size를 사용할 때, size가 소수(prime)이면 좋은 이유를 설명하세요.</p></div><div class="memo-area"><span class="memo-label">여기에 답을 써 보세요</span></div></div>
+<h2>정답</h2>
+<div class="answers-section avoid-break"><h3>정답</h3><div class="answer-item"><span class="answer-num">문제 1</span> <span class="answer-text">몫: 3, 나머지: 1. 4×3=12, 13-12=1.</span></div><div class="answer-item"><span class="answer-num">문제 2</span> <span class="answer-text">(2) 3. 정수 나눗셈은 소수점 버림. 17÷5=3.4 → 3.</span></div><div class="answer-item"><span class="answer-num">문제 3</span> <span class="answer-text">7. 37 = 10×3 + 7. %는 나머지를 반환.</span></div><div class="answer-item"><span class="answer-num">문제 4</span> <span class="answer-text">n % 2 == 0</span></div><div class="answer-item"><span class="answer-num">문제 5</span> <span class="answer-text">5시. (9+20)%12 = 29%12 = 5.</span></div><div class="answer-item"><span class="answer-num">문제 6</span> <span class="answer-text">일의 자리: 456%10=6, 십의 자리: (456/10)%10=5, 백의 자리: 456/100=4.</span></div><div class="answer-item"><span class="answer-num">문제 7</span> <span class="answer-text">15의 배수는 3의 배수이기도 함. i%3을 먼저 검사하면 15의 배수일 때 Fizz만 출력되고 FizzBuzz가 안 나옴.</span></div><div class="answer-item"><span class="answer-num">문제 8</span> <span class="answer-text">2024%4=0(O), 2024%100=24≠0 → 윤년! (100 조건 안 걸림)</span></div><div class="answer-item"><span class="answer-num">문제 9</span> <span class="answer-text">7/3은 정수 나눗셈으로 먼저 2가 됨. 그 후 double로 변환되어 2.0. (double)(7)/3으로 써야 2.333...</span></div><div class="answer-item"><span class="answer-num">문제 10</span> <span class="answer-text">temp%10으로 끝자리 꺼내고, result=result*10+끝자리, temp=temp/10. 반복.</span></div><div class="answer-item"><span class="answer-num">문제 11</span> <span class="answer-text">검증: a = (a/b)*b + a%b. -7 = (-7/3)*3 + (-7%3) = (-2)*3 + (-1) = -6-1 = -7 ✓</span></div><div class="answer-item"><span class="answer-num">문제 12</span> <span class="answer-text">((a % b) + b) % b. 예: ((-7%3)+3)%3 = (-1+3)%3 = 2.</span></div><div class="answer-item"><span class="answer-num">문제 13</span> <span class="answer-text">x/8 = x>>3, x%8 = x&7 (=x&0b111).</span></div><div class="answer-item"><span class="answer-num">문제 14</span> <span class="answer-text">나눗셈은 반복적 뺄셈/시프트 알고리즘. 비트 수만큼 반복 필요. 덧셈은 1사이클에 완료.</span></div><div class="answer-item"><span class="answer-num">문제 15</span> <span class="answer-text">size가 소수면 키 분포가 고르게 퍼짐. 합성수면 약수의 배수에 몰려서 충돌 증가.</span></div></div>
+<h2>용어 정리</h2>
+<h2>[심화 내용] 모듈러 산술 — 나머지의 수학</h2>
+<p>나머지 연산을 체계적으로 다루는 것이 모듈러 산술(Modular Arithmetic)이에요. 현대 암호학의 핵심이죠!</p>
+<div class="box box-key avoid-break"><span class="box-label">[심화 내용] 모듈러 산술의 성질</span><div class="box-content">a mod n에서 n을 <b>법(modulus)</b>이라 해요.<br><br><b>합동(Congruence):</b><br>a ≡ b (mod n) ⟺ n이 (a-b)를 나눔<br>예: 17 ≡ 5 (mod 12) (시계!)<br><br><b>연산 법칙:</b><br>(a + b) mod n = ((a mod n) + (b mod n)) mod n<br>(a * b) mod n = ((a mod n) * (b mod n)) mod n<br>(a - b) mod n = ((a mod n) - (b mod n) + n) mod n<br><br><b>주의:</b> 나눗셈은 성립 안 함!<br>(a / b) mod n ≠ ((a mod n) / (b mod n)) mod n<br>대신 <b>모듈러 역원</b>을 사용</div></div>
+<div class="box box-key avoid-break"><span class="box-label">[심화 내용] 큰 수의 거듭제곱 모듈러</span><div class="box-content">문제: 2^100 mod 13 = ?<br><br>직접 계산하면 2^100은 31자리 수... 불가능!<br><br><b>빠른 거듭제곱(Fast Exponentiation):</b><br>2^1 mod 13 = 2<br>2^2 mod 13 = 4<br>2^4 mod 13 = 16 mod 13 = 3<br>2^8 mod 13 = 3^2 mod 13 = 9<br>2^16 mod 13 = 9^2 mod 13 = 81 mod 13 = 3<br>2^32 mod 13 = 3^2 mod 13 = 9<br>2^64 mod 13 = 9^2 mod 13 = 3<br><br>100 = 64 + 32 + 4<br>2^100 = 2^64 * 2^32 * 2^4 mod 13<br>= 3 * 9 * 3 mod 13 = 81 mod 13 = <b>3</b></div></div>
+<div class="code-block avoid-break"><div class="code-block-header">[C 코드] 빠른 거듭제곱 모듈러</div>
+        <table class="code-table"><tr class=""><td class="line-num">1</td><td class="line-code"><span class="pp">#include</span> <span class="str">&lt;stdio.h&gt;</span></td></tr>
+<tr class=""><td class="line-num">2</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">3</td><td class="line-code"><span class="cmt">// a^b mod m을 O(log b)에 계산</span></td></tr>
+<tr class=""><td class="line-num">4</td><td class="line-code"><span class="type">long</span> <span class="type">long</span> <span class="fn">power_mod</span>(<span class="type">long</span> <span class="type">long</span> a, <span class="type">long</span> <span class="type">long</span> b, <span class="type">long</span> <span class="type">long</span> m) {</td></tr>
+<tr class=""><td class="line-num">5</td><td class="line-code">    <span class="type">long</span> <span class="type">long</span> result = <span class="num">1</span>;</td></tr>
+<tr class=""><td class="line-num">6</td><td class="line-code">    a %= m;</td></tr>
+<tr class=""><td class="line-num">7</td><td class="line-code">    <span class="kw">while</span> (b &gt; <span class="num">0</span>) {</td></tr>
+<tr class=""><td class="line-num">8</td><td class="line-code">        <span class="kw">if</span> (b &amp; <span class="num">1</span>)  <span class="cmt">// b가 홀수면</span></td></tr>
+<tr class=""><td class="line-num">9</td><td class="line-code">            result = result * a % m;</td></tr>
+<tr class=""><td class="line-num">10</td><td class="line-code">        b &gt;&gt;= <span class="num">1</span>;    <span class="cmt">// b를 반으로</span></td></tr>
+<tr class=""><td class="line-num">11</td><td class="line-code">        a = a * a % m;  <span class="cmt">// a를 제곱</span></td></tr>
+<tr class=""><td class="line-num">12</td><td class="line-code">    }</td></tr>
+<tr class=""><td class="line-num">13</td><td class="line-code">    <span class="kw">return</span> result;</td></tr>
+<tr class=""><td class="line-num">14</td><td class="line-code">}</td></tr>
+<tr class=""><td class="line-num">15</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">16</td><td class="line-code"><span class="type">int</span> <span class="fn">main</span>() {</td></tr>
+<tr class=""><td class="line-num">17</td><td class="line-code">    <span class="fn">printf</span>(<span class="str">"2^100 mod 13 = <span class="fmt">%l</span>ld<span class="esc">\n</span>"</span>, <span class="fn">power_mod</span>(<span class="num">2</span>, <span class="num">100</span>, <span class="num">13</span>));</td></tr>
+<tr class=""><td class="line-num">18</td><td class="line-code">    <span class="fn">printf</span>(<span class="str">"3^1000 mod 7 = <span class="fmt">%l</span>ld<span class="esc">\n</span>"</span>, <span class="fn">power_mod</span>(<span class="num">3</span>, <span class="num">1000</span>, <span class="num">7</span>));</td></tr>
+<tr class=""><td class="line-num">19</td><td class="line-code">    <span class="fn">printf</span>(<span class="str">"7^256 mod 11 = <span class="fmt">%l</span>ld<span class="esc">\n</span>"</span>, <span class="fn">power_mod</span>(<span class="num">7</span>, <span class="num">256</span>, <span class="num">11</span>));</td></tr>
+<tr class=""><td class="line-num">20</td><td class="line-code">    <span class="kw">return</span> <span class="num">0</span>;</td></tr>
+<tr class=""><td class="line-num">21</td><td class="line-code">}</td></tr></table></div>
+<div class="output-block avoid-break"><span class="output-label">실행 결과</span><div class="output-text">2^100 mod 13 = 3
+3^1000 mod 7 = 4
+7^256 mod 11 = 3</div></div>
+<h2>[심화 내용] RSA 암호와 나머지</h2>
+<div class="box box-key avoid-break"><span class="box-label">[심화 내용] RSA 암호의 원리</span><div class="box-content">인터넷 보안의 핵심 RSA 암호는 <b>모듈러 산술</b>로 작동해요!<br><br><b>키 생성:</b><br>1. 큰 소수 p, q 선택 (각각 수백 자리)<br>2. n = p * q<br>3. e (공개키), d (비밀키) 계산<br>   e * d ≡ 1 (mod (p-1)(q-1))<br><br><b>암호화:</b> C = M^e mod n (공개키로)<br><b>복호화:</b> M = C^d mod n (비밀키로)<br><br><b>안전한 이유:</b><br>n = p * q를 알아도 p, q를 구하기 극도로 어려움<br>(소인수분해 문제 = NP)<br><br>나머지 연산 없이는 현대 인터넷 보안이 불가능!</div></div>
+<h2>[심화 내용] 해시 함수와 나머지</h2>
+<p>해시 테이블의 핵심인 해시 함수도 나머지 연산을 사용해요.</p>
+<div class="box box-key avoid-break"><span class="box-label">[심화 내용] 해시 함수 = 나머지</span><div class="box-content"><b>가장 간단한 해시 함수:</b><br>hash(key) = key % table_size<br><br>예: 테이블 크기 10<br>hash(42) = 42 % 10 = 2 (인덱스 2에 저장)<br>hash(17) = 17 % 10 = 7 (인덱스 7에 저장)<br>hash(32) = 32 % 10 = 2 (충돌! 인덱스 2)<br><br><b>좋은 테이블 크기:</b> 소수가 좋아요<br>table_size = 7이면 key % 7은 0~6이 균등 분포<br>table_size = 10이면 끝자리만 보므로 편향 발생<br><br>Java HashMap: 2의 거듭제곱 크기 + 비트 조작<br>Python dict: 오픈 어드레싱 + 소수 기반</div></div>
+<h2>[심화 내용] 나눗셈의 하드웨어 구현</h2>
+<div class="box box-key avoid-break"><span class="box-label">[심화 내용] CPU의 나눗셈</span><div class="box-content">덧셈/뺄셈: 1 사이클 (가장 빠름)<br>곱셈: 3~5 사이클<br><b>나눗셈: 20~90 사이클</b> (가장 느림!)<br><br><b>Restoring Division 알고리즘:</b><br>1. 피제수(나눠지는 수)에서 제수(나누는 수)를 뺌<br>2. 결과가 양수면 -> 몫 비트 = 1<br>3. 결과가 음수면 -> 몫 비트 = 0, 원래값 복원(restore)<br>4. 시프트하고 반복 (32비트면 32번)<br><br><b>컴파일러 최적화:</b><br>2의 거듭제곱 나눗셈 -> 시프트로 대체!<br>x / 8 -> x >> 3 (1 사이클!)<br>x % 8 -> x & 7 (비트 AND, 1 사이클!)<br><br>상수 나눗셈 -> 곱셈+시프트로 변환<br>x / 7 -> x * 0x24924925 >> 35 (마법의 수!)</div></div>
+<div class="code-block avoid-break"><div class="code-block-header">[C 코드] 나머지 실전 패턴</div>
+        <table class="code-table"><tr class=""><td class="line-num">1</td><td class="line-code"><span class="pp">#include</span> <span class="str">&lt;stdio.h&gt;</span></td></tr>
+<tr class=""><td class="line-num">2</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">3</td><td class="line-code"><span class="type">int</span> <span class="fn">main</span>() {</td></tr>
+<tr class=""><td class="line-num">4</td><td class="line-code">    <span class="cmt">// 패턴 1: 짝홀 판별 (가장 기본!)</span></td></tr>
+<tr class=""><td class="line-num">5</td><td class="line-code">    <span class="kw">for</span> (<span class="type">int</span> i = <span class="num">0</span>; i &lt; <span class="num">6</span>; i++)</td></tr>
+<tr class=""><td class="line-num">6</td><td class="line-code">        <span class="fn">printf</span>(<span class="str">"<span class="fmt">%d</span>: <span class="fmt">%s</span><span class="esc">\n</span>"</span>, i, (i % <span class="num">2</span> == <span class="num">0</span>) ? <span class="str">"짝수"</span> : <span class="str">"홀수"</span>);</td></tr>
+<tr class=""><td class="line-num">7</td><td class="line-code">    </td></tr>
+<tr class=""><td class="line-num">8</td><td class="line-code">    <span class="cmt">// 패턴 2: 순환 (원형 배열)</span></td></tr>
+<tr class=""><td class="line-num">9</td><td class="line-code">    <span class="type">int</span> arr[] = {<span class="num">10</span>, <span class="num">20</span>, <span class="num">30</span>, <span class="num">40</span>, <span class="num">50</span>};</td></tr>
+<tr class=""><td class="line-num">10</td><td class="line-code">    <span class="type">int</span> n = <span class="num">5</span>;</td></tr>
+<tr class=""><td class="line-num">11</td><td class="line-code">    <span class="kw">for</span> (<span class="type">int</span> i = <span class="num">0</span>; i &lt; <span class="num">10</span>; i++)</td></tr>
+<tr class=""><td class="line-num">12</td><td class="line-code">        <span class="fn">printf</span>(<span class="str">"arr[<span class="fmt">%d</span><span class="fmt">%%</span>5] = <span class="fmt">%d</span><span class="esc">\n</span>"</span>, i, arr[i % n]);</td></tr>
+<tr class=""><td class="line-num">13</td><td class="line-code">    </td></tr>
+<tr class=""><td class="line-num">14</td><td class="line-code">    <span class="cmt">// 패턴 3: N번마다 한 번</span></td></tr>
+<tr class=""><td class="line-num">15</td><td class="line-code">    <span class="kw">for</span> (<span class="type">int</span> i = <span class="num">1</span>; i &lt;= <span class="num">20</span>; i++)</td></tr>
+<tr class=""><td class="line-num">16</td><td class="line-code">        <span class="kw">if</span> (i % <span class="num">5</span> == <span class="num">0</span>) <span class="fn">printf</span>(<span class="str">"5의 배수: <span class="fmt">%d</span><span class="esc">\n</span>"</span>, i);</td></tr>
+<tr class=""><td class="line-num">17</td><td class="line-code">    </td></tr>
+<tr class=""><td class="line-num">18</td><td class="line-code">    <span class="cmt">// 패턴 4: 자릿수 분리</span></td></tr>
+<tr class=""><td class="line-num">19</td><td class="line-code">    <span class="type">int</span> num = <span class="num">1234</span>;</td></tr>
+<tr class=""><td class="line-num">20</td><td class="line-code">    <span class="kw">while</span> (num &gt; <span class="num">0</span>) {</td></tr>
+<tr class=""><td class="line-num">21</td><td class="line-code">        <span class="fn">printf</span>(<span class="str">"자릿수: <span class="fmt">%d</span><span class="esc">\n</span>"</span>, num % <span class="num">10</span>);</td></tr>
+<tr class=""><td class="line-num">22</td><td class="line-code">        num /= <span class="num">10</span>;</td></tr>
+<tr class=""><td class="line-num">23</td><td class="line-code">    }</td></tr>
+<tr class=""><td class="line-num">24</td><td class="line-code">    </td></tr>
+<tr class=""><td class="line-num">25</td><td class="line-code">    <span class="kw">return</span> <span class="num">0</span>;</td></tr>
+<tr class=""><td class="line-num">26</td><td class="line-code">}</td></tr></table></div>
+<div class="output-block avoid-break"><span class="output-label">실행 결과</span><div class="output-text">0: 짝수
+1: 홀수
+2: 짝수
+3: 홀수
+4: 짝수
+5: 홀수
+arr[0%5] = 10
+arr[1%5] = 20
+...
+5의 배수: 5
+5의 배수: 10
+...
+자릿수: 4
+자릿수: 3
+자릿수: 2
+자릿수: 1</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">20~90</div><div class="fact-bite-text">CPU에서 나눗셈 명령어의 사이클 수. 덧셈(1 사이클)의 20~90배! 그래서 컴파일러가 시프트/곱셈으로 대체.</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">1977년</div><div class="fact-bite-text">RSA 암호가 발표된 해. 모듈러 산술이 인터넷 보안의 기초가 됨!</div></div>
+<div class="glossary avoid-break"><div class="glossary-item"><dt class="glossary-term">몫(Quotient)</dt><dd class="glossary-def">나눗셈에서 나누어진 횟수. 7÷3의 몫은 2.</dd></div><div class="glossary-item"><dt class="glossary-term">나머지(Remainder)</dt><dd class="glossary-def">나눗셈에서 나누고 남은 수. 7÷3의 나머지는 1.</dd></div><div class="glossary-item"><dt class="glossary-term">% (모듈로 연산자)</dt><dd class="glossary-def">C에서 나머지를 구하는 기호. 7%3=1.</dd></div><div class="glossary-item"><dt class="glossary-term">정수 나눗셈</dt><dd class="glossary-def">소수점 아래를 버리는 나눗셈. int끼리 /를 하면 정수 나눗셈.</dd></div><div class="glossary-item"><dt class="glossary-term">시계 산술(모듈러 산술)</dt><dd class="glossary-def">특정 수에서 다시 0으로 돌아가는 계산. 시계(12), 요일(7).</dd></div><div class="glossary-item"><dt class="glossary-term">배수</dt><dd class="glossary-def">어떤 수로 나누어떨어지는 수. 6%3==0 → 6은 3의 배수.</dd></div><div class="glossary-item"><dt class="glossary-term">FizzBuzz</dt><dd class="glossary-def">배수 판별 연습 문제. 면접에서도 자주 출제.</dd></div><div class="glossary-item"><dt class="glossary-term">윤년</dt><dd class="glossary-def">2월이 29일인 해. %4, %100, %400으로 판별.</dd></div><div class="glossary-item"><dt class="glossary-term">비트 시프트</dt><dd class="glossary-def">비트를 좌우로 밀기. >>1은 /2와 같음 (양수).</dd></div><div class="glossary-item"><dt class="glossary-term">해시 함수</dt><dd class="glossary-def">데이터를 고정 크기 값으로 변환. key%size가 기본형.</dd></div><div class="glossary-item"><dt class="glossary-term">0으로 나누기</dt><dd class="glossary-def">정수: 정의되지 않은 동작(크래시). 실수: inf 또는 nan.</dd></div><div class="glossary-item"><dt class="glossary-term">Truncation</dt><dd class="glossary-def">소수점 이하를 0 방향으로 버리는 것. C의 정수 나눗셈 방식.</dd></div><div class="glossary-item"><dt class="glossary-term">모듈러 산술</dt><dd class="glossary-def">나머지 연산을 체계화한 수학. 시계 산술이라고도 함. 암호학의 기초.</dd></div><div class="glossary-item"><dt class="glossary-term">합동(Congruence)</dt><dd class="glossary-def">a ≡ b (mod n). a와 b를 n으로 나눈 나머지가 같다는 뜻.</dd></div><div class="glossary-item"><dt class="glossary-term">빠른 거듭제곱</dt><dd class="glossary-def">a^b mod m을 O(log b)에 계산하는 알고리즘. RSA 암호의 핵심.</dd></div><div class="glossary-item"><dt class="glossary-term">RSA 암호</dt><dd class="glossary-def">큰 수의 소인수분해 어려움에 기반한 공개키 암호. 모듈러 산술 사용.</dd></div><div class="glossary-item"><dt class="glossary-term">해시 함수</dt><dd class="glossary-def">임의 크기 데이터를 고정 크기 값으로 변환하는 함수. 보통 나머지 연산 사용.</dd></div><div class="glossary-item"><dt class="glossary-term">Restoring Division</dt><dd class="glossary-def">CPU의 나눗셈 알고리즘. 뺄셈 + 복원을 반복하여 몫과 나머지 계산.</dd></div></div>
+<div class="visual-summary avoid-break"><div class="visual-summary-title">이번 유닛 핵심 정리</div><div class="visual-summary-items"><div class="visual-summary-item"><div class="visual-summary-num">1</div><span>나눗셈: 몫(/) = 몇 번 들어가나, 나머지(%) = 남는 것</span></div><div class="visual-summary-item"><div class="visual-summary-num">2</div><span>짝수 판별: n % 2 == 0이면 짝수!</span></div><div class="visual-summary-item"><div class="visual-summary-num">3</div><span>순환 패턴: i % n으로 0~(n-1) 반복</span></div><div class="visual-summary-item"><div class="visual-summary-num">4</div><span>[심화] 음수 나머지: C에서 -7 % 3 = -1 (부호 따라감)</span></div><div class="visual-summary-item"><div class="visual-summary-num">5</div><span>[심화 내용] 모듈러 산술: 덧셈/곱셈 법칙 성립, 나눗셈은 역원 필요</span></div><div class="visual-summary-item"><div class="visual-summary-num">6</div><span>[심화 내용] RSA 암호 = 모듈러 거듭제곱 + 소인수분해 어려움</span></div><div class="visual-summary-item"><div class="visual-summary-num">7</div><span>[심화 내용] 해시 함수 = key % table_size</span></div><div class="visual-summary-item"><div class="visual-summary-num">8</div><span>[심화 내용] CPU 나눗셈은 20~90 사이클 (가장 느린 산술 연산)</span></div></div></div>
+<div class="box box-summary avoid-break"><span class="box-label">이 유닛에서 연결된 축</span><div class="box-content"><b>[C언어]</b> / (정수 나눗셈), % (나머지), 캐스팅<br><b>[컴퓨팅 사고력]</b> 패턴 인식 — 짝/홀, 배수 판별<br><b>[디버깅]</b> 정수 나눗셈 소수점 버림, 0으로 나누기<br><b>[KOI]</b> FizzBuzz, 윤년, 자릿수 분리, 요일 계산<br><b>[코딩기초]</b> 조건 판별의 핵심 도구<br><b>[수학연결]</b> 약수·배수, 모듈러 산술, 정수론</div></div>
+<h2>실전 활용 연습</h2>
+<p>지금까지 배운 개념을 활용한 다양한 실전 예제와 연습문제입니다.</p>
+<div class="mascot-speech  avoid-break">
+        <img class="mascot-speech-img small" src="svg-assets/mascot-thinking.svg" alt="마스코트" />
+        <div class="mascot-bubble tip">직접 손으로 써보면서 연습해 보세요! 머릿속으로만 하면 금방 잊어버려요.</div>
+      </div>
+<h2>실생활 연결</h2>
+<div class="box box-tip avoid-break"><span class="box-label">[실생활] 이 개념은 어디에 쓰일까?</span><div class="box-content">게임 개발, 앱 만들기, 웹사이트, 로봇 제어, AI 학습 등 모든 분야에서 사용돼요!</div></div>
+<div class="mascot-speech  avoid-break">
+        <img class="mascot-speech-img small" src="svg-assets/mascot-hello.svg" alt="마스코트" />
+        <div class="mascot-bubble ">이 개념은 나중에 코딩할 때 반드시 필요해요!</div>
+      </div>
+<h2>추가 연습문제</h2>
+<div class="exercise avoid-break"><div class="exercise-title">문제 20 <span class="difficulty diff-2">★★ 도전</span></div><div class="exercise-item"><p>이번 유닛에서 배운 핵심 개념 3가지를 자신의 말로 설명해 보세요.</p></div><div class="memo-area"><span class="memo-label">여기에 답을 써 보세요</span></div></div>
+<div class="exercise avoid-break"><div class="exercise-title">문제 21 <span class="difficulty diff-2">★★ 도전</span></div><div class="exercise-item"><p>이번 유닛의 개념을 활용한 자신만의 문제를 1개 만들어 보세요.</p></div><div class="memo-area"><span class="memo-label">여기에 답을 써 보세요</span></div></div>
+<div class="exercise avoid-break"><div class="exercise-title">문제 22 <span class="difficulty diff-3">★★★ 심화</span></div><div class="exercise-item"><p>이번 유닛의 개념이 C언어에서 어떻게 사용되는지 조사해 보세요.</p></div><div class="memo-area"><span class="memo-label">여기에 답을 써 보세요</span></div></div>
+<h2>[심화] 더 알아보기</h2>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">undefined</div><div class="fact-bite-text">컴퓨팅 사고력(CT) = 문제를 컴퓨터처럼 분석하고 해결하는 능력. 모든 코딩의 기본!</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">undefined</div><div class="fact-bite-text">문제 해결 4단계: 이해 → 계획 → 실행 → 검증. 코딩만이 아니라 모든 문제에 적용!</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">undefined</div><div class="fact-bite-text">추상화 = 복잡한 것에서 핵심만 뽑아내기. 지하철 노선도 = 실제 도시의 추상화!</div></div>
+<div class="mascot-speech right avoid-break">
+        <img class="mascot-speech-img small" src="svg-assets/mascot-celebrate.svg" alt="마스코트" />
+        <div class="mascot-bubble success">이번 유닛 완전 정복! 다음 유닛으로 고고!</div>
+      </div>
+<p>이번 유닛의 모든 개념을 완전히 이해했습니다. 다음 유닛에서 더 발전된 개념을 배워보세요!</p>
+<div class="box box-question avoid-break"><span class="box-label">[다음 유닛 미리보기]</span><div class="box-content">1, 3, 5, 7, 9... 이 숫자들에 숨은 규칙을 찾을 수 있나요? 다음 유닛에서는 <b>패턴을 찾고, 수식으로 바꾸고, 코드로 만드는</b> 방법을 배워요!</div></div>
+<div class="mascot-speech  avoid-break">
+        <img class="mascot-speech-img " src="svg-assets/mascot-hello.svg" alt="마스코트" />
+        <div class="mascot-bubble celebrate">나머지 연산은 프로그래밍의 만능 열쇠야! 짝홀 판별, 배수 확인, 시계 계산까지! 다음엔 숫자 속 규칙을 찾아볼 거야. 기대해!</div>
+      </div>
+</article>
+</body>
+</html>

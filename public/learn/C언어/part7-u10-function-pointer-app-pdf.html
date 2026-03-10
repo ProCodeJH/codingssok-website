@@ -1,0 +1,1792 @@
+﻿<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<base href="/learn/C언어/">
+<title>코딩쏙 교재 — 함수 포인터 활용</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+/* ═══════════════════════════════════════════════════════════════
+   코딩쏙 프리미엄 PDF 교재 스타일시트 v5.0
+   Paged.js + A4 인쇄 최적화 + 아동교육 디자인 시스템
+   ═══════════════════════════════════════════════════════════════ */
+
+/* ── 리셋 & 기본 ── */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --c-primary: #FF6B6B;
+  --c-primary-light: #FFE8E8;
+  --c-primary-dark: #E84545;
+  --c-accent: #4ECDC4;
+  --c-accent-light: #E8FFF9;
+  --c-blue: #3B82F6;
+  --c-blue-light: #EFF6FF;
+  --c-purple: #8B5CF6;
+  --c-purple-light: #F5F3FF;
+  --c-orange: #F59E0B;
+  --c-orange-light: #FFFBEB;
+  --c-green: #10B981;
+  --c-green-light: #ECFDF5;
+  --c-red: #EF4444;
+  --c-red-light: #FEF2F2;
+  --c-teal: #14B8A6;
+  --c-teal-light: #F0FDFA;
+  --c-pink: #EC4899;
+  --c-text: #1E293B;
+  --c-text-secondary: #64748B;
+  --c-text-muted: #94A3B8;
+  --c-border: #E2E8F0;
+  --c-bg-subtle: #F8FAFC;
+  --c-bg-warm: #FFFBF5;
+  --font-body: 'Pretendard', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-code: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --radius-xl: 18px;
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.08);
+  --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
+  --shadow-lg: 0 8px 24px rgba(0,0,0,0.10);
+}
+
+/* ── 페이지 설정 ── */
+@page {
+  size: A4;
+  margin: 18mm 17mm 15mm 22mm;
+  @bottom-center {
+    content: counter(page);
+    font-family: var(--font-body);
+    font-size: 9pt;
+    color: var(--c-text-muted);
+    letter-spacing: 1px;
+  }
+}
+@page :first { @bottom-center { content: none; } }
+
+body {
+  font-family: var(--font-body);
+  color: var(--c-text);
+  background: white;
+  font-size: 11.5pt;
+  line-height: 180%;
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+  word-break: keep-all;
+  overflow-wrap: break-word;
+}
+
+/* ── 페이지 제어 ── */
+.avoid-break { break-inside: avoid !important; page-break-inside: avoid !important; }
+h2, h3 { break-after: avoid !important; page-break-after: avoid !important; }
+.page-break-hint { break-before: page !important; page-break-before: always !important; height: 0; margin: 0; padding: 0; }
+p { orphans: 3; widows: 3; }
+
+/* ═══════════════════════════════════════
+   레슨 헤더 — 프리미엄 그래디언트 배너
+   ═══════════════════════════════════════ */
+.lesson-header {
+  margin-bottom: 6mm;
+  padding: 6mm 5mm 5mm;
+  background: linear-gradient(135deg, #FF6B6B 0%, #FF8E53 50%, #FEC89A 100%);
+  border-radius: var(--radius-xl);
+  color: white;
+  position: relative;
+  overflow: hidden;
+  box-shadow: var(--shadow-lg);
+}
+.lesson-header::before {
+  content: '';
+  position: absolute;
+  top: -30%;
+  right: -10%;
+  width: 140px;
+  height: 140px;
+  background: rgba(255,255,255,0.12);
+  border-radius: 50%;
+}
+.lesson-header::after {
+  content: '';
+  position: absolute;
+  bottom: -20%;
+  left: 15%;
+  width: 80px;
+  height: 80px;
+  background: rgba(255,255,255,0.08);
+  border-radius: 50%;
+}
+.lesson-number {
+  font-size: 10pt;
+  font-weight: 700;
+  color: rgba(255,255,255,0.85);
+  margin-bottom: 2mm;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  position: relative;
+  z-index: 1;
+}
+.lesson-title {
+  font-size: 24pt;
+  font-weight: 900;
+  line-height: 125%;
+  color: white;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.15);
+  position: relative;
+  z-index: 1;
+}
+.lesson-summary {
+  font-size: 11pt;
+  color: rgba(255,255,255,0.9);
+  margin-top: 2.5mm;
+  font-weight: 400;
+  position: relative;
+  z-index: 1;
+}
+
+/* ═══════════════════════════════════════
+   제목 계층 — 프리미엄 타이포그래피
+   ═══════════════════════════════════════ */
+h2 {
+  font-size: 16pt;
+  font-weight: 800;
+  margin: 6mm 0 3mm;
+  padding: 2mm 0 2mm 4.5mm;
+  border-left: 4.5px solid var(--c-primary);
+  color: var(--c-text);
+  background: linear-gradient(90deg, var(--c-primary-light) 0%, transparent 60%);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  letter-spacing: -0.3px;
+}
+h3 {
+  font-size: 13.5pt;
+  font-weight: 700;
+  color: #334155;
+  margin: 4mm 0 2.5mm;
+  padding-bottom: 1mm;
+  border-bottom: 2px solid #F1F5F9;
+}
+p {
+  margin-bottom: 2.5mm;
+  text-align: justify;
+  line-height: 175%;
+  font-size: 11.5pt;
+}
+
+/* ── 인라인 코드 ── */
+code {
+  font-family: var(--font-code);
+  font-size: 9.5pt;
+  background: linear-gradient(135deg, #FEF3C7, #FDE68A);
+  padding: 0.5mm 2mm;
+  border-radius: 4px;
+  color: #92400E;
+  border: 1px solid #FCD34D;
+  font-weight: 500;
+}
+
+/* ═══════════════════════════════════════
+   코드 블록 — 프리미엄 IDE 스타일
+   ═══════════════════════════════════════ */
+.code-block {
+  background: #0F172A;
+  border-radius: var(--radius-md);
+  padding: 0;
+  margin: 3mm 0;
+  box-shadow: var(--shadow-md), inset 0 1px 0 rgba(255,255,255,0.05);
+  overflow: hidden;
+  border: 1px solid #1E293B;
+}
+.code-block-header {
+  font-family: var(--font-body);
+  font-size: 8.5pt;
+  font-weight: 600;
+  color: #94A3B8;
+  padding: 2.5mm 4.5mm;
+  background: #1E293B;
+  border-bottom: 1px solid #334155;
+  letter-spacing: 0.5px;
+  display: flex;
+  align-items: center;
+  gap: 2mm;
+}
+.code-block-header::before {
+  content: '';
+  display: inline-flex;
+  width: 8px; height: 8px;
+  background: #EF4444;
+  border-radius: 50%;
+  box-shadow: 14px 0 0 #F59E0B, 28px 0 0 #22C55E;
+  flex-shrink: 0;
+}
+.code-table { width: 100%; border-collapse: collapse; table-layout: fixed; }
+.code-table td { vertical-align: top; padding: 0; }
+.line-num {
+  width: 12mm;
+  min-width: 12mm;
+  max-width: 12mm;
+  text-align: right;
+  padding: 0.5mm 3mm 0.5mm 2mm;
+  font-family: var(--font-code);
+  font-size: 8pt;
+  color: #475569;
+  line-height: 165%;
+  user-select: none;
+  background: rgba(0,0,0,0.15);
+  border-right: 1px solid rgba(255,255,255,0.06);
+}
+.line-code {
+  width: auto;
+  font-family: var(--font-code);
+  font-size: 10pt;
+  color: #E2E8F0;
+  line-height: 165%;
+  padding: 0.5mm 4mm 0.5mm 4mm;
+  white-space: pre;
+  overflow-x: auto;
+}
+.line-highlight td { background: rgba(59,130,246,0.12) !important; }
+.line-highlight .line-num { color: var(--c-blue) !important; font-weight: 700; }
+
+/* 신택스 컬러 — VS Code Dark+ 영감 */
+.kw { color: #C084FC; font-weight: 500; }
+.str { color: #86EFAC; }
+.cmt { color: #6B7280; font-style: italic; }
+.fn { color: #FDBA74; }
+.pp { color: #F472B6; font-weight: 600; }
+.num { color: #7DD3FC; }
+.type { color: #5EEAD4; font-weight: 500; }
+.mc { color: #67E8F9; }
+.esc { color: #FCD34D; font-weight: 600; }
+.fmt { color: #FCD34D; }
+
+/* ═══════════════════════════════════════
+   실행 결과 — 터미널 스타일
+   ═══════════════════════════════════════ */
+.output-block {
+  background: #F0FDF4;
+  border: 1.5px solid #86EFAC;
+  border-radius: var(--radius-md);
+  padding: 3mm 4mm;
+  margin: 3mm 0;
+  position: relative;
+}
+.output-label {
+  font-family: var(--font-body);
+  font-size: 8.5pt;
+  color: var(--c-green);
+  display: block;
+  margin-bottom: 1.5mm;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+.output-text {
+  font-family: var(--font-code);
+  font-size: 10.5pt;
+  line-height: 160%;
+  color: #166534;
+}
+
+/* ═══════════════════════════════════════
+   박스 시스템 — 프리미엄 카드 디자인
+   ═══════════════════════════════════════ */
+.box {
+  border-radius: var(--radius-md);
+  padding: 3.5mm 4.5mm;
+  margin: 3mm 0;
+  position: relative;
+  box-shadow: var(--shadow-sm);
+}
+.box-label {
+  font-size: 10.5pt;
+  font-weight: 800;
+  margin-bottom: 2mm;
+  display: flex;
+  align-items: center;
+  gap: 2mm;
+}
+.box-content { font-size: 11pt; line-height: 170%; overflow-wrap: break-word; word-break: keep-all; }
+.box-warning {
+  border-left: 5px solid var(--c-red);
+  background: linear-gradient(135deg, #FEF2F2 0%, #FFF1F2 100%);
+}
+.box-warning .box-label { color: var(--c-red); }
+.box-key {
+  border-left: 5px solid var(--c-blue);
+  background: linear-gradient(135deg, #EFF6FF 0%, #F0F9FF 100%);
+}
+.box-key .box-label { color: var(--c-blue); }
+.box-tip {
+  border-left: 5px solid var(--c-orange);
+  background: linear-gradient(135deg, #FFFBEB 0%, #FEF9C3 50%, #FFFBEB 100%);
+}
+.box-tip .box-label { color: var(--c-orange); }
+.box-summary {
+  border-left: 5px solid var(--c-green);
+  background: linear-gradient(135deg, #ECFDF5 0%, #D1FAE5 100%);
+  border: 1.5px solid #A7F3D0;
+  border-left: 5px solid var(--c-green);
+}
+.box-summary .box-label { color: var(--c-green); }
+.box-question {
+  border-left: 5px solid var(--c-purple);
+  background: linear-gradient(135deg, #F5F3FF 0%, #EDE9FE 100%);
+}
+.box-question .box-label { color: var(--c-purple); }
+.box-history {
+  border-left: 5px solid var(--c-teal);
+  background: linear-gradient(135deg, #F0FDFA 0%, #CCFBF1 100%);
+}
+.box-history .box-label { color: var(--c-teal); }
+
+/* ═══════════════════════════════════════
+   연습문제 — 프리미엄 카드
+   ═══════════════════════════════════════ */
+.exercise {
+  background: white;
+  border: 1.5px solid #E2E8F0;
+  border-radius: var(--radius-lg);
+  padding: 3.5mm 4.5mm;
+  margin: 3mm 0;
+  border-left: 5px solid var(--c-primary);
+  box-shadow: var(--shadow-sm);
+  position: relative;
+}
+.exercise-title {
+  font-size: 13pt;
+  font-weight: 800;
+  color: var(--c-primary);
+  margin-bottom: 2.5mm;
+  display: flex;
+  align-items: center;
+  gap: 2mm;
+}
+.difficulty {
+  display: inline-flex;
+  align-items: center;
+  font-size: 8pt;
+  padding: 0.5mm 2.5mm;
+  border-radius: 20px;
+  margin-left: 2mm;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+}
+.diff-1 { background: #D1FAE5; color: #059669; }
+.diff-2 { background: #FEF3C7; color: #D97706; }
+.diff-3 { background: #FEE2E2; color: #DC2626; }
+.memo-area {
+  border: 2px dashed #CBD5E1;
+  border-radius: var(--radius-md);
+  padding: 3mm;
+  min-height: 15mm;
+  margin-top: 2.5mm;
+  background: repeating-linear-gradient(
+    transparent, transparent 7mm, #F1F5F9 7mm, #F1F5F9 7.5mm
+  );
+}
+.memo-label { font-size: 8.5pt; color: var(--c-text-muted); font-style: italic; }
+
+/* ── OX/Choice/Short ── */
+.exercise-answer {
+  font-size: 10pt;
+  color: var(--c-green);
+  margin-top: 2mm;
+  padding: 1.5mm 3mm;
+  background: var(--c-green-light);
+  border-radius: var(--radius-sm);
+  font-weight: 600;
+  border: 1px solid #A7F3D0;
+}
+.exercise-explain {
+  font-size: 9.5pt;
+  color: var(--c-text-secondary);
+  margin-top: 1.5mm;
+  padding: 2mm 3mm;
+  background: #F8FAFC;
+  border-radius: var(--radius-sm);
+  border-left: 3px solid #E2E8F0;
+}
+.choice-list { padding-left: 6mm; margin: 2mm 0; }
+.choice-list li { font-size: 10.5pt; margin-bottom: 1.5mm; line-height: 150%; }
+.choice-list li.choice-correct { color: var(--c-green); font-weight: 700; }
+
+/* ═══════════════════════════════════════
+   Before/After 비교 — 프리미엄 2컬럼
+   ═══════════════════════════════════════ */
+.compare {
+  display: flex;
+  gap: 3mm;
+  margin: 3mm 0;
+  overflow: hidden;
+}
+.compare-bad {
+  flex: 1;
+  min-width: 0;
+  background: linear-gradient(135deg, #FEF2F2, #FFF1F2);
+  border: 1.5px solid #FECACA;
+  border-radius: var(--radius-md);
+  padding: 3mm;
+  overflow: hidden;
+}
+.compare-good {
+  flex: 1;
+  min-width: 0;
+  background: linear-gradient(135deg, #ECFDF5, #D1FAE5);
+  border: 1.5px solid #A7F3D0;
+  border-radius: var(--radius-md);
+  padding: 3mm;
+  overflow: hidden;
+}
+.compare code {
+  font-size: 9pt;
+  word-break: break-all;
+  overflow-wrap: break-word;
+  display: block;
+  background: rgba(0,0,0,0.05);
+  padding: 2mm 3mm;
+  border-radius: var(--radius-sm);
+  margin: 1.5mm 0;
+  line-height: 155%;
+  white-space: pre-wrap;
+  border: none;
+  color: inherit;
+}
+.compare-label { font-size: 9.5pt; font-weight: 800; margin-bottom: 1.5mm; }
+.compare-bad .compare-label { color: var(--c-red); }
+.compare-good .compare-label { color: var(--c-green); }
+.compare-msg-bad { font-size: 9pt; color: var(--c-red); }
+.compare-msg-good { font-size: 9pt; color: var(--c-green); }
+
+/* ═══════════════════════════════════════
+   챕터 시작 — 프리미엄 카드
+   ═══════════════════════════════════════ */
+.chapter-start-box { margin-bottom: 3mm; }
+.learning-goals {
+  background: linear-gradient(135deg, #FFF7ED 0%, #FFFBEB 100%);
+  border-radius: var(--radius-lg);
+  padding: 4mm 5mm;
+  margin-bottom: 3mm;
+  border: 1.5px solid #FED7AA;
+  box-shadow: var(--shadow-sm);
+}
+.learning-goals h3 {
+  font-size: 12pt;
+  font-weight: 800;
+  color: #EA580C;
+  margin: 0 0 2.5mm;
+  border: none;
+  padding: 0;
+}
+.learning-goals ul { padding-left: 5mm; margin: 0; }
+.learning-goals li { font-size: 11pt; margin-bottom: 1.5mm; line-height: 160%; color: #431407; }
+.prereq-check {
+  background: var(--c-blue-light);
+  border-left: 5px solid var(--c-blue);
+  border-radius: var(--radius-md);
+  padding: 3mm 4mm;
+  margin-bottom: 2.5mm;
+}
+.prereq-check h3 {
+  font-size: 11pt;
+  font-weight: 700;
+  color: var(--c-blue);
+  margin: 0 0 1.5mm;
+  border: none;
+  padding: 0;
+}
+.checklist { list-style: none; padding-left: 4mm; margin: 0; }
+.checklist li { margin-bottom: 1mm; font-size: 10.5pt; }
+.checklist li::before { content: '\2610  '; font-size: 12pt; color: var(--c-text-muted); }
+.progress-section { margin-top: 2.5mm; }
+.progress-label { font-size: 9.5pt; color: var(--c-text-secondary); font-weight: 600; }
+.progress-bar {
+  background: #E2E8F0;
+  border-radius: 6px;
+  height: 4mm;
+  margin-top: 1.5mm;
+  overflow: hidden;
+}
+.progress-fill {
+  background: linear-gradient(90deg, var(--c-primary), #FF8E53, #FEC89A);
+  height: 100%;
+  border-radius: 6px;
+}
+
+/* ═══════════════════════════════════════
+   Predict — 생각해보기 카드
+   ═══════════════════════════════════════ */
+.predict-box {
+  display: flex;
+  gap: 3.5mm;
+  background: linear-gradient(135deg, #F5F3FF 0%, #EDE9FE 100%);
+  border: 1.5px solid #C4B5FD;
+  border-radius: var(--radius-lg);
+  padding: 3.5mm 4.5mm;
+  margin: 3mm 0;
+  box-shadow: var(--shadow-sm);
+}
+.predict-icon {
+  width: 10mm; height: 10mm;
+  background: linear-gradient(135deg, var(--c-purple), #A78BFA);
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16pt;
+  font-weight: 900;
+  flex-shrink: 0;
+  box-shadow: 0 2px 6px rgba(139,92,246,0.3);
+}
+.predict-content { flex: 1; }
+.predict-content p { font-size: 11pt; margin-bottom: 2mm; }
+
+/* ═══════════════════════════════════════
+   다이어그램 — 프리미엄 컨테이너
+   ═══════════════════════════════════════ */
+.diagram-box {
+  background: var(--c-bg-subtle);
+  border: 1.5px solid var(--c-border);
+  border-radius: var(--radius-lg);
+  padding: 4mm;
+  margin: 3.5mm 0;
+  box-shadow: var(--shadow-sm);
+}
+.diagram-title {
+  font-size: 11pt;
+  font-weight: 800;
+  color: var(--c-primary);
+  margin-bottom: 3mm;
+  text-align: center;
+  letter-spacing: 0.3px;
+}
+.diagram-content { font-size: 10.5pt; line-height: 170%; }
+.diagram-content .d-row { display: flex; align-items: center; justify-content: center; gap: 3mm; margin: 2mm 0; }
+.diagram-content .d-block { background: #1E293B; color: white; padding: 2mm 4mm; border-radius: var(--radius-sm); font-family: var(--font-code); font-size: 9.5pt; font-weight: 500; }
+.diagram-content .d-block-highlight { background: linear-gradient(135deg, var(--c-primary), #FF8E53); color: white; padding: 2mm 4mm; border-radius: var(--radius-sm); font-family: var(--font-code); font-size: 9.5pt; font-weight: 700; }
+.diagram-content .d-arrow { color: var(--c-text-muted); font-size: 14pt; }
+.diagram-content .d-label { font-size: 8.5pt; color: var(--c-text-secondary); }
+
+/* ═══════════════════════════════════════
+   Steps — 프리미엄 타임라인
+   ═══════════════════════════════════════ */
+.steps-visual { margin: 3mm 0; }
+.step-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 3.5mm;
+  margin-bottom: 1.5mm;
+}
+.step-num {
+  width: 8mm; height: 8mm;
+  background: linear-gradient(135deg, var(--c-primary), #FF8E53);
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10pt;
+  font-weight: 800;
+  flex-shrink: 0;
+  margin-top: 0.5mm;
+  box-shadow: 0 2px 4px rgba(255,107,107,0.3);
+}
+.step-body { flex: 1; }
+.step-title { font-size: 11pt; font-weight: 700; margin-bottom: 0.5mm; color: var(--c-text); }
+.step-desc { font-size: 10.5pt; color: var(--c-text-secondary); line-height: 160%; }
+.step-connector { width: 2.5px; height: 4mm; background: linear-gradient(180deg, var(--c-primary), transparent); margin-left: 3.7mm; }
+
+/* ═══════════════════════════════════════
+   Modify — 바꿔보기 카드
+   ═══════════════════════════════════════ */
+.modify-box {
+  background: linear-gradient(135deg, #F0F9FF 0%, #E0F2FE 100%);
+  border: 1.5px solid #7DD3FC;
+  border-left: 5px solid #0EA5E9;
+  border-radius: var(--radius-md);
+  padding: 3.5mm 4.5mm;
+  margin: 3mm 0;
+}
+.modify-label { font-size: 10.5pt; font-weight: 800; color: #0284C7; margin-bottom: 2mm; }
+.modify-hint { font-size: 9.5pt; color: var(--c-text-secondary); font-style: italic; margin: 1.5mm 0; }
+
+/* ═══════════════════════════════════════
+   정답 섹션
+   ═══════════════════════════════════════ */
+.answers-section {
+  background: white;
+  border: 1.5px solid #E9D5FF;
+  border-radius: var(--radius-md);
+  padding: 3mm 4mm;
+  margin: 3mm 0;
+  border-left: 5px solid var(--c-purple);
+}
+.answers-section h3 {
+  font-size: 12pt;
+  font-weight: 800;
+  color: var(--c-purple);
+  margin: 0 0 2.5mm;
+  border: none;
+  padding: 0;
+}
+.answer-item { margin-bottom: 1mm; font-size: 10pt; line-height: 150%; }
+.answer-num { font-weight: 700; color: var(--c-primary); margin-right: 2mm; }
+.answer-text { color: var(--c-text); }
+
+/* ═══════════════════════════════════════
+   코드 설명 (라인별)
+   ═══════════════════════════════════════ */
+.code-explain { margin: 3mm 0; padding-left: 2mm; }
+.code-explain-item {
+  display: flex;
+  align-items: flex-start;
+  margin-bottom: 2.5mm;
+  font-size: 11pt;
+  line-height: 165%;
+}
+.code-explain-line {
+  font-family: var(--font-code);
+  font-size: 9pt;
+  color: white;
+  background: linear-gradient(135deg, var(--c-primary), #FF8E53);
+  padding: 0.5mm 2.5mm;
+  border-radius: 4px;
+  margin-right: 3mm;
+  flex-shrink: 0;
+  font-weight: 700;
+  box-shadow: 0 1px 3px rgba(255,107,107,0.3);
+}
+
+/* ═══════════════════════════════════════
+   용어 정리 — 프리미엄 테이블
+   ═══════════════════════════════════════ */
+.glossary { margin: 3mm 0; break-inside: avoid; display: block !important; width: 100% !important; clear: both; }
+.glossary-item {
+  display: flex;
+  margin-bottom: 0;
+  font-size: 10pt;
+  padding: 2mm 3mm;
+  border-bottom: 1px solid #F1F5F9;
+  width: 100%;
+}
+.glossary-item:nth-child(odd) { background: #F8FAFC; }
+.glossary-item:first-child { border-radius: var(--radius-sm) var(--radius-sm) 0 0; }
+.glossary-item:last-child { border-radius: 0 0 var(--radius-sm) var(--radius-sm); border-bottom: none; }
+.glossary-term {
+  font-weight: 700;
+  min-width: 28mm;
+  max-width: 35mm;
+  flex-shrink: 0;
+  color: var(--c-text);
+  font-family: var(--font-code);
+  font-size: 9.5pt;
+  word-break: keep-all;
+}
+.glossary-def { color: var(--c-text-secondary); line-height: 155%; flex: 1; min-width: 0; }
+
+/* ═══════════════════════════════════════
+   추적 테이블 — 프리미엄 데이터 테이블
+   ═══════════════════════════════════════ */
+.trace-table { margin: 3.5mm 0; }
+.trace-caption { font-size: 10.5pt; font-weight: 700; color: var(--c-primary); margin-bottom: 2mm; }
+.trace-table table { width: 100%; border-collapse: collapse; font-size: 10pt; border-radius: var(--radius-sm); overflow: hidden; }
+.trace-table th {
+  background: linear-gradient(135deg, #1E293B, #334155);
+  color: white;
+  padding: 2mm 3.5mm;
+  text-align: left;
+  font-weight: 700;
+  font-size: 9.5pt;
+}
+.trace-table td { padding: 2mm 3.5mm; border-bottom: 1px solid #F1F5F9; font-family: var(--font-code); font-size: 9.5pt; }
+.trace-table tr:nth-child(even) td { background: #F8FAFC; }
+
+/* ═══════════════════════════════════════
+   마스코트 말풍선 — 프리미엄 디자인
+   ═══════════════════════════════════════ */
+.mascot-speech {
+  display: flex;
+  align-items: flex-start;
+  gap: 3.5mm;
+  margin: 3.5mm 0;
+}
+.mascot-speech.right { flex-direction: row-reverse; }
+.mascot-speech-img {
+  flex-shrink: 0;
+  width: 60px;
+  height: 60px;
+  object-fit: contain;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.15));
+}
+.mascot-speech-img.small { width: 48px; height: 48px; }
+.mascot-speech-img.large { width: 80px; height: 80px; }
+.mascot-bubble {
+  position: relative;
+  background: linear-gradient(135deg, #EFF6FF 0%, #DBEAFE 100%);
+  border: 1.5px solid #93C5FD;
+  border-radius: var(--radius-lg);
+  padding: 3.5mm 4.5mm;
+  font-size: 10.5pt;
+  color: #1E3A5F;
+  line-height: 1.6;
+  flex: 1;
+  max-width: 85%;
+  box-shadow: var(--shadow-sm);
+}
+.mascot-bubble.warn {
+  background: linear-gradient(135deg, #FEF2F2, #FEE2E2);
+  border-color: #FCA5A5;
+  color: #7F1D1D;
+}
+.mascot-bubble.success {
+  background: linear-gradient(135deg, #ECFDF5, #D1FAE5);
+  border-color: #6EE7B7;
+  color: #14532D;
+}
+.mascot-bubble.tip {
+  background: linear-gradient(135deg, #FFFBEB, #FEF3C7);
+  border-color: #FCD34D;
+  color: #78350F;
+}
+.mascot-bubble::before {
+  content: '';
+  position: absolute;
+  top: 14px;
+  left: -9px;
+  border: 7px solid transparent;
+  border-right-color: #93C5FD;
+}
+.mascot-bubble::after {
+  content: '';
+  position: absolute;
+  top: 15px;
+  left: -7px;
+  border: 6px solid transparent;
+  border-right-color: #EFF6FF;
+}
+.mascot-speech.right .mascot-bubble::before {
+  left: auto; right: -9px;
+  border-right-color: transparent;
+  border-left-color: #93C5FD;
+}
+.mascot-speech.right .mascot-bubble::after {
+  left: auto; right: -7px;
+  border-right-color: transparent;
+  border-left-color: #EFF6FF;
+}
+.mascot-bubble.warn::before { border-right-color: #FCA5A5; }
+.mascot-bubble.warn::after { border-right-color: #FEF2F2; }
+.mascot-speech.right .mascot-bubble.warn::before { border-right-color: transparent; border-left-color: #FCA5A5; }
+.mascot-speech.right .mascot-bubble.warn::after { border-right-color: transparent; border-left-color: #FEF2F2; }
+.mascot-bubble.success::before { border-right-color: #6EE7B7; }
+.mascot-bubble.success::after { border-right-color: #ECFDF5; }
+.mascot-speech.right .mascot-bubble.success::before { border-right-color: transparent; border-left-color: #6EE7B7; }
+.mascot-speech.right .mascot-bubble.success::after { border-right-color: transparent; border-left-color: #ECFDF5; }
+.mascot-bubble.tip::before { border-right-color: #FCD34D; }
+.mascot-bubble.tip::after { border-right-color: #FFFBEB; }
+.mascot-speech.right .mascot-bubble.tip::before { border-right-color: transparent; border-left-color: #FCD34D; }
+.mascot-speech.right .mascot-bubble.tip::after { border-right-color: transparent; border-left-color: #FFFBEB; }
+
+/* ═══════════════════════════════════════
+   Fact Bite — 숫자/팩트 강조 카드
+   ═══════════════════════════════════════ */
+.fact-bite {
+  display: flex;
+  align-items: center;
+  gap: 4mm;
+  margin: 3mm 0;
+  background: linear-gradient(135deg, #FFF1F2 0%, #FFE4E6 50%, #FFF1F2 100%);
+  border-radius: var(--radius-lg);
+  padding: 3.5mm 5mm;
+  border: 1.5px solid #FECDD3;
+  box-shadow: var(--shadow-sm);
+}
+.fact-bite-number {
+  font: 900 18pt var(--font-body);
+  background: linear-gradient(135deg, var(--c-primary), #FF8E53);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  white-space: nowrap;
+  flex-shrink: 0;
+  max-width: 40%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.fact-bite-text { font-size: 10pt; color: var(--c-text-secondary); line-height: 1.5; flex: 1; min-width: 0; }
+
+/* ═══════════════════════════════════════
+   Visual Summary — 핵심 정리 카드
+   ═══════════════════════════════════════ */
+.visual-summary {
+  background: linear-gradient(135deg, #ECFDF5 0%, #D1FAE5 50%, #A7F3D0 100%);
+  border: 1.5px solid #6EE7B7;
+  border-radius: var(--radius-xl);
+  padding: 5mm;
+  margin: 4mm 0;
+  box-shadow: var(--shadow-md);
+  display: block !important;
+  width: 100% !important;
+  clear: both;
+}
+.visual-summary-title {
+  font-size: 14pt;
+  font-weight: 900;
+  color: #065F46;
+  text-align: center;
+  margin-bottom: 3mm;
+}
+.visual-summary-items { display: flex; flex-direction: column; gap: 2mm; }
+.visual-summary-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 3mm;
+  background: rgba(255,255,255,0.7);
+  padding: 2.5mm 3.5mm;
+  border-radius: var(--radius-md);
+  backdrop-filter: blur(4px);
+}
+.visual-summary-num {
+  width: 7mm; height: 7mm;
+  background: linear-gradient(135deg, #059669, #10B981);
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 9pt;
+  font-weight: 800;
+  flex-shrink: 0;
+  box-shadow: 0 1px 3px rgba(5,150,105,0.3);
+}
+
+/* ═══════════════════════════════════════
+   10축 매핑 전용 스타일
+   ═══════════════════════════════════════ */
+.axis-section {
+  background: linear-gradient(135deg, #F8FAFC 0%, #F1F5F9 100%);
+  border: 1.5px solid #CBD5E1;
+  border-radius: var(--radius-xl);
+  padding: 5mm;
+  margin: 5mm 0;
+  box-shadow: var(--shadow-md);
+  page-break-inside: avoid;
+}
+.axis-title {
+  font-size: 14pt;
+  font-weight: 900;
+  text-align: center;
+  margin-bottom: 4mm;
+  color: var(--c-text);
+  letter-spacing: -0.3px;
+}
+.axis-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2.5mm;
+}
+.axis-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 2mm;
+  padding: 2.5mm 3mm;
+  border-radius: var(--radius-md);
+  background: white;
+  border: 1px solid #E2E8F0;
+}
+.axis-badge {
+  font-size: 7.5pt;
+  font-weight: 800;
+  padding: 0.5mm 2.5mm;
+  border-radius: 20px;
+  flex-shrink: 0;
+  letter-spacing: 0.3px;
+  white-space: nowrap;
+}
+.axis-badge.c-lang { background: #DBEAFE; color: #1D4ED8; }
+.axis-badge.thinking { background: #E0E7FF; color: #4338CA; }
+.axis-badge.debug { background: #FEE2E2; color: #DC2626; }
+.axis-badge.koi { background: #FEF3C7; color: #B45309; }
+.axis-badge.basics { background: #D1FAE5; color: #059669; }
+.axis-badge.reallife { background: #CCFBF1; color: #0D9488; }
+.axis-badge.crosssubj { background: #E9D5FF; color: #7C3AED; }
+.axis-badge.project { background: #FFE4E6; color: #BE123C; }
+.axis-badge.ai { background: #FCE7F3; color: #DB2777; }
+.axis-badge.hardware { background: #CFFAFE; color: #0891B2; }
+.axis-text { font-size: 9.5pt; line-height: 150%; color: var(--c-text-secondary); }
+
+/* ── TOC ── */
+.toc { margin: 5mm 0; }
+.toc h2 { border: none; padding: 0; margin-bottom: 3mm; background: none; }
+.toc ul { list-style: none; padding: 0; }
+.toc-h2 { display: flex; align-items: baseline; margin-bottom: 1.5mm; font-size: 11pt; }
+.toc-text { flex-shrink: 0; }
+.toc-dots { flex: 1; border-bottom: 1.5px dotted #CBD5E1; margin: 0 2mm; min-width: 10mm; }
+.toc-page { flex-shrink: 0; color: var(--c-text-muted); font-size: 10pt; }
+
+/* ── Margin Note ── */
+.margin-note {
+  float: right;
+  width: 30mm;
+  font-size: 8.5pt;
+  color: var(--c-text-secondary);
+  background: linear-gradient(135deg, #FFFBEB, #FEF3C7);
+  padding: 2mm 2.5mm;
+  border-radius: var(--radius-sm);
+  margin: 0 -35mm 2mm 2mm;
+  border-left: 2.5px solid var(--c-orange);
+}
+
+/* ── Cross Reference ── */
+.crossref { font-size: 9pt; color: var(--c-blue); font-style: italic; font-weight: 500; }
+
+/* ── Image ── */
+.image-block { margin: 3.5mm 0; text-align: center; }
+.image-block img { max-width: 100%; border-radius: var(--radius-md); box-shadow: var(--shadow-sm); }
+.image-caption {
+  font-size: 9pt;
+  color: var(--c-text-secondary);
+  margin-top: 2mm;
+  font-style: italic;
+  background: var(--c-bg-subtle);
+  padding: 1.5mm 4mm;
+  border-radius: 20px;
+  display: inline-block;
+}
+
+/* ═══════════════════════════════════════
+   v7.0 — 80레이어 리서치 증강분
+   v5 프리미엄 기반 + TEXTBOOK-DESIGN-DEEP P1~P6 합성
+   ═══════════════════════════════════════ */
+
+/* ── Layer 26: 게슈탈트 근접성 강화 ── */
+h2 + p,
+h3 + p,
+h2 + .code-block,
+h3 + .code-block { margin-top: 1mm !important; }
+.code-block + .code-explain { margin-top: 0.5mm; }
+.code-block + .output-block { margin-top: 1mm; }
+.exercise + .exercise { margin-top: 1.5mm; }
+
+/* ── Layer 28: 마이크로 타이포그래피 ── */
+body {
+  font-kerning: auto;
+  font-variant-ligatures: common-ligatures;
+  hanging-punctuation: first last;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+.line-num { font-variant-numeric: tabular-nums; }
+.trace-table td { font-variant-numeric: tabular-nums; }
+
+/* ── Layer 29: 연습문제 유형별 스타일 ── */
+.exercise-item { margin-bottom: 2mm; font-size: 11pt; line-height: 165%; }
+.exercise-item p { margin-bottom: 1.5mm; }
+.exercise-blank { display: inline-block; min-width: 20mm; border-bottom: 2px solid var(--c-primary); margin: 0 1mm; }
+.exercise-ox-grid { display: flex; gap: 3mm; margin-top: 2mm; }
+.exercise-ox-item { flex: 1; padding: 2mm 3mm; border: 1px solid var(--c-border); border-radius: var(--radius-sm); font-size: 10pt; }
+.exercise-matching { display: grid; grid-template-columns: 1fr auto 1fr; gap: 1.5mm; font-size: 10pt; }
+.exercise-reorder { display: flex; flex-direction: column; gap: 1mm; font-family: var(--font-code); font-size: 9.5pt; }
+.exercise-reorder-item { background: var(--c-bg-subtle); padding: 1.5mm 3mm; border-radius: var(--radius-sm); border: 1px solid var(--c-border); }
+
+/* ── Layer 30: 교사용 에디션 ── */
+.teacher-only { background: #FFF5F5; border: 2px dashed #E74C3C; padding: 3mm; border-radius: var(--radius-md); }
+.teacher-note { font-size: 9pt; color: #C0392B; font-style: italic; }
+
+/* ── Layer 32: 디자인 토큰 — 인쇄용 간격 ── */
+article > * + * { margin-top: 2.5mm; }
+article > h2 { margin-top: 5mm; }
+article > h3 { margin-top: 3.5mm; }
+
+/* ── Layer 51: 황금비 타이포 ──
+   24pt / 16pt / 13.5pt / 11.5pt = 1:0.67:0.56:0.48 ≈ 피보나치 */
+
+/* ── Layer 55: 인지부하 최적화 — 시각 앵커 ── */
+h2::before {
+  /* 빈 블록으로 스크롤 앵커 역할 — Paged.js에서 러닝헤드 지원 */
+}
+
+/* ── Layer 56: 아이트래킹 — F패턴 강화 ── */
+.lesson-header .lesson-number { font-weight: 700; }
+.box-label::before {
+  content: '';
+  display: inline-block;
+  width: 3px; height: 14px;
+  border-radius: 2px;
+  margin-right: 1.5mm;
+  flex-shrink: 0;
+}
+.box-warning .box-label::before { background: var(--c-red); }
+.box-key .box-label::before { background: var(--c-blue); }
+.box-tip .box-label::before { background: var(--c-orange); }
+.box-summary .box-label::before { background: var(--c-green); }
+.box-question .box-label::before { background: var(--c-purple); }
+.box-history .box-label::before { background: var(--c-teal); }
+
+/* ── Layer 58: 색상 조화 60-30-10 강화 ── */
+/* 60% = white/neutral, 30% = brand gradient accents, 10% = c-primary strong */
+
+/* ── Layer 60: 코드 블록 — 브래킷 컬러링 (Layer 30 from Deep) ── */
+.brace-1 { color: #C084FC; font-weight: bold; }
+.brace-2 { color: #86EFAC; font-weight: bold; }
+.brace-3 { color: #FDBA74; font-weight: bold; }
+.brace-4 { color: #7DD3FC; font-weight: bold; }
+
+/* ── Layer 61: 인덴트 가이드 ── */
+.indent-guide { border-left: 1px solid rgba(255,255,255,0.08); }
+
+/* ── Layer 65: 10축 매핑 강화 ── */
+.axis-item { transition: none; }
+.axis-section .box-content { font-size: 10pt; }
+
+/* ── Layer 67: 자료구조 시각화 ── */
+.ds-visual { font-family: var(--font-code); font-size: 9pt; text-align: center; margin: 3mm 0; }
+.ds-array { display: flex; justify-content: center; gap: 0; }
+.ds-cell { width: 9mm; height: 9mm; border: 1.5px solid var(--c-blue); display: flex; align-items: center; justify-content: center; font-weight: 700; }
+.ds-cell:first-child { border-radius: var(--radius-sm) 0 0 var(--radius-sm); }
+.ds-cell:last-child { border-radius: 0 var(--radius-sm) var(--radius-sm) 0; }
+.ds-index { font-size: 7pt; color: var(--c-text-muted); text-align: center; margin-top: 0.5mm; }
+
+/* ── Layer 68: 학습 저널 공간 ── */
+.reflection-box {
+  background: var(--c-bg-warm);
+  border: 1.5px dashed #FCD34D;
+  border-radius: var(--radius-lg);
+  padding: 4mm;
+  margin: 4mm 0;
+}
+.reflection-prompt { font-size: 10pt; color: var(--c-orange); font-weight: 700; margin-bottom: 2mm; }
+.reflection-lines {
+  min-height: 20mm;
+  background: repeating-linear-gradient(transparent, transparent 7mm, #FEF3C7 7mm, #FEF3C7 7.5mm);
+}
+
+/* ── Layer 69: 루브릭/자기평가 ── */
+.rubric-table { width: 100%; border-collapse: collapse; font-size: 9pt; margin: 3mm 0; }
+.rubric-table th { background: var(--c-purple); color: white; padding: 2mm; text-align: center; }
+.rubric-table td { padding: 2mm; border: 1px solid var(--c-border); text-align: center; }
+.self-check { display: flex; gap: 5mm; justify-content: center; margin: 3mm 0; }
+.self-check-item { text-align: center; font-size: 18pt; }
+.self-check-label { font-size: 7.5pt; color: var(--c-text-secondary); }
+
+/* ── Layer 72: 교실 게임 보드 ── */
+.bingo-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 1px; background: var(--c-border); border-radius: var(--radius-md); overflow: hidden; margin: 3mm 0; }
+.bingo-cell { background: white; padding: 3mm; text-align: center; font-size: 8.5pt; font-family: var(--font-code); min-height: 10mm; display: flex; align-items: center; justify-content: center; }
+.bingo-free { background: var(--c-primary-light); font-weight: 800; color: var(--c-primary); }
+
+/* ── Layer 77: 북마크/읽기 가이드 ──  */
+.reading-ruler { border-top: 3px solid var(--c-primary); margin: 4mm 0; opacity: 0.3; }
+
+/* ── Layer 78: 고급 그리드 — 2컬럼 레이아웃 ── */
+.two-col { display: flex; gap: 4mm; }
+.two-col > * { flex: 1; min-width: 0; }
+.three-col { display: flex; gap: 3mm; }
+.three-col > * { flex: 1; min-width: 0; }
+
+/* ── Layer 80: 인쇄 품질 마커 ── */
+.print-crop-mark { display: none; }
+
+/* ═══════════════════════════════════════
+   인쇄 최적화 — 강화 버전 (Layer 77~80)
+   ═══════════════════════════════════════ */
+@media print {
+  body {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  .lesson-header,
+  .code-block,
+  .box,
+  .exercise,
+  .predict-box,
+  .compare-bad,
+  .compare-good,
+  .step-num,
+  .mascot-bubble,
+  .visual-summary,
+  .axis-section,
+  .trace-table th,
+  .progress-fill,
+  .code-explain-line,
+  .fact-bite,
+  .diff-1, .diff-2, .diff-3,
+  .diagram-box,
+  .modify-box,
+  .answers-section {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  .no-print { display: none !important; }
+  /* orphan/widow 강화 */
+  p { orphans: 3; widows: 3; }
+  h2, h3 { break-after: avoid; }
+  .avoid-break { break-inside: avoid; }
+}
+
+/* ═══════════════════════════════════════
+   레이아웃 겹침 방지 — 모든 주요 섹션 블록 강제
+   ═══════════════════════════════════════ */
+article > .glossary,
+article > .visual-summary,
+article > .box,
+article > .fact-bite,
+article > .exercise,
+article > .answers-section,
+article > .mascot-speech,
+article > .code-block,
+article > .output-block,
+article > .compare,
+article > .predict-box {
+  display: block !important;
+  width: 100% !important;
+  float: none !important;
+  clear: both !important;
+}
+
+/* 박스 내부 테이블 오버플로 방지 */
+.box-content table { width: 100%; table-layout: fixed; }
+.box-content td, .box-content th { word-break: keep-all; overflow-wrap: break-word; }
+
+/* 마스코트 버블 너비 제한 완화 */
+.mascot-bubble { max-width: 100%; }
+
+/* Paged.js 컬럼 방지 */
+article { column-count: 1 !important; columns: 1 !important; }
+
+</style>
+<script src="https://unpkg.com/pagedjs/dist/paged.polyfill.js"></script>
+<script>
+  class PagedReadyHandler extends Paged.Handler {
+    constructor(chunker, polisher, caller) { super(chunker, polisher, caller); }
+    afterRendered(pages) {
+      document.body.setAttribute('data-paged-rendered', 'true');
+      document.body.setAttribute('data-page-count', pages.length);
+      console.log('PAGED_READY:' + pages.length);
+    }
+  }
+  Paged.registerHandlers(PagedReadyHandler);
+</script>
+</head>
+<body data-section-title="함수 포인터 활용">
+<article id="content">
+  <header class="lesson-header" role="banner">
+    <div class="lesson-number">Lesson 17-10</div>
+    <h1 class="lesson-title">함수 포인터 활용</h1>
+    <div class="lesson-summary">함수 포인터 배열, 구조체 멤버로 함수 포인터 사용, typedef로 깔끔하게 정리하는 방법을 배워요.</div>
+  </header>
+<div class="chapter-start-box avoid-break"><div class="learning-goals"><h3>📚 이번에 배울 것</h3><ul><li>함수 포인터 배열을 선언하고 사용할 수 있어요.</li><li>구조체에 함수 포인터를 멤버로 넣어 가짜 객체지향을 구현해요.</li><li>typedef로 함수 포인터 타입을 깔끔하게 정의해요.</li><li>메뉴 시스템을 함수 포인터 배열로 만들 수 있어요.</li></ul></div><div class="prereq-check"><h3>✅ 시작 전 체크</h3><ul class="checklist"><li>함수 포인터의 기본 개념을 알고 있다 (U7-09)</li><li>구조체의 기본 사용법을 알고 있다</li><li>배열의 기본 개념을 알고 있다</li></ul></div><div class="progress-section"><span class="progress-label">Part 1 진행률: 10%</span><div class="progress-bar"><div class="progress-fill" style="width:10%"></div></div></div></div>
+<h2>함수 포인터 배열: 인덱스로 함수를 고른다</h2>
+<div class="mascot-speech  avoid-break">
+        <img class="mascot-speech-img " src="svg-assets/mascot-hello.svg" alt="마스코트" />
+        <div class="mascot-bubble ">계산기를 만들 때 if-else를 4번 쓰는 대신, 함수들을 배열에 넣고 번호로 골라서 호출하면 어떨까? 이게 바로 <b>함수 포인터 배열</b>이야!</div>
+      </div>
+<p><b>함수 포인터 배열</b>이란, 함수 포인터를 여러 개 모아서 배열로 만든 것이에요. 인덱스(번호)로 원하는 함수를 골라서 호출할 수 있어요. if-else나 switch를 줄여주는 강력한 기법이에요.</p>
+<div class="code-block avoid-break">
+        <table class="code-table"><tr class=""><td class="line-num">1</td><td class="line-code"><span class="pp">#include</span> <span class="str">&lt;stdio.h&gt;</span></td></tr>
+<tr class=""><td class="line-num">2</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">3</td><td class="line-code"><span class="type">int</span> <span class="fn">add</span>(<span class="type">int</span> a, <span class="type">int</span> b) { <span class="kw">return</span> a + b; }</td></tr>
+<tr class=""><td class="line-num">4</td><td class="line-code"><span class="type">int</span> <span class="fn">sub</span>(<span class="type">int</span> a, <span class="type">int</span> b) { <span class="kw">return</span> a - b; }</td></tr>
+<tr class=""><td class="line-num">5</td><td class="line-code"><span class="type">int</span> <span class="fn">mul</span>(<span class="type">int</span> a, <span class="type">int</span> b) { <span class="kw">return</span> a * b; }</td></tr>
+<tr class=""><td class="line-num">6</td><td class="line-code"><span class="type">int</span> <span class="fn">div_f</span>(<span class="type">int</span> a, <span class="type">int</span> b) { <span class="kw">return</span> b != <span class="num">0</span> ? a / b : <span class="num">0</span>; }</td></tr>
+<tr class=""><td class="line-num">7</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">8</td><td class="line-code"><span class="type">int</span> <span class="fn">main</span>(<span class="type">void</span>) {</td></tr>
+<tr class=""><td class="line-num">9</td><td class="line-code">    <span class="cmt">// 함수 포인터 배열 선언</span></td></tr>
+<tr class=""><td class="line-num">10</td><td class="line-code">    <span class="type">int</span> (*func[<span class="num">4</span>])(<span class="type">int</span>, <span class="type">int</span>) = { add, sub, mul, div_f };</td></tr>
+<tr class=""><td class="line-num">11</td><td class="line-code">    <span class="type">char</span> *names[] = { <span class="str">"더하기"</span>, <span class="str">"빼기"</span>, <span class="str">"곱하기"</span>, <span class="str">"나누기"</span> };</td></tr>
+<tr class=""><td class="line-num">12</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">13</td><td class="line-code">    <span class="type">int</span> a = <span class="num">10</span>, b = <span class="num">3</span>;</td></tr>
+<tr class=""><td class="line-num">14</td><td class="line-code">    <span class="kw">for</span> (<span class="type">int</span> i = <span class="num">0</span>; i &lt; <span class="num">4</span>; i++) {</td></tr>
+<tr class=""><td class="line-num">15</td><td class="line-code">        <span class="fn">printf</span>(<span class="str">"<span class="fmt">%s</span>: <span class="fmt">%d</span><span class="esc">\n</span>"</span>, names[i], func[i](a, b));</td></tr>
+<tr class=""><td class="line-num">16</td><td class="line-code">    }</td></tr>
+<tr class=""><td class="line-num">17</td><td class="line-code">    <span class="kw">return</span> <span class="num">0</span>;</td></tr>
+<tr class=""><td class="line-num">18</td><td class="line-code">}</td></tr></table></div>
+<div class="output-block avoid-break"><span class="output-label">실행 결과</span><div class="output-text">더하기: 13
+빼기: 7
+곱하기: 30
+나누기: 3</div></div>
+<div class="code-explain avoid-break"><div class="code-explain-item"><span class="code-explain-line">10줄</span><span><code>int (*func[4])(int, int)</code> -- 'int를 2개 받아 int를 반환하는 함수 포인터'를 4개 담는 배열이에요.</span></div><div class="code-explain-item"><span class="code-explain-line">10줄</span><span><code>= { add, sub, mul, div_f }</code> -- 함수 이름 자체가 함수의 주소예요. 배열에 주소를 넣는 거죠.</span></div><div class="code-explain-item"><span class="code-explain-line">15줄</span><span><code>func[i](a, b)</code> -- i번째 함수 포인터를 통해 함수를 호출해요. func[0](10,3)은 add(10,3)과 같아요.</span></div></div>
+<div class="diagram-box avoid-break"><div class="diagram-content">undefined</div></div>
+<h2>typedef로 함수 포인터를 깔끔하게</h2>
+<p><code>int (*func[4])(int, int)</code>는 읽기 어렵죠? <b>typedef</b>를 사용하면 함수 포인터 타입에 이름을 붙여서 훨씬 깔끔하게 만들 수 있어요.</p>
+<div class="code-block avoid-break">
+        <table class="code-table"><tr class=""><td class="line-num">1</td><td class="line-code"><span class="pp">#include</span> <span class="str">&lt;stdio.h&gt;</span></td></tr>
+<tr class=""><td class="line-num">2</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">3</td><td class="line-code"><span class="cmt">// typedef로 함수 포인터 타입 정의</span></td></tr>
+<tr class=""><td class="line-num">4</td><td class="line-code"><span class="kw">typedef</span> <span class="type">int</span> (*CalcFunc)(<span class="type">int</span>, <span class="type">int</span>);</td></tr>
+<tr class=""><td class="line-num">5</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">6</td><td class="line-code"><span class="type">int</span> <span class="fn">add</span>(<span class="type">int</span> a, <span class="type">int</span> b) { <span class="kw">return</span> a + b; }</td></tr>
+<tr class=""><td class="line-num">7</td><td class="line-code"><span class="type">int</span> <span class="fn">sub</span>(<span class="type">int</span> a, <span class="type">int</span> b) { <span class="kw">return</span> a - b; }</td></tr>
+<tr class=""><td class="line-num">8</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">9</td><td class="line-code"><span class="type">int</span> <span class="fn">main</span>(<span class="type">void</span>) {</td></tr>
+<tr class=""><td class="line-num">10</td><td class="line-code">    <span class="cmt">// 깔끔한 선언!</span></td></tr>
+<tr class=""><td class="line-num">11</td><td class="line-code">    CalcFunc func[<span class="num">2</span>] = { add, sub };</td></tr>
+<tr class=""><td class="line-num">12</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">13</td><td class="line-code">    <span class="fn">printf</span>(<span class="str">"add: <span class="fmt">%d</span><span class="esc">\n</span>"</span>, func[<span class="num">0</span>](<span class="num">5</span>, <span class="num">3</span>));</td></tr>
+<tr class=""><td class="line-num">14</td><td class="line-code">    <span class="fn">printf</span>(<span class="str">"sub: <span class="fmt">%d</span><span class="esc">\n</span>"</span>, func[<span class="num">1</span>](<span class="num">5</span>, <span class="num">3</span>));</td></tr>
+<tr class=""><td class="line-num">15</td><td class="line-code">    <span class="kw">return</span> <span class="num">0</span>;</td></tr>
+<tr class=""><td class="line-num">16</td><td class="line-code">}</td></tr></table></div>
+<div class="mascot-speech right avoid-break">
+        <img class="mascot-speech-img " src="svg-assets/mascot-celebrate.svg" alt="마스코트" />
+        <div class="mascot-bubble success">typedef를 쓰면 <code>CalcFunc</code>라는 이름으로 함수 포인터를 마치 보통 자료형처럼 쓸 수 있어! 코드가 훨씬 읽기 쉬워져.</div>
+      </div>
+<h2>구조체 + 함수 포인터 = 가짜 OOP</h2>
+<p>C에는 객체지향(OOP)이 없지만, 구조체에 함수 포인터를 넣으면 비슷한 효과를 낼 수 있어요. 같은 구조체 타입인데 함수 포인터가 달라서 <b>다른 행동</b>을 하게 만들 수 있습니다. 이것이 <b>다형성(polymorphism)</b>의 기본 원리예요.</p>
+<div class="code-block avoid-break">
+        <table class="code-table"><tr class=""><td class="line-num">1</td><td class="line-code"><span class="pp">#include</span> <span class="str">&lt;stdio.h&gt;</span></td></tr>
+<tr class=""><td class="line-num">2</td><td class="line-code"><span class="pp">#include</span> <span class="str">&lt;string.h&gt;</span></td></tr>
+<tr class=""><td class="line-num">3</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">4</td><td class="line-code"><span class="kw">typedef</span> <span class="kw">struct</span> Animal {</td></tr>
+<tr class=""><td class="line-num">5</td><td class="line-code">    <span class="type">char</span> name[<span class="num">20</span>];</td></tr>
+<tr class=""><td class="line-num">6</td><td class="line-code">    <span class="type">int</span> age;</td></tr>
+<tr class=""><td class="line-num">7</td><td class="line-code">    <span class="type">void</span> (*speak)(<span class="type">void</span>);</td></tr>
+<tr class=""><td class="line-num">8</td><td class="line-code">} Animal;</td></tr>
+<tr class=""><td class="line-num">9</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">10</td><td class="line-code"><span class="type">void</span> <span class="fn">dog_speak</span>(<span class="type">void</span>) { <span class="fn">printf</span>(<span class="str">"Woof! Woof!<span class="esc">\n</span>"</span>); }</td></tr>
+<tr class=""><td class="line-num">11</td><td class="line-code"><span class="type">void</span> <span class="fn">cat_speak</span>(<span class="type">void</span>) { <span class="fn">printf</span>(<span class="str">"Meow~<span class="esc">\n</span>"</span>); }</td></tr>
+<tr class=""><td class="line-num">12</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">13</td><td class="line-code">Animal <span class="fn">create_dog</span>(<span class="kw">const</span> <span class="type">char</span> *name, <span class="type">int</span> age) {</td></tr>
+<tr class=""><td class="line-num">14</td><td class="line-code">    Animal a;</td></tr>
+<tr class=""><td class="line-num">15</td><td class="line-code">    <span class="fn">strcpy</span>(a.name, name);</td></tr>
+<tr class=""><td class="line-num">16</td><td class="line-code">    a.age = age;</td></tr>
+<tr class=""><td class="line-num">17</td><td class="line-code">    a.speak = dog_speak;</td></tr>
+<tr class=""><td class="line-num">18</td><td class="line-code">    <span class="kw">return</span> a;</td></tr>
+<tr class=""><td class="line-num">19</td><td class="line-code">}</td></tr>
+<tr class=""><td class="line-num">20</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">21</td><td class="line-code">Animal <span class="fn">create_cat</span>(<span class="kw">const</span> <span class="type">char</span> *name, <span class="type">int</span> age) {</td></tr>
+<tr class=""><td class="line-num">22</td><td class="line-code">    Animal a;</td></tr>
+<tr class=""><td class="line-num">23</td><td class="line-code">    <span class="fn">strcpy</span>(a.name, name);</td></tr>
+<tr class=""><td class="line-num">24</td><td class="line-code">    a.age = age;</td></tr>
+<tr class=""><td class="line-num">25</td><td class="line-code">    a.speak = cat_speak;</td></tr>
+<tr class=""><td class="line-num">26</td><td class="line-code">    <span class="kw">return</span> a;</td></tr>
+<tr class=""><td class="line-num">27</td><td class="line-code">}</td></tr>
+<tr class=""><td class="line-num">28</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">29</td><td class="line-code"><span class="type">int</span> <span class="fn">main</span>(<span class="type">void</span>) {</td></tr>
+<tr class=""><td class="line-num">30</td><td class="line-code">    Animal dog = <span class="fn">create_dog</span>(<span class="str">"Buddy"</span>, <span class="num">3</span>);</td></tr>
+<tr class=""><td class="line-num">31</td><td class="line-code">    Animal cat = <span class="fn">create_cat</span>(<span class="str">"Nabi"</span>, <span class="num">2</span>);</td></tr>
+<tr class=""><td class="line-num">32</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">33</td><td class="line-code">    <span class="fn">printf</span>(<span class="str">"<span class="fmt">%s</span> says: "</span>, dog.name);</td></tr>
+<tr class=""><td class="line-num">34</td><td class="line-code">    dog.<span class="fn">speak</span>();  <span class="cmt">// Woof! Woof!</span></td></tr>
+<tr class=""><td class="line-num">35</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">36</td><td class="line-code">    <span class="fn">printf</span>(<span class="str">"<span class="fmt">%s</span> says: "</span>, cat.name);</td></tr>
+<tr class=""><td class="line-num">37</td><td class="line-code">    cat.<span class="fn">speak</span>();  <span class="cmt">// Meow~</span></td></tr>
+<tr class=""><td class="line-num">38</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">39</td><td class="line-code">    <span class="kw">return</span> <span class="num">0</span>;</td></tr>
+<tr class=""><td class="line-num">40</td><td class="line-code">}</td></tr></table></div>
+<div class="output-block avoid-break"><span class="output-label">실행 결과</span><div class="output-text">Buddy says: Woof! Woof!
+Nabi says: Meow~</div></div>
+<div class="diagram-box avoid-break"><div class="diagram-content">undefined</div></div>
+<h2>실전: 메뉴 시스템을 함수 포인터 배열로</h2>
+<p>프로그램의 메뉴를 만들 때 switch 대신 함수 포인터 배열을 쓰면 코드가 훨씬 깔끔해져요. 메뉴 항목이 늘어나도 배열에 함수를 추가하기만 하면 돼요.</p>
+<div class="code-block avoid-break">
+        <table class="code-table"><tr class=""><td class="line-num">1</td><td class="line-code"><span class="pp">#include</span> <span class="str">&lt;stdio.h&gt;</span></td></tr>
+<tr class=""><td class="line-num">2</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">3</td><td class="line-code"><span class="type">void</span> <span class="fn">menu_hello</span>(<span class="type">void</span>) { <span class="fn">printf</span>(<span class="str">"Hello!<span class="esc">\n</span>"</span>); }</td></tr>
+<tr class=""><td class="line-num">4</td><td class="line-code"><span class="type">void</span> <span class="fn">menu_time</span>(<span class="type">void</span>)  { <span class="fn">printf</span>(<span class="str">"It is study time!<span class="esc">\n</span>"</span>); }</td></tr>
+<tr class=""><td class="line-num">5</td><td class="line-code"><span class="type">void</span> <span class="fn">menu_bye</span>(<span class="type">void</span>)   { <span class="fn">printf</span>(<span class="str">"Goodbye!<span class="esc">\n</span>"</span>); }</td></tr>
+<tr class=""><td class="line-num">6</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">7</td><td class="line-code"><span class="type">int</span> <span class="fn">main</span>(<span class="type">void</span>) {</td></tr>
+<tr class=""><td class="line-num">8</td><td class="line-code">    <span class="type">void</span> (*menu[])(<span class="type">void</span>) = { menu_hello, menu_time, menu_bye };</td></tr>
+<tr class=""><td class="line-num">9</td><td class="line-code">    <span class="type">char</span> *labels[] = { <span class="str">"1. 인사하기"</span>, <span class="str">"2. 시간 알려주기"</span>, <span class="str">"3. 종료"</span> };</td></tr>
+<tr class=""><td class="line-num">10</td><td class="line-code">    <span class="type">int</span> n = <span class="num">3</span>;</td></tr>
+<tr class=""><td class="line-num">11</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">12</td><td class="line-code">    <span class="kw">while</span> (<span class="num">1</span>) {</td></tr>
+<tr class=""><td class="line-num">13</td><td class="line-code">        <span class="fn">printf</span>(<span class="str">"<span class="esc">\n</span>--- 메뉴 ---<span class="esc">\n</span>"</span>);</td></tr>
+<tr class=""><td class="line-num">14</td><td class="line-code">        <span class="kw">for</span> (<span class="type">int</span> i = <span class="num">0</span>; i &lt; n; i++) {</td></tr>
+<tr class=""><td class="line-num">15</td><td class="line-code">            <span class="fn">printf</span>(<span class="str">"<span class="fmt">%s</span><span class="esc">\n</span>"</span>, labels[i]);</td></tr>
+<tr class=""><td class="line-num">16</td><td class="line-code">        }</td></tr>
+<tr class=""><td class="line-num">17</td><td class="line-code">        <span class="fn">printf</span>(<span class="str">"선택: "</span>);</td></tr>
+<tr class=""><td class="line-num">18</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">19</td><td class="line-code">        <span class="type">int</span> choice;</td></tr>
+<tr class=""><td class="line-num">20</td><td class="line-code">        <span class="fn">scanf</span>(<span class="str">"<span class="fmt">%d</span>"</span>, &amp;choice);</td></tr>
+<tr class=""><td class="line-num">21</td><td class="line-code">        <span class="kw">if</span> (choice &lt; <span class="num">1</span> || choice &gt; n) {</td></tr>
+<tr class=""><td class="line-num">22</td><td class="line-code">            <span class="fn">printf</span>(<span class="str">"잘못된 입력입니다.<span class="esc">\n</span>"</span>);</td></tr>
+<tr class=""><td class="line-num">23</td><td class="line-code">            <span class="kw">continue</span>;</td></tr>
+<tr class=""><td class="line-num">24</td><td class="line-code">        }</td></tr>
+<tr class=""><td class="line-num">25</td><td class="line-code">        <span class="kw">if</span> (choice == n) {</td></tr>
+<tr class=""><td class="line-num">26</td><td class="line-code">            menu[choice - <span class="num">1</span>]();</td></tr>
+<tr class=""><td class="line-num">27</td><td class="line-code">            <span class="kw">break</span>;</td></tr>
+<tr class=""><td class="line-num">28</td><td class="line-code">        }</td></tr>
+<tr class=""><td class="line-num">29</td><td class="line-code">        menu[choice - <span class="num">1</span>]();  <span class="cmt">// 인덱스로 함수 호출!</span></td></tr>
+<tr class=""><td class="line-num">30</td><td class="line-code">    }</td></tr>
+<tr class=""><td class="line-num">31</td><td class="line-code">    <span class="kw">return</span> <span class="num">0</span>;</td></tr>
+<tr class=""><td class="line-num">32</td><td class="line-code">}</td></tr></table></div>
+<div class="mascot-speech  avoid-break">
+        <img class="mascot-speech-img small" src="svg-assets/mascot-thinking.svg" alt="마스코트" />
+        <div class="mascot-bubble tip">switch문으로 만들면 case가 점점 늘어나지만, 함수 포인터 배열을 쓰면 <b>배열에 함수 하나만 추가</b>하면 끝이야. 유지보수가 쉬워지지!</div>
+      </div>
+<div class="box box-tip avoid-break"><span class="box-label">[KOI] 함수 포인터와 qsort</span><div class="box-content">C 표준 라이브러리의 <code>qsort</code> 함수는 비교 함수를 함수 포인터로 받아요. 정렬 기준을 바꾸고 싶을 때 비교 함수만 바꿔 넣으면 되니까 매우 유연해요. KOI 같은 대회에서 정렬 문제를 풀 때 자주 활용돼요.</div></div>
+<h2>연습문제</h2>
+<div class="exercise avoid-break"><div class="exercise-title">OX 퀴즈</div><div class="exercise-item"><p>함수 포인터 배열을 사용하면 if-else나 switch를 줄일 수 있다.</p></div><div class="exercise-answer"><b>정답:</b> ⭕ O</div><div class="exercise-explain">인덱스로 함수를 선택해서 호출하므로 조건 분기 코드가 필요 없어져요.</div></div>
+<div class="exercise avoid-break"><div class="exercise-title">객관식</div><div class="exercise-item"><p>다음 중 함수 포인터 배열을 올바르게 선언한 것은?</p><ol class="choice-list"><li class="">int *func[3](int);</li><li class="">int (*func[3])(int);</li><li class="">int func[3](int);</li><li class="">(*int func[3])(int);</li></ol></div><div class="exercise-answer"><b>정답:</b> 2</div><div class="exercise-explain">int (*func[3])(int)은 'int를 받아 int를 반환하는 함수 포인터 3개짜리 배열'이에요. 괄호 위치가 핵심이에요.</div></div>
+<div class="exercise avoid-break"><div class="exercise-title">단답형</div><div class="exercise-item"><p>typedef를 사용해 'int를 2개 받아 int를 반환하는 함수 포인터' 타입을 MathFunc라는 이름으로 정의하세요.</p></div><div class="exercise-answer"><b>정답:</b> typedef int (*MathFunc)(int, int);</div><div class="exercise-explain">typedef와 함수 포인터 선언을 결합해요. (*MathFunc) 부분이 타입 이름이 됩니다.</div></div>
+<div class="exercise avoid-break"><div class="exercise-title">OX 퀴즈</div><div class="exercise-item"><p>구조체 멤버로 함수 포인터를 넣을 수 없다.</p></div><div class="exercise-answer"><b>정답:</b> ❌ X</div><div class="exercise-explain">구조체 멤버로 함수 포인터를 넣을 수 있어요. 이를 통해 C에서도 객체지향과 비슷한 패턴을 구현할 수 있습니다.</div></div>
+<div class="exercise avoid-break"><div class="exercise-title">객관식</div><div class="exercise-item"><p>아래 코드에서 func[2](4, 5)의 결과는?
+int add(int a, int b) { return a+b; }
+int sub(int a, int b) { return a-b; }
+int mul(int a, int b) { return a*b; }
+int (*func[])(int,int) = {add, sub, mul};</p><ol class="choice-list"><li class="">9</li><li class="">-1</li><li class="">20</li><li class="">컴파일 오류</li></ol></div><div class="exercise-answer"><b>정답:</b> 3</div><div class="exercise-explain">func[2]는 mul이므로 mul(4, 5) = 20이 됩니다.</div></div>
+<h2>용어 정리</h2>
+<div class="code-block avoid-break"><div class="code-block-header">[C 코드] 함수 포인터 응용 — 콜백 + 이벤트</div>
+        <table class="code-table"><tr class=""><td class="line-num">1</td><td class="line-code"><span class="pp">#include</span> <span class="str">&lt;stdio.h&gt;</span></td></tr>
+<tr class=""><td class="line-num">2</td><td class="line-code"><span class="pp">#include</span> <span class="str">&lt;string.h&gt;</span></td></tr>
+<tr class=""><td class="line-num">3</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">4</td><td class="line-code">/*</td></tr>
+<tr class=""><td class="line-num">5</td><td class="line-code"> * 콜백 = <span class="str">"이거 끝나면 이 함수 불러줘"</span></td></tr>
+<tr class=""><td class="line-num">6</td><td class="line-code"> *</td></tr>
+<tr class=""><td class="line-num">7</td><td class="line-code"> * 비유: 배달 주문</td></tr>
+<tr class=""><td class="line-num">8</td><td class="line-code"> * <span class="num">1</span>. 치킨 주문 (작업 시작)</td></tr>
+<tr class=""><td class="line-num">9</td><td class="line-code"> * <span class="num">2</span>. <span class="str">"도착하면 전화해주세요"</span> (콜백 등록)</td></tr>
+<tr class=""><td class="line-num">10</td><td class="line-code"> * <span class="num">3</span>. 치킨 도착 → 전화 옴! (콜백 실행)</td></tr>
+<tr class=""><td class="line-num">11</td><td class="line-code"> */</td></tr>
+<tr class=""><td class="line-num">12</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">13</td><td class="line-code"><span class="cmt">// === 콜백 패턴 1: 정렬 비교 ===</span></td></tr>
+<tr class=""><td class="line-num">14</td><td class="line-code"><span class="kw">typedef</span> <span class="type">int</span> (*Comparator)(<span class="type">int</span>, <span class="type">int</span>);</td></tr>
+<tr class=""><td class="line-num">15</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">16</td><td class="line-code"><span class="type">int</span> <span class="fn">asc</span>(<span class="type">int</span> a, <span class="type">int</span> b) { <span class="kw">return</span> a - b; }</td></tr>
+<tr class=""><td class="line-num">17</td><td class="line-code"><span class="type">int</span> <span class="fn">desc</span>(<span class="type">int</span> a, <span class="type">int</span> b) { <span class="kw">return</span> b - a; }</td></tr>
+<tr class=""><td class="line-num">18</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">19</td><td class="line-code"><span class="type">void</span> <span class="fn">sort_with</span>(<span class="type">int</span> *arr, <span class="type">int</span> n, Comparator cmp) {</td></tr>
+<tr class=""><td class="line-num">20</td><td class="line-code">    <span class="kw">for</span> (<span class="type">int</span> i = <span class="num">0</span>; i &lt; n-<span class="num">1</span>; i++)</td></tr>
+<tr class=""><td class="line-num">21</td><td class="line-code">        <span class="kw">for</span> (<span class="type">int</span> j = <span class="num">0</span>; j &lt; n-<span class="num">1</span>-i; j++)</td></tr>
+<tr class=""><td class="line-num">22</td><td class="line-code">            <span class="kw">if</span> (<span class="fn">cmp</span>(arr[j], arr[j+<span class="num">1</span>]) &gt; <span class="num">0</span>) {</td></tr>
+<tr class=""><td class="line-num">23</td><td class="line-code">                <span class="type">int</span> t = arr[j]; arr[j] = arr[j+<span class="num">1</span>]; arr[j+<span class="num">1</span>] = t;</td></tr>
+<tr class=""><td class="line-num">24</td><td class="line-code">            }</td></tr>
+<tr class=""><td class="line-num">25</td><td class="line-code">}</td></tr>
+<tr class=""><td class="line-num">26</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">27</td><td class="line-code"><span class="cmt">// === 콜백 패턴 2: 이벤트 리스너 ===</span></td></tr>
+<tr class=""><td class="line-num">28</td><td class="line-code"><span class="kw">typedef</span> <span class="type">void</span> (*EventHandler)(<span class="kw">const</span> <span class="type">char</span>* msg);</td></tr>
+<tr class=""><td class="line-num">29</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">30</td><td class="line-code"><span class="kw">typedef</span> <span class="kw">struct</span> {</td></tr>
+<tr class=""><td class="line-num">31</td><td class="line-code">    <span class="kw">const</span> <span class="type">char</span> *name;</td></tr>
+<tr class=""><td class="line-num">32</td><td class="line-code">    EventHandler on_success;</td></tr>
+<tr class=""><td class="line-num">33</td><td class="line-code">    EventHandler on_error;</td></tr>
+<tr class=""><td class="line-num">34</td><td class="line-code">} Task;</td></tr>
+<tr class=""><td class="line-num">35</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">36</td><td class="line-code"><span class="type">void</span> <span class="fn">log_handler</span>(<span class="kw">const</span> <span class="type">char</span> *msg) { <span class="fn">printf</span>(<span class="str">"  [LOG] <span class="fmt">%s</span><span class="esc">\n</span>"</span>, msg); }</td></tr>
+<tr class=""><td class="line-num">37</td><td class="line-code"><span class="type">void</span> <span class="fn">alert_handler</span>(<span class="kw">const</span> <span class="type">char</span> *msg) { <span class="fn">printf</span>(<span class="str">"  ⚠️ <span class="fmt">%s</span><span class="esc">\n</span>"</span>, msg); }</td></tr>
+<tr class=""><td class="line-num">38</td><td class="line-code"><span class="type">void</span> <span class="fn">email_handler</span>(<span class="kw">const</span> <span class="type">char</span> *msg) { <span class="fn">printf</span>(<span class="str">"  📧 Sending: <span class="fmt">%s</span><span class="esc">\n</span>"</span>, msg); }</td></tr>
+<tr class=""><td class="line-num">39</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">40</td><td class="line-code"><span class="type">void</span> <span class="fn">run_task</span>(Task *t, <span class="type">int</span> success) {</td></tr>
+<tr class=""><td class="line-num">41</td><td class="line-code">    <span class="fn">printf</span>(<span class="str">"Running <span class="esc">\"</span><span class="fmt">%s</span><span class="esc">\"</span>: "</span>, t-&gt;name);</td></tr>
+<tr class=""><td class="line-num">42</td><td class="line-code">    <span class="kw">if</span> (success) {</td></tr>
+<tr class=""><td class="line-num">43</td><td class="line-code">        <span class="fn">printf</span>(<span class="str">"SUCCESS<span class="esc">\n</span>"</span>);</td></tr>
+<tr class=""><td class="line-num">44</td><td class="line-code">        <span class="kw">if</span> (t-&gt;on_success) t-&gt;<span class="fn">on_success</span>(t-&gt;name);</td></tr>
+<tr class=""><td class="line-num">45</td><td class="line-code">    } <span class="kw">else</span> {</td></tr>
+<tr class=""><td class="line-num">46</td><td class="line-code">        <span class="fn">printf</span>(<span class="str">"FAILED<span class="esc">\n</span>"</span>);</td></tr>
+<tr class=""><td class="line-num">47</td><td class="line-code">        <span class="kw">if</span> (t-&gt;on_error) t-&gt;<span class="fn">on_error</span>(t-&gt;name);</td></tr>
+<tr class=""><td class="line-num">48</td><td class="line-code">    }</td></tr>
+<tr class=""><td class="line-num">49</td><td class="line-code">}</td></tr>
+<tr class=""><td class="line-num">50</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">51</td><td class="line-code"><span class="cmt">// === 콜백 패턴 3: map/filter ===</span></td></tr>
+<tr class=""><td class="line-num">52</td><td class="line-code"><span class="kw">typedef</span> <span class="type">int</span> (*Transform)(<span class="type">int</span>);</td></tr>
+<tr class=""><td class="line-num">53</td><td class="line-code"><span class="kw">typedef</span> <span class="type">int</span> (*Predicate)(<span class="type">int</span>);</td></tr>
+<tr class=""><td class="line-num">54</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">55</td><td class="line-code"><span class="type">void</span> <span class="fn">array_map</span>(<span class="type">int</span> *arr, <span class="type">int</span> n, Transform fn) {</td></tr>
+<tr class=""><td class="line-num">56</td><td class="line-code">    <span class="kw">for</span> (<span class="type">int</span> i = <span class="num">0</span>; i &lt; n; i++) arr[i] = <span class="fn">fn</span>(arr[i]);</td></tr>
+<tr class=""><td class="line-num">57</td><td class="line-code">}</td></tr>
+<tr class=""><td class="line-num">58</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">59</td><td class="line-code"><span class="type">int</span> <span class="fn">array_filter</span>(<span class="type">int</span> *src, <span class="type">int</span> *dst, <span class="type">int</span> n, Predicate fn) {</td></tr>
+<tr class=""><td class="line-num">60</td><td class="line-code">    <span class="type">int</span> count = <span class="num">0</span>;</td></tr>
+<tr class=""><td class="line-num">61</td><td class="line-code">    <span class="kw">for</span> (<span class="type">int</span> i = <span class="num">0</span>; i &lt; n; i++)</td></tr>
+<tr class=""><td class="line-num">62</td><td class="line-code">        <span class="kw">if</span> (<span class="fn">fn</span>(src[i])) dst[count++] = src[i];</td></tr>
+<tr class=""><td class="line-num">63</td><td class="line-code">    <span class="kw">return</span> count;</td></tr>
+<tr class=""><td class="line-num">64</td><td class="line-code">}</td></tr>
+<tr class=""><td class="line-num">65</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">66</td><td class="line-code"><span class="type">int</span> <span class="fn">double_it</span>(<span class="type">int</span> x) { <span class="kw">return</span> x * <span class="num">2</span>; }</td></tr>
+<tr class=""><td class="line-num">67</td><td class="line-code"><span class="type">int</span> <span class="fn">square</span>(<span class="type">int</span> x) { <span class="kw">return</span> x * x; }</td></tr>
+<tr class=""><td class="line-num">68</td><td class="line-code"><span class="type">int</span> <span class="fn">is_even</span>(<span class="type">int</span> x) { <span class="kw">return</span> x % <span class="num">2</span> == <span class="num">0</span>; }</td></tr>
+<tr class=""><td class="line-num">69</td><td class="line-code"><span class="type">int</span> <span class="fn">is_positive</span>(<span class="type">int</span> x) { <span class="kw">return</span> x &gt; <span class="num">0</span>; }</td></tr>
+<tr class=""><td class="line-num">70</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">71</td><td class="line-code"><span class="type">int</span> <span class="fn">main</span>() {</td></tr>
+<tr class=""><td class="line-num">72</td><td class="line-code">    <span class="cmt">// 정렬 콜백</span></td></tr>
+<tr class=""><td class="line-num">73</td><td class="line-code">    <span class="type">int</span> nums[] = {<span class="num">5</span>, <span class="num">3</span>, <span class="num">8</span>, <span class="num">1</span>, <span class="num">9</span>};</td></tr>
+<tr class=""><td class="line-num">74</td><td class="line-code">    <span class="fn">sort_with</span>(nums, <span class="num">5</span>, asc);</td></tr>
+<tr class=""><td class="line-num">75</td><td class="line-code">    <span class="fn">printf</span>(<span class="str">"Ascending:  "</span>); <span class="kw">for</span>(<span class="type">int</span> i=<span class="num">0</span>;i&lt;<span class="num">5</span>;i++) <span class="fn">printf</span>(<span class="str">"<span class="fmt">%d</span> "</span>,nums[i]); <span class="fn">printf</span>(<span class="str">"<span class="esc">\n</span>"</span>);</td></tr>
+<tr class=""><td class="line-num">76</td><td class="line-code">    <span class="fn">sort_with</span>(nums, <span class="num">5</span>, desc);</td></tr>
+<tr class=""><td class="line-num">77</td><td class="line-code">    <span class="fn">printf</span>(<span class="str">"Descending: "</span>); <span class="kw">for</span>(<span class="type">int</span> i=<span class="num">0</span>;i&lt;<span class="num">5</span>;i++) <span class="fn">printf</span>(<span class="str">"<span class="fmt">%d</span> "</span>,nums[i]); <span class="fn">printf</span>(<span class="str">"<span class="esc">\n</span>"</span>);</td></tr>
+<tr class=""><td class="line-num">78</td><td class="line-code">    </td></tr>
+<tr class=""><td class="line-num">79</td><td class="line-code">    <span class="cmt">// 이벤트</span></td></tr>
+<tr class=""><td class="line-num">80</td><td class="line-code">    <span class="fn">printf</span>(<span class="str">"<span class="esc">\n</span>"</span>);</td></tr>
+<tr class=""><td class="line-num">81</td><td class="line-code">    Task t1 = {<span class="str">"Download"</span>, log_handler, alert_handler};</td></tr>
+<tr class=""><td class="line-num">82</td><td class="line-code">    Task t2 = {<span class="str">"Deploy"</span>, email_handler, alert_handler};</td></tr>
+<tr class=""><td class="line-num">83</td><td class="line-code">    <span class="fn">run_task</span>(&amp;t1, <span class="num">1</span>);</td></tr>
+<tr class=""><td class="line-num">84</td><td class="line-code">    <span class="fn">run_task</span>(&amp;t2, <span class="num">0</span>);</td></tr>
+<tr class=""><td class="line-num">85</td><td class="line-code">    </td></tr>
+<tr class=""><td class="line-num">86</td><td class="line-code">    <span class="cmt">// map/filter</span></td></tr>
+<tr class=""><td class="line-num">87</td><td class="line-code">    <span class="fn">printf</span>(<span class="str">"<span class="esc">\n</span>"</span>);</td></tr>
+<tr class=""><td class="line-num">88</td><td class="line-code">    <span class="type">int</span> arr[] = {<span class="num">1</span>,<span class="num">2</span>,<span class="num">3</span>,<span class="num">4</span>,<span class="num">5</span>,<span class="num">6</span>,<span class="num">7</span>,<span class="num">8</span>};</td></tr>
+<tr class=""><td class="line-num">89</td><td class="line-code">    <span class="fn">printf</span>(<span class="str">"Original: "</span>); <span class="kw">for</span>(<span class="type">int</span> i=<span class="num">0</span>;i&lt;<span class="num">8</span>;i++) <span class="fn">printf</span>(<span class="str">"<span class="fmt">%d</span> "</span>,arr[i]); <span class="fn">printf</span>(<span class="str">"<span class="esc">\n</span>"</span>);</td></tr>
+<tr class=""><td class="line-num">90</td><td class="line-code">    </td></tr>
+<tr class=""><td class="line-num">91</td><td class="line-code">    <span class="fn">array_map</span>(arr, <span class="num">8</span>, double_it);</td></tr>
+<tr class=""><td class="line-num">92</td><td class="line-code">    <span class="fn">printf</span>(<span class="str">"map(×2):  "</span>); <span class="kw">for</span>(<span class="type">int</span> i=<span class="num">0</span>;i&lt;<span class="num">8</span>;i++) <span class="fn">printf</span>(<span class="str">"<span class="fmt">%d</span> "</span>,arr[i]); <span class="fn">printf</span>(<span class="str">"<span class="esc">\n</span>"</span>);</td></tr>
+<tr class=""><td class="line-num">93</td><td class="line-code">    </td></tr>
+<tr class=""><td class="line-num">94</td><td class="line-code">    <span class="type">int</span> filtered[<span class="num">8</span>];</td></tr>
+<tr class=""><td class="line-num">95</td><td class="line-code">    <span class="type">int</span> n = <span class="fn">array_filter</span>(arr, filtered, <span class="num">8</span>, is_even);</td></tr>
+<tr class=""><td class="line-num">96</td><td class="line-code">    <span class="fn">printf</span>(<span class="str">"filter(even): "</span>); <span class="kw">for</span>(<span class="type">int</span> i=<span class="num">0</span>;i&lt;n;i++) <span class="fn">printf</span>(<span class="str">"<span class="fmt">%d</span> "</span>,filtered[i]); <span class="fn">printf</span>(<span class="str">"<span class="esc">\n</span>"</span>);</td></tr>
+<tr class=""><td class="line-num">97</td><td class="line-code">    <span class="kw">return</span> <span class="num">0</span>;</td></tr>
+<tr class=""><td class="line-num">98</td><td class="line-code">}</td></tr></table></div>
+<div class="output-block avoid-break"><span class="output-label">실행 결과</span><div class="output-text">Ascending:  1 3 5 8 9
+Descending: 9 8 5 3 1
+
+Running "Download": SUCCESS
+  [LOG] Download
+Running "Deploy": FAILED
+  ⚠️ Deploy
+
+Original: 1 2 3 4 5 6 7 8
+map(×2):  2 4 6 8 10 12 14 16
+filter(even): 2 4 6 8 10 12 14 16</div></div>
+<div class="box box-key avoid-break"><span class="box-label">쉽게 이해하기: 콜백의 3가지 패턴</span><div class="box-content"><b>패턴 1: 전략 (Strategy)</b><br>같은 정렬인데 비교 방법만 다르게!<br>sort(arr, asc) vs sort(arr, desc)<br>→ 정렬 코드는 1개, 비교만 갈아끼움<br><br><b>패턴 2: 이벤트 (Observer)</b><br>"성공하면 log, 실패하면 alert"<br>on_success = log_handler;<br>on_error = alert_handler;<br>→ GUI 버튼 클릭, 네트워크 응답에 활용<br><br><b>패턴 3: 변환 (Higher-order)</b><br>map: 모든 원소에 함수 적용 [1,2,3]→[2,4,6]<br>filter: 조건 만족하는 것만 [1,2,3,4]→[2,4]<br>→ JavaScript의 arr.map/filter와 동일!</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">higher-order function</div><div class="fact-bite-text">고차 함수. 함수를 인자로 받거나 반환. map/filter/reduce. 함수형 프로그래밍의 핵심!</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">strategy pattern</div><div class="fact-bite-text">전략 패턴. 알고리즘을 캡슐화하여 교환. sort+comparator. 런타임에 전략 변경!</div></div>
+<div class="mascot-speech right avoid-break">
+        <img class="mascot-speech-img " src="svg-assets/mascot-thinking.svg" alt="마스코트" />
+        <div class="mascot-bubble thinking">콜백 = "나중에 불러줘!" sort_with(arr, asc)에서 asc가 콜백. qsort도 같은 원리!</div>
+      </div>
+<div class="mascot-speech  avoid-break">
+        <img class="mascot-speech-img " src="svg-assets/mascot-eureka.svg" alt="마스코트" />
+        <div class="mascot-bubble eureka">map+filter = C에서도 함수형! double_it, is_even을 넘기면 배열 변환. JS와 같은 개념!</div>
+      </div>
+<div class="code-block avoid-break"><div class="code-block-header">[C 코드] 함수 포인터 응용 — 미니 프레임워크</div>
+        <table class="code-table"><tr class=""><td class="line-num">1</td><td class="line-code"><span class="pp">#include</span> <span class="str">&lt;stdio.h&gt;</span></td></tr>
+<tr class=""><td class="line-num">2</td><td class="line-code"><span class="pp">#include</span> <span class="str">&lt;string.h&gt;</span></td></tr>
+<tr class=""><td class="line-num">3</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">4</td><td class="line-code"><span class="cmt">// === 플러그인 시스템 ===</span></td></tr>
+<tr class=""><td class="line-num">5</td><td class="line-code"><span class="kw">typedef</span> <span class="kw">struct</span> {</td></tr>
+<tr class=""><td class="line-num">6</td><td class="line-code">    <span class="kw">const</span> <span class="type">char</span> *name;</td></tr>
+<tr class=""><td class="line-num">7</td><td class="line-code">    <span class="type">void</span> (*init)(<span class="type">void</span>);</td></tr>
+<tr class=""><td class="line-num">8</td><td class="line-code">    <span class="type">void</span> (*process)(<span class="kw">const</span> <span class="type">char</span> *data);</td></tr>
+<tr class=""><td class="line-num">9</td><td class="line-code">    <span class="type">void</span> (*cleanup)(<span class="type">void</span>);</td></tr>
+<tr class=""><td class="line-num">10</td><td class="line-code">} Plugin;</td></tr>
+<tr class=""><td class="line-num">11</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">12</td><td class="line-code"><span class="type">void</span> <span class="fn">csv_init</span>()  { <span class="fn">printf</span>(<span class="str">"    [CSV] Initialized<span class="esc">\n</span>"</span>); }</td></tr>
+<tr class=""><td class="line-num">13</td><td class="line-code"><span class="type">void</span> <span class="fn">csv_proc</span>(<span class="kw">const</span> <span class="type">char</span> *d) { <span class="fn">printf</span>(<span class="str">"    [CSV] Processing: <span class="fmt">%s</span><span class="esc">\n</span>"</span>, d); }</td></tr>
+<tr class=""><td class="line-num">14</td><td class="line-code"><span class="type">void</span> <span class="fn">csv_clean</span>() { <span class="fn">printf</span>(<span class="str">"    [CSV] Cleaned up<span class="esc">\n</span>"</span>); }</td></tr>
+<tr class=""><td class="line-num">15</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">16</td><td class="line-code"><span class="type">void</span> <span class="fn">json_init</span>()  { <span class="fn">printf</span>(<span class="str">"    [JSON] Initialized<span class="esc">\n</span>"</span>); }</td></tr>
+<tr class=""><td class="line-num">17</td><td class="line-code"><span class="type">void</span> <span class="fn">json_proc</span>(<span class="kw">const</span> <span class="type">char</span> *d) { <span class="fn">printf</span>(<span class="str">"    [JSON] Processing: <span class="fmt">%s</span><span class="esc">\n</span>"</span>, d); }</td></tr>
+<tr class=""><td class="line-num">18</td><td class="line-code"><span class="type">void</span> <span class="fn">json_clean</span>() { <span class="fn">printf</span>(<span class="str">"    [JSON] Cleaned up<span class="esc">\n</span>"</span>); }</td></tr>
+<tr class=""><td class="line-num">19</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">20</td><td class="line-code"><span class="type">void</span> <span class="fn">xml_init</span>()  { <span class="fn">printf</span>(<span class="str">"    [XML] Initialized<span class="esc">\n</span>"</span>); }</td></tr>
+<tr class=""><td class="line-num">21</td><td class="line-code"><span class="type">void</span> <span class="fn">xml_proc</span>(<span class="kw">const</span> <span class="type">char</span> *d) { <span class="fn">printf</span>(<span class="str">"    [XML] Processing: <span class="fmt">%s</span><span class="esc">\n</span>"</span>, d); }</td></tr>
+<tr class=""><td class="line-num">22</td><td class="line-code"><span class="type">void</span> <span class="fn">xml_clean</span>() { <span class="fn">printf</span>(<span class="str">"    [XML] Cleaned up<span class="esc">\n</span>"</span>); }</td></tr>
+<tr class=""><td class="line-num">23</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">24</td><td class="line-code"><span class="cmt">// 플러그인 실행기 — 타입 몰라도 동작!</span></td></tr>
+<tr class=""><td class="line-num">25</td><td class="line-code"><span class="type">void</span> <span class="fn">run_plugin</span>(Plugin *p, <span class="kw">const</span> <span class="type">char</span> *data) {</td></tr>
+<tr class=""><td class="line-num">26</td><td class="line-code">    <span class="fn">printf</span>(<span class="str">"  Plugin: <span class="fmt">%s</span><span class="esc">\n</span>"</span>, p-&gt;name);</td></tr>
+<tr class=""><td class="line-num">27</td><td class="line-code">    p-&gt;<span class="fn">init</span>();</td></tr>
+<tr class=""><td class="line-num">28</td><td class="line-code">    p-&gt;<span class="fn">process</span>(data);</td></tr>
+<tr class=""><td class="line-num">29</td><td class="line-code">    p-&gt;<span class="fn">cleanup</span>();</td></tr>
+<tr class=""><td class="line-num">30</td><td class="line-code">}</td></tr>
+<tr class=""><td class="line-num">31</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">32</td><td class="line-code"><span class="cmt">// === 미들웨어 체인 (함수 포인터 배열) ===</span></td></tr>
+<tr class=""><td class="line-num">33</td><td class="line-code"><span class="kw">typedef</span> <span class="type">void</span> (*Middleware)(<span class="type">char</span> *data);</td></tr>
+<tr class=""><td class="line-num">34</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">35</td><td class="line-code"><span class="type">void</span> <span class="fn">trim_whitespace</span>(<span class="type">char</span> *d) {</td></tr>
+<tr class=""><td class="line-num">36</td><td class="line-code">    <span class="type">int</span> len = <span class="fn">strlen</span>(d);</td></tr>
+<tr class=""><td class="line-num">37</td><td class="line-code">    <span class="kw">while</span> (len &gt; <span class="num">0</span> &amp;&amp; d[len-<span class="num">1</span>] == <span class="str">' '</span>) d[--len] = <span class="num">0</span>;</td></tr>
+<tr class=""><td class="line-num">38</td><td class="line-code">    <span class="type">char</span> *s = d; <span class="kw">while</span> (*s == <span class="str">' '</span>) s++;</td></tr>
+<tr class=""><td class="line-num">39</td><td class="line-code">    <span class="kw">if</span> (s != d) <span class="fn">memmove</span>(d, s, <span class="fn">strlen</span>(s)+<span class="num">1</span>);</td></tr>
+<tr class=""><td class="line-num">40</td><td class="line-code">    <span class="fn">printf</span>(<span class="str">"    [trim] <span class="esc">\"</span><span class="fmt">%s</span><span class="esc">\"</span><span class="esc">\n</span>"</span>, d);</td></tr>
+<tr class=""><td class="line-num">41</td><td class="line-code">}</td></tr>
+<tr class=""><td class="line-num">42</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">43</td><td class="line-code"><span class="type">void</span> <span class="fn">to_uppercase</span>(<span class="type">char</span> *d) {</td></tr>
+<tr class=""><td class="line-num">44</td><td class="line-code">    <span class="kw">for</span> (<span class="type">int</span> i = <span class="num">0</span>; d[i]; i++)</td></tr>
+<tr class=""><td class="line-num">45</td><td class="line-code">        <span class="kw">if</span> (d[i] &gt;= <span class="str">'a'</span> &amp;&amp; d[i] &lt;= <span class="str">'z'</span>) d[i] -= <span class="num">32</span>;</td></tr>
+<tr class=""><td class="line-num">46</td><td class="line-code">    <span class="fn">printf</span>(<span class="str">"    [upper] <span class="esc">\"</span><span class="fmt">%s</span><span class="esc">\"</span><span class="esc">\n</span>"</span>, d);</td></tr>
+<tr class=""><td class="line-num">47</td><td class="line-code">}</td></tr>
+<tr class=""><td class="line-num">48</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">49</td><td class="line-code"><span class="type">void</span> <span class="fn">add_timestamp</span>(<span class="type">char</span> *d) {</td></tr>
+<tr class=""><td class="line-num">50</td><td class="line-code">    <span class="type">char</span> buf[<span class="num">200</span>];</td></tr>
+<tr class=""><td class="line-num">51</td><td class="line-code">    <span class="fn">sprintf</span>(buf, <span class="str">"[2026-03-05] <span class="fmt">%s</span>"</span>, d);</td></tr>
+<tr class=""><td class="line-num">52</td><td class="line-code">    <span class="fn">strcpy</span>(d, buf);</td></tr>
+<tr class=""><td class="line-num">53</td><td class="line-code">    <span class="fn">printf</span>(<span class="str">"    [stamp] <span class="esc">\"</span><span class="fmt">%s</span><span class="esc">\"</span><span class="esc">\n</span>"</span>, d);</td></tr>
+<tr class=""><td class="line-num">54</td><td class="line-code">}</td></tr>
+<tr class=""><td class="line-num">55</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">56</td><td class="line-code"><span class="type">void</span> <span class="fn">pipeline</span>(<span class="type">char</span> *data, Middleware *mw, <span class="type">int</span> n) {</td></tr>
+<tr class=""><td class="line-num">57</td><td class="line-code">    <span class="fn">printf</span>(<span class="str">"  Pipeline: <span class="esc">\"</span><span class="fmt">%s</span><span class="esc">\"</span><span class="esc">\n</span>"</span>, data);</td></tr>
+<tr class=""><td class="line-num">58</td><td class="line-code">    <span class="kw">for</span> (<span class="type">int</span> i = <span class="num">0</span>; i &lt; n; i++) mw[i](data);</td></tr>
+<tr class=""><td class="line-num">59</td><td class="line-code">    <span class="fn">printf</span>(<span class="str">"  Final: <span class="esc">\"</span><span class="fmt">%s</span><span class="esc">\"</span><span class="esc">\n</span><span class="esc">\n</span>"</span>, data);</td></tr>
+<tr class=""><td class="line-num">60</td><td class="line-code">}</td></tr>
+<tr class=""><td class="line-num">61</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">62</td><td class="line-code"><span class="cmt">// === 이벤트 시스템 ===</span></td></tr>
+<tr class=""><td class="line-num">63</td><td class="line-code"><span class="kw">typedef</span> <span class="type">void</span> (*EventCb)(<span class="kw">const</span> <span class="type">char</span> *event, <span class="type">void</span> *ctx);</td></tr>
+<tr class=""><td class="line-num">64</td><td class="line-code"><span class="kw">typedef</span> <span class="kw">struct</span> { <span class="kw">const</span> <span class="type">char</span> *event; EventCb cb; <span class="type">void</span> *ctx; } Listener;</td></tr>
+<tr class=""><td class="line-num">65</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">66</td><td class="line-code">Listener listeners[<span class="num">20</span>];</td></tr>
+<tr class=""><td class="line-num">67</td><td class="line-code"><span class="type">int</span> nlisteners = <span class="num">0</span>;</td></tr>
+<tr class=""><td class="line-num">68</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">69</td><td class="line-code"><span class="type">void</span> <span class="fn">on</span>(<span class="kw">const</span> <span class="type">char</span> *event, EventCb cb, <span class="type">void</span> *ctx) {</td></tr>
+<tr class=""><td class="line-num">70</td><td class="line-code">    listeners[nlisteners++] = (Listener){event, cb, ctx};</td></tr>
+<tr class=""><td class="line-num">71</td><td class="line-code">}</td></tr>
+<tr class=""><td class="line-num">72</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">73</td><td class="line-code"><span class="type">void</span> <span class="fn">emit</span>(<span class="kw">const</span> <span class="type">char</span> *event) {</td></tr>
+<tr class=""><td class="line-num">74</td><td class="line-code">    <span class="kw">for</span> (<span class="type">int</span> i = <span class="num">0</span>; i &lt; nlisteners; i++)</td></tr>
+<tr class=""><td class="line-num">75</td><td class="line-code">        <span class="kw">if</span> (<span class="fn">strcmp</span>(listeners[i].event, event) == <span class="num">0</span>)</td></tr>
+<tr class=""><td class="line-num">76</td><td class="line-code">            listeners[i].<span class="fn">cb</span>(event, listeners[i].ctx);</td></tr>
+<tr class=""><td class="line-num">77</td><td class="line-code">}</td></tr>
+<tr class=""><td class="line-num">78</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">79</td><td class="line-code"><span class="type">void</span> <span class="fn">log_cb</span>(<span class="kw">const</span> <span class="type">char</span> *ev, <span class="type">void</span> *ctx) { <span class="fn">printf</span>(<span class="str">"    [LOG] Event: <span class="fmt">%s</span><span class="esc">\n</span>"</span>, ev); }</td></tr>
+<tr class=""><td class="line-num">80</td><td class="line-code"><span class="type">void</span> <span class="fn">save_cb</span>(<span class="kw">const</span> <span class="type">char</span> *ev, <span class="type">void</span> *ctx) { <span class="fn">printf</span>(<span class="str">"    [SAVE] Saving on <span class="fmt">%s</span><span class="esc">\n</span>"</span>, ev); }</td></tr>
+<tr class=""><td class="line-num">81</td><td class="line-code"><span class="type">void</span> <span class="fn">notify_cb</span>(<span class="kw">const</span> <span class="type">char</span> *ev, <span class="type">void</span> *ctx) { <span class="fn">printf</span>(<span class="str">"    [NOTIFY] Alert: <span class="fmt">%s</span> → <span class="fmt">%s</span><span class="esc">\n</span>"</span>, ev, (<span class="type">char</span>*)ctx); }</td></tr>
+<tr class=""><td class="line-num">82</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">83</td><td class="line-code"><span class="type">int</span> <span class="fn">main</span>() {</td></tr>
+<tr class=""><td class="line-num">84</td><td class="line-code">    <span class="cmt">// 플러그인</span></td></tr>
+<tr class=""><td class="line-num">85</td><td class="line-code">    <span class="fn">printf</span>(<span class="str">"=== 플러그인 시스템 ===<span class="esc">\n</span>"</span>);</td></tr>
+<tr class=""><td class="line-num">86</td><td class="line-code">    Plugin plugins[] = {</td></tr>
+<tr class=""><td class="line-num">87</td><td class="line-code">        {<span class="str">"CSV Parser"</span>, csv_init, csv_proc, csv_clean},</td></tr>
+<tr class=""><td class="line-num">88</td><td class="line-code">        {<span class="str">"JSON Parser"</span>, json_init, json_proc, json_clean},</td></tr>
+<tr class=""><td class="line-num">89</td><td class="line-code">        {<span class="str">"XML Parser"</span>, xml_init, xml_proc, xml_clean}</td></tr>
+<tr class=""><td class="line-num">90</td><td class="line-code">    };</td></tr>
+<tr class=""><td class="line-num">91</td><td class="line-code">    <span class="kw">for</span> (<span class="type">int</span> i = <span class="num">0</span>; i &lt; <span class="num">3</span>; i++) <span class="fn">run_plugin</span>(&amp;plugins[i], <span class="str">"data.txt"</span>);</td></tr>
+<tr class=""><td class="line-num">92</td><td class="line-code">    </td></tr>
+<tr class=""><td class="line-num">93</td><td class="line-code">    <span class="cmt">// 미들웨어</span></td></tr>
+<tr class=""><td class="line-num">94</td><td class="line-code">    <span class="fn">printf</span>(<span class="str">"<span class="esc">\n</span>=== 미들웨어 파이프라인 ===<span class="esc">\n</span>"</span>);</td></tr>
+<tr class=""><td class="line-num">95</td><td class="line-code">    Middleware mw[] = {trim_whitespace, to_uppercase, add_timestamp};</td></tr>
+<tr class=""><td class="line-num">96</td><td class="line-code">    <span class="type">char</span> data[<span class="num">200</span>] = <span class="str">"  hello world  "</span>;</td></tr>
+<tr class=""><td class="line-num">97</td><td class="line-code">    <span class="fn">pipeline</span>(data, mw, <span class="num">3</span>);</td></tr>
+<tr class=""><td class="line-num">98</td><td class="line-code">    </td></tr>
+<tr class=""><td class="line-num">99</td><td class="line-code">    <span class="cmt">// 이벤트</span></td></tr>
+<tr class=""><td class="line-num">100</td><td class="line-code">    <span class="fn">printf</span>(<span class="str">"=== 이벤트 시스템 ===<span class="esc">\n</span>"</span>);</td></tr>
+<tr class=""><td class="line-num">101</td><td class="line-code">    <span class="fn">on</span>(<span class="str">"click"</span>, log_cb, <span class="mc">NULL</span>);</td></tr>
+<tr class=""><td class="line-num">102</td><td class="line-code">    <span class="fn">on</span>(<span class="str">"click"</span>, save_cb, <span class="mc">NULL</span>);</td></tr>
+<tr class=""><td class="line-num">103</td><td class="line-code">    <span class="fn">on</span>(<span class="str">"error"</span>, notify_cb, <span class="str">"admin@test.com"</span>);</td></tr>
+<tr class=""><td class="line-num">104</td><td class="line-code">    <span class="fn">on</span>(<span class="str">"error"</span>, log_cb, <span class="mc">NULL</span>);</td></tr>
+<tr class=""><td class="line-num">105</td><td class="line-code">    <span class="fn">printf</span>(<span class="str">"  emit(click):<span class="esc">\n</span>"</span>); <span class="fn">emit</span>(<span class="str">"click"</span>);</td></tr>
+<tr class=""><td class="line-num">106</td><td class="line-code">    <span class="fn">printf</span>(<span class="str">"  emit(error):<span class="esc">\n</span>"</span>); <span class="fn">emit</span>(<span class="str">"error"</span>);</td></tr>
+<tr class=""><td class="line-num">107</td><td class="line-code">    <span class="kw">return</span> <span class="num">0</span>;</td></tr>
+<tr class=""><td class="line-num">108</td><td class="line-code">}</td></tr></table></div>
+<div class="output-block avoid-break"><span class="output-label">실행 결과</span><div class="output-text">=== 플러그인 시스템 ===
+  Plugin: CSV Parser
+    [CSV] Initialized
+    [CSV] Processing: data.txt
+    [CSV] Cleaned up
+  Plugin: JSON Parser
+    [JSON] Initialized
+    ...
+
+=== 미들웨어 파이프라인 ===
+  Pipeline: "  hello world  "
+    [trim] "hello world"
+    [upper] "HELLO WORLD"
+    [stamp] "[2026-03-05] HELLO WORLD"
+  Final: "[2026-03-05] HELLO WORLD"
+
+=== 이벤트 시스템 ===
+  emit(click):
+    [LOG] Event: click
+    [SAVE] Saving on click
+  emit(error):
+    [NOTIFY] Alert: error → admin@test.com
+    [LOG] Event: error</div></div>
+<div class="box box-key avoid-break"><span class="box-label">[심화 내용] 함수 포인터 디자인 패턴</span><div class="box-content"><b>1. 플러그인 패턴:</b><br>구조체에 init/process/cleanup 함수 포인터<br>새 포맷 추가 = 구조체 하나 추가! 기존 코드 수정 없음<br><br><b>2. 미들웨어/파이프라인:</b><br>함수 포인터 배열을 순서대로 실행<br>trim→upper→stamp 체인<br>Express.js의 middleware와 같은 원리!<br><br><b>3. 이벤트 시스템 (Observer):</b><br>on("event", callback) → 리스너 등록<br>emit("event") → 등록된 콜백 전부 실행<br>→ GUI, 게임 엔진의 핵심 패턴!<br><br><b>핵심:</b><br>함수 포인터 = "나중에 뭘 할지 미리 등록"<br>확장 가능하고 유연한 코드의 기반</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">plugin pattern</div><div class="fact-bite-text">플러그인 패턴. init/process/cleanup 함수 포인터. 새 기능=구조체 추가. 기존 코드 수정 불필요!</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">middleware</div><div class="fact-bite-text">미들웨어. 함수 포인터 체인. A→B→C 순서 실행. Express.js, Django, Linux 네트워크 스택에 활용!</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">observer pattern</div><div class="fact-bite-text">옵저버 패턴. on(event,callback)+emit(event). 이벤트 발생→등록된 콜백 실행. GUI의 핵심!</div></div>
+<div class="mascot-speech right avoid-break">
+        <img class="mascot-speech-img " src="svg-assets/mascot-thinking.svg" alt="마스코트" />
+        <div class="mascot-bubble thinking">플러그인 = 구조체에 함수 포인터 3개(init/process/cleanup). 새 포맷 추가가 이렇게 쉬워!</div>
+      </div>
+<div class="code-block avoid-break"><div class="code-block-header">[C 코드] 함수 포인터 — 제네릭 컨테이너</div>
+        <table class="code-table"><tr class=""><td class="line-num">1</td><td class="line-code"><span class="pp">#include</span> <span class="str">&lt;stdio.h&gt;</span></td></tr>
+<tr class=""><td class="line-num">2</td><td class="line-code"><span class="pp">#include</span> <span class="str">&lt;stdlib.h&gt;</span></td></tr>
+<tr class=""><td class="line-num">3</td><td class="line-code"><span class="pp">#include</span> <span class="str">&lt;string.h&gt;</span></td></tr>
+<tr class=""><td class="line-num">4</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">5</td><td class="line-code"><span class="cmt">// === 제네릭 동적 배열 (void* + 함수 포인터) ===</span></td></tr>
+<tr class=""><td class="line-num">6</td><td class="line-code"><span class="kw">typedef</span> <span class="type">int</span> (*Comparator)(<span class="kw">const</span> <span class="type">void</span>*, <span class="kw">const</span> <span class="type">void</span>*);</td></tr>
+<tr class=""><td class="line-num">7</td><td class="line-code"><span class="kw">typedef</span> <span class="type">void</span> (*Printer)(<span class="kw">const</span> <span class="type">void</span>*);</td></tr>
+<tr class=""><td class="line-num">8</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">9</td><td class="line-code"><span class="kw">typedef</span> <span class="kw">struct</span> {</td></tr>
+<tr class=""><td class="line-num">10</td><td class="line-code">    <span class="type">void</span> *data;</td></tr>
+<tr class=""><td class="line-num">11</td><td class="line-code">    <span class="type">int</span> size, cap, elem_size;</td></tr>
+<tr class=""><td class="line-num">12</td><td class="line-code">    Comparator cmp;</td></tr>
+<tr class=""><td class="line-num">13</td><td class="line-code">    Printer print;</td></tr>
+<tr class=""><td class="line-num">14</td><td class="line-code">} GenericArray;</td></tr>
+<tr class=""><td class="line-num">15</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">16</td><td class="line-code">GenericArray <span class="fn">ga_new</span>(<span class="type">int</span> elem_size, Comparator cmp, Printer print) {</td></tr>
+<tr class=""><td class="line-num">17</td><td class="line-code">    GenericArray a;</td></tr>
+<tr class=""><td class="line-num">18</td><td class="line-code">    a.elem_size = elem_size;</td></tr>
+<tr class=""><td class="line-num">19</td><td class="line-code">    a.size = <span class="num">0</span>; a.cap = <span class="num">4</span>;</td></tr>
+<tr class=""><td class="line-num">20</td><td class="line-code">    a.data = <span class="fn">malloc</span>(a.cap * elem_size);</td></tr>
+<tr class=""><td class="line-num">21</td><td class="line-code">    a.cmp = cmp; a.print = print;</td></tr>
+<tr class=""><td class="line-num">22</td><td class="line-code">    <span class="kw">return</span> a;</td></tr>
+<tr class=""><td class="line-num">23</td><td class="line-code">}</td></tr>
+<tr class=""><td class="line-num">24</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">25</td><td class="line-code"><span class="type">void</span>* <span class="fn">ga_at</span>(GenericArray *a, <span class="type">int</span> i) {</td></tr>
+<tr class=""><td class="line-num">26</td><td class="line-code">    <span class="kw">return</span> (<span class="type">char</span>*)a-&gt;data + i * a-&gt;elem_size;</td></tr>
+<tr class=""><td class="line-num">27</td><td class="line-code">}</td></tr>
+<tr class=""><td class="line-num">28</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">29</td><td class="line-code"><span class="type">void</span> <span class="fn">ga_push</span>(GenericArray *a, <span class="kw">const</span> <span class="type">void</span> *elem) {</td></tr>
+<tr class=""><td class="line-num">30</td><td class="line-code">    <span class="kw">if</span> (a-&gt;size &gt;= a-&gt;cap) {</td></tr>
+<tr class=""><td class="line-num">31</td><td class="line-code">        a-&gt;cap *= <span class="num">2</span>;</td></tr>
+<tr class=""><td class="line-num">32</td><td class="line-code">        a-&gt;data = <span class="fn">realloc</span>(a-&gt;data, a-&gt;cap * a-&gt;elem_size);</td></tr>
+<tr class=""><td class="line-num">33</td><td class="line-code">    }</td></tr>
+<tr class=""><td class="line-num">34</td><td class="line-code">    <span class="fn">memcpy</span>(<span class="fn">ga_at</span>(a, a-&gt;size++), elem, a-&gt;elem_size);</td></tr>
+<tr class=""><td class="line-num">35</td><td class="line-code">}</td></tr>
+<tr class=""><td class="line-num">36</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">37</td><td class="line-code"><span class="type">void</span> <span class="fn">ga_sort</span>(GenericArray *a) {</td></tr>
+<tr class=""><td class="line-num">38</td><td class="line-code">    <span class="fn">qsort</span>(a-&gt;data, a-&gt;size, a-&gt;elem_size, a-&gt;cmp);</td></tr>
+<tr class=""><td class="line-num">39</td><td class="line-code">}</td></tr>
+<tr class=""><td class="line-num">40</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">41</td><td class="line-code"><span class="type">void</span> <span class="fn">ga_print_all</span>(GenericArray *a) {</td></tr>
+<tr class=""><td class="line-num">42</td><td class="line-code">    <span class="fn">printf</span>(<span class="str">"  ["</span>);</td></tr>
+<tr class=""><td class="line-num">43</td><td class="line-code">    <span class="kw">for</span> (<span class="type">int</span> i = <span class="num">0</span>; i &lt; a-&gt;size; i++) {</td></tr>
+<tr class=""><td class="line-num">44</td><td class="line-code">        <span class="kw">if</span> (i &gt; <span class="num">0</span>) <span class="fn">printf</span>(<span class="str">", "</span>);</td></tr>
+<tr class=""><td class="line-num">45</td><td class="line-code">        a-&gt;<span class="fn">print</span>(<span class="fn">ga_at</span>(a, i));</td></tr>
+<tr class=""><td class="line-num">46</td><td class="line-code">    }</td></tr>
+<tr class=""><td class="line-num">47</td><td class="line-code">    <span class="fn">printf</span>(<span class="str">"]<span class="esc">\n</span>"</span>);</td></tr>
+<tr class=""><td class="line-num">48</td><td class="line-code">}</td></tr>
+<tr class=""><td class="line-num">49</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">50</td><td class="line-code"><span class="type">int</span> <span class="fn">ga_find</span>(GenericArray *a, <span class="kw">const</span> <span class="type">void</span> *key) {</td></tr>
+<tr class=""><td class="line-num">51</td><td class="line-code">    <span class="kw">for</span> (<span class="type">int</span> i = <span class="num">0</span>; i &lt; a-&gt;size; i++)</td></tr>
+<tr class=""><td class="line-num">52</td><td class="line-code">        <span class="kw">if</span> (a-&gt;<span class="fn">cmp</span>(<span class="fn">ga_at</span>(a, i), key) == <span class="num">0</span>) <span class="kw">return</span> i;</td></tr>
+<tr class=""><td class="line-num">53</td><td class="line-code">    <span class="kw">return</span> -<span class="num">1</span>;</td></tr>
+<tr class=""><td class="line-num">54</td><td class="line-code">}</td></tr>
+<tr class=""><td class="line-num">55</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">56</td><td class="line-code"><span class="cmt">// int 타입</span></td></tr>
+<tr class=""><td class="line-num">57</td><td class="line-code"><span class="type">int</span> <span class="fn">cmp_int</span>(<span class="kw">const</span> <span class="type">void</span> *a, <span class="kw">const</span> <span class="type">void</span> *b) { <span class="kw">return</span> *(<span class="type">int</span>*)a - *(<span class="type">int</span>*)b; }</td></tr>
+<tr class=""><td class="line-num">58</td><td class="line-code"><span class="type">void</span> <span class="fn">print_int</span>(<span class="kw">const</span> <span class="type">void</span> *p) { <span class="fn">printf</span>(<span class="str">"<span class="fmt">%d</span>"</span>, *(<span class="type">int</span>*)p); }</td></tr>
+<tr class=""><td class="line-num">59</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">60</td><td class="line-code"><span class="cmt">// string 타입</span></td></tr>
+<tr class=""><td class="line-num">61</td><td class="line-code"><span class="kw">typedef</span> <span class="kw">struct</span> { <span class="type">char</span> str[<span class="num">50</span>]; } Str;</td></tr>
+<tr class=""><td class="line-num">62</td><td class="line-code"><span class="type">int</span> <span class="fn">cmp_str</span>(<span class="kw">const</span> <span class="type">void</span> *a, <span class="kw">const</span> <span class="type">void</span> *b) { <span class="kw">return</span> <span class="fn">strcmp</span>(((Str*)a)-&gt;str, ((Str*)b)-&gt;str); }</td></tr>
+<tr class=""><td class="line-num">63</td><td class="line-code"><span class="type">void</span> <span class="fn">print_str</span>(<span class="kw">const</span> <span class="type">void</span> *p) { <span class="fn">printf</span>(<span class="str">"<span class="esc">\"</span><span class="fmt">%s</span><span class="esc">\"</span>"</span>, ((Str*)p)-&gt;str); }</td></tr>
+<tr class=""><td class="line-num">64</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">65</td><td class="line-code"><span class="cmt">// Student 타입</span></td></tr>
+<tr class=""><td class="line-num">66</td><td class="line-code"><span class="kw">typedef</span> <span class="kw">struct</span> { <span class="type">char</span> name[<span class="num">20</span>]; <span class="type">int</span> score; } Student;</td></tr>
+<tr class=""><td class="line-num">67</td><td class="line-code"><span class="type">int</span> <span class="fn">cmp_student_score</span>(<span class="kw">const</span> <span class="type">void</span> *a, <span class="kw">const</span> <span class="type">void</span> *b) { <span class="kw">return</span> ((Student*)b)-&gt;score - ((Student*)a)-&gt;score; }</td></tr>
+<tr class=""><td class="line-num">68</td><td class="line-code"><span class="type">void</span> <span class="fn">print_student</span>(<span class="kw">const</span> <span class="type">void</span> *p) { Student *s=(Student*)p; <span class="fn">printf</span>(<span class="str">"<span class="fmt">%s</span>(<span class="fmt">%d</span>)"</span>,s-&gt;name,s-&gt;score); }</td></tr>
+<tr class=""><td class="line-num">69</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">70</td><td class="line-code"><span class="type">int</span> <span class="fn">main</span>() {</td></tr>
+<tr class=""><td class="line-num">71</td><td class="line-code">    <span class="cmt">// int 배열</span></td></tr>
+<tr class=""><td class="line-num">72</td><td class="line-code">    <span class="fn">printf</span>(<span class="str">"=== Generic Int Array ===<span class="esc">\n</span>"</span>);</td></tr>
+<tr class=""><td class="line-num">73</td><td class="line-code">    GenericArray ints = <span class="fn">ga_new</span>(<span class="kw">sizeof</span>(<span class="type">int</span>), cmp_int, print_int);</td></tr>
+<tr class=""><td class="line-num">74</td><td class="line-code">    <span class="type">int</span> vals[] = {<span class="num">42</span>, <span class="num">7</span>, <span class="num">99</span>, <span class="num">3</span>, <span class="num">55</span>};</td></tr>
+<tr class=""><td class="line-num">75</td><td class="line-code">    <span class="kw">for</span> (<span class="type">int</span> i = <span class="num">0</span>; i &lt; <span class="num">5</span>; i++) <span class="fn">ga_push</span>(&amp;ints, &amp;vals[i]);</td></tr>
+<tr class=""><td class="line-num">76</td><td class="line-code">    <span class="fn">printf</span>(<span class="str">"  Before: "</span>); <span class="fn">ga_print_all</span>(&amp;ints);</td></tr>
+<tr class=""><td class="line-num">77</td><td class="line-code">    <span class="fn">ga_sort</span>(&amp;ints);</td></tr>
+<tr class=""><td class="line-num">78</td><td class="line-code">    <span class="fn">printf</span>(<span class="str">"  After:  "</span>); <span class="fn">ga_print_all</span>(&amp;ints);</td></tr>
+<tr class=""><td class="line-num">79</td><td class="line-code">    <span class="type">int</span> key = <span class="num">99</span>;</td></tr>
+<tr class=""><td class="line-num">80</td><td class="line-code">    <span class="fn">printf</span>(<span class="str">"  find(99) = index <span class="fmt">%d</span><span class="esc">\n</span>"</span>, <span class="fn">ga_find</span>(&amp;ints, &amp;key));</td></tr>
+<tr class=""><td class="line-num">81</td><td class="line-code">    </td></tr>
+<tr class=""><td class="line-num">82</td><td class="line-code">    <span class="cmt">// Student 배열</span></td></tr>
+<tr class=""><td class="line-num">83</td><td class="line-code">    <span class="fn">printf</span>(<span class="str">"<span class="esc">\n</span>=== Generic Student Array ===<span class="esc">\n</span>"</span>);</td></tr>
+<tr class=""><td class="line-num">84</td><td class="line-code">    GenericArray students = <span class="fn">ga_new</span>(<span class="kw">sizeof</span>(Student), cmp_student_score, print_student);</td></tr>
+<tr class=""><td class="line-num">85</td><td class="line-code">    Student ss[] = {{<span class="str">"Kim"</span>,<span class="num">85</span>},{<span class="str">"Lee"</span>,<span class="num">92</span>},{<span class="str">"Park"</span>,<span class="num">78</span>},{<span class="str">"Choi"</span>,<span class="num">95</span>}};</td></tr>
+<tr class=""><td class="line-num">86</td><td class="line-code">    <span class="kw">for</span> (<span class="type">int</span> i = <span class="num">0</span>; i &lt; <span class="num">4</span>; i++) <span class="fn">ga_push</span>(&amp;students, &amp;ss[i]);</td></tr>
+<tr class=""><td class="line-num">87</td><td class="line-code">    <span class="fn">printf</span>(<span class="str">"  Before: "</span>); <span class="fn">ga_print_all</span>(&amp;students);</td></tr>
+<tr class=""><td class="line-num">88</td><td class="line-code">    <span class="fn">ga_sort</span>(&amp;students);</td></tr>
+<tr class=""><td class="line-num">89</td><td class="line-code">    <span class="fn">printf</span>(<span class="str">"  Sorted: "</span>); <span class="fn">ga_print_all</span>(&amp;students);</td></tr>
+<tr class=""><td class="line-num">90</td><td class="line-code">    </td></tr>
+<tr class=""><td class="line-num">91</td><td class="line-code">    <span class="fn">free</span>(ints.data); <span class="fn">free</span>(students.data);</td></tr>
+<tr class=""><td class="line-num">92</td><td class="line-code">    <span class="kw">return</span> <span class="num">0</span>;</td></tr>
+<tr class=""><td class="line-num">93</td><td class="line-code">}</td></tr></table></div>
+<div class="output-block avoid-break"><span class="output-label">실행 결과</span><div class="output-text">=== Generic Int Array ===
+  Before: [42, 7, 99, 3, 55]
+  After:  [3, 7, 42, 55, 99]
+  find(99) = index 4
+
+=== Generic Student Array ===
+  Before: [Kim(85), Lee(92), Park(78), Choi(95)]
+  Sorted: [Choi(95), Lee(92), Kim(85), Park(78)]</div></div>
+<div class="box box-key avoid-break"><span class="box-label">[심화 내용] C의 제네릭 프로그래밍</span><div class="box-content"><b>void* = C의 제네릭!</b><br>타입을 모르지만 크기(elem_size)는 안다<br>→ memcpy로 복사, 함수 포인터로 비교/출력<br><br><b>qsort의 원리:</b><br>void qsort(void *base, size_t n, size_t size, cmp)<br>→ 어떤 타입이든 정렬 가능!<br>→ 비교 함수만 바꾸면 됨<br><br><b>C++ 템플릿 vs C void*:</b><br>C++: vector<int> → 컴파일 시 타입 확정, 빠름<br>C: void* + size → 런타임 유연성, 타입 안전 없음<br><br><b>실전:</b><br>qsort, bsearch, pthread_create 전부 void*<br>→ 함수 포인터 + void* = C의 다형성 기반</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">void* generic</div><div class="fact-bite-text">void* = 범용 포인터. 모든 타입 가리킴. qsort/bsearch/pthread의 기반. 타입 안전은 프로그래머 책임!</div></div>
+<div class="mascot-speech  avoid-break">
+        <img class="mascot-speech-img " src="svg-assets/mascot-eureka.svg" alt="마스코트" />
+        <div class="mascot-bubble eureka">제네릭 배열: void*로 데이터, cmp/print 함수 포인터로 동작. int든 Student든 같은 코드!</div>
+      </div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">dependency injection</div><div class="fact-bite-text">의존성 주입. 함수 포인터로 동작 주입. 테스트 시 mock 함수 전달! 유연한 설계의 핵심.</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">factory pattern</div><div class="fact-bite-text">팩토리 패턴. 함수 포인터로 생성 함수 선택. create_shape(type)→사각형/원. 다형적 생성!</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">closure simulation</div><div class="fact-bite-text">클로저 시뮬레이션. 함수포인터+void* context. JavaScript 클로저를 C에서! qsort_r의 원리.</div></div>
+<div class="mascot-speech  avoid-break">
+        <img class="mascot-speech-img " src="svg-assets/mascot-eureka.svg" alt="마스코트" />
+        <div class="mascot-bubble eureka">qsort_r: 비교 함수에 context(void*) 전달! 전역 변수 없이 상태 전달. 클로저의 C 버전!</div>
+      </div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">visitor pattern</div><div class="fact-bite-text">비지터 패턴. 함수 포인터로 자료 구조 순회+처리 분리. AST 처리, 직렬화에 활용!</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">command pattern</div><div class="fact-bite-text">커맨드 패턴. 동작을 구조체에 캡슐화. {execute, undo} 함수 포인터. 실행 취소의 핵심!</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">opaque pointer pattern</div><div class="fact-bite-text">불투명 포인터. typedef struct Impl *Handle. 내부 구조 숨김! 공개 API에 함수 포인터만 노출.</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">vtable implementation</div><div class="fact-bite-text">vtable 구현. 구조체 첫 필드=함수 포인터 배열 포인터. C++의 virtual이 내부적으로 이렇게!</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">file operations pattern</div><div class="fact-bite-text">file_operations 패턴. Linux 커널. open/read/write/close 함수 포인터. 디바이스 드라이버의 핵심!</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">function table</div><div class="fact-bite-text">함수 테이블. 배열 인덱스→함수 호출 O(1). switch 대체! VM opcode, 이벤트 핸들러에 사용.</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">visitor pattern</div><div class="fact-bite-text">비지터 패턴. 데이터 구조 순회+연산 분리. accept(visitor). C에서는 함수 포인터로 구현!</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">opaque pointer</div><div class="fact-bite-text">불투명 포인터. 구현 숨김. typedef struct Impl *Handle;. 인터페이스만 공개! C의 캡슐화.</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">function table versioning</div><div class="fact-bite-text">함수 테이블 버전. struct ops { int version; void(*fn1)(); void(*fn2)(); }. ABI 호환성!</div></div>
+<div class="glossary avoid-break"><div class="glossary-item"><dt class="glossary-term">함수 포인터 배열</dt><dd class="glossary-def">같은 시그니처의 함수 포인터 여러 개를 하나의 배열에 저장한 것. 인덱스로 함수를 선택해 호출할 수 있다.</dd></div><div class="glossary-item"><dt class="glossary-term">다형성(polymorphism)</dt><dd class="glossary-def">같은 인터페이스(함수 시그니처)를 통해 서로 다른 동작을 수행하는 것. C에서는 함수 포인터로 구현한다.</dd></div><div class="glossary-item"><dt class="glossary-term">콜백 함수(callback)</dt><dd class="glossary-def">다른 함수에 인자로 전달되어 나중에 호출되는 함수. 함수 포인터를 통해 전달한다.</dd></div><div class="glossary-item"><dt class="glossary-term">typedef (함수 포인터)</dt><dd class="glossary-def">복잡한 함수 포인터 타입에 이름을 붙여 읽기 쉽게 만드는 방법.</dd></div></div>
+<h2>실전 활용 확장</h2>
+<p>C언어 심화 개념을 활용한 다양한 실전 예제입니다.</p>
+<div class="mascot-speech right avoid-break">
+        <img class="mascot-speech-img small" src="svg-assets/mascot-eureka.svg" alt="마스코트" />
+        <div class="mascot-bubble eureka">심화 문법을 알면 더 강력한 프로그램을 만들 수 있어요!</div>
+      </div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">undefined</div><div class="fact-bite-text">비트 연산 = 비트 단위로 조작. 암호화, 압축, 권한 관리 등에 필수!</div></div>
+<h2>추가 연습문제</h2>
+<div class="exercise avoid-break"><div class="exercise-title">문제 1 <span class="difficulty diff-2">★★ 도전</span></div><div class="exercise-item"><p>이번 유닛의 핵심 개념을 활용하여 자신만의 프로그램을 만들어 보세요.</p></div><div class="memo-area"><span class="memo-label">여기에 답을 써 보세요</span></div></div>
+<div class="exercise avoid-break"><div class="exercise-title">문제 2 <span class="difficulty diff-3">★★★ 심화</span></div><div class="exercise-item"><p>이번 유닛의 코드를 수정하여 다른 결과를 내는 변형을 만들어 보세요.</p></div><div class="memo-area"><span class="memo-label">여기에 답을 써 보세요</span></div></div>
+<h2>실생활 연결</h2>
+<div class="box box-tip avoid-break"><span class="box-label">[실생활] 이 문법은 어디에?</span><div class="box-content">게임, 앱, 웹사이트, IoT, AI, 로봇 등 모든 분야의 프로그램에서 사용돼요!</div></div>
+<div class="mascot-speech  avoid-break">
+        <img class="mascot-speech-img small" src="svg-assets/mascot-hello.svg" alt="마스코트" />
+        <div class="mascot-bubble ">이 개념은 실제 프로그램을 만들 때 반드시 필요해요!</div>
+      </div>
+<h2>[심화] 더 알아보기</h2>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">undefined</div><div class="fact-bite-text">컴퓨팅 사고력(CT) = 문제를 컴퓨터처럼 분석하고 해결하는 능력!</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">undefined</div><div class="fact-bite-text">DRY(Don't Repeat Yourself) = 같은 코드 반복 금지! 함수로 분리!</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">undefined</div><div class="fact-bite-text">KISS(Keep It Simple) = 간단하게! 복잡한 코드는 버그의 온상!</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">undefined</div><div class="fact-bite-text">알고리즘 = 문제 해결의 단계별 방법. 요리 레시피도 알고리즘!</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">undefined</div><div class="fact-bite-text">패턴 인식 = 반복되는 규칙을 찾으면 문제가 쉬워져요!</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">undefined</div><div class="fact-bite-text">분해 = 큰 문제를 작은 조각으로. "어려운 문제는 없다, 모아놓은 쉬운 문제가 있을 뿐"</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">undefined</div><div class="fact-bite-text">KOI = 한국정보올림피아드. 초등/중등/고등부. 알고리즘 대회!</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">undefined</div><div class="fact-bite-text">반복문 = 같은 일을 여러 번. for, while, do-while!</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">undefined</div><div class="fact-bite-text">변수 = 값을 저장하는 상자. 이름을 붙여서 구별!</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">undefined</div><div class="fact-bite-text">함수 = 기능을 묶어놓은 상자. 한 번 만들면 여러 번 재사용!</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">undefined</div><div class="fact-bite-text">배열 = 같은 종류 데이터 여러 개 저장. int a[10] = 10칸짜리 상자!</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">undefined</div><div class="fact-bite-text">구조체 = 여러 변수를 하나로 묶음. 객체지향의 시작!</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">undefined</div><div class="fact-bite-text">포인터 = 메모리 주소. C언어의 가장 강력한 기능!</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">undefined</div><div class="fact-bite-text">비트 연산 = 비트 단위 조작. 암호화, 압축 등에 필수!</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">undefined</div><div class="fact-bite-text">매일 조금씩 코딩하는 것이 가장 중요해요. 10분이라도 매일!</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">undefined</div><div class="fact-bite-text">컴파일하고 실행하는 습관! 작성 → 컴파일 → 에러 확인 → 수정 → 반복!</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">undefined</div><div class="fact-bite-text">컴퓨팅 사고력(CT) = 문제를 컴퓨터처럼 분석하고 해결하는 능력!</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">undefined</div><div class="fact-bite-text">DRY(Don't Repeat Yourself) = 같은 코드 반복 금지! 함수로 분리!</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">undefined</div><div class="fact-bite-text">KISS(Keep It Simple) = 간단하게! 복잡한 코드는 버그의 온상!</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">undefined</div><div class="fact-bite-text">알고리즘 = 문제 해결의 단계별 방법. 요리 레시피도 알고리즘!</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">undefined</div><div class="fact-bite-text">패턴 인식 = 반복되는 규칙을 찾으면 문제가 쉬워져요!</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">undefined</div><div class="fact-bite-text">분해 = 큰 문제를 작은 조각으로. "어려운 문제는 없다, 모아놓은 쉬운 문제가 있을 뿐"</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">undefined</div><div class="fact-bite-text">KOI = 한국정보올림피아드. 초등/중등/고등부. 알고리즘 대회!</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">undefined</div><div class="fact-bite-text">반복문 = 같은 일을 여러 번. for, while, do-while!</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">undefined</div><div class="fact-bite-text">변수 = 값을 저장하는 상자. 이름을 붙여서 구별!</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">undefined</div><div class="fact-bite-text">함수 = 기능을 묶어놓은 상자. 한 번 만들면 여러 번 재사용!</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">undefined</div><div class="fact-bite-text">배열 = 같은 종류 데이터 여러 개 저장. int a[10] = 10칸짜리 상자!</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">undefined</div><div class="fact-bite-text">구조체 = 여러 변수를 하나로 묶음. 객체지향의 시작!</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">undefined</div><div class="fact-bite-text">포인터 = 메모리 주소. C언어의 가장 강력한 기능!</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">undefined</div><div class="fact-bite-text">비트 연산 = 비트 단위 조작. 암호화, 압축 등에 필수!</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">undefined</div><div class="fact-bite-text">매일 조금씩 코딩하는 것이 가장 중요해요. 10분이라도 매일!</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">undefined</div><div class="fact-bite-text">컴파일하고 실행하는 습관! 작성 → 컴파일 → 에러 확인 → 수정 → 반복!</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">undefined</div><div class="fact-bite-text">컴퓨팅 사고력(CT) = 문제를 컴퓨터처럼 분석하고 해결하는 능력!</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">undefined</div><div class="fact-bite-text">DRY(Don't Repeat Yourself) = 같은 코드 반복 금지! 함수로 분리!</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">undefined</div><div class="fact-bite-text">KISS(Keep It Simple) = 간단하게! 복잡한 코드는 버그의 온상!</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">undefined</div><div class="fact-bite-text">알고리즘 = 문제 해결의 단계별 방법. 요리 레시피도 알고리즘!</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">undefined</div><div class="fact-bite-text">패턴 인식 = 반복되는 규칙을 찾으면 문제가 쉬워져요!</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">undefined</div><div class="fact-bite-text">분해 = 큰 문제를 작은 조각으로. "어려운 문제는 없다, 모아놓은 쉬운 문제가 있을 뿐"</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">undefined</div><div class="fact-bite-text">KOI = 한국정보올림피아드. 초등/중등/고등부. 알고리즘 대회!</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">undefined</div><div class="fact-bite-text">반복문 = 같은 일을 여러 번. for, while, do-while!</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">undefined</div><div class="fact-bite-text">변수 = 값을 저장하는 상자. 이름을 붙여서 구별!</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">undefined</div><div class="fact-bite-text">함수 = 기능을 묶어놓은 상자. 한 번 만들면 여러 번 재사용!</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">undefined</div><div class="fact-bite-text">배열 = 같은 종류 데이터 여러 개 저장. int a[10] = 10칸짜리 상자!</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">undefined</div><div class="fact-bite-text">구조체 = 여러 변수를 하나로 묶음. 객체지향의 시작!</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">undefined</div><div class="fact-bite-text">포인터 = 메모리 주소. C언어의 가장 강력한 기능!</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">undefined</div><div class="fact-bite-text">비트 연산 = 비트 단위 조작. 암호화, 압축 등에 필수!</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">undefined</div><div class="fact-bite-text">매일 조금씩 코딩하는 것이 가장 중요해요. 10분이라도 매일!</div></div>
+<div class="mascot-speech right avoid-break">
+        <img class="mascot-speech-img small" src="svg-assets/mascot-celebrate.svg" alt="마스코트" />
+        <div class="mascot-bubble success">이번 유닛 완전 정복! 다음 유닛으로 고고!</div>
+      </div>
+<p>이번 유닛의 모든 개념을 완전히 이해했습니다. 다음 유닛에서 더 발전된 개념을 배워보세요!</p>
+<div class="visual-summary avoid-break"><div class="visual-summary-title">이번 유닛 핵심 정리</div><div class="visual-summary-items"><div class="visual-summary-item"><div class="visual-summary-num">1</div><span>함수 포인터 배열 = 함수들을 배열에 넣고 인덱스로 호출</span></div><div class="visual-summary-item"><div class="visual-summary-num">2</div><span>typedef를 쓰면 복잡한 함수 포인터 타입이 깔끔해진다</span></div><div class="visual-summary-item"><div class="visual-summary-num">3</div><span>구조체 + 함수 포인터 = C에서 가짜 OOP 구현 가능</span></div><div class="visual-summary-item"><div class="visual-summary-num">4</div><span>메뉴 시스템, 계산기 등에서 switch 대신 활용 가능</span></div><div class="visual-summary-item"><div class="visual-summary-num">5</div><span>qsort 같은 표준 함수도 함수 포인터(콜백)를 사용한다</span></div></div></div>
+<div class="box box-summary avoid-break"><span class="box-label">이 유닛에서 연결된 축</span><div class="box-content"><b>[C언어]</b> 함수 포인터 배열, typedef, 구조체 멤버 함수 포인터<br><b>[컴퓨팅사고력]</b> 추상화와 다형성 -- 같은 인터페이스로 다른 동작<br><b>[디버깅]</b> 함수 포인터 배열 인덱스 범위 오류, NULL 포인터 호출 주의<br><b>[KOI]</b> qsort 비교 함수를 함수 포인터로 전달<br><b>[코딩기초]</b> typedef로 가독성 향상<br><b>[프로젝트]</b> 메뉴 시스템, 계산기 리팩토링</div></div>
+</article>
+</body>
+</html>

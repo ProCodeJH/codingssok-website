@@ -1,0 +1,1348 @@
+﻿<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<base href="/learn/C언어/">
+<title>코딩쏙 교재 — 참과 거짓</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+/* ═══════════════════════════════════════════════════════════════
+   코딩쏙 프리미엄 PDF 교재 스타일시트 v5.0
+   Paged.js + A4 인쇄 최적화 + 아동교육 디자인 시스템
+   ═══════════════════════════════════════════════════════════════ */
+
+/* ── 리셋 & 기본 ── */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --c-primary: #FF6B6B;
+  --c-primary-light: #FFE8E8;
+  --c-primary-dark: #E84545;
+  --c-accent: #4ECDC4;
+  --c-accent-light: #E8FFF9;
+  --c-blue: #3B82F6;
+  --c-blue-light: #EFF6FF;
+  --c-purple: #8B5CF6;
+  --c-purple-light: #F5F3FF;
+  --c-orange: #F59E0B;
+  --c-orange-light: #FFFBEB;
+  --c-green: #10B981;
+  --c-green-light: #ECFDF5;
+  --c-red: #EF4444;
+  --c-red-light: #FEF2F2;
+  --c-teal: #14B8A6;
+  --c-teal-light: #F0FDFA;
+  --c-pink: #EC4899;
+  --c-text: #1E293B;
+  --c-text-secondary: #64748B;
+  --c-text-muted: #94A3B8;
+  --c-border: #E2E8F0;
+  --c-bg-subtle: #F8FAFC;
+  --c-bg-warm: #FFFBF5;
+  --font-body: 'Pretendard', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-code: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --radius-xl: 18px;
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.08);
+  --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
+  --shadow-lg: 0 8px 24px rgba(0,0,0,0.10);
+}
+
+/* ── 페이지 설정 ── */
+@page {
+  size: A4;
+  margin: 18mm 17mm 15mm 22mm;
+  @bottom-center {
+    content: counter(page);
+    font-family: var(--font-body);
+    font-size: 9pt;
+    color: var(--c-text-muted);
+    letter-spacing: 1px;
+  }
+}
+@page :first { @bottom-center { content: none; } }
+
+body {
+  font-family: var(--font-body);
+  color: var(--c-text);
+  background: white;
+  font-size: 11.5pt;
+  line-height: 180%;
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+  word-break: keep-all;
+  overflow-wrap: break-word;
+}
+
+/* ── 페이지 제어 ── */
+.avoid-break { break-inside: avoid !important; page-break-inside: avoid !important; }
+h2, h3 { break-after: avoid !important; page-break-after: avoid !important; }
+.page-break-hint { break-before: page !important; page-break-before: always !important; height: 0; margin: 0; padding: 0; }
+p { orphans: 3; widows: 3; }
+
+/* ═══════════════════════════════════════
+   레슨 헤더 — 프리미엄 그래디언트 배너
+   ═══════════════════════════════════════ */
+.lesson-header {
+  margin-bottom: 6mm;
+  padding: 6mm 5mm 5mm;
+  background: linear-gradient(135deg, #FF6B6B 0%, #FF8E53 50%, #FEC89A 100%);
+  border-radius: var(--radius-xl);
+  color: white;
+  position: relative;
+  overflow: hidden;
+  box-shadow: var(--shadow-lg);
+}
+.lesson-header::before {
+  content: '';
+  position: absolute;
+  top: -30%;
+  right: -10%;
+  width: 140px;
+  height: 140px;
+  background: rgba(255,255,255,0.12);
+  border-radius: 50%;
+}
+.lesson-header::after {
+  content: '';
+  position: absolute;
+  bottom: -20%;
+  left: 15%;
+  width: 80px;
+  height: 80px;
+  background: rgba(255,255,255,0.08);
+  border-radius: 50%;
+}
+.lesson-number {
+  font-size: 10pt;
+  font-weight: 700;
+  color: rgba(255,255,255,0.85);
+  margin-bottom: 2mm;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  position: relative;
+  z-index: 1;
+}
+.lesson-title {
+  font-size: 24pt;
+  font-weight: 900;
+  line-height: 125%;
+  color: white;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.15);
+  position: relative;
+  z-index: 1;
+}
+.lesson-summary {
+  font-size: 11pt;
+  color: rgba(255,255,255,0.9);
+  margin-top: 2.5mm;
+  font-weight: 400;
+  position: relative;
+  z-index: 1;
+}
+
+/* ═══════════════════════════════════════
+   제목 계층 — 프리미엄 타이포그래피
+   ═══════════════════════════════════════ */
+h2 {
+  font-size: 16pt;
+  font-weight: 800;
+  margin: 6mm 0 3mm;
+  padding: 2mm 0 2mm 4.5mm;
+  border-left: 4.5px solid var(--c-primary);
+  color: var(--c-text);
+  background: linear-gradient(90deg, var(--c-primary-light) 0%, transparent 60%);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  letter-spacing: -0.3px;
+}
+h3 {
+  font-size: 13.5pt;
+  font-weight: 700;
+  color: #334155;
+  margin: 4mm 0 2.5mm;
+  padding-bottom: 1mm;
+  border-bottom: 2px solid #F1F5F9;
+}
+p {
+  margin-bottom: 2.5mm;
+  text-align: justify;
+  line-height: 175%;
+  font-size: 11.5pt;
+}
+
+/* ── 인라인 코드 ── */
+code {
+  font-family: var(--font-code);
+  font-size: 9.5pt;
+  background: linear-gradient(135deg, #FEF3C7, #FDE68A);
+  padding: 0.5mm 2mm;
+  border-radius: 4px;
+  color: #92400E;
+  border: 1px solid #FCD34D;
+  font-weight: 500;
+}
+
+/* ═══════════════════════════════════════
+   코드 블록 — 프리미엄 IDE 스타일
+   ═══════════════════════════════════════ */
+.code-block {
+  background: #0F172A;
+  border-radius: var(--radius-md);
+  padding: 0;
+  margin: 3mm 0;
+  box-shadow: var(--shadow-md), inset 0 1px 0 rgba(255,255,255,0.05);
+  overflow: hidden;
+  border: 1px solid #1E293B;
+}
+.code-block-header {
+  font-family: var(--font-body);
+  font-size: 8.5pt;
+  font-weight: 600;
+  color: #94A3B8;
+  padding: 2.5mm 4.5mm;
+  background: #1E293B;
+  border-bottom: 1px solid #334155;
+  letter-spacing: 0.5px;
+  display: flex;
+  align-items: center;
+  gap: 2mm;
+}
+.code-block-header::before {
+  content: '';
+  display: inline-flex;
+  width: 8px; height: 8px;
+  background: #EF4444;
+  border-radius: 50%;
+  box-shadow: 14px 0 0 #F59E0B, 28px 0 0 #22C55E;
+  flex-shrink: 0;
+}
+.code-table { width: 100%; border-collapse: collapse; table-layout: fixed; }
+.code-table td { vertical-align: top; padding: 0; }
+.line-num {
+  width: 12mm;
+  min-width: 12mm;
+  max-width: 12mm;
+  text-align: right;
+  padding: 0.5mm 3mm 0.5mm 2mm;
+  font-family: var(--font-code);
+  font-size: 8pt;
+  color: #475569;
+  line-height: 165%;
+  user-select: none;
+  background: rgba(0,0,0,0.15);
+  border-right: 1px solid rgba(255,255,255,0.06);
+}
+.line-code {
+  width: auto;
+  font-family: var(--font-code);
+  font-size: 10pt;
+  color: #E2E8F0;
+  line-height: 165%;
+  padding: 0.5mm 4mm 0.5mm 4mm;
+  white-space: pre;
+  overflow-x: auto;
+}
+.line-highlight td { background: rgba(59,130,246,0.12) !important; }
+.line-highlight .line-num { color: var(--c-blue) !important; font-weight: 700; }
+
+/* 신택스 컬러 — VS Code Dark+ 영감 */
+.kw { color: #C084FC; font-weight: 500; }
+.str { color: #86EFAC; }
+.cmt { color: #6B7280; font-style: italic; }
+.fn { color: #FDBA74; }
+.pp { color: #F472B6; font-weight: 600; }
+.num { color: #7DD3FC; }
+.type { color: #5EEAD4; font-weight: 500; }
+.mc { color: #67E8F9; }
+.esc { color: #FCD34D; font-weight: 600; }
+.fmt { color: #FCD34D; }
+
+/* ═══════════════════════════════════════
+   실행 결과 — 터미널 스타일
+   ═══════════════════════════════════════ */
+.output-block {
+  background: #F0FDF4;
+  border: 1.5px solid #86EFAC;
+  border-radius: var(--radius-md);
+  padding: 3mm 4mm;
+  margin: 3mm 0;
+  position: relative;
+}
+.output-label {
+  font-family: var(--font-body);
+  font-size: 8.5pt;
+  color: var(--c-green);
+  display: block;
+  margin-bottom: 1.5mm;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+.output-text {
+  font-family: var(--font-code);
+  font-size: 10.5pt;
+  line-height: 160%;
+  color: #166534;
+}
+
+/* ═══════════════════════════════════════
+   박스 시스템 — 프리미엄 카드 디자인
+   ═══════════════════════════════════════ */
+.box {
+  border-radius: var(--radius-md);
+  padding: 3.5mm 4.5mm;
+  margin: 3mm 0;
+  position: relative;
+  box-shadow: var(--shadow-sm);
+}
+.box-label {
+  font-size: 10.5pt;
+  font-weight: 800;
+  margin-bottom: 2mm;
+  display: flex;
+  align-items: center;
+  gap: 2mm;
+}
+.box-content { font-size: 11pt; line-height: 170%; overflow-wrap: break-word; word-break: keep-all; }
+.box-warning {
+  border-left: 5px solid var(--c-red);
+  background: linear-gradient(135deg, #FEF2F2 0%, #FFF1F2 100%);
+}
+.box-warning .box-label { color: var(--c-red); }
+.box-key {
+  border-left: 5px solid var(--c-blue);
+  background: linear-gradient(135deg, #EFF6FF 0%, #F0F9FF 100%);
+}
+.box-key .box-label { color: var(--c-blue); }
+.box-tip {
+  border-left: 5px solid var(--c-orange);
+  background: linear-gradient(135deg, #FFFBEB 0%, #FEF9C3 50%, #FFFBEB 100%);
+}
+.box-tip .box-label { color: var(--c-orange); }
+.box-summary {
+  border-left: 5px solid var(--c-green);
+  background: linear-gradient(135deg, #ECFDF5 0%, #D1FAE5 100%);
+  border: 1.5px solid #A7F3D0;
+  border-left: 5px solid var(--c-green);
+}
+.box-summary .box-label { color: var(--c-green); }
+.box-question {
+  border-left: 5px solid var(--c-purple);
+  background: linear-gradient(135deg, #F5F3FF 0%, #EDE9FE 100%);
+}
+.box-question .box-label { color: var(--c-purple); }
+.box-history {
+  border-left: 5px solid var(--c-teal);
+  background: linear-gradient(135deg, #F0FDFA 0%, #CCFBF1 100%);
+}
+.box-history .box-label { color: var(--c-teal); }
+
+/* ═══════════════════════════════════════
+   연습문제 — 프리미엄 카드
+   ═══════════════════════════════════════ */
+.exercise {
+  background: white;
+  border: 1.5px solid #E2E8F0;
+  border-radius: var(--radius-lg);
+  padding: 3.5mm 4.5mm;
+  margin: 3mm 0;
+  border-left: 5px solid var(--c-primary);
+  box-shadow: var(--shadow-sm);
+  position: relative;
+}
+.exercise-title {
+  font-size: 13pt;
+  font-weight: 800;
+  color: var(--c-primary);
+  margin-bottom: 2.5mm;
+  display: flex;
+  align-items: center;
+  gap: 2mm;
+}
+.difficulty {
+  display: inline-flex;
+  align-items: center;
+  font-size: 8pt;
+  padding: 0.5mm 2.5mm;
+  border-radius: 20px;
+  margin-left: 2mm;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+}
+.diff-1 { background: #D1FAE5; color: #059669; }
+.diff-2 { background: #FEF3C7; color: #D97706; }
+.diff-3 { background: #FEE2E2; color: #DC2626; }
+.memo-area {
+  border: 2px dashed #CBD5E1;
+  border-radius: var(--radius-md);
+  padding: 3mm;
+  min-height: 15mm;
+  margin-top: 2.5mm;
+  background: repeating-linear-gradient(
+    transparent, transparent 7mm, #F1F5F9 7mm, #F1F5F9 7.5mm
+  );
+}
+.memo-label { font-size: 8.5pt; color: var(--c-text-muted); font-style: italic; }
+
+/* ── OX/Choice/Short ── */
+.exercise-answer {
+  font-size: 10pt;
+  color: var(--c-green);
+  margin-top: 2mm;
+  padding: 1.5mm 3mm;
+  background: var(--c-green-light);
+  border-radius: var(--radius-sm);
+  font-weight: 600;
+  border: 1px solid #A7F3D0;
+}
+.exercise-explain {
+  font-size: 9.5pt;
+  color: var(--c-text-secondary);
+  margin-top: 1.5mm;
+  padding: 2mm 3mm;
+  background: #F8FAFC;
+  border-radius: var(--radius-sm);
+  border-left: 3px solid #E2E8F0;
+}
+.choice-list { padding-left: 6mm; margin: 2mm 0; }
+.choice-list li { font-size: 10.5pt; margin-bottom: 1.5mm; line-height: 150%; }
+.choice-list li.choice-correct { color: var(--c-green); font-weight: 700; }
+
+/* ═══════════════════════════════════════
+   Before/After 비교 — 프리미엄 2컬럼
+   ═══════════════════════════════════════ */
+.compare {
+  display: flex;
+  gap: 3mm;
+  margin: 3mm 0;
+  overflow: hidden;
+}
+.compare-bad {
+  flex: 1;
+  min-width: 0;
+  background: linear-gradient(135deg, #FEF2F2, #FFF1F2);
+  border: 1.5px solid #FECACA;
+  border-radius: var(--radius-md);
+  padding: 3mm;
+  overflow: hidden;
+}
+.compare-good {
+  flex: 1;
+  min-width: 0;
+  background: linear-gradient(135deg, #ECFDF5, #D1FAE5);
+  border: 1.5px solid #A7F3D0;
+  border-radius: var(--radius-md);
+  padding: 3mm;
+  overflow: hidden;
+}
+.compare code {
+  font-size: 9pt;
+  word-break: break-all;
+  overflow-wrap: break-word;
+  display: block;
+  background: rgba(0,0,0,0.05);
+  padding: 2mm 3mm;
+  border-radius: var(--radius-sm);
+  margin: 1.5mm 0;
+  line-height: 155%;
+  white-space: pre-wrap;
+  border: none;
+  color: inherit;
+}
+.compare-label { font-size: 9.5pt; font-weight: 800; margin-bottom: 1.5mm; }
+.compare-bad .compare-label { color: var(--c-red); }
+.compare-good .compare-label { color: var(--c-green); }
+.compare-msg-bad { font-size: 9pt; color: var(--c-red); }
+.compare-msg-good { font-size: 9pt; color: var(--c-green); }
+
+/* ═══════════════════════════════════════
+   챕터 시작 — 프리미엄 카드
+   ═══════════════════════════════════════ */
+.chapter-start-box { margin-bottom: 3mm; }
+.learning-goals {
+  background: linear-gradient(135deg, #FFF7ED 0%, #FFFBEB 100%);
+  border-radius: var(--radius-lg);
+  padding: 4mm 5mm;
+  margin-bottom: 3mm;
+  border: 1.5px solid #FED7AA;
+  box-shadow: var(--shadow-sm);
+}
+.learning-goals h3 {
+  font-size: 12pt;
+  font-weight: 800;
+  color: #EA580C;
+  margin: 0 0 2.5mm;
+  border: none;
+  padding: 0;
+}
+.learning-goals ul { padding-left: 5mm; margin: 0; }
+.learning-goals li { font-size: 11pt; margin-bottom: 1.5mm; line-height: 160%; color: #431407; }
+.prereq-check {
+  background: var(--c-blue-light);
+  border-left: 5px solid var(--c-blue);
+  border-radius: var(--radius-md);
+  padding: 3mm 4mm;
+  margin-bottom: 2.5mm;
+}
+.prereq-check h3 {
+  font-size: 11pt;
+  font-weight: 700;
+  color: var(--c-blue);
+  margin: 0 0 1.5mm;
+  border: none;
+  padding: 0;
+}
+.checklist { list-style: none; padding-left: 4mm; margin: 0; }
+.checklist li { margin-bottom: 1mm; font-size: 10.5pt; }
+.checklist li::before { content: '\2610  '; font-size: 12pt; color: var(--c-text-muted); }
+.progress-section { margin-top: 2.5mm; }
+.progress-label { font-size: 9.5pt; color: var(--c-text-secondary); font-weight: 600; }
+.progress-bar {
+  background: #E2E8F0;
+  border-radius: 6px;
+  height: 4mm;
+  margin-top: 1.5mm;
+  overflow: hidden;
+}
+.progress-fill {
+  background: linear-gradient(90deg, var(--c-primary), #FF8E53, #FEC89A);
+  height: 100%;
+  border-radius: 6px;
+}
+
+/* ═══════════════════════════════════════
+   Predict — 생각해보기 카드
+   ═══════════════════════════════════════ */
+.predict-box {
+  display: flex;
+  gap: 3.5mm;
+  background: linear-gradient(135deg, #F5F3FF 0%, #EDE9FE 100%);
+  border: 1.5px solid #C4B5FD;
+  border-radius: var(--radius-lg);
+  padding: 3.5mm 4.5mm;
+  margin: 3mm 0;
+  box-shadow: var(--shadow-sm);
+}
+.predict-icon {
+  width: 10mm; height: 10mm;
+  background: linear-gradient(135deg, var(--c-purple), #A78BFA);
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16pt;
+  font-weight: 900;
+  flex-shrink: 0;
+  box-shadow: 0 2px 6px rgba(139,92,246,0.3);
+}
+.predict-content { flex: 1; }
+.predict-content p { font-size: 11pt; margin-bottom: 2mm; }
+
+/* ═══════════════════════════════════════
+   다이어그램 — 프리미엄 컨테이너
+   ═══════════════════════════════════════ */
+.diagram-box {
+  background: var(--c-bg-subtle);
+  border: 1.5px solid var(--c-border);
+  border-radius: var(--radius-lg);
+  padding: 4mm;
+  margin: 3.5mm 0;
+  box-shadow: var(--shadow-sm);
+}
+.diagram-title {
+  font-size: 11pt;
+  font-weight: 800;
+  color: var(--c-primary);
+  margin-bottom: 3mm;
+  text-align: center;
+  letter-spacing: 0.3px;
+}
+.diagram-content { font-size: 10.5pt; line-height: 170%; }
+.diagram-content .d-row { display: flex; align-items: center; justify-content: center; gap: 3mm; margin: 2mm 0; }
+.diagram-content .d-block { background: #1E293B; color: white; padding: 2mm 4mm; border-radius: var(--radius-sm); font-family: var(--font-code); font-size: 9.5pt; font-weight: 500; }
+.diagram-content .d-block-highlight { background: linear-gradient(135deg, var(--c-primary), #FF8E53); color: white; padding: 2mm 4mm; border-radius: var(--radius-sm); font-family: var(--font-code); font-size: 9.5pt; font-weight: 700; }
+.diagram-content .d-arrow { color: var(--c-text-muted); font-size: 14pt; }
+.diagram-content .d-label { font-size: 8.5pt; color: var(--c-text-secondary); }
+
+/* ═══════════════════════════════════════
+   Steps — 프리미엄 타임라인
+   ═══════════════════════════════════════ */
+.steps-visual { margin: 3mm 0; }
+.step-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 3.5mm;
+  margin-bottom: 1.5mm;
+}
+.step-num {
+  width: 8mm; height: 8mm;
+  background: linear-gradient(135deg, var(--c-primary), #FF8E53);
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10pt;
+  font-weight: 800;
+  flex-shrink: 0;
+  margin-top: 0.5mm;
+  box-shadow: 0 2px 4px rgba(255,107,107,0.3);
+}
+.step-body { flex: 1; }
+.step-title { font-size: 11pt; font-weight: 700; margin-bottom: 0.5mm; color: var(--c-text); }
+.step-desc { font-size: 10.5pt; color: var(--c-text-secondary); line-height: 160%; }
+.step-connector { width: 2.5px; height: 4mm; background: linear-gradient(180deg, var(--c-primary), transparent); margin-left: 3.7mm; }
+
+/* ═══════════════════════════════════════
+   Modify — 바꿔보기 카드
+   ═══════════════════════════════════════ */
+.modify-box {
+  background: linear-gradient(135deg, #F0F9FF 0%, #E0F2FE 100%);
+  border: 1.5px solid #7DD3FC;
+  border-left: 5px solid #0EA5E9;
+  border-radius: var(--radius-md);
+  padding: 3.5mm 4.5mm;
+  margin: 3mm 0;
+}
+.modify-label { font-size: 10.5pt; font-weight: 800; color: #0284C7; margin-bottom: 2mm; }
+.modify-hint { font-size: 9.5pt; color: var(--c-text-secondary); font-style: italic; margin: 1.5mm 0; }
+
+/* ═══════════════════════════════════════
+   정답 섹션
+   ═══════════════════════════════════════ */
+.answers-section {
+  background: white;
+  border: 1.5px solid #E9D5FF;
+  border-radius: var(--radius-md);
+  padding: 3mm 4mm;
+  margin: 3mm 0;
+  border-left: 5px solid var(--c-purple);
+}
+.answers-section h3 {
+  font-size: 12pt;
+  font-weight: 800;
+  color: var(--c-purple);
+  margin: 0 0 2.5mm;
+  border: none;
+  padding: 0;
+}
+.answer-item { margin-bottom: 1mm; font-size: 10pt; line-height: 150%; }
+.answer-num { font-weight: 700; color: var(--c-primary); margin-right: 2mm; }
+.answer-text { color: var(--c-text); }
+
+/* ═══════════════════════════════════════
+   코드 설명 (라인별)
+   ═══════════════════════════════════════ */
+.code-explain { margin: 3mm 0; padding-left: 2mm; }
+.code-explain-item {
+  display: flex;
+  align-items: flex-start;
+  margin-bottom: 2.5mm;
+  font-size: 11pt;
+  line-height: 165%;
+}
+.code-explain-line {
+  font-family: var(--font-code);
+  font-size: 9pt;
+  color: white;
+  background: linear-gradient(135deg, var(--c-primary), #FF8E53);
+  padding: 0.5mm 2.5mm;
+  border-radius: 4px;
+  margin-right: 3mm;
+  flex-shrink: 0;
+  font-weight: 700;
+  box-shadow: 0 1px 3px rgba(255,107,107,0.3);
+}
+
+/* ═══════════════════════════════════════
+   용어 정리 — 프리미엄 테이블
+   ═══════════════════════════════════════ */
+.glossary { margin: 3mm 0; break-inside: avoid; display: block !important; width: 100% !important; clear: both; }
+.glossary-item {
+  display: flex;
+  margin-bottom: 0;
+  font-size: 10pt;
+  padding: 2mm 3mm;
+  border-bottom: 1px solid #F1F5F9;
+  width: 100%;
+}
+.glossary-item:nth-child(odd) { background: #F8FAFC; }
+.glossary-item:first-child { border-radius: var(--radius-sm) var(--radius-sm) 0 0; }
+.glossary-item:last-child { border-radius: 0 0 var(--radius-sm) var(--radius-sm); border-bottom: none; }
+.glossary-term {
+  font-weight: 700;
+  min-width: 28mm;
+  max-width: 35mm;
+  flex-shrink: 0;
+  color: var(--c-text);
+  font-family: var(--font-code);
+  font-size: 9.5pt;
+  word-break: keep-all;
+}
+.glossary-def { color: var(--c-text-secondary); line-height: 155%; flex: 1; min-width: 0; }
+
+/* ═══════════════════════════════════════
+   추적 테이블 — 프리미엄 데이터 테이블
+   ═══════════════════════════════════════ */
+.trace-table { margin: 3.5mm 0; }
+.trace-caption { font-size: 10.5pt; font-weight: 700; color: var(--c-primary); margin-bottom: 2mm; }
+.trace-table table { width: 100%; border-collapse: collapse; font-size: 10pt; border-radius: var(--radius-sm); overflow: hidden; }
+.trace-table th {
+  background: linear-gradient(135deg, #1E293B, #334155);
+  color: white;
+  padding: 2mm 3.5mm;
+  text-align: left;
+  font-weight: 700;
+  font-size: 9.5pt;
+}
+.trace-table td { padding: 2mm 3.5mm; border-bottom: 1px solid #F1F5F9; font-family: var(--font-code); font-size: 9.5pt; }
+.trace-table tr:nth-child(even) td { background: #F8FAFC; }
+
+/* ═══════════════════════════════════════
+   마스코트 말풍선 — 프리미엄 디자인
+   ═══════════════════════════════════════ */
+.mascot-speech {
+  display: flex;
+  align-items: flex-start;
+  gap: 3.5mm;
+  margin: 3.5mm 0;
+}
+.mascot-speech.right { flex-direction: row-reverse; }
+.mascot-speech-img {
+  flex-shrink: 0;
+  width: 60px;
+  height: 60px;
+  object-fit: contain;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.15));
+}
+.mascot-speech-img.small { width: 48px; height: 48px; }
+.mascot-speech-img.large { width: 80px; height: 80px; }
+.mascot-bubble {
+  position: relative;
+  background: linear-gradient(135deg, #EFF6FF 0%, #DBEAFE 100%);
+  border: 1.5px solid #93C5FD;
+  border-radius: var(--radius-lg);
+  padding: 3.5mm 4.5mm;
+  font-size: 10.5pt;
+  color: #1E3A5F;
+  line-height: 1.6;
+  flex: 1;
+  max-width: 85%;
+  box-shadow: var(--shadow-sm);
+}
+.mascot-bubble.warn {
+  background: linear-gradient(135deg, #FEF2F2, #FEE2E2);
+  border-color: #FCA5A5;
+  color: #7F1D1D;
+}
+.mascot-bubble.success {
+  background: linear-gradient(135deg, #ECFDF5, #D1FAE5);
+  border-color: #6EE7B7;
+  color: #14532D;
+}
+.mascot-bubble.tip {
+  background: linear-gradient(135deg, #FFFBEB, #FEF3C7);
+  border-color: #FCD34D;
+  color: #78350F;
+}
+.mascot-bubble::before {
+  content: '';
+  position: absolute;
+  top: 14px;
+  left: -9px;
+  border: 7px solid transparent;
+  border-right-color: #93C5FD;
+}
+.mascot-bubble::after {
+  content: '';
+  position: absolute;
+  top: 15px;
+  left: -7px;
+  border: 6px solid transparent;
+  border-right-color: #EFF6FF;
+}
+.mascot-speech.right .mascot-bubble::before {
+  left: auto; right: -9px;
+  border-right-color: transparent;
+  border-left-color: #93C5FD;
+}
+.mascot-speech.right .mascot-bubble::after {
+  left: auto; right: -7px;
+  border-right-color: transparent;
+  border-left-color: #EFF6FF;
+}
+.mascot-bubble.warn::before { border-right-color: #FCA5A5; }
+.mascot-bubble.warn::after { border-right-color: #FEF2F2; }
+.mascot-speech.right .mascot-bubble.warn::before { border-right-color: transparent; border-left-color: #FCA5A5; }
+.mascot-speech.right .mascot-bubble.warn::after { border-right-color: transparent; border-left-color: #FEF2F2; }
+.mascot-bubble.success::before { border-right-color: #6EE7B7; }
+.mascot-bubble.success::after { border-right-color: #ECFDF5; }
+.mascot-speech.right .mascot-bubble.success::before { border-right-color: transparent; border-left-color: #6EE7B7; }
+.mascot-speech.right .mascot-bubble.success::after { border-right-color: transparent; border-left-color: #ECFDF5; }
+.mascot-bubble.tip::before { border-right-color: #FCD34D; }
+.mascot-bubble.tip::after { border-right-color: #FFFBEB; }
+.mascot-speech.right .mascot-bubble.tip::before { border-right-color: transparent; border-left-color: #FCD34D; }
+.mascot-speech.right .mascot-bubble.tip::after { border-right-color: transparent; border-left-color: #FFFBEB; }
+
+/* ═══════════════════════════════════════
+   Fact Bite — 숫자/팩트 강조 카드
+   ═══════════════════════════════════════ */
+.fact-bite {
+  display: flex;
+  align-items: center;
+  gap: 4mm;
+  margin: 3mm 0;
+  background: linear-gradient(135deg, #FFF1F2 0%, #FFE4E6 50%, #FFF1F2 100%);
+  border-radius: var(--radius-lg);
+  padding: 3.5mm 5mm;
+  border: 1.5px solid #FECDD3;
+  box-shadow: var(--shadow-sm);
+}
+.fact-bite-number {
+  font: 900 18pt var(--font-body);
+  background: linear-gradient(135deg, var(--c-primary), #FF8E53);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  white-space: nowrap;
+  flex-shrink: 0;
+  max-width: 40%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.fact-bite-text { font-size: 10pt; color: var(--c-text-secondary); line-height: 1.5; flex: 1; min-width: 0; }
+
+/* ═══════════════════════════════════════
+   Visual Summary — 핵심 정리 카드
+   ═══════════════════════════════════════ */
+.visual-summary {
+  background: linear-gradient(135deg, #ECFDF5 0%, #D1FAE5 50%, #A7F3D0 100%);
+  border: 1.5px solid #6EE7B7;
+  border-radius: var(--radius-xl);
+  padding: 5mm;
+  margin: 4mm 0;
+  box-shadow: var(--shadow-md);
+  display: block !important;
+  width: 100% !important;
+  clear: both;
+}
+.visual-summary-title {
+  font-size: 14pt;
+  font-weight: 900;
+  color: #065F46;
+  text-align: center;
+  margin-bottom: 3mm;
+}
+.visual-summary-items { display: flex; flex-direction: column; gap: 2mm; }
+.visual-summary-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 3mm;
+  background: rgba(255,255,255,0.7);
+  padding: 2.5mm 3.5mm;
+  border-radius: var(--radius-md);
+  backdrop-filter: blur(4px);
+}
+.visual-summary-num {
+  width: 7mm; height: 7mm;
+  background: linear-gradient(135deg, #059669, #10B981);
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 9pt;
+  font-weight: 800;
+  flex-shrink: 0;
+  box-shadow: 0 1px 3px rgba(5,150,105,0.3);
+}
+
+/* ═══════════════════════════════════════
+   10축 매핑 전용 스타일
+   ═══════════════════════════════════════ */
+.axis-section {
+  background: linear-gradient(135deg, #F8FAFC 0%, #F1F5F9 100%);
+  border: 1.5px solid #CBD5E1;
+  border-radius: var(--radius-xl);
+  padding: 5mm;
+  margin: 5mm 0;
+  box-shadow: var(--shadow-md);
+  page-break-inside: avoid;
+}
+.axis-title {
+  font-size: 14pt;
+  font-weight: 900;
+  text-align: center;
+  margin-bottom: 4mm;
+  color: var(--c-text);
+  letter-spacing: -0.3px;
+}
+.axis-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2.5mm;
+}
+.axis-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 2mm;
+  padding: 2.5mm 3mm;
+  border-radius: var(--radius-md);
+  background: white;
+  border: 1px solid #E2E8F0;
+}
+.axis-badge {
+  font-size: 7.5pt;
+  font-weight: 800;
+  padding: 0.5mm 2.5mm;
+  border-radius: 20px;
+  flex-shrink: 0;
+  letter-spacing: 0.3px;
+  white-space: nowrap;
+}
+.axis-badge.c-lang { background: #DBEAFE; color: #1D4ED8; }
+.axis-badge.thinking { background: #E0E7FF; color: #4338CA; }
+.axis-badge.debug { background: #FEE2E2; color: #DC2626; }
+.axis-badge.koi { background: #FEF3C7; color: #B45309; }
+.axis-badge.basics { background: #D1FAE5; color: #059669; }
+.axis-badge.reallife { background: #CCFBF1; color: #0D9488; }
+.axis-badge.crosssubj { background: #E9D5FF; color: #7C3AED; }
+.axis-badge.project { background: #FFE4E6; color: #BE123C; }
+.axis-badge.ai { background: #FCE7F3; color: #DB2777; }
+.axis-badge.hardware { background: #CFFAFE; color: #0891B2; }
+.axis-text { font-size: 9.5pt; line-height: 150%; color: var(--c-text-secondary); }
+
+/* ── TOC ── */
+.toc { margin: 5mm 0; }
+.toc h2 { border: none; padding: 0; margin-bottom: 3mm; background: none; }
+.toc ul { list-style: none; padding: 0; }
+.toc-h2 { display: flex; align-items: baseline; margin-bottom: 1.5mm; font-size: 11pt; }
+.toc-text { flex-shrink: 0; }
+.toc-dots { flex: 1; border-bottom: 1.5px dotted #CBD5E1; margin: 0 2mm; min-width: 10mm; }
+.toc-page { flex-shrink: 0; color: var(--c-text-muted); font-size: 10pt; }
+
+/* ── Margin Note ── */
+.margin-note {
+  float: right;
+  width: 30mm;
+  font-size: 8.5pt;
+  color: var(--c-text-secondary);
+  background: linear-gradient(135deg, #FFFBEB, #FEF3C7);
+  padding: 2mm 2.5mm;
+  border-radius: var(--radius-sm);
+  margin: 0 -35mm 2mm 2mm;
+  border-left: 2.5px solid var(--c-orange);
+}
+
+/* ── Cross Reference ── */
+.crossref { font-size: 9pt; color: var(--c-blue); font-style: italic; font-weight: 500; }
+
+/* ── Image ── */
+.image-block { margin: 3.5mm 0; text-align: center; }
+.image-block img { max-width: 100%; border-radius: var(--radius-md); box-shadow: var(--shadow-sm); }
+.image-caption {
+  font-size: 9pt;
+  color: var(--c-text-secondary);
+  margin-top: 2mm;
+  font-style: italic;
+  background: var(--c-bg-subtle);
+  padding: 1.5mm 4mm;
+  border-radius: 20px;
+  display: inline-block;
+}
+
+/* ═══════════════════════════════════════
+   v7.0 — 80레이어 리서치 증강분
+   v5 프리미엄 기반 + TEXTBOOK-DESIGN-DEEP P1~P6 합성
+   ═══════════════════════════════════════ */
+
+/* ── Layer 26: 게슈탈트 근접성 강화 ── */
+h2 + p,
+h3 + p,
+h2 + .code-block,
+h3 + .code-block { margin-top: 1mm !important; }
+.code-block + .code-explain { margin-top: 0.5mm; }
+.code-block + .output-block { margin-top: 1mm; }
+.exercise + .exercise { margin-top: 1.5mm; }
+
+/* ── Layer 28: 마이크로 타이포그래피 ── */
+body {
+  font-kerning: auto;
+  font-variant-ligatures: common-ligatures;
+  hanging-punctuation: first last;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+.line-num { font-variant-numeric: tabular-nums; }
+.trace-table td { font-variant-numeric: tabular-nums; }
+
+/* ── Layer 29: 연습문제 유형별 스타일 ── */
+.exercise-item { margin-bottom: 2mm; font-size: 11pt; line-height: 165%; }
+.exercise-item p { margin-bottom: 1.5mm; }
+.exercise-blank { display: inline-block; min-width: 20mm; border-bottom: 2px solid var(--c-primary); margin: 0 1mm; }
+.exercise-ox-grid { display: flex; gap: 3mm; margin-top: 2mm; }
+.exercise-ox-item { flex: 1; padding: 2mm 3mm; border: 1px solid var(--c-border); border-radius: var(--radius-sm); font-size: 10pt; }
+.exercise-matching { display: grid; grid-template-columns: 1fr auto 1fr; gap: 1.5mm; font-size: 10pt; }
+.exercise-reorder { display: flex; flex-direction: column; gap: 1mm; font-family: var(--font-code); font-size: 9.5pt; }
+.exercise-reorder-item { background: var(--c-bg-subtle); padding: 1.5mm 3mm; border-radius: var(--radius-sm); border: 1px solid var(--c-border); }
+
+/* ── Layer 30: 교사용 에디션 ── */
+.teacher-only { background: #FFF5F5; border: 2px dashed #E74C3C; padding: 3mm; border-radius: var(--radius-md); }
+.teacher-note { font-size: 9pt; color: #C0392B; font-style: italic; }
+
+/* ── Layer 32: 디자인 토큰 — 인쇄용 간격 ── */
+article > * + * { margin-top: 2.5mm; }
+article > h2 { margin-top: 5mm; }
+article > h3 { margin-top: 3.5mm; }
+
+/* ── Layer 51: 황금비 타이포 ──
+   24pt / 16pt / 13.5pt / 11.5pt = 1:0.67:0.56:0.48 ≈ 피보나치 */
+
+/* ── Layer 55: 인지부하 최적화 — 시각 앵커 ── */
+h2::before {
+  /* 빈 블록으로 스크롤 앵커 역할 — Paged.js에서 러닝헤드 지원 */
+}
+
+/* ── Layer 56: 아이트래킹 — F패턴 강화 ── */
+.lesson-header .lesson-number { font-weight: 700; }
+.box-label::before {
+  content: '';
+  display: inline-block;
+  width: 3px; height: 14px;
+  border-radius: 2px;
+  margin-right: 1.5mm;
+  flex-shrink: 0;
+}
+.box-warning .box-label::before { background: var(--c-red); }
+.box-key .box-label::before { background: var(--c-blue); }
+.box-tip .box-label::before { background: var(--c-orange); }
+.box-summary .box-label::before { background: var(--c-green); }
+.box-question .box-label::before { background: var(--c-purple); }
+.box-history .box-label::before { background: var(--c-teal); }
+
+/* ── Layer 58: 색상 조화 60-30-10 강화 ── */
+/* 60% = white/neutral, 30% = brand gradient accents, 10% = c-primary strong */
+
+/* ── Layer 60: 코드 블록 — 브래킷 컬러링 (Layer 30 from Deep) ── */
+.brace-1 { color: #C084FC; font-weight: bold; }
+.brace-2 { color: #86EFAC; font-weight: bold; }
+.brace-3 { color: #FDBA74; font-weight: bold; }
+.brace-4 { color: #7DD3FC; font-weight: bold; }
+
+/* ── Layer 61: 인덴트 가이드 ── */
+.indent-guide { border-left: 1px solid rgba(255,255,255,0.08); }
+
+/* ── Layer 65: 10축 매핑 강화 ── */
+.axis-item { transition: none; }
+.axis-section .box-content { font-size: 10pt; }
+
+/* ── Layer 67: 자료구조 시각화 ── */
+.ds-visual { font-family: var(--font-code); font-size: 9pt; text-align: center; margin: 3mm 0; }
+.ds-array { display: flex; justify-content: center; gap: 0; }
+.ds-cell { width: 9mm; height: 9mm; border: 1.5px solid var(--c-blue); display: flex; align-items: center; justify-content: center; font-weight: 700; }
+.ds-cell:first-child { border-radius: var(--radius-sm) 0 0 var(--radius-sm); }
+.ds-cell:last-child { border-radius: 0 var(--radius-sm) var(--radius-sm) 0; }
+.ds-index { font-size: 7pt; color: var(--c-text-muted); text-align: center; margin-top: 0.5mm; }
+
+/* ── Layer 68: 학습 저널 공간 ── */
+.reflection-box {
+  background: var(--c-bg-warm);
+  border: 1.5px dashed #FCD34D;
+  border-radius: var(--radius-lg);
+  padding: 4mm;
+  margin: 4mm 0;
+}
+.reflection-prompt { font-size: 10pt; color: var(--c-orange); font-weight: 700; margin-bottom: 2mm; }
+.reflection-lines {
+  min-height: 20mm;
+  background: repeating-linear-gradient(transparent, transparent 7mm, #FEF3C7 7mm, #FEF3C7 7.5mm);
+}
+
+/* ── Layer 69: 루브릭/자기평가 ── */
+.rubric-table { width: 100%; border-collapse: collapse; font-size: 9pt; margin: 3mm 0; }
+.rubric-table th { background: var(--c-purple); color: white; padding: 2mm; text-align: center; }
+.rubric-table td { padding: 2mm; border: 1px solid var(--c-border); text-align: center; }
+.self-check { display: flex; gap: 5mm; justify-content: center; margin: 3mm 0; }
+.self-check-item { text-align: center; font-size: 18pt; }
+.self-check-label { font-size: 7.5pt; color: var(--c-text-secondary); }
+
+/* ── Layer 72: 교실 게임 보드 ── */
+.bingo-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 1px; background: var(--c-border); border-radius: var(--radius-md); overflow: hidden; margin: 3mm 0; }
+.bingo-cell { background: white; padding: 3mm; text-align: center; font-size: 8.5pt; font-family: var(--font-code); min-height: 10mm; display: flex; align-items: center; justify-content: center; }
+.bingo-free { background: var(--c-primary-light); font-weight: 800; color: var(--c-primary); }
+
+/* ── Layer 77: 북마크/읽기 가이드 ──  */
+.reading-ruler { border-top: 3px solid var(--c-primary); margin: 4mm 0; opacity: 0.3; }
+
+/* ── Layer 78: 고급 그리드 — 2컬럼 레이아웃 ── */
+.two-col { display: flex; gap: 4mm; }
+.two-col > * { flex: 1; min-width: 0; }
+.three-col { display: flex; gap: 3mm; }
+.three-col > * { flex: 1; min-width: 0; }
+
+/* ── Layer 80: 인쇄 품질 마커 ── */
+.print-crop-mark { display: none; }
+
+/* ═══════════════════════════════════════
+   인쇄 최적화 — 강화 버전 (Layer 77~80)
+   ═══════════════════════════════════════ */
+@media print {
+  body {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  .lesson-header,
+  .code-block,
+  .box,
+  .exercise,
+  .predict-box,
+  .compare-bad,
+  .compare-good,
+  .step-num,
+  .mascot-bubble,
+  .visual-summary,
+  .axis-section,
+  .trace-table th,
+  .progress-fill,
+  .code-explain-line,
+  .fact-bite,
+  .diff-1, .diff-2, .diff-3,
+  .diagram-box,
+  .modify-box,
+  .answers-section {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  .no-print { display: none !important; }
+  /* orphan/widow 강화 */
+  p { orphans: 3; widows: 3; }
+  h2, h3 { break-after: avoid; }
+  .avoid-break { break-inside: avoid; }
+}
+
+/* ═══════════════════════════════════════
+   레이아웃 겹침 방지 — 모든 주요 섹션 블록 강제
+   ═══════════════════════════════════════ */
+article > .glossary,
+article > .visual-summary,
+article > .box,
+article > .fact-bite,
+article > .exercise,
+article > .answers-section,
+article > .mascot-speech,
+article > .code-block,
+article > .output-block,
+article > .compare,
+article > .predict-box {
+  display: block !important;
+  width: 100% !important;
+  float: none !important;
+  clear: both !important;
+}
+
+/* 박스 내부 테이블 오버플로 방지 */
+.box-content table { width: 100%; table-layout: fixed; }
+.box-content td, .box-content th { word-break: keep-all; overflow-wrap: break-word; }
+
+/* 마스코트 버블 너비 제한 완화 */
+.mascot-bubble { max-width: 100%; }
+
+/* Paged.js 컬럼 방지 */
+article { column-count: 1 !important; columns: 1 !important; }
+
+</style>
+<script src="https://unpkg.com/pagedjs/dist/paged.polyfill.js"></script>
+<script>
+  class PagedReadyHandler extends Paged.Handler {
+    constructor(chunker, polisher, caller) { super(chunker, polisher, caller); }
+    afterRendered(pages) {
+      document.body.setAttribute('data-paged-rendered', 'true');
+      document.body.setAttribute('data-page-count', pages.length);
+      console.log('PAGED_READY:' + pages.length);
+    }
+  }
+  Paged.registerHandlers(PagedReadyHandler);
+</script>
+</head>
+<body data-section-title="참과 거짓">
+<article id="content">
+  <header class="lesson-header" role="banner">
+    <div class="lesson-number">Lesson 0-9</div>
+    <h1 class="lesson-title">참과 거짓</h1>
+    <div class="lesson-summary">참과 거짓을 판단할 수 있는 문장(명제)이 무엇인지 배워요.</div>
+  </header>
+<div class="chapter-start-box avoid-break"><div class="learning-goals"><h3>📚 이번에 배울 것</h3><ul><li>명제가 무엇인지 설명할 수 있어요.</li><li>문장이 명제인지 아닌지 구별할 수 있어요.</li><li>참(True)과 거짓(False)의 뜻을 알아요.</li><li>C 언어에서 참/거짓이 어떻게 표현되는지 알아요.</li><li>[심화] 불리언 대수의 기본 개념을 이해해요.</li><li>[심화 내용] 명제 논리와 술어 논리의 차이를 알아요.</li></ul></div><div class="prereq-check"><h3>✅ 시작 전 체크</h3><ul class="checklist"><li>글을 읽고 뜻을 이해할 수 있다</li><li>간단한 수학 계산을 할 수 있다 (U0-04)</li></ul></div><div class="progress-section"><span class="progress-label">Part 1 진행률: 9%</span><div class="progress-bar"><div class="progress-fill" style="width:9%"></div></div></div></div>
+<h2>참일까? 거짓일까?</h2>
+<div class="mascot-speech  avoid-break">
+        <img class="mascot-speech-img " src="svg-assets/mascot-hello.svg" alt="마스코트" />
+        <div class="mascot-bubble hello">안녕! 오늘은 <b>참</b>과 <b>거짓</b>을 배울 거야. 컴퓨터는 모든 것을 '참 아니면 거짓'으로 판단해. 이게 프로그래밍의 시작이야!</div>
+      </div>
+<p>우리가 매일 쓰는 말 중에는 <b>맞다/틀리다</b>를 확실히 말할 수 있는 것이 있어요. 예를 들어볼까요?</p>
+<div class="box box-key avoid-break"><span class="box-label">[예시] 맞다/틀리다를 말할 수 있는 문장</span><div class="box-content">"서울은 한국의 수도다" → <b>참</b> (맞아요!)<br> "1 + 1 = 3" → <b>거짓</b> (틀려요! 1+1=2니까)<br> "물은 100°C에서 끓는다" → <b>참</b><br> "고양이는 새다" → <b>거짓</b></div></div>
+<p>이렇게 <b>확실하게 참인지 거짓인지 판단할 수 있는 문장</b>을 <b>명제</b>라고 해요.</p>
+<div class="box box-key avoid-break"><span class="box-label">[핵심] 명제(Proposition)의 정의</span><div class="box-content"><b>명제</b>란 참(True)인지 거짓(False)인지 <b>확실하게 판단할 수 있는 문장</b>이에요.<br><br>중요한 조건: <b>누가 판단해도 같은 결과</b>가 나와야 해요!</div></div>
+<h2>명제가 아닌 것</h2>
+<p>그런데 모든 문장이 명제인 건 아니에요. 사람마다 다르게 생각할 수 있는 문장은 명제가 아니에요.</p>
+<div class="box box-warning avoid-break"><span class="box-label">[주의] 이런 건 명제가 아니에요!</span><div class="box-content">"오늘 날씨 좋다" → 사람마다 다르게 느껴요<br> "피자가 치킨보다 맛있다" → 취향이에요<br> "수학은 재미있다" → 사람마다 달라요<br> "빨리 와!" → 명령이지 판단할 수 있는 문장이 아니에요<br> "지금 몇 시야?" → 질문이에요</div></div>
+<div class="image-block avoid-break"><img src="visuals/part0-u09-proposition-classify.svg" alt="명제인 문장과 명제가 아닌 문장 분류 다이어그램" style="max-width:100%"/><div class="image-caption">명제 = 참/거짓을 확실히 판단할 수 있는 문장</div></div>
+<div class="mascot-speech right avoid-break">
+        <img class="mascot-speech-img " src="svg-assets/mascot-thinking.svg" alt="마스코트" />
+        <div class="mascot-bubble thinking">쉽게 기억하는 방법! '이 문장은 참이야? 거짓이야?'라고 물었을 때 <b>누구나 같은 대답</b>을 할 수 있으면 명제야!</div>
+      </div>
+<h2>명제 판별 연습</h2>
+<p>명제인지 아닌지 구별하는 연습을 해봐요. 핵심은 <b>'누구나 같은 답을 할 수 있는가?'</b>예요.</p>
+<div class="trace-table avoid-break"><table><thead><tr><th>문장</th><th>참/거짓 판단 가능?</th><th>누구나 같은 답?</th><th>명제?</th></tr></thead><tbody><tr><td>"지구는 둥글다"</td><td>O</td><td>O</td><td>O (참)</td></tr><tr><td>"7 × 8 = 54"</td><td>O</td><td>O</td><td>O (거짓, 56이 맞음)</td></tr><tr><td>"이 노래 좋다"</td><td>X</td><td>X</td><td>X</td></tr><tr><td>"대한민국 인구는 5천만 명 이상이다"</td><td>O</td><td>O</td><td>O (참)</td></tr><tr><td>"문 좀 닫아!"</td><td>—</td><td>—</td><td>X (명령문)</td></tr></tbody></table></div>
+<div class="box box-tip avoid-break"><span class="box-label">[꿀팁] 명제 구별 3초 규칙</span><div class="box-content">문장을 보고 3초 안에 <b>O(참) 또는 X(거짓)</b>를 정할 수 있으면 → 명제!<br>3초가 넘어도 답이 안 나오면(의견/감정/질문/명령) → 명제 아님!</div></div>
+<h2>컴퓨터는 참/거짓으로 생각해요</h2>
+<p>컴퓨터는 0과 1만 이해한다고 했죠? (U0-03에서 배웠어요!) 참과 거짓도 마찬가지예요. 컴퓨터에서는 <b>참 = 1</b>, <b>거짓 = 0</b>이에요.</p>
+<div class="box box-key avoid-break"><span class="box-label">[핵심] 컴퓨터의 참/거짓</span><div class="box-content"><b>참 (True)</b> = 1 = 전기가 흐른다 = 스위치 ON<br><b>거짓 (False)</b> = 0 = 전기가 안 흐른다 = 스위치 OFF<br><br>컴퓨터는 모든 판단을 이 두 가지로 해요!</div></div>
+<div class="image-block avoid-break"><img src="visuals/part0-u09-true-false-switch.svg" alt="참/거짓과 스위치 ON/OFF 비교" style="max-width:100%"/><div class="image-caption">참 = ON = 1, 거짓 = OFF = 0</div></div>
+<div class="compare avoid-break"><div class="compare-bad"><div class="compare-label">✕ 잘못된 코드</div><code></code><br><span class="compare-msg-bad"></span></div><div class="compare-good"><div class="compare-label">✓ 올바른 코드</div><code></code><br><span class="compare-msg-good"></span></div></div>
+<h2>참/거짓은 왜 중요할까?</h2>
+<p>참과 거짓은 프로그래밍의 <b>가장 기본적인 뼈대</b>예요. 컴퓨터가 하는 거의 모든 일은 '이 조건이 참이면 이걸 해라, 거짓이면 저걸 해라'의 반복이에요.</p>
+<div class="code-explain avoid-break"><div class="code-explain-item"><span class="code-explain-line">undefined줄</span><span>undefined</span></div><div class="code-explain-item"><span class="code-explain-line">undefined줄</span><span>undefined</span></div><div class="code-explain-item"><span class="code-explain-line">undefined줄</span><span>undefined</span></div><div class="code-explain-item"><span class="code-explain-line">undefined줄</span><span>undefined</span></div></div>
+<div class="mascot-speech  avoid-break">
+        <img class="mascot-speech-img " src="svg-assets/mascot-eureka.svg" alt="마스코트" />
+        <div class="mascot-bubble eureka">세상의 모든 프로그램은 '만약 ~이면'의 연속이야! 참/거짓을 모르면 프로그래밍을 할 수 없어. 그만큼 중요한 개념이야!</div>
+      </div>
+<h2>C 언어에서의 참과 거짓</h2>
+<p>나중에 C 언어를 배우면, <b>if</b>라는 명령어를 써서 '이 조건이 참이면 이걸 해라'라고 컴퓨터에게 시킬 수 있어요.</p>
+<div class="box box-tip avoid-break"><span class="box-label">[C 연결 미리보기] if 조건문</span><div class="box-content"><b>if (조건)</b> — 조건이 참이면 실행!<br><br>예시: if (점수 >= 60) → '합격' 출력<br>이때 '점수 >= 60'이 <b>명제</b>예요.<br>점수가 80이면? → 참 → '합격' 출력!<br>점수가 40이면? → 거짓 → 실행 안 함!</div></div>
+<div class="code-block avoid-break"><div class="code-block-header">C 언어에서 참/거짓 확인하기</div>
+        <table class="code-table"><tr class=""><td class="line-num">1</td><td class="line-code"></td></tr></table></div>
+<div class="output-block avoid-break"><span class="output-label">실행 결과</span><div class="output-text">합격!
+5 > 3 은 1
+2 > 7 은 0</div></div>
+<div class="mascot-speech  avoid-break">
+        <img class="mascot-speech-img " src="svg-assets/mascot-eureka.svg" alt="마스코트" />
+        <div class="mascot-bubble eureka">C 언어에서 0은 거짓, <b>0이 아닌 모든 수</b>는 참이야! 1도 참, 42도 참, -3도 참이야. 오직 0만 거짓!</div>
+      </div>
+<div class="box box-warning avoid-break"><span class="box-label">[주의] C 언어의 독특한 참/거짓 규칙</span><div class="box-content">C 언어에서는 <b>전용 불리언 타입이 원래 없었어요</b> (C99에서 추가).<br>그래서 정수(int)로 참/거짓을 표현해요:<br><br>• <b>0</b> → 거짓(False)<br>• <b>0이 아닌 모든 값</b>(1, -1, 42, 999…) → 참(True)<br><br>다른 언어(Python, Java 등)와 다른 점이에요!</div></div>
+<h2>C99의 _Bool과 stdbool.h</h2>
+<p>C99 표준부터는 <b>_Bool</b>이라는 불리언 타입이 추가되었어요. <b>stdbool.h</b> 헤더를 포함하면 <b>bool</b>, <b>true</b>, <b>false</b> 키워드를 쓸 수 있어요.</p>
+<div class="code-block avoid-break"><div class="code-block-header">stdbool.h 사용 예시</div>
+        <table class="code-table"><tr class=""><td class="line-num">1</td><td class="line-code"></td></tr></table></div>
+<div class="output-block avoid-break"><span class="output-label">실행 결과</span><div class="output-text">우산을 챙기세요!
+isRaining = 1
+hasSunglasses = 0</div></div>
+<div class="box box-tip avoid-break"><span class="box-label">[팁] bool을 쓰면 코드가 읽기 쉬워져요</span><div class="box-content">int flag = 1; 보다 bool flag = true; 가 의미가 훨씬 명확해요.<br>나중에 팀 프로젝트를 할 때, 다른 사람이 코드를 읽을 때 이해하기 쉬워져요.</div></div>
+<h2>비교 연산자 — 참/거짓을 만드는 도구</h2>
+<p>컴퓨터에서 참/거짓을 만들어내는 가장 흔한 방법은 <b>비교 연산자</b>예요. 두 값을 비교해서 참 또는 거짓을 알려줘요.</p>
+<div class="compare avoid-break"><div class="compare-bad"><div class="compare-label">✕ 잘못된 코드</div><code></code><br><span class="compare-msg-bad"></span></div><div class="compare-good"><div class="compare-label">✓ 올바른 코드</div><code></code><br><span class="compare-msg-good"></span></div></div>
+<div class="box box-warning avoid-break"><span class="box-label">[주의] = 와 == 를 헷갈리지 마세요!</span><div class="box-content"><b>=</b> 는 '대입' (값을 넣는 것)<br><b>==</b> 는 '비교' (같은지 확인하는 것)<br><br>if (x = 5) → ❌ x에 5를 넣는 것 (항상 참!)<br>if (x == 5) → ✅ x가 5인지 비교하는 것<br><br>초보자가 가장 많이 하는 실수 1위!</div></div>
+<div class="code-block avoid-break"><div class="code-block-header">비교 연산자 실험</div>
+        <table class="code-table"><tr class=""><td class="line-num">1</td><td class="line-code"></td></tr></table></div>
+<div class="output-block avoid-break"><span class="output-label">실행 결과</span><div class="output-text">a == b : 0
+a != b : 1
+a > b  : 0
+a < b  : 1
+a >= 10: 1
+b <= 15: 0</div></div>
+<h2>참/거짓 추적 연습</h2>
+<p>코드를 한 줄씩 따라가면서 참/거짓 결과를 추적해 볼까요? 이걸 <b>트레이스(trace)</b>라고 해요.</p>
+<div class="trace-table avoid-break"><table><thead><tr><th>변수/식</th><th>값</th><th>참/거짓</th></tr></thead><tbody><tr><td>int x = 7;</td><td>x = 7</td><td>—</td></tr><tr><td>int y = 3;</td><td>y = 3</td><td>—</td></tr><tr><td>x > y</td><td>7 > 3</td><td>1 (참)</td></tr><tr><td>x == y</td><td>7 == 3</td><td>0 (거짓)</td></tr><tr><td>x != y</td><td>7 != 3</td><td>1 (참)</td></tr><tr><td>x + y > 9</td><td>10 > 9</td><td>1 (참)</td></tr><tr><td>x - y < 2</td><td>4 < 2</td><td>0 (거짓)</td></tr><tr><td>x * 0 == 0</td><td>0 == 0</td><td>1 (참)</td></tr></tbody></table></div>
+<h2>KOI 시험에 나오는 논리 문제</h2>
+<div class="box box-tip avoid-break"><span class="box-label">[KOI 연결] 필기 1차 단골 문제</span><div class="box-content">정보올림피아드(KOI) 1차 필기시험에서 '다음 중 명제인 것은?', '참인 명제를 모두 고르시오' 같은 문제가 자주 나와요. 명제를 정확히 이해하면 쉽게 풀 수 있어요!</div></div>
+<div class="box box-question avoid-break"><span class="box-label">[KOI 기출 스타일] 다음 중 명제인 것은?</span><div class="box-content">(1) x + 3 = 7<br>(2) 서울의 인구는 1000만 명 이상이다<br>(3) 프로그래밍은 재미있다<br>(4) 모든 짝수는 2로 나누어진다<br><br>정답: (2), (4) — (1)은 x의 값에 따라 달라지므로 명제가 아닙니다. (3)은 의견입니다.</div></div>
+<h2>[심화] 변수가 있는 문장 — 열린 문장</h2>
+<p>"x + 3 = 7"은 명제일까요? x가 4이면 참이고, x가 5이면 거짓이에요. 이렇게 <b>변수의 값에 따라 참/거짓이 달라지는 문장</b>을 <b>열린 문장(open sentence)</b>이라고 해요.</p>
+<div class="box box-key avoid-break"><span class="box-label">[심화] 명제 vs 열린 문장</span><div class="box-content"><b>명제</b>: 참/거짓이 확정됨 — "3 + 4 = 7" (참)<br><b>열린 문장</b>: 변수 값에 따라 달라짐 — "x + 4 = 7"<br><br>열린 문장은 변수에 값을 <b>대입</b>하면 명제가 돼요!<br>x = 3 → "3 + 4 = 7" → 참인 명제<br>x = 5 → "5 + 4 = 7" → 거짓인 명제</div></div>
+<div class="mascot-speech right avoid-break">
+        <img class="mascot-speech-img " src="svg-assets/mascot-thinking.svg" alt="마스코트" />
+        <div class="mascot-bubble thinking">프로그래밍에서 if (x > 10) 같은 조건도 일종의 열린 문장이야. x에 실제 값이 들어가는 순간 참/거짓이 결정돼!</div>
+      </div>
+<h2>[심화] 디버깅과 참/거짓</h2>
+<div class="mascot-speech  avoid-break">
+        <img class="mascot-speech-img " src="svg-assets/mascot-debugging.svg" alt="마스코트" />
+        <div class="mascot-bubble debug">버그의 절반은 참/거짓 판단 실수에서 나와! = 와 == 를 헷갈리거나, 조건 범위를 잘못 쓰거나... 지금부터 디버깅 눈을 길러보자!</div>
+      </div>
+<p>프로그래밍에서 버그의 많은 부분은 <b>참/거짓 판단이 잘못되어서</b> 생겨요. 조건을 잘못 쓰면 프로그램이 예상과 다르게 동작해요.</p>
+<div class="code-block avoid-break"><div class="code-block-header">흔한 버그 — 대입과 비교 혼동</div>
+        <table class="code-table"><tr class=""><td class="line-num">1</td><td class="line-code"></td></tr></table></div>
+<div class="box box-warning avoid-break"><span class="box-label">[디버깅] = vs == 버그 찾기</span><div class="box-content">if (x = 5)는 x에 5를 대입한 후, 5(0이 아님)이므로 <b>항상 참</b>이 돼요!<br>컴파일러가 경고를 줄 수 있지만, 에러는 아니라서 실행은 돼요.<br><br><b>해결법</b>: 비교할 때는 반드시 == 를 쓰세요!<br><b>팁</b>: if (5 == x) 처럼 상수를 왼쪽에 놓으면 = 실수 시 컴파일 에러가 나서 잡기 쉬워요.</div></div>
+<h2>[심화] 실무에서의 불리언 — 플래그와 상태 관리</h2>
+<p>실제 프로그램에서는 <b>플래그(flag)</b>라는 이름의 불리언 변수를 많이 써요. 어떤 상태를 기억해두는 역할이에요.</p>
+<div class="code-block avoid-break"><div class="code-block-header">플래그 변수 활용 예시</div>
+        <table class="code-table"><tr class=""><td class="line-num">1</td><td class="line-code"></td></tr></table></div>
+<div class="output-block avoid-break"><span class="output-label">실행 결과</span><div class="output-text">로그인: 1
+관리자: 0
+권한: 0</div></div>
+<div class="box box-tip avoid-break"><span class="box-label">[실무 팁] 불리언 변수 이름 짓기</span><div class="box-content">불리언 변수는 <b>is, has, can, should</b>로 시작하면 읽기 쉬워요:<br><br>• isReady — 준비됐는지<br>• hasError — 에러가 있는지<br>• canDelete — 삭제할 수 있는지<br>• shouldRetry — 재시도해야 하는지<br><br>이렇게 이름을 지으면 if (isReady)처럼 영어 문장처럼 읽혀요!</div></div>
+<h2>[심화] 역사 — 불리언의 아버지, 조지 불</h2>
+<div class="box box-history avoid-break"><span class="box-label">[역사] 조지 불 (George Boole, 1815-1864)</span><div class="box-content">영국의 수학자 <b>조지 불</b>은 1854년에 《사고의 법칙》이라는 책을 썼어요. 이 책에서 그는 <b>참/거짓으로 수학적 계산을 하는 체계</b>를 만들었어요.<br><br>이것이 바로 <b>불리언 대수(Boolean Algebra)</b>예요. 당시에는 '쓸모없는 이론'이라는 평가를 받았지만, 약 80년 후 클로드 섀넌이 <b>전기 회로 설계에 응용</b>하면서 컴퓨터 시대의 기반이 되었어요!<br><br>조지 불의 이름에서 Boolean이라는 단어가 나왔어요.</div></div>
+<div class="box box-history avoid-break"><span class="box-label">[역사] 클로드 섀넌 — 디지털 시대를 연 사람</span><div class="box-content">1937년, MIT 대학원생 <b>클로드 섀넌</b>(Claude Shannon)은 석사 논문에서 불리언 대수를 전기 스위치 회로에 적용했어요.<br><br>스위치 ON = 참(1), OFF = 거짓(0)<br><br>이 아이디어가 현대 디지털 컴퓨터의 기초가 되었어요. 이 논문은 '20세기 가장 중요한 석사 논문'으로 불려요!</div></div>
+<h2>[심화] 하드웨어 — 트랜지스터와 참/거짓</h2>
+<p>컴퓨터 내부에서 참/거짓은 <b>전기 신호</b>로 구현돼요. <b>트랜지스터</b>라는 아주 작은 스위치가 전기를 흘려보내거나(참) 차단하거나(거짓) 해요.</p>
+<div class="box box-key avoid-break"><span class="box-label">[HW 연결] 트랜지스터 = 참/거짓 스위치</span><div class="box-content">현대 CPU 안에는 트랜지스터가 <b>수십억 개</b> 들어있어요.<br><br>각 트랜지스터는 전기가 흐르면 1(참), 안 흐르면 0(거짓).<br>이 수십억 개의 참/거짓 조합으로 게임, 영상, 인공지능 등 모든 계산이 이루어져요!<br><br>예: Apple M2 칩 — 약 200억 개의 트랜지스터</div></div>
+<div class="mascot-speech  avoid-break">
+        <img class="mascot-speech-img " src="svg-assets/mascot-eureka.svg" alt="마스코트" />
+        <div class="mascot-bubble eureka">너의 스마트폰 안에도 수십억 개의 참/거짓 스위치가 초당 수십억 번 켜졌다 꺼졌다 해! 그게 바로 '컴퓨팅'이야!</div>
+      </div>
+<div class="code-explain avoid-break"><div class="code-explain-item"><span class="code-explain-line">undefined줄</span><span>undefined</span></div><div class="code-explain-item"><span class="code-explain-line">undefined줄</span><span>undefined</span></div><div class="code-explain-item"><span class="code-explain-line">undefined줄</span><span>undefined</span></div></div>
+<h2>[심화 내용] 명제 논리 vs 술어 논리</h2>
+<p>대학 컴퓨터과학에서는 논리를 더 세밀하게 구분해요. 지금 배우는 것은 <b>명제 논리</b>(Propositional Logic)이고, 더 강력한 <b>술어 논리</b>(Predicate Logic)도 있어요.</p>
+<div class="compare avoid-break"><div class="compare-bad"><div class="compare-label">✕ 잘못된 코드</div><code></code><br><span class="compare-msg-bad"></span></div><div class="compare-good"><div class="compare-label">✓ 올바른 코드</div><code></code><br><span class="compare-msg-good"></span></div></div>
+<div class="box box-tip avoid-break"><span class="box-label">[심화 내용] 한정사 맛보기</span><div class="box-content"><b>∀x P(x)</b> — '모든 x에 대해 P(x)가 참' (전칭 한정사)<br>예: ∀x (x > 0 → x² > 0) — '모든 양수의 제곱은 양수'<br><br><b>∃x P(x)</b> — '어떤 x가 존재하여 P(x)가 참' (존재 한정사)<br>예: ∃x (x² = 4) — 'x²=4인 x가 존재한다' (x=2 또는 x=-2)</div></div>
+<h2>[심화 내용] 진리값과 불리언 대수</h2>
+<p>불리언 대수에서는 참/거짓에 대해 <b>수학적 연산 규칙</b>을 정의해요. 이것이 디지털 회로 설계와 프로그래밍의 수학적 기반이에요.</p>
+<div class="box box-key avoid-break"><span class="box-label">[심화 내용] 불리언 대수의 기본 법칙</span><div class="box-content"><b>항등 법칙</b>: A AND 1 = A, A OR 0 = A<br><b>영 법칙</b>: A AND 0 = 0, A OR 1 = 1<br><b>보수 법칙</b>: A AND NOT A = 0, A OR NOT A = 1<br><b>멱등 법칙</b>: A AND A = A, A OR A = A<br><b>이중 부정</b>: NOT (NOT A) = A<br><br>이 법칙들은 다음 유닛(AND, OR, NOT)에서 더 자세히 배워요!</div></div>
+<h2>[심화 내용] 어셈블리와 조건 분기</h2>
+<p>CPU가 참/거짓을 판단하는 과정을 어셈블리 언어 수준에서 살펴볼까요? 비교 명령(CMP)이 플래그를 설정하고, 조건 분기 명령(JE, JNE 등)이 그 결과에 따라 실행 흐름을 바꿔요.</p>
+<div class="code-block avoid-break"><div class="code-block-header">x86 어셈블리에서의 비교와 분기</div>
+        <table class="code-table"><tr class=""><td class="line-num">1</td><td class="line-code"></td></tr></table></div>
+<div class="box box-tip avoid-break"><span class="box-label">[심화 내용] CPU 플래그 레지스터</span><div class="box-content">CPU에는 <b>플래그 레지스터</b>(FLAGS)가 있어요. 비교(CMP) 명령 실행 후:<br><br>• <b>ZF (Zero Flag)</b>: 결과가 0이면 1 → 두 값이 같다<br>• <b>SF (Sign Flag)</b>: 결과가 음수면 1<br>• <b>CF (Carry Flag)</b>: 자리올림 발생 시 1<br><br>조건 분기 명령(JE, JNE, JG, JL…)은 이 플래그를 보고 점프 여부를 결정해요.</div></div>
+<h2>[심화 내용] 알고리즘과 불리언 — 탐색의 핵심</h2>
+<p>알고리즘에서 참/거짓 판단은 <b>탐색</b>과 <b>정렬</b>의 핵심이에요. 이진 탐색을 예로 들면, 매 단계마다 '찾는 값이 중간값보다 큰가?'를 판단해요.</p>
+<div class="code-block avoid-break"><div class="code-block-header">이진 탐색에서의 참/거짓 판단</div>
+        <table class="code-table"><tr class=""><td class="line-num">1</td><td class="line-code"></td></tr></table></div>
+<div class="box box-summary avoid-break"><span class="box-label">[심화 내용] 알고리즘의 판단 횟수</span><div class="box-content">이진 탐색: 1000개 중 찾기 → 최대 <b>10번</b>만 참/거짓 판단 (log₂1000 ≈ 10)<br>순차 탐색: 1000개 중 찾기 → 최대 <b>1000번</b> 참/거짓 판단<br><br>참/거짓을 <b>어떤 순서로, 얼마나 효율적으로 판단하느냐</b>가 알고리즘의 핵심이에요!</div></div>
+<h2>[심화] 면접에서 나오는 참/거짓 질문</h2>
+<div class="box box-question avoid-break"><span class="box-label">[면접 대비] 자주 나오는 질문들</span><div class="box-content"><b>Q1:</b> C 언어에서 NULL은 참인가요 거짓인가요?<br>→ <b>거짓</b>. NULL은 보통 0으로 정의되어 있어요.<br><br><b>Q2:</b> if (ptr)는 무슨 뜻인가요?<br>→ ptr이 NULL이 아닌지(유효한 포인터인지) 확인하는 관용적 표현이에요.<br><br><b>Q3:</b> 불리언 값을 정수로 변환하면?<br>→ true = 1, false = 0. 연산에 활용 가능: count += (x > 0); 처럼 쓸 수 있어요.</div></div>
+<h2>[심화] 다른 언어에서의 참/거짓</h2>
+<div class="compare avoid-break"><div class="compare-bad"><div class="compare-label">✕ 잘못된 코드</div><code></code><br><span class="compare-msg-bad"></span></div><div class="compare-good"><div class="compare-label">✓ 올바른 코드</div><code></code><br><span class="compare-msg-good"></span></div></div>
+<div class="mascot-speech right avoid-break">
+        <img class="mascot-speech-img " src="svg-assets/mascot-thinking.svg" alt="마스코트" />
+        <div class="mascot-bubble thinking">언어마다 '거짓으로 취급하는 값'이 달라! C는 단순하게 0만 거짓이지만, Python이나 JavaScript는 빈 문자열, 빈 리스트도 거짓이야. 이걸 'falsy 값'이라고 해!</div>
+      </div>
+<h2>일상 속 참/거짓 찾기</h2>
+<p>참/거짓은 프로그래밍만의 것이 아니에요. 우리 일상은 참/거짓 판단으로 가득 차 있어요!</p>
+<div class="code-explain avoid-break"><div class="code-explain-item"><span class="code-explain-line">undefined줄</span><span>undefined</span></div><div class="code-explain-item"><span class="code-explain-line">undefined줄</span><span>undefined</span></div><div class="code-explain-item"><span class="code-explain-line">undefined줄</span><span>undefined</span></div><div class="code-explain-item"><span class="code-explain-line">undefined줄</span><span>undefined</span></div><div class="code-explain-item"><span class="code-explain-line">undefined줄</span><span>undefined</span></div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">2가지</div><div class="fact-bite-text">컴퓨터가 판단할 수 있는 결과는 딱 2가지뿐이에요 — 참(1) 아니면 거짓(0)!</div></div>
+<div class="box box-tip avoid-break"><span class="box-label">[활동] 명제 탐정 게임</span><div class="box-content">친구와 번갈아가며 문장을 말해요. 상대방이 '명제다!' 또는 '명제 아니다!'를 외쳐요.<br>예: '지구는 둥글다' → 명제다! (참)<br>'아이스크림이 맛있다' → 명제 아니다!</div></div>
+<h2>연습문제</h2>
+<div class="exercise avoid-break"><div class="exercise-title">OX 퀴즈</div><div class="exercise-item"><p>'5 > 3'은 명제이다. (O/X)</p></div><div class="exercise-answer"><b>정답:</b> ⭕ O</div><div class="exercise-explain">5는 3보다 크므로 참인 명제입니다.</div></div>
+<div class="exercise avoid-break"><div class="exercise-title">OX 퀴즈</div><div class="exercise-item"><p>'이 영화 재미있다'는 명제이다. (O/X)</p></div><div class="exercise-answer"><b>정답:</b> ❌ X</div><div class="exercise-explain">재미있는지는 사람마다 다르게 느끼므로 명제가 아닙니다.</div></div>
+<div class="exercise avoid-break"><div class="exercise-title">객관식</div><div class="exercise-item"><p>다음 중 명제인 것을 모두 고르세요.</p><ol class="choice-list"></ol></div><div class="exercise-answer"><b>정답:</b> (1), (3), (5)</div><div class="exercise-explain">(2)는 사람마다 다르고, (4)는 명령문이므로 명제가 아닙니다.</div></div>
+<div class="exercise avoid-break"><div class="exercise-title">OX 퀴즈</div><div class="exercise-item"><p>컴퓨터에서 참(True)은 숫자 0으로 표현한다. (O/X)</p></div><div class="exercise-answer"><b>정답:</b> ❌ X</div><div class="exercise-explain">참(True)은 1, 거짓(False)이 0입니다.</div></div>
+<div class="exercise avoid-break"><div class="exercise-title">객관식</div><div class="exercise-item"><p>다음 비교 연산의 결과가 참(1)인 것은?</p><ol class="choice-list"></ol></div><div class="exercise-answer"><b>정답:</b> (2)</div><div class="exercise-explain">10 == 10은 같으므로 참(1)입니다. 나머지는 모두 거짓(0)입니다.</div></div>
+<div class="exercise avoid-break"><div class="exercise-title">단답형</div><div class="exercise-item"><p>C 언어에서 다음 중 '거짓'으로 판단되는 값은?<br>(1) 1<br>(2) 0<br>(3) -5<br>(4) 100</p></div><div class="exercise-answer"><b>정답:</b> (2) 0</div><div class="exercise-explain">C 언어에서는 0만 거짓이고, 0이 아닌 모든 수(1, -5, 100 등)는 참입니다.</div></div>
+<div class="exercise avoid-break"><div class="exercise-title">단답형</div><div class="exercise-item"><p>다음 코드의 출력 결과를 쓰세요.<br><code>printf("%d\n", 10 > 5);</code><br><code>printf("%d\n", 3 == 4);</code></p></div><div class="exercise-answer"><b>정답:</b> 1<br>0</div><div class="exercise-explain">10 > 5는 참이므로 1, 3 == 4는 거짓이므로 0이 출력됩니다.</div></div>
+<div class="exercise avoid-break"><div class="exercise-title">단답형</div><div class="exercise-item"><p>다음 코드에서 버그를 찾고 수정하세요.<br><code>int x = 7;<br>if (x = 10) { printf("같다"); }</code></p></div><div class="exercise-answer"><b>정답:</b> if (x == 10) 으로 수정해야 합니다.</div><div class="exercise-explain">= 는 대입 연산자, == 가 비교 연산자입니다. x = 10은 x에 10을 대입한 후 10(참)을 반환하므로 항상 실행됩니다.</div></div>
+<div class="exercise avoid-break"><div class="exercise-title">객관식</div><div class="exercise-item"><p>불리언(Boolean)이라는 이름은 누구에게서 유래했나요?</p><ol class="choice-list"></ol></div><div class="exercise-answer"><b>정답:</b> (2) 조지 불</div><div class="exercise-explain">영국 수학자 George Boole(1815-1864)이 참/거짓으로 수학적 계산을 하는 불리언 대수를 만들었어요.</div></div>
+<div class="exercise avoid-break"><div class="exercise-title">단답형</div><div class="exercise-item"><p>실생활에서 참/거짓 판단이 사용되는 예시를 3가지 쓰세요.</p></div><div class="exercise-answer"><b>정답:</b> 예시: (1) 신호등 — 빨간불이면 멈춤 (2) 비밀번호 확인 — 맞으면 로그인 (3) ATM — 잔액 충분하면 출금</div><div class="exercise-explain">우리 주변의 거의 모든 자동 판단 시스템은 참/거짓 로직으로 작동합니다.</div></div>
+<div class="exercise avoid-break"><div class="exercise-title">단답형</div><div class="exercise-item"><p>[심화] 'x + 2 = 8'은 명제인가요? 이유를 설명하세요.</p></div><div class="exercise-answer"><b>정답:</b> 명제가 아닙니다. x의 값에 따라 참/거짓이 달라지는 '열린 문장'입니다.</div><div class="exercise-explain">x = 6이면 참이지만 x = 3이면 거짓이므로, 변수에 값이 확정되기 전에는 명제가 아닙니다. 이를 열린 문장(open sentence)이라고 합니다.</div></div>
+<div class="exercise avoid-break"><div class="exercise-title">단답형</div><div class="exercise-item"><p>[심화] C 언어에서 if (ptr)의 의미를 설명하세요. ptr은 포인터 변수입니다.</p></div><div class="exercise-answer"><b>정답:</b> ptr이 NULL이 아닌지(유효한 포인터인지) 확인하는 표현입니다.</div><div class="exercise-explain">NULL은 보통 0으로 정의되므로 거짓입니다. ptr이 NULL이 아니면(0이 아니면) 참이 되어 if 블록이 실행됩니다. if (ptr != NULL)과 같은 의미입니다.</div></div>
+<div class="exercise avoid-break"><div class="exercise-title">단답형</div><div class="exercise-item"><p>[심화] Python에서 다음 중 거짓(falsy)으로 판단되는 것을 모두 고르세요.<br>(1) 0<br>(2) ''(빈 문자열)<br>(3) [](빈 리스트)<br>(4) 'hello'<br>(5) None</p></div><div class="exercise-answer"><b>정답:</b> (1), (2), (3), (5)</div><div class="exercise-explain">Python에서 0, 빈 문자열, 빈 리스트, None은 모두 falsy 값입니다. 'hello'는 비어있지 않은 문자열이므로 truthy입니다.</div></div>
+<div class="exercise avoid-break"><div class="exercise-title">단답형</div><div class="exercise-item"><p>[심화 내용] '∀x (x > 0 → x + 1 > 0)'을 한국어로 해석하고 참/거짓을 판단하세요.</p></div><div class="exercise-answer"><b>정답:</b> '모든 x에 대해, x가 0보다 크면 x+1도 0보다 크다' — 참입니다.</div><div class="exercise-explain">양수에 1을 더하면 반드시 양수이므로 참입니다. ∀는 전칭 한정사(모든), →는 '이면'(함의)을 뜻합니다.</div></div>
+<div class="exercise avoid-break"><div class="exercise-title">단답형</div><div class="exercise-item"><p>[심화 내용] x86 CPU에서 CMP 명령 실행 후 ZF(Zero Flag)가 1이 되었다면, 비교한 두 값의 관계를 설명하세요.</p></div><div class="exercise-answer"><b>정답:</b> 두 값이 같습니다(equal).</div><div class="exercise-explain">CMP는 내부적으로 뺄셈(A - B)을 수행합니다. 결과가 0이면 ZF=1이 됩니다. 즉, 두 피연산자가 같다는 의미입니다. JE(Jump if Equal) 명령이 이 플래그를 검사합니다.</div></div>
+<h2>정답</h2>
+<div class="answers-section avoid-break"><h3>정답</h3><div class="answer-item"><span class="answer-num">문제 1</span> <span class="answer-text">O — 5 > 3은 참인 명제입니다.</span></div><div class="answer-item"><span class="answer-num">문제 2</span> <span class="answer-text">X — '이 영화 재미있다'는 사람마다 의견이 달라 명제가 아닙니다.</span></div><div class="answer-item"><span class="answer-num">문제 3</span> <span class="answer-text">(1), (3), (5) — (2)는 의견, (4)는 명령문이라 명제가 아닙니다.</span></div><div class="answer-item"><span class="answer-num">문제 4</span> <span class="answer-text">X — 참(True)은 1, 거짓(False)이 0입니다.</span></div><div class="answer-item"><span class="answer-num">문제 5</span> <span class="answer-text">(2) 10 == 10 — 같으므로 참(1)입니다.</span></div><div class="answer-item"><span class="answer-num">문제 6</span> <span class="answer-text">(2) 0 — C 언어에서 0만 거짓이고 나머지(1, -5, 100)는 모두 참입니다.</span></div><div class="answer-item"><span class="answer-num">문제 7</span> <span class="answer-text">1 (10 > 5는 참), 0 (3 == 4는 거짓)</span></div><div class="answer-item"><span class="answer-num">문제 8</span> <span class="answer-text">if (x = 10)을 if (x == 10)으로 수정. = 는 대입, == 가 비교입니다.</span></div><div class="answer-item"><span class="answer-num">문제 9</span> <span class="answer-text">(2) 조지 불(George Boole, 1815-1864) — 불리언 대수의 창시자입니다.</span></div><div class="answer-item"><span class="answer-num">문제 10</span> <span class="answer-text">예시: 신호등(빨간불이면 멈춤), 비밀번호 확인(맞으면 로그인), ATM(잔액 충분하면 출금) 등</span></div><div class="answer-item"><span class="answer-num">문제 11</span> <span class="answer-text">명제가 아닙니다. x의 값에 따라 참/거짓이 달라지는 '열린 문장(open sentence)'입니다.</span></div><div class="answer-item"><span class="answer-num">문제 12</span> <span class="answer-text">ptr이 NULL이 아닌지 확인하는 관용적 표현. NULL=0이므로 거짓, 유효한 포인터는 참.</span></div><div class="answer-item"><span class="answer-num">문제 13</span> <span class="answer-text">(1) 0, (2) '', (3) [], (5) None이 falsy입니다. 'hello'는 truthy입니다.</span></div><div class="answer-item"><span class="answer-num">문제 14</span> <span class="answer-text">'모든 x에 대해 x>0이면 x+1>0이다' — 참입니다. 양수에 1을 더하면 반드시 양수입니다.</span></div><div class="answer-item"><span class="answer-num">문제 15</span> <span class="answer-text">두 값이 같습니다. CMP는 뺄셈(A-B)을 수행하며, 결과가 0(ZF=1)이면 A=B를 의미합니다.</span></div></div>
+<h2>용어 정리</h2>
+<div class="glossary avoid-break"><div class="glossary-item"><dt class="glossary-term">명제 (Proposition)</dt><dd class="glossary-def">참인지 거짓인지 확실히 판단할 수 있는 문장.</dd></div><div class="glossary-item"><dt class="glossary-term">참 (True)</dt><dd class="glossary-def">맞다는 뜻. 컴퓨터에서는 1로 표현해요.</dd></div><div class="glossary-item"><dt class="glossary-term">거짓 (False)</dt><dd class="glossary-def">틀리다는 뜻. 컴퓨터에서는 0으로 표현해요.</dd></div><div class="glossary-item"><dt class="glossary-term">불리언 (Boolean)</dt><dd class="glossary-def">참과 거짓, 단 2가지 값만 가지는 자료형. 영국 수학자 조지 불(George Boole)의 이름에서 왔어요.</dd></div><div class="glossary-item"><dt class="glossary-term">조건 (Condition)</dt><dd class="glossary-def">참인지 거짓인지 판단할 수 있는 식. if문에서 사용해요.</dd></div><div class="glossary-item"><dt class="glossary-term">if문</dt><dd class="glossary-def">C 언어에서 조건이 참일 때만 코드를 실행하는 명령어.</dd></div><div class="glossary-item"><dt class="glossary-term">비교 연산자</dt><dd class="glossary-def">두 값을 비교해서 참/거짓을 반환하는 연산자. ==, !=, >, <, >=, <=</dd></div><div class="glossary-item"><dt class="glossary-term">열린 문장 (Open Sentence)</dt><dd class="glossary-def">변수가 포함되어 값에 따라 참/거짓이 달라지는 문장. 변수에 값을 대입하면 명제가 돼요.</dd></div><div class="glossary-item"><dt class="glossary-term">플래그 (Flag)</dt><dd class="glossary-def">프로그래밍에서 어떤 상태를 참/거짓으로 기억하는 불리언 변수.</dd></div><div class="glossary-item"><dt class="glossary-term">불리언 대수 (Boolean Algebra)</dt><dd class="glossary-def">참/거짓에 대한 수학적 연산 체계. 조지 불이 창시하고, 클로드 섀넌이 디지털 회로에 응용했어요.</dd></div><div class="glossary-item"><dt class="glossary-term">트랜지스터 (Transistor)</dt><dd class="glossary-def">전기 신호를 켜고 끄는 아주 작은 스위치. CPU 안에 수십억 개가 들어있어요.</dd></div><div class="glossary-item"><dt class="glossary-term">명제 논리 (Propositional Logic)</dt><dd class="glossary-def">문장 단위로 참/거짓을 다루는 논리 체계.</dd></div><div class="glossary-item"><dt class="glossary-term">술어 논리 (Predicate Logic)</dt><dd class="glossary-def">주어와 술어로 분해하고 한정사(∀, ∃)를 사용하는 더 강력한 논리 체계.</dd></div><div class="glossary-item"><dt class="glossary-term">falsy</dt><dd class="glossary-def">프로그래밍에서 거짓으로 취급되는 값들. 언어마다 다르지만 보통 0, 빈 값, null 등.</dd></div></div>
+<div class="visual-summary avoid-break"><div class="visual-summary-title">이번 유닛 핵심 정리</div><div class="visual-summary-items"><div class="visual-summary-item"><div class="visual-summary-num">1</div><span>명제 = 참/거짓을 확실히 판단할 수 있는 문장</span></div><div class="visual-summary-item"><div class="visual-summary-num">2</div><span>참 = 1 = ON, 거짓 = 0 = OFF</span></div><div class="visual-summary-item"><div class="visual-summary-num">3</div><span>사람마다 다르게 생각할 수 있는 문장은 명제가 아니에요</span></div><div class="visual-summary-item"><div class="visual-summary-num">4</div><span>C 언어에서 0만 거짓, 나머지는 전부 참!</span></div><div class="visual-summary-item"><div class="visual-summary-num">5</div><span>비교 연산자(==, !=, >, <, >=, <=)가 참/거짓을 만들어요</span></div><div class="visual-summary-item"><div class="visual-summary-num">6</div><span>= 는 대입, == 는 비교 — 초보자 실수 1위!</span></div><div class="visual-summary-item"><div class="visual-summary-num">7</div><span>불리언(Boolean)은 조지 불의 이름에서 유래</span></div><div class="visual-summary-item"><div class="visual-summary-num">8</div><span>트랜지스터의 ON/OFF가 컴퓨터 참/거짓의 물리적 구현</span></div></div></div>
+<div class="box box-summary avoid-break"><span class="box-label">이 유닛에서 연결된 축</span><div class="box-content"><b>[컴퓨팅 사고력]</b> 명제 판별 — 문장을 논리적으로 분석하기<br><b>[C언어]</b> if 조건문의 조건은 모두 참/거짓, 비교 연산자, stdbool.h (Part 1 미리보기)<br><b>[KOI]</b> 필기 1차에서 명제 판별 문제 출제<br><b>[실생활]</b> 일상 속 참/거짓 판단 (신호등, 로그인, 게임)<br><b>[디버깅]</b> = vs == 혼동 버그 — 가장 흔한 실수<br><b>[하드웨어]</b> 트랜지스터의 ON/OFF = 참/거짓</div></div>
+<div class="box box-question avoid-break"><span class="box-label">[다음 유닛 미리보기]</span><div class="box-content">참과 거짓을 배웠으니, 이제 참/거짓을 <b>합치는 방법</b>을 배울 거예요. '비가 오고 AND 우산이 없으면' — 두 조건을 합치면 어떻게 될까요?</div></div>
+<div class="mascot-speech  avoid-break">
+        <img class="mascot-speech-img " src="svg-assets/mascot-hello.svg" alt="마스코트" />
+        <div class="mascot-bubble celebrate">참과 거짓, 어렵지 않지? 이게 <b>논리</b>의 시작이야! 다음에는 '그리고(AND)'를 배울 거야. 두 가지 조건을 합치는 마법을 보여줄게!</div>
+      </div>
+</article>
+</body>
+</html>

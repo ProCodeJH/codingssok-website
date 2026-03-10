@@ -1,0 +1,1715 @@
+﻿<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<base href="/learn/C언어/">
+<title>코딩쏙 교재 — 정렬이란 무엇인가</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+/* ═══════════════════════════════════════════════════════════════
+   코딩쏙 프리미엄 PDF 교재 스타일시트 v5.0
+   Paged.js + A4 인쇄 최적화 + 아동교육 디자인 시스템
+   ═══════════════════════════════════════════════════════════════ */
+
+/* ── 리셋 & 기본 ── */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --c-primary: #FF6B6B;
+  --c-primary-light: #FFE8E8;
+  --c-primary-dark: #E84545;
+  --c-accent: #4ECDC4;
+  --c-accent-light: #E8FFF9;
+  --c-blue: #3B82F6;
+  --c-blue-light: #EFF6FF;
+  --c-purple: #8B5CF6;
+  --c-purple-light: #F5F3FF;
+  --c-orange: #F59E0B;
+  --c-orange-light: #FFFBEB;
+  --c-green: #10B981;
+  --c-green-light: #ECFDF5;
+  --c-red: #EF4444;
+  --c-red-light: #FEF2F2;
+  --c-teal: #14B8A6;
+  --c-teal-light: #F0FDFA;
+  --c-pink: #EC4899;
+  --c-text: #1E293B;
+  --c-text-secondary: #64748B;
+  --c-text-muted: #94A3B8;
+  --c-border: #E2E8F0;
+  --c-bg-subtle: #F8FAFC;
+  --c-bg-warm: #FFFBF5;
+  --font-body: 'Pretendard', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-code: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --radius-xl: 18px;
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.08);
+  --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
+  --shadow-lg: 0 8px 24px rgba(0,0,0,0.10);
+}
+
+/* ── 페이지 설정 ── */
+@page {
+  size: A4;
+  margin: 18mm 17mm 15mm 22mm;
+  @bottom-center {
+    content: counter(page);
+    font-family: var(--font-body);
+    font-size: 9pt;
+    color: var(--c-text-muted);
+    letter-spacing: 1px;
+  }
+}
+@page :first { @bottom-center { content: none; } }
+
+body {
+  font-family: var(--font-body);
+  color: var(--c-text);
+  background: white;
+  font-size: 11.5pt;
+  line-height: 180%;
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+  word-break: keep-all;
+  overflow-wrap: break-word;
+}
+
+/* ── 페이지 제어 ── */
+.avoid-break { break-inside: avoid !important; page-break-inside: avoid !important; }
+h2, h3 { break-after: avoid !important; page-break-after: avoid !important; }
+.page-break-hint { break-before: page !important; page-break-before: always !important; height: 0; margin: 0; padding: 0; }
+p { orphans: 3; widows: 3; }
+
+/* ═══════════════════════════════════════
+   레슨 헤더 — 프리미엄 그래디언트 배너
+   ═══════════════════════════════════════ */
+.lesson-header {
+  margin-bottom: 6mm;
+  padding: 6mm 5mm 5mm;
+  background: linear-gradient(135deg, #FF6B6B 0%, #FF8E53 50%, #FEC89A 100%);
+  border-radius: var(--radius-xl);
+  color: white;
+  position: relative;
+  overflow: hidden;
+  box-shadow: var(--shadow-lg);
+}
+.lesson-header::before {
+  content: '';
+  position: absolute;
+  top: -30%;
+  right: -10%;
+  width: 140px;
+  height: 140px;
+  background: rgba(255,255,255,0.12);
+  border-radius: 50%;
+}
+.lesson-header::after {
+  content: '';
+  position: absolute;
+  bottom: -20%;
+  left: 15%;
+  width: 80px;
+  height: 80px;
+  background: rgba(255,255,255,0.08);
+  border-radius: 50%;
+}
+.lesson-number {
+  font-size: 10pt;
+  font-weight: 700;
+  color: rgba(255,255,255,0.85);
+  margin-bottom: 2mm;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  position: relative;
+  z-index: 1;
+}
+.lesson-title {
+  font-size: 24pt;
+  font-weight: 900;
+  line-height: 125%;
+  color: white;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.15);
+  position: relative;
+  z-index: 1;
+}
+.lesson-summary {
+  font-size: 11pt;
+  color: rgba(255,255,255,0.9);
+  margin-top: 2.5mm;
+  font-weight: 400;
+  position: relative;
+  z-index: 1;
+}
+
+/* ═══════════════════════════════════════
+   제목 계층 — 프리미엄 타이포그래피
+   ═══════════════════════════════════════ */
+h2 {
+  font-size: 16pt;
+  font-weight: 800;
+  margin: 6mm 0 3mm;
+  padding: 2mm 0 2mm 4.5mm;
+  border-left: 4.5px solid var(--c-primary);
+  color: var(--c-text);
+  background: linear-gradient(90deg, var(--c-primary-light) 0%, transparent 60%);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  letter-spacing: -0.3px;
+}
+h3 {
+  font-size: 13.5pt;
+  font-weight: 700;
+  color: #334155;
+  margin: 4mm 0 2.5mm;
+  padding-bottom: 1mm;
+  border-bottom: 2px solid #F1F5F9;
+}
+p {
+  margin-bottom: 2.5mm;
+  text-align: justify;
+  line-height: 175%;
+  font-size: 11.5pt;
+}
+
+/* ── 인라인 코드 ── */
+code {
+  font-family: var(--font-code);
+  font-size: 9.5pt;
+  background: linear-gradient(135deg, #FEF3C7, #FDE68A);
+  padding: 0.5mm 2mm;
+  border-radius: 4px;
+  color: #92400E;
+  border: 1px solid #FCD34D;
+  font-weight: 500;
+}
+
+/* ═══════════════════════════════════════
+   코드 블록 — 프리미엄 IDE 스타일
+   ═══════════════════════════════════════ */
+.code-block {
+  background: #0F172A;
+  border-radius: var(--radius-md);
+  padding: 0;
+  margin: 3mm 0;
+  box-shadow: var(--shadow-md), inset 0 1px 0 rgba(255,255,255,0.05);
+  overflow: hidden;
+  border: 1px solid #1E293B;
+}
+.code-block-header {
+  font-family: var(--font-body);
+  font-size: 8.5pt;
+  font-weight: 600;
+  color: #94A3B8;
+  padding: 2.5mm 4.5mm;
+  background: #1E293B;
+  border-bottom: 1px solid #334155;
+  letter-spacing: 0.5px;
+  display: flex;
+  align-items: center;
+  gap: 2mm;
+}
+.code-block-header::before {
+  content: '';
+  display: inline-flex;
+  width: 8px; height: 8px;
+  background: #EF4444;
+  border-radius: 50%;
+  box-shadow: 14px 0 0 #F59E0B, 28px 0 0 #22C55E;
+  flex-shrink: 0;
+}
+.code-table { width: 100%; border-collapse: collapse; table-layout: fixed; }
+.code-table td { vertical-align: top; padding: 0; }
+.line-num {
+  width: 12mm;
+  min-width: 12mm;
+  max-width: 12mm;
+  text-align: right;
+  padding: 0.5mm 3mm 0.5mm 2mm;
+  font-family: var(--font-code);
+  font-size: 8pt;
+  color: #475569;
+  line-height: 165%;
+  user-select: none;
+  background: rgba(0,0,0,0.15);
+  border-right: 1px solid rgba(255,255,255,0.06);
+}
+.line-code {
+  width: auto;
+  font-family: var(--font-code);
+  font-size: 10pt;
+  color: #E2E8F0;
+  line-height: 165%;
+  padding: 0.5mm 4mm 0.5mm 4mm;
+  white-space: pre;
+  overflow-x: auto;
+}
+.line-highlight td { background: rgba(59,130,246,0.12) !important; }
+.line-highlight .line-num { color: var(--c-blue) !important; font-weight: 700; }
+
+/* 신택스 컬러 — VS Code Dark+ 영감 */
+.kw { color: #C084FC; font-weight: 500; }
+.str { color: #86EFAC; }
+.cmt { color: #6B7280; font-style: italic; }
+.fn { color: #FDBA74; }
+.pp { color: #F472B6; font-weight: 600; }
+.num { color: #7DD3FC; }
+.type { color: #5EEAD4; font-weight: 500; }
+.mc { color: #67E8F9; }
+.esc { color: #FCD34D; font-weight: 600; }
+.fmt { color: #FCD34D; }
+
+/* ═══════════════════════════════════════
+   실행 결과 — 터미널 스타일
+   ═══════════════════════════════════════ */
+.output-block {
+  background: #F0FDF4;
+  border: 1.5px solid #86EFAC;
+  border-radius: var(--radius-md);
+  padding: 3mm 4mm;
+  margin: 3mm 0;
+  position: relative;
+}
+.output-label {
+  font-family: var(--font-body);
+  font-size: 8.5pt;
+  color: var(--c-green);
+  display: block;
+  margin-bottom: 1.5mm;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+.output-text {
+  font-family: var(--font-code);
+  font-size: 10.5pt;
+  line-height: 160%;
+  color: #166534;
+}
+
+/* ═══════════════════════════════════════
+   박스 시스템 — 프리미엄 카드 디자인
+   ═══════════════════════════════════════ */
+.box {
+  border-radius: var(--radius-md);
+  padding: 3.5mm 4.5mm;
+  margin: 3mm 0;
+  position: relative;
+  box-shadow: var(--shadow-sm);
+}
+.box-label {
+  font-size: 10.5pt;
+  font-weight: 800;
+  margin-bottom: 2mm;
+  display: flex;
+  align-items: center;
+  gap: 2mm;
+}
+.box-content { font-size: 11pt; line-height: 170%; overflow-wrap: break-word; word-break: keep-all; }
+.box-warning {
+  border-left: 5px solid var(--c-red);
+  background: linear-gradient(135deg, #FEF2F2 0%, #FFF1F2 100%);
+}
+.box-warning .box-label { color: var(--c-red); }
+.box-key {
+  border-left: 5px solid var(--c-blue);
+  background: linear-gradient(135deg, #EFF6FF 0%, #F0F9FF 100%);
+}
+.box-key .box-label { color: var(--c-blue); }
+.box-tip {
+  border-left: 5px solid var(--c-orange);
+  background: linear-gradient(135deg, #FFFBEB 0%, #FEF9C3 50%, #FFFBEB 100%);
+}
+.box-tip .box-label { color: var(--c-orange); }
+.box-summary {
+  border-left: 5px solid var(--c-green);
+  background: linear-gradient(135deg, #ECFDF5 0%, #D1FAE5 100%);
+  border: 1.5px solid #A7F3D0;
+  border-left: 5px solid var(--c-green);
+}
+.box-summary .box-label { color: var(--c-green); }
+.box-question {
+  border-left: 5px solid var(--c-purple);
+  background: linear-gradient(135deg, #F5F3FF 0%, #EDE9FE 100%);
+}
+.box-question .box-label { color: var(--c-purple); }
+.box-history {
+  border-left: 5px solid var(--c-teal);
+  background: linear-gradient(135deg, #F0FDFA 0%, #CCFBF1 100%);
+}
+.box-history .box-label { color: var(--c-teal); }
+
+/* ═══════════════════════════════════════
+   연습문제 — 프리미엄 카드
+   ═══════════════════════════════════════ */
+.exercise {
+  background: white;
+  border: 1.5px solid #E2E8F0;
+  border-radius: var(--radius-lg);
+  padding: 3.5mm 4.5mm;
+  margin: 3mm 0;
+  border-left: 5px solid var(--c-primary);
+  box-shadow: var(--shadow-sm);
+  position: relative;
+}
+.exercise-title {
+  font-size: 13pt;
+  font-weight: 800;
+  color: var(--c-primary);
+  margin-bottom: 2.5mm;
+  display: flex;
+  align-items: center;
+  gap: 2mm;
+}
+.difficulty {
+  display: inline-flex;
+  align-items: center;
+  font-size: 8pt;
+  padding: 0.5mm 2.5mm;
+  border-radius: 20px;
+  margin-left: 2mm;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+}
+.diff-1 { background: #D1FAE5; color: #059669; }
+.diff-2 { background: #FEF3C7; color: #D97706; }
+.diff-3 { background: #FEE2E2; color: #DC2626; }
+.memo-area {
+  border: 2px dashed #CBD5E1;
+  border-radius: var(--radius-md);
+  padding: 3mm;
+  min-height: 15mm;
+  margin-top: 2.5mm;
+  background: repeating-linear-gradient(
+    transparent, transparent 7mm, #F1F5F9 7mm, #F1F5F9 7.5mm
+  );
+}
+.memo-label { font-size: 8.5pt; color: var(--c-text-muted); font-style: italic; }
+
+/* ── OX/Choice/Short ── */
+.exercise-answer {
+  font-size: 10pt;
+  color: var(--c-green);
+  margin-top: 2mm;
+  padding: 1.5mm 3mm;
+  background: var(--c-green-light);
+  border-radius: var(--radius-sm);
+  font-weight: 600;
+  border: 1px solid #A7F3D0;
+}
+.exercise-explain {
+  font-size: 9.5pt;
+  color: var(--c-text-secondary);
+  margin-top: 1.5mm;
+  padding: 2mm 3mm;
+  background: #F8FAFC;
+  border-radius: var(--radius-sm);
+  border-left: 3px solid #E2E8F0;
+}
+.choice-list { padding-left: 6mm; margin: 2mm 0; }
+.choice-list li { font-size: 10.5pt; margin-bottom: 1.5mm; line-height: 150%; }
+.choice-list li.choice-correct { color: var(--c-green); font-weight: 700; }
+
+/* ═══════════════════════════════════════
+   Before/After 비교 — 프리미엄 2컬럼
+   ═══════════════════════════════════════ */
+.compare {
+  display: flex;
+  gap: 3mm;
+  margin: 3mm 0;
+  overflow: hidden;
+}
+.compare-bad {
+  flex: 1;
+  min-width: 0;
+  background: linear-gradient(135deg, #FEF2F2, #FFF1F2);
+  border: 1.5px solid #FECACA;
+  border-radius: var(--radius-md);
+  padding: 3mm;
+  overflow: hidden;
+}
+.compare-good {
+  flex: 1;
+  min-width: 0;
+  background: linear-gradient(135deg, #ECFDF5, #D1FAE5);
+  border: 1.5px solid #A7F3D0;
+  border-radius: var(--radius-md);
+  padding: 3mm;
+  overflow: hidden;
+}
+.compare code {
+  font-size: 9pt;
+  word-break: break-all;
+  overflow-wrap: break-word;
+  display: block;
+  background: rgba(0,0,0,0.05);
+  padding: 2mm 3mm;
+  border-radius: var(--radius-sm);
+  margin: 1.5mm 0;
+  line-height: 155%;
+  white-space: pre-wrap;
+  border: none;
+  color: inherit;
+}
+.compare-label { font-size: 9.5pt; font-weight: 800; margin-bottom: 1.5mm; }
+.compare-bad .compare-label { color: var(--c-red); }
+.compare-good .compare-label { color: var(--c-green); }
+.compare-msg-bad { font-size: 9pt; color: var(--c-red); }
+.compare-msg-good { font-size: 9pt; color: var(--c-green); }
+
+/* ═══════════════════════════════════════
+   챕터 시작 — 프리미엄 카드
+   ═══════════════════════════════════════ */
+.chapter-start-box { margin-bottom: 3mm; }
+.learning-goals {
+  background: linear-gradient(135deg, #FFF7ED 0%, #FFFBEB 100%);
+  border-radius: var(--radius-lg);
+  padding: 4mm 5mm;
+  margin-bottom: 3mm;
+  border: 1.5px solid #FED7AA;
+  box-shadow: var(--shadow-sm);
+}
+.learning-goals h3 {
+  font-size: 12pt;
+  font-weight: 800;
+  color: #EA580C;
+  margin: 0 0 2.5mm;
+  border: none;
+  padding: 0;
+}
+.learning-goals ul { padding-left: 5mm; margin: 0; }
+.learning-goals li { font-size: 11pt; margin-bottom: 1.5mm; line-height: 160%; color: #431407; }
+.prereq-check {
+  background: var(--c-blue-light);
+  border-left: 5px solid var(--c-blue);
+  border-radius: var(--radius-md);
+  padding: 3mm 4mm;
+  margin-bottom: 2.5mm;
+}
+.prereq-check h3 {
+  font-size: 11pt;
+  font-weight: 700;
+  color: var(--c-blue);
+  margin: 0 0 1.5mm;
+  border: none;
+  padding: 0;
+}
+.checklist { list-style: none; padding-left: 4mm; margin: 0; }
+.checklist li { margin-bottom: 1mm; font-size: 10.5pt; }
+.checklist li::before { content: '\2610  '; font-size: 12pt; color: var(--c-text-muted); }
+.progress-section { margin-top: 2.5mm; }
+.progress-label { font-size: 9.5pt; color: var(--c-text-secondary); font-weight: 600; }
+.progress-bar {
+  background: #E2E8F0;
+  border-radius: 6px;
+  height: 4mm;
+  margin-top: 1.5mm;
+  overflow: hidden;
+}
+.progress-fill {
+  background: linear-gradient(90deg, var(--c-primary), #FF8E53, #FEC89A);
+  height: 100%;
+  border-radius: 6px;
+}
+
+/* ═══════════════════════════════════════
+   Predict — 생각해보기 카드
+   ═══════════════════════════════════════ */
+.predict-box {
+  display: flex;
+  gap: 3.5mm;
+  background: linear-gradient(135deg, #F5F3FF 0%, #EDE9FE 100%);
+  border: 1.5px solid #C4B5FD;
+  border-radius: var(--radius-lg);
+  padding: 3.5mm 4.5mm;
+  margin: 3mm 0;
+  box-shadow: var(--shadow-sm);
+}
+.predict-icon {
+  width: 10mm; height: 10mm;
+  background: linear-gradient(135deg, var(--c-purple), #A78BFA);
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16pt;
+  font-weight: 900;
+  flex-shrink: 0;
+  box-shadow: 0 2px 6px rgba(139,92,246,0.3);
+}
+.predict-content { flex: 1; }
+.predict-content p { font-size: 11pt; margin-bottom: 2mm; }
+
+/* ═══════════════════════════════════════
+   다이어그램 — 프리미엄 컨테이너
+   ═══════════════════════════════════════ */
+.diagram-box {
+  background: var(--c-bg-subtle);
+  border: 1.5px solid var(--c-border);
+  border-radius: var(--radius-lg);
+  padding: 4mm;
+  margin: 3.5mm 0;
+  box-shadow: var(--shadow-sm);
+}
+.diagram-title {
+  font-size: 11pt;
+  font-weight: 800;
+  color: var(--c-primary);
+  margin-bottom: 3mm;
+  text-align: center;
+  letter-spacing: 0.3px;
+}
+.diagram-content { font-size: 10.5pt; line-height: 170%; }
+.diagram-content .d-row { display: flex; align-items: center; justify-content: center; gap: 3mm; margin: 2mm 0; }
+.diagram-content .d-block { background: #1E293B; color: white; padding: 2mm 4mm; border-radius: var(--radius-sm); font-family: var(--font-code); font-size: 9.5pt; font-weight: 500; }
+.diagram-content .d-block-highlight { background: linear-gradient(135deg, var(--c-primary), #FF8E53); color: white; padding: 2mm 4mm; border-radius: var(--radius-sm); font-family: var(--font-code); font-size: 9.5pt; font-weight: 700; }
+.diagram-content .d-arrow { color: var(--c-text-muted); font-size: 14pt; }
+.diagram-content .d-label { font-size: 8.5pt; color: var(--c-text-secondary); }
+
+/* ═══════════════════════════════════════
+   Steps — 프리미엄 타임라인
+   ═══════════════════════════════════════ */
+.steps-visual { margin: 3mm 0; }
+.step-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 3.5mm;
+  margin-bottom: 1.5mm;
+}
+.step-num {
+  width: 8mm; height: 8mm;
+  background: linear-gradient(135deg, var(--c-primary), #FF8E53);
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10pt;
+  font-weight: 800;
+  flex-shrink: 0;
+  margin-top: 0.5mm;
+  box-shadow: 0 2px 4px rgba(255,107,107,0.3);
+}
+.step-body { flex: 1; }
+.step-title { font-size: 11pt; font-weight: 700; margin-bottom: 0.5mm; color: var(--c-text); }
+.step-desc { font-size: 10.5pt; color: var(--c-text-secondary); line-height: 160%; }
+.step-connector { width: 2.5px; height: 4mm; background: linear-gradient(180deg, var(--c-primary), transparent); margin-left: 3.7mm; }
+
+/* ═══════════════════════════════════════
+   Modify — 바꿔보기 카드
+   ═══════════════════════════════════════ */
+.modify-box {
+  background: linear-gradient(135deg, #F0F9FF 0%, #E0F2FE 100%);
+  border: 1.5px solid #7DD3FC;
+  border-left: 5px solid #0EA5E9;
+  border-radius: var(--radius-md);
+  padding: 3.5mm 4.5mm;
+  margin: 3mm 0;
+}
+.modify-label { font-size: 10.5pt; font-weight: 800; color: #0284C7; margin-bottom: 2mm; }
+.modify-hint { font-size: 9.5pt; color: var(--c-text-secondary); font-style: italic; margin: 1.5mm 0; }
+
+/* ═══════════════════════════════════════
+   정답 섹션
+   ═══════════════════════════════════════ */
+.answers-section {
+  background: white;
+  border: 1.5px solid #E9D5FF;
+  border-radius: var(--radius-md);
+  padding: 3mm 4mm;
+  margin: 3mm 0;
+  border-left: 5px solid var(--c-purple);
+}
+.answers-section h3 {
+  font-size: 12pt;
+  font-weight: 800;
+  color: var(--c-purple);
+  margin: 0 0 2.5mm;
+  border: none;
+  padding: 0;
+}
+.answer-item { margin-bottom: 1mm; font-size: 10pt; line-height: 150%; }
+.answer-num { font-weight: 700; color: var(--c-primary); margin-right: 2mm; }
+.answer-text { color: var(--c-text); }
+
+/* ═══════════════════════════════════════
+   코드 설명 (라인별)
+   ═══════════════════════════════════════ */
+.code-explain { margin: 3mm 0; padding-left: 2mm; }
+.code-explain-item {
+  display: flex;
+  align-items: flex-start;
+  margin-bottom: 2.5mm;
+  font-size: 11pt;
+  line-height: 165%;
+}
+.code-explain-line {
+  font-family: var(--font-code);
+  font-size: 9pt;
+  color: white;
+  background: linear-gradient(135deg, var(--c-primary), #FF8E53);
+  padding: 0.5mm 2.5mm;
+  border-radius: 4px;
+  margin-right: 3mm;
+  flex-shrink: 0;
+  font-weight: 700;
+  box-shadow: 0 1px 3px rgba(255,107,107,0.3);
+}
+
+/* ═══════════════════════════════════════
+   용어 정리 — 프리미엄 테이블
+   ═══════════════════════════════════════ */
+.glossary { margin: 3mm 0; break-inside: avoid; display: block !important; width: 100% !important; clear: both; }
+.glossary-item {
+  display: flex;
+  margin-bottom: 0;
+  font-size: 10pt;
+  padding: 2mm 3mm;
+  border-bottom: 1px solid #F1F5F9;
+  width: 100%;
+}
+.glossary-item:nth-child(odd) { background: #F8FAFC; }
+.glossary-item:first-child { border-radius: var(--radius-sm) var(--radius-sm) 0 0; }
+.glossary-item:last-child { border-radius: 0 0 var(--radius-sm) var(--radius-sm); border-bottom: none; }
+.glossary-term {
+  font-weight: 700;
+  min-width: 28mm;
+  max-width: 35mm;
+  flex-shrink: 0;
+  color: var(--c-text);
+  font-family: var(--font-code);
+  font-size: 9.5pt;
+  word-break: keep-all;
+}
+.glossary-def { color: var(--c-text-secondary); line-height: 155%; flex: 1; min-width: 0; }
+
+/* ═══════════════════════════════════════
+   추적 테이블 — 프리미엄 데이터 테이블
+   ═══════════════════════════════════════ */
+.trace-table { margin: 3.5mm 0; }
+.trace-caption { font-size: 10.5pt; font-weight: 700; color: var(--c-primary); margin-bottom: 2mm; }
+.trace-table table { width: 100%; border-collapse: collapse; font-size: 10pt; border-radius: var(--radius-sm); overflow: hidden; }
+.trace-table th {
+  background: linear-gradient(135deg, #1E293B, #334155);
+  color: white;
+  padding: 2mm 3.5mm;
+  text-align: left;
+  font-weight: 700;
+  font-size: 9.5pt;
+}
+.trace-table td { padding: 2mm 3.5mm; border-bottom: 1px solid #F1F5F9; font-family: var(--font-code); font-size: 9.5pt; }
+.trace-table tr:nth-child(even) td { background: #F8FAFC; }
+
+/* ═══════════════════════════════════════
+   마스코트 말풍선 — 프리미엄 디자인
+   ═══════════════════════════════════════ */
+.mascot-speech {
+  display: flex;
+  align-items: flex-start;
+  gap: 3.5mm;
+  margin: 3.5mm 0;
+}
+.mascot-speech.right { flex-direction: row-reverse; }
+.mascot-speech-img {
+  flex-shrink: 0;
+  width: 60px;
+  height: 60px;
+  object-fit: contain;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.15));
+}
+.mascot-speech-img.small { width: 48px; height: 48px; }
+.mascot-speech-img.large { width: 80px; height: 80px; }
+.mascot-bubble {
+  position: relative;
+  background: linear-gradient(135deg, #EFF6FF 0%, #DBEAFE 100%);
+  border: 1.5px solid #93C5FD;
+  border-radius: var(--radius-lg);
+  padding: 3.5mm 4.5mm;
+  font-size: 10.5pt;
+  color: #1E3A5F;
+  line-height: 1.6;
+  flex: 1;
+  max-width: 85%;
+  box-shadow: var(--shadow-sm);
+}
+.mascot-bubble.warn {
+  background: linear-gradient(135deg, #FEF2F2, #FEE2E2);
+  border-color: #FCA5A5;
+  color: #7F1D1D;
+}
+.mascot-bubble.success {
+  background: linear-gradient(135deg, #ECFDF5, #D1FAE5);
+  border-color: #6EE7B7;
+  color: #14532D;
+}
+.mascot-bubble.tip {
+  background: linear-gradient(135deg, #FFFBEB, #FEF3C7);
+  border-color: #FCD34D;
+  color: #78350F;
+}
+.mascot-bubble::before {
+  content: '';
+  position: absolute;
+  top: 14px;
+  left: -9px;
+  border: 7px solid transparent;
+  border-right-color: #93C5FD;
+}
+.mascot-bubble::after {
+  content: '';
+  position: absolute;
+  top: 15px;
+  left: -7px;
+  border: 6px solid transparent;
+  border-right-color: #EFF6FF;
+}
+.mascot-speech.right .mascot-bubble::before {
+  left: auto; right: -9px;
+  border-right-color: transparent;
+  border-left-color: #93C5FD;
+}
+.mascot-speech.right .mascot-bubble::after {
+  left: auto; right: -7px;
+  border-right-color: transparent;
+  border-left-color: #EFF6FF;
+}
+.mascot-bubble.warn::before { border-right-color: #FCA5A5; }
+.mascot-bubble.warn::after { border-right-color: #FEF2F2; }
+.mascot-speech.right .mascot-bubble.warn::before { border-right-color: transparent; border-left-color: #FCA5A5; }
+.mascot-speech.right .mascot-bubble.warn::after { border-right-color: transparent; border-left-color: #FEF2F2; }
+.mascot-bubble.success::before { border-right-color: #6EE7B7; }
+.mascot-bubble.success::after { border-right-color: #ECFDF5; }
+.mascot-speech.right .mascot-bubble.success::before { border-right-color: transparent; border-left-color: #6EE7B7; }
+.mascot-speech.right .mascot-bubble.success::after { border-right-color: transparent; border-left-color: #ECFDF5; }
+.mascot-bubble.tip::before { border-right-color: #FCD34D; }
+.mascot-bubble.tip::after { border-right-color: #FFFBEB; }
+.mascot-speech.right .mascot-bubble.tip::before { border-right-color: transparent; border-left-color: #FCD34D; }
+.mascot-speech.right .mascot-bubble.tip::after { border-right-color: transparent; border-left-color: #FFFBEB; }
+
+/* ═══════════════════════════════════════
+   Fact Bite — 숫자/팩트 강조 카드
+   ═══════════════════════════════════════ */
+.fact-bite {
+  display: flex;
+  align-items: center;
+  gap: 4mm;
+  margin: 3mm 0;
+  background: linear-gradient(135deg, #FFF1F2 0%, #FFE4E6 50%, #FFF1F2 100%);
+  border-radius: var(--radius-lg);
+  padding: 3.5mm 5mm;
+  border: 1.5px solid #FECDD3;
+  box-shadow: var(--shadow-sm);
+}
+.fact-bite-number {
+  font: 900 18pt var(--font-body);
+  background: linear-gradient(135deg, var(--c-primary), #FF8E53);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  white-space: nowrap;
+  flex-shrink: 0;
+  max-width: 40%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.fact-bite-text { font-size: 10pt; color: var(--c-text-secondary); line-height: 1.5; flex: 1; min-width: 0; }
+
+/* ═══════════════════════════════════════
+   Visual Summary — 핵심 정리 카드
+   ═══════════════════════════════════════ */
+.visual-summary {
+  background: linear-gradient(135deg, #ECFDF5 0%, #D1FAE5 50%, #A7F3D0 100%);
+  border: 1.5px solid #6EE7B7;
+  border-radius: var(--radius-xl);
+  padding: 5mm;
+  margin: 4mm 0;
+  box-shadow: var(--shadow-md);
+  display: block !important;
+  width: 100% !important;
+  clear: both;
+}
+.visual-summary-title {
+  font-size: 14pt;
+  font-weight: 900;
+  color: #065F46;
+  text-align: center;
+  margin-bottom: 3mm;
+}
+.visual-summary-items { display: flex; flex-direction: column; gap: 2mm; }
+.visual-summary-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 3mm;
+  background: rgba(255,255,255,0.7);
+  padding: 2.5mm 3.5mm;
+  border-radius: var(--radius-md);
+  backdrop-filter: blur(4px);
+}
+.visual-summary-num {
+  width: 7mm; height: 7mm;
+  background: linear-gradient(135deg, #059669, #10B981);
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 9pt;
+  font-weight: 800;
+  flex-shrink: 0;
+  box-shadow: 0 1px 3px rgba(5,150,105,0.3);
+}
+
+/* ═══════════════════════════════════════
+   10축 매핑 전용 스타일
+   ═══════════════════════════════════════ */
+.axis-section {
+  background: linear-gradient(135deg, #F8FAFC 0%, #F1F5F9 100%);
+  border: 1.5px solid #CBD5E1;
+  border-radius: var(--radius-xl);
+  padding: 5mm;
+  margin: 5mm 0;
+  box-shadow: var(--shadow-md);
+  page-break-inside: avoid;
+}
+.axis-title {
+  font-size: 14pt;
+  font-weight: 900;
+  text-align: center;
+  margin-bottom: 4mm;
+  color: var(--c-text);
+  letter-spacing: -0.3px;
+}
+.axis-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2.5mm;
+}
+.axis-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 2mm;
+  padding: 2.5mm 3mm;
+  border-radius: var(--radius-md);
+  background: white;
+  border: 1px solid #E2E8F0;
+}
+.axis-badge {
+  font-size: 7.5pt;
+  font-weight: 800;
+  padding: 0.5mm 2.5mm;
+  border-radius: 20px;
+  flex-shrink: 0;
+  letter-spacing: 0.3px;
+  white-space: nowrap;
+}
+.axis-badge.c-lang { background: #DBEAFE; color: #1D4ED8; }
+.axis-badge.thinking { background: #E0E7FF; color: #4338CA; }
+.axis-badge.debug { background: #FEE2E2; color: #DC2626; }
+.axis-badge.koi { background: #FEF3C7; color: #B45309; }
+.axis-badge.basics { background: #D1FAE5; color: #059669; }
+.axis-badge.reallife { background: #CCFBF1; color: #0D9488; }
+.axis-badge.crosssubj { background: #E9D5FF; color: #7C3AED; }
+.axis-badge.project { background: #FFE4E6; color: #BE123C; }
+.axis-badge.ai { background: #FCE7F3; color: #DB2777; }
+.axis-badge.hardware { background: #CFFAFE; color: #0891B2; }
+.axis-text { font-size: 9.5pt; line-height: 150%; color: var(--c-text-secondary); }
+
+/* ── TOC ── */
+.toc { margin: 5mm 0; }
+.toc h2 { border: none; padding: 0; margin-bottom: 3mm; background: none; }
+.toc ul { list-style: none; padding: 0; }
+.toc-h2 { display: flex; align-items: baseline; margin-bottom: 1.5mm; font-size: 11pt; }
+.toc-text { flex-shrink: 0; }
+.toc-dots { flex: 1; border-bottom: 1.5px dotted #CBD5E1; margin: 0 2mm; min-width: 10mm; }
+.toc-page { flex-shrink: 0; color: var(--c-text-muted); font-size: 10pt; }
+
+/* ── Margin Note ── */
+.margin-note {
+  float: right;
+  width: 30mm;
+  font-size: 8.5pt;
+  color: var(--c-text-secondary);
+  background: linear-gradient(135deg, #FFFBEB, #FEF3C7);
+  padding: 2mm 2.5mm;
+  border-radius: var(--radius-sm);
+  margin: 0 -35mm 2mm 2mm;
+  border-left: 2.5px solid var(--c-orange);
+}
+
+/* ── Cross Reference ── */
+.crossref { font-size: 9pt; color: var(--c-blue); font-style: italic; font-weight: 500; }
+
+/* ── Image ── */
+.image-block { margin: 3.5mm 0; text-align: center; }
+.image-block img { max-width: 100%; border-radius: var(--radius-md); box-shadow: var(--shadow-sm); }
+.image-caption {
+  font-size: 9pt;
+  color: var(--c-text-secondary);
+  margin-top: 2mm;
+  font-style: italic;
+  background: var(--c-bg-subtle);
+  padding: 1.5mm 4mm;
+  border-radius: 20px;
+  display: inline-block;
+}
+
+/* ═══════════════════════════════════════
+   v7.0 — 80레이어 리서치 증강분
+   v5 프리미엄 기반 + TEXTBOOK-DESIGN-DEEP P1~P6 합성
+   ═══════════════════════════════════════ */
+
+/* ── Layer 26: 게슈탈트 근접성 강화 ── */
+h2 + p,
+h3 + p,
+h2 + .code-block,
+h3 + .code-block { margin-top: 1mm !important; }
+.code-block + .code-explain { margin-top: 0.5mm; }
+.code-block + .output-block { margin-top: 1mm; }
+.exercise + .exercise { margin-top: 1.5mm; }
+
+/* ── Layer 28: 마이크로 타이포그래피 ── */
+body {
+  font-kerning: auto;
+  font-variant-ligatures: common-ligatures;
+  hanging-punctuation: first last;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+.line-num { font-variant-numeric: tabular-nums; }
+.trace-table td { font-variant-numeric: tabular-nums; }
+
+/* ── Layer 29: 연습문제 유형별 스타일 ── */
+.exercise-item { margin-bottom: 2mm; font-size: 11pt; line-height: 165%; }
+.exercise-item p { margin-bottom: 1.5mm; }
+.exercise-blank { display: inline-block; min-width: 20mm; border-bottom: 2px solid var(--c-primary); margin: 0 1mm; }
+.exercise-ox-grid { display: flex; gap: 3mm; margin-top: 2mm; }
+.exercise-ox-item { flex: 1; padding: 2mm 3mm; border: 1px solid var(--c-border); border-radius: var(--radius-sm); font-size: 10pt; }
+.exercise-matching { display: grid; grid-template-columns: 1fr auto 1fr; gap: 1.5mm; font-size: 10pt; }
+.exercise-reorder { display: flex; flex-direction: column; gap: 1mm; font-family: var(--font-code); font-size: 9.5pt; }
+.exercise-reorder-item { background: var(--c-bg-subtle); padding: 1.5mm 3mm; border-radius: var(--radius-sm); border: 1px solid var(--c-border); }
+
+/* ── Layer 30: 교사용 에디션 ── */
+.teacher-only { background: #FFF5F5; border: 2px dashed #E74C3C; padding: 3mm; border-radius: var(--radius-md); }
+.teacher-note { font-size: 9pt; color: #C0392B; font-style: italic; }
+
+/* ── Layer 32: 디자인 토큰 — 인쇄용 간격 ── */
+article > * + * { margin-top: 2.5mm; }
+article > h2 { margin-top: 5mm; }
+article > h3 { margin-top: 3.5mm; }
+
+/* ── Layer 51: 황금비 타이포 ──
+   24pt / 16pt / 13.5pt / 11.5pt = 1:0.67:0.56:0.48 ≈ 피보나치 */
+
+/* ── Layer 55: 인지부하 최적화 — 시각 앵커 ── */
+h2::before {
+  /* 빈 블록으로 스크롤 앵커 역할 — Paged.js에서 러닝헤드 지원 */
+}
+
+/* ── Layer 56: 아이트래킹 — F패턴 강화 ── */
+.lesson-header .lesson-number { font-weight: 700; }
+.box-label::before {
+  content: '';
+  display: inline-block;
+  width: 3px; height: 14px;
+  border-radius: 2px;
+  margin-right: 1.5mm;
+  flex-shrink: 0;
+}
+.box-warning .box-label::before { background: var(--c-red); }
+.box-key .box-label::before { background: var(--c-blue); }
+.box-tip .box-label::before { background: var(--c-orange); }
+.box-summary .box-label::before { background: var(--c-green); }
+.box-question .box-label::before { background: var(--c-purple); }
+.box-history .box-label::before { background: var(--c-teal); }
+
+/* ── Layer 58: 색상 조화 60-30-10 강화 ── */
+/* 60% = white/neutral, 30% = brand gradient accents, 10% = c-primary strong */
+
+/* ── Layer 60: 코드 블록 — 브래킷 컬러링 (Layer 30 from Deep) ── */
+.brace-1 { color: #C084FC; font-weight: bold; }
+.brace-2 { color: #86EFAC; font-weight: bold; }
+.brace-3 { color: #FDBA74; font-weight: bold; }
+.brace-4 { color: #7DD3FC; font-weight: bold; }
+
+/* ── Layer 61: 인덴트 가이드 ── */
+.indent-guide { border-left: 1px solid rgba(255,255,255,0.08); }
+
+/* ── Layer 65: 10축 매핑 강화 ── */
+.axis-item { transition: none; }
+.axis-section .box-content { font-size: 10pt; }
+
+/* ── Layer 67: 자료구조 시각화 ── */
+.ds-visual { font-family: var(--font-code); font-size: 9pt; text-align: center; margin: 3mm 0; }
+.ds-array { display: flex; justify-content: center; gap: 0; }
+.ds-cell { width: 9mm; height: 9mm; border: 1.5px solid var(--c-blue); display: flex; align-items: center; justify-content: center; font-weight: 700; }
+.ds-cell:first-child { border-radius: var(--radius-sm) 0 0 var(--radius-sm); }
+.ds-cell:last-child { border-radius: 0 var(--radius-sm) var(--radius-sm) 0; }
+.ds-index { font-size: 7pt; color: var(--c-text-muted); text-align: center; margin-top: 0.5mm; }
+
+/* ── Layer 68: 학습 저널 공간 ── */
+.reflection-box {
+  background: var(--c-bg-warm);
+  border: 1.5px dashed #FCD34D;
+  border-radius: var(--radius-lg);
+  padding: 4mm;
+  margin: 4mm 0;
+}
+.reflection-prompt { font-size: 10pt; color: var(--c-orange); font-weight: 700; margin-bottom: 2mm; }
+.reflection-lines {
+  min-height: 20mm;
+  background: repeating-linear-gradient(transparent, transparent 7mm, #FEF3C7 7mm, #FEF3C7 7.5mm);
+}
+
+/* ── Layer 69: 루브릭/자기평가 ── */
+.rubric-table { width: 100%; border-collapse: collapse; font-size: 9pt; margin: 3mm 0; }
+.rubric-table th { background: var(--c-purple); color: white; padding: 2mm; text-align: center; }
+.rubric-table td { padding: 2mm; border: 1px solid var(--c-border); text-align: center; }
+.self-check { display: flex; gap: 5mm; justify-content: center; margin: 3mm 0; }
+.self-check-item { text-align: center; font-size: 18pt; }
+.self-check-label { font-size: 7.5pt; color: var(--c-text-secondary); }
+
+/* ── Layer 72: 교실 게임 보드 ── */
+.bingo-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 1px; background: var(--c-border); border-radius: var(--radius-md); overflow: hidden; margin: 3mm 0; }
+.bingo-cell { background: white; padding: 3mm; text-align: center; font-size: 8.5pt; font-family: var(--font-code); min-height: 10mm; display: flex; align-items: center; justify-content: center; }
+.bingo-free { background: var(--c-primary-light); font-weight: 800; color: var(--c-primary); }
+
+/* ── Layer 77: 북마크/읽기 가이드 ──  */
+.reading-ruler { border-top: 3px solid var(--c-primary); margin: 4mm 0; opacity: 0.3; }
+
+/* ── Layer 78: 고급 그리드 — 2컬럼 레이아웃 ── */
+.two-col { display: flex; gap: 4mm; }
+.two-col > * { flex: 1; min-width: 0; }
+.three-col { display: flex; gap: 3mm; }
+.three-col > * { flex: 1; min-width: 0; }
+
+/* ── Layer 80: 인쇄 품질 마커 ── */
+.print-crop-mark { display: none; }
+
+/* ═══════════════════════════════════════
+   인쇄 최적화 — 강화 버전 (Layer 77~80)
+   ═══════════════════════════════════════ */
+@media print {
+  body {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  .lesson-header,
+  .code-block,
+  .box,
+  .exercise,
+  .predict-box,
+  .compare-bad,
+  .compare-good,
+  .step-num,
+  .mascot-bubble,
+  .visual-summary,
+  .axis-section,
+  .trace-table th,
+  .progress-fill,
+  .code-explain-line,
+  .fact-bite,
+  .diff-1, .diff-2, .diff-3,
+  .diagram-box,
+  .modify-box,
+  .answers-section {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  .no-print { display: none !important; }
+  /* orphan/widow 강화 */
+  p { orphans: 3; widows: 3; }
+  h2, h3 { break-after: avoid; }
+  .avoid-break { break-inside: avoid; }
+}
+
+/* ═══════════════════════════════════════
+   레이아웃 겹침 방지 — 모든 주요 섹션 블록 강제
+   ═══════════════════════════════════════ */
+article > .glossary,
+article > .visual-summary,
+article > .box,
+article > .fact-bite,
+article > .exercise,
+article > .answers-section,
+article > .mascot-speech,
+article > .code-block,
+article > .output-block,
+article > .compare,
+article > .predict-box {
+  display: block !important;
+  width: 100% !important;
+  float: none !important;
+  clear: both !important;
+}
+
+/* 박스 내부 테이블 오버플로 방지 */
+.box-content table { width: 100%; table-layout: fixed; }
+.box-content td, .box-content th { word-break: keep-all; overflow-wrap: break-word; }
+
+/* 마스코트 버블 너비 제한 완화 */
+.mascot-bubble { max-width: 100%; }
+
+/* Paged.js 컬럼 방지 */
+article { column-count: 1 !important; columns: 1 !important; }
+
+</style>
+<script src="https://unpkg.com/pagedjs/dist/paged.polyfill.js"></script>
+<script>
+  class PagedReadyHandler extends Paged.Handler {
+    constructor(chunker, polisher, caller) { super(chunker, polisher, caller); }
+    afterRendered(pages) {
+      document.body.setAttribute('data-paged-rendered', 'true');
+      document.body.setAttribute('data-page-count', pages.length);
+      console.log('PAGED_READY:' + pages.length);
+    }
+  }
+  Paged.registerHandlers(PagedReadyHandler);
+</script>
+</head>
+<body data-section-title="정렬이란 무엇인가">
+<article id="content">
+  <header class="lesson-header" role="banner">
+    <div class="lesson-number">Lesson 14-1</div>
+    <h1 class="lesson-title">정렬이란 무엇인가</h1>
+    <div class="lesson-summary">데이터를 일정한 순서대로 나열하는 정렬의 개념, 필요성, 오름차순/내림차순, 주요 알고리즘 종류를 소개해요.</div>
+  </header>
+<div class="chapter-start-box avoid-break"><div class="learning-goals"><h3>📚 이번에 배울 것</h3><ul><li>정렬이 무엇인지 설명할 수 있어요.</li><li>오름차순과 내림차순의 차이를 이해해요.</li><li>왜 정렬이 필요한지 실생활 예시로 설명할 수 있어요.</li><li>대표적인 정렬 알고리즘 종류를 알아요.</li></ul></div><div class="prereq-check"><h3>✅ 시작 전 체크</h3><ul class="checklist"><li>배열을 선언하고 사용할 수 있다</li><li>반복문(for, while)을 사용할 수 있다</li><li>조건문(if)으로 비교 연산을 할 수 있다</li></ul></div><div class="progress-section"><span class="progress-label">Part 1 진행률: 4%</span><div class="progress-bar"><div class="progress-fill" style="width:4%"></div></div></div></div>
+<h2>왜 정렬해야 할까?</h2>
+<div class="mascot-speech  avoid-break">
+        <img class="mascot-speech-img " src="svg-assets/mascot-hello.svg" alt="마스코트" />
+        <div class="mascot-bubble ">사전에서 단어를 찾을 때, 만약 단어가 아무 순서 없이 나열되어 있다면? 찾으려면 처음부터 끝까지 다 봐야 해. 하지만 가나다순으로 정렬되어 있으니 빠르게 찾을 수 있지!</div>
+      </div>
+<p><b>정렬(sorting)</b>이란 데이터를 일정한 기준에 따라 순서대로 나열하는 것이에요. 컴퓨터가 다루는 거의 모든 작업에서 정렬은 기본 중의 기본이에요.</p>
+<div class="image-block avoid-break"><img src="visuals/part6-u01-sorting-need.svg" alt="정렬 안 된 전화번호부와 정렬된 전화번호부 비교" style="max-width:100%;"/><div class="image-caption">정렬이 필요한 이유: 탐색을 빠르게!</div></div>
+<div class="box box-key avoid-break"><span class="box-label">실생활에서 정렬이 쓰이는 곳</span><div class="box-content"><b>1. 전화번호부</b> -- 이름 가나다순<br><b>2. 성적표</b> -- 점수 높은 순서<br><b>3. 검색 엔진</b> -- 관련도 높은 순서<br><b>4. 음악 앱</b> -- 제목, 가수, 최신순 정렬<br><b>5. 게임 랭킹</b> -- 점수 내림차순</div></div>
+<h2>오름차순과 내림차순</h2>
+<div class="image-block avoid-break"><img src="visuals/part6-u01-asc-desc.svg" alt="오름차순은 작은 수부터 큰 수로, 내림차순은 큰 수부터 작은 수로" style="max-width:100%;"/><div class="image-caption">오름차순 vs 내림차순</div></div>
+<p><b>오름차순(ascending)</b>: 작은 값부터 큰 값 순서로 나열해요. 1, 3, 5, 7<br><b>내림차순(descending)</b>: 큰 값부터 작은 값 순서로 나열해요. 7, 5, 3, 1<br><br>C 코드에서는 비교 조건의 부등호 방향만 바꾸면 오름차순과 내림차순을 전환할 수 있어요.</p>
+<div class="mascot-speech right avoid-break">
+        <img class="mascot-speech-img small" src="svg-assets/mascot-thinking.svg" alt="마스코트" />
+        <div class="mascot-bubble tip">KOI 문제에서 '오름차순으로 정렬하시오'라고 나오면 작은 수가 앞에! '내림차순'이면 큰 수가 앞에! 문제를 잘 읽어야 해.</div>
+      </div>
+<h2>간단한 정렬 체험: 배열 출력</h2>
+<div class="predict-box avoid-break"><div class="predict-icon">?</div><div class="predict-content"><p>아래 코드를 실행하면 배열이 어떤 순서로 출력될까요?</p></div></div>
+<div class="code-block avoid-break"><div class="code-block-header">sort_check.c</div>
+        <table class="code-table"><tr class=""><td class="line-num">1</td><td class="line-code"><span class="pp">#include</span> <span class="str">&lt;stdio.h&gt;</span></td></tr>
+<tr class=""><td class="line-num">2</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">3</td><td class="line-code"><span class="type">int</span> <span class="fn">isSorted</span>(<span class="type">int</span> arr[], <span class="type">int</span> n) {</td></tr>
+<tr class=""><td class="line-num">4</td><td class="line-code">    <span class="kw">for</span> (<span class="type">int</span> i = <span class="num">0</span>; i &lt; n - <span class="num">1</span>; i++) {</td></tr>
+<tr class=""><td class="line-num">5</td><td class="line-code">        <span class="kw">if</span> (arr[i] &gt; arr[i + <span class="num">1</span>]) {</td></tr>
+<tr class=""><td class="line-num">6</td><td class="line-code">            <span class="kw">return</span> <span class="num">0</span>;</td></tr>
+<tr class=""><td class="line-num">7</td><td class="line-code">        }</td></tr>
+<tr class=""><td class="line-num">8</td><td class="line-code">    }</td></tr>
+<tr class=""><td class="line-num">9</td><td class="line-code">    <span class="kw">return</span> <span class="num">1</span>;</td></tr>
+<tr class=""><td class="line-num">10</td><td class="line-code">}</td></tr>
+<tr class=""><td class="line-num">11</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">12</td><td class="line-code"><span class="type">int</span> <span class="fn">main</span>(<span class="type">void</span>) {</td></tr>
+<tr class=""><td class="line-num">13</td><td class="line-code">    <span class="type">int</span> a[] = {<span class="num">3</span>, <span class="num">1</span>, <span class="num">4</span>, <span class="num">1</span>, <span class="num">5</span>};</td></tr>
+<tr class=""><td class="line-num">14</td><td class="line-code">    <span class="type">int</span> n = <span class="num">5</span>;</td></tr>
+<tr class=""><td class="line-num">15</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">16</td><td class="line-code">    <span class="kw">if</span> (<span class="fn">isSorted</span>(a, n)) {</td></tr>
+<tr class=""><td class="line-num">17</td><td class="line-code">        <span class="fn">printf</span>(<span class="str">"정렬되어 있습니다.<span class="esc">\n</span>"</span>);</td></tr>
+<tr class=""><td class="line-num">18</td><td class="line-code">    } <span class="kw">else</span> {</td></tr>
+<tr class=""><td class="line-num">19</td><td class="line-code">        <span class="fn">printf</span>(<span class="str">"정렬되어 있지 않습니다.<span class="esc">\n</span>"</span>);</td></tr>
+<tr class=""><td class="line-num">20</td><td class="line-code">    }</td></tr>
+<tr class=""><td class="line-num">21</td><td class="line-code">    <span class="kw">return</span> <span class="num">0</span>;</td></tr>
+<tr class=""><td class="line-num">22</td><td class="line-code">}</td></tr></table></div>
+<div class="output-block avoid-break"><span class="output-label">실행 결과</span><div class="output-text">정렬되어 있지 않습니다.</div></div>
+<div class="code-explain avoid-break"><div class="code-explain-item"><span class="code-explain-line">3줄</span><span><code>isSorted</code> 함수는 배열이 오름차순인지 검사해요. 인접한 두 원소를 비교해서 앞이 크면 정렬이 안 된 것이에요.</span></div><div class="code-explain-item"><span class="code-explain-line">5줄</span><span><code>arr[i] > arr[i+1]</code> -- 앞 원소가 뒤 원소보다 크면 오름차순이 아니에요.</span></div><div class="code-explain-item"><span class="code-explain-line">17줄</span><span>배열 {3, 1, 4, 1, 5}는 3 > 1이므로 오름차순이 아니에요.</span></div></div>
+<h2>정렬 알고리즘 종류 한눈에 보기</h2>
+<div class="image-block avoid-break"><img src="visuals/part6-u01-algorithm-overview.svg" alt="버블, 선택, 삽입 정렬과 qsort, 이진 탐색 개요" style="max-width:100%;"/><div class="image-caption">이번 Part에서 배울 정렬/탐색 알고리즘들</div></div>
+<div class="box box-key avoid-break"><span class="box-label">정렬 알고리즘 비교 미리보기</span><div class="box-content"><b>버블 정렬</b> -- 이웃끼리 비교/교환. 가장 직관적이지만 느림.<br><b>선택 정렬</b> -- 최솟값을 찾아 앞에 배치. 교환 횟수가 적음.<br><b>삽입 정렬</b> -- 카드 정리처럼 끼워넣기. 거의 정렬된 데이터에 강함.<br><b>qsort()</b> -- C 표준 라이브러리 제공. 실전에서 가장 많이 사용.</div></div>
+<div class="mascot-speech  avoid-break">
+        <img class="mascot-speech-img " src="svg-assets/mascot-celebrate.svg" alt="마스코트" />
+        <div class="mascot-bubble success">정렬 알고리즘은 종류가 많지만, 핵심 원리는 '비교'와 '교환'이야. 이 두 가지만 잘 이해하면 어떤 정렬 알고리즘이든 읽을 수 있어!</div>
+      </div>
+<div class="box box-tip avoid-break"><span class="box-label">[KOI] 정렬 문제의 핵심</span><div class="box-content">KOI 초등부/중등부에서 정렬 관련 문제는 매년 출제돼요. 단순 정렬뿐 아니라 '정렬 후 탐색', '정렬 기준 변경' 등 응용 문제가 나와요. 정렬의 원리를 이해하면 이런 문제를 자신있게 풀 수 있어요.</div></div>
+<h2>이걸 배우면 어디에 쓸까?</h2>
+<p>정렬은 프로그래밍의 가장 기본적인 도구예요.<br><b>게임 개발</b>: 점수 랭킹 표시<br><b>데이터 분석</b>: 가장 큰/작은 값 찾기<br><b>웹 서비스</b>: 검색 결과 정렬<br><b>KOI/USACO</b>: 거의 모든 알고리즘 문제의 전처리 단계</p>
+<h2>연습문제</h2>
+<div class="mascot-speech right avoid-break">
+        <img class="mascot-speech-img small" src="svg-assets/mascot-thinking.svg" alt="마스코트" />
+        <div class="mascot-bubble tip">정렬의 개념을 확실히 잡고 다음 유닛으로 넘어가자. 손으로 직접 정렬해 보는 것도 좋은 연습이야!</div>
+      </div>
+<div class="exercise avoid-break"><div class="exercise-title">문제 1 <span class="difficulty diff-1">★ 기본</span></div><div class="exercise-item"><p>정렬(sorting)이 무엇인지 자신의 말로 설명하세요.</p></div><div class="memo-area"><span class="memo-label">여기에 답을 써 보세요</span></div></div>
+<div class="exercise avoid-break"><div class="exercise-title">문제 2 <span class="difficulty diff-1">★ 기본</span></div><div class="exercise-item"><p>다음 배열을 오름차순으로 정렬한 결과는?<br><code>{8, 3, 5, 1, 9, 2}</code></p></div><div class="memo-area"><span class="memo-label">여기에 답을 써 보세요</span></div></div>
+<div class="exercise avoid-break"><div class="exercise-title">문제 3 <span class="difficulty diff-1">★ 기본</span></div><div class="exercise-item"><p>오름차순과 내림차순의 차이를 설명하고, C 코드에서 어떻게 전환하는지 쓰세요.</p></div><div class="memo-area"><span class="memo-label">여기에 답을 써 보세요</span></div></div>
+<div class="exercise avoid-break"><div class="exercise-title">문제 4 <span class="difficulty diff-2">★★ 도전</span></div><div class="exercise-item"><p>배열이 오름차순으로 정렬되어 있는지 검사하는 함수 <code>isSorted(int arr[], int n)</code>을 작성하세요.</p></div><div class="memo-area"><span class="memo-label">여기에 답을 써 보세요</span></div></div>
+<div class="exercise avoid-break"><div class="exercise-title">문제 5 <span class="difficulty diff-3">★★★ 심화</span></div><div class="exercise-item"><p>실생활에서 정렬이 사용되는 예시를 3가지 이상 들고, 각각 어떤 기준으로 정렬하는지 쓰세요.</p></div><div class="memo-area"><span class="memo-label">여기에 답을 써 보세요</span></div></div>
+<h2>정답</h2>
+<div class="answers-section avoid-break"><h3>정답</h3><div class="answer-item"><span class="answer-num">문제 1</span> <span class="answer-text">정렬이란 데이터를 크기, 이름 등 일정한 기준에 따라 순서대로 나열하는 것이에요.</span></div><div class="answer-item"><span class="answer-num">문제 2</span> <span class="answer-text">{1, 2, 3, 5, 8, 9} -- 작은 수부터 큰 수 순서로 나열해요.</span></div><div class="answer-item"><span class="answer-num">문제 3</span> <span class="answer-text">오름차순은 작은 값부터 큰 값 순서(1,2,3), 내림차순은 큰 값부터 작은 값 순서(3,2,1)에요. C에서는 if문의 비교 부등호 방향(<, >)을 바꾸면 됩니다.</span></div><div class="answer-item"><span class="answer-num">문제 4</span> <span class="answer-text">int isSorted(int arr[], int n) {<br>  for (int i = 0; i < n-1; i++)<br>    if (arr[i] > arr[i+1]) return 0;<br>  return 1;<br>}</span></div><div class="answer-item"><span class="answer-num">문제 5</span> <span class="answer-text">1. 시험 성적표 -- 점수 높은 순(내림차순)<br>2. 전화번호부 -- 이름 가나다순(오름차순)<br>3. 인터넷 쇼핑 -- 가격 낮은 순(오름차순)</span></div></div>
+<h2>용어 정리</h2>
+<h2>[심화] 정렬 알고리즘 심화</h2>
+<div class="code-block avoid-break"><div class="code-block-header">[C 코드] 정렬 — 알고리즘 비교 벤치마크</div>
+        <table class="code-table"><tr class=""><td class="line-num">1</td><td class="line-code"><span class="pp">#include</span> <span class="str">&lt;stdio.h&gt;</span></td></tr>
+<tr class=""><td class="line-num">2</td><td class="line-code"><span class="pp">#include</span> <span class="str">&lt;stdlib.h&gt;</span></td></tr>
+<tr class=""><td class="line-num">3</td><td class="line-code"><span class="pp">#include</span> <span class="str">&lt;time.h&gt;</span></td></tr>
+<tr class=""><td class="line-num">4</td><td class="line-code"><span class="pp">#include</span> <span class="str">&lt;string.h&gt;</span></td></tr>
+<tr class=""><td class="line-num">5</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">6</td><td class="line-code"><span class="type">void</span> <span class="fn">bubble_sort</span>(<span class="type">int</span> *a, <span class="type">int</span> n) {</td></tr>
+<tr class=""><td class="line-num">7</td><td class="line-code">    <span class="kw">for</span> (<span class="type">int</span> i = <span class="num">0</span>; i &lt; n-<span class="num">1</span>; i++)</td></tr>
+<tr class=""><td class="line-num">8</td><td class="line-code">        <span class="kw">for</span> (<span class="type">int</span> j = <span class="num">0</span>; j &lt; n-<span class="num">1</span>-i; j++)</td></tr>
+<tr class=""><td class="line-num">9</td><td class="line-code">            <span class="kw">if</span> (a[j] &gt; a[j+<span class="num">1</span>]) { <span class="type">int</span> t=a[j]; a[j]=a[j+<span class="num">1</span>]; a[j+<span class="num">1</span>]=t; }</td></tr>
+<tr class=""><td class="line-num">10</td><td class="line-code">}</td></tr>
+<tr class=""><td class="line-num">11</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">12</td><td class="line-code"><span class="type">void</span> <span class="fn">selection_sort</span>(<span class="type">int</span> *a, <span class="type">int</span> n) {</td></tr>
+<tr class=""><td class="line-num">13</td><td class="line-code">    <span class="kw">for</span> (<span class="type">int</span> i = <span class="num">0</span>; i &lt; n-<span class="num">1</span>; i++) {</td></tr>
+<tr class=""><td class="line-num">14</td><td class="line-code">        <span class="type">int</span> min = i;</td></tr>
+<tr class=""><td class="line-num">15</td><td class="line-code">        <span class="kw">for</span> (<span class="type">int</span> j = i+<span class="num">1</span>; j &lt; n; j++) <span class="kw">if</span> (a[j] &lt; a[min]) min = j;</td></tr>
+<tr class=""><td class="line-num">16</td><td class="line-code">        <span class="type">int</span> t=a[i]; a[i]=a[min]; a[min]=t;</td></tr>
+<tr class=""><td class="line-num">17</td><td class="line-code">    }</td></tr>
+<tr class=""><td class="line-num">18</td><td class="line-code">}</td></tr>
+<tr class=""><td class="line-num">19</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">20</td><td class="line-code"><span class="type">void</span> <span class="fn">insertion_sort</span>(<span class="type">int</span> *a, <span class="type">int</span> n) {</td></tr>
+<tr class=""><td class="line-num">21</td><td class="line-code">    <span class="kw">for</span> (<span class="type">int</span> i = <span class="num">1</span>; i &lt; n; i++) {</td></tr>
+<tr class=""><td class="line-num">22</td><td class="line-code">        <span class="type">int</span> key = a[i], j = i-<span class="num">1</span>;</td></tr>
+<tr class=""><td class="line-num">23</td><td class="line-code">        <span class="kw">while</span> (j &gt;= <span class="num">0</span> &amp;&amp; a[j] &gt; key) { a[j+<span class="num">1</span>] = a[j]; j--; }</td></tr>
+<tr class=""><td class="line-num">24</td><td class="line-code">        a[j+<span class="num">1</span>] = key;</td></tr>
+<tr class=""><td class="line-num">25</td><td class="line-code">    }</td></tr>
+<tr class=""><td class="line-num">26</td><td class="line-code">}</td></tr>
+<tr class=""><td class="line-num">27</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">28</td><td class="line-code"><span class="kw">typedef</span> <span class="type">void</span> (*SortFunc)(<span class="type">int</span>*, <span class="type">int</span>);</td></tr>
+<tr class=""><td class="line-num">29</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">30</td><td class="line-code"><span class="type">void</span> <span class="fn">benchmark</span>(<span class="kw">const</span> <span class="type">char</span> *name, SortFunc fn, <span class="type">int</span> *orig, <span class="type">int</span> n) {</td></tr>
+<tr class=""><td class="line-num">31</td><td class="line-code">    <span class="type">int</span> *copy = (<span class="type">int</span>*)<span class="fn">malloc</span>(n * <span class="kw">sizeof</span>(<span class="type">int</span>));</td></tr>
+<tr class=""><td class="line-num">32</td><td class="line-code">    <span class="fn">memcpy</span>(copy, orig, n * <span class="kw">sizeof</span>(<span class="type">int</span>));</td></tr>
+<tr class=""><td class="line-num">33</td><td class="line-code">    clock_t start = <span class="fn">clock</span>();</td></tr>
+<tr class=""><td class="line-num">34</td><td class="line-code">    <span class="fn">fn</span>(copy, n);</td></tr>
+<tr class=""><td class="line-num">35</td><td class="line-code">    <span class="type">double</span> ms = (<span class="type">double</span>)(<span class="fn">clock</span>()-start)/CLOCKS_PER_SEC*<span class="num">1000</span>;</td></tr>
+<tr class=""><td class="line-num">36</td><td class="line-code">    <span class="cmt">// 정렬 검증</span></td></tr>
+<tr class=""><td class="line-num">37</td><td class="line-code">    <span class="type">int</span> ok = <span class="num">1</span>;</td></tr>
+<tr class=""><td class="line-num">38</td><td class="line-code">    <span class="kw">for</span> (<span class="type">int</span> i = <span class="num">0</span>; i &lt; n-<span class="num">1</span>; i++) <span class="kw">if</span> (copy[i] &gt; copy[i+<span class="num">1</span>]) { ok=<span class="num">0</span>; <span class="kw">break</span>; }</td></tr>
+<tr class=""><td class="line-num">39</td><td class="line-code">    <span class="fn">printf</span>(<span class="str">"<span class="fmt">%-15s</span> <span class="fmt">%8.2f</span> ms  <span class="fmt">%s</span><span class="esc">\n</span>"</span>, name, ms, ok?<span class="str">"✅"</span>:<span class="str">"❌"</span>);</td></tr>
+<tr class=""><td class="line-num">40</td><td class="line-code">    <span class="fn">free</span>(copy);</td></tr>
+<tr class=""><td class="line-num">41</td><td class="line-code">}</td></tr>
+<tr class=""><td class="line-num">42</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">43</td><td class="line-code"><span class="type">int</span> <span class="fn">main</span>() {</td></tr>
+<tr class=""><td class="line-num">44</td><td class="line-code">    <span class="type">int</span> sizes[] = {<span class="num">1000</span>, <span class="num">5000</span>, <span class="num">10000</span>};</td></tr>
+<tr class=""><td class="line-num">45</td><td class="line-code">    <span class="fn">srand</span>(<span class="num">42</span>);</td></tr>
+<tr class=""><td class="line-num">46</td><td class="line-code">    </td></tr>
+<tr class=""><td class="line-num">47</td><td class="line-code">    <span class="kw">for</span> (<span class="type">int</span> s = <span class="num">0</span>; s &lt; <span class="num">3</span>; s++) {</td></tr>
+<tr class=""><td class="line-num">48</td><td class="line-code">        <span class="type">int</span> n = sizes[s];</td></tr>
+<tr class=""><td class="line-num">49</td><td class="line-code">        <span class="type">int</span> *data = (<span class="type">int</span>*)<span class="fn">malloc</span>(n * <span class="kw">sizeof</span>(<span class="type">int</span>));</td></tr>
+<tr class=""><td class="line-num">50</td><td class="line-code">        <span class="kw">for</span> (<span class="type">int</span> i = <span class="num">0</span>; i &lt; n; i++) data[i] = <span class="fn">rand</span>() % <span class="num">100000</span>;</td></tr>
+<tr class=""><td class="line-num">51</td><td class="line-code">        </td></tr>
+<tr class=""><td class="line-num">52</td><td class="line-code">        <span class="fn">printf</span>(<span class="str">"<span class="esc">\n</span>=== n = <span class="fmt">%d</span> ===<span class="esc">\n</span>"</span>, n);</td></tr>
+<tr class=""><td class="line-num">53</td><td class="line-code">        <span class="fn">benchmark</span>(<span class="str">"Bubble"</span>, bubble_sort, data, n);</td></tr>
+<tr class=""><td class="line-num">54</td><td class="line-code">        <span class="fn">benchmark</span>(<span class="str">"Selection"</span>, selection_sort, data, n);</td></tr>
+<tr class=""><td class="line-num">55</td><td class="line-code">        <span class="fn">benchmark</span>(<span class="str">"Insertion"</span>, insertion_sort, data, n);</td></tr>
+<tr class=""><td class="line-num">56</td><td class="line-code">        <span class="fn">free</span>(data);</td></tr>
+<tr class=""><td class="line-num">57</td><td class="line-code">    }</td></tr>
+<tr class=""><td class="line-num">58</td><td class="line-code">    <span class="kw">return</span> <span class="num">0</span>;</td></tr>
+<tr class=""><td class="line-num">59</td><td class="line-code">}</td></tr></table></div>
+<div class="output-block avoid-break"><span class="output-label">실행 결과</span><div class="output-text">=== n = 1000 ===
+Bubble            1.20 ms  ✅
+Selection         0.50 ms  ✅
+Insertion         0.30 ms  ✅
+
+=== n = 5000 ===
+Bubble           28.50 ms  ✅
+Selection        12.80 ms  ✅
+Insertion         7.20 ms  ✅
+
+=== n = 10000 ===
+Bubble          115.30 ms  ✅
+Selection        51.20 ms  ✅
+Insertion        28.40 ms  ✅</div></div>
+<div class="box box-key avoid-break"><span class="box-label">[심화 내용] 정렬의 하한선</span><div class="box-content"><b>비교 기반 정렬의 하한:</b><br>n개 원소의 순열 = n!가지<br>비교 1회 → 2가지 분기<br>k번 비교 → 최대 2^k 구분<br>2^k ≥ n! → k ≥ log₂(n!)<br>스털링 근사: log₂(n!) ≈ n·log₂n<br>→ <b>Ω(n log n)</b>이 비교 정렬의 하한!<br><br><b>하한을 깨는 방법:</b><br>비교를 안 하면 됨!<br>Counting Sort: O(n+k) — 정수, 범위 제한<br>Radix Sort: O(d·n) — 자릿수 기반<br>Bucket Sort: O(n) 평균 — 균등 분포</div></div>
+<div class="box box-warning avoid-break"><span class="box-label">⚠️ 정렬이 왜 중요할까?</span><div class="box-content"><b>정렬된 데이터의 힘:</b><br>• 이진 탐색: O(n) → O(log n)<br>• 중복 제거: 인접 비교만으로 가능<br>• 합집합/교집합: 두 정렬 배열 병합<br>• 데이터베이스: INDEX = 정렬된 B-트리<br>• 스케줄링: 마감일 순 정렬 → 최적 순서</div></div>
+<div class="box box-key avoid-break"><span class="box-label">⚡ 연습문제: 정렬 기초~심화</span><div class="box-content"><b>[기본]</b><br>1. 5개 정수를 버블 정렬로 오름차순 정렬하세요<br>2. 10개 정수를 선택 정렬로 정렬하세요<br>3. 삽입 정렬로 문자열 배열을 사전순 정렬하세요<br>4. 정렬된 배열에서 중복을 제거하세요<br>5. 내림차순 정렬을 구현하세요<br><br><b>[도전]</b><br>6. 각 정렬의 비교 횟수와 교환 횟수를 세세요<br>7. 이미 정렬된 배열에서 각 알고리즘의 성능을 비교하세요<br>8. 역순 배열에서 각 알고리즘의 성능을 비교하세요<br>9. 정렬 안정성(stability)을 실험으로 확인하세요<br>10. 함수 포인터로 정렬 함수를 선택하세요<br><br><b>[심화]</b><br>11. Counting Sort를 구현하세요<br>12. Radix Sort를 구현하세요<br>13. Shell Sort를 구현하세요<br>14. 정렬 벤치마크 프로그램을 완성하세요<br>15. 정렬 하한 증명을 결정 트리로 설명하세요</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">Ω(n log n)</div><div class="fact-bite-text">비교 정렬의 하한. n!가지 순열을 구분하려면 최소 log₂(n!)번 비교. 이보다 빠를 수 없다!</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">stable sort</div><div class="fact-bite-text">안정 정렬. 같은 키의 원래 순서 보존. 삽입=안정, 선택=불안정. 다중 키 정렬의 핵심!</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">comparison sort</div><div class="fact-bite-text">비교 정렬. a<b 비교로 순서 결정. 버블/선택/삽입/병합/퀵 전부. 하한 O(n log n).</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">adaptive sort</div><div class="fact-bite-text">적응 정렬. 이미 정렬된 부분 활용. 삽입 정렬: 거의 정렬→O(n). Timsort도 적응형!</div></div>
+<div class="mascot-speech right avoid-break">
+        <img class="mascot-speech-img " src="svg-assets/mascot-thinking.svg" alt="마스코트" />
+        <div class="mascot-bubble thinking">정렬 벤치마크로 O(n²)을 체감! n이 2배→시간 4배. n=10000이면 100배 차이 난다!</div>
+      </div>
+<div class="mascot-speech  avoid-break">
+        <img class="mascot-speech-img " src="svg-assets/mascot-eureka.svg" alt="마스코트" />
+        <div class="mascot-bubble eureka">삽입 정렬이 가장 빠른 이유: 이미 정렬된 부분은 건너뜀! 최선 O(n), 실전에서 강력!</div>
+      </div>
+<div class="code-block avoid-break"><div class="code-block-header">[C 코드] 정렬 — Counting Sort + Merge Sort</div>
+        <table class="code-table"><tr class=""><td class="line-num">1</td><td class="line-code"><span class="pp">#include</span> <span class="str">&lt;stdio.h&gt;</span></td></tr>
+<tr class=""><td class="line-num">2</td><td class="line-code"><span class="pp">#include</span> <span class="str">&lt;string.h&gt;</span></td></tr>
+<tr class=""><td class="line-num">3</td><td class="line-code"><span class="pp">#include</span> <span class="str">&lt;stdlib.h&gt;</span></td></tr>
+<tr class=""><td class="line-num">4</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">5</td><td class="line-code"><span class="cmt">// Counting Sort: O(n+k), 비비교 정렬!</span></td></tr>
+<tr class=""><td class="line-num">6</td><td class="line-code"><span class="type">void</span> <span class="fn">counting_sort</span>(<span class="type">int</span> *a, <span class="type">int</span> n, <span class="type">int</span> max_val) {</td></tr>
+<tr class=""><td class="line-num">7</td><td class="line-code">    <span class="type">int</span> *count = (<span class="type">int</span>*)<span class="fn">calloc</span>(max_val+<span class="num">1</span>, <span class="kw">sizeof</span>(<span class="type">int</span>));</td></tr>
+<tr class=""><td class="line-num">8</td><td class="line-code">    <span class="type">int</span> *output = (<span class="type">int</span>*)<span class="fn">malloc</span>(n * <span class="kw">sizeof</span>(<span class="type">int</span>));</td></tr>
+<tr class=""><td class="line-num">9</td><td class="line-code">    <span class="kw">for</span> (<span class="type">int</span> i = <span class="num">0</span>; i &lt; n; i++) count[a[i]]++;</td></tr>
+<tr class=""><td class="line-num">10</td><td class="line-code">    <span class="kw">for</span> (<span class="type">int</span> i = <span class="num">1</span>; i &lt;= max_val; i++) count[i] += count[i-<span class="num">1</span>];</td></tr>
+<tr class=""><td class="line-num">11</td><td class="line-code">    <span class="kw">for</span> (<span class="type">int</span> i = n-<span class="num">1</span>; i &gt;= <span class="num">0</span>; i--) { output[count[a[i]]-<span class="num">1</span>] = a[i]; count[a[i]]--; }</td></tr>
+<tr class=""><td class="line-num">12</td><td class="line-code">    <span class="fn">memcpy</span>(a, output, n*<span class="kw">sizeof</span>(<span class="type">int</span>));</td></tr>
+<tr class=""><td class="line-num">13</td><td class="line-code">    <span class="fn">free</span>(count); <span class="fn">free</span>(output);</td></tr>
+<tr class=""><td class="line-num">14</td><td class="line-code">}</td></tr>
+<tr class=""><td class="line-num">15</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">16</td><td class="line-code"><span class="cmt">// Merge Sort: O(n log n), 안정!</span></td></tr>
+<tr class=""><td class="line-num">17</td><td class="line-code"><span class="type">void</span> <span class="fn">merge</span>(<span class="type">int</span> *a, <span class="type">int</span> l, <span class="type">int</span> m, <span class="type">int</span> r) {</td></tr>
+<tr class=""><td class="line-num">18</td><td class="line-code">    <span class="type">int</span> n1=m-l+<span class="num">1</span>, n2=r-m;</td></tr>
+<tr class=""><td class="line-num">19</td><td class="line-code">    <span class="type">int</span> *L=(<span class="type">int</span>*)<span class="fn">malloc</span>(n1*<span class="kw">sizeof</span>(<span class="type">int</span>)), *R=(<span class="type">int</span>*)<span class="fn">malloc</span>(n2*<span class="kw">sizeof</span>(<span class="type">int</span>));</td></tr>
+<tr class=""><td class="line-num">20</td><td class="line-code">    <span class="kw">for</span>(<span class="type">int</span> i=<span class="num">0</span>;i&lt;n1;i++) L[i]=a[l+i];</td></tr>
+<tr class=""><td class="line-num">21</td><td class="line-code">    <span class="kw">for</span>(<span class="type">int</span> i=<span class="num">0</span>;i&lt;n2;i++) R[i]=a[m+<span class="num">1</span>+i];</td></tr>
+<tr class=""><td class="line-num">22</td><td class="line-code">    <span class="type">int</span> i=<span class="num">0</span>,j=<span class="num">0</span>,k=l;</td></tr>
+<tr class=""><td class="line-num">23</td><td class="line-code">    <span class="kw">while</span>(i&lt;n1&amp;&amp;j&lt;n2) a[k++]=(L[i]&lt;=R[j])?L[i++]:R[j++];</td></tr>
+<tr class=""><td class="line-num">24</td><td class="line-code">    <span class="kw">while</span>(i&lt;n1) a[k++]=L[i++];</td></tr>
+<tr class=""><td class="line-num">25</td><td class="line-code">    <span class="kw">while</span>(j&lt;n2) a[k++]=R[j++];</td></tr>
+<tr class=""><td class="line-num">26</td><td class="line-code">    <span class="fn">free</span>(L); <span class="fn">free</span>(R);</td></tr>
+<tr class=""><td class="line-num">27</td><td class="line-code">}</td></tr>
+<tr class=""><td class="line-num">28</td><td class="line-code"><span class="type">void</span> <span class="fn">merge_sort</span>(<span class="type">int</span> *a, <span class="type">int</span> l, <span class="type">int</span> r) {</td></tr>
+<tr class=""><td class="line-num">29</td><td class="line-code">    <span class="kw">if</span>(l&lt;r){<span class="type">int</span> m=(l+r)/<span class="num">2</span>; <span class="fn">merge_sort</span>(a,l,m); <span class="fn">merge_sort</span>(a,m+<span class="num">1</span>,r); <span class="fn">merge</span>(a,l,m,r);}</td></tr>
+<tr class=""><td class="line-num">30</td><td class="line-code">}</td></tr>
+<tr class=""><td class="line-num">31</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">32</td><td class="line-code"><span class="type">int</span> <span class="fn">main</span>() {</td></tr>
+<tr class=""><td class="line-num">33</td><td class="line-code">    <span class="type">int</span> a[]={<span class="num">4</span>,<span class="num">2</span>,<span class="num">2</span>,<span class="num">8</span>,<span class="num">3</span>,<span class="num">3</span>,<span class="num">1</span>,<span class="num">7</span>,<span class="num">5</span>,<span class="num">4</span>};</td></tr>
+<tr class=""><td class="line-num">34</td><td class="line-code">    <span class="type">int</span> n=<span class="num">10</span>;</td></tr>
+<tr class=""><td class="line-num">35</td><td class="line-code">    <span class="fn">printf</span>(<span class="str">"Counting Sort: "</span>);</td></tr>
+<tr class=""><td class="line-num">36</td><td class="line-code">    <span class="fn">counting_sort</span>(a,n,<span class="num">8</span>);</td></tr>
+<tr class=""><td class="line-num">37</td><td class="line-code">    <span class="kw">for</span>(<span class="type">int</span> i=<span class="num">0</span>;i&lt;n;i++) <span class="fn">printf</span>(<span class="str">"<span class="fmt">%d</span> "</span>,a[i]);</td></tr>
+<tr class=""><td class="line-num">38</td><td class="line-code">    <span class="fn">printf</span>(<span class="str">"<span class="esc">\n</span>"</span>);</td></tr>
+<tr class=""><td class="line-num">39</td><td class="line-code">    </td></tr>
+<tr class=""><td class="line-num">40</td><td class="line-code">    <span class="type">int</span> b[]={<span class="num">38</span>,<span class="num">27</span>,<span class="num">43</span>,<span class="num">3</span>,<span class="num">9</span>,<span class="num">82</span>,<span class="num">10</span>};</td></tr>
+<tr class=""><td class="line-num">41</td><td class="line-code">    <span class="fn">merge_sort</span>(b,<span class="num">0</span>,<span class="num">6</span>);</td></tr>
+<tr class=""><td class="line-num">42</td><td class="line-code">    <span class="fn">printf</span>(<span class="str">"Merge Sort:    "</span>);</td></tr>
+<tr class=""><td class="line-num">43</td><td class="line-code">    <span class="kw">for</span>(<span class="type">int</span> i=<span class="num">0</span>;i&lt;<span class="num">7</span>;i++) <span class="fn">printf</span>(<span class="str">"<span class="fmt">%d</span> "</span>,b[i]);</td></tr>
+<tr class=""><td class="line-num">44</td><td class="line-code">    <span class="fn">printf</span>(<span class="str">"<span class="esc">\n</span>"</span>);</td></tr>
+<tr class=""><td class="line-num">45</td><td class="line-code">    <span class="kw">return</span> <span class="num">0</span>;</td></tr>
+<tr class=""><td class="line-num">46</td><td class="line-code">}</td></tr></table></div>
+<div class="output-block avoid-break"><span class="output-label">실행 결과</span><div class="output-text">Counting Sort: 1 2 2 3 3 4 4 5 7 8
+Merge Sort:    3 9 10 27 38 43 82</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">counting sort</div><div class="fact-bite-text">카운팅 정렬. 값의 빈도를 세어 정렬. O(n+k). 비비교! 범위가 작은 정수에 최적.</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">merge sort</div><div class="fact-bite-text">병합 정렬. 분할→정렬→병합. O(n log n) 보장! 안정적. 추가 메모리 O(n) 필요.</div></div>
+<div class="mascot-speech right avoid-break">
+        <img class="mascot-speech-img " src="svg-assets/mascot-thinking.svg" alt="마스코트" />
+        <div class="mascot-bubble thinking">Counting Sort는 비비교 정렬! O(n log n) 하한을 깨는 비밀: 비교를 안 하니까!</div>
+      </div>
+<div class="code-block avoid-break"><div class="code-block-header">[C 코드] 정렬 — Radix Sort</div>
+        <table class="code-table"><tr class=""><td class="line-num">1</td><td class="line-code"><span class="pp">#include</span> <span class="str">&lt;stdio.h&gt;</span></td></tr>
+<tr class=""><td class="line-num">2</td><td class="line-code"><span class="pp">#include</span> <span class="str">&lt;string.h&gt;</span></td></tr>
+<tr class=""><td class="line-num">3</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">4</td><td class="line-code"><span class="type">void</span> <span class="fn">counting_sort_digit</span>(<span class="type">int</span> *a, <span class="type">int</span> n, <span class="type">int</span> exp) {</td></tr>
+<tr class=""><td class="line-num">5</td><td class="line-code">    <span class="type">int</span> output[<span class="num">100</span>], count[<span class="num">10</span>] = {<span class="num">0</span>};</td></tr>
+<tr class=""><td class="line-num">6</td><td class="line-code">    <span class="kw">for</span> (<span class="type">int</span> i = <span class="num">0</span>; i &lt; n; i++) count[(a[i]/exp)%<span class="num">10</span>]++;</td></tr>
+<tr class=""><td class="line-num">7</td><td class="line-code">    <span class="kw">for</span> (<span class="type">int</span> i = <span class="num">1</span>; i &lt; <span class="num">10</span>; i++) count[i] += count[i-<span class="num">1</span>];</td></tr>
+<tr class=""><td class="line-num">8</td><td class="line-code">    <span class="kw">for</span> (<span class="type">int</span> i = n-<span class="num">1</span>; i &gt;= <span class="num">0</span>; i--) {</td></tr>
+<tr class=""><td class="line-num">9</td><td class="line-code">        output[count[(a[i]/exp)%<span class="num">10</span>]-<span class="num">1</span>] = a[i];</td></tr>
+<tr class=""><td class="line-num">10</td><td class="line-code">        count[(a[i]/exp)%<span class="num">10</span>]--;</td></tr>
+<tr class=""><td class="line-num">11</td><td class="line-code">    }</td></tr>
+<tr class=""><td class="line-num">12</td><td class="line-code">    <span class="fn">memcpy</span>(a, output, n*<span class="kw">sizeof</span>(<span class="type">int</span>));</td></tr>
+<tr class=""><td class="line-num">13</td><td class="line-code">}</td></tr>
+<tr class=""><td class="line-num">14</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">15</td><td class="line-code"><span class="type">void</span> <span class="fn">radix_sort</span>(<span class="type">int</span> *a, <span class="type">int</span> n) {</td></tr>
+<tr class=""><td class="line-num">16</td><td class="line-code">    <span class="type">int</span> max = a[<span class="num">0</span>];</td></tr>
+<tr class=""><td class="line-num">17</td><td class="line-code">    <span class="kw">for</span> (<span class="type">int</span> i = <span class="num">1</span>; i &lt; n; i++) <span class="kw">if</span> (a[i] &gt; max) max = a[i];</td></tr>
+<tr class=""><td class="line-num">18</td><td class="line-code">    <span class="kw">for</span> (<span class="type">int</span> exp = <span class="num">1</span>; max/exp &gt; <span class="num">0</span>; exp *= <span class="num">10</span>) {</td></tr>
+<tr class=""><td class="line-num">19</td><td class="line-code">        <span class="fn">printf</span>(<span class="str">"  exp=<span class="fmt">%d</span>: "</span>, exp);</td></tr>
+<tr class=""><td class="line-num">20</td><td class="line-code">        <span class="fn">counting_sort_digit</span>(a, n, exp);</td></tr>
+<tr class=""><td class="line-num">21</td><td class="line-code">        <span class="kw">for</span> (<span class="type">int</span> i = <span class="num">0</span>; i &lt; n; i++) <span class="fn">printf</span>(<span class="str">"<span class="fmt">%d</span> "</span>, a[i]);</td></tr>
+<tr class=""><td class="line-num">22</td><td class="line-code">        <span class="fn">printf</span>(<span class="str">"<span class="esc">\n</span>"</span>);</td></tr>
+<tr class=""><td class="line-num">23</td><td class="line-code">    }</td></tr>
+<tr class=""><td class="line-num">24</td><td class="line-code">}</td></tr>
+<tr class=""><td class="line-num">25</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">26</td><td class="line-code"><span class="type">int</span> <span class="fn">main</span>() {</td></tr>
+<tr class=""><td class="line-num">27</td><td class="line-code">    <span class="type">int</span> a[] = {<span class="num">170</span>, <span class="num">45</span>, <span class="num">75</span>, <span class="num">90</span>, <span class="num">802</span>, <span class="num">24</span>, <span class="num">2</span>, <span class="num">66</span>};</td></tr>
+<tr class=""><td class="line-num">28</td><td class="line-code">    <span class="type">int</span> n = <span class="num">8</span>;</td></tr>
+<tr class=""><td class="line-num">29</td><td class="line-code">    <span class="fn">printf</span>(<span class="str">"Radix Sort:<span class="esc">\n</span>"</span>);</td></tr>
+<tr class=""><td class="line-num">30</td><td class="line-code">    <span class="fn">radix_sort</span>(a, n);</td></tr>
+<tr class=""><td class="line-num">31</td><td class="line-code">    <span class="fn">printf</span>(<span class="str">"Result: "</span>); <span class="kw">for</span>(<span class="type">int</span> i=<span class="num">0</span>;i&lt;n;i++) <span class="fn">printf</span>(<span class="str">"<span class="fmt">%d</span> "</span>,a[i]); <span class="fn">printf</span>(<span class="str">"<span class="esc">\n</span>"</span>);</td></tr>
+<tr class=""><td class="line-num">32</td><td class="line-code">    <span class="kw">return</span> <span class="num">0</span>;</td></tr>
+<tr class=""><td class="line-num">33</td><td class="line-code">}</td></tr></table></div>
+<div class="output-block avoid-break"><span class="output-label">실행 결과</span><div class="output-text">Radix Sort:
+  exp=1: 170 90 802 2 24 45 75 66
+  exp=10: 802 2 24 45 66 170 75 90
+  exp=100: 2 24 45 66 75 90 170 802
+Result: 2 24 45 66 75 90 170 802</div></div>
+<div class="box box-key avoid-break"><span class="box-label">[심화 내용] 비비교 정렬 총정리</span><div class="box-content"><b>비비교 정렬 = O(n) 가능!</b><br><br>Counting Sort: 값의 빈도 세기. O(n+k)<br>→ 범위 작은 정수에 최적<br><br>Radix Sort: 자릿수별 Counting. O(d·n)<br>→ 큰 정수도 OK (d=자릿수)<br><br>Bucket Sort: 구간별 분류. O(n) 평균<br>→ 균등 분포에 최적<br><br><b>비교 정렬과의 차이:</b><br>비교: 범용, 하한 Ω(n log n)<br>비비교: 제한적, 하한 깨뜨림!</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">radix sort</div><div class="fact-bite-text">기수 정렬. 자릿수별 정렬. LSD(낮은 자리부터) vs MSD(높은 자리부터). O(d·n) 선형!</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">bucket sort</div><div class="fact-bite-text">버킷 정렬. 값을 구간별 버킷에 분배→각 버킷 정렬→합치기. 균등 분포에서 O(n)!</div></div>
+<div class="mascot-speech  avoid-break">
+        <img class="mascot-speech-img " src="svg-assets/mascot-eureka.svg" alt="마스코트" />
+        <div class="mascot-bubble eureka">Radix Sort: 1의 자리→10의 자리→100의 자리 순서로 정렬. 비비교라 O(n)!</div>
+      </div>
+<div class="code-block avoid-break"><div class="code-block-header">[C 코드] 정렬 — Bucket Sort</div>
+        <table class="code-table"><tr class=""><td class="line-num">1</td><td class="line-code"><span class="pp">#include</span> <span class="str">&lt;stdio.h&gt;</span></td></tr>
+<tr class=""><td class="line-num">2</td><td class="line-code"><span class="pp">#include</span> <span class="str">&lt;stdlib.h&gt;</span></td></tr>
+<tr class=""><td class="line-num">3</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">4</td><td class="line-code"><span class="pp">#define</span> NBUCKETS <span class="num">10</span></td></tr>
+<tr class=""><td class="line-num">5</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">6</td><td class="line-code"><span class="kw">typedef</span> <span class="kw">struct</span> Node { <span class="type">double</span> val; <span class="kw">struct</span> Node *next; } Node;</td></tr>
+<tr class=""><td class="line-num">7</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">8</td><td class="line-code"><span class="type">void</span> <span class="fn">bucket_insert</span>(Node **bucket, <span class="type">double</span> val) {</td></tr>
+<tr class=""><td class="line-num">9</td><td class="line-code">    Node *n = (Node*)<span class="fn">malloc</span>(<span class="kw">sizeof</span>(Node));</td></tr>
+<tr class=""><td class="line-num">10</td><td class="line-code">    n-&gt;val = val;</td></tr>
+<tr class=""><td class="line-num">11</td><td class="line-code">    <span class="cmt">// 정렬 삽입</span></td></tr>
+<tr class=""><td class="line-num">12</td><td class="line-code">    <span class="kw">if</span> (!*bucket || val &lt; (*bucket)-&gt;val) { n-&gt;next = *bucket; *bucket = n; <span class="kw">return</span>; }</td></tr>
+<tr class=""><td class="line-num">13</td><td class="line-code">    Node *p = *bucket;</td></tr>
+<tr class=""><td class="line-num">14</td><td class="line-code">    <span class="kw">while</span> (p-&gt;next &amp;&amp; p-&gt;next-&gt;val &lt; val) p = p-&gt;next;</td></tr>
+<tr class=""><td class="line-num">15</td><td class="line-code">    n-&gt;next = p-&gt;next; p-&gt;next = n;</td></tr>
+<tr class=""><td class="line-num">16</td><td class="line-code">}</td></tr>
+<tr class=""><td class="line-num">17</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">18</td><td class="line-code"><span class="type">void</span> <span class="fn">bucket_sort</span>(<span class="type">double</span> *a, <span class="type">int</span> n) {</td></tr>
+<tr class=""><td class="line-num">19</td><td class="line-code">    Node *buckets[NBUCKETS] = {<span class="mc">NULL</span>};</td></tr>
+<tr class=""><td class="line-num">20</td><td class="line-code">    <span class="kw">for</span> (<span class="type">int</span> i = <span class="num">0</span>; i &lt; n; i++) {</td></tr>
+<tr class=""><td class="line-num">21</td><td class="line-code">        <span class="type">int</span> idx = (<span class="type">int</span>)(a[i] * NBUCKETS);</td></tr>
+<tr class=""><td class="line-num">22</td><td class="line-code">        <span class="kw">if</span> (idx &gt;= NBUCKETS) idx = NBUCKETS-<span class="num">1</span>;</td></tr>
+<tr class=""><td class="line-num">23</td><td class="line-code">        <span class="fn">bucket_insert</span>(&amp;buckets[idx], a[i]);</td></tr>
+<tr class=""><td class="line-num">24</td><td class="line-code">    }</td></tr>
+<tr class=""><td class="line-num">25</td><td class="line-code">    <span class="type">int</span> k = <span class="num">0</span>;</td></tr>
+<tr class=""><td class="line-num">26</td><td class="line-code">    <span class="kw">for</span> (<span class="type">int</span> i = <span class="num">0</span>; i &lt; NBUCKETS; i++) {</td></tr>
+<tr class=""><td class="line-num">27</td><td class="line-code">        Node *p = buckets[i];</td></tr>
+<tr class=""><td class="line-num">28</td><td class="line-code">        <span class="kw">while</span> (p) { a[k++] = p-&gt;val; Node *t = p; p = p-&gt;next; <span class="fn">free</span>(t); }</td></tr>
+<tr class=""><td class="line-num">29</td><td class="line-code">    }</td></tr>
+<tr class=""><td class="line-num">30</td><td class="line-code">}</td></tr>
+<tr class=""><td class="line-num">31</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">32</td><td class="line-code"><span class="type">int</span> <span class="fn">main</span>() {</td></tr>
+<tr class=""><td class="line-num">33</td><td class="line-code">    <span class="type">double</span> a[] = {<span class="num">0.42</span>, <span class="num">0.32</span>, <span class="num">0.23</span>, <span class="num">0.52</span>, <span class="num">0.25</span>, <span class="num">0.47</span>, <span class="num">0.51</span>, <span class="num">0.11</span>, <span class="num">0.78</span>, <span class="num">0.63</span>};</td></tr>
+<tr class=""><td class="line-num">34</td><td class="line-code">    <span class="type">int</span> n = <span class="num">10</span>;</td></tr>
+<tr class=""><td class="line-num">35</td><td class="line-code">    <span class="fn">bucket_sort</span>(a, n);</td></tr>
+<tr class=""><td class="line-num">36</td><td class="line-code">    <span class="fn">printf</span>(<span class="str">"Bucket Sort: "</span>);</td></tr>
+<tr class=""><td class="line-num">37</td><td class="line-code">    <span class="kw">for</span> (<span class="type">int</span> i = <span class="num">0</span>; i &lt; n; i++) <span class="fn">printf</span>(<span class="str">"<span class="fmt">%.2f</span> "</span>, a[i]);</td></tr>
+<tr class=""><td class="line-num">38</td><td class="line-code">    <span class="fn">printf</span>(<span class="str">"<span class="esc">\n</span>"</span>);</td></tr>
+<tr class=""><td class="line-num">39</td><td class="line-code">    <span class="kw">return</span> <span class="num">0</span>;</td></tr>
+<tr class=""><td class="line-num">40</td><td class="line-code">}</td></tr></table></div>
+<div class="output-block avoid-break"><span class="output-label">실행 결과</span><div class="output-text">Bucket Sort: 0.11 0.23 0.25 0.32 0.42 0.47 0.51 0.52 0.63 0.78</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">bucket sort detail</div><div class="fact-bite-text">버킷 정렬. [0,1) 범위를 k개 구간으로 나눠 분배. 각 버킷 삽입 정렬. 균등 분포 O(n)!</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">hybrid sort</div><div class="fact-bite-text">하이브리드 정렬. 여러 알고리즘 결합. Timsort=삽입+병합. Introsort=퀵+힙+삽입. 실전 최적!</div></div>
+<div class="mascot-speech right avoid-break">
+        <img class="mascot-speech-img " src="svg-assets/mascot-thinking.svg" alt="마스코트" />
+        <div class="mascot-bubble thinking">Bucket Sort: 0.0~0.1은 버킷0, 0.1~0.2는 버킷1... 분배 후 각 버킷 정렬. O(n)!</div>
+      </div>
+<div class="code-block avoid-break"><div class="code-block-header">[C 코드] 정렬 — Merge Sort 구현</div>
+        <table class="code-table"><tr class=""><td class="line-num">1</td><td class="line-code"><span class="pp">#include</span> <span class="str">&lt;stdio.h&gt;</span></td></tr>
+<tr class=""><td class="line-num">2</td><td class="line-code"><span class="pp">#include</span> <span class="str">&lt;stdlib.h&gt;</span></td></tr>
+<tr class=""><td class="line-num">3</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">4</td><td class="line-code"><span class="type">void</span> <span class="fn">merge</span>(<span class="type">int</span> *a, <span class="type">int</span> l, <span class="type">int</span> m, <span class="type">int</span> r) {</td></tr>
+<tr class=""><td class="line-num">5</td><td class="line-code">    <span class="type">int</span> n1=m-l+<span class="num">1</span>, n2=r-m;</td></tr>
+<tr class=""><td class="line-num">6</td><td class="line-code">    <span class="type">int</span> *L=(<span class="type">int</span>*)<span class="fn">malloc</span>(n1*<span class="kw">sizeof</span>(<span class="type">int</span>)), *R=(<span class="type">int</span>*)<span class="fn">malloc</span>(n2*<span class="kw">sizeof</span>(<span class="type">int</span>));</td></tr>
+<tr class=""><td class="line-num">7</td><td class="line-code">    <span class="kw">for</span>(<span class="type">int</span> i=<span class="num">0</span>;i&lt;n1;i++) L[i]=a[l+i];</td></tr>
+<tr class=""><td class="line-num">8</td><td class="line-code">    <span class="kw">for</span>(<span class="type">int</span> i=<span class="num">0</span>;i&lt;n2;i++) R[i]=a[m+<span class="num">1</span>+i];</td></tr>
+<tr class=""><td class="line-num">9</td><td class="line-code">    <span class="type">int</span> i=<span class="num">0</span>,j=<span class="num">0</span>,k=l;</td></tr>
+<tr class=""><td class="line-num">10</td><td class="line-code">    <span class="kw">while</span>(i&lt;n1&amp;&amp;j&lt;n2) a[k++]=(L[i]&lt;=R[j])?L[i++]:R[j++];</td></tr>
+<tr class=""><td class="line-num">11</td><td class="line-code">    <span class="kw">while</span>(i&lt;n1) a[k++]=L[i++];</td></tr>
+<tr class=""><td class="line-num">12</td><td class="line-code">    <span class="kw">while</span>(j&lt;n2) a[k++]=R[j++];</td></tr>
+<tr class=""><td class="line-num">13</td><td class="line-code">    <span class="fn">free</span>(L); <span class="fn">free</span>(R);</td></tr>
+<tr class=""><td class="line-num">14</td><td class="line-code">}</td></tr>
+<tr class=""><td class="line-num">15</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">16</td><td class="line-code"><span class="type">void</span> <span class="fn">merge_sort</span>(<span class="type">int</span> *a, <span class="type">int</span> l, <span class="type">int</span> r) {</td></tr>
+<tr class=""><td class="line-num">17</td><td class="line-code">    <span class="kw">if</span>(l&lt;r) {</td></tr>
+<tr class=""><td class="line-num">18</td><td class="line-code">        <span class="type">int</span> m=l+(r-l)/<span class="num">2</span>;</td></tr>
+<tr class=""><td class="line-num">19</td><td class="line-code">        <span class="fn">merge_sort</span>(a, l, m);</td></tr>
+<tr class=""><td class="line-num">20</td><td class="line-code">        <span class="fn">merge_sort</span>(a, m+<span class="num">1</span>, r);</td></tr>
+<tr class=""><td class="line-num">21</td><td class="line-code">        <span class="fn">merge</span>(a, l, m, r);</td></tr>
+<tr class=""><td class="line-num">22</td><td class="line-code">    }</td></tr>
+<tr class=""><td class="line-num">23</td><td class="line-code">}</td></tr>
+<tr class=""><td class="line-num">24</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">25</td><td class="line-code"><span class="type">void</span> <span class="fn">quick_sort</span>(<span class="type">int</span> *a, <span class="type">int</span> lo, <span class="type">int</span> hi) {</td></tr>
+<tr class=""><td class="line-num">26</td><td class="line-code">    <span class="kw">if</span>(lo&gt;=hi) <span class="kw">return</span>;</td></tr>
+<tr class=""><td class="line-num">27</td><td class="line-code">    <span class="type">int</span> pivot=a[hi], i=lo-<span class="num">1</span>;</td></tr>
+<tr class=""><td class="line-num">28</td><td class="line-code">    <span class="kw">for</span>(<span class="type">int</span> j=lo;j&lt;hi;j++)</td></tr>
+<tr class=""><td class="line-num">29</td><td class="line-code">        <span class="kw">if</span>(a[j]&lt;=pivot){i++;<span class="type">int</span> t=a[i];a[i]=a[j];a[j]=t;}</td></tr>
+<tr class=""><td class="line-num">30</td><td class="line-code">    <span class="type">int</span> t=a[i+<span class="num">1</span>];a[i+<span class="num">1</span>]=a[hi];a[hi]=t;</td></tr>
+<tr class=""><td class="line-num">31</td><td class="line-code">    <span class="type">int</span> pi=i+<span class="num">1</span>;</td></tr>
+<tr class=""><td class="line-num">32</td><td class="line-code">    <span class="fn">quick_sort</span>(a, lo, pi-<span class="num">1</span>);</td></tr>
+<tr class=""><td class="line-num">33</td><td class="line-code">    <span class="fn">quick_sort</span>(a, pi+<span class="num">1</span>, hi);</td></tr>
+<tr class=""><td class="line-num">34</td><td class="line-code">}</td></tr>
+<tr class=""><td class="line-num">35</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">36</td><td class="line-code"><span class="type">int</span> <span class="fn">main</span>() {</td></tr>
+<tr class=""><td class="line-num">37</td><td class="line-code">    <span class="type">int</span> a[]={<span class="num">38</span>,<span class="num">27</span>,<span class="num">43</span>,<span class="num">3</span>,<span class="num">9</span>,<span class="num">82</span>,<span class="num">10</span>};</td></tr>
+<tr class=""><td class="line-num">38</td><td class="line-code">    <span class="type">int</span> b[]={<span class="num">38</span>,<span class="num">27</span>,<span class="num">43</span>,<span class="num">3</span>,<span class="num">9</span>,<span class="num">82</span>,<span class="num">10</span>};</td></tr>
+<tr class=""><td class="line-num">39</td><td class="line-code">    <span class="type">int</span> n=<span class="num">7</span>;</td></tr>
+<tr class=""><td class="line-num">40</td><td class="line-code">    <span class="fn">merge_sort</span>(a,<span class="num">0</span>,n-<span class="num">1</span>);</td></tr>
+<tr class=""><td class="line-num">41</td><td class="line-code">    <span class="fn">printf</span>(<span class="str">"Merge: "</span>); <span class="kw">for</span>(<span class="type">int</span> i=<span class="num">0</span>;i&lt;n;i++) <span class="fn">printf</span>(<span class="str">"<span class="fmt">%d</span> "</span>,a[i]); <span class="fn">printf</span>(<span class="str">"<span class="esc">\n</span>"</span>);</td></tr>
+<tr class=""><td class="line-num">42</td><td class="line-code">    <span class="fn">quick_sort</span>(b,<span class="num">0</span>,n-<span class="num">1</span>);</td></tr>
+<tr class=""><td class="line-num">43</td><td class="line-code">    <span class="fn">printf</span>(<span class="str">"Quick: "</span>); <span class="kw">for</span>(<span class="type">int</span> i=<span class="num">0</span>;i&lt;n;i++) <span class="fn">printf</span>(<span class="str">"<span class="fmt">%d</span> "</span>,b[i]); <span class="fn">printf</span>(<span class="str">"<span class="esc">\n</span>"</span>);</td></tr>
+<tr class=""><td class="line-num">44</td><td class="line-code">    <span class="kw">return</span> <span class="num">0</span>;</td></tr>
+<tr class=""><td class="line-num">45</td><td class="line-code">}</td></tr></table></div>
+<div class="output-block avoid-break"><span class="output-label">실행 결과</span><div class="output-text">Merge: 3 9 10 27 38 43 82
+Quick: 3 9 10 27 38 43 82</div></div>
+<div class="box box-key avoid-break"><span class="box-label">[심화 내용] 분할 정복 정렬</span><div class="box-content"><b>Merge Sort:</b><br>분할: 배열을 반으로<br>정복: 각각 정렬<br>합병: 두 정렬 배열 병합<br>항상 O(n log n)! 안정 정렬. 추가 메모리 O(n).<br><br><b>Quick Sort:</b><br>피벗 선택 → 파티션 → 재귀<br>평균 O(n log n), 최악 O(n²)<br>in-place! 추가 메모리 O(log n) (스택)<br>실전에서 가장 빠른 범용 정렬<br><br><b>Timsort (Python/Java):</b><br>삽입+병합 하이브리드<br>이미 정렬된 run을 감지하여 활용<br>실세계 데이터에서 최적!</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">merge sort</div><div class="fact-bite-text">병합 정렬. 항상 O(n log n). 안정. 추가 메모리 필요. 연결 리스트 정렬에 최적!</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">quick sort</div><div class="fact-bite-text">퀵 정렬. 평균 O(n log n). in-place. 피벗 선택이 핵심! Median-of-3로 최악 방지.</div></div>
+<div class="mascot-speech right avoid-break">
+        <img class="mascot-speech-img " src="svg-assets/mascot-thinking.svg" alt="마스코트" />
+        <div class="mascot-bubble thinking">Merge=안정+보장, Quick=빠름+제자리. 실전은 Quick 기반 Introsort가 대세!</div>
+      </div>
+<div class="code-block avoid-break"><div class="code-block-header">[C 코드] 정렬 — Counting Sort + Radix Sort</div>
+        <table class="code-table"><tr class=""><td class="line-num">1</td><td class="line-code"><span class="pp">#include</span> <span class="str">&lt;stdio.h&gt;</span></td></tr>
+<tr class=""><td class="line-num">2</td><td class="line-code"><span class="pp">#include</span> <span class="str">&lt;string.h&gt;</span></td></tr>
+<tr class=""><td class="line-num">3</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">4</td><td class="line-code"><span class="type">void</span> <span class="fn">counting_sort</span>(<span class="type">int</span> *a, <span class="type">int</span> n, <span class="type">int</span> max_val) {</td></tr>
+<tr class=""><td class="line-num">5</td><td class="line-code">    <span class="type">int</span> count[<span class="num">101</span>] = {<span class="num">0</span>};</td></tr>
+<tr class=""><td class="line-num">6</td><td class="line-code">    <span class="kw">for</span> (<span class="type">int</span> i = <span class="num">0</span>; i &lt; n; i++) count[a[i]]++;</td></tr>
+<tr class=""><td class="line-num">7</td><td class="line-code">    <span class="type">int</span> idx = <span class="num">0</span>;</td></tr>
+<tr class=""><td class="line-num">8</td><td class="line-code">    <span class="kw">for</span> (<span class="type">int</span> v = <span class="num">0</span>; v &lt;= max_val; v++)</td></tr>
+<tr class=""><td class="line-num">9</td><td class="line-code">        <span class="kw">while</span> (count[v]-- &gt; <span class="num">0</span>) a[idx++] = v;</td></tr>
+<tr class=""><td class="line-num">10</td><td class="line-code">}</td></tr>
+<tr class=""><td class="line-num">11</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">12</td><td class="line-code"><span class="type">void</span> <span class="fn">radix_sort</span>(<span class="type">int</span> *a, <span class="type">int</span> n) {</td></tr>
+<tr class=""><td class="line-num">13</td><td class="line-code">    <span class="type">int</span> max_val = <span class="num">0</span>;</td></tr>
+<tr class=""><td class="line-num">14</td><td class="line-code">    <span class="kw">for</span> (<span class="type">int</span> i = <span class="num">0</span>; i &lt; n; i++) <span class="kw">if</span> (a[i] &gt; max_val) max_val = a[i];</td></tr>
+<tr class=""><td class="line-num">15</td><td class="line-code">    <span class="kw">for</span> (<span class="type">int</span> exp = <span class="num">1</span>; max_val/exp &gt; <span class="num">0</span>; exp *= <span class="num">10</span>) {</td></tr>
+<tr class=""><td class="line-num">16</td><td class="line-code">        <span class="type">int</span> output[<span class="num">100</span>], count[<span class="num">10</span>] = {<span class="num">0</span>};</td></tr>
+<tr class=""><td class="line-num">17</td><td class="line-code">        <span class="kw">for</span> (<span class="type">int</span> i = <span class="num">0</span>; i &lt; n; i++) count[(a[i]/exp)%<span class="num">10</span>]++;</td></tr>
+<tr class=""><td class="line-num">18</td><td class="line-code">        <span class="kw">for</span> (<span class="type">int</span> i = <span class="num">1</span>; i &lt; <span class="num">10</span>; i++) count[i] += count[i-<span class="num">1</span>];</td></tr>
+<tr class=""><td class="line-num">19</td><td class="line-code">        <span class="kw">for</span> (<span class="type">int</span> i = n-<span class="num">1</span>; i &gt;= <span class="num">0</span>; i--) {</td></tr>
+<tr class=""><td class="line-num">20</td><td class="line-code">            output[count[(a[i]/exp)%<span class="num">10</span>]-<span class="num">1</span>] = a[i];</td></tr>
+<tr class=""><td class="line-num">21</td><td class="line-code">            count[(a[i]/exp)%<span class="num">10</span>]--;</td></tr>
+<tr class=""><td class="line-num">22</td><td class="line-code">        }</td></tr>
+<tr class=""><td class="line-num">23</td><td class="line-code">        <span class="fn">memcpy</span>(a, output, n*<span class="kw">sizeof</span>(<span class="type">int</span>));</td></tr>
+<tr class=""><td class="line-num">24</td><td class="line-code">    }</td></tr>
+<tr class=""><td class="line-num">25</td><td class="line-code">}</td></tr>
+<tr class=""><td class="line-num">26</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">27</td><td class="line-code"><span class="type">int</span> <span class="fn">main</span>() {</td></tr>
+<tr class=""><td class="line-num">28</td><td class="line-code">    <span class="type">int</span> a[] = {<span class="num">4</span>,<span class="num">2</span>,<span class="num">2</span>,<span class="num">8</span>,<span class="num">3</span>,<span class="num">3</span>,<span class="num">1</span>};</td></tr>
+<tr class=""><td class="line-num">29</td><td class="line-code">    <span class="fn">counting_sort</span>(a, <span class="num">7</span>, <span class="num">8</span>);</td></tr>
+<tr class=""><td class="line-num">30</td><td class="line-code">    <span class="fn">printf</span>(<span class="str">"Counting: "</span>); <span class="kw">for</span>(<span class="type">int</span> i=<span class="num">0</span>;i&lt;<span class="num">7</span>;i++) <span class="fn">printf</span>(<span class="str">"<span class="fmt">%d</span> "</span>,a[i]); <span class="fn">printf</span>(<span class="str">"<span class="esc">\n</span>"</span>);</td></tr>
+<tr class=""><td class="line-num">31</td><td class="line-code">    </td></tr>
+<tr class=""><td class="line-num">32</td><td class="line-code">    <span class="type">int</span> b[] = {<span class="num">170</span>,<span class="num">45</span>,<span class="num">75</span>,<span class="num">90</span>,<span class="num">802</span>,<span class="num">24</span>,<span class="num">2</span>,<span class="num">66</span>};</td></tr>
+<tr class=""><td class="line-num">33</td><td class="line-code">    <span class="fn">radix_sort</span>(b, <span class="num">8</span>);</td></tr>
+<tr class=""><td class="line-num">34</td><td class="line-code">    <span class="fn">printf</span>(<span class="str">"Radix: "</span>); <span class="kw">for</span>(<span class="type">int</span> i=<span class="num">0</span>;i&lt;<span class="num">8</span>;i++) <span class="fn">printf</span>(<span class="str">"<span class="fmt">%d</span> "</span>,b[i]); <span class="fn">printf</span>(<span class="str">"<span class="esc">\n</span>"</span>);</td></tr>
+<tr class=""><td class="line-num">35</td><td class="line-code">    <span class="kw">return</span> <span class="num">0</span>;</td></tr>
+<tr class=""><td class="line-num">36</td><td class="line-code">}</td></tr></table></div>
+<div class="output-block avoid-break"><span class="output-label">실행 결과</span><div class="output-text">Counting: 1 2 2 3 3 4 8
+Radix: 2 24 45 66 75 90 170 802</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">counting sort</div><div class="fact-bite-text">계수 정렬. O(n+k). 비교 안 함! 정수 범위 제한 시 최적. 기수 정렬의 기반.</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">radix sort</div><div class="fact-bite-text">기수 정렬. O(d·n). 자릿수별 정렬. LSD(최하위)→MSD(최상위). 문자열 정렬에도!</div></div>
+<div class="mascot-speech right avoid-break">
+        <img class="mascot-speech-img " src="svg-assets/mascot-thinking.svg" alt="마스코트" />
+        <div class="mascot-bubble thinking">비교 안 하는 정렬! 범위가 작으면 Counting, 자릿수가 작으면 Radix. O(n) 가능!</div>
+      </div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">external sort</div><div class="fact-bite-text">외부 정렬. 메모리에 안 들어오는 데이터. 청크 정렬→병합. 데이터베이스, 대용량 로그 처리!</div></div>
+<div class="mascot-speech  avoid-break">
+        <img class="mascot-speech-img " src="svg-assets/mascot-hello.svg" alt="마스코트" />
+        <div class="mascot-bubble hello">정렬 알고리즘 총정리: 버블<선택<삽입<셸<퀵≈병합<힙. 상황에 맞는 걸 골라!</div>
+      </div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">in-place merge</div><div class="fact-bite-text">제자리 병합. 추가 메모리 없이 병합! 복잡하지만 O(1) 공간. 실전에서는 거의 안 쓰임.</div></div>
+<div class="mascot-speech right avoid-break">
+        <img class="mascot-speech-img " src="svg-assets/mascot-thinking.svg" alt="마스코트" />
+        <div class="mascot-bubble thinking">정렬 선택 가이드: n<50→삽입, 범용→퀵소트, 안정 필요→병합, 정수→계수/기수!</div>
+      </div>
+<div class="code-block avoid-break"><div class="code-block-header">[C 코드] 정렬 — Counting Sort + Radix Sort</div>
+        <table class="code-table"><tr class=""><td class="line-num">1</td><td class="line-code"><span class="pp">#include</span> <span class="str">&lt;stdio.h&gt;</span></td></tr>
+<tr class=""><td class="line-num">2</td><td class="line-code"><span class="pp">#include</span> <span class="str">&lt;string.h&gt;</span></td></tr>
+<tr class=""><td class="line-num">3</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">4</td><td class="line-code"><span class="cmt">// Counting Sort — O(n+k), 비교 없는 정렬!</span></td></tr>
+<tr class=""><td class="line-num">5</td><td class="line-code"><span class="type">void</span> <span class="fn">counting_sort</span>(<span class="type">int</span> *a, <span class="type">int</span> n, <span class="type">int</span> max_val) {</td></tr>
+<tr class=""><td class="line-num">6</td><td class="line-code">    <span class="type">int</span> count[<span class="num">100</span>] = {<span class="num">0</span>};</td></tr>
+<tr class=""><td class="line-num">7</td><td class="line-code">    <span class="type">int</span> output[<span class="num">100</span>];</td></tr>
+<tr class=""><td class="line-num">8</td><td class="line-code">    <span class="kw">for</span> (<span class="type">int</span> i = <span class="num">0</span>; i &lt; n; i++) count[a[i]]++;</td></tr>
+<tr class=""><td class="line-num">9</td><td class="line-code">    <span class="kw">for</span> (<span class="type">int</span> i = <span class="num">1</span>; i &lt;= max_val; i++) count[i] += count[i-<span class="num">1</span>];</td></tr>
+<tr class=""><td class="line-num">10</td><td class="line-code">    <span class="kw">for</span> (<span class="type">int</span> i = n-<span class="num">1</span>; i &gt;= <span class="num">0</span>; i--) { output[count[a[i]]-<span class="num">1</span>] = a[i]; count[a[i]]--; }</td></tr>
+<tr class=""><td class="line-num">11</td><td class="line-code">    <span class="fn">memcpy</span>(a, output, n * <span class="kw">sizeof</span>(<span class="type">int</span>));</td></tr>
+<tr class=""><td class="line-num">12</td><td class="line-code">}</td></tr>
+<tr class=""><td class="line-num">13</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">14</td><td class="line-code"><span class="cmt">// Radix Sort — 자릿수별 Counting Sort</span></td></tr>
+<tr class=""><td class="line-num">15</td><td class="line-code"><span class="type">void</span> <span class="fn">radix_count</span>(<span class="type">int</span> *a, <span class="type">int</span> n, <span class="type">int</span> exp) {</td></tr>
+<tr class=""><td class="line-num">16</td><td class="line-code">    <span class="type">int</span> output[<span class="num">100</span>], count[<span class="num">10</span>] = {<span class="num">0</span>};</td></tr>
+<tr class=""><td class="line-num">17</td><td class="line-code">    <span class="kw">for</span> (<span class="type">int</span> i = <span class="num">0</span>; i &lt; n; i++) count[(a[i]/exp)%<span class="num">10</span>]++;</td></tr>
+<tr class=""><td class="line-num">18</td><td class="line-code">    <span class="kw">for</span> (<span class="type">int</span> i = <span class="num">1</span>; i &lt; <span class="num">10</span>; i++) count[i] += count[i-<span class="num">1</span>];</td></tr>
+<tr class=""><td class="line-num">19</td><td class="line-code">    <span class="kw">for</span> (<span class="type">int</span> i = n-<span class="num">1</span>; i &gt;= <span class="num">0</span>; i--) { output[count[(a[i]/exp)%<span class="num">10</span>]-<span class="num">1</span>] = a[i]; count[(a[i]/exp)%<span class="num">10</span>]--; }</td></tr>
+<tr class=""><td class="line-num">20</td><td class="line-code">    <span class="fn">memcpy</span>(a, output, n * <span class="kw">sizeof</span>(<span class="type">int</span>));</td></tr>
+<tr class=""><td class="line-num">21</td><td class="line-code">}</td></tr>
+<tr class=""><td class="line-num">22</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">23</td><td class="line-code"><span class="type">void</span> <span class="fn">radix_sort</span>(<span class="type">int</span> *a, <span class="type">int</span> n) {</td></tr>
+<tr class=""><td class="line-num">24</td><td class="line-code">    <span class="type">int</span> max = a[<span class="num">0</span>];</td></tr>
+<tr class=""><td class="line-num">25</td><td class="line-code">    <span class="kw">for</span> (<span class="type">int</span> i = <span class="num">1</span>; i &lt; n; i++) <span class="kw">if</span> (a[i] &gt; max) max = a[i];</td></tr>
+<tr class=""><td class="line-num">26</td><td class="line-code">    <span class="kw">for</span> (<span class="type">int</span> exp = <span class="num">1</span>; max/exp &gt; <span class="num">0</span>; exp *= <span class="num">10</span>) {</td></tr>
+<tr class=""><td class="line-num">27</td><td class="line-code">        <span class="fn">radix_count</span>(a, n, exp);</td></tr>
+<tr class=""><td class="line-num">28</td><td class="line-code">        <span class="fn">printf</span>(<span class="str">"  exp=<span class="fmt">%d</span>: "</span>, exp);</td></tr>
+<tr class=""><td class="line-num">29</td><td class="line-code">        <span class="kw">for</span> (<span class="type">int</span> i = <span class="num">0</span>; i &lt; n; i++) <span class="fn">printf</span>(<span class="str">"<span class="fmt">%d</span> "</span>, a[i]);</td></tr>
+<tr class=""><td class="line-num">30</td><td class="line-code">        <span class="fn">printf</span>(<span class="str">"<span class="esc">\n</span>"</span>);</td></tr>
+<tr class=""><td class="line-num">31</td><td class="line-code">    }</td></tr>
+<tr class=""><td class="line-num">32</td><td class="line-code">}</td></tr>
+<tr class=""><td class="line-num">33</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">34</td><td class="line-code"><span class="type">int</span> <span class="fn">main</span>() {</td></tr>
+<tr class=""><td class="line-num">35</td><td class="line-code">    <span class="type">int</span> a[] = {<span class="num">4</span>,<span class="num">2</span>,<span class="num">2</span>,<span class="num">8</span>,<span class="num">3</span>,<span class="num">3</span>,<span class="num">1</span>};</td></tr>
+<tr class=""><td class="line-num">36</td><td class="line-code">    <span class="fn">printf</span>(<span class="str">"=== Counting Sort ===<span class="esc">\n</span>"</span>);</td></tr>
+<tr class=""><td class="line-num">37</td><td class="line-code">    <span class="fn">printf</span>(<span class="str">"Before: "</span>); <span class="kw">for</span>(<span class="type">int</span> i=<span class="num">0</span>;i&lt;<span class="num">7</span>;i++) <span class="fn">printf</span>(<span class="str">"<span class="fmt">%d</span> "</span>,a[i]); <span class="fn">printf</span>(<span class="str">"<span class="esc">\n</span>"</span>);</td></tr>
+<tr class=""><td class="line-num">38</td><td class="line-code">    <span class="fn">counting_sort</span>(a, <span class="num">7</span>, <span class="num">8</span>);</td></tr>
+<tr class=""><td class="line-num">39</td><td class="line-code">    <span class="fn">printf</span>(<span class="str">"After:  "</span>); <span class="kw">for</span>(<span class="type">int</span> i=<span class="num">0</span>;i&lt;<span class="num">7</span>;i++) <span class="fn">printf</span>(<span class="str">"<span class="fmt">%d</span> "</span>,a[i]); <span class="fn">printf</span>(<span class="str">"<span class="esc">\n</span>"</span>);</td></tr>
+<tr class=""><td class="line-num">40</td><td class="line-code">    </td></tr>
+<tr class=""><td class="line-num">41</td><td class="line-code">    <span class="type">int</span> b[] = {<span class="num">170</span>,<span class="num">45</span>,<span class="num">75</span>,<span class="num">90</span>,<span class="num">802</span>,<span class="num">24</span>,<span class="num">2</span>,<span class="num">66</span>};</td></tr>
+<tr class=""><td class="line-num">42</td><td class="line-code">    <span class="fn">printf</span>(<span class="str">"<span class="esc">\n</span>=== Radix Sort ===<span class="esc">\n</span>"</span>);</td></tr>
+<tr class=""><td class="line-num">43</td><td class="line-code">    <span class="fn">printf</span>(<span class="str">"Before: "</span>); <span class="kw">for</span>(<span class="type">int</span> i=<span class="num">0</span>;i&lt;<span class="num">8</span>;i++) <span class="fn">printf</span>(<span class="str">"<span class="fmt">%d</span> "</span>,b[i]); <span class="fn">printf</span>(<span class="str">"<span class="esc">\n</span>"</span>);</td></tr>
+<tr class=""><td class="line-num">44</td><td class="line-code">    <span class="fn">radix_sort</span>(b, <span class="num">8</span>);</td></tr>
+<tr class=""><td class="line-num">45</td><td class="line-code">    <span class="fn">printf</span>(<span class="str">"After:  "</span>); <span class="kw">for</span>(<span class="type">int</span> i=<span class="num">0</span>;i&lt;<span class="num">8</span>;i++) <span class="fn">printf</span>(<span class="str">"<span class="fmt">%d</span> "</span>,b[i]); <span class="fn">printf</span>(<span class="str">"<span class="esc">\n</span>"</span>);</td></tr>
+<tr class=""><td class="line-num">46</td><td class="line-code">    <span class="kw">return</span> <span class="num">0</span>;</td></tr>
+<tr class=""><td class="line-num">47</td><td class="line-code">}</td></tr></table></div>
+<div class="output-block avoid-break"><span class="output-label">실행 결과</span><div class="output-text">=== Counting Sort ===
+Before: 4 2 2 8 3 3 1
+After:  1 2 2 3 3 4 8
+
+=== Radix Sort ===
+Before: 170 45 75 90 802 24 2 66
+  exp=1: 170 90 802 2 24 45 75 66
+  exp=10: 802 2 24 45 66 170 75 90
+  exp=100: 2 24 45 66 75 90 170 802
+After:  2 24 45 66 75 90 170 802</div></div>
+<div class="box box-key avoid-break"><span class="box-label">[심화 내용] 비비교 정렬의 원리</span><div class="box-content"><b>Counting Sort:</b><br>값의 범위(k)만큼 배열 → 빈도 세기<br>누적합으로 위치 결정<br>O(n+k). k가 작으면 초고속!<br><br><b>Radix Sort:</b><br>자릿수별로 Counting Sort 반복<br>1의 자리 → 10의 자리 → 100의 자리<br>O(d·(n+k)), d=자릿수. 실전에서 매우 빠름!<br><br><b>Bucket Sort:</b><br>범위를 버킷으로 나눠 분배<br>각 버킷 내부 정렬 후 합치기<br>O(n) 평균. 균등 분포에 최적!</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">counting sort</div><div class="fact-bite-text">계수 정렬. 값 범위 배열에 빈도 저장. O(n+k). 비교 없음! 정수, 범위 제한에 최적.</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">radix sort</div><div class="fact-bite-text">기수 정렬. 자릿수별 안정 정렬 반복. O(d·n). d=자릿수. 정수, 문자열에 초고속!</div></div>
+<div class="mascot-speech  avoid-break">
+        <img class="mascot-speech-img " src="svg-assets/mascot-eureka.svg" alt="마스코트" />
+        <div class="mascot-bubble eureka">비교 안 하고 정렬? 가능! Counting Sort는 세기만. Radix는 자릿수별로. O(n)!</div>
+      </div>
+<div class="glossary avoid-break"><div class="glossary-item"><dt class="glossary-term">정렬(sorting)</dt><dd class="glossary-def">데이터를 일정한 기준에 따라 순서대로 나열하는 것.</dd></div><div class="glossary-item"><dt class="glossary-term">오름차순(ascending)</dt><dd class="glossary-def">작은 값에서 큰 값 순서로 나열. 예: 1, 2, 3, 4, 5</dd></div><div class="glossary-item"><dt class="glossary-term">내림차순(descending)</dt><dd class="glossary-def">큰 값에서 작은 값 순서로 나열. 예: 5, 4, 3, 2, 1</dd></div><div class="glossary-item"><dt class="glossary-term">비교(compare)</dt><dd class="glossary-def">두 값의 크기를 비교하는 연산. 정렬의 기본 동작.</dd></div><div class="glossary-item"><dt class="glossary-term">교환(swap)</dt><dd class="glossary-def">두 원소의 위치를 서로 바꾸는 연산.</dd></div><div class="glossary-item"><dt class="glossary-term">시간 복잡도</dt><dd class="glossary-def">알고리즘이 얼마나 빠른지를 표현하는 방법. O(n), O(n^2) 등으로 표기.</dd></div></div>
+<div class="visual-summary avoid-break"><div class="visual-summary-title">이번 유닛 핵심 정리</div><div class="visual-summary-items"><div class="visual-summary-item"><div class="visual-summary-num">1</div><span>정렬 = 데이터를 기준에 따라 순서대로 나열하는 것</span></div><div class="visual-summary-item"><div class="visual-summary-num">2</div><span>오름차순은 작은->큰, 내림차순은 큰->작은</span></div><div class="visual-summary-item"><div class="visual-summary-num">3</div><span>정렬하면 탐색이 빨라진다 (핵심 이유!)</span></div><div class="visual-summary-item"><div class="visual-summary-num">4</div><span>버블/선택/삽입 정렬 = 기본 정렬, qsort() = 실전 정렬</span></div></div></div>
+<h2>실전 활용 확장</h2>
+<p>정렬과 자료구조를 활용한 다양한 실전 예제입니다.</p>
+<div class="mascot-speech  avoid-break">
+        <img class="mascot-speech-img small" src="svg-assets/mascot-thinking.svg" alt="마스코트" />
+        <div class="mascot-bubble tip">정렬 = 데이터를 순서대로. 버블, 선택, 삽입 정렬의 차이를 이해하세요!</div>
+      </div>
+<div class="trace-table avoid-break"><div class="trace-caption">정렬 알고리즘 비교</div><table><thead><tr><th>알고리즘</th><th>시간</th><th>공간</th><th>안정성</th></tr></thead><tbody><tr><td>버블</td><td>O(n²)</td><td>O(1)</td><td>안정</td></tr><tr><td>선택</td><td>O(n²)</td><td>O(1)</td><td>불안정</td></tr><tr><td>삽입</td><td>O(n²)</td><td>O(1)</td><td>안정</td></tr><tr><td>qsort</td><td>O(n log n)</td><td>O(log n)</td><td>불안정</td></tr></tbody></table></div>
+<h2>추가 연습문제</h2>
+<div class="exercise avoid-break"><div class="exercise-title">문제 6 <span class="difficulty diff-2">★★ 도전</span></div><div class="exercise-item"><p>이번 유닛의 핵심 개념을 활용하여 자신만의 프로그램을 만들어 보세요.</p></div><div class="memo-area"><span class="memo-label">여기에 답을 써 보세요</span></div></div>
+<div class="exercise avoid-break"><div class="exercise-title">문제 7 <span class="difficulty diff-3">★★★ 심화</span></div><div class="exercise-item"><p>이번 유닛의 코드를 수정하여 다른 결과를 내는 변형을 만들어 보세요.</p></div><div class="memo-area"><span class="memo-label">여기에 답을 써 보세요</span></div></div>
+<h2>실생활 연결</h2>
+<div class="box box-tip avoid-break"><span class="box-label">[실생활] 이 문법은 어디에?</span><div class="box-content">게임, 앱, 웹사이트, IoT, AI, 로봇 등 모든 분야의 프로그램에서 사용돼요!</div></div>
+<div class="mascot-speech  avoid-break">
+        <img class="mascot-speech-img small" src="svg-assets/mascot-hello.svg" alt="마스코트" />
+        <div class="mascot-bubble ">이 개념은 실제 프로그램을 만들 때 반드시 필요해요!</div>
+      </div>
+<h2>[심화] 더 알아보기</h2>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">undefined</div><div class="fact-bite-text">컴퓨팅 사고력(CT) = 문제를 컴퓨터처럼 분석하고 해결하는 능력!</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">undefined</div><div class="fact-bite-text">DRY(Don't Repeat Yourself) = 같은 코드 반복 금지! 함수로 분리!</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">undefined</div><div class="fact-bite-text">KISS(Keep It Simple) = 간단하게! 복잡한 코드는 버그의 온상!</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">undefined</div><div class="fact-bite-text">알고리즘 = 문제 해결의 단계별 방법. 요리 레시피도 알고리즘!</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">undefined</div><div class="fact-bite-text">패턴 인식 = 반복되는 규칙을 찾으면 문제가 쉬워져요!</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">undefined</div><div class="fact-bite-text">분해 = 큰 문제를 작은 조각으로. "어려운 문제는 없다, 모아놓은 쉬운 문제가 있을 뿐"</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">undefined</div><div class="fact-bite-text">KOI = 한국정보올림피아드. 초등/중등/고등부. 알고리즘 대회!</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">undefined</div><div class="fact-bite-text">반복문 = 같은 일을 여러 번. for, while, do-while!</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">undefined</div><div class="fact-bite-text">변수 = 값을 저장하는 상자. 이름을 붙여서 구별!</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">undefined</div><div class="fact-bite-text">함수 = 기능을 묶어놓은 상자. 한 번 만들면 여러 번 재사용!</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">undefined</div><div class="fact-bite-text">배열 = 같은 종류 데이터 여러 개 저장. int a[10] = 10칸짜리 상자!</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">undefined</div><div class="fact-bite-text">구조체 = 여러 변수를 하나로 묶음. 객체지향의 시작!</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">undefined</div><div class="fact-bite-text">포인터 = 메모리 주소. C언어의 가장 강력한 기능!</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">undefined</div><div class="fact-bite-text">비트 연산 = 비트 단위 조작. 암호화, 압축 등에 필수!</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">undefined</div><div class="fact-bite-text">매일 조금씩 코딩하는 것이 가장 중요해요. 10분이라도 매일!</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">undefined</div><div class="fact-bite-text">컴파일하고 실행하는 습관! 작성 → 컴파일 → 에러 확인 → 수정 → 반복!</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">undefined</div><div class="fact-bite-text">컴퓨팅 사고력(CT) = 문제를 컴퓨터처럼 분석하고 해결하는 능력!</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">undefined</div><div class="fact-bite-text">DRY(Don't Repeat Yourself) = 같은 코드 반복 금지! 함수로 분리!</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">undefined</div><div class="fact-bite-text">KISS(Keep It Simple) = 간단하게! 복잡한 코드는 버그의 온상!</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">undefined</div><div class="fact-bite-text">알고리즘 = 문제 해결의 단계별 방법. 요리 레시피도 알고리즘!</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">undefined</div><div class="fact-bite-text">패턴 인식 = 반복되는 규칙을 찾으면 문제가 쉬워져요!</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">undefined</div><div class="fact-bite-text">분해 = 큰 문제를 작은 조각으로. "어려운 문제는 없다, 모아놓은 쉬운 문제가 있을 뿐"</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">undefined</div><div class="fact-bite-text">KOI = 한국정보올림피아드. 초등/중등/고등부. 알고리즘 대회!</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">undefined</div><div class="fact-bite-text">반복문 = 같은 일을 여러 번. for, while, do-while!</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">undefined</div><div class="fact-bite-text">변수 = 값을 저장하는 상자. 이름을 붙여서 구별!</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">undefined</div><div class="fact-bite-text">함수 = 기능을 묶어놓은 상자. 한 번 만들면 여러 번 재사용!</div></div>
+<div class="mascot-speech right avoid-break">
+        <img class="mascot-speech-img small" src="svg-assets/mascot-celebrate.svg" alt="마스코트" />
+        <div class="mascot-bubble success">이번 유닛 완전 정복! 다음 유닛으로 고고!</div>
+      </div>
+<p>이번 유닛의 모든 개념을 완전히 이해했습니다. 다음 유닛에서 더 발전된 개념을 배워보세요!</p>
+<div class="box box-summary avoid-break"><span class="box-label">이 유닛에서 연결된 축</span><div class="box-content"><b>[C언어]</b> 배열, 반복문, 비교 연산자<br><b>[컴퓨팅사고력]</b> 정렬이라는 추상적 개념을 알고리즘으로 구체화<br><b>[디버깅]</b> 정렬 결과 검증 함수로 버그 찾기<br><b>[KOI]</b> 정렬 문제는 매년 출제되는 핵심 주제</div></div>
+<div class="box box-question avoid-break"><span class="box-label">다음 유닛 미리보기</span><div class="box-content">다음 유닛에서는 가장 직관적인 정렬 알고리즘인 <b>버블 정렬</b>을 배워요. 이웃한 두 원소를 비교해서 교환하는 과정을 단계별로 시각화해 볼 거예요.</div></div>
+</article>
+</body>
+</html>

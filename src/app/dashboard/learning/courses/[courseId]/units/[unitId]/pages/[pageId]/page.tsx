@@ -6,6 +6,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "@/contexts/AuthContext";
 import { awardXP, deductXP, XP_REWARDS, XP_PENALTIES } from "@/lib/xp-engine";
 import { getCourseById, getAllUnits } from "@/data/courses";
+import { getHtmlContentPath } from "@/data/courses/html-content-map";
 import type { Unit, Page, Quiz, CodeProblem } from "@/data/courses";
 import LevelUpModal from "@/components/ui/LevelUpModal";
 import { QuizPanel, CodeProblemCard, MI, glassPanel } from "../../../../components";
@@ -32,7 +33,16 @@ export default function LearningContentPage() {
     // Find unit by 1-based index in allUnits (URL param is index, not unitNumber)
     const unitIndex = parseInt(unitIdParam, 10) - 1;
     const unit = useMemo(() => (unitIndex >= 0 && unitIndex < allUnits.length) ? allUnits[unitIndex] : undefined, [allUnits, unitIndex]);
-    const pages = useMemo(() => unit?.pages ?? [], [unit]);
+    // Auto-inject HTML textbook page if available
+    const htmlContentPath = useMemo(() => getHtmlContentPath(courseId, unitIndex + 1), [courseId, unitIndex]);
+    const pages = useMemo(() => {
+        const basePgs = unit?.pages ?? [];
+        if (htmlContentPath && !basePgs.some(p => p.id.endsWith('.0'))) {
+            const textbookPage: Page = { id: `${unit?.unitNumber ?? 0}.0`, title: '교재', type: '페이지' as const, content: `<iframe src="${htmlContentPath}" style="width:100%;min-height:85vh;border:none;border-radius:12px" />` };
+            return [textbookPage, ...basePgs];
+        }
+        return basePgs;
+    }, [unit, htmlContentPath]);
     const currentPage = useMemo(() => pages.find(p => p.id === pageIdParam), [pages, pageIdParam]);
     const currentPageIndex = useMemo(() => pages.findIndex(p => p.id === pageIdParam), [pages, pageIdParam]);
 
@@ -345,10 +355,13 @@ export default function LearningContentPage() {
                 {/* Content Body */}
                 <div style={{ padding: "28px 36px 36px" }}>
                     {/* HTML content */}
-                    {currentPage.content && (
+                    {currentPage.content && currentPage.content.includes('<iframe') ? (
+                        <div dangerouslySetInnerHTML={{ __html: currentPage.content }}
+                            style={{ width: '100%', minHeight: '85vh' }} />
+                    ) : currentPage.content ? (
                         <div dangerouslySetInnerHTML={{ __html: currentPage.content }}
                             style={{ fontSize: 14, lineHeight: 1.9, color: "#334155", marginBottom: currentPage.quiz || currentPage.problems ? 32 : 0 }} />
-                    )}
+                    ) : null}
 
                     {/* Quiz */}
                     {currentPage.quiz && (

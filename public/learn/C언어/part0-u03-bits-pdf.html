@@ -1,0 +1,1387 @@
+﻿<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<base href="/learn/C언어/">
+<title>코딩쏙 교재 — 0과 1의 세계 (비트)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+/* ═══════════════════════════════════════════════════════════════
+   코딩쏙 프리미엄 PDF 교재 스타일시트 v5.0
+   Paged.js + A4 인쇄 최적화 + 아동교육 디자인 시스템
+   ═══════════════════════════════════════════════════════════════ */
+
+/* ── 리셋 & 기본 ── */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --c-primary: #FF6B6B;
+  --c-primary-light: #FFE8E8;
+  --c-primary-dark: #E84545;
+  --c-accent: #4ECDC4;
+  --c-accent-light: #E8FFF9;
+  --c-blue: #3B82F6;
+  --c-blue-light: #EFF6FF;
+  --c-purple: #8B5CF6;
+  --c-purple-light: #F5F3FF;
+  --c-orange: #F59E0B;
+  --c-orange-light: #FFFBEB;
+  --c-green: #10B981;
+  --c-green-light: #ECFDF5;
+  --c-red: #EF4444;
+  --c-red-light: #FEF2F2;
+  --c-teal: #14B8A6;
+  --c-teal-light: #F0FDFA;
+  --c-pink: #EC4899;
+  --c-text: #1E293B;
+  --c-text-secondary: #64748B;
+  --c-text-muted: #94A3B8;
+  --c-border: #E2E8F0;
+  --c-bg-subtle: #F8FAFC;
+  --c-bg-warm: #FFFBF5;
+  --font-body: 'Pretendard', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-code: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --radius-xl: 18px;
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.08);
+  --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
+  --shadow-lg: 0 8px 24px rgba(0,0,0,0.10);
+}
+
+/* ── 페이지 설정 ── */
+@page {
+  size: A4;
+  margin: 18mm 17mm 15mm 22mm;
+  @bottom-center {
+    content: counter(page);
+    font-family: var(--font-body);
+    font-size: 9pt;
+    color: var(--c-text-muted);
+    letter-spacing: 1px;
+  }
+}
+@page :first { @bottom-center { content: none; } }
+
+body {
+  font-family: var(--font-body);
+  color: var(--c-text);
+  background: white;
+  font-size: 11.5pt;
+  line-height: 180%;
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+  word-break: keep-all;
+  overflow-wrap: break-word;
+}
+
+/* ── 페이지 제어 ── */
+.avoid-break { break-inside: avoid !important; page-break-inside: avoid !important; }
+h2, h3 { break-after: avoid !important; page-break-after: avoid !important; }
+.page-break-hint { break-before: page !important; page-break-before: always !important; height: 0; margin: 0; padding: 0; }
+p { orphans: 3; widows: 3; }
+
+/* ═══════════════════════════════════════
+   레슨 헤더 — 프리미엄 그래디언트 배너
+   ═══════════════════════════════════════ */
+.lesson-header {
+  margin-bottom: 6mm;
+  padding: 6mm 5mm 5mm;
+  background: linear-gradient(135deg, #FF6B6B 0%, #FF8E53 50%, #FEC89A 100%);
+  border-radius: var(--radius-xl);
+  color: white;
+  position: relative;
+  overflow: hidden;
+  box-shadow: var(--shadow-lg);
+}
+.lesson-header::before {
+  content: '';
+  position: absolute;
+  top: -30%;
+  right: -10%;
+  width: 140px;
+  height: 140px;
+  background: rgba(255,255,255,0.12);
+  border-radius: 50%;
+}
+.lesson-header::after {
+  content: '';
+  position: absolute;
+  bottom: -20%;
+  left: 15%;
+  width: 80px;
+  height: 80px;
+  background: rgba(255,255,255,0.08);
+  border-radius: 50%;
+}
+.lesson-number {
+  font-size: 10pt;
+  font-weight: 700;
+  color: rgba(255,255,255,0.85);
+  margin-bottom: 2mm;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  position: relative;
+  z-index: 1;
+}
+.lesson-title {
+  font-size: 24pt;
+  font-weight: 900;
+  line-height: 125%;
+  color: white;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.15);
+  position: relative;
+  z-index: 1;
+}
+.lesson-summary {
+  font-size: 11pt;
+  color: rgba(255,255,255,0.9);
+  margin-top: 2.5mm;
+  font-weight: 400;
+  position: relative;
+  z-index: 1;
+}
+
+/* ═══════════════════════════════════════
+   제목 계층 — 프리미엄 타이포그래피
+   ═══════════════════════════════════════ */
+h2 {
+  font-size: 16pt;
+  font-weight: 800;
+  margin: 6mm 0 3mm;
+  padding: 2mm 0 2mm 4.5mm;
+  border-left: 4.5px solid var(--c-primary);
+  color: var(--c-text);
+  background: linear-gradient(90deg, var(--c-primary-light) 0%, transparent 60%);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  letter-spacing: -0.3px;
+}
+h3 {
+  font-size: 13.5pt;
+  font-weight: 700;
+  color: #334155;
+  margin: 4mm 0 2.5mm;
+  padding-bottom: 1mm;
+  border-bottom: 2px solid #F1F5F9;
+}
+p {
+  margin-bottom: 2.5mm;
+  text-align: justify;
+  line-height: 175%;
+  font-size: 11.5pt;
+}
+
+/* ── 인라인 코드 ── */
+code {
+  font-family: var(--font-code);
+  font-size: 9.5pt;
+  background: linear-gradient(135deg, #FEF3C7, #FDE68A);
+  padding: 0.5mm 2mm;
+  border-radius: 4px;
+  color: #92400E;
+  border: 1px solid #FCD34D;
+  font-weight: 500;
+}
+
+/* ═══════════════════════════════════════
+   코드 블록 — 프리미엄 IDE 스타일
+   ═══════════════════════════════════════ */
+.code-block {
+  background: #0F172A;
+  border-radius: var(--radius-md);
+  padding: 0;
+  margin: 3mm 0;
+  box-shadow: var(--shadow-md), inset 0 1px 0 rgba(255,255,255,0.05);
+  overflow: hidden;
+  border: 1px solid #1E293B;
+}
+.code-block-header {
+  font-family: var(--font-body);
+  font-size: 8.5pt;
+  font-weight: 600;
+  color: #94A3B8;
+  padding: 2.5mm 4.5mm;
+  background: #1E293B;
+  border-bottom: 1px solid #334155;
+  letter-spacing: 0.5px;
+  display: flex;
+  align-items: center;
+  gap: 2mm;
+}
+.code-block-header::before {
+  content: '';
+  display: inline-flex;
+  width: 8px; height: 8px;
+  background: #EF4444;
+  border-radius: 50%;
+  box-shadow: 14px 0 0 #F59E0B, 28px 0 0 #22C55E;
+  flex-shrink: 0;
+}
+.code-table { width: 100%; border-collapse: collapse; table-layout: fixed; }
+.code-table td { vertical-align: top; padding: 0; }
+.line-num {
+  width: 12mm;
+  min-width: 12mm;
+  max-width: 12mm;
+  text-align: right;
+  padding: 0.5mm 3mm 0.5mm 2mm;
+  font-family: var(--font-code);
+  font-size: 8pt;
+  color: #475569;
+  line-height: 165%;
+  user-select: none;
+  background: rgba(0,0,0,0.15);
+  border-right: 1px solid rgba(255,255,255,0.06);
+}
+.line-code {
+  width: auto;
+  font-family: var(--font-code);
+  font-size: 10pt;
+  color: #E2E8F0;
+  line-height: 165%;
+  padding: 0.5mm 4mm 0.5mm 4mm;
+  white-space: pre;
+  overflow-x: auto;
+}
+.line-highlight td { background: rgba(59,130,246,0.12) !important; }
+.line-highlight .line-num { color: var(--c-blue) !important; font-weight: 700; }
+
+/* 신택스 컬러 — VS Code Dark+ 영감 */
+.kw { color: #C084FC; font-weight: 500; }
+.str { color: #86EFAC; }
+.cmt { color: #6B7280; font-style: italic; }
+.fn { color: #FDBA74; }
+.pp { color: #F472B6; font-weight: 600; }
+.num { color: #7DD3FC; }
+.type { color: #5EEAD4; font-weight: 500; }
+.mc { color: #67E8F9; }
+.esc { color: #FCD34D; font-weight: 600; }
+.fmt { color: #FCD34D; }
+
+/* ═══════════════════════════════════════
+   실행 결과 — 터미널 스타일
+   ═══════════════════════════════════════ */
+.output-block {
+  background: #F0FDF4;
+  border: 1.5px solid #86EFAC;
+  border-radius: var(--radius-md);
+  padding: 3mm 4mm;
+  margin: 3mm 0;
+  position: relative;
+}
+.output-label {
+  font-family: var(--font-body);
+  font-size: 8.5pt;
+  color: var(--c-green);
+  display: block;
+  margin-bottom: 1.5mm;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+.output-text {
+  font-family: var(--font-code);
+  font-size: 10.5pt;
+  line-height: 160%;
+  color: #166534;
+}
+
+/* ═══════════════════════════════════════
+   박스 시스템 — 프리미엄 카드 디자인
+   ═══════════════════════════════════════ */
+.box {
+  border-radius: var(--radius-md);
+  padding: 3.5mm 4.5mm;
+  margin: 3mm 0;
+  position: relative;
+  box-shadow: var(--shadow-sm);
+}
+.box-label {
+  font-size: 10.5pt;
+  font-weight: 800;
+  margin-bottom: 2mm;
+  display: flex;
+  align-items: center;
+  gap: 2mm;
+}
+.box-content { font-size: 11pt; line-height: 170%; overflow-wrap: break-word; word-break: keep-all; }
+.box-warning {
+  border-left: 5px solid var(--c-red);
+  background: linear-gradient(135deg, #FEF2F2 0%, #FFF1F2 100%);
+}
+.box-warning .box-label { color: var(--c-red); }
+.box-key {
+  border-left: 5px solid var(--c-blue);
+  background: linear-gradient(135deg, #EFF6FF 0%, #F0F9FF 100%);
+}
+.box-key .box-label { color: var(--c-blue); }
+.box-tip {
+  border-left: 5px solid var(--c-orange);
+  background: linear-gradient(135deg, #FFFBEB 0%, #FEF9C3 50%, #FFFBEB 100%);
+}
+.box-tip .box-label { color: var(--c-orange); }
+.box-summary {
+  border-left: 5px solid var(--c-green);
+  background: linear-gradient(135deg, #ECFDF5 0%, #D1FAE5 100%);
+  border: 1.5px solid #A7F3D0;
+  border-left: 5px solid var(--c-green);
+}
+.box-summary .box-label { color: var(--c-green); }
+.box-question {
+  border-left: 5px solid var(--c-purple);
+  background: linear-gradient(135deg, #F5F3FF 0%, #EDE9FE 100%);
+}
+.box-question .box-label { color: var(--c-purple); }
+.box-history {
+  border-left: 5px solid var(--c-teal);
+  background: linear-gradient(135deg, #F0FDFA 0%, #CCFBF1 100%);
+}
+.box-history .box-label { color: var(--c-teal); }
+
+/* ═══════════════════════════════════════
+   연습문제 — 프리미엄 카드
+   ═══════════════════════════════════════ */
+.exercise {
+  background: white;
+  border: 1.5px solid #E2E8F0;
+  border-radius: var(--radius-lg);
+  padding: 3.5mm 4.5mm;
+  margin: 3mm 0;
+  border-left: 5px solid var(--c-primary);
+  box-shadow: var(--shadow-sm);
+  position: relative;
+}
+.exercise-title {
+  font-size: 13pt;
+  font-weight: 800;
+  color: var(--c-primary);
+  margin-bottom: 2.5mm;
+  display: flex;
+  align-items: center;
+  gap: 2mm;
+}
+.difficulty {
+  display: inline-flex;
+  align-items: center;
+  font-size: 8pt;
+  padding: 0.5mm 2.5mm;
+  border-radius: 20px;
+  margin-left: 2mm;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+}
+.diff-1 { background: #D1FAE5; color: #059669; }
+.diff-2 { background: #FEF3C7; color: #D97706; }
+.diff-3 { background: #FEE2E2; color: #DC2626; }
+.memo-area {
+  border: 2px dashed #CBD5E1;
+  border-radius: var(--radius-md);
+  padding: 3mm;
+  min-height: 15mm;
+  margin-top: 2.5mm;
+  background: repeating-linear-gradient(
+    transparent, transparent 7mm, #F1F5F9 7mm, #F1F5F9 7.5mm
+  );
+}
+.memo-label { font-size: 8.5pt; color: var(--c-text-muted); font-style: italic; }
+
+/* ── OX/Choice/Short ── */
+.exercise-answer {
+  font-size: 10pt;
+  color: var(--c-green);
+  margin-top: 2mm;
+  padding: 1.5mm 3mm;
+  background: var(--c-green-light);
+  border-radius: var(--radius-sm);
+  font-weight: 600;
+  border: 1px solid #A7F3D0;
+}
+.exercise-explain {
+  font-size: 9.5pt;
+  color: var(--c-text-secondary);
+  margin-top: 1.5mm;
+  padding: 2mm 3mm;
+  background: #F8FAFC;
+  border-radius: var(--radius-sm);
+  border-left: 3px solid #E2E8F0;
+}
+.choice-list { padding-left: 6mm; margin: 2mm 0; }
+.choice-list li { font-size: 10.5pt; margin-bottom: 1.5mm; line-height: 150%; }
+.choice-list li.choice-correct { color: var(--c-green); font-weight: 700; }
+
+/* ═══════════════════════════════════════
+   Before/After 비교 — 프리미엄 2컬럼
+   ═══════════════════════════════════════ */
+.compare {
+  display: flex;
+  gap: 3mm;
+  margin: 3mm 0;
+  overflow: hidden;
+}
+.compare-bad {
+  flex: 1;
+  min-width: 0;
+  background: linear-gradient(135deg, #FEF2F2, #FFF1F2);
+  border: 1.5px solid #FECACA;
+  border-radius: var(--radius-md);
+  padding: 3mm;
+  overflow: hidden;
+}
+.compare-good {
+  flex: 1;
+  min-width: 0;
+  background: linear-gradient(135deg, #ECFDF5, #D1FAE5);
+  border: 1.5px solid #A7F3D0;
+  border-radius: var(--radius-md);
+  padding: 3mm;
+  overflow: hidden;
+}
+.compare code {
+  font-size: 9pt;
+  word-break: break-all;
+  overflow-wrap: break-word;
+  display: block;
+  background: rgba(0,0,0,0.05);
+  padding: 2mm 3mm;
+  border-radius: var(--radius-sm);
+  margin: 1.5mm 0;
+  line-height: 155%;
+  white-space: pre-wrap;
+  border: none;
+  color: inherit;
+}
+.compare-label { font-size: 9.5pt; font-weight: 800; margin-bottom: 1.5mm; }
+.compare-bad .compare-label { color: var(--c-red); }
+.compare-good .compare-label { color: var(--c-green); }
+.compare-msg-bad { font-size: 9pt; color: var(--c-red); }
+.compare-msg-good { font-size: 9pt; color: var(--c-green); }
+
+/* ═══════════════════════════════════════
+   챕터 시작 — 프리미엄 카드
+   ═══════════════════════════════════════ */
+.chapter-start-box { margin-bottom: 3mm; }
+.learning-goals {
+  background: linear-gradient(135deg, #FFF7ED 0%, #FFFBEB 100%);
+  border-radius: var(--radius-lg);
+  padding: 4mm 5mm;
+  margin-bottom: 3mm;
+  border: 1.5px solid #FED7AA;
+  box-shadow: var(--shadow-sm);
+}
+.learning-goals h3 {
+  font-size: 12pt;
+  font-weight: 800;
+  color: #EA580C;
+  margin: 0 0 2.5mm;
+  border: none;
+  padding: 0;
+}
+.learning-goals ul { padding-left: 5mm; margin: 0; }
+.learning-goals li { font-size: 11pt; margin-bottom: 1.5mm; line-height: 160%; color: #431407; }
+.prereq-check {
+  background: var(--c-blue-light);
+  border-left: 5px solid var(--c-blue);
+  border-radius: var(--radius-md);
+  padding: 3mm 4mm;
+  margin-bottom: 2.5mm;
+}
+.prereq-check h3 {
+  font-size: 11pt;
+  font-weight: 700;
+  color: var(--c-blue);
+  margin: 0 0 1.5mm;
+  border: none;
+  padding: 0;
+}
+.checklist { list-style: none; padding-left: 4mm; margin: 0; }
+.checklist li { margin-bottom: 1mm; font-size: 10.5pt; }
+.checklist li::before { content: '\2610  '; font-size: 12pt; color: var(--c-text-muted); }
+.progress-section { margin-top: 2.5mm; }
+.progress-label { font-size: 9.5pt; color: var(--c-text-secondary); font-weight: 600; }
+.progress-bar {
+  background: #E2E8F0;
+  border-radius: 6px;
+  height: 4mm;
+  margin-top: 1.5mm;
+  overflow: hidden;
+}
+.progress-fill {
+  background: linear-gradient(90deg, var(--c-primary), #FF8E53, #FEC89A);
+  height: 100%;
+  border-radius: 6px;
+}
+
+/* ═══════════════════════════════════════
+   Predict — 생각해보기 카드
+   ═══════════════════════════════════════ */
+.predict-box {
+  display: flex;
+  gap: 3.5mm;
+  background: linear-gradient(135deg, #F5F3FF 0%, #EDE9FE 100%);
+  border: 1.5px solid #C4B5FD;
+  border-radius: var(--radius-lg);
+  padding: 3.5mm 4.5mm;
+  margin: 3mm 0;
+  box-shadow: var(--shadow-sm);
+}
+.predict-icon {
+  width: 10mm; height: 10mm;
+  background: linear-gradient(135deg, var(--c-purple), #A78BFA);
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16pt;
+  font-weight: 900;
+  flex-shrink: 0;
+  box-shadow: 0 2px 6px rgba(139,92,246,0.3);
+}
+.predict-content { flex: 1; }
+.predict-content p { font-size: 11pt; margin-bottom: 2mm; }
+
+/* ═══════════════════════════════════════
+   다이어그램 — 프리미엄 컨테이너
+   ═══════════════════════════════════════ */
+.diagram-box {
+  background: var(--c-bg-subtle);
+  border: 1.5px solid var(--c-border);
+  border-radius: var(--radius-lg);
+  padding: 4mm;
+  margin: 3.5mm 0;
+  box-shadow: var(--shadow-sm);
+}
+.diagram-title {
+  font-size: 11pt;
+  font-weight: 800;
+  color: var(--c-primary);
+  margin-bottom: 3mm;
+  text-align: center;
+  letter-spacing: 0.3px;
+}
+.diagram-content { font-size: 10.5pt; line-height: 170%; }
+.diagram-content .d-row { display: flex; align-items: center; justify-content: center; gap: 3mm; margin: 2mm 0; }
+.diagram-content .d-block { background: #1E293B; color: white; padding: 2mm 4mm; border-radius: var(--radius-sm); font-family: var(--font-code); font-size: 9.5pt; font-weight: 500; }
+.diagram-content .d-block-highlight { background: linear-gradient(135deg, var(--c-primary), #FF8E53); color: white; padding: 2mm 4mm; border-radius: var(--radius-sm); font-family: var(--font-code); font-size: 9.5pt; font-weight: 700; }
+.diagram-content .d-arrow { color: var(--c-text-muted); font-size: 14pt; }
+.diagram-content .d-label { font-size: 8.5pt; color: var(--c-text-secondary); }
+
+/* ═══════════════════════════════════════
+   Steps — 프리미엄 타임라인
+   ═══════════════════════════════════════ */
+.steps-visual { margin: 3mm 0; }
+.step-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 3.5mm;
+  margin-bottom: 1.5mm;
+}
+.step-num {
+  width: 8mm; height: 8mm;
+  background: linear-gradient(135deg, var(--c-primary), #FF8E53);
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10pt;
+  font-weight: 800;
+  flex-shrink: 0;
+  margin-top: 0.5mm;
+  box-shadow: 0 2px 4px rgba(255,107,107,0.3);
+}
+.step-body { flex: 1; }
+.step-title { font-size: 11pt; font-weight: 700; margin-bottom: 0.5mm; color: var(--c-text); }
+.step-desc { font-size: 10.5pt; color: var(--c-text-secondary); line-height: 160%; }
+.step-connector { width: 2.5px; height: 4mm; background: linear-gradient(180deg, var(--c-primary), transparent); margin-left: 3.7mm; }
+
+/* ═══════════════════════════════════════
+   Modify — 바꿔보기 카드
+   ═══════════════════════════════════════ */
+.modify-box {
+  background: linear-gradient(135deg, #F0F9FF 0%, #E0F2FE 100%);
+  border: 1.5px solid #7DD3FC;
+  border-left: 5px solid #0EA5E9;
+  border-radius: var(--radius-md);
+  padding: 3.5mm 4.5mm;
+  margin: 3mm 0;
+}
+.modify-label { font-size: 10.5pt; font-weight: 800; color: #0284C7; margin-bottom: 2mm; }
+.modify-hint { font-size: 9.5pt; color: var(--c-text-secondary); font-style: italic; margin: 1.5mm 0; }
+
+/* ═══════════════════════════════════════
+   정답 섹션
+   ═══════════════════════════════════════ */
+.answers-section {
+  background: white;
+  border: 1.5px solid #E9D5FF;
+  border-radius: var(--radius-md);
+  padding: 3mm 4mm;
+  margin: 3mm 0;
+  border-left: 5px solid var(--c-purple);
+}
+.answers-section h3 {
+  font-size: 12pt;
+  font-weight: 800;
+  color: var(--c-purple);
+  margin: 0 0 2.5mm;
+  border: none;
+  padding: 0;
+}
+.answer-item { margin-bottom: 1mm; font-size: 10pt; line-height: 150%; }
+.answer-num { font-weight: 700; color: var(--c-primary); margin-right: 2mm; }
+.answer-text { color: var(--c-text); }
+
+/* ═══════════════════════════════════════
+   코드 설명 (라인별)
+   ═══════════════════════════════════════ */
+.code-explain { margin: 3mm 0; padding-left: 2mm; }
+.code-explain-item {
+  display: flex;
+  align-items: flex-start;
+  margin-bottom: 2.5mm;
+  font-size: 11pt;
+  line-height: 165%;
+}
+.code-explain-line {
+  font-family: var(--font-code);
+  font-size: 9pt;
+  color: white;
+  background: linear-gradient(135deg, var(--c-primary), #FF8E53);
+  padding: 0.5mm 2.5mm;
+  border-radius: 4px;
+  margin-right: 3mm;
+  flex-shrink: 0;
+  font-weight: 700;
+  box-shadow: 0 1px 3px rgba(255,107,107,0.3);
+}
+
+/* ═══════════════════════════════════════
+   용어 정리 — 프리미엄 테이블
+   ═══════════════════════════════════════ */
+.glossary { margin: 3mm 0; break-inside: avoid; display: block !important; width: 100% !important; clear: both; }
+.glossary-item {
+  display: flex;
+  margin-bottom: 0;
+  font-size: 10pt;
+  padding: 2mm 3mm;
+  border-bottom: 1px solid #F1F5F9;
+  width: 100%;
+}
+.glossary-item:nth-child(odd) { background: #F8FAFC; }
+.glossary-item:first-child { border-radius: var(--radius-sm) var(--radius-sm) 0 0; }
+.glossary-item:last-child { border-radius: 0 0 var(--radius-sm) var(--radius-sm); border-bottom: none; }
+.glossary-term {
+  font-weight: 700;
+  min-width: 28mm;
+  max-width: 35mm;
+  flex-shrink: 0;
+  color: var(--c-text);
+  font-family: var(--font-code);
+  font-size: 9.5pt;
+  word-break: keep-all;
+}
+.glossary-def { color: var(--c-text-secondary); line-height: 155%; flex: 1; min-width: 0; }
+
+/* ═══════════════════════════════════════
+   추적 테이블 — 프리미엄 데이터 테이블
+   ═══════════════════════════════════════ */
+.trace-table { margin: 3.5mm 0; }
+.trace-caption { font-size: 10.5pt; font-weight: 700; color: var(--c-primary); margin-bottom: 2mm; }
+.trace-table table { width: 100%; border-collapse: collapse; font-size: 10pt; border-radius: var(--radius-sm); overflow: hidden; }
+.trace-table th {
+  background: linear-gradient(135deg, #1E293B, #334155);
+  color: white;
+  padding: 2mm 3.5mm;
+  text-align: left;
+  font-weight: 700;
+  font-size: 9.5pt;
+}
+.trace-table td { padding: 2mm 3.5mm; border-bottom: 1px solid #F1F5F9; font-family: var(--font-code); font-size: 9.5pt; }
+.trace-table tr:nth-child(even) td { background: #F8FAFC; }
+
+/* ═══════════════════════════════════════
+   마스코트 말풍선 — 프리미엄 디자인
+   ═══════════════════════════════════════ */
+.mascot-speech {
+  display: flex;
+  align-items: flex-start;
+  gap: 3.5mm;
+  margin: 3.5mm 0;
+}
+.mascot-speech.right { flex-direction: row-reverse; }
+.mascot-speech-img {
+  flex-shrink: 0;
+  width: 60px;
+  height: 60px;
+  object-fit: contain;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.15));
+}
+.mascot-speech-img.small { width: 48px; height: 48px; }
+.mascot-speech-img.large { width: 80px; height: 80px; }
+.mascot-bubble {
+  position: relative;
+  background: linear-gradient(135deg, #EFF6FF 0%, #DBEAFE 100%);
+  border: 1.5px solid #93C5FD;
+  border-radius: var(--radius-lg);
+  padding: 3.5mm 4.5mm;
+  font-size: 10.5pt;
+  color: #1E3A5F;
+  line-height: 1.6;
+  flex: 1;
+  max-width: 85%;
+  box-shadow: var(--shadow-sm);
+}
+.mascot-bubble.warn {
+  background: linear-gradient(135deg, #FEF2F2, #FEE2E2);
+  border-color: #FCA5A5;
+  color: #7F1D1D;
+}
+.mascot-bubble.success {
+  background: linear-gradient(135deg, #ECFDF5, #D1FAE5);
+  border-color: #6EE7B7;
+  color: #14532D;
+}
+.mascot-bubble.tip {
+  background: linear-gradient(135deg, #FFFBEB, #FEF3C7);
+  border-color: #FCD34D;
+  color: #78350F;
+}
+.mascot-bubble::before {
+  content: '';
+  position: absolute;
+  top: 14px;
+  left: -9px;
+  border: 7px solid transparent;
+  border-right-color: #93C5FD;
+}
+.mascot-bubble::after {
+  content: '';
+  position: absolute;
+  top: 15px;
+  left: -7px;
+  border: 6px solid transparent;
+  border-right-color: #EFF6FF;
+}
+.mascot-speech.right .mascot-bubble::before {
+  left: auto; right: -9px;
+  border-right-color: transparent;
+  border-left-color: #93C5FD;
+}
+.mascot-speech.right .mascot-bubble::after {
+  left: auto; right: -7px;
+  border-right-color: transparent;
+  border-left-color: #EFF6FF;
+}
+.mascot-bubble.warn::before { border-right-color: #FCA5A5; }
+.mascot-bubble.warn::after { border-right-color: #FEF2F2; }
+.mascot-speech.right .mascot-bubble.warn::before { border-right-color: transparent; border-left-color: #FCA5A5; }
+.mascot-speech.right .mascot-bubble.warn::after { border-right-color: transparent; border-left-color: #FEF2F2; }
+.mascot-bubble.success::before { border-right-color: #6EE7B7; }
+.mascot-bubble.success::after { border-right-color: #ECFDF5; }
+.mascot-speech.right .mascot-bubble.success::before { border-right-color: transparent; border-left-color: #6EE7B7; }
+.mascot-speech.right .mascot-bubble.success::after { border-right-color: transparent; border-left-color: #ECFDF5; }
+.mascot-bubble.tip::before { border-right-color: #FCD34D; }
+.mascot-bubble.tip::after { border-right-color: #FFFBEB; }
+.mascot-speech.right .mascot-bubble.tip::before { border-right-color: transparent; border-left-color: #FCD34D; }
+.mascot-speech.right .mascot-bubble.tip::after { border-right-color: transparent; border-left-color: #FFFBEB; }
+
+/* ═══════════════════════════════════════
+   Fact Bite — 숫자/팩트 강조 카드
+   ═══════════════════════════════════════ */
+.fact-bite {
+  display: flex;
+  align-items: center;
+  gap: 4mm;
+  margin: 3mm 0;
+  background: linear-gradient(135deg, #FFF1F2 0%, #FFE4E6 50%, #FFF1F2 100%);
+  border-radius: var(--radius-lg);
+  padding: 3.5mm 5mm;
+  border: 1.5px solid #FECDD3;
+  box-shadow: var(--shadow-sm);
+}
+.fact-bite-number {
+  font: 900 18pt var(--font-body);
+  background: linear-gradient(135deg, var(--c-primary), #FF8E53);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  white-space: nowrap;
+  flex-shrink: 0;
+  max-width: 40%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.fact-bite-text { font-size: 10pt; color: var(--c-text-secondary); line-height: 1.5; flex: 1; min-width: 0; }
+
+/* ═══════════════════════════════════════
+   Visual Summary — 핵심 정리 카드
+   ═══════════════════════════════════════ */
+.visual-summary {
+  background: linear-gradient(135deg, #ECFDF5 0%, #D1FAE5 50%, #A7F3D0 100%);
+  border: 1.5px solid #6EE7B7;
+  border-radius: var(--radius-xl);
+  padding: 5mm;
+  margin: 4mm 0;
+  box-shadow: var(--shadow-md);
+  display: block !important;
+  width: 100% !important;
+  clear: both;
+}
+.visual-summary-title {
+  font-size: 14pt;
+  font-weight: 900;
+  color: #065F46;
+  text-align: center;
+  margin-bottom: 3mm;
+}
+.visual-summary-items { display: flex; flex-direction: column; gap: 2mm; }
+.visual-summary-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 3mm;
+  background: rgba(255,255,255,0.7);
+  padding: 2.5mm 3.5mm;
+  border-radius: var(--radius-md);
+  backdrop-filter: blur(4px);
+}
+.visual-summary-num {
+  width: 7mm; height: 7mm;
+  background: linear-gradient(135deg, #059669, #10B981);
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 9pt;
+  font-weight: 800;
+  flex-shrink: 0;
+  box-shadow: 0 1px 3px rgba(5,150,105,0.3);
+}
+
+/* ═══════════════════════════════════════
+   10축 매핑 전용 스타일
+   ═══════════════════════════════════════ */
+.axis-section {
+  background: linear-gradient(135deg, #F8FAFC 0%, #F1F5F9 100%);
+  border: 1.5px solid #CBD5E1;
+  border-radius: var(--radius-xl);
+  padding: 5mm;
+  margin: 5mm 0;
+  box-shadow: var(--shadow-md);
+  page-break-inside: avoid;
+}
+.axis-title {
+  font-size: 14pt;
+  font-weight: 900;
+  text-align: center;
+  margin-bottom: 4mm;
+  color: var(--c-text);
+  letter-spacing: -0.3px;
+}
+.axis-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2.5mm;
+}
+.axis-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 2mm;
+  padding: 2.5mm 3mm;
+  border-radius: var(--radius-md);
+  background: white;
+  border: 1px solid #E2E8F0;
+}
+.axis-badge {
+  font-size: 7.5pt;
+  font-weight: 800;
+  padding: 0.5mm 2.5mm;
+  border-radius: 20px;
+  flex-shrink: 0;
+  letter-spacing: 0.3px;
+  white-space: nowrap;
+}
+.axis-badge.c-lang { background: #DBEAFE; color: #1D4ED8; }
+.axis-badge.thinking { background: #E0E7FF; color: #4338CA; }
+.axis-badge.debug { background: #FEE2E2; color: #DC2626; }
+.axis-badge.koi { background: #FEF3C7; color: #B45309; }
+.axis-badge.basics { background: #D1FAE5; color: #059669; }
+.axis-badge.reallife { background: #CCFBF1; color: #0D9488; }
+.axis-badge.crosssubj { background: #E9D5FF; color: #7C3AED; }
+.axis-badge.project { background: #FFE4E6; color: #BE123C; }
+.axis-badge.ai { background: #FCE7F3; color: #DB2777; }
+.axis-badge.hardware { background: #CFFAFE; color: #0891B2; }
+.axis-text { font-size: 9.5pt; line-height: 150%; color: var(--c-text-secondary); }
+
+/* ── TOC ── */
+.toc { margin: 5mm 0; }
+.toc h2 { border: none; padding: 0; margin-bottom: 3mm; background: none; }
+.toc ul { list-style: none; padding: 0; }
+.toc-h2 { display: flex; align-items: baseline; margin-bottom: 1.5mm; font-size: 11pt; }
+.toc-text { flex-shrink: 0; }
+.toc-dots { flex: 1; border-bottom: 1.5px dotted #CBD5E1; margin: 0 2mm; min-width: 10mm; }
+.toc-page { flex-shrink: 0; color: var(--c-text-muted); font-size: 10pt; }
+
+/* ── Margin Note ── */
+.margin-note {
+  float: right;
+  width: 30mm;
+  font-size: 8.5pt;
+  color: var(--c-text-secondary);
+  background: linear-gradient(135deg, #FFFBEB, #FEF3C7);
+  padding: 2mm 2.5mm;
+  border-radius: var(--radius-sm);
+  margin: 0 -35mm 2mm 2mm;
+  border-left: 2.5px solid var(--c-orange);
+}
+
+/* ── Cross Reference ── */
+.crossref { font-size: 9pt; color: var(--c-blue); font-style: italic; font-weight: 500; }
+
+/* ── Image ── */
+.image-block { margin: 3.5mm 0; text-align: center; }
+.image-block img { max-width: 100%; border-radius: var(--radius-md); box-shadow: var(--shadow-sm); }
+.image-caption {
+  font-size: 9pt;
+  color: var(--c-text-secondary);
+  margin-top: 2mm;
+  font-style: italic;
+  background: var(--c-bg-subtle);
+  padding: 1.5mm 4mm;
+  border-radius: 20px;
+  display: inline-block;
+}
+
+/* ═══════════════════════════════════════
+   v7.0 — 80레이어 리서치 증강분
+   v5 프리미엄 기반 + TEXTBOOK-DESIGN-DEEP P1~P6 합성
+   ═══════════════════════════════════════ */
+
+/* ── Layer 26: 게슈탈트 근접성 강화 ── */
+h2 + p,
+h3 + p,
+h2 + .code-block,
+h3 + .code-block { margin-top: 1mm !important; }
+.code-block + .code-explain { margin-top: 0.5mm; }
+.code-block + .output-block { margin-top: 1mm; }
+.exercise + .exercise { margin-top: 1.5mm; }
+
+/* ── Layer 28: 마이크로 타이포그래피 ── */
+body {
+  font-kerning: auto;
+  font-variant-ligatures: common-ligatures;
+  hanging-punctuation: first last;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+.line-num { font-variant-numeric: tabular-nums; }
+.trace-table td { font-variant-numeric: tabular-nums; }
+
+/* ── Layer 29: 연습문제 유형별 스타일 ── */
+.exercise-item { margin-bottom: 2mm; font-size: 11pt; line-height: 165%; }
+.exercise-item p { margin-bottom: 1.5mm; }
+.exercise-blank { display: inline-block; min-width: 20mm; border-bottom: 2px solid var(--c-primary); margin: 0 1mm; }
+.exercise-ox-grid { display: flex; gap: 3mm; margin-top: 2mm; }
+.exercise-ox-item { flex: 1; padding: 2mm 3mm; border: 1px solid var(--c-border); border-radius: var(--radius-sm); font-size: 10pt; }
+.exercise-matching { display: grid; grid-template-columns: 1fr auto 1fr; gap: 1.5mm; font-size: 10pt; }
+.exercise-reorder { display: flex; flex-direction: column; gap: 1mm; font-family: var(--font-code); font-size: 9.5pt; }
+.exercise-reorder-item { background: var(--c-bg-subtle); padding: 1.5mm 3mm; border-radius: var(--radius-sm); border: 1px solid var(--c-border); }
+
+/* ── Layer 30: 교사용 에디션 ── */
+.teacher-only { background: #FFF5F5; border: 2px dashed #E74C3C; padding: 3mm; border-radius: var(--radius-md); }
+.teacher-note { font-size: 9pt; color: #C0392B; font-style: italic; }
+
+/* ── Layer 32: 디자인 토큰 — 인쇄용 간격 ── */
+article > * + * { margin-top: 2.5mm; }
+article > h2 { margin-top: 5mm; }
+article > h3 { margin-top: 3.5mm; }
+
+/* ── Layer 51: 황금비 타이포 ──
+   24pt / 16pt / 13.5pt / 11.5pt = 1:0.67:0.56:0.48 ≈ 피보나치 */
+
+/* ── Layer 55: 인지부하 최적화 — 시각 앵커 ── */
+h2::before {
+  /* 빈 블록으로 스크롤 앵커 역할 — Paged.js에서 러닝헤드 지원 */
+}
+
+/* ── Layer 56: 아이트래킹 — F패턴 강화 ── */
+.lesson-header .lesson-number { font-weight: 700; }
+.box-label::before {
+  content: '';
+  display: inline-block;
+  width: 3px; height: 14px;
+  border-radius: 2px;
+  margin-right: 1.5mm;
+  flex-shrink: 0;
+}
+.box-warning .box-label::before { background: var(--c-red); }
+.box-key .box-label::before { background: var(--c-blue); }
+.box-tip .box-label::before { background: var(--c-orange); }
+.box-summary .box-label::before { background: var(--c-green); }
+.box-question .box-label::before { background: var(--c-purple); }
+.box-history .box-label::before { background: var(--c-teal); }
+
+/* ── Layer 58: 색상 조화 60-30-10 강화 ── */
+/* 60% = white/neutral, 30% = brand gradient accents, 10% = c-primary strong */
+
+/* ── Layer 60: 코드 블록 — 브래킷 컬러링 (Layer 30 from Deep) ── */
+.brace-1 { color: #C084FC; font-weight: bold; }
+.brace-2 { color: #86EFAC; font-weight: bold; }
+.brace-3 { color: #FDBA74; font-weight: bold; }
+.brace-4 { color: #7DD3FC; font-weight: bold; }
+
+/* ── Layer 61: 인덴트 가이드 ── */
+.indent-guide { border-left: 1px solid rgba(255,255,255,0.08); }
+
+/* ── Layer 65: 10축 매핑 강화 ── */
+.axis-item { transition: none; }
+.axis-section .box-content { font-size: 10pt; }
+
+/* ── Layer 67: 자료구조 시각화 ── */
+.ds-visual { font-family: var(--font-code); font-size: 9pt; text-align: center; margin: 3mm 0; }
+.ds-array { display: flex; justify-content: center; gap: 0; }
+.ds-cell { width: 9mm; height: 9mm; border: 1.5px solid var(--c-blue); display: flex; align-items: center; justify-content: center; font-weight: 700; }
+.ds-cell:first-child { border-radius: var(--radius-sm) 0 0 var(--radius-sm); }
+.ds-cell:last-child { border-radius: 0 var(--radius-sm) var(--radius-sm) 0; }
+.ds-index { font-size: 7pt; color: var(--c-text-muted); text-align: center; margin-top: 0.5mm; }
+
+/* ── Layer 68: 학습 저널 공간 ── */
+.reflection-box {
+  background: var(--c-bg-warm);
+  border: 1.5px dashed #FCD34D;
+  border-radius: var(--radius-lg);
+  padding: 4mm;
+  margin: 4mm 0;
+}
+.reflection-prompt { font-size: 10pt; color: var(--c-orange); font-weight: 700; margin-bottom: 2mm; }
+.reflection-lines {
+  min-height: 20mm;
+  background: repeating-linear-gradient(transparent, transparent 7mm, #FEF3C7 7mm, #FEF3C7 7.5mm);
+}
+
+/* ── Layer 69: 루브릭/자기평가 ── */
+.rubric-table { width: 100%; border-collapse: collapse; font-size: 9pt; margin: 3mm 0; }
+.rubric-table th { background: var(--c-purple); color: white; padding: 2mm; text-align: center; }
+.rubric-table td { padding: 2mm; border: 1px solid var(--c-border); text-align: center; }
+.self-check { display: flex; gap: 5mm; justify-content: center; margin: 3mm 0; }
+.self-check-item { text-align: center; font-size: 18pt; }
+.self-check-label { font-size: 7.5pt; color: var(--c-text-secondary); }
+
+/* ── Layer 72: 교실 게임 보드 ── */
+.bingo-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 1px; background: var(--c-border); border-radius: var(--radius-md); overflow: hidden; margin: 3mm 0; }
+.bingo-cell { background: white; padding: 3mm; text-align: center; font-size: 8.5pt; font-family: var(--font-code); min-height: 10mm; display: flex; align-items: center; justify-content: center; }
+.bingo-free { background: var(--c-primary-light); font-weight: 800; color: var(--c-primary); }
+
+/* ── Layer 77: 북마크/읽기 가이드 ──  */
+.reading-ruler { border-top: 3px solid var(--c-primary); margin: 4mm 0; opacity: 0.3; }
+
+/* ── Layer 78: 고급 그리드 — 2컬럼 레이아웃 ── */
+.two-col { display: flex; gap: 4mm; }
+.two-col > * { flex: 1; min-width: 0; }
+.three-col { display: flex; gap: 3mm; }
+.three-col > * { flex: 1; min-width: 0; }
+
+/* ── Layer 80: 인쇄 품질 마커 ── */
+.print-crop-mark { display: none; }
+
+/* ═══════════════════════════════════════
+   인쇄 최적화 — 강화 버전 (Layer 77~80)
+   ═══════════════════════════════════════ */
+@media print {
+  body {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  .lesson-header,
+  .code-block,
+  .box,
+  .exercise,
+  .predict-box,
+  .compare-bad,
+  .compare-good,
+  .step-num,
+  .mascot-bubble,
+  .visual-summary,
+  .axis-section,
+  .trace-table th,
+  .progress-fill,
+  .code-explain-line,
+  .fact-bite,
+  .diff-1, .diff-2, .diff-3,
+  .diagram-box,
+  .modify-box,
+  .answers-section {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  .no-print { display: none !important; }
+  /* orphan/widow 강화 */
+  p { orphans: 3; widows: 3; }
+  h2, h3 { break-after: avoid; }
+  .avoid-break { break-inside: avoid; }
+}
+
+/* ═══════════════════════════════════════
+   레이아웃 겹침 방지 — 모든 주요 섹션 블록 강제
+   ═══════════════════════════════════════ */
+article > .glossary,
+article > .visual-summary,
+article > .box,
+article > .fact-bite,
+article > .exercise,
+article > .answers-section,
+article > .mascot-speech,
+article > .code-block,
+article > .output-block,
+article > .compare,
+article > .predict-box {
+  display: block !important;
+  width: 100% !important;
+  float: none !important;
+  clear: both !important;
+}
+
+/* 박스 내부 테이블 오버플로 방지 */
+.box-content table { width: 100%; table-layout: fixed; }
+.box-content td, .box-content th { word-break: keep-all; overflow-wrap: break-word; }
+
+/* 마스코트 버블 너비 제한 완화 */
+.mascot-bubble { max-width: 100%; }
+
+/* Paged.js 컬럼 방지 */
+article { column-count: 1 !important; columns: 1 !important; }
+
+</style>
+<script src="https://unpkg.com/pagedjs/dist/paged.polyfill.js"></script>
+<script>
+  class PagedReadyHandler extends Paged.Handler {
+    constructor(chunker, polisher, caller) { super(chunker, polisher, caller); }
+    afterRendered(pages) {
+      document.body.setAttribute('data-paged-rendered', 'true');
+      document.body.setAttribute('data-page-count', pages.length);
+      console.log('PAGED_READY:' + pages.length);
+    }
+  }
+  Paged.registerHandlers(PagedReadyHandler);
+</script>
+</head>
+<body data-section-title="0과 1의 세계 (비트)">
+<article id="content">
+  <header class="lesson-header" role="banner">
+    <div class="lesson-number">Lesson 0-3</div>
+    <h1 class="lesson-title">0과 1의 세계 (비트)</h1>
+    <div class="lesson-summary">컴퓨터가 0과 1만으로 모든 것을 표현하는 원리를 알아보고, 정보 이론과 데이터 전송까지 탐구해요.</div>
+  </header>
+<div class="chapter-start-box avoid-break"><div class="learning-goals"><h3>📚 이번에 배울 것</h3><ul><li>비트(bit)가 무엇인지 설명할 수 있어요.</li><li>N비트로 표현할 수 있는 가짓수를 계산할 수 있어요.</li><li>바이트(byte)의 뜻과 크기를 알 수 있어요.</li><li>데이터 단위(KB, MB, GB)를 환산할 수 있어요.</li><li>[심화] 워드 크기의 역사를 이해해요.</li><li>[심화 내용] 섀넌 엔트로피와 정보 이론의 기초를 알아요.</li></ul></div><div class="prereq-check"><h3>✅ 시작 전 체크</h3><ul class="checklist"><li>U0-02 '컴퓨터는 어떻게 생겼을까?'를 읽었다</li><li>2의 곱셈을 할 수 있다 (2x2=4, 2x2x2=8)</li></ul></div><div class="progress-section"><span class="progress-label">Part 1 진행률: 3%</span><div class="progress-bar"><div class="progress-fill" style="width:3%"></div></div></div></div>
+<h2>컴퓨터는 0과 1밖에 모른다</h2>
+<div class="mascot-speech  avoid-break">
+        <img class="mascot-speech-img " src="svg-assets/mascot-hello.svg" alt="마스코트" />
+        <div class="mascot-bubble hello">컴퓨터 안에는 아주 작은 전기 스위치가 수십억 개 있어. 이 스위치는 '켜짐' 아니면 '꺼짐', 딱 두 가지 상태만 있어!</div>
+      </div>
+<p>컴퓨터는 전기로 작동해요. 전기가 흐르면 <b>1</b>(켜짐), 안 흐르면 <b>0</b>(꺼짐)이에요. 이게 전부예요. 컴퓨터가 아는 건 0과 1뿐이에요.</p>
+<p>그런데 어떻게 0과 1만으로 숫자도, 글자도, 사진도, 음악도, 영상도 표현할 수 있을까요? 비밀은 <b>조합</b>에 있어요!</p>
+<div class="image-block avoid-break"><img src="svg-assets/bit-switch.svg" alt="전기 스위치로 비유한 비트의 개념 — 꺼짐(0)과 켜짐(1)" style="max-width:100%"/><div class="image-caption">1비트 = 0 또는 1, 딱 두 가지</div></div>
+<div class="box box-key avoid-break"><span class="box-label">[핵심] 비트(bit)란?</span><div class="box-content"><b>비트(bit)</b> = 0 또는 1을 담는 가장 작은 단위. 'binary digit'(2진수 숫자)의 줄임말이에요. 컴퓨터의 모든 정보는 비트의 조합이에요.</div></div>
+<h2>왜 하필 2진수일까?</h2>
+<p>사람은 10진수(0~9)를 쓰지만, 컴퓨터는 2진수(0과 1)를 써요. 왜일까요?</p>
+<div class="box box-key avoid-break"><span class="box-label">[핵심] 2진수를 쓰는 이유</span><div class="box-content">전기 스위치는 <b>켜짐(1)/꺼짐(0)</b> 두 가지 상태만 확실하게 구분할 수 있어요.<br><br>만약 10단계로 나누면? '7이야 8이야?' 구분이 어려워요. 오류가 생겨요.<br>2단계면? '켜졌어 꺼졌어?' 확실해요. 안정적이에요!<br><br>그래서 컴퓨터는 가장 안정적인 2진법을 사용해요.</div></div>
+<h2>비트를 늘리면?</h2>
+<p>비트 1개로는 0, 1 두 가지밖에 표현 못해요. 비트를 <b>늘리면</b> 더 많은 것을 표현할 수 있어요.</p>
+<div class="mascot-speech right avoid-break">
+        <img class="mascot-speech-img small" src="svg-assets/mascot-thinking.svg" alt="마스코트" />
+        <div class="mascot-bubble thinking">비트를 1개 추가할 때마다 표현 가능한 가짓수가 <b>2배</b>로 늘어나요. 규칙이 보이나요?</div>
+      </div>
+<div class="trace-table avoid-break"><table><thead><tr><th>비트 수</th><th>가짓수</th><th>2의 거듭제곱</th><th>범위</th></tr></thead><tbody><tr><td>1비트</td><td>2</td><td>2¹</td><td>0~1</td></tr><tr><td>2비트</td><td>4</td><td>2²</td><td>0~3</td></tr><tr><td>3비트</td><td>8</td><td>2³</td><td>0~7</td></tr><tr><td>4비트</td><td>16</td><td>2⁴</td><td>0~15</td></tr><tr><td>5비트</td><td>32</td><td>2⁵</td><td>0~31</td></tr><tr><td>8비트</td><td>256</td><td>2⁸</td><td>0~255</td></tr><tr><td>16비트</td><td>65,536</td><td>2¹⁶</td><td>0~65,535</td></tr><tr><td>32비트</td><td>4,294,967,296</td><td>2³²</td><td>약 42억</td></tr><tr><td>64비트</td><td>약 1844경</td><td>2⁶⁴</td><td>어마어마하게 큰 수!</td></tr></tbody></table></div>
+<div class="image-block avoid-break"><img src="svg-assets/bit-counting.svg" alt="1비트부터 8비트까지 표현 가능한 가짓수 + 데이터 단위" style="max-width:100%"/><div class="image-caption">N비트 = 2의 N승 가지. 비트 1개 추가 = 2배!</div></div>
+<div class="box box-key avoid-break"><span class="box-label">[핵심] N비트 공식</span><div class="box-content"><b>N비트로 표현할 수 있는 가짓수 = 2<sup>N</sup></b><br><br>• 표현 가능한 범위: 0 ~ (2<sup>N</sup> - 1)<br>• 가장 큰 수 = 2<sup>N</sup> - 1 (0부터 세니까 1을 빼요)</div></div>
+<h2>바이트(byte) = 8비트</h2>
+<p>비트가 너무 작으니까, <b>8비트를 묶어서 1바이트(byte)</b>라고 불러요. 1바이트로 0부터 255까지, 총 256가지를 표현할 수 있어요.</p>
+<div class="box box-key avoid-break"><span class="box-label">[핵심] 비트와 바이트</span><div class="box-content">1바이트(byte) = 8비트(bit)<br>1바이트로 256가지를 표현해요 (2⁸ = 256)<br><br>영어 알파벳 1글자를 저장하는 데 딱 1바이트면 충분해요.</div></div>
+<h2>왜 하필 8비트?</h2>
+<p>왜 7비트도 아니고 9비트도 아니고 딱 <b>8비트</b>가 1바이트일까요?</p>
+<div class="box box-history avoid-break"><span class="box-label">[역사] 8비트 바이트의 탄생</span><div class="box-content">초기 컴퓨터에서는 6비트, 7비트 등 다양한 크기를 바이트로 사용했어요.<br><br>1960년대 IBM이 System/360이라는 컴퓨터를 만들면서 <b>8비트를 1바이트</b>로 표준화했어요.<br><br>이유: 8비트(256가지)면 영어 대소문자, 숫자, 기호를 충분히 담을 수 있고, 8은 2의 거듭제곱(2³)이라 회로 설계가 깔끔해요.</div></div>
+<h2>데이터 크기 단위: KB, MB, GB</h2>
+<p>바이트만으로는 큰 데이터를 표현하기 불편해요. 그래서 더 큰 단위를 만들었어요.</p>
+<div class="box box-key avoid-break"><span class="box-label">[핵심] 데이터 크기 단위</span><div class="box-content">1킬로바이트(KB) = 약 1,000바이트<br>1메가바이트(MB) = 약 1,000KB = 약 100만 바이트<br>1기가바이트(GB) = 약 1,000MB = 약 10억 바이트<br>1테라바이트(TB) = 약 1,000GB = 약 1조 바이트<br><br>예: 사진 1장 ≈ 3MB, 노래 1곡 ≈ 5MB, 영화 1편 ≈ 2GB, 게임 1개 ≈ 50~100GB</div></div>
+<h2>[심화] 1000 vs 1024 논쟁</h2>
+<p>데이터 크기에서 자주 헷갈리는 부분이 있어요. 1KB가 정확히 1,000바이트일까요, 1,024바이트일까요?</p>
+<div class="box box-key avoid-break"><span class="box-label">[심화] 1000 vs 1024 — 어느 게 맞아?</span><div class="box-content">컴퓨터는 2진수를 쓰니까, 원래 1KB = 2¹⁰ = <b>1,024바이트</b>로 사용했어요.<br>하지만 하드디스크 제조사들은 1KB = <b>1,000바이트</b>로 계산해서 용량을 표시했어요.<br><br>혼란을 해결하기 위해 IEC에서 새 단위를 만들었어요:<br>• <b>KB</b>(킬로바이트) = 1,000바이트 (SI 표준)<br>• <b>KiB</b>(키비바이트) = 1,024바이트 (이진 표준)<br>• <b>MB</b> = 1,000,000바이트 / <b>MiB</b> = 1,048,576바이트<br><br>그래서 '500GB' SSD를 사면 윈도우에서 약 465GB로 보여요!</div></div>
+<div class="box box-tip avoid-break"><span class="box-label">[비유] 비트와 바이트 크기 감각</span><div class="box-content"><b>1바이트</b> = 영어 글자 1개<br><b>1KB</b> = 짧은 문자 메시지<br><b>1MB</b> = 책 한 권 (텍스트만)<br><b>1GB</b> = 고화질 영화 30분<br><b>1TB</b> = 도서관 한 개 분량의 책<br><b>1PB</b> = 넷플릭스 전체 영상 라이브러리</div></div>
+<h2>활동: 손가락 2진수</h2>
+<p>한 손의 손가락 5개를 이용하면 0부터 31까지 셀 수 있어요. 손가락을 펴면 1, 접으면 0이에요.</p>
+<div class="image-block avoid-break"><img src="svg-assets/finger-binary.svg" alt="손가락으로 2진수 세는 방법 — 엄지=1, 검지=2, 중지=4, 약지=8, 새끼=16" style="max-width:100%"/><div class="image-caption">손가락 5개 = 5비트 = 0~31까지 표현 가능!</div></div>
+<div class="box box-tip avoid-break"><span class="box-label">[활동] 직접 해 보기!</span><div class="box-content">아래 수를 손가락으로 표현해 보세요. (접으면 0, 펴면 1)<br><br>1. 숫자 7 = 엄지+검지+중지 펴기 (00111 = 1+2+4 = 7)<br>2. 숫자 10 = 검지+약지 펴기 (01010 = 2+8 = 10)<br>3. 숫자 21 = 엄지+중지+새끼 펴기 (10101 = 1+4+16 = 21)<br>4. 숫자 31은? 직접 해 봐요!</div></div>
+<div class="mascot-speech  avoid-break">
+        <img class="mascot-speech-img small" src="svg-assets/mascot-eureka.svg" alt="마스코트" />
+        <div class="mascot-bubble eureka">두 손을 쓰면 10비트! 0부터 1023까지 셀 수 있어요. 발가락까지 쓰면... 음, 그건 좀 어렵겠지만요.</div>
+      </div>
+<h2>모든 것은 비트의 조합</h2>
+<p>비트로 숫자만 표현하는 게 아니에요. 글자, 색깔, 소리, 영상 — 전부 비트의 조합이에요.</p>
+<div class="box box-key avoid-break"><span class="box-label">[핵심] 비트로 표현하는 것들</span><div class="box-content"><b>숫자</b>: 0과 1의 조합 = 2진수 (0101 = 5)<br><b>글자</b>: 숫자와 글자를 약속해서 대응 (A = 65 = 01000001)<br><b>색깔</b>: RGB 각각 1바이트씩 = 3바이트로 1600만 가지 색<br><b>소리</b>: 공기의 진동을 숫자로 변환 (샘플링)<br><b>사진</b>: 점(픽셀)마다 색깔 정보를 저장<br><b>영상</b>: 사진을 초당 30~60장 연속 재생</div></div>
+<h2>[심화] 워드(word) 크기의 역사</h2>
+<p>CPU가 한 번에 처리할 수 있는 데이터의 크기를 <b>워드</b>(word)라고 해요. 워드 크기는 컴퓨터의 발전과 함께 점점 커졌어요.</p>
+<div class="steps-visual avoid-break"></div>
+<div class="box box-key avoid-break"><span class="box-label">[심화] 워드 크기가 중요한 이유</span><div class="box-content">워드 크기가 크면:<br>• <b>더 큰 숫자</b>를 한 번에 처리할 수 있어요<br>• <b>더 많은 메모리</b>에 접근할 수 있어요<br><br>32비트 CPU → 최대 4GB RAM만 인식 (2³² = 약 42억 바이트)<br>64비트 CPU → 이론적으로 16EB(엑사바이트)까지 인식!<br><br>그래서 RAM 4GB 이상이면 64비트 운영체제가 필요해요.</div></div>
+<h2>[심화] 니블(nibble) = 4비트</h2>
+<p>비트와 바이트 사이에 <b>니블</b>(nibble)이라는 단위도 있어요. 4비트 = 0.5바이트예요.</p>
+<div class="box box-tip avoid-break"><span class="box-label">[심화] 니블의 활용</span><div class="box-content">4비트 = 16가지 = 0~15<br>이건 16진수 한 자릿수와 정확히 대응해요!<br><br>1바이트(8비트) = 니블 2개 = 16진수 2자리<br>예: 11111111 → FF, 10100011 → A3<br><br>그래서 16진수를 쓰면 비트를 4개씩 묶어서 읽기 편해요.</div></div>
+<h2>━━━ 비트 전송 ━━━</h2>
+<h2>[심화] 직렬 전송 vs 병렬 전송</h2>
+<p>컴퓨터 부품 사이, 또는 컴퓨터끼리 데이터를 보내는 방법은 두 가지예요.</p>
+<div class="compare avoid-break"><div class="compare-bad"><div class="compare-label">✕ 잘못된 코드</div><code></code><br><span class="compare-msg-bad"></span></div><div class="compare-good"><div class="compare-label">✓ 올바른 코드</div><code></code><br><span class="compare-msg-good"></span></div></div>
+<div class="code-explain avoid-break"></div>
+<h2>[심화] 대역폭과 지연시간</h2>
+<p>데이터 전송에서 중요한 두 가지 개념이 있어요.</p>
+<div class="box box-key avoid-break"><span class="box-label">[심화] 대역폭과 지연시간</span><div class="box-content"><b>대역폭</b>(Bandwidth) = 1초에 보낼 수 있는 <b>최대 데이터 양</b><br>단위: bps(bits per second) = 초당 비트 수<br>예: 100Mbps = 1초에 1억 비트<br><br><b>지연시간</b>(Latency) = 데이터가 출발해서 <b>도착하는 데 걸리는 시간</b><br>단위: ms(밀리초), μs(마이크로초)<br>예: 핑(ping) 10ms = 데이터가 0.01초 만에 도착</div></div>
+<div class="box box-tip avoid-break"><span class="box-label">[비유] 대역폭 vs 지연시간</span><div class="box-content"><b>대역폭</b> = 도로의 <b>차선 수</b> (한꺼번에 얼마나 많이)<br><b>지연시간</b> = 도로의 <b>길이</b> (얼마나 빨리 도착)<br><br>8차선 고속도로(높은 대역폭)라도 서울→부산(높은 지연시간)이면 오래 걸려요.<br>1차선 골목(낮은 대역폭)이라도 집 앞(낮은 지연시간)이면 금방 도착해요.</div></div>
+<h2>인터넷 속도와 비트</h2>
+<p>인터넷 속도도 비트로 표현해요.</p>
+<div class="box box-key avoid-break"><span class="box-label">[핵심] 인터넷 속도 이해하기</span><div class="box-content">인터넷 속도 <b>100Mbps</b> = 1초에 1억 비트 = 약 12.5MB/초<br><br>주의! 속도는 <b>b</b>(비트)인데, 파일 크기는 <b>B</b>(바이트)예요!<br>100M<b>b</b>ps ÷ 8 = 12.5M<b>B</b>/s<br><br>그래서 100Mbps 인터넷으로 1GB 파일을 받으면:<br>1,000MB ÷ 12.5MB/s = <b>약 80초</b> 걸려요.</div></div>
+<div class="box box-warning avoid-break"><span class="box-label">[주의] b와 B를 구분하자!</span><div class="box-content">소문자 <b>b</b> = bit (비트)<br>대문자 <b>B</b> = Byte (바이트) = 8비트<br><br>100Mbps = 초당 1억 <b>비트</b><br>100MBps = 초당 1억 <b>바이트</b> = 초당 8억 비트<br><br>8배 차이! 인터넷 광고에서 속이는 경우도 있으니 주의!</div></div>
+<h2>━━━ 정보 이론 ━━━</h2>
+<h2>[심화 내용] 정보 이론과 섀넌 엔트로피</h2>
+<div class="mascot-speech  avoid-break">
+        <img class="mascot-speech-img " src="svg-assets/mascot-eureka.svg" alt="마스코트" />
+        <div class="mascot-bubble eureka">이 부분은 대학교에서 배우는 내용이야! '정보'를 수학적으로 정의한 사람이 있어. 바로 클로드 섀넌!</div>
+      </div>
+<p>1948년, 미국의 수학자 <b>클로드 섀넌</b>(Claude Shannon)이 '정보란 무엇인가?'에 대해 수학적으로 정의했어요. 이게 <b>정보 이론</b>의 시작이에요.</p>
+<div class="box box-key avoid-break"><span class="box-label">[심화 내용] 정보량이란?</span><div class="box-content">놀라운 일에는 <b>정보가 많고</b>, 당연한 일에는 <b>정보가 적어요</b>.<br><br>예시:<br>• '내일 해가 뜬다' → 당연! 정보량 거의 0<br>• '내일 눈이 3미터 온다' → 깜짝! 정보량 매우 높음<br><br>수학적으로: 확률 p인 사건의 정보량 = -log₂(p) 비트<br>• 동전 던지기 (확률 1/2): -log₂(1/2) = 1비트<br>• 주사위 눈 (확률 1/6): -log₂(1/6) ≈ 2.58비트</div></div>
+<div class="box box-key avoid-break"><span class="box-label">[심화 내용] 섀넌 엔트로피</span><div class="box-content"><b>엔트로피</b>(entropy) = 정보의 <b>평균 불확실성</b><br><br>동전 던지기: 앞/뒤 확률이 반반 → 엔트로피 = 1비트 (최대 불확실성)<br>양면이 앞인 동전: 항상 앞 → 엔트로피 = 0비트 (불확실성 없음)<br><br>엔트로피가 높으면: 예측이 어려움 → 정보가 많음 → 압축이 어려움<br>엔트로피가 낮으면: 예측이 쉬움 → 정보가 적음 → 압축이 쉬움</div></div>
+<div class="box box-tip avoid-break"><span class="box-label">[심화 내용] 섀넌의 업적</span><div class="box-content">클로드 섀넌은 '정보 이론의 아버지'라고 불려요. 그의 업적:<br><br>• 정보의 기본 단위로 <b>비트</b>를 제안<br>• 데이터 압축의 한계(엔트로피)를 수학적으로 증명<br>• 오류 정정 코딩의 기초를 마련<br>• 현대 디지털 통신의 이론적 토대를 세움<br><br>인터넷, 와이파이, 5G — 모두 섀넌의 이론 위에 세워졌어요.</div></div>
+<h2>[심화 내용] 데이터 압축과 엔트로피</h2>
+<p>파일을 ZIP으로 압축하면 크기가 줄어들죠? 섀넌의 엔트로피는 <b>이론적으로 가능한 최소 크기</b>를 알려줘요.</p>
+<div class="box box-key avoid-break"><span class="box-label">[심화 내용] 압축의 원리</span><div class="box-content">AAAAAABBBB (10글자)를 압축하면?<br>→ A6B4 (4글자) — 반복 패턴을 줄였어요!<br><br>QWXYZMPTNE (10글자)를 압축하면?<br>→ 줄일 수 없어요 — 패턴이 없으니까!<br><br>엔트로피가 낮은 데이터(반복 많음) = 잘 압축됨<br>엔트로피가 높은 데이터(랜덤) = 잘 안 압축됨</div></div>
+<h2>[심화 내용] 오류 검출과 정정</h2>
+<p>데이터를 전송할 때 전자기 간섭 등으로 비트가 바뀔 수 있어요. 0이 1로, 1이 0으로요. 이런 오류를 발견하고 고치는 방법이 있어요.</p>
+<div class="box box-key avoid-break"><span class="box-label">[심화 내용] 패리티 비트</span><div class="box-content"><b>패리티 비트</b>: 데이터 끝에 1비트를 추가해서 1의 개수를 짝수(또는 홀수)로 맞추는 방법<br><br>예 (짝수 패리티):<br>데이터 1010110 → 1의 개수 = 4개(짝수) → 패리티 비트 = 0 → 10101100<br>데이터 1010111 → 1의 개수 = 5개(홀수) → 패리티 비트 = 1 → 10101111<br><br>받는 쪽에서 1의 개수를 세서 짝수가 아니면 → 오류 발생! 재전송 요청</div></div>
+<h2>[심화] 해밍 코드</h2>
+<p>패리티 비트는 오류가 있는지 <b>발견</b>만 할 수 있어요. 하지만 <b>해밍 코드</b>(Hamming code)는 어디가 틀렸는지 찾아서 <b>고칠</b> 수도 있어요.</p>
+<div class="box box-key avoid-break"><span class="box-label">[심화] 해밍 코드란?</span><div class="box-content">리처드 해밍이 1950년에 발명한 오류 정정 코드.<br><br>• 데이터 비트 사이에 패리티 비트를 전략적으로 배치<br>• 오류가 발생하면 어느 비트가 틀렸는지 찾아서 자동 수정<br>• 우주 탐사선, 위성 통신, ECC 메모리(서버용 RAM)에서 사용<br>• 예: 4비트 데이터를 보내려면 3개의 패리티 비트를 추가 → 7비트 전송</div></div>
+<h2>비트와 색깔</h2>
+<p>컴퓨터 화면의 색깔도 비트로 표현해요.</p>
+<div class="box box-key avoid-break"><span class="box-label">[핵심] 색깔과 비트</span><div class="box-content">모니터의 각 점(픽셀)은 <b>빨강(R), 초록(G), 파랑(B)</b> 세 가지 빛을 섞어서 색을 만들어요.<br><br>• R, G, B 각각 1바이트(8비트) = 0~255 단계<br>• 1픽셀 = 3바이트 = 24비트<br>• 24비트로 표현 가능한 색 = 2²⁴ = <b>16,777,216가지</b> (약 1600만 색)<br><br>예: (255, 0, 0) = 빨강, (0, 255, 0) = 초록, (0, 0, 255) = 파랑<br>(255, 255, 255) = 흰색, (0, 0, 0) = 검정</div></div>
+<h2>비트와 소리</h2>
+<p>소리도 비트로 저장해요. 소리는 공기의 <b>진동</b>이에요. 이 진동을 일정 간격으로 측정(샘플링)해서 숫자로 바꿔요.</p>
+<div class="box box-key avoid-break"><span class="box-label">[핵심] 소리의 디지털화</span><div class="box-content"><b>샘플링 레이트</b>: 1초에 몇 번 측정하는지<br>• CD 음질: 44,100Hz (1초에 44,100번 측정)<br>• 전화: 8,000Hz<br><br><b>비트 깊이</b>: 한 번 측정할 때 몇 비트로 기록하는지<br>• CD 음질: 16비트 (65,536단계의 세밀함)<br>• 고음질: 24비트 (16,777,216단계)<br><br>CD 1초 = 44,100 × 16 × 2(스테레오) = 1,411,200비트 ≈ 176KB</div></div>
+<h2>[심화] 부동소수점 — 비트로 소수 표현하기</h2>
+<p>정수(1, 2, 3)는 비트로 쉽게 표현할 수 있어요. 하지만 소수(3.14, 0.001)는 어떻게 표현할까요?</p>
+<div class="box box-key avoid-break"><span class="box-label">[심화] 부동소수점이란?</span><div class="box-content">소수를 비트로 표현하는 방법 = <b>부동소수점</b>(floating point)<br><br>32비트(float)의 구조:<br>• 부호 1비트: 양수(0) / 음수(1)<br>• 지수 8비트: 소수점 위치<br>• 가수 23비트: 실제 숫자<br><br>과학적 표기법과 비슷해요: 3.14 = 3.14 × 10⁰<br><br>⚠ 주의: 0.1 + 0.2 = 0.30000000000000004 같은 오차가 생길 수 있어요! (나중에 C언어에서 직접 확인해요)</div></div>
+<h2>[심화] 엔디안 — 바이트 순서</h2>
+<p>숫자 0x12345678을 메모리에 저장할 때, 앞(12)부터 저장할까요 뒤(78)부터 저장할까요?</p>
+<div class="compare avoid-break"><div class="compare-bad"><div class="compare-label">✕ 잘못된 코드</div><code></code><br><span class="compare-msg-bad"></span></div><div class="compare-good"><div class="compare-label">✓ 올바른 코드</div><code></code><br><span class="compare-msg-good"></span></div></div>
+<h2>비트의 실생활 응용</h2>
+<div class="box box-history avoid-break"><span class="box-label">[실생활] QR코드와 비트</span><div class="box-content">QR코드의 검은 점 = 1, 흰 점 = 0이에요. QR코드를 스캔하면 0과 1의 패턴을 읽어서 웹사이트 주소, 연락처 등으로 변환해요. 오류 정정 기능도 내장되어 있어서 일부가 가려져도 읽을 수 있어요!</div></div>
+<div class="box box-history avoid-break"><span class="box-label">[실생활] 바코드와 비트</span><div class="box-content">마트의 바코드도 비트 원리를 써요. 검은 줄 = 1, 흰 줄 = 0으로, 상품 번호를 2진수로 저장해요. 바코드 스캐너가 빛을 쏘아 반사되는 패턴을 읽어요.</div></div>
+<h2>[심화] 비트 연산 미리보기</h2>
+<p>C언어에서는 비트를 직접 조작하는 <b>비트 연산</b>을 할 수 있어요. 나중에 자세히 배우겠지만 미리 살짝 볼까요?</p>
+<div class="box box-tip avoid-break"><span class="box-label">[심화] 비트 연산의 종류</span><div class="box-content"><b>AND (&)</b>: 둘 다 1이면 1 → 1010 & 1100 = 1000<br><b>OR (|)</b>: 하나라도 1이면 1 → 1010 | 1100 = 1110<br><b>XOR (^)</b>: 서로 다르면 1 → 1010 ^ 1100 = 0110<br><b>NOT (~)</b>: 0→1, 1→0 뒤집기 → ~1010 = 0101<br><b>시프트 (<<, >>)</b>: 비트를 왼쪽/오른쪽으로 밀기<br><br>이런 연산이 게임 개발, 암호화, 네트워크에서 많이 쓰여요!</div></div>
+<h2>[심화 내용] 정보량과 일상</h2>
+<p>정보 이론을 일상에서 느껴볼까요?</p>
+<div class="box box-tip avoid-break"><span class="box-label">[심화 내용] 20가지 질문 게임과 정보 이론</span><div class="box-content">친구가 1~100 사이 숫자를 하나 생각했어요. '예/아니오'로만 대답해요.<br><br>최적 전략: '50보다 커?' → '75보다 커?' → ...<br>매번 가능한 답을 절반으로 줄이면 → log₂(100) ≈ 7번 만에 찾을 수 있어요!<br><br>이것이 <b>이진 탐색</b>의 원리이고, 정보 이론의 실체예요.<br>100가지 중 하나를 특정하는 데 필요한 정보량 = log₂(100) ≈ 6.64비트</div></div>
+<h2>디지털 vs 아날로그</h2>
+<p>비트로 세상을 표현하는 방식을 <b>디지털</b>(digital)이라고 해요. 반대로 연속적인 값을 그대로 사용하는 방식은 <b>아날로그</b>(analog)예요.</p>
+<div class="compare avoid-break"><div class="compare-bad"><div class="compare-label">✕ 잘못된 코드</div><code></code><br><span class="compare-msg-bad"></span></div><div class="compare-good"><div class="compare-label">✓ 올바른 코드</div><code></code><br><span class="compare-msg-good"></span></div></div>
+<p>우리가 사는 세상은 아날로그이지만, 컴퓨터는 디지털이에요. 마이크가 아날로그 소리를 디지털 신호로 바꿔주고(ADC), 스피커가 디지털 신호를 아날로그 소리로 바꿔줘요(DAC).</p>
+<div class="box box-key avoid-break"><span class="box-label">[핵심] ADC와 DAC</span><div class="box-content"><b>ADC</b>(Analog-to-Digital Converter): 아날로그 → 디지털 변환<br>예: 마이크가 목소리를 0과 1로 변환<br><br><b>DAC</b>(Digital-to-Analog Converter): 디지털 → 아날로그 변환<br>예: 스피커가 0과 1을 소리로 변환<br><br>스마트폰 안에도 ADC와 DAC가 들어있어요!</div></div>
+<h2>C언어와 비트의 연결</h2>
+<div class="box box-tip avoid-break"><span class="box-label">[C 연결 미리보기] 비트와 자료형</span><div class="box-content">C언어에서 <code>char</code> = 1바이트(8비트) = 영어 글자 1개 저장 (256가지)<br>C언어에서 <code>int</code> = 4바이트(32비트) = 큰 숫자 저장 (약 42억 가지)<br>C언어에서 <code>long long</code> = 8바이트(64비트) = 매우 큰 숫자 저장<br><br>비트가 많을수록 더 큰 숫자, 더 많은 종류를 저장할 수 있어요.</div></div>
+<div class="box box-key avoid-break"><span class="box-label">[C 연결] sizeof 연산자</span><div class="box-content">C언어에서 자료형의 크기(바이트 수)를 확인하는 연산자:<br><br><code>sizeof(char)</code> = 1 (항상 1바이트)<br><code>sizeof(int)</code> = 4 (보통 4바이트)<br><code>sizeof(double)</code> = 8 (8바이트)<br><br>이건 Part 1에서 직접 확인해 볼 거예요!</div></div>
+<h2>━━━ 연습문제 ━━━</h2>
+<h2>연습문제</h2>
+<div class="exercise avoid-break"><div class="exercise-title">문제 1 <span class="difficulty diff-1">★ 기본</span></div><div class="exercise-item"><p>비트(bit)란 무엇인가요? 한 문장으로 설명해 보세요.</p></div><div class="memo-area"><span class="memo-label">여기에 답을 써 보세요</span></div></div>
+<div class="exercise avoid-break"><div class="exercise-title">문제 2 <span class="difficulty diff-1">★ 기본</span></div><div class="exercise-item"><p>1바이트는 몇 비트인가요? 1바이트로 몇 가지를 표현할 수 있나요?</p></div><div class="memo-area"><span class="memo-label">여기에 답을 써 보세요</span></div></div>
+<div class="exercise avoid-break"><div class="exercise-title">문제 3 <span class="difficulty diff-1">★ 기본</span></div><div class="exercise-item"><p>다음 단위를 큰 순서대로 나열하세요: MB, KB, TB, GB, byte</p></div><div class="memo-area"><span class="memo-label">여기에 답을 써 보세요</span></div></div>
+<div class="exercise avoid-break"><div class="exercise-title">문제 4 <span class="difficulty diff-1">★ 기본</span></div><div class="exercise-item"><p>인터넷 속도에서 소문자 b(비트)와 대문자 B(바이트)의 차이는 몇 배인가요?</p></div><div class="memo-area"><span class="memo-label">여기에 답을 써 보세요</span></div></div>
+<div class="exercise avoid-break"><div class="exercise-title">문제 5 <span class="difficulty diff-1">★ 기본</span></div><div class="exercise-item"><p>컴퓨터가 2진수(0과 1)를 쓰는 이유를 설명해 보세요.</p></div><div class="memo-area"><span class="memo-label">여기에 답을 써 보세요</span></div></div>
+<div class="exercise avoid-break"><div class="exercise-title">문제 6 <span class="difficulty diff-2">★★ 도전</span></div><div class="exercise-item"><p>4비트로 표현할 수 있는 가짓수는 몇 가지인가요? 가능한 조합을 0000부터 1111까지 전부 나열해 보세요.</p></div><div class="memo-area"><span class="memo-label">여기에 답을 써 보세요</span></div></div>
+<div class="exercise avoid-break"><div class="exercise-title">문제 7 <span class="difficulty diff-2">★★ 도전</span></div><div class="exercise-item"><p>손가락 2진수로 숫자 19를 표현하려면 어떤 손가락을 펴야 하나요? (엄지=1, 검지=2, 중지=4, 약지=8, 새끼=16)</p></div><div class="memo-area"><span class="memo-label">여기에 답을 써 보세요</span></div></div>
+<div class="exercise avoid-break"><div class="exercise-title">문제 8 <span class="difficulty diff-2">★★ 도전</span></div><div class="exercise-item"><p>100Mbps 인터넷으로 500MB 파일을 다운로드하면 약 몇 초 걸리나요? (계산 과정을 적으세요)</p></div><div class="memo-area"><span class="memo-label">여기에 답을 써 보세요</span></div></div>
+<div class="exercise avoid-break"><div class="exercise-title">문제 9 <span class="difficulty diff-2">★★ 도전</span></div><div class="exercise-item"><p>32비트 CPU가 최대 4GB RAM만 인식할 수 있는 이유를 설명해 보세요.</p></div><div class="memo-area"><span class="memo-label">여기에 답을 써 보세요</span></div></div>
+<div class="exercise avoid-break"><div class="exercise-title">문제 10 <span class="difficulty diff-2">★★ 도전</span></div><div class="exercise-item"><p>직렬 전송과 병렬 전송의 차이를 일상 비유를 들어 설명해 보세요.</p></div><div class="memo-area"><span class="memo-label">여기에 답을 써 보세요</span></div></div>
+<div class="exercise avoid-break"><div class="exercise-title">문제 11 <span class="difficulty diff-3">★★★ 심화</span></div><div class="exercise-item"><p>[심화] 10비트로 표현할 수 있는 가장 큰 수는 얼마인가요? 계산 과정을 적으세요.</p></div><div class="memo-area"><span class="memo-label">여기에 답을 써 보세요</span></div></div>
+<div class="exercise avoid-break"><div class="exercise-title">문제 12 <span class="difficulty diff-3">★★★ 심화</span></div><div class="exercise-item"><p>[심화] 1KB = 1,000바이트와 1KB = 1,024바이트, 두 해석이 있는 이유를 설명해 보세요.</p></div><div class="memo-area"><span class="memo-label">여기에 답을 써 보세요</span></div></div>
+<div class="exercise avoid-break"><div class="exercise-title">문제 13 <span class="difficulty diff-3">★★★ 심화</span></div><div class="exercise-item"><p>[심화] 대역폭과 지연시간의 차이를 자기 말로 설명하고, 게임할 때 어느 것이 더 중요한지 이유를 적어 보세요.</p></div><div class="memo-area"><span class="memo-label">여기에 답을 써 보세요</span></div></div>
+<div class="exercise avoid-break"><div class="exercise-title">문제 14 <span class="difficulty diff-3">★★★ 심화</span></div><div class="exercise-item"><p>[심화 내용] 동전 던지기에서 앞면(확률 1/2)의 정보량은 몇 비트인가요? 주사위 눈(확률 1/6)의 정보량은 약 몇 비트인가요?</p></div><div class="memo-area"><span class="memo-label">여기에 답을 써 보세요</span></div></div>
+<div class="exercise avoid-break"><div class="exercise-title">문제 15 <span class="difficulty diff-3">★★★ 심화</span></div><div class="exercise-item"><p>[심화 내용] '엔트로피가 낮은 데이터는 압축이 잘 된다'는 말의 의미를 예시를 들어 설명해 보세요.</p></div><div class="memo-area"><span class="memo-label">여기에 답을 써 보세요</span></div></div>
+<h2>정답</h2>
+<div class="answers-section avoid-break"><h3>정답</h3><div class="answer-item"><span class="answer-num">문제 1</span> <span class="answer-text">비트(bit)는 0 또는 1을 담는 컴퓨터 정보의 가장 작은 단위예요.</span></div><div class="answer-item"><span class="answer-num">문제 2</span> <span class="answer-text">1바이트 = 8비트. 1바이트로 256가지(2의 8승)를 표현할 수 있어요.</span></div><div class="answer-item"><span class="answer-num">문제 3</span> <span class="answer-text">TB > GB > MB > KB > byte</span></div><div class="answer-item"><span class="answer-num">문제 4</span> <span class="answer-text">8배. 1바이트(B) = 8비트(b). 100MBps는 100Mbps의 8배예요.</span></div><div class="answer-item"><span class="answer-num">문제 5</span> <span class="answer-text">전기 스위치가 켜짐(1)/꺼짐(0) 두 가지만 확실히 구분할 수 있어서. 10단계보다 2단계가 안정적이에요.</span></div><div class="answer-item"><span class="answer-num">문제 6</span> <span class="answer-text">4비트 = 16가지(2의 4승). 0000, 0001, 0010, 0011, 0100, 0101, 0110, 0111, 1000, 1001, 1010, 1011, 1100, 1101, 1110, 1111</span></div><div class="answer-item"><span class="answer-num">문제 7</span> <span class="answer-text">19 = 16 + 2 + 1 → 새끼손가락(16) + 검지(2) + 엄지(1) 펴기. 2진수로 10011이에요.</span></div><div class="answer-item"><span class="answer-num">문제 8</span> <span class="answer-text">100Mbps = 12.5MB/s (100÷8). 500MB ÷ 12.5MB/s = 40초. 약 40초 걸려요.</span></div><div class="answer-item"><span class="answer-num">문제 9</span> <span class="answer-text">32비트 주소로 표현할 수 있는 최대 주소 수 = 2³² = 4,294,967,296 ≈ 4GB. 주소가 4GB까지밖에 안 되니까 그 이상의 RAM을 인식할 수 없어요.</span></div><div class="answer-item"><span class="answer-num">문제 10</span> <span class="answer-text">직렬: 1차선 도로에 차가 한 줄로 빠르게 달림. 병렬: 8차선 도로에 차가 나란히 달림. 고속에서는 직렬이 더 안정적이에요.</span></div><div class="answer-item"><span class="answer-num">문제 11</span> <span class="answer-text">2¹⁰ = 1024. 0부터 세니까 가장 큰 수는 1024 - 1 = 1023이에요.</span></div><div class="answer-item"><span class="answer-num">문제 12</span> <span class="answer-text">컴퓨터는 2진수를 쓰니까 2¹⁰ = 1024가 자연스럽지만, 일상에서는 10³ = 1000이 편해요. 하드디스크 업체는 1000을 쓰고, OS는 1024를 써서 혼란이 생겼어요. IEC에서 KiB(1024) vs KB(1000)로 구분하는 표준을 만들었어요.</span></div><div class="answer-item"><span class="answer-num">문제 13</span> <span class="answer-text">대역폭 = 한꺼번에 보낼 수 있는 최대 데이터양 (차선 수). 지연시간 = 데이터가 도착하는 데 걸리는 시간 (거리). 게임에서는 지연시간(핑)이 더 중요해요. 총을 쏘는 순간 바로 반영되어야 하니까 지연이 적어야 해요.</span></div><div class="answer-item"><span class="answer-num">문제 14</span> <span class="answer-text">동전 앞면: -log₂(1/2) = log₂(2) = 1비트. 주사위 눈: -log₂(1/6) = log₂(6) ≈ 2.58비트.</span></div><div class="answer-item"><span class="answer-num">문제 15</span> <span class="answer-text">엔트로피가 낮다 = 반복 패턴이 많다 = 예측하기 쉽다 = 줄여 쓸 수 있다. 예: AAAAAABBBB(엔트로피 낮음)는 A6B4로 압축 가능하지만, QWXYZ(엔트로피 높음)는 줄일 수 없어요.</span></div></div>
+<h2>용어 정리</h2>
+<div class="glossary avoid-break"><div class="glossary-item"><dt class="glossary-term">비트(bit)</dt><dd class="glossary-def">0 또는 1을 담는 가장 작은 정보 단위. binary digit의 줄임말.</dd></div><div class="glossary-item"><dt class="glossary-term">바이트(byte)</dt><dd class="glossary-def">8비트를 묶은 단위. 1바이트로 256가지를 표현할 수 있어요.</dd></div><div class="glossary-item"><dt class="glossary-term">니블(nibble)</dt><dd class="glossary-def">4비트를 묶은 단위. 16진수 한 자릿수와 대응.</dd></div><div class="glossary-item"><dt class="glossary-term">워드(word)</dt><dd class="glossary-def">CPU가 한 번에 처리하는 데이터 크기. 현대 PC는 64비트.</dd></div><div class="glossary-item"><dt class="glossary-term">2진수</dt><dd class="glossary-def">0과 1만 사용하는 수 체계. 컴퓨터가 사용하는 수예요.</dd></div><div class="glossary-item"><dt class="glossary-term">10진수</dt><dd class="glossary-def">0부터 9까지 10개 숫자를 사용하는 수 체계. 우리가 일상에서 쓰는 수예요.</dd></div><div class="glossary-item"><dt class="glossary-term">KB (킬로바이트)</dt><dd class="glossary-def">약 1,000바이트. (엄밀히 KiB = 1,024바이트)</dd></div><div class="glossary-item"><dt class="glossary-term">MB (메가바이트)</dt><dd class="glossary-def">약 1,000KB = 약 100만 바이트.</dd></div><div class="glossary-item"><dt class="glossary-term">GB (기가바이트)</dt><dd class="glossary-def">약 1,000MB = 약 10억 바이트.</dd></div><div class="glossary-item"><dt class="glossary-term">TB (테라바이트)</dt><dd class="glossary-def">약 1,000GB = 약 1조 바이트.</dd></div><div class="glossary-item"><dt class="glossary-term">대역폭</dt><dd class="glossary-def">1초에 보낼 수 있는 최대 데이터양. 단위: bps(초당 비트 수).</dd></div><div class="glossary-item"><dt class="glossary-term">지연시간</dt><dd class="glossary-def">데이터가 출발해서 도착하는 데 걸리는 시간. 단위: ms.</dd></div><div class="glossary-item"><dt class="glossary-term">직렬 전송</dt><dd class="glossary-def">비트를 하나씩 순서대로 보내는 방식. USB, SATA 등.</dd></div><div class="glossary-item"><dt class="glossary-term">병렬 전송</dt><dd class="glossary-def">여러 비트를 동시에 나란히 보내는 방식. 옛날 프린터 케이블 등.</dd></div><div class="glossary-item"><dt class="glossary-term">엔트로피</dt><dd class="glossary-def">정보의 평균 불확실성. 높을수록 정보가 많고 압축이 어려움.</dd></div><div class="glossary-item"><dt class="glossary-term">패리티 비트</dt><dd class="glossary-def">오류 검출을 위해 데이터에 추가하는 1비트.</dd></div><div class="glossary-item"><dt class="glossary-term">클로드 섀넌</dt><dd class="glossary-def">정보 이론의 아버지. 비트의 개념을 수학적으로 정의한 사람.</dd></div><div class="glossary-item"><dt class="glossary-term">bps</dt><dd class="glossary-def">bits per second. 초당 전송 비트 수. 통신 속도의 단위.</dd></div></div>
+<div class="visual-summary avoid-break"><div class="visual-summary-title">이번 유닛 핵심 정리</div><div class="visual-summary-items"><div class="visual-summary-item"><div class="visual-summary-num">1</div><span>비트(bit)는 0 또는 1, 컴퓨터 정보의 가장 작은 단위예요</span></div><div class="visual-summary-item"><div class="visual-summary-num">2</div><span>N비트 = 2의 N승 가지를 표현할 수 있어요 (비트 1개 추가 = 2배)</span></div><div class="visual-summary-item"><div class="visual-summary-num">3</div><span>8비트 = 1바이트. 1바이트로 256가지를 표현해요</span></div><div class="visual-summary-item"><div class="visual-summary-num">4</div><span>KB < MB < GB < TB (각각 약 1,000배)</span></div><div class="visual-summary-item"><div class="visual-summary-num">5</div><span>[심화] 워드 크기: 4→8→16→32→64비트로 발전</span></div><div class="visual-summary-item"><div class="visual-summary-num">6</div><span>[심화] 대역폭 = 전송 용량, 지연시간 = 전송 시간</span></div><div class="visual-summary-item"><div class="visual-summary-num">7</div><span>[심화 내용] 섀넌 엔트로피 = 정보의 불확실성 척도</span></div></div></div>
+<h2>━━━ 10축 심화 학습 ━━━</h2>
+<h2>[KOI] 비트/바이트 관련 실전 기출 유형</h2>
+<div class="box box-key avoid-break"><span class="box-label">[KOI 실전 문제 1] N비트 계산</span><div class="box-content"><b>문제:</b> 12비트로 표현할 수 있는 서로 다른 정수는 최대 몇 개인가요? 가장 큰 수는 무엇인가요?<br><br><b>정답:</b> 4,096개 (0~4,095)<br><br><b>풀이:</b><br>• 2¹² = 4,096가지<br>• 0부터 세니까 가장 큰 수 = 4,096 - 1 = <b>4,095</b><br>• 공식: N비트 → 가짓수 = 2ᴺ, 최대값 = 2ᴺ - 1</div></div>
+<div class="box box-key avoid-break"><span class="box-label">[KOI 실전 문제 2] 데이터 단위 환산</span><div class="box-content"><b>문제:</b> 3GB 영화 파일을 100Mbps 인터넷으로 다운로드하면 약 몇 초가 걸리나요?<br><br><b>정답:</b> 약 240초 (4분)<br><br><b>풀이:</b><br>• 3GB = 3,000MB<br>• 100Mbps = 100백만 비트/초 = 12.5MB/초 (÷8)<br>• 3,000MB ÷ 12.5MB/초 = <b>240초</b><br>• 함정: Mbps의 b는 비트! 바이트로 바꾸려면 ÷8</div></div>
+<div class="box box-key avoid-break"><span class="box-label">[KOI 실전 문제 3] 패리티 비트</span><div class="box-content"><b>문제:</b> 짝수 패리티를 사용하여 데이터 1011010을 전송하려고 합니다. 패리티 비트는 무엇인가요?<br><br><b>정답:</b> 패리티 비트 = 0<br><br><b>풀이:</b><br>• 데이터 1011010에서 1의 개수 = 4개 (짝수)<br>• 짝수 패리티는 1의 총 개수가 짝수여야 함<br>• 이미 짝수이므로 패리티 비트 = <b>0</b><br>• 전송: 1011010<b>0</b> (1의 개수 = 4, 짝수 유지)<br>• 만약 1비트가 바뀌면? → 1의 개수가 홀수가 되어 오류 발견!</div></div>
+<div class="box box-key avoid-break"><span class="box-label">[KOI 실전 문제 4] 워드 크기와 RAM</span><div class="box-content"><b>문제:</b> 32비트 CPU는 최대 4GB RAM만 인식합니다. 64비트 CPU는 이론적으로 최대 몇 바이트의 RAM을 인식할 수 있나요?<br><br><b>정답:</b> 2⁶⁴ 바이트 ≈ 16EB(엑사바이트)<br><br><b>풀이:</b><br>• 32비트: 2³² = 4,294,967,296 바이트 ≈ <b>4GB</b><br>• 64비트: 2⁶⁴ = 18,446,744,073,709,551,616 바이트 ≈ <b>16EB</b><br>• 16EB = 16,384PB = 16,777,216TB!<br>• 현재 기술로는 이만큼 RAM을 만들 수 없어요!</div></div>
+<div class="box box-key avoid-break"><span class="box-label">[KOI 실전 문제 5] RGB 색상 계산</span><div class="box-content"><b>문제:</b> 1920×1080 해상도 사진 1장이 차지하는 용량(RGB, 24비트)을 MB 단위로 계산하세요.<br><br><b>정답:</b> 약 5.93MB<br><br><b>풀이:</b><br>• 넘셀 수 = 1920 × 1080 = 2,073,600개<br>• 1픽셀 = 3바이트 (R, G, B 각 1바이트)<br>• 총 용량 = 2,073,600 × 3 = <b>6,220,800바이트</b><br>• 6,220,800 ÷ 1,048,576 ≈ <b>5.93MB</b><br>• 실제 JPEG는 압축되어서 0.5~3MB 정도!</div></div>
+<div class="exercise avoid-break"><div class="exercise-title">문제 16 <span class="difficulty diff-2">★★ 도전</span></div><div class="exercise-item"><p>[KOI] 홍수 패리티를 사용하여 데이터 1100101을 전송하려고 합니다.
+(1) 1의 개수를 세세요
+(2) 패리티 비트는 0인가요 1인가요?
+(3) 전송 중 5번째 비트가 0에서 1로 바뀌면 받는 쪽에서 오류를 발견할 수 있나요? 이유를 적으세요.</p></div><div class="memo-area"><span class="memo-label">여기에 답을 써 보세요</span></div></div>
+<h2>[디버깅] 오버플로우 — 비트가 모자라면?</h2>
+<p>비트 수가 정해져 있으면, 표현할 수 있는 범위도 정해져 있어요. 이 범위를 넘으면 <b>오버플로우</b>(넘침)가 생겼요!</p>
+<div class="box box-warning avoid-break"><span class="box-label">[디버깅] 정수 오버플로우 예시</span><div class="box-content">C언어에서 <code>unsigned char</code> = 8비트 = 0~255 범위<br><br>만약 255에서 1을 더하면?<br><code>11111111 + 1 = 100000000</code> (9비트!)<br>하지만 8비트만 저장 가능하니까 → <code>00000000</code> = <b>0</b>으로 돌아감!<br><br>255 → 0 → 1 → 2 ... 다시 도는 것 처럼 보여요.<br><br><b>실제 사고:</b><br>• 999만 km 차량 계기판이 000000으로 리셋 (자릿수 초과)<br>• 2038년 문제: 32비트 유닉스 시간이 2038년 1월 19일에 오버플로우!<br>• 아리안5 로켓 폭발(1996년): 64비트 수를 16비트에 넣어서 오버플로우 → 로켓 폭발</div></div>
+<div class="code-block avoid-break"><div class="code-block-header">[디버깅] 오버플로우 직접 확인 (Part 2 미리보기)</div>
+        <table class="code-table"><tr class=""><td class="line-num">1</td><td class="line-code"><span class="pp">#include</span> <span class="str">&lt;stdio.h&gt;</span></td></tr>
+<tr class=""><td class="line-num">2</td><td class="line-code"><span class="pp">#include</span> <span class="str">&lt;limits.h&gt;</span>  <span class="cmt">// INT_MAX, CHAR_MAX 등</span></td></tr>
+<tr class=""><td class="line-num">3</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">4</td><td class="line-code"><span class="type">int</span> <span class="fn">main</span>(<span class="type">void</span>) {</td></tr>
+<tr class=""><td class="line-num">5</td><td class="line-code">    <span class="type">unsigned</span> <span class="type">char</span> c = <span class="num">255</span>;</td></tr>
+<tr class=""><td class="line-num">6</td><td class="line-code">    <span class="fn">printf</span>(<span class="str">"c = <span class="fmt">%d</span><span class="esc">\n</span>"</span>, c);    <span class="cmt">// 255</span></td></tr>
+<tr class=""><td class="line-num">7</td><td class="line-code">    c = c + <span class="num">1</span>;                   <span class="cmt">// 오버플로우!</span></td></tr>
+<tr class=""><td class="line-num">8</td><td class="line-code">    <span class="fn">printf</span>(<span class="str">"c + 1 = <span class="fmt">%d</span><span class="esc">\n</span>"</span>, c); <span class="cmt">// 0! (넘침)</span></td></tr>
+<tr class=""><td class="line-num">9</td><td class="line-code">    </td></tr>
+<tr class=""><td class="line-num">10</td><td class="line-code">    <span class="type">int</span> x = INT_MAX;  <span class="cmt">// 32비트 최대: 2,147,483,647</span></td></tr>
+<tr class=""><td class="line-num">11</td><td class="line-code">    <span class="fn">printf</span>(<span class="str">"INT_MAX = <span class="fmt">%d</span><span class="esc">\n</span>"</span>, x);</td></tr>
+<tr class=""><td class="line-num">12</td><td class="line-code">    <span class="fn">printf</span>(<span class="str">"INT_MAX + 1 = <span class="fmt">%d</span><span class="esc">\n</span>"</span>, x + <span class="num">1</span>); <span class="cmt">// 음수가 됨!</span></td></tr>
+<tr class=""><td class="line-num">13</td><td class="line-code">    <span class="kw">return</span> <span class="num">0</span>;</td></tr>
+<tr class=""><td class="line-num">14</td><td class="line-code">}</td></tr></table></div>
+<!-- unknown type: output-block -->
+<h2>[컴퓨팅사고력] 패턴 인식 — 2의 거듭제곱</h2>
+<p>N비트 = 2ᴺ 가지라는 규칙을 발견했어요. 이처럼 <b>규칙(패턴)을 찾는 것</b>이 컴퓨팅사고력의 <b>패턴 인식</b>이에요.</p>
+<div class="box box-tip avoid-break"><span class="box-label">[컴퓨팅사고력] 2의 거듭제곱 패턴</span><div class="box-content">2의 거듭제곱은 컴퓨터 과학에서 계속 나와요:<br><br>• 비트 수: 1, 2, 4, 8, 16, 32, 64...<br>• 바이트 단위: 1B, 1KB(2¹⁰), 1MB(2²⁰), 1GB(2³⁰)...<br>• RGB 색상: 2²⁴ = 약 1600만 색<br>• 이진 탐색: N개 중 하나를 찾는 데 log₂(N)번 필요<br><br><b>암기할 2의 거듭제곱:</b> 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024<br>이 수들을 외워두면 컴퓨터 과학 공부가 훨씬 쉬워져요!</div></div>
+<div class="exercise avoid-break"><div class="exercise-title">문제 17 <span class="difficulty diff-2">★★ 도전</span></div><div class="exercise-item"><p>[컴퓨팅사고력] 다음 패턴을 찾으세요:
+(1) 1, 2, 4, 8, ?, ?, ? (다음 3개는?)
+(2) 8비트=256, 16비트=65536이면, 24비트=? (RGB 색상 수)
+(3) 1000명 중 한 명을 찾는 데 예/아니오 질문은 최소 몇 번 필요한가요? (힌트: log₂(1000) ≈ ?)</p></div><div class="memo-area"><span class="memo-label">여기에 답을 써 보세요</span></div></div>
+<h2>[C언어] 비트 연산 코드 미리보기</h2>
+<div class="code-block avoid-break"><div class="code-block-header">비트 연산으로 2의 거듭제곱 계산 (Part 3 미리보기)</div>
+        <table class="code-table"><tr class=""><td class="line-num">1</td><td class="line-code"><span class="pp">#include</span> <span class="str">&lt;stdio.h&gt;</span></td></tr>
+<tr class=""><td class="line-num">2</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">3</td><td class="line-code"><span class="type">int</span> <span class="fn">main</span>(<span class="type">void</span>) {</td></tr>
+<tr class=""><td class="line-num">4</td><td class="line-code">    <span class="cmt">// 왼쪽 시프트 = ×2</span></td></tr>
+<tr class=""><td class="line-num">5</td><td class="line-code">    <span class="type">int</span> a = <span class="num">1</span>;</td></tr>
+<tr class=""><td class="line-num">6</td><td class="line-code">    <span class="fn">printf</span>(<span class="str">"<span class="fmt">%d</span><span class="esc">\n</span>"</span>, a);       <span class="cmt">// 1</span></td></tr>
+<tr class=""><td class="line-num">7</td><td class="line-code">    <span class="fn">printf</span>(<span class="str">"<span class="fmt">%d</span><span class="esc">\n</span>"</span>, a &lt;&lt; <span class="num">1</span>); <span class="cmt">// 2  (1을 왼쪽으로 1칸 밀기)</span></td></tr>
+<tr class=""><td class="line-num">8</td><td class="line-code">    <span class="fn">printf</span>(<span class="str">"<span class="fmt">%d</span><span class="esc">\n</span>"</span>, a &lt;&lt; <span class="num">2</span>); <span class="cmt">// 4  (1을 왼쪽으로 2칸 밀기)</span></td></tr>
+<tr class=""><td class="line-num">9</td><td class="line-code">    <span class="fn">printf</span>(<span class="str">"<span class="fmt">%d</span><span class="esc">\n</span>"</span>, a &lt;&lt; <span class="num">3</span>); <span class="cmt">// 8  (1을 왼쪽으로 3칸 밀기)</span></td></tr>
+<tr class=""><td class="line-num">10</td><td class="line-code">    <span class="fn">printf</span>(<span class="str">"<span class="fmt">%d</span><span class="esc">\n</span>"</span>, a &lt;&lt; <span class="num">10</span>); <span class="cmt">// 1024 = 1KB!</span></td></tr>
+<tr class=""><td class="line-num">11</td><td class="line-code">    </td></tr>
+<tr class=""><td class="line-num">12</td><td class="line-code">    <span class="cmt">// AND 연산으로 홈수/짝수 판단</span></td></tr>
+<tr class=""><td class="line-num">13</td><td class="line-code">    <span class="type">int</span> n = <span class="num">7</span>;</td></tr>
+<tr class=""><td class="line-num">14</td><td class="line-code">    <span class="kw">if</span> (n &amp; <span class="num">1</span>) {  <span class="cmt">// 마지막 비트가 1이면 홈수</span></td></tr>
+<tr class=""><td class="line-num">15</td><td class="line-code">        <span class="fn">printf</span>(<span class="str">"<span class="fmt">%d</span>는 홈수<span class="esc">\n</span>"</span>, n);</td></tr>
+<tr class=""><td class="line-num">16</td><td class="line-code">    }</td></tr>
+<tr class=""><td class="line-num">17</td><td class="line-code">    <span class="kw">return</span> <span class="num">0</span>;</td></tr>
+<tr class=""><td class="line-num">18</td><td class="line-code">}</td></tr></table></div>
+<!-- unknown type: output-block -->
+<div class="exercise avoid-break"><div class="exercise-title">문제 18 <span class="difficulty diff-3">★★★ 심화</span></div><div class="exercise-item"><p>[C+비트] 1 << 20은 얼마인가요? 이것이 MB와 어떤 관계가 있나요? (1MB = 1,048,576바이트 = 2²⁰바이트)</p></div><div class="memo-area"><span class="memo-label">여기에 답을 써 보세요</span></div></div>
+<h2>[실생활] 내 데이터는 몇 비트?</h2>
+<div class="box box-history avoid-break"><span class="box-label">[실생활] 일상 데이터의 비트 계산</span><div class="box-content"><b>문자 메시지 '안녕하세요':</b><br>• 한글 1글자 = 2~3바이트 (UTF-8), 5글자 ≈ 15바이트 = <b>120비트</b><br><br><b>MP3 노래 1곡 (3분):</b><br>• 320kbps × 180초 = 57,600,000비트 = <b>약 6.9MB</b><br><br><b>유튜브 영상 1시간 (1080p):</b><br>• 압축 후 약 3~5Mbps × 3600초 = <b>약 1.5~2.2GB</b><br><br><b>스마트폰 사진 1장 (12MP):</b><br>• 4000×3000 픽셀 × 3바이트 = 36MB (비압축)<br>• JPEG 압축 후 ≈ <b>약 3~5MB</b></div></div>
+<div class="exercise avoid-break"><div class="exercise-title">문제 19 <span class="difficulty diff-2">★★ 도전</span></div><div class="exercise-item"><p>[실생활] 4K 영상(3840×2160)의 1프레임이 차지하는 용량을 MB 단위로 계산하세요. (RGB 24비트 기준, 1MB = 1,048,576바이트)</p></div><div class="memo-area"><span class="memo-label">여기에 답을 써 보세요</span></div></div>
+<div class="box box-summary avoid-break"><span class="box-label">이 유닛에서 깊이 배운 10축</span><div class="box-content"><b>[KOI]</b> N비트 계산(2ᴺ), 데이터 단위 환산(Mbps→MB/s), 패리티 비트 계산, 워드크기와 RAM, RGB 사진 용량. 실전 문제 5개+풀이<br><b>[디버깅]</b> 정수 오버플로우(255+1=0). C코드로 직접 확인. 아리안5/2038년 실제 사고<br><b>[컴퓨팅사고력]</b> 패턴 인식 — 2의 거듭제곱 규칙 발견. 이진 탐색의 원리(log₂)<br><b>[C언어]</b> 비트 시프트(<< = ×2), AND 연산으로 홈수/짝수 판단. 오버플로우 코드 예시<br><b>[코딩기초]</b> char/int/long long의 비트 수와 표현 범위. sizeof 연산자<br><b>[실생활]</b> 문자/음악/영상/사진의 비트 계산. QR코드/바코드의 비트 원리<br><b>[하드웨어]</b> 워드 크기 발전(4→64비트). 직렬 vs 병렬 전송. 대역폭/지연시간<br><b>[타과목]</b> 수학 — 2의 거듭제곱, 로그. 물리 — 전기 신호. 정보이론 — 셀놌 엔트로피</div></div>
+<div class="box box-question avoid-break"><span class="box-label">[다음 유닛 미리보기]</span><div class="box-content">0과 1로만 이루어진 2진수를 우리가 쓰는 10진수로 바꾸려면 어떻게 해야 할까요? 반대로 10진수를 2진수로 바꾸는 방법은? 다음 유닛에서 직접 변환해 볼 거예요!</div></div>
+<div class="mascot-speech  avoid-break">
+        <img class="mascot-speech-img " src="svg-assets/mascot-hello.svg" alt="마스코트" />
+        <div class="mascot-bubble celebrate">0과 1의 세계를 깊이 탐험했어요! 비트와 바이트의 기본부터 정보 이론과 데이터 전송까지! 다음에는 2진수와 10진수를 바꾸는 법을 배워요!</div>
+      </div>
+</article>
+</body>
+</html>

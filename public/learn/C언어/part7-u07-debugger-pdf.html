@@ -1,0 +1,1844 @@
+﻿<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<base href="/learn/C언어/">
+<title>코딩쏙 교재 — 디버거 완전 정복</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+/* ═══════════════════════════════════════════════════════════════
+   코딩쏙 프리미엄 PDF 교재 스타일시트 v5.0
+   Paged.js + A4 인쇄 최적화 + 아동교육 디자인 시스템
+   ═══════════════════════════════════════════════════════════════ */
+
+/* ── 리셋 & 기본 ── */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --c-primary: #FF6B6B;
+  --c-primary-light: #FFE8E8;
+  --c-primary-dark: #E84545;
+  --c-accent: #4ECDC4;
+  --c-accent-light: #E8FFF9;
+  --c-blue: #3B82F6;
+  --c-blue-light: #EFF6FF;
+  --c-purple: #8B5CF6;
+  --c-purple-light: #F5F3FF;
+  --c-orange: #F59E0B;
+  --c-orange-light: #FFFBEB;
+  --c-green: #10B981;
+  --c-green-light: #ECFDF5;
+  --c-red: #EF4444;
+  --c-red-light: #FEF2F2;
+  --c-teal: #14B8A6;
+  --c-teal-light: #F0FDFA;
+  --c-pink: #EC4899;
+  --c-text: #1E293B;
+  --c-text-secondary: #64748B;
+  --c-text-muted: #94A3B8;
+  --c-border: #E2E8F0;
+  --c-bg-subtle: #F8FAFC;
+  --c-bg-warm: #FFFBF5;
+  --font-body: 'Pretendard', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-code: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --radius-xl: 18px;
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.08);
+  --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
+  --shadow-lg: 0 8px 24px rgba(0,0,0,0.10);
+}
+
+/* ── 페이지 설정 ── */
+@page {
+  size: A4;
+  margin: 18mm 17mm 15mm 22mm;
+  @bottom-center {
+    content: counter(page);
+    font-family: var(--font-body);
+    font-size: 9pt;
+    color: var(--c-text-muted);
+    letter-spacing: 1px;
+  }
+}
+@page :first { @bottom-center { content: none; } }
+
+body {
+  font-family: var(--font-body);
+  color: var(--c-text);
+  background: white;
+  font-size: 11.5pt;
+  line-height: 180%;
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+  word-break: keep-all;
+  overflow-wrap: break-word;
+}
+
+/* ── 페이지 제어 ── */
+.avoid-break { break-inside: avoid !important; page-break-inside: avoid !important; }
+h2, h3 { break-after: avoid !important; page-break-after: avoid !important; }
+.page-break-hint { break-before: page !important; page-break-before: always !important; height: 0; margin: 0; padding: 0; }
+p { orphans: 3; widows: 3; }
+
+/* ═══════════════════════════════════════
+   레슨 헤더 — 프리미엄 그래디언트 배너
+   ═══════════════════════════════════════ */
+.lesson-header {
+  margin-bottom: 6mm;
+  padding: 6mm 5mm 5mm;
+  background: linear-gradient(135deg, #FF6B6B 0%, #FF8E53 50%, #FEC89A 100%);
+  border-radius: var(--radius-xl);
+  color: white;
+  position: relative;
+  overflow: hidden;
+  box-shadow: var(--shadow-lg);
+}
+.lesson-header::before {
+  content: '';
+  position: absolute;
+  top: -30%;
+  right: -10%;
+  width: 140px;
+  height: 140px;
+  background: rgba(255,255,255,0.12);
+  border-radius: 50%;
+}
+.lesson-header::after {
+  content: '';
+  position: absolute;
+  bottom: -20%;
+  left: 15%;
+  width: 80px;
+  height: 80px;
+  background: rgba(255,255,255,0.08);
+  border-radius: 50%;
+}
+.lesson-number {
+  font-size: 10pt;
+  font-weight: 700;
+  color: rgba(255,255,255,0.85);
+  margin-bottom: 2mm;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  position: relative;
+  z-index: 1;
+}
+.lesson-title {
+  font-size: 24pt;
+  font-weight: 900;
+  line-height: 125%;
+  color: white;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.15);
+  position: relative;
+  z-index: 1;
+}
+.lesson-summary {
+  font-size: 11pt;
+  color: rgba(255,255,255,0.9);
+  margin-top: 2.5mm;
+  font-weight: 400;
+  position: relative;
+  z-index: 1;
+}
+
+/* ═══════════════════════════════════════
+   제목 계층 — 프리미엄 타이포그래피
+   ═══════════════════════════════════════ */
+h2 {
+  font-size: 16pt;
+  font-weight: 800;
+  margin: 6mm 0 3mm;
+  padding: 2mm 0 2mm 4.5mm;
+  border-left: 4.5px solid var(--c-primary);
+  color: var(--c-text);
+  background: linear-gradient(90deg, var(--c-primary-light) 0%, transparent 60%);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  letter-spacing: -0.3px;
+}
+h3 {
+  font-size: 13.5pt;
+  font-weight: 700;
+  color: #334155;
+  margin: 4mm 0 2.5mm;
+  padding-bottom: 1mm;
+  border-bottom: 2px solid #F1F5F9;
+}
+p {
+  margin-bottom: 2.5mm;
+  text-align: justify;
+  line-height: 175%;
+  font-size: 11.5pt;
+}
+
+/* ── 인라인 코드 ── */
+code {
+  font-family: var(--font-code);
+  font-size: 9.5pt;
+  background: linear-gradient(135deg, #FEF3C7, #FDE68A);
+  padding: 0.5mm 2mm;
+  border-radius: 4px;
+  color: #92400E;
+  border: 1px solid #FCD34D;
+  font-weight: 500;
+}
+
+/* ═══════════════════════════════════════
+   코드 블록 — 프리미엄 IDE 스타일
+   ═══════════════════════════════════════ */
+.code-block {
+  background: #0F172A;
+  border-radius: var(--radius-md);
+  padding: 0;
+  margin: 3mm 0;
+  box-shadow: var(--shadow-md), inset 0 1px 0 rgba(255,255,255,0.05);
+  overflow: hidden;
+  border: 1px solid #1E293B;
+}
+.code-block-header {
+  font-family: var(--font-body);
+  font-size: 8.5pt;
+  font-weight: 600;
+  color: #94A3B8;
+  padding: 2.5mm 4.5mm;
+  background: #1E293B;
+  border-bottom: 1px solid #334155;
+  letter-spacing: 0.5px;
+  display: flex;
+  align-items: center;
+  gap: 2mm;
+}
+.code-block-header::before {
+  content: '';
+  display: inline-flex;
+  width: 8px; height: 8px;
+  background: #EF4444;
+  border-radius: 50%;
+  box-shadow: 14px 0 0 #F59E0B, 28px 0 0 #22C55E;
+  flex-shrink: 0;
+}
+.code-table { width: 100%; border-collapse: collapse; table-layout: fixed; }
+.code-table td { vertical-align: top; padding: 0; }
+.line-num {
+  width: 12mm;
+  min-width: 12mm;
+  max-width: 12mm;
+  text-align: right;
+  padding: 0.5mm 3mm 0.5mm 2mm;
+  font-family: var(--font-code);
+  font-size: 8pt;
+  color: #475569;
+  line-height: 165%;
+  user-select: none;
+  background: rgba(0,0,0,0.15);
+  border-right: 1px solid rgba(255,255,255,0.06);
+}
+.line-code {
+  width: auto;
+  font-family: var(--font-code);
+  font-size: 10pt;
+  color: #E2E8F0;
+  line-height: 165%;
+  padding: 0.5mm 4mm 0.5mm 4mm;
+  white-space: pre;
+  overflow-x: auto;
+}
+.line-highlight td { background: rgba(59,130,246,0.12) !important; }
+.line-highlight .line-num { color: var(--c-blue) !important; font-weight: 700; }
+
+/* 신택스 컬러 — VS Code Dark+ 영감 */
+.kw { color: #C084FC; font-weight: 500; }
+.str { color: #86EFAC; }
+.cmt { color: #6B7280; font-style: italic; }
+.fn { color: #FDBA74; }
+.pp { color: #F472B6; font-weight: 600; }
+.num { color: #7DD3FC; }
+.type { color: #5EEAD4; font-weight: 500; }
+.mc { color: #67E8F9; }
+.esc { color: #FCD34D; font-weight: 600; }
+.fmt { color: #FCD34D; }
+
+/* ═══════════════════════════════════════
+   실행 결과 — 터미널 스타일
+   ═══════════════════════════════════════ */
+.output-block {
+  background: #F0FDF4;
+  border: 1.5px solid #86EFAC;
+  border-radius: var(--radius-md);
+  padding: 3mm 4mm;
+  margin: 3mm 0;
+  position: relative;
+}
+.output-label {
+  font-family: var(--font-body);
+  font-size: 8.5pt;
+  color: var(--c-green);
+  display: block;
+  margin-bottom: 1.5mm;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+.output-text {
+  font-family: var(--font-code);
+  font-size: 10.5pt;
+  line-height: 160%;
+  color: #166534;
+}
+
+/* ═══════════════════════════════════════
+   박스 시스템 — 프리미엄 카드 디자인
+   ═══════════════════════════════════════ */
+.box {
+  border-radius: var(--radius-md);
+  padding: 3.5mm 4.5mm;
+  margin: 3mm 0;
+  position: relative;
+  box-shadow: var(--shadow-sm);
+}
+.box-label {
+  font-size: 10.5pt;
+  font-weight: 800;
+  margin-bottom: 2mm;
+  display: flex;
+  align-items: center;
+  gap: 2mm;
+}
+.box-content { font-size: 11pt; line-height: 170%; overflow-wrap: break-word; word-break: keep-all; }
+.box-warning {
+  border-left: 5px solid var(--c-red);
+  background: linear-gradient(135deg, #FEF2F2 0%, #FFF1F2 100%);
+}
+.box-warning .box-label { color: var(--c-red); }
+.box-key {
+  border-left: 5px solid var(--c-blue);
+  background: linear-gradient(135deg, #EFF6FF 0%, #F0F9FF 100%);
+}
+.box-key .box-label { color: var(--c-blue); }
+.box-tip {
+  border-left: 5px solid var(--c-orange);
+  background: linear-gradient(135deg, #FFFBEB 0%, #FEF9C3 50%, #FFFBEB 100%);
+}
+.box-tip .box-label { color: var(--c-orange); }
+.box-summary {
+  border-left: 5px solid var(--c-green);
+  background: linear-gradient(135deg, #ECFDF5 0%, #D1FAE5 100%);
+  border: 1.5px solid #A7F3D0;
+  border-left: 5px solid var(--c-green);
+}
+.box-summary .box-label { color: var(--c-green); }
+.box-question {
+  border-left: 5px solid var(--c-purple);
+  background: linear-gradient(135deg, #F5F3FF 0%, #EDE9FE 100%);
+}
+.box-question .box-label { color: var(--c-purple); }
+.box-history {
+  border-left: 5px solid var(--c-teal);
+  background: linear-gradient(135deg, #F0FDFA 0%, #CCFBF1 100%);
+}
+.box-history .box-label { color: var(--c-teal); }
+
+/* ═══════════════════════════════════════
+   연습문제 — 프리미엄 카드
+   ═══════════════════════════════════════ */
+.exercise {
+  background: white;
+  border: 1.5px solid #E2E8F0;
+  border-radius: var(--radius-lg);
+  padding: 3.5mm 4.5mm;
+  margin: 3mm 0;
+  border-left: 5px solid var(--c-primary);
+  box-shadow: var(--shadow-sm);
+  position: relative;
+}
+.exercise-title {
+  font-size: 13pt;
+  font-weight: 800;
+  color: var(--c-primary);
+  margin-bottom: 2.5mm;
+  display: flex;
+  align-items: center;
+  gap: 2mm;
+}
+.difficulty {
+  display: inline-flex;
+  align-items: center;
+  font-size: 8pt;
+  padding: 0.5mm 2.5mm;
+  border-radius: 20px;
+  margin-left: 2mm;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+}
+.diff-1 { background: #D1FAE5; color: #059669; }
+.diff-2 { background: #FEF3C7; color: #D97706; }
+.diff-3 { background: #FEE2E2; color: #DC2626; }
+.memo-area {
+  border: 2px dashed #CBD5E1;
+  border-radius: var(--radius-md);
+  padding: 3mm;
+  min-height: 15mm;
+  margin-top: 2.5mm;
+  background: repeating-linear-gradient(
+    transparent, transparent 7mm, #F1F5F9 7mm, #F1F5F9 7.5mm
+  );
+}
+.memo-label { font-size: 8.5pt; color: var(--c-text-muted); font-style: italic; }
+
+/* ── OX/Choice/Short ── */
+.exercise-answer {
+  font-size: 10pt;
+  color: var(--c-green);
+  margin-top: 2mm;
+  padding: 1.5mm 3mm;
+  background: var(--c-green-light);
+  border-radius: var(--radius-sm);
+  font-weight: 600;
+  border: 1px solid #A7F3D0;
+}
+.exercise-explain {
+  font-size: 9.5pt;
+  color: var(--c-text-secondary);
+  margin-top: 1.5mm;
+  padding: 2mm 3mm;
+  background: #F8FAFC;
+  border-radius: var(--radius-sm);
+  border-left: 3px solid #E2E8F0;
+}
+.choice-list { padding-left: 6mm; margin: 2mm 0; }
+.choice-list li { font-size: 10.5pt; margin-bottom: 1.5mm; line-height: 150%; }
+.choice-list li.choice-correct { color: var(--c-green); font-weight: 700; }
+
+/* ═══════════════════════════════════════
+   Before/After 비교 — 프리미엄 2컬럼
+   ═══════════════════════════════════════ */
+.compare {
+  display: flex;
+  gap: 3mm;
+  margin: 3mm 0;
+  overflow: hidden;
+}
+.compare-bad {
+  flex: 1;
+  min-width: 0;
+  background: linear-gradient(135deg, #FEF2F2, #FFF1F2);
+  border: 1.5px solid #FECACA;
+  border-radius: var(--radius-md);
+  padding: 3mm;
+  overflow: hidden;
+}
+.compare-good {
+  flex: 1;
+  min-width: 0;
+  background: linear-gradient(135deg, #ECFDF5, #D1FAE5);
+  border: 1.5px solid #A7F3D0;
+  border-radius: var(--radius-md);
+  padding: 3mm;
+  overflow: hidden;
+}
+.compare code {
+  font-size: 9pt;
+  word-break: break-all;
+  overflow-wrap: break-word;
+  display: block;
+  background: rgba(0,0,0,0.05);
+  padding: 2mm 3mm;
+  border-radius: var(--radius-sm);
+  margin: 1.5mm 0;
+  line-height: 155%;
+  white-space: pre-wrap;
+  border: none;
+  color: inherit;
+}
+.compare-label { font-size: 9.5pt; font-weight: 800; margin-bottom: 1.5mm; }
+.compare-bad .compare-label { color: var(--c-red); }
+.compare-good .compare-label { color: var(--c-green); }
+.compare-msg-bad { font-size: 9pt; color: var(--c-red); }
+.compare-msg-good { font-size: 9pt; color: var(--c-green); }
+
+/* ═══════════════════════════════════════
+   챕터 시작 — 프리미엄 카드
+   ═══════════════════════════════════════ */
+.chapter-start-box { margin-bottom: 3mm; }
+.learning-goals {
+  background: linear-gradient(135deg, #FFF7ED 0%, #FFFBEB 100%);
+  border-radius: var(--radius-lg);
+  padding: 4mm 5mm;
+  margin-bottom: 3mm;
+  border: 1.5px solid #FED7AA;
+  box-shadow: var(--shadow-sm);
+}
+.learning-goals h3 {
+  font-size: 12pt;
+  font-weight: 800;
+  color: #EA580C;
+  margin: 0 0 2.5mm;
+  border: none;
+  padding: 0;
+}
+.learning-goals ul { padding-left: 5mm; margin: 0; }
+.learning-goals li { font-size: 11pt; margin-bottom: 1.5mm; line-height: 160%; color: #431407; }
+.prereq-check {
+  background: var(--c-blue-light);
+  border-left: 5px solid var(--c-blue);
+  border-radius: var(--radius-md);
+  padding: 3mm 4mm;
+  margin-bottom: 2.5mm;
+}
+.prereq-check h3 {
+  font-size: 11pt;
+  font-weight: 700;
+  color: var(--c-blue);
+  margin: 0 0 1.5mm;
+  border: none;
+  padding: 0;
+}
+.checklist { list-style: none; padding-left: 4mm; margin: 0; }
+.checklist li { margin-bottom: 1mm; font-size: 10.5pt; }
+.checklist li::before { content: '\2610  '; font-size: 12pt; color: var(--c-text-muted); }
+.progress-section { margin-top: 2.5mm; }
+.progress-label { font-size: 9.5pt; color: var(--c-text-secondary); font-weight: 600; }
+.progress-bar {
+  background: #E2E8F0;
+  border-radius: 6px;
+  height: 4mm;
+  margin-top: 1.5mm;
+  overflow: hidden;
+}
+.progress-fill {
+  background: linear-gradient(90deg, var(--c-primary), #FF8E53, #FEC89A);
+  height: 100%;
+  border-radius: 6px;
+}
+
+/* ═══════════════════════════════════════
+   Predict — 생각해보기 카드
+   ═══════════════════════════════════════ */
+.predict-box {
+  display: flex;
+  gap: 3.5mm;
+  background: linear-gradient(135deg, #F5F3FF 0%, #EDE9FE 100%);
+  border: 1.5px solid #C4B5FD;
+  border-radius: var(--radius-lg);
+  padding: 3.5mm 4.5mm;
+  margin: 3mm 0;
+  box-shadow: var(--shadow-sm);
+}
+.predict-icon {
+  width: 10mm; height: 10mm;
+  background: linear-gradient(135deg, var(--c-purple), #A78BFA);
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16pt;
+  font-weight: 900;
+  flex-shrink: 0;
+  box-shadow: 0 2px 6px rgba(139,92,246,0.3);
+}
+.predict-content { flex: 1; }
+.predict-content p { font-size: 11pt; margin-bottom: 2mm; }
+
+/* ═══════════════════════════════════════
+   다이어그램 — 프리미엄 컨테이너
+   ═══════════════════════════════════════ */
+.diagram-box {
+  background: var(--c-bg-subtle);
+  border: 1.5px solid var(--c-border);
+  border-radius: var(--radius-lg);
+  padding: 4mm;
+  margin: 3.5mm 0;
+  box-shadow: var(--shadow-sm);
+}
+.diagram-title {
+  font-size: 11pt;
+  font-weight: 800;
+  color: var(--c-primary);
+  margin-bottom: 3mm;
+  text-align: center;
+  letter-spacing: 0.3px;
+}
+.diagram-content { font-size: 10.5pt; line-height: 170%; }
+.diagram-content .d-row { display: flex; align-items: center; justify-content: center; gap: 3mm; margin: 2mm 0; }
+.diagram-content .d-block { background: #1E293B; color: white; padding: 2mm 4mm; border-radius: var(--radius-sm); font-family: var(--font-code); font-size: 9.5pt; font-weight: 500; }
+.diagram-content .d-block-highlight { background: linear-gradient(135deg, var(--c-primary), #FF8E53); color: white; padding: 2mm 4mm; border-radius: var(--radius-sm); font-family: var(--font-code); font-size: 9.5pt; font-weight: 700; }
+.diagram-content .d-arrow { color: var(--c-text-muted); font-size: 14pt; }
+.diagram-content .d-label { font-size: 8.5pt; color: var(--c-text-secondary); }
+
+/* ═══════════════════════════════════════
+   Steps — 프리미엄 타임라인
+   ═══════════════════════════════════════ */
+.steps-visual { margin: 3mm 0; }
+.step-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 3.5mm;
+  margin-bottom: 1.5mm;
+}
+.step-num {
+  width: 8mm; height: 8mm;
+  background: linear-gradient(135deg, var(--c-primary), #FF8E53);
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10pt;
+  font-weight: 800;
+  flex-shrink: 0;
+  margin-top: 0.5mm;
+  box-shadow: 0 2px 4px rgba(255,107,107,0.3);
+}
+.step-body { flex: 1; }
+.step-title { font-size: 11pt; font-weight: 700; margin-bottom: 0.5mm; color: var(--c-text); }
+.step-desc { font-size: 10.5pt; color: var(--c-text-secondary); line-height: 160%; }
+.step-connector { width: 2.5px; height: 4mm; background: linear-gradient(180deg, var(--c-primary), transparent); margin-left: 3.7mm; }
+
+/* ═══════════════════════════════════════
+   Modify — 바꿔보기 카드
+   ═══════════════════════════════════════ */
+.modify-box {
+  background: linear-gradient(135deg, #F0F9FF 0%, #E0F2FE 100%);
+  border: 1.5px solid #7DD3FC;
+  border-left: 5px solid #0EA5E9;
+  border-radius: var(--radius-md);
+  padding: 3.5mm 4.5mm;
+  margin: 3mm 0;
+}
+.modify-label { font-size: 10.5pt; font-weight: 800; color: #0284C7; margin-bottom: 2mm; }
+.modify-hint { font-size: 9.5pt; color: var(--c-text-secondary); font-style: italic; margin: 1.5mm 0; }
+
+/* ═══════════════════════════════════════
+   정답 섹션
+   ═══════════════════════════════════════ */
+.answers-section {
+  background: white;
+  border: 1.5px solid #E9D5FF;
+  border-radius: var(--radius-md);
+  padding: 3mm 4mm;
+  margin: 3mm 0;
+  border-left: 5px solid var(--c-purple);
+}
+.answers-section h3 {
+  font-size: 12pt;
+  font-weight: 800;
+  color: var(--c-purple);
+  margin: 0 0 2.5mm;
+  border: none;
+  padding: 0;
+}
+.answer-item { margin-bottom: 1mm; font-size: 10pt; line-height: 150%; }
+.answer-num { font-weight: 700; color: var(--c-primary); margin-right: 2mm; }
+.answer-text { color: var(--c-text); }
+
+/* ═══════════════════════════════════════
+   코드 설명 (라인별)
+   ═══════════════════════════════════════ */
+.code-explain { margin: 3mm 0; padding-left: 2mm; }
+.code-explain-item {
+  display: flex;
+  align-items: flex-start;
+  margin-bottom: 2.5mm;
+  font-size: 11pt;
+  line-height: 165%;
+}
+.code-explain-line {
+  font-family: var(--font-code);
+  font-size: 9pt;
+  color: white;
+  background: linear-gradient(135deg, var(--c-primary), #FF8E53);
+  padding: 0.5mm 2.5mm;
+  border-radius: 4px;
+  margin-right: 3mm;
+  flex-shrink: 0;
+  font-weight: 700;
+  box-shadow: 0 1px 3px rgba(255,107,107,0.3);
+}
+
+/* ═══════════════════════════════════════
+   용어 정리 — 프리미엄 테이블
+   ═══════════════════════════════════════ */
+.glossary { margin: 3mm 0; break-inside: avoid; display: block !important; width: 100% !important; clear: both; }
+.glossary-item {
+  display: flex;
+  margin-bottom: 0;
+  font-size: 10pt;
+  padding: 2mm 3mm;
+  border-bottom: 1px solid #F1F5F9;
+  width: 100%;
+}
+.glossary-item:nth-child(odd) { background: #F8FAFC; }
+.glossary-item:first-child { border-radius: var(--radius-sm) var(--radius-sm) 0 0; }
+.glossary-item:last-child { border-radius: 0 0 var(--radius-sm) var(--radius-sm); border-bottom: none; }
+.glossary-term {
+  font-weight: 700;
+  min-width: 28mm;
+  max-width: 35mm;
+  flex-shrink: 0;
+  color: var(--c-text);
+  font-family: var(--font-code);
+  font-size: 9.5pt;
+  word-break: keep-all;
+}
+.glossary-def { color: var(--c-text-secondary); line-height: 155%; flex: 1; min-width: 0; }
+
+/* ═══════════════════════════════════════
+   추적 테이블 — 프리미엄 데이터 테이블
+   ═══════════════════════════════════════ */
+.trace-table { margin: 3.5mm 0; }
+.trace-caption { font-size: 10.5pt; font-weight: 700; color: var(--c-primary); margin-bottom: 2mm; }
+.trace-table table { width: 100%; border-collapse: collapse; font-size: 10pt; border-radius: var(--radius-sm); overflow: hidden; }
+.trace-table th {
+  background: linear-gradient(135deg, #1E293B, #334155);
+  color: white;
+  padding: 2mm 3.5mm;
+  text-align: left;
+  font-weight: 700;
+  font-size: 9.5pt;
+}
+.trace-table td { padding: 2mm 3.5mm; border-bottom: 1px solid #F1F5F9; font-family: var(--font-code); font-size: 9.5pt; }
+.trace-table tr:nth-child(even) td { background: #F8FAFC; }
+
+/* ═══════════════════════════════════════
+   마스코트 말풍선 — 프리미엄 디자인
+   ═══════════════════════════════════════ */
+.mascot-speech {
+  display: flex;
+  align-items: flex-start;
+  gap: 3.5mm;
+  margin: 3.5mm 0;
+}
+.mascot-speech.right { flex-direction: row-reverse; }
+.mascot-speech-img {
+  flex-shrink: 0;
+  width: 60px;
+  height: 60px;
+  object-fit: contain;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.15));
+}
+.mascot-speech-img.small { width: 48px; height: 48px; }
+.mascot-speech-img.large { width: 80px; height: 80px; }
+.mascot-bubble {
+  position: relative;
+  background: linear-gradient(135deg, #EFF6FF 0%, #DBEAFE 100%);
+  border: 1.5px solid #93C5FD;
+  border-radius: var(--radius-lg);
+  padding: 3.5mm 4.5mm;
+  font-size: 10.5pt;
+  color: #1E3A5F;
+  line-height: 1.6;
+  flex: 1;
+  max-width: 85%;
+  box-shadow: var(--shadow-sm);
+}
+.mascot-bubble.warn {
+  background: linear-gradient(135deg, #FEF2F2, #FEE2E2);
+  border-color: #FCA5A5;
+  color: #7F1D1D;
+}
+.mascot-bubble.success {
+  background: linear-gradient(135deg, #ECFDF5, #D1FAE5);
+  border-color: #6EE7B7;
+  color: #14532D;
+}
+.mascot-bubble.tip {
+  background: linear-gradient(135deg, #FFFBEB, #FEF3C7);
+  border-color: #FCD34D;
+  color: #78350F;
+}
+.mascot-bubble::before {
+  content: '';
+  position: absolute;
+  top: 14px;
+  left: -9px;
+  border: 7px solid transparent;
+  border-right-color: #93C5FD;
+}
+.mascot-bubble::after {
+  content: '';
+  position: absolute;
+  top: 15px;
+  left: -7px;
+  border: 6px solid transparent;
+  border-right-color: #EFF6FF;
+}
+.mascot-speech.right .mascot-bubble::before {
+  left: auto; right: -9px;
+  border-right-color: transparent;
+  border-left-color: #93C5FD;
+}
+.mascot-speech.right .mascot-bubble::after {
+  left: auto; right: -7px;
+  border-right-color: transparent;
+  border-left-color: #EFF6FF;
+}
+.mascot-bubble.warn::before { border-right-color: #FCA5A5; }
+.mascot-bubble.warn::after { border-right-color: #FEF2F2; }
+.mascot-speech.right .mascot-bubble.warn::before { border-right-color: transparent; border-left-color: #FCA5A5; }
+.mascot-speech.right .mascot-bubble.warn::after { border-right-color: transparent; border-left-color: #FEF2F2; }
+.mascot-bubble.success::before { border-right-color: #6EE7B7; }
+.mascot-bubble.success::after { border-right-color: #ECFDF5; }
+.mascot-speech.right .mascot-bubble.success::before { border-right-color: transparent; border-left-color: #6EE7B7; }
+.mascot-speech.right .mascot-bubble.success::after { border-right-color: transparent; border-left-color: #ECFDF5; }
+.mascot-bubble.tip::before { border-right-color: #FCD34D; }
+.mascot-bubble.tip::after { border-right-color: #FFFBEB; }
+.mascot-speech.right .mascot-bubble.tip::before { border-right-color: transparent; border-left-color: #FCD34D; }
+.mascot-speech.right .mascot-bubble.tip::after { border-right-color: transparent; border-left-color: #FFFBEB; }
+
+/* ═══════════════════════════════════════
+   Fact Bite — 숫자/팩트 강조 카드
+   ═══════════════════════════════════════ */
+.fact-bite {
+  display: flex;
+  align-items: center;
+  gap: 4mm;
+  margin: 3mm 0;
+  background: linear-gradient(135deg, #FFF1F2 0%, #FFE4E6 50%, #FFF1F2 100%);
+  border-radius: var(--radius-lg);
+  padding: 3.5mm 5mm;
+  border: 1.5px solid #FECDD3;
+  box-shadow: var(--shadow-sm);
+}
+.fact-bite-number {
+  font: 900 18pt var(--font-body);
+  background: linear-gradient(135deg, var(--c-primary), #FF8E53);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  white-space: nowrap;
+  flex-shrink: 0;
+  max-width: 40%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.fact-bite-text { font-size: 10pt; color: var(--c-text-secondary); line-height: 1.5; flex: 1; min-width: 0; }
+
+/* ═══════════════════════════════════════
+   Visual Summary — 핵심 정리 카드
+   ═══════════════════════════════════════ */
+.visual-summary {
+  background: linear-gradient(135deg, #ECFDF5 0%, #D1FAE5 50%, #A7F3D0 100%);
+  border: 1.5px solid #6EE7B7;
+  border-radius: var(--radius-xl);
+  padding: 5mm;
+  margin: 4mm 0;
+  box-shadow: var(--shadow-md);
+  display: block !important;
+  width: 100% !important;
+  clear: both;
+}
+.visual-summary-title {
+  font-size: 14pt;
+  font-weight: 900;
+  color: #065F46;
+  text-align: center;
+  margin-bottom: 3mm;
+}
+.visual-summary-items { display: flex; flex-direction: column; gap: 2mm; }
+.visual-summary-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 3mm;
+  background: rgba(255,255,255,0.7);
+  padding: 2.5mm 3.5mm;
+  border-radius: var(--radius-md);
+  backdrop-filter: blur(4px);
+}
+.visual-summary-num {
+  width: 7mm; height: 7mm;
+  background: linear-gradient(135deg, #059669, #10B981);
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 9pt;
+  font-weight: 800;
+  flex-shrink: 0;
+  box-shadow: 0 1px 3px rgba(5,150,105,0.3);
+}
+
+/* ═══════════════════════════════════════
+   10축 매핑 전용 스타일
+   ═══════════════════════════════════════ */
+.axis-section {
+  background: linear-gradient(135deg, #F8FAFC 0%, #F1F5F9 100%);
+  border: 1.5px solid #CBD5E1;
+  border-radius: var(--radius-xl);
+  padding: 5mm;
+  margin: 5mm 0;
+  box-shadow: var(--shadow-md);
+  page-break-inside: avoid;
+}
+.axis-title {
+  font-size: 14pt;
+  font-weight: 900;
+  text-align: center;
+  margin-bottom: 4mm;
+  color: var(--c-text);
+  letter-spacing: -0.3px;
+}
+.axis-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2.5mm;
+}
+.axis-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 2mm;
+  padding: 2.5mm 3mm;
+  border-radius: var(--radius-md);
+  background: white;
+  border: 1px solid #E2E8F0;
+}
+.axis-badge {
+  font-size: 7.5pt;
+  font-weight: 800;
+  padding: 0.5mm 2.5mm;
+  border-radius: 20px;
+  flex-shrink: 0;
+  letter-spacing: 0.3px;
+  white-space: nowrap;
+}
+.axis-badge.c-lang { background: #DBEAFE; color: #1D4ED8; }
+.axis-badge.thinking { background: #E0E7FF; color: #4338CA; }
+.axis-badge.debug { background: #FEE2E2; color: #DC2626; }
+.axis-badge.koi { background: #FEF3C7; color: #B45309; }
+.axis-badge.basics { background: #D1FAE5; color: #059669; }
+.axis-badge.reallife { background: #CCFBF1; color: #0D9488; }
+.axis-badge.crosssubj { background: #E9D5FF; color: #7C3AED; }
+.axis-badge.project { background: #FFE4E6; color: #BE123C; }
+.axis-badge.ai { background: #FCE7F3; color: #DB2777; }
+.axis-badge.hardware { background: #CFFAFE; color: #0891B2; }
+.axis-text { font-size: 9.5pt; line-height: 150%; color: var(--c-text-secondary); }
+
+/* ── TOC ── */
+.toc { margin: 5mm 0; }
+.toc h2 { border: none; padding: 0; margin-bottom: 3mm; background: none; }
+.toc ul { list-style: none; padding: 0; }
+.toc-h2 { display: flex; align-items: baseline; margin-bottom: 1.5mm; font-size: 11pt; }
+.toc-text { flex-shrink: 0; }
+.toc-dots { flex: 1; border-bottom: 1.5px dotted #CBD5E1; margin: 0 2mm; min-width: 10mm; }
+.toc-page { flex-shrink: 0; color: var(--c-text-muted); font-size: 10pt; }
+
+/* ── Margin Note ── */
+.margin-note {
+  float: right;
+  width: 30mm;
+  font-size: 8.5pt;
+  color: var(--c-text-secondary);
+  background: linear-gradient(135deg, #FFFBEB, #FEF3C7);
+  padding: 2mm 2.5mm;
+  border-radius: var(--radius-sm);
+  margin: 0 -35mm 2mm 2mm;
+  border-left: 2.5px solid var(--c-orange);
+}
+
+/* ── Cross Reference ── */
+.crossref { font-size: 9pt; color: var(--c-blue); font-style: italic; font-weight: 500; }
+
+/* ── Image ── */
+.image-block { margin: 3.5mm 0; text-align: center; }
+.image-block img { max-width: 100%; border-radius: var(--radius-md); box-shadow: var(--shadow-sm); }
+.image-caption {
+  font-size: 9pt;
+  color: var(--c-text-secondary);
+  margin-top: 2mm;
+  font-style: italic;
+  background: var(--c-bg-subtle);
+  padding: 1.5mm 4mm;
+  border-radius: 20px;
+  display: inline-block;
+}
+
+/* ═══════════════════════════════════════
+   v7.0 — 80레이어 리서치 증강분
+   v5 프리미엄 기반 + TEXTBOOK-DESIGN-DEEP P1~P6 합성
+   ═══════════════════════════════════════ */
+
+/* ── Layer 26: 게슈탈트 근접성 강화 ── */
+h2 + p,
+h3 + p,
+h2 + .code-block,
+h3 + .code-block { margin-top: 1mm !important; }
+.code-block + .code-explain { margin-top: 0.5mm; }
+.code-block + .output-block { margin-top: 1mm; }
+.exercise + .exercise { margin-top: 1.5mm; }
+
+/* ── Layer 28: 마이크로 타이포그래피 ── */
+body {
+  font-kerning: auto;
+  font-variant-ligatures: common-ligatures;
+  hanging-punctuation: first last;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+.line-num { font-variant-numeric: tabular-nums; }
+.trace-table td { font-variant-numeric: tabular-nums; }
+
+/* ── Layer 29: 연습문제 유형별 스타일 ── */
+.exercise-item { margin-bottom: 2mm; font-size: 11pt; line-height: 165%; }
+.exercise-item p { margin-bottom: 1.5mm; }
+.exercise-blank { display: inline-block; min-width: 20mm; border-bottom: 2px solid var(--c-primary); margin: 0 1mm; }
+.exercise-ox-grid { display: flex; gap: 3mm; margin-top: 2mm; }
+.exercise-ox-item { flex: 1; padding: 2mm 3mm; border: 1px solid var(--c-border); border-radius: var(--radius-sm); font-size: 10pt; }
+.exercise-matching { display: grid; grid-template-columns: 1fr auto 1fr; gap: 1.5mm; font-size: 10pt; }
+.exercise-reorder { display: flex; flex-direction: column; gap: 1mm; font-family: var(--font-code); font-size: 9.5pt; }
+.exercise-reorder-item { background: var(--c-bg-subtle); padding: 1.5mm 3mm; border-radius: var(--radius-sm); border: 1px solid var(--c-border); }
+
+/* ── Layer 30: 교사용 에디션 ── */
+.teacher-only { background: #FFF5F5; border: 2px dashed #E74C3C; padding: 3mm; border-radius: var(--radius-md); }
+.teacher-note { font-size: 9pt; color: #C0392B; font-style: italic; }
+
+/* ── Layer 32: 디자인 토큰 — 인쇄용 간격 ── */
+article > * + * { margin-top: 2.5mm; }
+article > h2 { margin-top: 5mm; }
+article > h3 { margin-top: 3.5mm; }
+
+/* ── Layer 51: 황금비 타이포 ──
+   24pt / 16pt / 13.5pt / 11.5pt = 1:0.67:0.56:0.48 ≈ 피보나치 */
+
+/* ── Layer 55: 인지부하 최적화 — 시각 앵커 ── */
+h2::before {
+  /* 빈 블록으로 스크롤 앵커 역할 — Paged.js에서 러닝헤드 지원 */
+}
+
+/* ── Layer 56: 아이트래킹 — F패턴 강화 ── */
+.lesson-header .lesson-number { font-weight: 700; }
+.box-label::before {
+  content: '';
+  display: inline-block;
+  width: 3px; height: 14px;
+  border-radius: 2px;
+  margin-right: 1.5mm;
+  flex-shrink: 0;
+}
+.box-warning .box-label::before { background: var(--c-red); }
+.box-key .box-label::before { background: var(--c-blue); }
+.box-tip .box-label::before { background: var(--c-orange); }
+.box-summary .box-label::before { background: var(--c-green); }
+.box-question .box-label::before { background: var(--c-purple); }
+.box-history .box-label::before { background: var(--c-teal); }
+
+/* ── Layer 58: 색상 조화 60-30-10 강화 ── */
+/* 60% = white/neutral, 30% = brand gradient accents, 10% = c-primary strong */
+
+/* ── Layer 60: 코드 블록 — 브래킷 컬러링 (Layer 30 from Deep) ── */
+.brace-1 { color: #C084FC; font-weight: bold; }
+.brace-2 { color: #86EFAC; font-weight: bold; }
+.brace-3 { color: #FDBA74; font-weight: bold; }
+.brace-4 { color: #7DD3FC; font-weight: bold; }
+
+/* ── Layer 61: 인덴트 가이드 ── */
+.indent-guide { border-left: 1px solid rgba(255,255,255,0.08); }
+
+/* ── Layer 65: 10축 매핑 강화 ── */
+.axis-item { transition: none; }
+.axis-section .box-content { font-size: 10pt; }
+
+/* ── Layer 67: 자료구조 시각화 ── */
+.ds-visual { font-family: var(--font-code); font-size: 9pt; text-align: center; margin: 3mm 0; }
+.ds-array { display: flex; justify-content: center; gap: 0; }
+.ds-cell { width: 9mm; height: 9mm; border: 1.5px solid var(--c-blue); display: flex; align-items: center; justify-content: center; font-weight: 700; }
+.ds-cell:first-child { border-radius: var(--radius-sm) 0 0 var(--radius-sm); }
+.ds-cell:last-child { border-radius: 0 var(--radius-sm) var(--radius-sm) 0; }
+.ds-index { font-size: 7pt; color: var(--c-text-muted); text-align: center; margin-top: 0.5mm; }
+
+/* ── Layer 68: 학습 저널 공간 ── */
+.reflection-box {
+  background: var(--c-bg-warm);
+  border: 1.5px dashed #FCD34D;
+  border-radius: var(--radius-lg);
+  padding: 4mm;
+  margin: 4mm 0;
+}
+.reflection-prompt { font-size: 10pt; color: var(--c-orange); font-weight: 700; margin-bottom: 2mm; }
+.reflection-lines {
+  min-height: 20mm;
+  background: repeating-linear-gradient(transparent, transparent 7mm, #FEF3C7 7mm, #FEF3C7 7.5mm);
+}
+
+/* ── Layer 69: 루브릭/자기평가 ── */
+.rubric-table { width: 100%; border-collapse: collapse; font-size: 9pt; margin: 3mm 0; }
+.rubric-table th { background: var(--c-purple); color: white; padding: 2mm; text-align: center; }
+.rubric-table td { padding: 2mm; border: 1px solid var(--c-border); text-align: center; }
+.self-check { display: flex; gap: 5mm; justify-content: center; margin: 3mm 0; }
+.self-check-item { text-align: center; font-size: 18pt; }
+.self-check-label { font-size: 7.5pt; color: var(--c-text-secondary); }
+
+/* ── Layer 72: 교실 게임 보드 ── */
+.bingo-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 1px; background: var(--c-border); border-radius: var(--radius-md); overflow: hidden; margin: 3mm 0; }
+.bingo-cell { background: white; padding: 3mm; text-align: center; font-size: 8.5pt; font-family: var(--font-code); min-height: 10mm; display: flex; align-items: center; justify-content: center; }
+.bingo-free { background: var(--c-primary-light); font-weight: 800; color: var(--c-primary); }
+
+/* ── Layer 77: 북마크/읽기 가이드 ──  */
+.reading-ruler { border-top: 3px solid var(--c-primary); margin: 4mm 0; opacity: 0.3; }
+
+/* ── Layer 78: 고급 그리드 — 2컬럼 레이아웃 ── */
+.two-col { display: flex; gap: 4mm; }
+.two-col > * { flex: 1; min-width: 0; }
+.three-col { display: flex; gap: 3mm; }
+.three-col > * { flex: 1; min-width: 0; }
+
+/* ── Layer 80: 인쇄 품질 마커 ── */
+.print-crop-mark { display: none; }
+
+/* ═══════════════════════════════════════
+   인쇄 최적화 — 강화 버전 (Layer 77~80)
+   ═══════════════════════════════════════ */
+@media print {
+  body {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  .lesson-header,
+  .code-block,
+  .box,
+  .exercise,
+  .predict-box,
+  .compare-bad,
+  .compare-good,
+  .step-num,
+  .mascot-bubble,
+  .visual-summary,
+  .axis-section,
+  .trace-table th,
+  .progress-fill,
+  .code-explain-line,
+  .fact-bite,
+  .diff-1, .diff-2, .diff-3,
+  .diagram-box,
+  .modify-box,
+  .answers-section {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  .no-print { display: none !important; }
+  /* orphan/widow 강화 */
+  p { orphans: 3; widows: 3; }
+  h2, h3 { break-after: avoid; }
+  .avoid-break { break-inside: avoid; }
+}
+
+/* ═══════════════════════════════════════
+   레이아웃 겹침 방지 — 모든 주요 섹션 블록 강제
+   ═══════════════════════════════════════ */
+article > .glossary,
+article > .visual-summary,
+article > .box,
+article > .fact-bite,
+article > .exercise,
+article > .answers-section,
+article > .mascot-speech,
+article > .code-block,
+article > .output-block,
+article > .compare,
+article > .predict-box {
+  display: block !important;
+  width: 100% !important;
+  float: none !important;
+  clear: both !important;
+}
+
+/* 박스 내부 테이블 오버플로 방지 */
+.box-content table { width: 100%; table-layout: fixed; }
+.box-content td, .box-content th { word-break: keep-all; overflow-wrap: break-word; }
+
+/* 마스코트 버블 너비 제한 완화 */
+.mascot-bubble { max-width: 100%; }
+
+/* Paged.js 컬럼 방지 */
+article { column-count: 1 !important; columns: 1 !important; }
+
+</style>
+<script src="https://unpkg.com/pagedjs/dist/paged.polyfill.js"></script>
+<script>
+  class PagedReadyHandler extends Paged.Handler {
+    constructor(chunker, polisher, caller) { super(chunker, polisher, caller); }
+    afterRendered(pages) {
+      document.body.setAttribute('data-paged-rendered', 'true');
+      document.body.setAttribute('data-page-count', pages.length);
+      console.log('PAGED_READY:' + pages.length);
+    }
+  }
+  Paged.registerHandlers(PagedReadyHandler);
+</script>
+</head>
+<body data-section-title="디버거 완전 정복">
+<article id="content">
+  <header class="lesson-header" role="banner">
+    <div class="lesson-number">Lesson 16-7</div>
+    <h1 class="lesson-title">디버거 완전 정복</h1>
+    <div class="lesson-summary">VS Code 디버거로 버그를 찾는 방법을 배워요. 중단점, 변수 감시, 스텝 실행을 익혀요.</div>
+  </header>
+<div class="chapter-start-box avoid-break"><div class="learning-goals"><h3>📚 이번에 배울 것</h3><ul><li>VS Code에서 디버거를 설정하고 실행할 수 있어요.</li><li>중단점(breakpoint)을 설정하고 활용할 수 있어요.</li><li>변수 감시(watch)와 호출 스택(call stack)을 볼 수 있어요.</li><li>Step Over, Step Into, Step Out의 차이를 알아요.</li></ul></div><div class="prereq-check"><h3>✅ 시작 전 체크</h3><ul class="checklist"><li>VS Code에서 C 프로그램을 컴파일/실행할 수 있다</li><li>함수 호출의 개념을 이해하고 있다</li></ul></div><div class="progress-section"><span class="progress-label">Part 1 진행률: 7%</span><div class="progress-bar"><div class="progress-fill" style="width:7%"></div></div></div></div>
+<h2>printf 디버깅의 한계</h2>
+<div class="mascot-speech  avoid-break">
+        <img class="mascot-speech-img " src="svg-assets/mascot-hello.svg" alt="마스코트" />
+        <div class="mascot-bubble ">버그를 찾으려고 printf를 잔뜩 넣었다가, 다 찾고 나면 지우는 것도 일이지? <b>디버거</b>를 쓰면 코드를 수정하지 않고도 프로그램을 한 줄씩 실행하면서 변수 값을 볼 수 있어!</div>
+      </div>
+<p><b>디버거(debugger)</b>는 프로그램의 실행을 제어하면서 버그를 찾는 도구예요. 원하는 위치에서 멈추고, 변수 값을 확인하고, 한 줄씩 실행할 수 있어요.</p>
+<div class="diagram-box avoid-break"><div class="diagram-content">undefined</div></div>
+<h2>중단점(Breakpoint) 설정하기</h2>
+<p><b>중단점</b>은 프로그램이 실행 중에 멈출 위치를 표시하는 것이에요. VS Code에서는 줄 번호 왼쪽을 클릭하면 빨간 점이 생기면서 중단점이 설정돼요.</p>
+<div class="code-block avoid-break"><div class="code-block-header">debug_example.c</div>
+        <table class="code-table"><tr class=""><td class="line-num">1</td><td class="line-code"><span class="pp">#include</span> <span class="str">&lt;stdio.h&gt;</span></td></tr>
+<tr class=""><td class="line-num">2</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">3</td><td class="line-code"><span class="type">int</span> <span class="fn">sum</span>(<span class="type">int</span> arr[], <span class="type">int</span> n) {</td></tr>
+<tr class=""><td class="line-num">4</td><td class="line-code">    <span class="type">int</span> total = <span class="num">0</span>;</td></tr>
+<tr class=""><td class="line-num">5</td><td class="line-code">    <span class="kw">for</span> (<span class="type">int</span> i = <span class="num">0</span>; i &lt;= n; i++) {  <span class="cmt">/* 버그: i &lt;= n (범위 초과) */</span></td></tr>
+<tr class=""><td class="line-num">6</td><td class="line-code">        total += arr[i];</td></tr>
+<tr class=""><td class="line-num">7</td><td class="line-code">    }</td></tr>
+<tr class=""><td class="line-num">8</td><td class="line-code">    <span class="kw">return</span> total;</td></tr>
+<tr class=""><td class="line-num">9</td><td class="line-code">}</td></tr>
+<tr class=""><td class="line-num">10</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">11</td><td class="line-code"><span class="type">int</span> <span class="fn">main</span>(<span class="type">void</span>) {</td></tr>
+<tr class=""><td class="line-num">12</td><td class="line-code">    <span class="type">int</span> numbers[] = {<span class="num">10</span>, <span class="num">20</span>, <span class="num">30</span>, <span class="num">40</span>, <span class="num">50</span>};</td></tr>
+<tr class=""><td class="line-num">13</td><td class="line-code">    <span class="type">int</span> result = <span class="fn">sum</span>(numbers, <span class="num">5</span>);</td></tr>
+<tr class=""><td class="line-num">14</td><td class="line-code">    <span class="fn">printf</span>(<span class="str">"합계: <span class="fmt">%d</span><span class="esc">\n</span>"</span>, result);</td></tr>
+<tr class=""><td class="line-num">15</td><td class="line-code">    <span class="kw">return</span> <span class="num">0</span>;</td></tr>
+<tr class=""><td class="line-num">16</td><td class="line-code">}</td></tr></table></div>
+<p>위 코드에는 버그가 있어요. for 루프에서 <code>i <= n</code>이라고 써서 배열 범위를 벗어나요. 디버거로 이 버그를 찾아볼게요.</p>
+<h2>스텝 실행: Step Over, Step Into, Step Out</h2>
+<p>디버거에서 프로그램을 한 줄씩 실행할 때 3가지 방법이 있어요.</p>
+<div class="code-block avoid-break"><div class="code-block-header">step_demo.c</div>
+        <table class="code-table"><tr class=""><td class="line-num">1</td><td class="line-code"><span class="pp">#include</span> <span class="str">&lt;stdio.h&gt;</span></td></tr>
+<tr class=""><td class="line-num">2</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">3</td><td class="line-code"><span class="type">int</span> <span class="fn">multiply</span>(<span class="type">int</span> a, <span class="type">int</span> b) {</td></tr>
+<tr class=""><td class="line-num">4</td><td class="line-code">    <span class="kw">return</span> a * b;        <span class="cmt">/* Step Into로 여기까지 들어옴 */</span></td></tr>
+<tr class=""><td class="line-num">5</td><td class="line-code">}</td></tr>
+<tr class=""><td class="line-num">6</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">7</td><td class="line-code"><span class="type">int</span> <span class="fn">calculate</span>(<span class="type">int</span> x) {</td></tr>
+<tr class=""><td class="line-num">8</td><td class="line-code">    <span class="type">int</span> doubled = <span class="fn">multiply</span>(x, <span class="num">2</span>);  <span class="cmt">/* Step Into: 함수 안으로 */</span></td></tr>
+<tr class=""><td class="line-num">9</td><td class="line-code">    <span class="kw">return</span> doubled + <span class="num">10</span>;           <span class="cmt">/* Step Out: 여기로 돌아옴 */</span></td></tr>
+<tr class=""><td class="line-num">10</td><td class="line-code">}</td></tr>
+<tr class=""><td class="line-num">11</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">12</td><td class="line-code"><span class="type">int</span> <span class="fn">main</span>(<span class="type">void</span>) {</td></tr>
+<tr class=""><td class="line-num">13</td><td class="line-code">    <span class="type">int</span> a = <span class="num">5</span>;</td></tr>
+<tr class=""><td class="line-num">14</td><td class="line-code">    <span class="type">int</span> b = <span class="fn">calculate</span>(a);   <span class="cmt">/* Step Over: 함수 건너뜀 */</span></td></tr>
+<tr class=""><td class="line-num">15</td><td class="line-code">    <span class="type">int</span> c = b + <span class="num">3</span>;           <span class="cmt">/* Step Over: 다음 줄로 */</span></td></tr>
+<tr class=""><td class="line-num">16</td><td class="line-code">    <span class="fn">printf</span>(<span class="str">"결과: <span class="fmt">%d</span><span class="esc">\n</span>"</span>, c);</td></tr>
+<tr class=""><td class="line-num">17</td><td class="line-code">    <span class="kw">return</span> <span class="num">0</span>;</td></tr>
+<tr class=""><td class="line-num">18</td><td class="line-code">}</td></tr></table></div>
+<div class="mascot-speech right avoid-break">
+        <img class="mascot-speech-img " src="svg-assets/mascot-celebrate.svg" alt="마스코트" />
+        <div class="mascot-bubble success"><b>Step Over(F10)</b>는 함수를 통째로 실행하고 다음 줄로. <b>Step Into(F11)</b>는 함수 안으로 들어가서 한 줄씩. <b>Step Out(Shift+F11)</b>은 현재 함수에서 빠져나와!</div>
+      </div>
+<h2>변수 감시와 호출 스택</h2>
+<p><b>변수 감시(Watch)</b>는 특정 변수나 식의 값을 계속 추적하는 기능이에요. <b>호출 스택(Call Stack)</b>은 현재 어떤 함수가 어떤 함수를 호출해서 여기까지 왔는지 보여줘요.</p>
+<div class="code-block avoid-break"><div class="code-block-header">watch_demo.c</div>
+        <table class="code-table"><tr class=""><td class="line-num">1</td><td class="line-code"><span class="pp">#include</span> <span class="str">&lt;stdio.h&gt;</span></td></tr>
+<tr class=""><td class="line-num">2</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">3</td><td class="line-code"><span class="type">int</span> <span class="fn">factorial</span>(<span class="type">int</span> n) {</td></tr>
+<tr class=""><td class="line-num">4</td><td class="line-code">    <span class="kw">if</span> (n &lt;= <span class="num">1</span>) <span class="kw">return</span> <span class="num">1</span>;</td></tr>
+<tr class=""><td class="line-num">5</td><td class="line-code">    <span class="kw">return</span> n * <span class="fn">factorial</span>(n - <span class="num">1</span>);  <span class="cmt">/* 재귀 호출 */</span></td></tr>
+<tr class=""><td class="line-num">6</td><td class="line-code">}</td></tr>
+<tr class=""><td class="line-num">7</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">8</td><td class="line-code"><span class="type">int</span> <span class="fn">main</span>(<span class="type">void</span>) {</td></tr>
+<tr class=""><td class="line-num">9</td><td class="line-code">    <span class="type">int</span> result = <span class="fn">factorial</span>(<span class="num">5</span>);</td></tr>
+<tr class=""><td class="line-num">10</td><td class="line-code">    <span class="fn">printf</span>(<span class="str">"5! = <span class="fmt">%d</span><span class="esc">\n</span>"</span>, result);</td></tr>
+<tr class=""><td class="line-num">11</td><td class="line-code">    <span class="kw">return</span> <span class="num">0</span>;</td></tr>
+<tr class=""><td class="line-num">12</td><td class="line-code">}</td></tr></table></div>
+<p>factorial(5)를 디버거로 추적하면 호출 스택에 factorial이 5번 쌓이는 것을 볼 수 있어요. 각 단계에서 n의 값이 5, 4, 3, 2, 1로 바뀌는 것을 Watch 창에서 확인할 수 있어요.</p>
+<div class="diagram-box avoid-break"><div class="diagram-content">undefined</div></div>
+<div class="mascot-speech right avoid-break">
+        <img class="mascot-speech-img small" src="svg-assets/mascot-thinking.svg" alt="마스코트" />
+        <div class="mascot-bubble tip">디버거는 연습할수록 실력이 늘어! 버그 있는 코드를 일부러 만들고 디버거로 찾는 연습을 해 봐. printf 없이 버그를 잡을 수 있게 될 거야.</div>
+      </div>
+<div class="box box-key avoid-break"><span class="box-label">디버거 단축키 정리 (VS Code)</span><div class="box-content"><b>F5</b> -- 디버그 시작/계속 실행<br><b>F9</b> -- 중단점 설정/해제<br><b>F10</b> -- Step Over (다음 줄로)<br><b>F11</b> -- Step Into (함수 안으로)<br><b>Shift+F11</b> -- Step Out (함수 밖으로)<br><b>Shift+F5</b> -- 디버그 중지</div></div>
+<div class="box box-tip avoid-break"><span class="box-label">[디버깅] 디버거 활용 전략</span><div class="box-content">1. 문제가 있는 부분 근처에 중단점을 설정하세요.<br>2. 변수 값이 예상과 다른 순간을 찾으세요.<br>3. 반복문에서는 조건 중단점(조건이 참일 때만 멈춤)을 활용하세요.<br>4. 호출 스택으로 함수 호출 순서를 추적하세요.</div></div>
+<h2>연습문제</h2>
+<div class="exercise avoid-break"><div class="exercise-title">OX 퀴즈</div><div class="exercise-item"><p>디버거를 사용하면 코드를 수정하지 않고도 변수 값을 확인할 수 있다.</p></div><div class="exercise-answer"><b>정답:</b> ⭕ O</div><div class="exercise-explain">디버거는 프로그램 실행 중에 변수 값을 보여줘요. printf를 추가할 필요가 없어요.</div></div>
+<div class="exercise avoid-break"><div class="exercise-title">객관식</div><div class="exercise-item"><p>함수 안으로 들어가서 한 줄씩 실행하는 디버거 명령은?</p><ol class="choice-list"><li class="">Step Over (F10)</li><li class="">Step Into (F11)</li><li class="">Step Out (Shift+F11)</li><li class="">Continue (F5)</li></ol></div><div class="exercise-answer"><b>정답:</b> 2</div><div class="exercise-explain">Step Into(F11)는 함수 호출을 만났을 때 그 함수 안으로 들어가서 실행해요.</div></div>
+<div class="exercise avoid-break"><div class="exercise-title">단답형</div><div class="exercise-item"><p>프로그램이 특정 줄에서 멈추도록 설정하는 것을 무엇이라 하나요?</p></div><div class="exercise-answer"><b>정답:</b> 중단점</div><div class="exercise-explain">중단점(breakpoint)은 프로그램 실행이 멈출 위치를 지정하는 것이에요.</div></div>
+<div class="exercise avoid-break"><div class="exercise-title">객관식</div><div class="exercise-item"><p>현재 실행 중인 함수에서 빠져나와 호출한 곳으로 돌아가는 명령은?</p><ol class="choice-list"><li class="">Step Over</li><li class="">Step Into</li><li class="">Step Out</li><li class="">Restart</li></ol></div><div class="exercise-answer"><b>정답:</b> 3</div><div class="exercise-explain">Step Out(Shift+F11)은 현재 함수의 나머지를 다 실행하고 호출한 곳으로 돌아가요.</div></div>
+<div class="exercise avoid-break"><div class="exercise-title">OX 퀴즈</div><div class="exercise-item"><p>printf 디버깅은 멀티스레드 프로그램에서도 항상 정확한 실행 순서를 보여준다.</p></div><div class="exercise-answer"><b>정답:</b> ❌ X</div><div class="exercise-explain">멀티스레드 환경에서 printf 출력은 버퍼링과 스레드 스케줄링에 의해 실제 실행 순서와 다르게 나타날 수 있습니다.</div></div>
+<h2>용어 정리</h2>
+<div class="code-block avoid-break"><div class="code-block-header">[C 코드] 디버깅 — 자체 디버그 도구</div>
+        <table class="code-table"><tr class=""><td class="line-num">1</td><td class="line-code"><span class="pp">#include</span> <span class="str">&lt;stdio.h&gt;</span></td></tr>
+<tr class=""><td class="line-num">2</td><td class="line-code"><span class="pp">#include</span> <span class="str">&lt;string.h&gt;</span></td></tr>
+<tr class=""><td class="line-num">3</td><td class="line-code"><span class="pp">#include</span> <span class="str">&lt;signal.h&gt;</span></td></tr>
+<tr class=""><td class="line-num">4</td><td class="line-code"><span class="pp">#include</span> <span class="str">&lt;stdlib.h&gt;</span></td></tr>
+<tr class=""><td class="line-num">5</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">6</td><td class="line-code"><span class="cmt">// 디버그 매크로</span></td></tr>
+<tr class=""><td class="line-num">7</td><td class="line-code"><span class="pp">#ifdef</span> DEBUG</td></tr>
+<tr class=""><td class="line-num">8</td><td class="line-code">  <span class="pp">#define</span> <span class="fn">DBG</span>(fmt,...) <span class="fn">fprintf</span>(stderr,<span class="str">"[DBG <span class="fmt">%s</span>:<span class="fmt">%d</span> <span class="fmt">%s</span>] "</span> fmt <span class="str">"<span class="esc">\n</span>"</span>,__FILE__,__LINE__,__func__,#<span class="pp">#__VA_ARGS__</span>)</td></tr>
+<tr class=""><td class="line-num">9</td><td class="line-code">  <span class="pp">#define</span> <span class="fn">TRACE</span>() <span class="fn">fprintf</span>(stderr,<span class="str">"[TRACE] <span class="fmt">%s</span>() at <span class="fmt">%s</span>:<span class="fmt">%d</span><span class="esc">\n</span>"</span>,__func__,__FILE__,__LINE__)</td></tr>
+<tr class=""><td class="line-num">10</td><td class="line-code">  <span class="pp">#define</span> <span class="fn">ASSERT</span>(cond) <span class="kw">do</span> { <span class="kw">if</span>(!(cond)){ \</td></tr>
+<tr class=""><td class="line-num">11</td><td class="line-code">    <span class="fn">fprintf</span>(stderr,<span class="str">"ASSERT FAIL: <span class="fmt">%s</span> at <span class="fmt">%s</span>:<span class="fmt">%d</span><span class="esc">\n</span>"</span>,<span class="pp">#cond</span>,__FILE__,__LINE__); <span class="fn">abort</span>(); } } <span class="kw">while</span>(<span class="num">0</span>)</td></tr>
+<tr class=""><td class="line-num">12</td><td class="line-code"><span class="pp">#<span class="kw">else</span></span></td></tr>
+<tr class=""><td class="line-num">13</td><td class="line-code">  <span class="pp">#define</span> <span class="fn">DBG</span>(fmt,...) ((<span class="type">void</span>)<span class="num">0</span>)</td></tr>
+<tr class=""><td class="line-num">14</td><td class="line-code">  <span class="pp">#define</span> <span class="fn">TRACE</span>() ((<span class="type">void</span>)<span class="num">0</span>)</td></tr>
+<tr class=""><td class="line-num">15</td><td class="line-code">  <span class="pp">#define</span> <span class="fn">ASSERT</span>(cond) ((<span class="type">void</span>)<span class="num">0</span>)</td></tr>
+<tr class=""><td class="line-num">16</td><td class="line-code"><span class="pp">#endif</span></td></tr>
+<tr class=""><td class="line-num">17</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">18</td><td class="line-code"><span class="cmt">// 메모리 디버거 (간단 버전)</span></td></tr>
+<tr class=""><td class="line-num">19</td><td class="line-code"><span class="kw">static</span> <span class="type">int</span> alloc_count = <span class="num">0</span>, free_count = <span class="num">0</span>;</td></tr>
+<tr class=""><td class="line-num">20</td><td class="line-code"><span class="kw">static</span> <span class="type">long</span> total_bytes = <span class="num">0</span>;</td></tr>
+<tr class=""><td class="line-num">21</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">22</td><td class="line-code"><span class="type">void</span>* <span class="fn">debug_malloc</span>(<span class="type">size_t</span> size, <span class="kw">const</span> <span class="type">char</span> *file, <span class="type">int</span> line) {</td></tr>
+<tr class=""><td class="line-num">23</td><td class="line-code">    <span class="type">void</span> *ptr = <span class="fn">malloc</span>(size);</td></tr>
+<tr class=""><td class="line-num">24</td><td class="line-code">    <span class="kw">if</span> (ptr) { alloc_count++; total_bytes += size; }</td></tr>
+<tr class=""><td class="line-num">25</td><td class="line-code">    <span class="fn">fprintf</span>(stderr, <span class="str">"[MEM] malloc(%zu) = <span class="fmt">%p</span> at <span class="fmt">%s</span>:<span class="fmt">%d</span><span class="esc">\n</span>"</span>, size, ptr, file, line);</td></tr>
+<tr class=""><td class="line-num">26</td><td class="line-code">    <span class="kw">return</span> ptr;</td></tr>
+<tr class=""><td class="line-num">27</td><td class="line-code">}</td></tr>
+<tr class=""><td class="line-num">28</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">29</td><td class="line-code"><span class="type">void</span> <span class="fn">debug_free</span>(<span class="type">void</span> *ptr, <span class="kw">const</span> <span class="type">char</span> *file, <span class="type">int</span> line) {</td></tr>
+<tr class=""><td class="line-num">30</td><td class="line-code">    <span class="fn">fprintf</span>(stderr, <span class="str">"[MEM] free(<span class="fmt">%p</span>) at <span class="fmt">%s</span>:<span class="fmt">%d</span><span class="esc">\n</span>"</span>, ptr, file, line);</td></tr>
+<tr class=""><td class="line-num">31</td><td class="line-code">    free_count++;</td></tr>
+<tr class=""><td class="line-num">32</td><td class="line-code">    <span class="fn">free</span>(ptr);</td></tr>
+<tr class=""><td class="line-num">33</td><td class="line-code">}</td></tr>
+<tr class=""><td class="line-num">34</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">35</td><td class="line-code"><span class="pp">#define</span> <span class="fn">MALLOC</span>(size) <span class="fn">debug_malloc</span>(size, __FILE__, __LINE__)</td></tr>
+<tr class=""><td class="line-num">36</td><td class="line-code"><span class="pp">#define</span> <span class="fn">FREE</span>(ptr) <span class="fn">debug_free</span>(ptr, __FILE__, __LINE__)</td></tr>
+<tr class=""><td class="line-num">37</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">38</td><td class="line-code"><span class="type">void</span> <span class="fn">mem_report</span>() {</td></tr>
+<tr class=""><td class="line-num">39</td><td class="line-code">    <span class="fn">fprintf</span>(stderr, <span class="str">"<span class="esc">\n</span>=== Memory Report ===<span class="esc">\n</span>"</span>);</td></tr>
+<tr class=""><td class="line-num">40</td><td class="line-code">    <span class="fn">fprintf</span>(stderr, <span class="str">"  allocs: <span class="fmt">%d</span><span class="esc">\n</span>"</span>, alloc_count);</td></tr>
+<tr class=""><td class="line-num">41</td><td class="line-code">    <span class="fn">fprintf</span>(stderr, <span class="str">"  frees:  <span class="fmt">%d</span><span class="esc">\n</span>"</span>, free_count);</td></tr>
+<tr class=""><td class="line-num">42</td><td class="line-code">    <span class="fn">fprintf</span>(stderr, <span class="str">"  leaks:  <span class="fmt">%d</span><span class="esc">\n</span>"</span>, alloc_count - free_count);</td></tr>
+<tr class=""><td class="line-num">43</td><td class="line-code">}</td></tr>
+<tr class=""><td class="line-num">44</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">45</td><td class="line-code"><span class="type">int</span> <span class="fn">main</span>() {</td></tr>
+<tr class=""><td class="line-num">46</td><td class="line-code">    <span class="fn">printf</span>(<span class="str">"=== Debug Demo ===<span class="esc">\n</span>"</span>);</td></tr>
+<tr class=""><td class="line-num">47</td><td class="line-code">    </td></tr>
+<tr class=""><td class="line-num">48</td><td class="line-code">    <span class="type">char</span> *buf1 = (<span class="type">char</span>*)<span class="fn">MALLOC</span>(<span class="num">100</span>);</td></tr>
+<tr class=""><td class="line-num">49</td><td class="line-code">    <span class="type">char</span> *buf2 = (<span class="type">char</span>*)<span class="fn">MALLOC</span>(<span class="num">200</span>);</td></tr>
+<tr class=""><td class="line-num">50</td><td class="line-code">    <span class="type">char</span> *buf3 = (<span class="type">char</span>*)<span class="fn">MALLOC</span>(<span class="num">50</span>);</td></tr>
+<tr class=""><td class="line-num">51</td><td class="line-code">    </td></tr>
+<tr class=""><td class="line-num">52</td><td class="line-code">    <span class="fn">strcpy</span>(buf1, <span class="str">"Hello"</span>);</td></tr>
+<tr class=""><td class="line-num">53</td><td class="line-code">    <span class="fn">strcpy</span>(buf2, <span class="str">"World"</span>);</td></tr>
+<tr class=""><td class="line-num">54</td><td class="line-code">    </td></tr>
+<tr class=""><td class="line-num">55</td><td class="line-code">    <span class="fn">FREE</span>(buf1);</td></tr>
+<tr class=""><td class="line-num">56</td><td class="line-code">    <span class="fn">FREE</span>(buf2);</td></tr>
+<tr class=""><td class="line-num">57</td><td class="line-code">    <span class="cmt">// buf3 해제 안 함 → 누수!</span></td></tr>
+<tr class=""><td class="line-num">58</td><td class="line-code">    </td></tr>
+<tr class=""><td class="line-num">59</td><td class="line-code">    <span class="fn">mem_report</span>();</td></tr>
+<tr class=""><td class="line-num">60</td><td class="line-code">    <span class="fn">FREE</span>(buf3);  <span class="cmt">// 이제 해제</span></td></tr>
+<tr class=""><td class="line-num">61</td><td class="line-code">    <span class="kw">return</span> <span class="num">0</span>;</td></tr>
+<tr class=""><td class="line-num">62</td><td class="line-code">}</td></tr></table></div>
+<div class="output-block avoid-break"><span class="output-label">실행 결과</span><div class="output-text">=== Debug Demo ===
+[MEM] malloc(100) = 0x55a1234 at main.c:42
+[MEM] malloc(200) = 0x55a1298 at main.c:43
+[MEM] malloc(50) = 0x55a1360 at main.c:44
+[MEM] free(0x55a1234) at main.c:49
+[MEM] free(0x55a1298) at main.c:50
+
+=== Memory Report ===
+  allocs: 3
+  frees:  2
+  leaks:  1</div></div>
+<div class="box box-key avoid-break"><span class="box-label">쉽게 이해하기: 디버깅 기법</span><div class="box-content"><b>프린트 디버깅:</b><br>printf로 변수 값 출력 → 가장 기본!<br>DBG 매크로로 파일/줄/함수 자동 표시<br><br><b>GDB 디버거:</b><br>gcc -g main.c → 디버그 정보 포함<br>gdb ./a.out → 실행<br>break main → 중단점<br>run → 실행<br>next/step → 한 줄씩<br>print x → 변수 값 확인<br>backtrace → 호출 스택<br><br><b>메모리 도구:</b><br>Valgrind: 누수/접근 오류 검출<br>AddressSanitizer: gcc -fsanitize=address</div></div>
+<div class="box box-key avoid-break"><span class="box-label">⚡ 연습문제: 디버깅</span><div class="box-content"><b>[기본]</b><br>1. printf로 변수 값을 추적하세요<br>2. DBG 매크로를 만드세요 (파일/줄 포함)<br>3. ASSERT 매크로를 구현하세요<br>4. 메모리 누수를 의도적으로 만들고 찾으세요<br>5. 배열 범위 초과 버그를 찾으세요<br><br><b>[도전]</b><br>6. malloc/free 래퍼로 누수 탐지기를 만드세요<br>7. 시그널 핸들러로 크래시 정보를 출력하세요<br>8. TRACE 매크로로 함수 호출 순서를 추적하세요<br>9. GDB로 세그폴트를 디버깅하세요<br>10. Valgrind로 메모리 오류를 찾으세요<br><br><b>[심화]</b><br>11. AddressSanitizer를 사용해보세요<br>12. 디버그/릴리즈 빌드를 분리하세요<br>13. 코어 덤프를 분석하세요<br>14. 스택 추적(backtrace)를 구현하세요<br>15. 자체 로그 시스템을 구현하세요</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">Valgrind</div><div class="fact-bite-text">메모리 분석 도구. 누수, 초기화 안 된 읽기, 이중 해제 감지. valgrind ./a.out으로 실행!</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">ASAN</div><div class="fact-bite-text">AddressSanitizer. -fsanitize=address. 버퍼 오버플로, use-after-free 즉시 감지! 2배 느림.</div></div>
+<div class="mascot-speech right avoid-break">
+        <img class="mascot-speech-img " src="svg-assets/mascot-thinking.svg" alt="마스코트" />
+        <div class="mascot-bubble thinking">printf 디버깅이 90%! DBG 매크로로 파일:줄 자동 표시하면 어디서 터졌는지 바로!</div>
+      </div>
+<div class="mascot-speech  avoid-break">
+        <img class="mascot-speech-img " src="svg-assets/mascot-eureka.svg" alt="마스코트" />
+        <div class="mascot-bubble eureka">malloc 래핑으로 누수 탐지! alloc_count - free_count > 0이면 누수! 간단하고 효과적!</div>
+      </div>
+<div class="code-block avoid-break"><div class="code-block-header">[C 코드] 디버깅 — 로그 시스템 + 크래시 핸들러</div>
+        <table class="code-table"><tr class=""><td class="line-num">1</td><td class="line-code"><span class="pp">#include</span> <span class="str">&lt;stdio.h&gt;</span></td></tr>
+<tr class=""><td class="line-num">2</td><td class="line-code"><span class="pp">#include</span> <span class="str">&lt;stdlib.h&gt;</span></td></tr>
+<tr class=""><td class="line-num">3</td><td class="line-code"><span class="pp">#include</span> <span class="str">&lt;string.h&gt;</span></td></tr>
+<tr class=""><td class="line-num">4</td><td class="line-code"><span class="pp">#include</span> <span class="str">&lt;stdarg.h&gt;</span></td></tr>
+<tr class=""><td class="line-num">5</td><td class="line-code"><span class="pp">#include</span> <span class="str">&lt;time.h&gt;</span></td></tr>
+<tr class=""><td class="line-num">6</td><td class="line-code"><span class="pp">#include</span> <span class="str">&lt;signal.h&gt;</span></td></tr>
+<tr class=""><td class="line-num">7</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">8</td><td class="line-code"><span class="cmt">// === 로그 시스템 ===</span></td></tr>
+<tr class=""><td class="line-num">9</td><td class="line-code"><span class="kw">typedef</span> <span class="kw">enum</span> { LOG_DEBUG, LOG_INFO, LOG_WARN, LOG_ERROR, LOG_FATAL } LogLevel;</td></tr>
+<tr class=""><td class="line-num">10</td><td class="line-code"><span class="kw">static</span> LogLevel min_level = LOG_DEBUG;</td></tr>
+<tr class=""><td class="line-num">11</td><td class="line-code"><span class="kw">static</span> <span class="type">FILE</span> *log_file = <span class="mc">NULL</span>;</td></tr>
+<tr class=""><td class="line-num">12</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">13</td><td class="line-code"><span class="kw">const</span> <span class="type">char</span> *level_str[] = {<span class="str">"DEBUG"</span>,<span class="str">"INFO "</span>,<span class="str">"WARN "</span>,<span class="str">"ERROR"</span>,<span class="str">"FATAL"</span>};</td></tr>
+<tr class=""><td class="line-num">14</td><td class="line-code"><span class="kw">const</span> <span class="type">char</span> *level_color[] = {<span class="str">"<span class="esc">\0</span>33[36m"</span>,<span class="str">"<span class="esc">\0</span>33[32m"</span>,<span class="str">"<span class="esc">\0</span>33[33m"</span>,<span class="str">"<span class="esc">\0</span>33[31m"</span>,<span class="str">"<span class="esc">\0</span>33[35m"</span>};</td></tr>
+<tr class=""><td class="line-num">15</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">16</td><td class="line-code"><span class="type">void</span> <span class="fn">log_init</span>(<span class="kw">const</span> <span class="type">char</span> *filename) {</td></tr>
+<tr class=""><td class="line-num">17</td><td class="line-code">    log_file = <span class="fn">fopen</span>(filename, <span class="str">"a"</span>);</td></tr>
+<tr class=""><td class="line-num">18</td><td class="line-code">}</td></tr>
+<tr class=""><td class="line-num">19</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">20</td><td class="line-code"><span class="type">void</span> <span class="fn">log_msg</span>(LogLevel lv, <span class="kw">const</span> <span class="type">char</span> *file, <span class="type">int</span> line, <span class="kw">const</span> <span class="type">char</span> *fmt, ...) {</td></tr>
+<tr class=""><td class="line-num">21</td><td class="line-code">    <span class="kw">if</span> (lv &lt; min_level) <span class="kw">return</span>;</td></tr>
+<tr class=""><td class="line-num">22</td><td class="line-code">    time_t now = <span class="fn">time</span>(<span class="mc">NULL</span>);</td></tr>
+<tr class=""><td class="line-num">23</td><td class="line-code">    <span class="kw">struct</span> tm *t = <span class="fn">localtime</span>(&amp;now);</td></tr>
+<tr class=""><td class="line-num">24</td><td class="line-code">    <span class="type">char</span> timebuf[<span class="num">20</span>];</td></tr>
+<tr class=""><td class="line-num">25</td><td class="line-code">    <span class="fn">strftime</span>(timebuf, <span class="num">20</span>, <span class="str">"%H:%M:%S"</span>, t);</td></tr>
+<tr class=""><td class="line-num">26</td><td class="line-code">    </td></tr>
+<tr class=""><td class="line-num">27</td><td class="line-code">    <span class="cmt">// 콘솔 (컬러)</span></td></tr>
+<tr class=""><td class="line-num">28</td><td class="line-code">    <span class="fn">fprintf</span>(stderr, <span class="str">"<span class="fmt">%s</span>[<span class="fmt">%s</span> <span class="fmt">%s</span>] <span class="fmt">%s</span>:<span class="fmt">%d</span>: "</span>, level_color[lv], timebuf, level_str[lv], file, line);</td></tr>
+<tr class=""><td class="line-num">29</td><td class="line-code">    va_list args;</td></tr>
+<tr class=""><td class="line-num">30</td><td class="line-code">    <span class="fn">va_start</span>(args, fmt); <span class="fn">vfprintf</span>(stderr, fmt, args); <span class="fn">va_end</span>(args);</td></tr>
+<tr class=""><td class="line-num">31</td><td class="line-code">    <span class="fn">fprintf</span>(stderr, <span class="str">"<span class="esc">\0</span>33[0m<span class="esc">\n</span>"</span>);</td></tr>
+<tr class=""><td class="line-num">32</td><td class="line-code">    </td></tr>
+<tr class=""><td class="line-num">33</td><td class="line-code">    <span class="cmt">// 파일</span></td></tr>
+<tr class=""><td class="line-num">34</td><td class="line-code">    <span class="kw">if</span> (log_file) {</td></tr>
+<tr class=""><td class="line-num">35</td><td class="line-code">        <span class="fn">fprintf</span>(log_file, <span class="str">"[<span class="fmt">%s</span> <span class="fmt">%s</span>] <span class="fmt">%s</span>:<span class="fmt">%d</span>: "</span>, timebuf, level_str[lv], file, line);</td></tr>
+<tr class=""><td class="line-num">36</td><td class="line-code">        <span class="fn">va_start</span>(args, fmt); <span class="fn">vfprintf</span>(log_file, fmt, args); <span class="fn">va_end</span>(args);</td></tr>
+<tr class=""><td class="line-num">37</td><td class="line-code">        <span class="fn">fprintf</span>(log_file, <span class="str">"<span class="esc">\n</span>"</span>);</td></tr>
+<tr class=""><td class="line-num">38</td><td class="line-code">        <span class="fn">fflush</span>(log_file);</td></tr>
+<tr class=""><td class="line-num">39</td><td class="line-code">    }</td></tr>
+<tr class=""><td class="line-num">40</td><td class="line-code">}</td></tr>
+<tr class=""><td class="line-num">41</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">42</td><td class="line-code"><span class="pp">#define</span> <span class="fn">LOG_D</span>(fmt,...) <span class="fn">log_msg</span>(LOG_DEBUG,__FILE__,__LINE__,fmt,#<span class="pp">#__VA_ARGS__</span>)</td></tr>
+<tr class=""><td class="line-num">43</td><td class="line-code"><span class="pp">#define</span> <span class="fn">LOG_I</span>(fmt,...) <span class="fn">log_msg</span>(LOG_INFO, __FILE__,__LINE__,fmt,#<span class="pp">#__VA_ARGS__</span>)</td></tr>
+<tr class=""><td class="line-num">44</td><td class="line-code"><span class="pp">#define</span> <span class="fn">LOG_W</span>(fmt,...) <span class="fn">log_msg</span>(LOG_WARN, __FILE__,__LINE__,fmt,#<span class="pp">#__VA_ARGS__</span>)</td></tr>
+<tr class=""><td class="line-num">45</td><td class="line-code"><span class="pp">#define</span> <span class="fn">LOG_E</span>(fmt,...) <span class="fn">log_msg</span>(LOG_ERROR,__FILE__,__LINE__,fmt,#<span class="pp">#__VA_ARGS__</span>)</td></tr>
+<tr class=""><td class="line-num">46</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">47</td><td class="line-code"><span class="cmt">// === 시그널 핸들러 ===</span></td></tr>
+<tr class=""><td class="line-num">48</td><td class="line-code"><span class="type">void</span> <span class="fn">crash_handler</span>(<span class="type">int</span> sig) {</td></tr>
+<tr class=""><td class="line-num">49</td><td class="line-code">    <span class="kw">const</span> <span class="type">char</span> *signame = sig==SIGSEGV?<span class="str">"SIGSEGV"</span>:sig==SIGFPE?<span class="str">"SIGFPE"</span>:<span class="str">"UNKNOWN"</span>;</td></tr>
+<tr class=""><td class="line-num">50</td><td class="line-code">    <span class="fn">fprintf</span>(stderr, <span class="str">"<span class="esc">\n</span>💥 CRASH: <span class="fmt">%s</span> (signal <span class="fmt">%d</span>)<span class="esc">\n</span>"</span>, signame, sig);</td></tr>
+<tr class=""><td class="line-num">51</td><td class="line-code">    <span class="fn">fprintf</span>(stderr, <span class="str">"  Tip: compile with -g, run with gdb<span class="esc">\n</span>"</span>);</td></tr>
+<tr class=""><td class="line-num">52</td><td class="line-code">    <span class="fn">exit</span>(<span class="num">1</span>);</td></tr>
+<tr class=""><td class="line-num">53</td><td class="line-code">}</td></tr>
+<tr class=""><td class="line-num">54</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">55</td><td class="line-code"><span class="cmt">// === 성능 프로파일러 ===</span></td></tr>
+<tr class=""><td class="line-num">56</td><td class="line-code"><span class="kw">typedef</span> <span class="kw">struct</span> { <span class="kw">const</span> <span class="type">char</span> *name; clock_t start; } Timer;</td></tr>
+<tr class=""><td class="line-num">57</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">58</td><td class="line-code">Timer <span class="fn">timer_start</span>(<span class="kw">const</span> <span class="type">char</span> *name) {</td></tr>
+<tr class=""><td class="line-num">59</td><td class="line-code">    Timer t = {name, <span class="fn">clock</span>()};</td></tr>
+<tr class=""><td class="line-num">60</td><td class="line-code">    <span class="kw">return</span> t;</td></tr>
+<tr class=""><td class="line-num">61</td><td class="line-code">}</td></tr>
+<tr class=""><td class="line-num">62</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">63</td><td class="line-code"><span class="type">void</span> <span class="fn">timer_stop</span>(Timer *t) {</td></tr>
+<tr class=""><td class="line-num">64</td><td class="line-code">    <span class="type">double</span> ms = (<span class="type">double</span>)(<span class="fn">clock</span>() - t-&gt;start) / CLOCKS_PER_SEC * <span class="num">1000</span>;</td></tr>
+<tr class=""><td class="line-num">65</td><td class="line-code">    <span class="fn">printf</span>(<span class="str">"  ⏱ <span class="fmt">%s</span>: <span class="fmt">%.2f</span> ms<span class="esc">\n</span>"</span>, t-&gt;name, ms);</td></tr>
+<tr class=""><td class="line-num">66</td><td class="line-code">}</td></tr>
+<tr class=""><td class="line-num">67</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">68</td><td class="line-code"><span class="type">int</span> <span class="fn">main</span>() {</td></tr>
+<tr class=""><td class="line-num">69</td><td class="line-code">    <span class="fn">signal</span>(SIGSEGV, crash_handler);</td></tr>
+<tr class=""><td class="line-num">70</td><td class="line-code">    <span class="fn">signal</span>(SIGFPE, crash_handler);</td></tr>
+<tr class=""><td class="line-num">71</td><td class="line-code">    </td></tr>
+<tr class=""><td class="line-num">72</td><td class="line-code">    <span class="fn">LOG_I</span>(<span class="str">"프로그램 시작"</span>);</td></tr>
+<tr class=""><td class="line-num">73</td><td class="line-code">    <span class="fn">LOG_D</span>(<span class="str">"디버그 메시지: x=<span class="fmt">%d</span>"</span>, <span class="num">42</span>);</td></tr>
+<tr class=""><td class="line-num">74</td><td class="line-code">    <span class="fn">LOG_W</span>(<span class="str">"메모리 사용량: <span class="fmt">%d</span><span class="fmt">%%</span>"</span>, <span class="num">85</span>);</td></tr>
+<tr class=""><td class="line-num">75</td><td class="line-code">    <span class="fn">LOG_E</span>(<span class="str">"파일 열기 실패: <span class="fmt">%s</span>"</span>, <span class="str">"config.ini"</span>);</td></tr>
+<tr class=""><td class="line-num">76</td><td class="line-code">    </td></tr>
+<tr class=""><td class="line-num">77</td><td class="line-code">    <span class="cmt">// 타이머</span></td></tr>
+<tr class=""><td class="line-num">78</td><td class="line-code">    <span class="fn">printf</span>(<span class="str">"<span class="esc">\n</span>"</span>);</td></tr>
+<tr class=""><td class="line-num">79</td><td class="line-code">    Timer t = <span class="fn">timer_start</span>(<span class="str">"배열 합계"</span>);</td></tr>
+<tr class=""><td class="line-num">80</td><td class="line-code">    <span class="type">long</span> sum = <span class="num">0</span>;</td></tr>
+<tr class=""><td class="line-num">81</td><td class="line-code">    <span class="kw">for</span> (<span class="type">int</span> i = <span class="num">0</span>; i &lt; <span class="num">10000000</span>; i++) sum += i;</td></tr>
+<tr class=""><td class="line-num">82</td><td class="line-code">    <span class="fn">timer_stop</span>(&amp;t);</td></tr>
+<tr class=""><td class="line-num">83</td><td class="line-code">    <span class="fn">printf</span>(<span class="str">"  결과: <span class="fmt">%l</span>d<span class="esc">\n</span>"</span>, sum);</td></tr>
+<tr class=""><td class="line-num">84</td><td class="line-code">    </td></tr>
+<tr class=""><td class="line-num">85</td><td class="line-code">    <span class="fn">LOG_I</span>(<span class="str">"프로그램 정상 종료"</span>);</td></tr>
+<tr class=""><td class="line-num">86</td><td class="line-code">    <span class="kw">return</span> <span class="num">0</span>;</td></tr>
+<tr class=""><td class="line-num">87</td><td class="line-code">}</td></tr></table></div>
+<div class="output-block avoid-break"><span class="output-label">실행 결과</span><div class="output-text">[12:00:00 INFO ] main.c:48: 프로그램 시작
+[12:00:00 DEBUG] main.c:49: 디버그 메시지: x=42
+[12:00:00 WARN ] main.c:50: 메모리 사용량: 85%
+[12:00:00 ERROR] main.c:51: 파일 열기 실패: config.ini
+
+  ⏱ 배열 합계: 12.34 ms
+  결과: 49999995000000
+[12:00:00 INFO ] main.c:59: 프로그램 정상 종료</div></div>
+<div class="box box-key avoid-break"><span class="box-label">[심화 내용] 디버깅 도구 총정리</span><div class="box-content"><b>레벨별 도구:</b><br>1. printf/로그 → 가장 기본, 90%의 버그 해결<br>2. GDB → 중단점, 스텝 실행, 변수 감시<br>3. Valgrind → 메모리 누수, 접근 오류<br>4. ASAN/MSAN → 컴파일 시 삽입, 빠른 감지<br>5. strace/ltrace → 시스템 콜 추적<br><br><b>GDB 필수 명령:</b><br>break main → 중단점<br>run → 실행<br>next/step → 한 줄(step=함수 진입)<br>print var → 변수 값<br>backtrace → 콜 스택<br>watch var → 변수 변경 감시<br>info locals → 지역 변수 전부<br><br><b>로그 시스템 설계:</b><br>레벨(DEBUG~FATAL) + 타임스탬프 + 파일:줄<br>va_args로 printf 형식 지원<br>파일/콘솔 동시 출력</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">strace</div><div class="fact-bite-text">시스템 콜 추적. strace ./a.out. open/read/write/mmap 호출 확인! 파일/네트워크 디버깅 필수.</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">watchpoint</div><div class="fact-bite-text">감시점. GDB에서 watch var. 변수 값 변경 시 자동 중단! 어디서 값이 바뀌는지 추적.</div></div>
+<div class="mascot-speech  avoid-break">
+        <img class="mascot-speech-img " src="svg-assets/mascot-eureka.svg" alt="마스코트" />
+        <div class="mascot-bubble eureka">로그 매크로에 __FILE__,__LINE__ 넣으면 어디서 호출했는지 자동! 디버깅의 기본!</div>
+      </div>
+<div class="code-block avoid-break"><div class="code-block-header">[C 코드] 디버깅 — 메모리 검사기</div>
+        <table class="code-table"><tr class=""><td class="line-num">1</td><td class="line-code"><span class="pp">#include</span> <span class="str">&lt;stdio.h&gt;</span></td></tr>
+<tr class=""><td class="line-num">2</td><td class="line-code"><span class="pp">#include</span> <span class="str">&lt;stdlib.h&gt;</span></td></tr>
+<tr class=""><td class="line-num">3</td><td class="line-code"><span class="pp">#include</span> <span class="str">&lt;string.h&gt;</span></td></tr>
+<tr class=""><td class="line-num">4</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">5</td><td class="line-code"><span class="cmt">// === 메모리 검사기 (Sanitizer 원리) ===</span></td></tr>
+<tr class=""><td class="line-num">6</td><td class="line-code"><span class="pp">#define</span> MAX_ALLOCS <span class="num">100</span></td></tr>
+<tr class=""><td class="line-num">7</td><td class="line-code"><span class="pp">#define</span> GUARD_BYTE <span class="num">0xCD</span></td></tr>
+<tr class=""><td class="line-num">8</td><td class="line-code"><span class="pp">#define</span> FREE_BYTE <span class="num">0xDD</span></td></tr>
+<tr class=""><td class="line-num">9</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">10</td><td class="line-code"><span class="kw">typedef</span> <span class="kw">struct</span> {</td></tr>
+<tr class=""><td class="line-num">11</td><td class="line-code">    <span class="type">void</span> *ptr;</td></tr>
+<tr class=""><td class="line-num">12</td><td class="line-code">    <span class="type">size_t</span> size;</td></tr>
+<tr class=""><td class="line-num">13</td><td class="line-code">    <span class="kw">const</span> <span class="type">char</span> *file;</td></tr>
+<tr class=""><td class="line-num">14</td><td class="line-code">    <span class="type">int</span> line;</td></tr>
+<tr class=""><td class="line-num">15</td><td class="line-code">    <span class="type">int</span> freed;</td></tr>
+<tr class=""><td class="line-num">16</td><td class="line-code">} AllocInfo;</td></tr>
+<tr class=""><td class="line-num">17</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">18</td><td class="line-code"><span class="kw">static</span> AllocInfo allocs[MAX_ALLOCS];</td></tr>
+<tr class=""><td class="line-num">19</td><td class="line-code"><span class="kw">static</span> <span class="type">int</span> nallocs = <span class="num">0</span>;</td></tr>
+<tr class=""><td class="line-num">20</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">21</td><td class="line-code"><span class="type">void</span>* <span class="fn">checked_malloc</span>(<span class="type">size_t</span> size, <span class="kw">const</span> <span class="type">char</span> *file, <span class="type">int</span> line) {</td></tr>
+<tr class=""><td class="line-num">22</td><td class="line-code">    <span class="cmt">// 가드 바이트 추가 (앞뒤 8바이트)</span></td></tr>
+<tr class=""><td class="line-num">23</td><td class="line-code">    <span class="type">size_t</span> total = size + <span class="num">16</span>;</td></tr>
+<tr class=""><td class="line-num">24</td><td class="line-code">    <span class="type">unsigned</span> <span class="type">char</span> *raw = (<span class="type">unsigned</span> <span class="type">char</span>*)<span class="fn">malloc</span>(total);</td></tr>
+<tr class=""><td class="line-num">25</td><td class="line-code">    <span class="kw">if</span> (!raw) <span class="kw">return</span> <span class="mc">NULL</span>;</td></tr>
+<tr class=""><td class="line-num">26</td><td class="line-code">    </td></tr>
+<tr class=""><td class="line-num">27</td><td class="line-code">    <span class="fn">memset</span>(raw, GUARD_BYTE, <span class="num">8</span>);          <span class="cmt">// 앞 가드</span></td></tr>
+<tr class=""><td class="line-num">28</td><td class="line-code">    <span class="fn">memset</span>(raw+<span class="num">8</span>+size, GUARD_BYTE, <span class="num">8</span>);   <span class="cmt">// 뒤 가드</span></td></tr>
+<tr class=""><td class="line-num">29</td><td class="line-code">    <span class="fn">memset</span>(raw+<span class="num">8</span>, <span class="num">0</span>, size);              <span class="cmt">// 사용 영역 초기화</span></td></tr>
+<tr class=""><td class="line-num">30</td><td class="line-code">    </td></tr>
+<tr class=""><td class="line-num">31</td><td class="line-code">    allocs[nallocs++] = (AllocInfo){raw, size, file, line, <span class="num">0</span>};</td></tr>
+<tr class=""><td class="line-num">32</td><td class="line-code">    <span class="fn">printf</span>(<span class="str">"  [ALLOC] %zu bytes at <span class="fmt">%s</span>:<span class="fmt">%d</span><span class="esc">\n</span>"</span>, size, file, line);</td></tr>
+<tr class=""><td class="line-num">33</td><td class="line-code">    <span class="kw">return</span> raw + <span class="num">8</span>;</td></tr>
+<tr class=""><td class="line-num">34</td><td class="line-code">}</td></tr>
+<tr class=""><td class="line-num">35</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">36</td><td class="line-code"><span class="type">void</span> <span class="fn">checked_free</span>(<span class="type">void</span> *ptr, <span class="kw">const</span> <span class="type">char</span> *file, <span class="type">int</span> line) {</td></tr>
+<tr class=""><td class="line-num">37</td><td class="line-code">    <span class="kw">if</span> (!ptr) <span class="kw">return</span>;</td></tr>
+<tr class=""><td class="line-num">38</td><td class="line-code">    <span class="type">unsigned</span> <span class="type">char</span> *raw = (<span class="type">unsigned</span> <span class="type">char</span>*)ptr - <span class="num">8</span>;</td></tr>
+<tr class=""><td class="line-num">39</td><td class="line-code">    </td></tr>
+<tr class=""><td class="line-num">40</td><td class="line-code">    <span class="cmt">// 할당 정보 찾기</span></td></tr>
+<tr class=""><td class="line-num">41</td><td class="line-code">    <span class="type">int</span> found = -<span class="num">1</span>;</td></tr>
+<tr class=""><td class="line-num">42</td><td class="line-code">    <span class="kw">for</span> (<span class="type">int</span> i = <span class="num">0</span>; i &lt; nallocs; i++)</td></tr>
+<tr class=""><td class="line-num">43</td><td class="line-code">        <span class="kw">if</span> (allocs[i].ptr == raw) { found = i; <span class="kw">break</span>; }</td></tr>
+<tr class=""><td class="line-num">44</td><td class="line-code">    </td></tr>
+<tr class=""><td class="line-num">45</td><td class="line-code">    <span class="kw">if</span> (found &lt; <span class="num">0</span>) {</td></tr>
+<tr class=""><td class="line-num">46</td><td class="line-code">        <span class="fn">printf</span>(<span class="str">"  ⚠️ [FREE] Unknown pointer at <span class="fmt">%s</span>:<span class="fmt">%d</span>!<span class="esc">\n</span>"</span>, file, line);</td></tr>
+<tr class=""><td class="line-num">47</td><td class="line-code">        <span class="kw">return</span>;</td></tr>
+<tr class=""><td class="line-num">48</td><td class="line-code">    }</td></tr>
+<tr class=""><td class="line-num">49</td><td class="line-code">    <span class="kw">if</span> (allocs[found].freed) {</td></tr>
+<tr class=""><td class="line-num">50</td><td class="line-code">        <span class="fn">printf</span>(<span class="str">"  ⚠️ [DOUBLE FREE] at <span class="fmt">%s</span>:<span class="fmt">%d</span> (originally at <span class="fmt">%s</span>:<span class="fmt">%d</span>)!<span class="esc">\n</span>"</span>,</td></tr>
+<tr class=""><td class="line-num">51</td><td class="line-code">               file, line, allocs[found].file, allocs[found].line);</td></tr>
+<tr class=""><td class="line-num">52</td><td class="line-code">        <span class="kw">return</span>;</td></tr>
+<tr class=""><td class="line-num">53</td><td class="line-code">    }</td></tr>
+<tr class=""><td class="line-num">54</td><td class="line-code">    </td></tr>
+<tr class=""><td class="line-num">55</td><td class="line-code">    <span class="cmt">// 가드 바이트 검사</span></td></tr>
+<tr class=""><td class="line-num">56</td><td class="line-code">    <span class="type">size_t</span> size = allocs[found].size;</td></tr>
+<tr class=""><td class="line-num">57</td><td class="line-code">    <span class="type">int</span> front_ok = <span class="num">1</span>, back_ok = <span class="num">1</span>;</td></tr>
+<tr class=""><td class="line-num">58</td><td class="line-code">    <span class="kw">for</span> (<span class="type">int</span> i = <span class="num">0</span>; i &lt; <span class="num">8</span>; i++) {</td></tr>
+<tr class=""><td class="line-num">59</td><td class="line-code">        <span class="kw">if</span> (raw[i] != GUARD_BYTE) front_ok = <span class="num">0</span>;</td></tr>
+<tr class=""><td class="line-num">60</td><td class="line-code">        <span class="kw">if</span> (raw[<span class="num">8</span>+size+i] != GUARD_BYTE) back_ok = <span class="num">0</span>;</td></tr>
+<tr class=""><td class="line-num">61</td><td class="line-code">    }</td></tr>
+<tr class=""><td class="line-num">62</td><td class="line-code">    <span class="kw">if</span> (!front_ok) <span class="fn">printf</span>(<span class="str">"  ⚠️ [UNDERFLOW] Buffer underflow detected at <span class="fmt">%s</span>:<span class="fmt">%d</span>!<span class="esc">\n</span>"</span>, file, line);</td></tr>
+<tr class=""><td class="line-num">63</td><td class="line-code">    <span class="kw">if</span> (!back_ok) <span class="fn">printf</span>(<span class="str">"  ⚠️ [OVERFLOW] Buffer overflow detected at <span class="fmt">%s</span>:<span class="fmt">%d</span>!<span class="esc">\n</span>"</span>, file, line);</td></tr>
+<tr class=""><td class="line-num">64</td><td class="line-code">    </td></tr>
+<tr class=""><td class="line-num">65</td><td class="line-code">    <span class="fn">memset</span>(raw+<span class="num">8</span>, FREE_BYTE, size);  <span class="cmt">// use-after-free 감지</span></td></tr>
+<tr class=""><td class="line-num">66</td><td class="line-code">    allocs[found].freed = <span class="num">1</span>;</td></tr>
+<tr class=""><td class="line-num">67</td><td class="line-code">    <span class="fn">printf</span>(<span class="str">"  [FREE] %zu bytes at <span class="fmt">%s</span>:<span class="fmt">%d</span><span class="esc">\n</span>"</span>, size, file, line);</td></tr>
+<tr class=""><td class="line-num">68</td><td class="line-code">    <span class="fn">free</span>(raw);</td></tr>
+<tr class=""><td class="line-num">69</td><td class="line-code">}</td></tr>
+<tr class=""><td class="line-num">70</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">71</td><td class="line-code"><span class="type">void</span> <span class="fn">memory_report</span>() {</td></tr>
+<tr class=""><td class="line-num">72</td><td class="line-code">    <span class="fn">printf</span>(<span class="str">"<span class="esc">\n</span>  === Memory Report ===<span class="esc">\n</span>"</span>);</td></tr>
+<tr class=""><td class="line-num">73</td><td class="line-code">    <span class="type">int</span> leaks = <span class="num">0</span>;</td></tr>
+<tr class=""><td class="line-num">74</td><td class="line-code">    <span class="kw">for</span> (<span class="type">int</span> i = <span class="num">0</span>; i &lt; nallocs; i++) {</td></tr>
+<tr class=""><td class="line-num">75</td><td class="line-code">        <span class="kw">if</span> (!allocs[i].freed) {</td></tr>
+<tr class=""><td class="line-num">76</td><td class="line-code">            <span class="fn">printf</span>(<span class="str">"  💧 LEAK: %zu bytes at <span class="fmt">%s</span>:<span class="fmt">%d</span><span class="esc">\n</span>"</span>,</td></tr>
+<tr class=""><td class="line-num">77</td><td class="line-code">                   allocs[i].size, allocs[i].file, allocs[i].line);</td></tr>
+<tr class=""><td class="line-num">78</td><td class="line-code">            leaks++;</td></tr>
+<tr class=""><td class="line-num">79</td><td class="line-code">        }</td></tr>
+<tr class=""><td class="line-num">80</td><td class="line-code">    }</td></tr>
+<tr class=""><td class="line-num">81</td><td class="line-code">    <span class="fn">printf</span>(<span class="str">"  Total: <span class="fmt">%d</span> allocs, <span class="fmt">%d</span> leaks<span class="esc">\n</span>"</span>, nallocs, leaks);</td></tr>
+<tr class=""><td class="line-num">82</td><td class="line-code">}</td></tr>
+<tr class=""><td class="line-num">83</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">84</td><td class="line-code"><span class="pp">#define</span> <span class="fn">MALLOC</span>(sz) <span class="fn">checked_malloc</span>(sz, __FILE__, __LINE__)</td></tr>
+<tr class=""><td class="line-num">85</td><td class="line-code"><span class="pp">#define</span> <span class="fn">FREE</span>(p) <span class="fn">checked_free</span>(p, __FILE__, __LINE__)</td></tr>
+<tr class=""><td class="line-num">86</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">87</td><td class="line-code"><span class="type">int</span> <span class="fn">main</span>() {</td></tr>
+<tr class=""><td class="line-num">88</td><td class="line-code">    <span class="fn">printf</span>(<span class="str">"=== 메모리 검사기 ===<span class="esc">\n</span>"</span>);</td></tr>
+<tr class=""><td class="line-num">89</td><td class="line-code">    </td></tr>
+<tr class=""><td class="line-num">90</td><td class="line-code">    <span class="type">char</span> *buf = (<span class="type">char</span>*)<span class="fn">MALLOC</span>(<span class="num">10</span>);</td></tr>
+<tr class=""><td class="line-num">91</td><td class="line-code">    <span class="fn">strcpy</span>(buf, <span class="str">"Hello"</span>);   <span class="cmt">// OK</span></td></tr>
+<tr class=""><td class="line-num">92</td><td class="line-code">    <span class="fn">FREE</span>(buf);</td></tr>
+<tr class=""><td class="line-num">93</td><td class="line-code">    </td></tr>
+<tr class=""><td class="line-num">94</td><td class="line-code">    <span class="type">int</span> *arr = (<span class="type">int</span>*)<span class="fn">MALLOC</span>(<span class="num">5</span> * <span class="kw">sizeof</span>(<span class="type">int</span>));</td></tr>
+<tr class=""><td class="line-num">95</td><td class="line-code">    <span class="kw">for</span> (<span class="type">int</span> i = <span class="num">0</span>; i &lt; <span class="num">5</span>; i++) arr[i] = i;  <span class="cmt">// OK</span></td></tr>
+<tr class=""><td class="line-num">96</td><td class="line-code">    </td></tr>
+<tr class=""><td class="line-num">97</td><td class="line-code">    <span class="type">char</span> *leak = (<span class="type">char</span>*)<span class="fn">MALLOC</span>(<span class="num">100</span>);  <span class="cmt">// 해제 안 함!</span></td></tr>
+<tr class=""><td class="line-num">98</td><td class="line-code">    <span class="fn">strcpy</span>(leak, <span class="str">"This leaks"</span>);</td></tr>
+<tr class=""><td class="line-num">99</td><td class="line-code">    </td></tr>
+<tr class=""><td class="line-num">100</td><td class="line-code">    <span class="fn">FREE</span>(arr);</td></tr>
+<tr class=""><td class="line-num">101</td><td class="line-code">    <span class="cmt">// FREE(buf);  // double free → 감지!</span></td></tr>
+<tr class=""><td class="line-num">102</td><td class="line-code">    <span class="fn">memory_report</span>();</td></tr>
+<tr class=""><td class="line-num">103</td><td class="line-code">    <span class="kw">return</span> <span class="num">0</span>;</td></tr>
+<tr class=""><td class="line-num">104</td><td class="line-code">}</td></tr></table></div>
+<div class="output-block avoid-break"><span class="output-label">실행 결과</span><div class="output-text">=== 메모리 검사기 ===
+  [ALLOC] 10 bytes at main.c:72
+  [FREE] 10 bytes at main.c:74
+  [ALLOC] 20 bytes at main.c:76
+  [ALLOC] 100 bytes at main.c:79
+  [FREE] 20 bytes at main.c:82
+
+  === Memory Report ===
+  💧 LEAK: 100 bytes at main.c:79
+  Total: 3 allocs, 1 leaks</div></div>
+<div class="box box-key avoid-break"><span class="box-label">[심화 내용] 메모리 검사 원리</span><div class="box-content"><b>가드 바이트:</b><br>할당 앞뒤에 특수 패턴(0xCD) 배치<br>free 시 검사 → 변경됐으면 오버플로!<br>→ AddressSanitizer의 "red zone" 원리<br><br><b>해제 후 접근(Use-After-Free) 감지:</b><br>free 시 0xDD로 채움<br>→ 접근하면 0xDD 패턴 발견 = 버그!<br><br><b>더블 프리 감지:</b><br>freed 플래그로 추적<br>이미 freed면 경고!<br><br><b>실제 도구 비교:</b><br>Valgrind: 바이너리 인스트루멘테이션 (느림)<br>ASAN: 컴파일러 삽입 (2배 느림)<br>직접 구현: 교육용 (기능 제한)</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">red zone</div><div class="fact-bite-text">레드 존. 할당 영역 앞뒤 여분 바이트. 접근하면 오류! AddressSanitizer의 핵심 메커니즘.</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">use-after-free</div><div class="fact-bite-text">해제 후 사용. 보안 취약점 1위급. free 후에도 포인터 사용→정의되지 않은 동작! 해제 후 NULL 대입.</div></div>
+<div class="mascot-speech  avoid-break">
+        <img class="mascot-speech-img " src="svg-assets/mascot-eureka.svg" alt="마스코트" />
+        <div class="mascot-bubble eureka">가드 바이트 0xCD! free할 때 확인. 바뀌었으면 경계 넘은 것! ASAN도 같은 원리!</div>
+      </div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">core dump</div><div class="fact-bite-text">코어 덤프. 크래시 시 메모리 스냅샷. gdb core로 분석. ulimit -c unlimited로 활성화!</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">breakpoint mechanism</div><div class="fact-bite-text">중단점 메커니즘. INT3(0xCC) 삽입→트랩→디버거 활성화. 소프트/하드웨어 중단점!</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">DWARF debug info</div><div class="fact-bite-text">DWARF 디버그 정보. -g 옵션. 변수 이름, 줄 번호, 타입 정보. ELF .debug_info 섹션!</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">sanitizer family</div><div class="fact-bite-text">새너타이저 가족. ASAN(메모리), MSAN(초기화), TSAN(스레드), UBSAN(UB). 전부 -fsanitize=!</div></div>
+<div class="mascot-speech right avoid-break">
+        <img class="mascot-speech-img " src="svg-assets/mascot-thinking.svg" alt="마스코트" />
+        <div class="mascot-bubble thinking">중단점 원리: 코드에 INT3(0xCC) 삽입! CPU가 트랩→OS→디버거 활성화. 하드웨어 지원!</div>
+      </div>
+<div class="box box-key avoid-break"><span class="box-label">[심화] 디버깅 체크리스트</span><div class="box-content"><b>버그 분류:</b>
+1. 컴파일 에러 → 문법 확인, 헤더 포함
+2. 링크 에러 → 함수 정의 누락, 라이브러리
+3. 런타임 크래시 → ASAN, GDB backtrace
+4. 논리 버그 → printf/로그, 단위 테스트
+5. 메모리 버그 → Valgrind, MSAN
+6. 성능 문제 → perf, gprof
+
+<b>5 Whys 기법:</b>
+왜 크래시? → 널 포인터
+왜 널? → 함수 반환값 미확인
+왜 미확인? → 에러 처리 누락
+왜 누락? → 코딩 표준 없음
+왜 없음? → 도입 예정
+→ 근본 원인 발견!
+
+<b>고무 오리 디버깅:</b>
+오리에게 코드를 한 줄씩 설명
+→ 설명하다 보면 버그 발견!
+→ 진짜 효과 있음 (코드 리뷰 원리)</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">rubber duck debugging</div><div class="fact-bite-text">고무 오리 디버깅. 코드를 소리 내어 설명하면 버그 발견! 코드 리뷰의 셀프 버전. 진짜 효과적!</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">perf profiler</div><div class="fact-bite-text">perf. Linux 성능 프로파일러. perf record+perf report. CPU 핫스팟 찾기! 캐시 미스 분석.</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">gprof</div><div class="fact-bite-text">gprof. 함수별 실행 시간 측정. gcc -pg→실행→gprof. 콜 그래프 생성! 기본 프로파일러.</div></div>
+<div class="mascot-speech right avoid-break">
+        <img class="mascot-speech-img " src="svg-assets/mascot-thinking.svg" alt="마스코트" />
+        <div class="mascot-bubble thinking">perf: CPU 핫스팟을 찾아라! perf record ./a.out → perf report. 어디서 시간을 쓰는지 한눈에!</div>
+      </div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">ltrace</div><div class="fact-bite-text">ltrace. 라이브러리 함수 호출 추적. printf, malloc, strlen 호출 확인! strace(시스템콜)와 쌍!</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">coredump analysis</div><div class="fact-bite-text">코어 덤프 분석. ulimit -c unlimited→크래시→gdb core. bt로 콜 스택! 프로덕션 디버깅 필수.</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">conditional breakpoint</div><div class="fact-bite-text">조건부 중단점. GDB: break main.c:42 if x>100. 특정 조건에서만 멈춤! 반복문 디버깅 필수.</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">reverse debugging</div><div class="fact-bite-text">역방향 디버깅. GDB: reverse-step. 시간을 되돌려 실행! rr(Record and Replay)로 결정적 재현.</div></div>
+<div class="mascot-speech  avoid-break">
+        <img class="mascot-speech-img " src="svg-assets/mascot-eureka.svg" alt="마스코트" />
+        <div class="mascot-bubble eureka">rr: 실행을 녹화→정확히 재현→역방향 스텝! 비결정적 버그(레이스 컨디션)도 잡는다!</div>
+      </div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">debug symbol strip</div><div class="fact-bite-text">디버그 심볼 제거. strip a.out. 릴리즈 바이너리 크기 50%↓. 심볼은 별도 .debug 파일로!</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">watchpoint</div><div class="fact-bite-text">감시점. GDB: watch x. x 값 변경 시 자동 멈춤! 하드웨어 지원(DR0~DR3). 메모리 변조 추적!</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">printf debugging</div><div class="fact-bite-text">printf 디버깅. 가장 원시적이지만 가장 많이 씀! __FILE__, __LINE__, __func__ 매크로 활용.</div></div>
+<div class="mascot-speech right avoid-break">
+        <img class="mascot-speech-img " src="svg-assets/mascot-thinking.svg" alt="마스코트" />
+        <div class="mascot-bubble thinking">watch x: x가 바뀌면 자동 중단! 누가 변수를 건드리는지 추적. 하드웨어 감시점 최대 4개!</div>
+      </div>
+<div class="code-block avoid-break"><div class="code-block-header">[C 코드] 디버깅 — 스택 추적 시뮬레이션</div>
+        <table class="code-table"><tr class=""><td class="line-num">1</td><td class="line-code"><span class="pp">#include</span> <span class="str">&lt;stdio.h&gt;</span></td></tr>
+<tr class=""><td class="line-num">2</td><td class="line-code"><span class="pp">#include</span> <span class="str">&lt;string.h&gt;</span></td></tr>
+<tr class=""><td class="line-num">3</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">4</td><td class="line-code"><span class="cmt">// === 수동 스택 추적 ===</span></td></tr>
+<tr class=""><td class="line-num">5</td><td class="line-code"><span class="pp">#define</span> MAX_FRAMES <span class="num">20</span></td></tr>
+<tr class=""><td class="line-num">6</td><td class="line-code"><span class="kw">typedef</span> <span class="kw">struct</span> { <span class="kw">const</span> <span class="type">char</span> *func; <span class="kw">const</span> <span class="type">char</span> *file; <span class="type">int</span> line; } Frame;</td></tr>
+<tr class=""><td class="line-num">7</td><td class="line-code">Frame call_stack[MAX_FRAMES];</td></tr>
+<tr class=""><td class="line-num">8</td><td class="line-code"><span class="type">int</span> stack_depth = <span class="num">0</span>;</td></tr>
+<tr class=""><td class="line-num">9</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">10</td><td class="line-code"><span class="pp">#define</span> <span class="fn">ENTER</span>() <span class="kw">do</span> { \</td></tr>
+<tr class=""><td class="line-num">11</td><td class="line-code">    call_stack[stack_depth++] = (Frame){__func__, __FILE__, __LINE__}; \</td></tr>
+<tr class=""><td class="line-num">12</td><td class="line-code">} <span class="kw">while</span>(<span class="num">0</span>)</td></tr>
+<tr class=""><td class="line-num">13</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">14</td><td class="line-code"><span class="pp">#define</span> <span class="fn">LEAVE</span>() (stack_depth--)</td></tr>
+<tr class=""><td class="line-num">15</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">16</td><td class="line-code"><span class="type">void</span> <span class="fn">print_backtrace</span>() {</td></tr>
+<tr class=""><td class="line-num">17</td><td class="line-code">    <span class="fn">printf</span>(<span class="str">"  === Backtrace ===<span class="esc">\n</span>"</span>);</td></tr>
+<tr class=""><td class="line-num">18</td><td class="line-code">    <span class="kw">for</span> (<span class="type">int</span> i = stack_depth-<span class="num">1</span>; i &gt;= <span class="num">0</span>; i--)</td></tr>
+<tr class=""><td class="line-num">19</td><td class="line-code">        <span class="fn">printf</span>(<span class="str">"  #<span class="fmt">%d</span> <span class="fmt">%s</span>() at <span class="fmt">%s</span>:<span class="fmt">%d</span><span class="esc">\n</span>"</span>, stack_depth-<span class="num">1</span>-i,</td></tr>
+<tr class=""><td class="line-num">20</td><td class="line-code">               call_stack[i].func, call_stack[i].file, call_stack[i].line);</td></tr>
+<tr class=""><td class="line-num">21</td><td class="line-code">}</td></tr>
+<tr class=""><td class="line-num">22</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">23</td><td class="line-code"><span class="type">void</span> <span class="fn">func_c</span>() { <span class="fn">ENTER</span>(); <span class="fn">printf</span>(<span class="str">"  In func_c<span class="esc">\n</span>"</span>); <span class="fn">print_backtrace</span>(); <span class="fn">LEAVE</span>(); }</td></tr>
+<tr class=""><td class="line-num">24</td><td class="line-code"><span class="type">void</span> <span class="fn">func_b</span>() { <span class="fn">ENTER</span>(); <span class="fn">printf</span>(<span class="str">"  In func_b<span class="esc">\n</span>"</span>); <span class="fn">func_c</span>(); <span class="fn">LEAVE</span>(); }</td></tr>
+<tr class=""><td class="line-num">25</td><td class="line-code"><span class="type">void</span> <span class="fn">func_a</span>() { <span class="fn">ENTER</span>(); <span class="fn">printf</span>(<span class="str">"  In func_a<span class="esc">\n</span>"</span>); <span class="fn">func_b</span>(); <span class="fn">LEAVE</span>(); }</td></tr>
+<tr class=""><td class="line-num">26</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">27</td><td class="line-code"><span class="cmt">// === 메모리 덤프 ===</span></td></tr>
+<tr class=""><td class="line-num">28</td><td class="line-code"><span class="type">void</span> <span class="fn">hex_dump</span>(<span class="kw">const</span> <span class="type">void</span> *data, <span class="type">int</span> size) {</td></tr>
+<tr class=""><td class="line-num">29</td><td class="line-code">    <span class="kw">const</span> <span class="type">unsigned</span> <span class="type">char</span> *p = (<span class="kw">const</span> <span class="type">unsigned</span> <span class="type">char</span>*)data;</td></tr>
+<tr class=""><td class="line-num">30</td><td class="line-code">    <span class="kw">for</span> (<span class="type">int</span> i = <span class="num">0</span>; i &lt; size; i += <span class="num">16</span>) {</td></tr>
+<tr class=""><td class="line-num">31</td><td class="line-code">        <span class="fn">printf</span>(<span class="str">"  <span class="fmt">%04x</span>: "</span>, i);</td></tr>
+<tr class=""><td class="line-num">32</td><td class="line-code">        <span class="kw">for</span> (<span class="type">int</span> j = <span class="num">0</span>; j &lt; <span class="num">16</span> &amp;&amp; i+j &lt; size; j++)</td></tr>
+<tr class=""><td class="line-num">33</td><td class="line-code">            <span class="fn">printf</span>(<span class="str">"<span class="fmt">%02x</span> "</span>, p[i+j]);</td></tr>
+<tr class=""><td class="line-num">34</td><td class="line-code">        <span class="kw">for</span> (<span class="type">int</span> j = size-i; j &lt; <span class="num">16</span>; j++) <span class="fn">printf</span>(<span class="str">"   "</span>);</td></tr>
+<tr class=""><td class="line-num">35</td><td class="line-code">        <span class="fn">printf</span>(<span class="str">" |"</span>);</td></tr>
+<tr class=""><td class="line-num">36</td><td class="line-code">        <span class="kw">for</span> (<span class="type">int</span> j = <span class="num">0</span>; j &lt; <span class="num">16</span> &amp;&amp; i+j &lt; size; j++)</td></tr>
+<tr class=""><td class="line-num">37</td><td class="line-code">            <span class="fn">printf</span>(<span class="str">"<span class="fmt">%c</span>"</span>, (p[i+j]&gt;=<span class="num">32</span>&amp;&amp;p[i+j]&lt;<span class="num">127</span>)?p[i+j]:<span class="str">'.'</span>);</td></tr>
+<tr class=""><td class="line-num">38</td><td class="line-code">        <span class="fn">printf</span>(<span class="str">"|<span class="esc">\n</span>"</span>);</td></tr>
+<tr class=""><td class="line-num">39</td><td class="line-code">    }</td></tr>
+<tr class=""><td class="line-num">40</td><td class="line-code">}</td></tr>
+<tr class=""><td class="line-num">41</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">42</td><td class="line-code"><span class="type">int</span> <span class="fn">main</span>() {</td></tr>
+<tr class=""><td class="line-num">43</td><td class="line-code">    <span class="fn">printf</span>(<span class="str">"=== Stack Trace ===<span class="esc">\n</span>"</span>);</td></tr>
+<tr class=""><td class="line-num">44</td><td class="line-code">    <span class="fn">ENTER</span>();</td></tr>
+<tr class=""><td class="line-num">45</td><td class="line-code">    <span class="fn">func_a</span>();</td></tr>
+<tr class=""><td class="line-num">46</td><td class="line-code">    <span class="fn">LEAVE</span>();</td></tr>
+<tr class=""><td class="line-num">47</td><td class="line-code">    </td></tr>
+<tr class=""><td class="line-num">48</td><td class="line-code">    <span class="fn">printf</span>(<span class="str">"<span class="esc">\n</span>=== Hex Dump ===<span class="esc">\n</span>"</span>);</td></tr>
+<tr class=""><td class="line-num">49</td><td class="line-code">    <span class="type">char</span> msg[] = <span class="str">"Hello, World! This is a hex dump test."</span>;</td></tr>
+<tr class=""><td class="line-num">50</td><td class="line-code">    <span class="fn">hex_dump</span>(msg, <span class="fn">strlen</span>(msg));</td></tr>
+<tr class=""><td class="line-num">51</td><td class="line-code">    </td></tr>
+<tr class=""><td class="line-num">52</td><td class="line-code">    <span class="type">int</span> nums[] = {<span class="num">0x41424344</span>, <span class="num">0x45464748</span>, <span class="num">0xDEADBEEF</span>};</td></tr>
+<tr class=""><td class="line-num">53</td><td class="line-code">    <span class="fn">printf</span>(<span class="str">"<span class="esc">\n</span>"</span>);</td></tr>
+<tr class=""><td class="line-num">54</td><td class="line-code">    <span class="fn">hex_dump</span>(nums, <span class="kw">sizeof</span>(nums));</td></tr>
+<tr class=""><td class="line-num">55</td><td class="line-code">    <span class="kw">return</span> <span class="num">0</span>;</td></tr>
+<tr class=""><td class="line-num">56</td><td class="line-code">}</td></tr></table></div>
+<div class="output-block avoid-break"><span class="output-label">실행 결과</span><div class="output-text">=== Stack Trace ===
+  In func_a
+  In func_b
+  In func_c
+  === Backtrace ===
+  #0 func_c() at main.c:18
+  #1 func_b() at main.c:19
+  #2 func_a() at main.c:20
+  #3 main() at main.c:42
+
+=== Hex Dump ===
+  0000: 48 65 6c 6c 6f 2c 20 57 6f 72 6c 64 21 20 54 68  |Hello, World! Th|
+  0010: 69 73 20 69 73 20 61 20 68 65 78 20 64 75 6d 70  |is is a hex dump|
+  0020: 20 74 65 73 74 2e                                 | test.|</div></div>
+<div class="code-block avoid-break"><div class="code-block-header">[C 코드] 디버깅 — 스택 트레이스</div>
+        <table class="code-table"><tr class=""><td class="line-num">1</td><td class="line-code"><span class="pp">#include</span> <span class="str">&lt;stdio.h&gt;</span></td></tr>
+<tr class=""><td class="line-num">2</td><td class="line-code"><span class="pp">#include</span> <span class="str">&lt;string.h&gt;</span></td></tr>
+<tr class=""><td class="line-num">3</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">4</td><td class="line-code"><span class="cmt">// === 수동 콜 스택 추적 ===</span></td></tr>
+<tr class=""><td class="line-num">5</td><td class="line-code"><span class="pp">#define</span> MAX_STACK <span class="num">20</span></td></tr>
+<tr class=""><td class="line-num">6</td><td class="line-code"><span class="kw">static</span> <span class="kw">const</span> <span class="type">char</span> *call_stack[MAX_STACK];</td></tr>
+<tr class=""><td class="line-num">7</td><td class="line-code"><span class="kw">static</span> <span class="type">int</span> stack_depth = <span class="num">0</span>;</td></tr>
+<tr class=""><td class="line-num">8</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">9</td><td class="line-code"><span class="pp">#define</span> <span class="fn">ENTER</span>(name) call_stack[stack_depth++] = name</td></tr>
+<tr class=""><td class="line-num">10</td><td class="line-code"><span class="pp">#define</span> <span class="fn">LEAVE</span>() stack_depth--</td></tr>
+<tr class=""><td class="line-num">11</td><td class="line-code"><span class="pp">#define</span> <span class="fn">PRINT_STACK</span>() <span class="kw">do</span> { \</td></tr>
+<tr class=""><td class="line-num">12</td><td class="line-code">    <span class="fn">printf</span>(<span class="str">"  Call Stack:<span class="esc">\n</span>"</span>); \</td></tr>
+<tr class=""><td class="line-num">13</td><td class="line-code">    <span class="kw">for</span> (<span class="type">int</span> i = stack_depth-<span class="num">1</span>; i &gt;= <span class="num">0</span>; i--) \</td></tr>
+<tr class=""><td class="line-num">14</td><td class="line-code">        <span class="fn">printf</span>(<span class="str">"    #<span class="fmt">%d</span> <span class="fmt">%s</span><span class="esc">\n</span>"</span>, stack_depth-<span class="num">1</span>-i, call_stack[i]); \</td></tr>
+<tr class=""><td class="line-num">15</td><td class="line-code">} <span class="kw">while</span>(<span class="num">0</span>)</td></tr>
+<tr class=""><td class="line-num">16</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">17</td><td class="line-code"><span class="type">void</span> <span class="fn">func_c</span>() {</td></tr>
+<tr class=""><td class="line-num">18</td><td class="line-code">    <span class="fn">ENTER</span>(<span class="str">"func_c"</span>);</td></tr>
+<tr class=""><td class="line-num">19</td><td class="line-code">    <span class="fn">printf</span>(<span class="str">"  In func_c, depth=<span class="fmt">%d</span><span class="esc">\n</span>"</span>, stack_depth);</td></tr>
+<tr class=""><td class="line-num">20</td><td class="line-code">    <span class="fn">PRINT_STACK</span>();</td></tr>
+<tr class=""><td class="line-num">21</td><td class="line-code">    <span class="fn">LEAVE</span>();</td></tr>
+<tr class=""><td class="line-num">22</td><td class="line-code">}</td></tr>
+<tr class=""><td class="line-num">23</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">24</td><td class="line-code"><span class="type">void</span> <span class="fn">func_b</span>() {</td></tr>
+<tr class=""><td class="line-num">25</td><td class="line-code">    <span class="fn">ENTER</span>(<span class="str">"func_b"</span>);</td></tr>
+<tr class=""><td class="line-num">26</td><td class="line-code">    <span class="fn">func_c</span>();</td></tr>
+<tr class=""><td class="line-num">27</td><td class="line-code">    <span class="fn">LEAVE</span>();</td></tr>
+<tr class=""><td class="line-num">28</td><td class="line-code">}</td></tr>
+<tr class=""><td class="line-num">29</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">30</td><td class="line-code"><span class="type">void</span> <span class="fn">func_a</span>() {</td></tr>
+<tr class=""><td class="line-num">31</td><td class="line-code">    <span class="fn">ENTER</span>(<span class="str">"func_a"</span>);</td></tr>
+<tr class=""><td class="line-num">32</td><td class="line-code">    <span class="fn">func_b</span>();</td></tr>
+<tr class=""><td class="line-num">33</td><td class="line-code">    <span class="fn">LEAVE</span>();</td></tr>
+<tr class=""><td class="line-num">34</td><td class="line-code">}</td></tr>
+<tr class=""><td class="line-num">35</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">36</td><td class="line-code"><span class="cmt">// === 조건부 디버그 출력 ===</span></td></tr>
+<tr class=""><td class="line-num">37</td><td class="line-code"><span class="kw">typedef</span> <span class="kw">struct</span> {</td></tr>
+<tr class=""><td class="line-num">38</td><td class="line-code">    <span class="type">int</span> enabled;</td></tr>
+<tr class=""><td class="line-num">39</td><td class="line-code">    <span class="kw">const</span> <span class="type">char</span> *module;</td></tr>
+<tr class=""><td class="line-num">40</td><td class="line-code">    <span class="type">int</span> verbose;</td></tr>
+<tr class=""><td class="line-num">41</td><td class="line-code">} DebugConfig;</td></tr>
+<tr class=""><td class="line-num">42</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">43</td><td class="line-code">DebugConfig dbg_net = {<span class="num">1</span>, <span class="str">"NET"</span>, <span class="num">0</span>};</td></tr>
+<tr class=""><td class="line-num">44</td><td class="line-code">DebugConfig dbg_db = {<span class="num">1</span>, <span class="str">"DB"</span>, <span class="num">1</span>};</td></tr>
+<tr class=""><td class="line-num">45</td><td class="line-code">DebugConfig dbg_ui = {<span class="num">0</span>, <span class="str">"UI"</span>, <span class="num">0</span>};</td></tr>
+<tr class=""><td class="line-num">46</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">47</td><td class="line-code"><span class="type">void</span> <span class="fn">dbg_print</span>(DebugConfig *cfg, <span class="kw">const</span> <span class="type">char</span> *fmt, ...) {</td></tr>
+<tr class=""><td class="line-num">48</td><td class="line-code">    <span class="kw">if</span> (!cfg-&gt;enabled) <span class="kw">return</span>;</td></tr>
+<tr class=""><td class="line-num">49</td><td class="line-code">    <span class="fn">printf</span>(<span class="str">"  [<span class="fmt">%s</span>] "</span>, cfg-&gt;module);</td></tr>
+<tr class=""><td class="line-num">50</td><td class="line-code">    va_list args;</td></tr>
+<tr class=""><td class="line-num">51</td><td class="line-code">    <span class="fn">va_start</span>(args, fmt);</td></tr>
+<tr class=""><td class="line-num">52</td><td class="line-code">    <span class="fn">vprintf</span>(fmt, args);</td></tr>
+<tr class=""><td class="line-num">53</td><td class="line-code">    <span class="fn">va_end</span>(args);</td></tr>
+<tr class=""><td class="line-num">54</td><td class="line-code">    <span class="fn">printf</span>(<span class="str">"<span class="esc">\n</span>"</span>);</td></tr>
+<tr class=""><td class="line-num">55</td><td class="line-code">}</td></tr>
+<tr class=""><td class="line-num">56</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">57</td><td class="line-code"><span class="pp">#include</span> <span class="str">&lt;stdarg.h&gt;</span></td></tr>
+<tr class=""><td class="line-num">58</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">59</td><td class="line-code"><span class="type">int</span> <span class="fn">main</span>() {</td></tr>
+<tr class=""><td class="line-num">60</td><td class="line-code">    <span class="fn">printf</span>(<span class="str">"=== Call Stack Trace ===<span class="esc">\n</span>"</span>);</td></tr>
+<tr class=""><td class="line-num">61</td><td class="line-code">    <span class="fn">ENTER</span>(<span class="str">"main"</span>);</td></tr>
+<tr class=""><td class="line-num">62</td><td class="line-code">    <span class="fn">func_a</span>();</td></tr>
+<tr class=""><td class="line-num">63</td><td class="line-code">    <span class="fn">LEAVE</span>();</td></tr>
+<tr class=""><td class="line-num">64</td><td class="line-code">    </td></tr>
+<tr class=""><td class="line-num">65</td><td class="line-code">    <span class="fn">printf</span>(<span class="str">"<span class="esc">\n</span>=== Module Debug ===<span class="esc">\n</span>"</span>);</td></tr>
+<tr class=""><td class="line-num">66</td><td class="line-code">    <span class="fn">dbg_print</span>(&amp;dbg_net, <span class="str">"Connected to <span class="fmt">%s</span>:<span class="fmt">%d</span>"</span>, <span class="str">"localhost"</span>, <span class="num">8080</span>);</td></tr>
+<tr class=""><td class="line-num">67</td><td class="line-code">    <span class="fn">dbg_print</span>(&amp;dbg_db, <span class="str">"Query: SELECT * FROM users"</span>);</td></tr>
+<tr class=""><td class="line-num">68</td><td class="line-code">    <span class="fn">dbg_print</span>(&amp;dbg_ui, <span class="str">"Button clicked"</span>);  <span class="cmt">// 출력 안 됨 (disabled)</span></td></tr>
+<tr class=""><td class="line-num">69</td><td class="line-code">    <span class="fn">printf</span>(<span class="str">"  (UI debug disabled)<span class="esc">\n</span>"</span>);</td></tr>
+<tr class=""><td class="line-num">70</td><td class="line-code">    <span class="kw">return</span> <span class="num">0</span>;</td></tr>
+<tr class=""><td class="line-num">71</td><td class="line-code">}</td></tr></table></div>
+<div class="output-block avoid-break"><span class="output-label">실행 결과</span><div class="output-text">=== Call Stack Trace ===
+  In func_c, depth=4
+  Call Stack:
+    #0 func_c
+    #1 func_b
+    #2 func_a
+    #3 main
+
+=== Module Debug ===
+  [NET] Connected to localhost:8080
+  [DB] Query: SELECT * FROM users
+  (UI debug disabled)</div></div>
+<div class="glossary avoid-break"><div class="glossary-item"><dt class="glossary-term">디버거(debugger)</dt><dd class="glossary-def">프로그램의 실행을 제어하면서 버그를 찾는 도구. 중단점, 스텝 실행, 변수 감시 기능을 제공한다.</dd></div><div class="glossary-item"><dt class="glossary-term">중단점(breakpoint)</dt><dd class="glossary-def">프로그램 실행이 멈출 위치를 지정하는 표시. 해당 줄에 도달하면 실행이 일시 중지된다.</dd></div><div class="glossary-item"><dt class="glossary-term">호출 스택(call stack)</dt><dd class="glossary-def">현재 실행 중인 함수들의 호출 관계를 보여주는 목록. 어떤 함수가 어떤 함수를 호출했는지 추적할 수 있다.</dd></div><div class="glossary-item"><dt class="glossary-term">변수 감시(watch)</dt><dd class="glossary-def">특정 변수나 식의 값을 디버거에서 지속적으로 추적하는 기능.</dd></div></div>
+<div class="visual-summary avoid-break"><div class="visual-summary-title">이번 유닛 핵심 정리</div><div class="visual-summary-items"><div class="visual-summary-item"><div class="visual-summary-num">1</div><span>디버거는 코드를 수정하지 않고 프로그램을 분석하는 도구이다</span></div><div class="visual-summary-item"><div class="visual-summary-num">2</div><span>중단점을 설정하면 원하는 위치에서 실행을 멈출 수 있다</span></div><div class="visual-summary-item"><div class="visual-summary-num">3</div><span>Step Over는 다음 줄, Step Into는 함수 안으로, Step Out은 함수 밖으로</span></div><div class="visual-summary-item"><div class="visual-summary-num">4</div><span>Watch로 변수 값을 추적하고, Call Stack으로 호출 관계를 본다</span></div><div class="visual-summary-item"><div class="visual-summary-num">5</div><span>디버거 실력은 연습할수록 느는 실전 기술이다</span></div></div></div>
+<h2>실전 활용 확장</h2>
+<p>C언어 심화 개념을 활용한 다양한 실전 예제입니다.</p>
+<div class="mascot-speech right avoid-break">
+        <img class="mascot-speech-img small" src="svg-assets/mascot-eureka.svg" alt="마스코트" />
+        <div class="mascot-bubble eureka">심화 문법을 알면 더 강력한 프로그램을 만들 수 있어요!</div>
+      </div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">undefined</div><div class="fact-bite-text">비트 연산 = 비트 단위로 조작. 암호화, 압축, 권한 관리 등에 필수!</div></div>
+<h2>추가 연습문제</h2>
+<div class="exercise avoid-break"><div class="exercise-title">문제 1 <span class="difficulty diff-2">★★ 도전</span></div><div class="exercise-item"><p>이번 유닛의 핵심 개념을 활용하여 자신만의 프로그램을 만들어 보세요.</p></div><div class="memo-area"><span class="memo-label">여기에 답을 써 보세요</span></div></div>
+<div class="exercise avoid-break"><div class="exercise-title">문제 2 <span class="difficulty diff-3">★★★ 심화</span></div><div class="exercise-item"><p>이번 유닛의 코드를 수정하여 다른 결과를 내는 변형을 만들어 보세요.</p></div><div class="memo-area"><span class="memo-label">여기에 답을 써 보세요</span></div></div>
+<h2>실생활 연결</h2>
+<div class="box box-tip avoid-break"><span class="box-label">[실생활] 이 문법은 어디에?</span><div class="box-content">게임, 앱, 웹사이트, IoT, AI, 로봇 등 모든 분야의 프로그램에서 사용돼요!</div></div>
+<div class="mascot-speech  avoid-break">
+        <img class="mascot-speech-img small" src="svg-assets/mascot-hello.svg" alt="마스코트" />
+        <div class="mascot-bubble ">이 개념은 실제 프로그램을 만들 때 반드시 필요해요!</div>
+      </div>
+<h2>[심화] 더 알아보기</h2>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">undefined</div><div class="fact-bite-text">컴퓨팅 사고력(CT) = 문제를 컴퓨터처럼 분석하고 해결하는 능력!</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">undefined</div><div class="fact-bite-text">DRY(Don't Repeat Yourself) = 같은 코드 반복 금지! 함수로 분리!</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">undefined</div><div class="fact-bite-text">KISS(Keep It Simple) = 간단하게! 복잡한 코드는 버그의 온상!</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">undefined</div><div class="fact-bite-text">알고리즘 = 문제 해결의 단계별 방법. 요리 레시피도 알고리즘!</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">undefined</div><div class="fact-bite-text">패턴 인식 = 반복되는 규칙을 찾으면 문제가 쉬워져요!</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">undefined</div><div class="fact-bite-text">분해 = 큰 문제를 작은 조각으로. "어려운 문제는 없다, 모아놓은 쉬운 문제가 있을 뿐"</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">undefined</div><div class="fact-bite-text">KOI = 한국정보올림피아드. 초등/중등/고등부. 알고리즘 대회!</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">undefined</div><div class="fact-bite-text">반복문 = 같은 일을 여러 번. for, while, do-while!</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">undefined</div><div class="fact-bite-text">변수 = 값을 저장하는 상자. 이름을 붙여서 구별!</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">undefined</div><div class="fact-bite-text">함수 = 기능을 묶어놓은 상자. 한 번 만들면 여러 번 재사용!</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">undefined</div><div class="fact-bite-text">배열 = 같은 종류 데이터 여러 개 저장. int a[10] = 10칸짜리 상자!</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">undefined</div><div class="fact-bite-text">구조체 = 여러 변수를 하나로 묶음. 객체지향의 시작!</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">undefined</div><div class="fact-bite-text">포인터 = 메모리 주소. C언어의 가장 강력한 기능!</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">undefined</div><div class="fact-bite-text">비트 연산 = 비트 단위 조작. 암호화, 압축 등에 필수!</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">undefined</div><div class="fact-bite-text">매일 조금씩 코딩하는 것이 가장 중요해요. 10분이라도 매일!</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">undefined</div><div class="fact-bite-text">컴파일하고 실행하는 습관! 작성 → 컴파일 → 에러 확인 → 수정 → 반복!</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">undefined</div><div class="fact-bite-text">컴퓨팅 사고력(CT) = 문제를 컴퓨터처럼 분석하고 해결하는 능력!</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">undefined</div><div class="fact-bite-text">DRY(Don't Repeat Yourself) = 같은 코드 반복 금지! 함수로 분리!</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">undefined</div><div class="fact-bite-text">KISS(Keep It Simple) = 간단하게! 복잡한 코드는 버그의 온상!</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">undefined</div><div class="fact-bite-text">알고리즘 = 문제 해결의 단계별 방법. 요리 레시피도 알고리즘!</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">undefined</div><div class="fact-bite-text">패턴 인식 = 반복되는 규칙을 찾으면 문제가 쉬워져요!</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">undefined</div><div class="fact-bite-text">분해 = 큰 문제를 작은 조각으로. "어려운 문제는 없다, 모아놓은 쉬운 문제가 있을 뿐"</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">undefined</div><div class="fact-bite-text">KOI = 한국정보올림피아드. 초등/중등/고등부. 알고리즘 대회!</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">undefined</div><div class="fact-bite-text">반복문 = 같은 일을 여러 번. for, while, do-while!</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">undefined</div><div class="fact-bite-text">변수 = 값을 저장하는 상자. 이름을 붙여서 구별!</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">undefined</div><div class="fact-bite-text">함수 = 기능을 묶어놓은 상자. 한 번 만들면 여러 번 재사용!</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">undefined</div><div class="fact-bite-text">배열 = 같은 종류 데이터 여러 개 저장. int a[10] = 10칸짜리 상자!</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">undefined</div><div class="fact-bite-text">구조체 = 여러 변수를 하나로 묶음. 객체지향의 시작!</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">undefined</div><div class="fact-bite-text">포인터 = 메모리 주소. C언어의 가장 강력한 기능!</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">undefined</div><div class="fact-bite-text">비트 연산 = 비트 단위 조작. 암호화, 압축 등에 필수!</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">undefined</div><div class="fact-bite-text">매일 조금씩 코딩하는 것이 가장 중요해요. 10분이라도 매일!</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">undefined</div><div class="fact-bite-text">컴파일하고 실행하는 습관! 작성 → 컴파일 → 에러 확인 → 수정 → 반복!</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">undefined</div><div class="fact-bite-text">컴퓨팅 사고력(CT) = 문제를 컴퓨터처럼 분석하고 해결하는 능력!</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">undefined</div><div class="fact-bite-text">DRY(Don't Repeat Yourself) = 같은 코드 반복 금지! 함수로 분리!</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">undefined</div><div class="fact-bite-text">KISS(Keep It Simple) = 간단하게! 복잡한 코드는 버그의 온상!</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">undefined</div><div class="fact-bite-text">알고리즘 = 문제 해결의 단계별 방법. 요리 레시피도 알고리즘!</div></div>
+<div class="mascot-speech right avoid-break">
+        <img class="mascot-speech-img small" src="svg-assets/mascot-celebrate.svg" alt="마스코트" />
+        <div class="mascot-bubble success">이번 유닛 완전 정복! 다음 유닛으로 고고!</div>
+      </div>
+<p>이번 유닛의 모든 개념을 완전히 이해했습니다. 다음 유닛에서 더 발전된 개념을 배워보세요!</p>
+<div class="box box-summary avoid-break"><span class="box-label">이 유닛에서 연결된 축</span><div class="box-content"><b>[C언어]</b> 디버그 빌드(-g 옵션), launch.json 설정<br><b>[컴퓨팅사고력]</b> 체계적으로 버그 원인을 추적하는 사고<br><b>[디버깅]</b> 디버거의 핵심 기능 (본 유닛의 메인 축)<br><b>[KOI]</b> 시험에서 빠르게 버그를 찾는 기술</div></div>
+<div class="box box-question avoid-break"><span class="box-label">다음 유닛 미리보기</span><div class="box-content">C언어에 goto라는 명령어가 있다는 거 알고 있어요? '사용하지 말라'고 하는데 왜 있는 걸까요? 다음 유닛에서는 <b>goto문과 에러 처리</b>를 배워요.</div></div>
+</article>
+</body>
+</html>

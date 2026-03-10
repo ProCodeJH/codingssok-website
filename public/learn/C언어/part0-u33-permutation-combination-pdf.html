@@ -1,0 +1,1580 @@
+﻿<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<base href="/learn/C언어/">
+<title>코딩쏙 교재 — 순열과 조합 — 뽑는 방법이 몇 가지?</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+/* ═══════════════════════════════════════════════════════════════
+   코딩쏙 프리미엄 PDF 교재 스타일시트 v5.0
+   Paged.js + A4 인쇄 최적화 + 아동교육 디자인 시스템
+   ═══════════════════════════════════════════════════════════════ */
+
+/* ── 리셋 & 기본 ── */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --c-primary: #FF6B6B;
+  --c-primary-light: #FFE8E8;
+  --c-primary-dark: #E84545;
+  --c-accent: #4ECDC4;
+  --c-accent-light: #E8FFF9;
+  --c-blue: #3B82F6;
+  --c-blue-light: #EFF6FF;
+  --c-purple: #8B5CF6;
+  --c-purple-light: #F5F3FF;
+  --c-orange: #F59E0B;
+  --c-orange-light: #FFFBEB;
+  --c-green: #10B981;
+  --c-green-light: #ECFDF5;
+  --c-red: #EF4444;
+  --c-red-light: #FEF2F2;
+  --c-teal: #14B8A6;
+  --c-teal-light: #F0FDFA;
+  --c-pink: #EC4899;
+  --c-text: #1E293B;
+  --c-text-secondary: #64748B;
+  --c-text-muted: #94A3B8;
+  --c-border: #E2E8F0;
+  --c-bg-subtle: #F8FAFC;
+  --c-bg-warm: #FFFBF5;
+  --font-body: 'Pretendard', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-code: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --radius-xl: 18px;
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.08);
+  --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
+  --shadow-lg: 0 8px 24px rgba(0,0,0,0.10);
+}
+
+/* ── 페이지 설정 ── */
+@page {
+  size: A4;
+  margin: 18mm 17mm 15mm 22mm;
+  @bottom-center {
+    content: counter(page);
+    font-family: var(--font-body);
+    font-size: 9pt;
+    color: var(--c-text-muted);
+    letter-spacing: 1px;
+  }
+}
+@page :first { @bottom-center { content: none; } }
+
+body {
+  font-family: var(--font-body);
+  color: var(--c-text);
+  background: white;
+  font-size: 11.5pt;
+  line-height: 180%;
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+  word-break: keep-all;
+  overflow-wrap: break-word;
+}
+
+/* ── 페이지 제어 ── */
+.avoid-break { break-inside: avoid !important; page-break-inside: avoid !important; }
+h2, h3 { break-after: avoid !important; page-break-after: avoid !important; }
+.page-break-hint { break-before: page !important; page-break-before: always !important; height: 0; margin: 0; padding: 0; }
+p { orphans: 3; widows: 3; }
+
+/* ═══════════════════════════════════════
+   레슨 헤더 — 프리미엄 그래디언트 배너
+   ═══════════════════════════════════════ */
+.lesson-header {
+  margin-bottom: 6mm;
+  padding: 6mm 5mm 5mm;
+  background: linear-gradient(135deg, #FF6B6B 0%, #FF8E53 50%, #FEC89A 100%);
+  border-radius: var(--radius-xl);
+  color: white;
+  position: relative;
+  overflow: hidden;
+  box-shadow: var(--shadow-lg);
+}
+.lesson-header::before {
+  content: '';
+  position: absolute;
+  top: -30%;
+  right: -10%;
+  width: 140px;
+  height: 140px;
+  background: rgba(255,255,255,0.12);
+  border-radius: 50%;
+}
+.lesson-header::after {
+  content: '';
+  position: absolute;
+  bottom: -20%;
+  left: 15%;
+  width: 80px;
+  height: 80px;
+  background: rgba(255,255,255,0.08);
+  border-radius: 50%;
+}
+.lesson-number {
+  font-size: 10pt;
+  font-weight: 700;
+  color: rgba(255,255,255,0.85);
+  margin-bottom: 2mm;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  position: relative;
+  z-index: 1;
+}
+.lesson-title {
+  font-size: 24pt;
+  font-weight: 900;
+  line-height: 125%;
+  color: white;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.15);
+  position: relative;
+  z-index: 1;
+}
+.lesson-summary {
+  font-size: 11pt;
+  color: rgba(255,255,255,0.9);
+  margin-top: 2.5mm;
+  font-weight: 400;
+  position: relative;
+  z-index: 1;
+}
+
+/* ═══════════════════════════════════════
+   제목 계층 — 프리미엄 타이포그래피
+   ═══════════════════════════════════════ */
+h2 {
+  font-size: 16pt;
+  font-weight: 800;
+  margin: 6mm 0 3mm;
+  padding: 2mm 0 2mm 4.5mm;
+  border-left: 4.5px solid var(--c-primary);
+  color: var(--c-text);
+  background: linear-gradient(90deg, var(--c-primary-light) 0%, transparent 60%);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  letter-spacing: -0.3px;
+}
+h3 {
+  font-size: 13.5pt;
+  font-weight: 700;
+  color: #334155;
+  margin: 4mm 0 2.5mm;
+  padding-bottom: 1mm;
+  border-bottom: 2px solid #F1F5F9;
+}
+p {
+  margin-bottom: 2.5mm;
+  text-align: justify;
+  line-height: 175%;
+  font-size: 11.5pt;
+}
+
+/* ── 인라인 코드 ── */
+code {
+  font-family: var(--font-code);
+  font-size: 9.5pt;
+  background: linear-gradient(135deg, #FEF3C7, #FDE68A);
+  padding: 0.5mm 2mm;
+  border-radius: 4px;
+  color: #92400E;
+  border: 1px solid #FCD34D;
+  font-weight: 500;
+}
+
+/* ═══════════════════════════════════════
+   코드 블록 — 프리미엄 IDE 스타일
+   ═══════════════════════════════════════ */
+.code-block {
+  background: #0F172A;
+  border-radius: var(--radius-md);
+  padding: 0;
+  margin: 3mm 0;
+  box-shadow: var(--shadow-md), inset 0 1px 0 rgba(255,255,255,0.05);
+  overflow: hidden;
+  border: 1px solid #1E293B;
+}
+.code-block-header {
+  font-family: var(--font-body);
+  font-size: 8.5pt;
+  font-weight: 600;
+  color: #94A3B8;
+  padding: 2.5mm 4.5mm;
+  background: #1E293B;
+  border-bottom: 1px solid #334155;
+  letter-spacing: 0.5px;
+  display: flex;
+  align-items: center;
+  gap: 2mm;
+}
+.code-block-header::before {
+  content: '';
+  display: inline-flex;
+  width: 8px; height: 8px;
+  background: #EF4444;
+  border-radius: 50%;
+  box-shadow: 14px 0 0 #F59E0B, 28px 0 0 #22C55E;
+  flex-shrink: 0;
+}
+.code-table { width: 100%; border-collapse: collapse; table-layout: fixed; }
+.code-table td { vertical-align: top; padding: 0; }
+.line-num {
+  width: 12mm;
+  min-width: 12mm;
+  max-width: 12mm;
+  text-align: right;
+  padding: 0.5mm 3mm 0.5mm 2mm;
+  font-family: var(--font-code);
+  font-size: 8pt;
+  color: #475569;
+  line-height: 165%;
+  user-select: none;
+  background: rgba(0,0,0,0.15);
+  border-right: 1px solid rgba(255,255,255,0.06);
+}
+.line-code {
+  width: auto;
+  font-family: var(--font-code);
+  font-size: 10pt;
+  color: #E2E8F0;
+  line-height: 165%;
+  padding: 0.5mm 4mm 0.5mm 4mm;
+  white-space: pre;
+  overflow-x: auto;
+}
+.line-highlight td { background: rgba(59,130,246,0.12) !important; }
+.line-highlight .line-num { color: var(--c-blue) !important; font-weight: 700; }
+
+/* 신택스 컬러 — VS Code Dark+ 영감 */
+.kw { color: #C084FC; font-weight: 500; }
+.str { color: #86EFAC; }
+.cmt { color: #6B7280; font-style: italic; }
+.fn { color: #FDBA74; }
+.pp { color: #F472B6; font-weight: 600; }
+.num { color: #7DD3FC; }
+.type { color: #5EEAD4; font-weight: 500; }
+.mc { color: #67E8F9; }
+.esc { color: #FCD34D; font-weight: 600; }
+.fmt { color: #FCD34D; }
+
+/* ═══════════════════════════════════════
+   실행 결과 — 터미널 스타일
+   ═══════════════════════════════════════ */
+.output-block {
+  background: #F0FDF4;
+  border: 1.5px solid #86EFAC;
+  border-radius: var(--radius-md);
+  padding: 3mm 4mm;
+  margin: 3mm 0;
+  position: relative;
+}
+.output-label {
+  font-family: var(--font-body);
+  font-size: 8.5pt;
+  color: var(--c-green);
+  display: block;
+  margin-bottom: 1.5mm;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+.output-text {
+  font-family: var(--font-code);
+  font-size: 10.5pt;
+  line-height: 160%;
+  color: #166534;
+}
+
+/* ═══════════════════════════════════════
+   박스 시스템 — 프리미엄 카드 디자인
+   ═══════════════════════════════════════ */
+.box {
+  border-radius: var(--radius-md);
+  padding: 3.5mm 4.5mm;
+  margin: 3mm 0;
+  position: relative;
+  box-shadow: var(--shadow-sm);
+}
+.box-label {
+  font-size: 10.5pt;
+  font-weight: 800;
+  margin-bottom: 2mm;
+  display: flex;
+  align-items: center;
+  gap: 2mm;
+}
+.box-content { font-size: 11pt; line-height: 170%; overflow-wrap: break-word; word-break: keep-all; }
+.box-warning {
+  border-left: 5px solid var(--c-red);
+  background: linear-gradient(135deg, #FEF2F2 0%, #FFF1F2 100%);
+}
+.box-warning .box-label { color: var(--c-red); }
+.box-key {
+  border-left: 5px solid var(--c-blue);
+  background: linear-gradient(135deg, #EFF6FF 0%, #F0F9FF 100%);
+}
+.box-key .box-label { color: var(--c-blue); }
+.box-tip {
+  border-left: 5px solid var(--c-orange);
+  background: linear-gradient(135deg, #FFFBEB 0%, #FEF9C3 50%, #FFFBEB 100%);
+}
+.box-tip .box-label { color: var(--c-orange); }
+.box-summary {
+  border-left: 5px solid var(--c-green);
+  background: linear-gradient(135deg, #ECFDF5 0%, #D1FAE5 100%);
+  border: 1.5px solid #A7F3D0;
+  border-left: 5px solid var(--c-green);
+}
+.box-summary .box-label { color: var(--c-green); }
+.box-question {
+  border-left: 5px solid var(--c-purple);
+  background: linear-gradient(135deg, #F5F3FF 0%, #EDE9FE 100%);
+}
+.box-question .box-label { color: var(--c-purple); }
+.box-history {
+  border-left: 5px solid var(--c-teal);
+  background: linear-gradient(135deg, #F0FDFA 0%, #CCFBF1 100%);
+}
+.box-history .box-label { color: var(--c-teal); }
+
+/* ═══════════════════════════════════════
+   연습문제 — 프리미엄 카드
+   ═══════════════════════════════════════ */
+.exercise {
+  background: white;
+  border: 1.5px solid #E2E8F0;
+  border-radius: var(--radius-lg);
+  padding: 3.5mm 4.5mm;
+  margin: 3mm 0;
+  border-left: 5px solid var(--c-primary);
+  box-shadow: var(--shadow-sm);
+  position: relative;
+}
+.exercise-title {
+  font-size: 13pt;
+  font-weight: 800;
+  color: var(--c-primary);
+  margin-bottom: 2.5mm;
+  display: flex;
+  align-items: center;
+  gap: 2mm;
+}
+.difficulty {
+  display: inline-flex;
+  align-items: center;
+  font-size: 8pt;
+  padding: 0.5mm 2.5mm;
+  border-radius: 20px;
+  margin-left: 2mm;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+}
+.diff-1 { background: #D1FAE5; color: #059669; }
+.diff-2 { background: #FEF3C7; color: #D97706; }
+.diff-3 { background: #FEE2E2; color: #DC2626; }
+.memo-area {
+  border: 2px dashed #CBD5E1;
+  border-radius: var(--radius-md);
+  padding: 3mm;
+  min-height: 15mm;
+  margin-top: 2.5mm;
+  background: repeating-linear-gradient(
+    transparent, transparent 7mm, #F1F5F9 7mm, #F1F5F9 7.5mm
+  );
+}
+.memo-label { font-size: 8.5pt; color: var(--c-text-muted); font-style: italic; }
+
+/* ── OX/Choice/Short ── */
+.exercise-answer {
+  font-size: 10pt;
+  color: var(--c-green);
+  margin-top: 2mm;
+  padding: 1.5mm 3mm;
+  background: var(--c-green-light);
+  border-radius: var(--radius-sm);
+  font-weight: 600;
+  border: 1px solid #A7F3D0;
+}
+.exercise-explain {
+  font-size: 9.5pt;
+  color: var(--c-text-secondary);
+  margin-top: 1.5mm;
+  padding: 2mm 3mm;
+  background: #F8FAFC;
+  border-radius: var(--radius-sm);
+  border-left: 3px solid #E2E8F0;
+}
+.choice-list { padding-left: 6mm; margin: 2mm 0; }
+.choice-list li { font-size: 10.5pt; margin-bottom: 1.5mm; line-height: 150%; }
+.choice-list li.choice-correct { color: var(--c-green); font-weight: 700; }
+
+/* ═══════════════════════════════════════
+   Before/After 비교 — 프리미엄 2컬럼
+   ═══════════════════════════════════════ */
+.compare {
+  display: flex;
+  gap: 3mm;
+  margin: 3mm 0;
+  overflow: hidden;
+}
+.compare-bad {
+  flex: 1;
+  min-width: 0;
+  background: linear-gradient(135deg, #FEF2F2, #FFF1F2);
+  border: 1.5px solid #FECACA;
+  border-radius: var(--radius-md);
+  padding: 3mm;
+  overflow: hidden;
+}
+.compare-good {
+  flex: 1;
+  min-width: 0;
+  background: linear-gradient(135deg, #ECFDF5, #D1FAE5);
+  border: 1.5px solid #A7F3D0;
+  border-radius: var(--radius-md);
+  padding: 3mm;
+  overflow: hidden;
+}
+.compare code {
+  font-size: 9pt;
+  word-break: break-all;
+  overflow-wrap: break-word;
+  display: block;
+  background: rgba(0,0,0,0.05);
+  padding: 2mm 3mm;
+  border-radius: var(--radius-sm);
+  margin: 1.5mm 0;
+  line-height: 155%;
+  white-space: pre-wrap;
+  border: none;
+  color: inherit;
+}
+.compare-label { font-size: 9.5pt; font-weight: 800; margin-bottom: 1.5mm; }
+.compare-bad .compare-label { color: var(--c-red); }
+.compare-good .compare-label { color: var(--c-green); }
+.compare-msg-bad { font-size: 9pt; color: var(--c-red); }
+.compare-msg-good { font-size: 9pt; color: var(--c-green); }
+
+/* ═══════════════════════════════════════
+   챕터 시작 — 프리미엄 카드
+   ═══════════════════════════════════════ */
+.chapter-start-box { margin-bottom: 3mm; }
+.learning-goals {
+  background: linear-gradient(135deg, #FFF7ED 0%, #FFFBEB 100%);
+  border-radius: var(--radius-lg);
+  padding: 4mm 5mm;
+  margin-bottom: 3mm;
+  border: 1.5px solid #FED7AA;
+  box-shadow: var(--shadow-sm);
+}
+.learning-goals h3 {
+  font-size: 12pt;
+  font-weight: 800;
+  color: #EA580C;
+  margin: 0 0 2.5mm;
+  border: none;
+  padding: 0;
+}
+.learning-goals ul { padding-left: 5mm; margin: 0; }
+.learning-goals li { font-size: 11pt; margin-bottom: 1.5mm; line-height: 160%; color: #431407; }
+.prereq-check {
+  background: var(--c-blue-light);
+  border-left: 5px solid var(--c-blue);
+  border-radius: var(--radius-md);
+  padding: 3mm 4mm;
+  margin-bottom: 2.5mm;
+}
+.prereq-check h3 {
+  font-size: 11pt;
+  font-weight: 700;
+  color: var(--c-blue);
+  margin: 0 0 1.5mm;
+  border: none;
+  padding: 0;
+}
+.checklist { list-style: none; padding-left: 4mm; margin: 0; }
+.checklist li { margin-bottom: 1mm; font-size: 10.5pt; }
+.checklist li::before { content: '\2610  '; font-size: 12pt; color: var(--c-text-muted); }
+.progress-section { margin-top: 2.5mm; }
+.progress-label { font-size: 9.5pt; color: var(--c-text-secondary); font-weight: 600; }
+.progress-bar {
+  background: #E2E8F0;
+  border-radius: 6px;
+  height: 4mm;
+  margin-top: 1.5mm;
+  overflow: hidden;
+}
+.progress-fill {
+  background: linear-gradient(90deg, var(--c-primary), #FF8E53, #FEC89A);
+  height: 100%;
+  border-radius: 6px;
+}
+
+/* ═══════════════════════════════════════
+   Predict — 생각해보기 카드
+   ═══════════════════════════════════════ */
+.predict-box {
+  display: flex;
+  gap: 3.5mm;
+  background: linear-gradient(135deg, #F5F3FF 0%, #EDE9FE 100%);
+  border: 1.5px solid #C4B5FD;
+  border-radius: var(--radius-lg);
+  padding: 3.5mm 4.5mm;
+  margin: 3mm 0;
+  box-shadow: var(--shadow-sm);
+}
+.predict-icon {
+  width: 10mm; height: 10mm;
+  background: linear-gradient(135deg, var(--c-purple), #A78BFA);
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16pt;
+  font-weight: 900;
+  flex-shrink: 0;
+  box-shadow: 0 2px 6px rgba(139,92,246,0.3);
+}
+.predict-content { flex: 1; }
+.predict-content p { font-size: 11pt; margin-bottom: 2mm; }
+
+/* ═══════════════════════════════════════
+   다이어그램 — 프리미엄 컨테이너
+   ═══════════════════════════════════════ */
+.diagram-box {
+  background: var(--c-bg-subtle);
+  border: 1.5px solid var(--c-border);
+  border-radius: var(--radius-lg);
+  padding: 4mm;
+  margin: 3.5mm 0;
+  box-shadow: var(--shadow-sm);
+}
+.diagram-title {
+  font-size: 11pt;
+  font-weight: 800;
+  color: var(--c-primary);
+  margin-bottom: 3mm;
+  text-align: center;
+  letter-spacing: 0.3px;
+}
+.diagram-content { font-size: 10.5pt; line-height: 170%; }
+.diagram-content .d-row { display: flex; align-items: center; justify-content: center; gap: 3mm; margin: 2mm 0; }
+.diagram-content .d-block { background: #1E293B; color: white; padding: 2mm 4mm; border-radius: var(--radius-sm); font-family: var(--font-code); font-size: 9.5pt; font-weight: 500; }
+.diagram-content .d-block-highlight { background: linear-gradient(135deg, var(--c-primary), #FF8E53); color: white; padding: 2mm 4mm; border-radius: var(--radius-sm); font-family: var(--font-code); font-size: 9.5pt; font-weight: 700; }
+.diagram-content .d-arrow { color: var(--c-text-muted); font-size: 14pt; }
+.diagram-content .d-label { font-size: 8.5pt; color: var(--c-text-secondary); }
+
+/* ═══════════════════════════════════════
+   Steps — 프리미엄 타임라인
+   ═══════════════════════════════════════ */
+.steps-visual { margin: 3mm 0; }
+.step-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 3.5mm;
+  margin-bottom: 1.5mm;
+}
+.step-num {
+  width: 8mm; height: 8mm;
+  background: linear-gradient(135deg, var(--c-primary), #FF8E53);
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10pt;
+  font-weight: 800;
+  flex-shrink: 0;
+  margin-top: 0.5mm;
+  box-shadow: 0 2px 4px rgba(255,107,107,0.3);
+}
+.step-body { flex: 1; }
+.step-title { font-size: 11pt; font-weight: 700; margin-bottom: 0.5mm; color: var(--c-text); }
+.step-desc { font-size: 10.5pt; color: var(--c-text-secondary); line-height: 160%; }
+.step-connector { width: 2.5px; height: 4mm; background: linear-gradient(180deg, var(--c-primary), transparent); margin-left: 3.7mm; }
+
+/* ═══════════════════════════════════════
+   Modify — 바꿔보기 카드
+   ═══════════════════════════════════════ */
+.modify-box {
+  background: linear-gradient(135deg, #F0F9FF 0%, #E0F2FE 100%);
+  border: 1.5px solid #7DD3FC;
+  border-left: 5px solid #0EA5E9;
+  border-radius: var(--radius-md);
+  padding: 3.5mm 4.5mm;
+  margin: 3mm 0;
+}
+.modify-label { font-size: 10.5pt; font-weight: 800; color: #0284C7; margin-bottom: 2mm; }
+.modify-hint { font-size: 9.5pt; color: var(--c-text-secondary); font-style: italic; margin: 1.5mm 0; }
+
+/* ═══════════════════════════════════════
+   정답 섹션
+   ═══════════════════════════════════════ */
+.answers-section {
+  background: white;
+  border: 1.5px solid #E9D5FF;
+  border-radius: var(--radius-md);
+  padding: 3mm 4mm;
+  margin: 3mm 0;
+  border-left: 5px solid var(--c-purple);
+}
+.answers-section h3 {
+  font-size: 12pt;
+  font-weight: 800;
+  color: var(--c-purple);
+  margin: 0 0 2.5mm;
+  border: none;
+  padding: 0;
+}
+.answer-item { margin-bottom: 1mm; font-size: 10pt; line-height: 150%; }
+.answer-num { font-weight: 700; color: var(--c-primary); margin-right: 2mm; }
+.answer-text { color: var(--c-text); }
+
+/* ═══════════════════════════════════════
+   코드 설명 (라인별)
+   ═══════════════════════════════════════ */
+.code-explain { margin: 3mm 0; padding-left: 2mm; }
+.code-explain-item {
+  display: flex;
+  align-items: flex-start;
+  margin-bottom: 2.5mm;
+  font-size: 11pt;
+  line-height: 165%;
+}
+.code-explain-line {
+  font-family: var(--font-code);
+  font-size: 9pt;
+  color: white;
+  background: linear-gradient(135deg, var(--c-primary), #FF8E53);
+  padding: 0.5mm 2.5mm;
+  border-radius: 4px;
+  margin-right: 3mm;
+  flex-shrink: 0;
+  font-weight: 700;
+  box-shadow: 0 1px 3px rgba(255,107,107,0.3);
+}
+
+/* ═══════════════════════════════════════
+   용어 정리 — 프리미엄 테이블
+   ═══════════════════════════════════════ */
+.glossary { margin: 3mm 0; break-inside: avoid; display: block !important; width: 100% !important; clear: both; }
+.glossary-item {
+  display: flex;
+  margin-bottom: 0;
+  font-size: 10pt;
+  padding: 2mm 3mm;
+  border-bottom: 1px solid #F1F5F9;
+  width: 100%;
+}
+.glossary-item:nth-child(odd) { background: #F8FAFC; }
+.glossary-item:first-child { border-radius: var(--radius-sm) var(--radius-sm) 0 0; }
+.glossary-item:last-child { border-radius: 0 0 var(--radius-sm) var(--radius-sm); border-bottom: none; }
+.glossary-term {
+  font-weight: 700;
+  min-width: 28mm;
+  max-width: 35mm;
+  flex-shrink: 0;
+  color: var(--c-text);
+  font-family: var(--font-code);
+  font-size: 9.5pt;
+  word-break: keep-all;
+}
+.glossary-def { color: var(--c-text-secondary); line-height: 155%; flex: 1; min-width: 0; }
+
+/* ═══════════════════════════════════════
+   추적 테이블 — 프리미엄 데이터 테이블
+   ═══════════════════════════════════════ */
+.trace-table { margin: 3.5mm 0; }
+.trace-caption { font-size: 10.5pt; font-weight: 700; color: var(--c-primary); margin-bottom: 2mm; }
+.trace-table table { width: 100%; border-collapse: collapse; font-size: 10pt; border-radius: var(--radius-sm); overflow: hidden; }
+.trace-table th {
+  background: linear-gradient(135deg, #1E293B, #334155);
+  color: white;
+  padding: 2mm 3.5mm;
+  text-align: left;
+  font-weight: 700;
+  font-size: 9.5pt;
+}
+.trace-table td { padding: 2mm 3.5mm; border-bottom: 1px solid #F1F5F9; font-family: var(--font-code); font-size: 9.5pt; }
+.trace-table tr:nth-child(even) td { background: #F8FAFC; }
+
+/* ═══════════════════════════════════════
+   마스코트 말풍선 — 프리미엄 디자인
+   ═══════════════════════════════════════ */
+.mascot-speech {
+  display: flex;
+  align-items: flex-start;
+  gap: 3.5mm;
+  margin: 3.5mm 0;
+}
+.mascot-speech.right { flex-direction: row-reverse; }
+.mascot-speech-img {
+  flex-shrink: 0;
+  width: 60px;
+  height: 60px;
+  object-fit: contain;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.15));
+}
+.mascot-speech-img.small { width: 48px; height: 48px; }
+.mascot-speech-img.large { width: 80px; height: 80px; }
+.mascot-bubble {
+  position: relative;
+  background: linear-gradient(135deg, #EFF6FF 0%, #DBEAFE 100%);
+  border: 1.5px solid #93C5FD;
+  border-radius: var(--radius-lg);
+  padding: 3.5mm 4.5mm;
+  font-size: 10.5pt;
+  color: #1E3A5F;
+  line-height: 1.6;
+  flex: 1;
+  max-width: 85%;
+  box-shadow: var(--shadow-sm);
+}
+.mascot-bubble.warn {
+  background: linear-gradient(135deg, #FEF2F2, #FEE2E2);
+  border-color: #FCA5A5;
+  color: #7F1D1D;
+}
+.mascot-bubble.success {
+  background: linear-gradient(135deg, #ECFDF5, #D1FAE5);
+  border-color: #6EE7B7;
+  color: #14532D;
+}
+.mascot-bubble.tip {
+  background: linear-gradient(135deg, #FFFBEB, #FEF3C7);
+  border-color: #FCD34D;
+  color: #78350F;
+}
+.mascot-bubble::before {
+  content: '';
+  position: absolute;
+  top: 14px;
+  left: -9px;
+  border: 7px solid transparent;
+  border-right-color: #93C5FD;
+}
+.mascot-bubble::after {
+  content: '';
+  position: absolute;
+  top: 15px;
+  left: -7px;
+  border: 6px solid transparent;
+  border-right-color: #EFF6FF;
+}
+.mascot-speech.right .mascot-bubble::before {
+  left: auto; right: -9px;
+  border-right-color: transparent;
+  border-left-color: #93C5FD;
+}
+.mascot-speech.right .mascot-bubble::after {
+  left: auto; right: -7px;
+  border-right-color: transparent;
+  border-left-color: #EFF6FF;
+}
+.mascot-bubble.warn::before { border-right-color: #FCA5A5; }
+.mascot-bubble.warn::after { border-right-color: #FEF2F2; }
+.mascot-speech.right .mascot-bubble.warn::before { border-right-color: transparent; border-left-color: #FCA5A5; }
+.mascot-speech.right .mascot-bubble.warn::after { border-right-color: transparent; border-left-color: #FEF2F2; }
+.mascot-bubble.success::before { border-right-color: #6EE7B7; }
+.mascot-bubble.success::after { border-right-color: #ECFDF5; }
+.mascot-speech.right .mascot-bubble.success::before { border-right-color: transparent; border-left-color: #6EE7B7; }
+.mascot-speech.right .mascot-bubble.success::after { border-right-color: transparent; border-left-color: #ECFDF5; }
+.mascot-bubble.tip::before { border-right-color: #FCD34D; }
+.mascot-bubble.tip::after { border-right-color: #FFFBEB; }
+.mascot-speech.right .mascot-bubble.tip::before { border-right-color: transparent; border-left-color: #FCD34D; }
+.mascot-speech.right .mascot-bubble.tip::after { border-right-color: transparent; border-left-color: #FFFBEB; }
+
+/* ═══════════════════════════════════════
+   Fact Bite — 숫자/팩트 강조 카드
+   ═══════════════════════════════════════ */
+.fact-bite {
+  display: flex;
+  align-items: center;
+  gap: 4mm;
+  margin: 3mm 0;
+  background: linear-gradient(135deg, #FFF1F2 0%, #FFE4E6 50%, #FFF1F2 100%);
+  border-radius: var(--radius-lg);
+  padding: 3.5mm 5mm;
+  border: 1.5px solid #FECDD3;
+  box-shadow: var(--shadow-sm);
+}
+.fact-bite-number {
+  font: 900 18pt var(--font-body);
+  background: linear-gradient(135deg, var(--c-primary), #FF8E53);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  white-space: nowrap;
+  flex-shrink: 0;
+  max-width: 40%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.fact-bite-text { font-size: 10pt; color: var(--c-text-secondary); line-height: 1.5; flex: 1; min-width: 0; }
+
+/* ═══════════════════════════════════════
+   Visual Summary — 핵심 정리 카드
+   ═══════════════════════════════════════ */
+.visual-summary {
+  background: linear-gradient(135deg, #ECFDF5 0%, #D1FAE5 50%, #A7F3D0 100%);
+  border: 1.5px solid #6EE7B7;
+  border-radius: var(--radius-xl);
+  padding: 5mm;
+  margin: 4mm 0;
+  box-shadow: var(--shadow-md);
+  display: block !important;
+  width: 100% !important;
+  clear: both;
+}
+.visual-summary-title {
+  font-size: 14pt;
+  font-weight: 900;
+  color: #065F46;
+  text-align: center;
+  margin-bottom: 3mm;
+}
+.visual-summary-items { display: flex; flex-direction: column; gap: 2mm; }
+.visual-summary-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 3mm;
+  background: rgba(255,255,255,0.7);
+  padding: 2.5mm 3.5mm;
+  border-radius: var(--radius-md);
+  backdrop-filter: blur(4px);
+}
+.visual-summary-num {
+  width: 7mm; height: 7mm;
+  background: linear-gradient(135deg, #059669, #10B981);
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 9pt;
+  font-weight: 800;
+  flex-shrink: 0;
+  box-shadow: 0 1px 3px rgba(5,150,105,0.3);
+}
+
+/* ═══════════════════════════════════════
+   10축 매핑 전용 스타일
+   ═══════════════════════════════════════ */
+.axis-section {
+  background: linear-gradient(135deg, #F8FAFC 0%, #F1F5F9 100%);
+  border: 1.5px solid #CBD5E1;
+  border-radius: var(--radius-xl);
+  padding: 5mm;
+  margin: 5mm 0;
+  box-shadow: var(--shadow-md);
+  page-break-inside: avoid;
+}
+.axis-title {
+  font-size: 14pt;
+  font-weight: 900;
+  text-align: center;
+  margin-bottom: 4mm;
+  color: var(--c-text);
+  letter-spacing: -0.3px;
+}
+.axis-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2.5mm;
+}
+.axis-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 2mm;
+  padding: 2.5mm 3mm;
+  border-radius: var(--radius-md);
+  background: white;
+  border: 1px solid #E2E8F0;
+}
+.axis-badge {
+  font-size: 7.5pt;
+  font-weight: 800;
+  padding: 0.5mm 2.5mm;
+  border-radius: 20px;
+  flex-shrink: 0;
+  letter-spacing: 0.3px;
+  white-space: nowrap;
+}
+.axis-badge.c-lang { background: #DBEAFE; color: #1D4ED8; }
+.axis-badge.thinking { background: #E0E7FF; color: #4338CA; }
+.axis-badge.debug { background: #FEE2E2; color: #DC2626; }
+.axis-badge.koi { background: #FEF3C7; color: #B45309; }
+.axis-badge.basics { background: #D1FAE5; color: #059669; }
+.axis-badge.reallife { background: #CCFBF1; color: #0D9488; }
+.axis-badge.crosssubj { background: #E9D5FF; color: #7C3AED; }
+.axis-badge.project { background: #FFE4E6; color: #BE123C; }
+.axis-badge.ai { background: #FCE7F3; color: #DB2777; }
+.axis-badge.hardware { background: #CFFAFE; color: #0891B2; }
+.axis-text { font-size: 9.5pt; line-height: 150%; color: var(--c-text-secondary); }
+
+/* ── TOC ── */
+.toc { margin: 5mm 0; }
+.toc h2 { border: none; padding: 0; margin-bottom: 3mm; background: none; }
+.toc ul { list-style: none; padding: 0; }
+.toc-h2 { display: flex; align-items: baseline; margin-bottom: 1.5mm; font-size: 11pt; }
+.toc-text { flex-shrink: 0; }
+.toc-dots { flex: 1; border-bottom: 1.5px dotted #CBD5E1; margin: 0 2mm; min-width: 10mm; }
+.toc-page { flex-shrink: 0; color: var(--c-text-muted); font-size: 10pt; }
+
+/* ── Margin Note ── */
+.margin-note {
+  float: right;
+  width: 30mm;
+  font-size: 8.5pt;
+  color: var(--c-text-secondary);
+  background: linear-gradient(135deg, #FFFBEB, #FEF3C7);
+  padding: 2mm 2.5mm;
+  border-radius: var(--radius-sm);
+  margin: 0 -35mm 2mm 2mm;
+  border-left: 2.5px solid var(--c-orange);
+}
+
+/* ── Cross Reference ── */
+.crossref { font-size: 9pt; color: var(--c-blue); font-style: italic; font-weight: 500; }
+
+/* ── Image ── */
+.image-block { margin: 3.5mm 0; text-align: center; }
+.image-block img { max-width: 100%; border-radius: var(--radius-md); box-shadow: var(--shadow-sm); }
+.image-caption {
+  font-size: 9pt;
+  color: var(--c-text-secondary);
+  margin-top: 2mm;
+  font-style: italic;
+  background: var(--c-bg-subtle);
+  padding: 1.5mm 4mm;
+  border-radius: 20px;
+  display: inline-block;
+}
+
+/* ═══════════════════════════════════════
+   v7.0 — 80레이어 리서치 증강분
+   v5 프리미엄 기반 + TEXTBOOK-DESIGN-DEEP P1~P6 합성
+   ═══════════════════════════════════════ */
+
+/* ── Layer 26: 게슈탈트 근접성 강화 ── */
+h2 + p,
+h3 + p,
+h2 + .code-block,
+h3 + .code-block { margin-top: 1mm !important; }
+.code-block + .code-explain { margin-top: 0.5mm; }
+.code-block + .output-block { margin-top: 1mm; }
+.exercise + .exercise { margin-top: 1.5mm; }
+
+/* ── Layer 28: 마이크로 타이포그래피 ── */
+body {
+  font-kerning: auto;
+  font-variant-ligatures: common-ligatures;
+  hanging-punctuation: first last;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+.line-num { font-variant-numeric: tabular-nums; }
+.trace-table td { font-variant-numeric: tabular-nums; }
+
+/* ── Layer 29: 연습문제 유형별 스타일 ── */
+.exercise-item { margin-bottom: 2mm; font-size: 11pt; line-height: 165%; }
+.exercise-item p { margin-bottom: 1.5mm; }
+.exercise-blank { display: inline-block; min-width: 20mm; border-bottom: 2px solid var(--c-primary); margin: 0 1mm; }
+.exercise-ox-grid { display: flex; gap: 3mm; margin-top: 2mm; }
+.exercise-ox-item { flex: 1; padding: 2mm 3mm; border: 1px solid var(--c-border); border-radius: var(--radius-sm); font-size: 10pt; }
+.exercise-matching { display: grid; grid-template-columns: 1fr auto 1fr; gap: 1.5mm; font-size: 10pt; }
+.exercise-reorder { display: flex; flex-direction: column; gap: 1mm; font-family: var(--font-code); font-size: 9.5pt; }
+.exercise-reorder-item { background: var(--c-bg-subtle); padding: 1.5mm 3mm; border-radius: var(--radius-sm); border: 1px solid var(--c-border); }
+
+/* ── Layer 30: 교사용 에디션 ── */
+.teacher-only { background: #FFF5F5; border: 2px dashed #E74C3C; padding: 3mm; border-radius: var(--radius-md); }
+.teacher-note { font-size: 9pt; color: #C0392B; font-style: italic; }
+
+/* ── Layer 32: 디자인 토큰 — 인쇄용 간격 ── */
+article > * + * { margin-top: 2.5mm; }
+article > h2 { margin-top: 5mm; }
+article > h3 { margin-top: 3.5mm; }
+
+/* ── Layer 51: 황금비 타이포 ──
+   24pt / 16pt / 13.5pt / 11.5pt = 1:0.67:0.56:0.48 ≈ 피보나치 */
+
+/* ── Layer 55: 인지부하 최적화 — 시각 앵커 ── */
+h2::before {
+  /* 빈 블록으로 스크롤 앵커 역할 — Paged.js에서 러닝헤드 지원 */
+}
+
+/* ── Layer 56: 아이트래킹 — F패턴 강화 ── */
+.lesson-header .lesson-number { font-weight: 700; }
+.box-label::before {
+  content: '';
+  display: inline-block;
+  width: 3px; height: 14px;
+  border-radius: 2px;
+  margin-right: 1.5mm;
+  flex-shrink: 0;
+}
+.box-warning .box-label::before { background: var(--c-red); }
+.box-key .box-label::before { background: var(--c-blue); }
+.box-tip .box-label::before { background: var(--c-orange); }
+.box-summary .box-label::before { background: var(--c-green); }
+.box-question .box-label::before { background: var(--c-purple); }
+.box-history .box-label::before { background: var(--c-teal); }
+
+/* ── Layer 58: 색상 조화 60-30-10 강화 ── */
+/* 60% = white/neutral, 30% = brand gradient accents, 10% = c-primary strong */
+
+/* ── Layer 60: 코드 블록 — 브래킷 컬러링 (Layer 30 from Deep) ── */
+.brace-1 { color: #C084FC; font-weight: bold; }
+.brace-2 { color: #86EFAC; font-weight: bold; }
+.brace-3 { color: #FDBA74; font-weight: bold; }
+.brace-4 { color: #7DD3FC; font-weight: bold; }
+
+/* ── Layer 61: 인덴트 가이드 ── */
+.indent-guide { border-left: 1px solid rgba(255,255,255,0.08); }
+
+/* ── Layer 65: 10축 매핑 강화 ── */
+.axis-item { transition: none; }
+.axis-section .box-content { font-size: 10pt; }
+
+/* ── Layer 67: 자료구조 시각화 ── */
+.ds-visual { font-family: var(--font-code); font-size: 9pt; text-align: center; margin: 3mm 0; }
+.ds-array { display: flex; justify-content: center; gap: 0; }
+.ds-cell { width: 9mm; height: 9mm; border: 1.5px solid var(--c-blue); display: flex; align-items: center; justify-content: center; font-weight: 700; }
+.ds-cell:first-child { border-radius: var(--radius-sm) 0 0 var(--radius-sm); }
+.ds-cell:last-child { border-radius: 0 var(--radius-sm) var(--radius-sm) 0; }
+.ds-index { font-size: 7pt; color: var(--c-text-muted); text-align: center; margin-top: 0.5mm; }
+
+/* ── Layer 68: 학습 저널 공간 ── */
+.reflection-box {
+  background: var(--c-bg-warm);
+  border: 1.5px dashed #FCD34D;
+  border-radius: var(--radius-lg);
+  padding: 4mm;
+  margin: 4mm 0;
+}
+.reflection-prompt { font-size: 10pt; color: var(--c-orange); font-weight: 700; margin-bottom: 2mm; }
+.reflection-lines {
+  min-height: 20mm;
+  background: repeating-linear-gradient(transparent, transparent 7mm, #FEF3C7 7mm, #FEF3C7 7.5mm);
+}
+
+/* ── Layer 69: 루브릭/자기평가 ── */
+.rubric-table { width: 100%; border-collapse: collapse; font-size: 9pt; margin: 3mm 0; }
+.rubric-table th { background: var(--c-purple); color: white; padding: 2mm; text-align: center; }
+.rubric-table td { padding: 2mm; border: 1px solid var(--c-border); text-align: center; }
+.self-check { display: flex; gap: 5mm; justify-content: center; margin: 3mm 0; }
+.self-check-item { text-align: center; font-size: 18pt; }
+.self-check-label { font-size: 7.5pt; color: var(--c-text-secondary); }
+
+/* ── Layer 72: 교실 게임 보드 ── */
+.bingo-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 1px; background: var(--c-border); border-radius: var(--radius-md); overflow: hidden; margin: 3mm 0; }
+.bingo-cell { background: white; padding: 3mm; text-align: center; font-size: 8.5pt; font-family: var(--font-code); min-height: 10mm; display: flex; align-items: center; justify-content: center; }
+.bingo-free { background: var(--c-primary-light); font-weight: 800; color: var(--c-primary); }
+
+/* ── Layer 77: 북마크/읽기 가이드 ──  */
+.reading-ruler { border-top: 3px solid var(--c-primary); margin: 4mm 0; opacity: 0.3; }
+
+/* ── Layer 78: 고급 그리드 — 2컬럼 레이아웃 ── */
+.two-col { display: flex; gap: 4mm; }
+.two-col > * { flex: 1; min-width: 0; }
+.three-col { display: flex; gap: 3mm; }
+.three-col > * { flex: 1; min-width: 0; }
+
+/* ── Layer 80: 인쇄 품질 마커 ── */
+.print-crop-mark { display: none; }
+
+/* ═══════════════════════════════════════
+   인쇄 최적화 — 강화 버전 (Layer 77~80)
+   ═══════════════════════════════════════ */
+@media print {
+  body {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  .lesson-header,
+  .code-block,
+  .box,
+  .exercise,
+  .predict-box,
+  .compare-bad,
+  .compare-good,
+  .step-num,
+  .mascot-bubble,
+  .visual-summary,
+  .axis-section,
+  .trace-table th,
+  .progress-fill,
+  .code-explain-line,
+  .fact-bite,
+  .diff-1, .diff-2, .diff-3,
+  .diagram-box,
+  .modify-box,
+  .answers-section {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  .no-print { display: none !important; }
+  /* orphan/widow 강화 */
+  p { orphans: 3; widows: 3; }
+  h2, h3 { break-after: avoid; }
+  .avoid-break { break-inside: avoid; }
+}
+
+/* ═══════════════════════════════════════
+   레이아웃 겹침 방지 — 모든 주요 섹션 블록 강제
+   ═══════════════════════════════════════ */
+article > .glossary,
+article > .visual-summary,
+article > .box,
+article > .fact-bite,
+article > .exercise,
+article > .answers-section,
+article > .mascot-speech,
+article > .code-block,
+article > .output-block,
+article > .compare,
+article > .predict-box {
+  display: block !important;
+  width: 100% !important;
+  float: none !important;
+  clear: both !important;
+}
+
+/* 박스 내부 테이블 오버플로 방지 */
+.box-content table { width: 100%; table-layout: fixed; }
+.box-content td, .box-content th { word-break: keep-all; overflow-wrap: break-word; }
+
+/* 마스코트 버블 너비 제한 완화 */
+.mascot-bubble { max-width: 100%; }
+
+/* Paged.js 컬럼 방지 */
+article { column-count: 1 !important; columns: 1 !important; }
+
+</style>
+<script src="https://unpkg.com/pagedjs/dist/paged.polyfill.js"></script>
+<script>
+  class PagedReadyHandler extends Paged.Handler {
+    constructor(chunker, polisher, caller) { super(chunker, polisher, caller); }
+    afterRendered(pages) {
+      document.body.setAttribute('data-paged-rendered', 'true');
+      document.body.setAttribute('data-page-count', pages.length);
+      console.log('PAGED_READY:' + pages.length);
+    }
+  }
+  Paged.registerHandlers(PagedReadyHandler);
+</script>
+</head>
+<body data-section-title="순열과 조합 — 뽑는 방법이 몇 가지?">
+<article id="content">
+  <header class="lesson-header" role="banner">
+    <div class="lesson-number">Lesson 0-33</div>
+    <h1 class="lesson-title">순열과 조합 — 뽑는 방법이 몇 가지?</h1>
+    <div class="lesson-summary">순서가 있는 순열과 순서가 없는 조합의 차이를 이해하고 경우의 수를 구해요.</div>
+  </header>
+<div class="chapter-start-box avoid-break"><div class="learning-goals"><h3>📚 이번에 배울 것</h3><ul><li>순열과 조합의 차이를 설명할 수 있어요.</li><li>nPr, nCr 공식을 사용할 수 있어요.</li><li>팩토리얼(!)의 뜻을 알아요.</li><li>[심화] 재귀로 순열/조합을 생성할 수 있어요.</li><li>[심화] 중복 순열과 중복 조합을 이해해요.</li><li>[심화 내용] 이항 정리와 파스칼 삼각형을 알아요.</li><li>[심화 내용] 카탈란 수를 이해해요.</li></ul></div><div class="prereq-check"><h3>✅ 시작 전 체크</h3><ul class="checklist"><li>곱의 법칙 (경우의 수)</li><li>집합 기본 (U32)</li></ul></div><div class="progress-section"><span class="progress-label">Part 1 진행률: 33%</span><div class="progress-bar"><div class="progress-fill" style="width:33%"></div></div></div></div>
+<h2>뽑는 방법이 몇 가지?</h2>
+<div class="mascot-speech  avoid-break">
+        <img class="mascot-speech-img " src="svg-assets/mascot-hello.svg" alt="마스코트" />
+        <div class="mascot-bubble hello">3명 중에 반장, 부반장을 뽑는 것과, 3명 중에 대표 2명을 뽑는 건 달라! <b>순서가 중요한지</b> 아닌지에 따라 경우의 수가 달라지거든!</div>
+      </div>
+<h2>순열 (Permutation)</h2>
+<div class="box box-key avoid-break"><span class="box-label">[핵심] 순열 = 순서 O</span><div class="box-content"><b>순열(Permutation)</b> = n개에서 r개를 <b>순서 있게</b> 뽑기<br><br>nPr = n! / (n-r)!<br><br>예: {A, B, C}에서 2개를 순서 있게 뽑기<br>3P2 = 3! / 1! = 6가지<br>AB, AC, BA, BC, CA, CB<br><br>반장-부반장처럼 <b>자리(역할)가 다를 때</b> 사용!</div></div>
+<div class="box box-key avoid-break"><span class="box-label">[핵심] 팩토리얼</span><div class="box-content"><b>n!</b> = n × (n-1) × (n-2) × ... × 2 × 1<br><br>0! = 1 (약속!)<br>1! = 1<br>3! = 3 × 2 × 1 = 6<br>5! = 5 × 4 × 3 × 2 × 1 = 120<br>10! = 3,628,800</div></div>
+<h2>조합 (Combination)</h2>
+<div class="box box-key avoid-break"><span class="box-label">[핵심] 조합 = 순서 X</span><div class="box-content"><b>조합(Combination)</b> = n개에서 r개를 <b>순서 없이</b> 뽑기<br><br>nCr = n! / (r! × (n-r)!)<br><br>예: {A, B, C}에서 2개를 순서 없이 뽑기<br>3C2 = 3! / (2! × 1!) = 3가지<br>{A,B}, {A,C}, {B,C}<br><br>대표 2명처럼 <b>역할 구분 없이</b> 뽑을 때 사용!</div></div>
+<h2>순열 vs 조합 구분법</h2>
+<div class="compare avoid-break"><div class="compare-bad"><div class="compare-label">✕ 잘못된 코드</div><code></code><br><span class="compare-msg-bad"></span></div><div class="compare-good"><div class="compare-label">✓ 올바른 코드</div><code></code><br><span class="compare-msg-good"></span></div></div>
+<div class="mascot-speech right avoid-break">
+        <img class="mascot-speech-img " src="svg-assets/mascot-thinking.svg" alt="마스코트" />
+        <div class="mascot-bubble thinking">헷갈리면 이렇게 생각해! '반장-부반장'은 순열(AB≠BA), '팀 짜기'는 조합(AB=BA)!</div>
+      </div>
+<h2>계산 연습</h2>
+<div class="trace-table avoid-break"><div class="trace-caption">순열·조합 계산</div><table><thead><tr><th>문제</th><th>공식</th><th>계산</th><th>답</th></tr></thead><tbody><tr><td>5P2</td><td>5!/(5-2)!</td><td>5×4</td><td>20</td></tr><tr><td>5P3</td><td>5!/(5-3)!</td><td>5×4×3</td><td>60</td></tr><tr><td>5C2</td><td>5!/(2!×3!)</td><td>(5×4)/(2×1)</td><td>10</td></tr><tr><td>5C3</td><td>5!/(3!×2!)</td><td>(5×4×3)/(3×2×1)</td><td>10</td></tr><tr><td>10C3</td><td>10!/(3!×7!)</td><td>(10×9×8)/(3×2×1)</td><td>120</td></tr></tbody></table></div>
+<div class="box box-tip avoid-break"><span class="box-label">[팁] 조합 계산 꿀팁</span><div class="box-content">nCr = nC(n-r)!<br>5C3 = 5C2 = 10 (같다!)<br><br>작은 쪽으로 계산하면 편해요.<br>100C98 = 100C2 = (100×99)/2 = 4950</div></div>
+<h2>C로 순열·조합 구현</h2>
+<div class="code-block avoid-break"><div class="code-block-header">perm_comb.c</div>
+        <table class="code-table"><tr class=""><td class="line-num">1</td><td class="line-code"><span class="pp">#include</span> <span class="str">&lt;stdio.h&gt;</span></td></tr>
+<tr class=""><td class="line-num">2</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">3</td><td class="line-code"><span class="type">long</span> <span class="type">long</span> <span class="fn">factorial</span>(<span class="type">int</span> n) {</td></tr>
+<tr class=""><td class="line-num">4</td><td class="line-code">    <span class="type">long</span> <span class="type">long</span> result = <span class="num">1</span>;</td></tr>
+<tr class=""><td class="line-num">5</td><td class="line-code">    <span class="kw">for</span> (<span class="type">int</span> i = <span class="num">2</span>; i &lt;= n; i++)</td></tr>
+<tr class=""><td class="line-num">6</td><td class="line-code">        result *= i;</td></tr>
+<tr class=""><td class="line-num">7</td><td class="line-code">    <span class="kw">return</span> result;</td></tr>
+<tr class=""><td class="line-num">8</td><td class="line-code">}</td></tr>
+<tr class=""><td class="line-num">9</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">10</td><td class="line-code"><span class="type">long</span> <span class="type">long</span> <span class="fn">nPr</span>(<span class="type">int</span> n, <span class="type">int</span> r) {</td></tr>
+<tr class=""><td class="line-num">11</td><td class="line-code">    <span class="kw">return</span> <span class="fn">factorial</span>(n) / <span class="fn">factorial</span>(n - r);</td></tr>
+<tr class=""><td class="line-num">12</td><td class="line-code">}</td></tr>
+<tr class=""><td class="line-num">13</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">14</td><td class="line-code"><span class="type">long</span> <span class="type">long</span> <span class="fn">nCr</span>(<span class="type">int</span> n, <span class="type">int</span> r) {</td></tr>
+<tr class=""><td class="line-num">15</td><td class="line-code">    <span class="kw">return</span> <span class="fn">factorial</span>(n) / (<span class="fn">factorial</span>(r) * <span class="fn">factorial</span>(n - r));</td></tr>
+<tr class=""><td class="line-num">16</td><td class="line-code">}</td></tr>
+<tr class=""><td class="line-num">17</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">18</td><td class="line-code"><span class="type">int</span> <span class="fn">main</span>(<span class="type">void</span>) {</td></tr>
+<tr class=""><td class="line-num">19</td><td class="line-code">    <span class="fn">printf</span>(<span class="str">"5P2 = <span class="fmt">%l</span>ld<span class="esc">\n</span>"</span>, <span class="fn">nPr</span>(<span class="num">5</span>, <span class="num">2</span>));  <span class="cmt">// 20</span></td></tr>
+<tr class=""><td class="line-num">20</td><td class="line-code">    <span class="fn">printf</span>(<span class="str">"5C2 = <span class="fmt">%l</span>ld<span class="esc">\n</span>"</span>, <span class="fn">nCr</span>(<span class="num">5</span>, <span class="num">2</span>));  <span class="cmt">// 10</span></td></tr>
+<tr class=""><td class="line-num">21</td><td class="line-code">    <span class="fn">printf</span>(<span class="str">"10C3 = <span class="fmt">%l</span>ld<span class="esc">\n</span>"</span>, <span class="fn">nCr</span>(<span class="num">10</span>, <span class="num">3</span>)); <span class="cmt">// 120</span></td></tr>
+<tr class=""><td class="line-num">22</td><td class="line-code">    <span class="kw">return</span> <span class="num">0</span>;</td></tr>
+<tr class=""><td class="line-num">23</td><td class="line-code">}</td></tr></table></div>
+<div class="output-block avoid-break"><span class="output-label">실행 결과</span><div class="output-text">5P2 = 20
+5C2 = 10
+10C3 = 120</div></div>
+<h2>[심화] 재귀로 순열 생성</h2>
+<div class="code-block avoid-break"><div class="code-block-header">perm_recursive.c</div>
+        <table class="code-table"><tr class=""><td class="line-num">1</td><td class="line-code"><span class="pp">#include</span> <span class="str">&lt;stdio.h&gt;</span></td></tr>
+<tr class=""><td class="line-num">2</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">3</td><td class="line-code"><span class="type">int</span> arr[] = {<span class="num">1</span>, <span class="num">2</span>, <span class="num">3</span>};</td></tr>
+<tr class=""><td class="line-num">4</td><td class="line-code"><span class="type">int</span> n = <span class="num">3</span>;</td></tr>
+<tr class=""><td class="line-num">5</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">6</td><td class="line-code"><span class="type">void</span> <span class="fn">swap</span>(<span class="type">int</span> *a, <span class="type">int</span> *b) { <span class="type">int</span> t=*a; *a=*b; *b=t; }</td></tr>
+<tr class=""><td class="line-num">7</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">8</td><td class="line-code"><span class="type">void</span> <span class="fn">permute</span>(<span class="type">int</span> start) {</td></tr>
+<tr class=""><td class="line-num">9</td><td class="line-code">    <span class="kw">if</span> (start == n) {</td></tr>
+<tr class=""><td class="line-num">10</td><td class="line-code">        <span class="kw">for</span> (<span class="type">int</span> i = <span class="num">0</span>; i &lt; n; i++) <span class="fn">printf</span>(<span class="str">"<span class="fmt">%d</span> "</span>, arr[i]);</td></tr>
+<tr class=""><td class="line-num">11</td><td class="line-code">        <span class="fn">printf</span>(<span class="str">"<span class="esc">\n</span>"</span>);</td></tr>
+<tr class=""><td class="line-num">12</td><td class="line-code">        <span class="kw">return</span>;</td></tr>
+<tr class=""><td class="line-num">13</td><td class="line-code">    }</td></tr>
+<tr class=""><td class="line-num">14</td><td class="line-code">    <span class="kw">for</span> (<span class="type">int</span> i = start; i &lt; n; i++) {</td></tr>
+<tr class=""><td class="line-num">15</td><td class="line-code">        <span class="fn">swap</span>(&amp;arr[start], &amp;arr[i]);</td></tr>
+<tr class=""><td class="line-num">16</td><td class="line-code">        <span class="fn">permute</span>(start + <span class="num">1</span>);</td></tr>
+<tr class=""><td class="line-num">17</td><td class="line-code">        <span class="fn">swap</span>(&amp;arr[start], &amp;arr[i]);  <span class="cmt">// 원복!</span></td></tr>
+<tr class=""><td class="line-num">18</td><td class="line-code">    }</td></tr>
+<tr class=""><td class="line-num">19</td><td class="line-code">}</td></tr>
+<tr class=""><td class="line-num">20</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">21</td><td class="line-code"><span class="type">int</span> <span class="fn">main</span>(<span class="type">void</span>) {</td></tr>
+<tr class=""><td class="line-num">22</td><td class="line-code">    <span class="fn">printf</span>(<span class="str">"3개의 모든 순열 (3!=6가지):<span class="esc">\n</span>"</span>);</td></tr>
+<tr class=""><td class="line-num">23</td><td class="line-code">    <span class="fn">permute</span>(<span class="num">0</span>);</td></tr>
+<tr class=""><td class="line-num">24</td><td class="line-code">    <span class="kw">return</span> <span class="num">0</span>;</td></tr>
+<tr class=""><td class="line-num">25</td><td class="line-code">}</td></tr></table></div>
+<div class="output-block avoid-break"><span class="output-label">실행 결과</span><div class="output-text">3개의 모든 순열 (3!=6가지):
+1 2 3
+1 3 2
+2 1 3
+2 3 1
+3 2 1
+3 1 2</div></div>
+<div class="box box-key avoid-break"><span class="box-label">[심화] 순열 생성의 핵심 패턴</span><div class="box-content">1. 첫 번째 자리에 올 수 있는 원소를 하나씩 고정<br>2. 나머지 원소로 재귀 호출<br>3. 재귀가 끝나면 <b>원복(swap back)</b>!<br><br>원복을 잊으면 배열이 망가져요!</div></div>
+<h2>[심화] 재귀로 조합 생성</h2>
+<div class="code-block avoid-break"><div class="code-block-header">comb_recursive.c</div>
+        <table class="code-table"><tr class=""><td class="line-num">1</td><td class="line-code"><span class="pp">#include</span> <span class="str">&lt;stdio.h&gt;</span></td></tr>
+<tr class=""><td class="line-num">2</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">3</td><td class="line-code"><span class="type">int</span> selected[<span class="num">10</span>];</td></tr>
+<tr class=""><td class="line-num">4</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">5</td><td class="line-code"><span class="type">void</span> <span class="fn">combination</span>(<span class="type">int</span> n, <span class="type">int</span> r, <span class="type">int</span> start, <span class="type">int</span> depth) {</td></tr>
+<tr class=""><td class="line-num">6</td><td class="line-code">    <span class="kw">if</span> (depth == r) {</td></tr>
+<tr class=""><td class="line-num">7</td><td class="line-code">        <span class="fn">printf</span>(<span class="str">"{"</span>);</td></tr>
+<tr class=""><td class="line-num">8</td><td class="line-code">        <span class="kw">for</span> (<span class="type">int</span> i = <span class="num">0</span>; i &lt; r; i++)</td></tr>
+<tr class=""><td class="line-num">9</td><td class="line-code">            <span class="fn">printf</span>(<span class="str">"<span class="fmt">%d</span><span class="fmt">%s</span>"</span>, selected[i], i&lt;r-<span class="num">1</span>?<span class="str">","</span>:<span class="str">""</span>);</td></tr>
+<tr class=""><td class="line-num">10</td><td class="line-code">        <span class="fn">printf</span>(<span class="str">"}<span class="esc">\n</span>"</span>);</td></tr>
+<tr class=""><td class="line-num">11</td><td class="line-code">        <span class="kw">return</span>;</td></tr>
+<tr class=""><td class="line-num">12</td><td class="line-code">    }</td></tr>
+<tr class=""><td class="line-num">13</td><td class="line-code">    <span class="kw">for</span> (<span class="type">int</span> i = start; i &lt;= n; i++) {</td></tr>
+<tr class=""><td class="line-num">14</td><td class="line-code">        selected[depth] = i;</td></tr>
+<tr class=""><td class="line-num">15</td><td class="line-code">        <span class="fn">combination</span>(n, r, i + <span class="num">1</span>, depth + <span class="num">1</span>);</td></tr>
+<tr class=""><td class="line-num">16</td><td class="line-code">    }</td></tr>
+<tr class=""><td class="line-num">17</td><td class="line-code">}</td></tr>
+<tr class=""><td class="line-num">18</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">19</td><td class="line-code"><span class="type">int</span> <span class="fn">main</span>(<span class="type">void</span>) {</td></tr>
+<tr class=""><td class="line-num">20</td><td class="line-code">    <span class="fn">printf</span>(<span class="str">"5C3 = 5개에서 3개 뽑기:<span class="esc">\n</span>"</span>);</td></tr>
+<tr class=""><td class="line-num">21</td><td class="line-code">    <span class="fn">combination</span>(<span class="num">5</span>, <span class="num">3</span>, <span class="num">1</span>, <span class="num">0</span>);</td></tr>
+<tr class=""><td class="line-num">22</td><td class="line-code">    <span class="kw">return</span> <span class="num">0</span>;</td></tr>
+<tr class=""><td class="line-num">23</td><td class="line-code">}</td></tr></table></div>
+<div class="output-block avoid-break"><span class="output-label">실행 결과</span><div class="output-text">5C3 = 5개에서 3개 뽑기:
+{1,2,3}
+{1,2,4}
+{1,2,5}
+{1,3,4}
+{1,3,5}
+{1,4,5}
+{2,3,4}
+{2,3,5}
+{2,4,5}
+{3,4,5}</div></div>
+<h2>[심화] 중복 순열과 중복 조합</h2>
+<div class="compare avoid-break"><div class="compare-bad"><div class="compare-label">✕ 잘못된 코드</div><code></code><br><span class="compare-msg-bad"></span></div><div class="compare-good"><div class="compare-label">✓ 올바른 코드</div><code></code><br><span class="compare-msg-good"></span></div></div>
+<div class="box box-key avoid-break"><span class="box-label">[심화] 중복 순열 예시</span><div class="box-content">숫자 {1,2,3}으로 2자리 비밀번호 만들기 (중복 허용)<br>→ 3² = 9가지: 11,12,13,21,22,23,31,32,33</div></div>
+<h2>[심화 내용] 파스칼 삼각형</h2>
+<div class="box box-key avoid-break"><span class="box-label">[심화 내용] 파스칼 삼각형과 이항 계수</span><div class="box-content">nCr = n-1Cr-1 + n-1Cr (파스칼 항등식)<br><br>         1<br>        1 1<br>       1 2 1<br>      1 3 3 1<br>     1 4 6 4 1<br>    1 5 10 10 5 1<br><br>n행의 r번째 = nCr!<br><br><b>이항 정리</b>: (a+b)ⁿ = Σ nCk × aⁿ⁻ᵏ × bᵏ<br>(a+b)³ = a³ + 3a²b + 3ab² + b³</div></div>
+<div class="code-block avoid-break"><div class="code-block-header">pascal.c</div>
+        <table class="code-table"><tr class=""><td class="line-num">1</td><td class="line-code"><span class="pp">#include</span> <span class="str">&lt;stdio.h&gt;</span></td></tr>
+<tr class=""><td class="line-num">2</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">3</td><td class="line-code"><span class="type">int</span> <span class="fn">main</span>(<span class="type">void</span>) {</td></tr>
+<tr class=""><td class="line-num">4</td><td class="line-code">    <span class="type">int</span> n = <span class="num">8</span>;</td></tr>
+<tr class=""><td class="line-num">5</td><td class="line-code">    <span class="type">int</span> C[<span class="num">20</span>][<span class="num">20</span>] = {<span class="num">0</span>};</td></tr>
+<tr class=""><td class="line-num">6</td><td class="line-code">    </td></tr>
+<tr class=""><td class="line-num">7</td><td class="line-code">    <span class="kw">for</span> (<span class="type">int</span> i = <span class="num">0</span>; i &lt;= n; i++) {</td></tr>
+<tr class=""><td class="line-num">8</td><td class="line-code">        C[i][<span class="num">0</span>] = <span class="num">1</span>;</td></tr>
+<tr class=""><td class="line-num">9</td><td class="line-code">        <span class="kw">for</span> (<span class="type">int</span> j = <span class="num">1</span>; j &lt;= i; j++)</td></tr>
+<tr class=""><td class="line-num">10</td><td class="line-code">            C[i][j] = C[i-<span class="num">1</span>][j-<span class="num">1</span>] + C[i-<span class="num">1</span>][j];  <span class="cmt">// 파스칼 항등식</span></td></tr>
+<tr class=""><td class="line-num">11</td><td class="line-code">    }</td></tr>
+<tr class=""><td class="line-num">12</td><td class="line-code">    </td></tr>
+<tr class=""><td class="line-num">13</td><td class="line-code">    <span class="kw">for</span> (<span class="type">int</span> i = <span class="num">0</span>; i &lt;= n; i++) {</td></tr>
+<tr class=""><td class="line-num">14</td><td class="line-code">        <span class="kw">for</span> (<span class="type">int</span> s = <span class="num">0</span>; s &lt; n-i; s++) <span class="fn">printf</span>(<span class="str">"  "</span>);</td></tr>
+<tr class=""><td class="line-num">15</td><td class="line-code">        <span class="kw">for</span> (<span class="type">int</span> j = <span class="num">0</span>; j &lt;= i; j++)</td></tr>
+<tr class=""><td class="line-num">16</td><td class="line-code">            <span class="fn">printf</span>(<span class="str">"<span class="fmt">%4d</span>"</span>, C[i][j]);</td></tr>
+<tr class=""><td class="line-num">17</td><td class="line-code">        <span class="fn">printf</span>(<span class="str">"<span class="esc">\n</span>"</span>);</td></tr>
+<tr class=""><td class="line-num">18</td><td class="line-code">    }</td></tr>
+<tr class=""><td class="line-num">19</td><td class="line-code">    <span class="kw">return</span> <span class="num">0</span>;</td></tr>
+<tr class=""><td class="line-num">20</td><td class="line-code">}</td></tr></table></div>
+<h2>[심화 내용] 카탈란 수</h2>
+<div class="box box-key avoid-break"><span class="box-label">[심화 내용] 카탈란 수 (Catalan Number)</span><div class="box-content">Cₙ = (2n)! / ((n+1)! × n!)<br><br>C₀=1, C₁=1, C₂=2, C₃=5, C₄=14, C₅=42<br><br>등장하는 곳:<br>• n쌍 괄호의 올바른 배열 수<br>• n+1개 잎의 이진 트리 구조 수<br>• 계단 격자 경로 수 (대각선 아래 안 가는)</div></div>
+<div class="code-block avoid-break"><div class="code-block-header">catalan.c</div>
+        <table class="code-table"><tr class=""><td class="line-num">1</td><td class="line-code"><span class="pp">#include</span> <span class="str">&lt;stdio.h&gt;</span></td></tr>
+<tr class=""><td class="line-num">2</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">3</td><td class="line-code"><span class="type">long</span> <span class="type">long</span> <span class="fn">catalan</span>(<span class="type">int</span> n) {</td></tr>
+<tr class=""><td class="line-num">4</td><td class="line-code">    <span class="type">long</span> <span class="type">long</span> C[<span class="num">20</span>] = {<span class="num">0</span>};</td></tr>
+<tr class=""><td class="line-num">5</td><td class="line-code">    C[<span class="num">0</span>] = <span class="num">1</span>;</td></tr>
+<tr class=""><td class="line-num">6</td><td class="line-code">    C[<span class="num">1</span>] = <span class="num">1</span>;</td></tr>
+<tr class=""><td class="line-num">7</td><td class="line-code">    <span class="kw">for</span> (<span class="type">int</span> i = <span class="num">2</span>; i &lt;= n; i++) {</td></tr>
+<tr class=""><td class="line-num">8</td><td class="line-code">        C[i] = <span class="num">0</span>;</td></tr>
+<tr class=""><td class="line-num">9</td><td class="line-code">        <span class="kw">for</span> (<span class="type">int</span> j = <span class="num">0</span>; j &lt; i; j++)</td></tr>
+<tr class=""><td class="line-num">10</td><td class="line-code">            C[i] += C[j] * C[i - <span class="num">1</span> - j];</td></tr>
+<tr class=""><td class="line-num">11</td><td class="line-code">    }</td></tr>
+<tr class=""><td class="line-num">12</td><td class="line-code">    <span class="kw">return</span> C[n];</td></tr>
+<tr class=""><td class="line-num">13</td><td class="line-code">}</td></tr>
+<tr class=""><td class="line-num">14</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">15</td><td class="line-code"><span class="type">int</span> <span class="fn">main</span>(<span class="type">void</span>) {</td></tr>
+<tr class=""><td class="line-num">16</td><td class="line-code">    <span class="kw">for</span> (<span class="type">int</span> i = <span class="num">0</span>; i &lt;= <span class="num">10</span>; i++)</td></tr>
+<tr class=""><td class="line-num">17</td><td class="line-code">        <span class="fn">printf</span>(<span class="str">"C_<span class="fmt">%d</span> = <span class="fmt">%l</span>ld<span class="esc">\n</span>"</span>, i, <span class="fn">catalan</span>(i));</td></tr>
+<tr class=""><td class="line-num">18</td><td class="line-code">    <span class="kw">return</span> <span class="num">0</span>;</td></tr>
+<tr class=""><td class="line-num">19</td><td class="line-code">}</td></tr></table></div>
+<div class="output-block avoid-break"><span class="output-label">실행 결과</span><div class="output-text">C_0 = 1
+C_1 = 1
+C_2 = 2
+C_3 = 5
+C_4 = 14
+C_5 = 42
+C_6 = 132
+C_7 = 429
+C_8 = 1430
+C_9 = 4862
+C_10 = 16796</div></div>
+<h2>KOI 연결: 순열·조합 문제</h2>
+<div class="box box-tip avoid-break"><span class="box-label">[KOI] 경우의 수 문제 키워드</span><div class="box-content">• '몇 가지 방법' → 순열 또는 조합<br>• '순서가 다르면 다른 경우' → <b>순열</b><br>• '순서 상관없이' → <b>조합</b><br>• '중복 가능' → 중복 순열/조합<br>• N ≤ 20이면 → 완전 탐색으로도 가능<br>• N ≤ 10이면 → 순열 완전 탐색 가능 (N!)</div></div>
+<div class="box box-tip avoid-break"><span class="box-label">[KOI 실전] nCr 계산 시 오버플로 방지</span><div class="box-content">큰 수의 nCr 계산 시 팩토리얼이 오버플로!<br><br><b>방법 1: 파스칼 삼각형 (DP)</b><br>C[i][j] = C[i-1][j-1] + C[i-1][j]<br>→ 곱셈 없이 덧셈만! 오버플로 적음<br><br><b>방법 2: 교대 곱·나눗셈</b><br>result = 1<br>for i=0 to r-1: result = result*(n-i)/(i+1)<br>→ 매 단계 나눠서 수가 안 커짐<br><br><b>방법 3: 모듈러 역원 (MOD 문제)</b><br>페르마 소정리로 나눗셈을 곱셈으로 변환</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">52!</div><div class="fact-bite-text">카드 한 벌(52장)을 섞는 경우의 수 = 52! ≈ 8×10⁶⁷. 우주의 원자 수(약 10⁸⁰)보다는 적지만, 지구가 생긴 이래 한 번도 같은 순서로 섞인 적 없다고 봐요!</div></div>
+<h2>OX 퀴즈</h2>
+<div class="exercise avoid-break"><div class="exercise-title">OX 퀴즈</div><div class="exercise-item"><p></p></div><div class="exercise-answer"><b>정답:</b> ❌ X</div></div>
+<h2>연습문제</h2>
+<div class="exercise avoid-break"><div class="exercise-title">문제 1 <span class="difficulty diff-1">★ 기본</span></div><div class="exercise-item"><p>순열과 조합의 차이를 한 문장으로 설명하세요.</p></div><div class="memo-area"><span class="memo-label">여기에 답을 써 보세요</span></div></div>
+<div class="exercise avoid-break"><div class="exercise-title">문제 2 <span class="difficulty diff-1">★ 기본</span></div><div class="exercise-item"><p>5! = ?</p></div><div class="memo-area"><span class="memo-label">여기에 답을 써 보세요</span></div></div>
+<div class="exercise avoid-break"><div class="exercise-title">문제 3 <span class="difficulty diff-1">★ 기본</span></div><div class="exercise-item"><p>4P2 = ?</p></div><div class="memo-area"><span class="memo-label">여기에 답을 써 보세요</span></div></div>
+<div class="exercise avoid-break"><div class="exercise-title">문제 4 <span class="difficulty diff-1">★ 기본</span></div><div class="exercise-item"><p>4C2 = ?</p></div><div class="memo-area"><span class="memo-label">여기에 답을 써 보세요</span></div></div>
+<div class="exercise avoid-break"><div class="exercise-title">문제 5 <span class="difficulty diff-1">★ 기본</span></div><div class="exercise-item"><p>'반장-부반장 뽑기'는 순열? 조합?</p></div><div class="memo-area"><span class="memo-label">여기에 답을 써 보세요</span></div></div>
+<div class="exercise avoid-break"><div class="exercise-title">문제 6 <span class="difficulty diff-2">★★ 도전</span></div><div class="exercise-item"><p>10명에서 대표 3명을 뽑는 경우의 수는? (10C3)</p></div><div class="memo-area"><span class="memo-label">여기에 답을 써 보세요</span></div></div>
+<div class="exercise avoid-break"><div class="exercise-title">문제 7 <span class="difficulty diff-2">★★ 도전</span></div><div class="exercise-item"><p>숫자 {1,2,3,4}로 3자리 비밀번호(중복 허용)를 만드는 경우의 수는?</p></div><div class="memo-area"><span class="memo-label">여기에 답을 써 보세요</span></div></div>
+<div class="exercise avoid-break"><div class="exercise-title">문제 8 <span class="difficulty diff-2">★★ 도전</span></div><div class="exercise-item"><p>nCr = nC(n-r)인 이유를 설명하세요.</p></div><div class="memo-area"><span class="memo-label">여기에 답을 써 보세요</span></div></div>
+<div class="exercise avoid-break"><div class="exercise-title">문제 9 <span class="difficulty diff-2">★★ 도전</span></div><div class="exercise-item"><p>파스칼 삼각형의 4번째 줄(n=3)을 쓰세요.</p></div><div class="memo-area"><span class="memo-label">여기에 답을 써 보세요</span></div></div>
+<div class="exercise avoid-break"><div class="exercise-title">문제 10 <span class="difficulty diff-2">★★ 도전</span></div><div class="exercise-item"><p>(a+b)³을 이항 정리로 전개하세요.</p></div><div class="memo-area"><span class="memo-label">여기에 답을 써 보세요</span></div></div>
+<div class="exercise avoid-break"><div class="exercise-title">문제 11 <span class="difficulty diff-3">★★★ 심화</span></div><div class="exercise-item"><p>[심화] 재귀로 조합을 생성할 때, start 매개변수의 역할은?</p></div><div class="memo-area"><span class="memo-label">여기에 답을 써 보세요</span></div></div>
+<div class="exercise avoid-break"><div class="exercise-title">문제 12 <span class="difficulty diff-3">★★★ 심화</span></div><div class="exercise-item"><p>[심화] 5C2를 파스칼 항등식으로 계산하세요.</p></div><div class="memo-area"><span class="memo-label">여기에 답을 써 보세요</span></div></div>
+<div class="exercise avoid-break"><div class="exercise-title">문제 13 <span class="difficulty diff-3">★★★ 심화</span></div><div class="exercise-item"><p>[심화] 중복 조합 H(3,2)의 공식과 값을 구하세요.</p></div><div class="memo-area"><span class="memo-label">여기에 답을 써 보세요</span></div></div>
+<div class="exercise avoid-break"><div class="exercise-title">문제 14 <span class="difficulty diff-3">★★★ 심화</span></div><div class="exercise-item"><p>[심화 내용] 카탈란 수 C₃ = 5가 나타내는 것 하나를 설명하세요.</p></div><div class="memo-area"><span class="memo-label">여기에 답을 써 보세요</span></div></div>
+<div class="exercise avoid-break"><div class="exercise-title">문제 15 <span class="difficulty diff-3">★★★ 심화</span></div><div class="exercise-item"><p>[심화 내용] nCr을 큰 수에서도 오버플로 없이 계산하는 방법을 쓰세요.</p></div><div class="memo-area"><span class="memo-label">여기에 답을 써 보세요</span></div></div>
+<h2>정답</h2>
+<div class="answers-section avoid-break"><h3>정답</h3><div class="answer-item"><span class="answer-num">문제 1</span> <span class="answer-text">순열은 순서가 중요하고(AB≠BA), 조합은 순서가 상관없다({A,B}={B,A}).</span></div><div class="answer-item"><span class="answer-num">문제 2</span> <span class="answer-text">120. 5×4×3×2×1 = 120.</span></div><div class="answer-item"><span class="answer-num">문제 3</span> <span class="answer-text">12. 4!/(4-2)! = 4×3 = 12.</span></div><div class="answer-item"><span class="answer-num">문제 4</span> <span class="answer-text">6. 4!/(2!×2!) = (4×3)/(2×1) = 6.</span></div><div class="answer-item"><span class="answer-num">문제 5</span> <span class="answer-text">순열. 반장=A, 부반장=B ≠ 반장=B, 부반장=A (역할이 다름).</span></div><div class="answer-item"><span class="answer-num">문제 6</span> <span class="answer-text">120. 10!/(3!×7!) = (10×9×8)/(3×2×1) = 120.</span></div><div class="answer-item"><span class="answer-num">문제 7</span> <span class="answer-text">4³ = 64가지 (중복 순열).</span></div><div class="answer-item"><span class="answer-num">문제 8</span> <span class="answer-text">r개를 뽑는 것 = (n-r)개를 안 뽑는 것. 같은 행위의 다른 시각.</span></div><div class="answer-item"><span class="answer-num">문제 9</span> <span class="answer-text">1, 3, 3, 1.</span></div><div class="answer-item"><span class="answer-num">문제 10</span> <span class="answer-text">a³ + 3a²b + 3ab² + b³.</span></div><div class="answer-item"><span class="answer-num">문제 11</span> <span class="answer-text">start부터 시작해 이전 원소를 다시 선택하지 않도록 하여 중복 없이 조합 생성.</span></div><div class="answer-item"><span class="answer-num">문제 12</span> <span class="answer-text">5C2 = 4C1 + 4C2 = 4 + 6 = 10.</span></div><div class="answer-item"><span class="answer-num">문제 13</span> <span class="answer-text">H(3,2) = 3+2-1C2 = 4C2 = 6.</span></div><div class="answer-item"><span class="answer-num">문제 14</span> <span class="answer-text">3쌍 괄호의 올바른 배열: ((())), (()()), (())(), ()(()), ()()() → 5가지.</span></div><div class="answer-item"><span class="answer-num">문제 15</span> <span class="answer-text">파스칼 삼각형(DP): C[i][j]=C[i-1][j-1]+C[i-1][j]. 또는 분자/분모를 교대 곱·나눗셈.</span></div></div>
+<h2>용어 정리</h2>
+<h2>[심화] C로 순열/조합 생성</h2>
+<div class="code-block avoid-break"><div class="code-block-header">[C 코드] 조합 생성 (백트래킹)</div>
+        <table class="code-table"><tr class=""><td class="line-num">1</td><td class="line-code"><span class="pp">#include</span> <span class="str">&lt;stdio.h&gt;</span></td></tr>
+<tr class=""><td class="line-num">2</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">3</td><td class="line-code"><span class="type">int</span> result[<span class="num">20</span>], n_val, r_val;</td></tr>
+<tr class=""><td class="line-num">4</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">5</td><td class="line-code"><span class="cmt">// nCr의 모든 조합 출력</span></td></tr>
+<tr class=""><td class="line-num">6</td><td class="line-code"><span class="type">void</span> <span class="fn">combination</span>(<span class="type">int</span> start, <span class="type">int</span> depth) {</td></tr>
+<tr class=""><td class="line-num">7</td><td class="line-code">    <span class="kw">if</span> (depth == r_val) {</td></tr>
+<tr class=""><td class="line-num">8</td><td class="line-code">        <span class="fn">printf</span>(<span class="str">"{"</span>);</td></tr>
+<tr class=""><td class="line-num">9</td><td class="line-code">        <span class="kw">for</span> (<span class="type">int</span> i = <span class="num">0</span>; i &lt; r_val; i++) {</td></tr>
+<tr class=""><td class="line-num">10</td><td class="line-code">            <span class="kw">if</span> (i) <span class="fn">printf</span>(<span class="str">","</span>);</td></tr>
+<tr class=""><td class="line-num">11</td><td class="line-code">            <span class="fn">printf</span>(<span class="str">"<span class="fmt">%d</span>"</span>, result[i]);</td></tr>
+<tr class=""><td class="line-num">12</td><td class="line-code">        }</td></tr>
+<tr class=""><td class="line-num">13</td><td class="line-code">        <span class="fn">printf</span>(<span class="str">"} "</span>);</td></tr>
+<tr class=""><td class="line-num">14</td><td class="line-code">        <span class="kw">return</span>;</td></tr>
+<tr class=""><td class="line-num">15</td><td class="line-code">    }</td></tr>
+<tr class=""><td class="line-num">16</td><td class="line-code">    <span class="kw">for</span> (<span class="type">int</span> i = start; i &lt;= n_val; i++) {</td></tr>
+<tr class=""><td class="line-num">17</td><td class="line-code">        result[depth] = i;</td></tr>
+<tr class=""><td class="line-num">18</td><td class="line-code">        <span class="fn">combination</span>(i + <span class="num">1</span>, depth + <span class="num">1</span>);</td></tr>
+<tr class=""><td class="line-num">19</td><td class="line-code">    }</td></tr>
+<tr class=""><td class="line-num">20</td><td class="line-code">}</td></tr>
+<tr class=""><td class="line-num">21</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">22</td><td class="line-code"><span class="type">int</span> <span class="fn">main</span>() {</td></tr>
+<tr class=""><td class="line-num">23</td><td class="line-code">    n_val = <span class="num">5</span>; r_val = <span class="num">3</span>;</td></tr>
+<tr class=""><td class="line-num">24</td><td class="line-code">    <span class="fn">printf</span>(<span class="str">"5C3 = "</span>);</td></tr>
+<tr class=""><td class="line-num">25</td><td class="line-code">    <span class="fn">combination</span>(<span class="num">1</span>, <span class="num">0</span>);</td></tr>
+<tr class=""><td class="line-num">26</td><td class="line-code">    <span class="fn">printf</span>(<span class="str">"<span class="esc">\n</span><span class="esc">\n</span>"</span>);</td></tr>
+<tr class=""><td class="line-num">27</td><td class="line-code">    </td></tr>
+<tr class=""><td class="line-num">28</td><td class="line-code">    n_val = <span class="num">4</span>; r_val = <span class="num">2</span>;</td></tr>
+<tr class=""><td class="line-num">29</td><td class="line-code">    <span class="fn">printf</span>(<span class="str">"4C2 = "</span>);</td></tr>
+<tr class=""><td class="line-num">30</td><td class="line-code">    <span class="fn">combination</span>(<span class="num">1</span>, <span class="num">0</span>);</td></tr>
+<tr class=""><td class="line-num">31</td><td class="line-code">    <span class="fn">printf</span>(<span class="str">"<span class="esc">\n</span>"</span>);</td></tr>
+<tr class=""><td class="line-num">32</td><td class="line-code">    <span class="kw">return</span> <span class="num">0</span>;</td></tr>
+<tr class=""><td class="line-num">33</td><td class="line-code">}</td></tr></table></div>
+<div class="output-block avoid-break"><span class="output-label">실행 결과</span><div class="output-text">5C3 = {1,2,3} {1,2,4} {1,2,5} {1,3,4} {1,3,5} {1,4,5} {2,3,4} {2,3,5} {2,4,5} {3,4,5}
+
+4C2 = {1,2} {1,3} {1,4} {2,3} {2,4} {3,4}</div></div>
+<h2>[심화 내용] next_permutation 알고리즘</h2>
+<div class="box box-key avoid-break"><span class="box-label">[심화 내용] 사전순 다음 순열 알고리즘</span><div class="box-content"><b>C++ STL의 next_permutation 내부 알고리즘:</b><br><br>1. 뒤에서부터 arr[i] < arr[i+1]인 i를 찾음<br>2. 뒤에서부터 arr[i] < arr[j]인 j를 찾음<br>3. arr[i]와 arr[j]를 swap<br>4. i+1부터 끝까지 reverse<br><br><b>예:</b> {1,3,5,4,2}<br>1. i=1 (3 < 5)<br>2. j=3 (3 < 4)<br>3. swap: {1,4,5,3,2}<br>4. reverse i+1~end: {1,4,2,3,5}<br><br>시간: O(n), 공간: O(1)<br>모든 n! 순열을 사전순으로 생성 가능!</div></div>
+<h2>[심화 내용] 조합론의 항등식</h2>
+<div class="box box-key avoid-break"><span class="box-label">[심화 내용] 유용한 조합 항등식</span><div class="box-content"><b>파스칼 규칙:</b> C(n,r) = C(n-1,r-1) + C(n-1,r)<br><b>반더몬드:</b> C(m+n,r) = sum C(m,k)*C(n,r-k)<br><b>하키 스틱:</b> C(r,r)+C(r+1,r)+...+C(n,r) = C(n+1,r+1)<br><b>이항 정리:</b> (1+x)^n = sum C(n,k)*x^k<br><b>대칭:</b> C(n,r) = C(n,n-r)<br><b>합:</b> C(n,0)+C(n,1)+...+C(n,n) = 2^n<br><br>대회에서 조합 문제를 풀 때 이 항등식들이 핵심!</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">O(n)</div><div class="fact-bite-text">next_permutation의 시간 복잡도. 상수 공간으로 사전순 다음 순열을 구할 수 있어요!</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">52!</div><div class="fact-bite-text">트럼프 카드 52장의 순열 수: 약 8*10^67. 우주의 원자 수(10^80)에 가까운 어마어마한 수!</div></div>
+<h2>[심화 내용] 순열/조합과 확률</h2>
+<div class="box box-key avoid-break"><span class="box-label">[심화 내용] 순열/조합 응용 문제</span><div class="box-content"><b>Q1. 로또 1등 확률</b><br>45개 중 6개 선택: C(45,6) = 8,145,060<br>확률 = 1/8,145,060 ≈ 0.0000123%<br><br><b>Q2. 포커 패 확률</b><br>52장에서 5장: C(52,5) = 2,598,960<br>로열 플러시: 4가지/2,598,960 ≈ 0.000154%<br>풀 하우스: 3,744/2,598,960 ≈ 0.144%<br><br><b>Q3. 주사위 야쯔 확률</b><br>5개 주사위 모두 같은 눈: 6/6^5 = 6/7776 ≈ 0.077%<br><br><b>Q4. 같은 반 확률</b><br>30명 중 3명이 같은 반(10명씩 3반):<br>모두 같은 반: 3*C(27,7)*C(10,3) / C(30,10,10,10)</div></div>
+<div class="code-block avoid-break"><div class="code-block-header">[C 코드] 중복 순열 — 비밀번호 생성</div>
+        <table class="code-table"><tr class=""><td class="line-num">1</td><td class="line-code"><span class="pp">#include</span> <span class="str">&lt;stdio.h&gt;</span></td></tr>
+<tr class=""><td class="line-num">2</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">3</td><td class="line-code"><span class="cmt">// n자리 비밀번호의 모든 경우 (숫자 0~k-1)</span></td></tr>
+<tr class=""><td class="line-num">4</td><td class="line-code"><span class="type">void</span> <span class="fn">gen_password</span>(<span class="type">int</span> digits[], <span class="type">int</span> n, <span class="type">int</span> k, <span class="type">int</span> pos) {</td></tr>
+<tr class=""><td class="line-num">5</td><td class="line-code">    <span class="kw">static</span> <span class="type">int</span> count = <span class="num">0</span>;</td></tr>
+<tr class=""><td class="line-num">6</td><td class="line-code">    <span class="kw">if</span> (pos == n) {</td></tr>
+<tr class=""><td class="line-num">7</td><td class="line-code">        count++;</td></tr>
+<tr class=""><td class="line-num">8</td><td class="line-code">        <span class="kw">if</span> (count &lt;= <span class="num">5</span> || count == (<span class="type">int</span>)<span class="num">1</span>) {  <span class="cmt">// 처음 5개만 출력</span></td></tr>
+<tr class=""><td class="line-num">9</td><td class="line-code">            <span class="kw">for</span> (<span class="type">int</span> i = <span class="num">0</span>; i &lt; n; i++) <span class="fn">printf</span>(<span class="str">"<span class="fmt">%d</span>"</span>, digits[i]);</td></tr>
+<tr class=""><td class="line-num">10</td><td class="line-code">            <span class="fn">printf</span>(<span class="str">" "</span>);</td></tr>
+<tr class=""><td class="line-num">11</td><td class="line-code">        }</td></tr>
+<tr class=""><td class="line-num">12</td><td class="line-code">        <span class="kw">return</span>;</td></tr>
+<tr class=""><td class="line-num">13</td><td class="line-code">    }</td></tr>
+<tr class=""><td class="line-num">14</td><td class="line-code">    <span class="kw">for</span> (<span class="type">int</span> d = <span class="num">0</span>; d &lt; k; d++) {</td></tr>
+<tr class=""><td class="line-num">15</td><td class="line-code">        digits[pos] = d;</td></tr>
+<tr class=""><td class="line-num">16</td><td class="line-code">        <span class="fn">gen_password</span>(digits, n, k, pos + <span class="num">1</span>);</td></tr>
+<tr class=""><td class="line-num">17</td><td class="line-code">    }</td></tr>
+<tr class=""><td class="line-num">18</td><td class="line-code">}</td></tr>
+<tr class=""><td class="line-num">19</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">20</td><td class="line-code"><span class="type">int</span> <span class="fn">main</span>() {</td></tr>
+<tr class=""><td class="line-num">21</td><td class="line-code">    <span class="type">int</span> digits[<span class="num">10</span>];</td></tr>
+<tr class=""><td class="line-num">22</td><td class="line-code">    <span class="fn">printf</span>(<span class="str">"3자리 이진수 (0~1): "</span>);</td></tr>
+<tr class=""><td class="line-num">23</td><td class="line-code">    <span class="fn">gen_password</span>(digits, <span class="num">3</span>, <span class="num">2</span>, <span class="num">0</span>);</td></tr>
+<tr class=""><td class="line-num">24</td><td class="line-code">    <span class="fn">printf</span>(<span class="str">"...<span class="esc">\n</span>"</span>);</td></tr>
+<tr class=""><td class="line-num">25</td><td class="line-code">    </td></tr>
+<tr class=""><td class="line-num">26</td><td class="line-code">    <span class="cmt">// 총 개수만 계산</span></td></tr>
+<tr class=""><td class="line-num">27</td><td class="line-code">    <span class="type">long</span> <span class="type">long</span> total = <span class="num">1</span>;</td></tr>
+<tr class=""><td class="line-num">28</td><td class="line-code">    <span class="kw">for</span> (<span class="type">int</span> i = <span class="num">0</span>; i &lt; <span class="num">4</span>; i++) total *= <span class="num">10</span>;</td></tr>
+<tr class=""><td class="line-num">29</td><td class="line-code">    <span class="fn">printf</span>(<span class="str">"4자리 숫자 비밀번호: <span class="fmt">%l</span>ld가지<span class="esc">\n</span>"</span>, total);</td></tr>
+<tr class=""><td class="line-num">30</td><td class="line-code">    </td></tr>
+<tr class=""><td class="line-num">31</td><td class="line-code">    total = <span class="num">1</span>;</td></tr>
+<tr class=""><td class="line-num">32</td><td class="line-code">    <span class="kw">for</span> (<span class="type">int</span> i = <span class="num">0</span>; i &lt; <span class="num">8</span>; i++) total *= <span class="num">62</span>;  <span class="cmt">// a-z(26)+A-Z(26)+0-9(10)</span></td></tr>
+<tr class=""><td class="line-num">33</td><td class="line-code">    <span class="fn">printf</span>(<span class="str">"8자리 영숫자 비밀번호: <span class="fmt">%l</span>ld가지<span class="esc">\n</span>"</span>, total);</td></tr>
+<tr class=""><td class="line-num">34</td><td class="line-code">    <span class="kw">return</span> <span class="num">0</span>;</td></tr>
+<tr class=""><td class="line-num">35</td><td class="line-code">}</td></tr></table></div>
+<div class="output-block avoid-break"><span class="output-label">실행 결과</span><div class="output-text">3자리 이진수 (0~1): 000 001 010 011 100 ...
+4자리 숫자 비밀번호: 10000가지
+8자리 영숫자 비밀번호: 218340105584896가지</div></div>
+<div class="mascot-speech right avoid-break">
+        <img class="mascot-speech-img " src="svg-assets/mascot-thinking.svg" alt="마스코트" />
+        <div class="mascot-bubble thinking">순열과 조합은 확률의 기초이고, 확률은 AI와 암호학의 기초야! 이 작은 개념이 어마어마한 분야로 연결돼!</div>
+      </div>
+<h2>[심화] 중복 조합과 별 찍기 문제</h2>
+<div class="box box-key avoid-break"><span class="box-label">[심화] 중복 조합 = 별과 막대</span><div class="box-content"><b>중복 조합 H(n,r) = C(n+r-1, r)</b><br><br>예: 3종류 과일에서 5개 고르기<br>H(3,5) = C(7,5) = 21가지<br><br><b>별과 막대 (Stars and Bars):</b><br>★★|★★★| → 사과2, 바나나3, 포도0<br>★|★|★★★ → 사과1, 바나나1, 포도3<br><br>5개의 별(★)과 2개의 막대(|)를 배열<br>= 7자리 중 2자리에 막대 배치<br>= C(7,2) = 21<br><br><b>응용:</b><br>x1+x2+x3=5의 음이 아닌 정수 해 = H(3,5) = 21<br>동전 나누기, 칸 배분 등 다양한 문제에 활용!</div></div>
+<div class="code-block avoid-break"><div class="code-block-header">[C 코드] 파스칼 삼각형</div>
+        <table class="code-table"><tr class=""><td class="line-num">1</td><td class="line-code"><span class="pp">#include</span> <span class="str">&lt;stdio.h&gt;</span></td></tr>
+<tr class=""><td class="line-num">2</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">3</td><td class="line-code"><span class="type">int</span> <span class="fn">main</span>() {</td></tr>
+<tr class=""><td class="line-num">4</td><td class="line-code">    <span class="type">int</span> n = <span class="num">10</span>;</td></tr>
+<tr class=""><td class="line-num">5</td><td class="line-code">    <span class="type">int</span> C[<span class="num">11</span>][<span class="num">11</span>] = {<span class="num">0</span>};</td></tr>
+<tr class=""><td class="line-num">6</td><td class="line-code">    </td></tr>
+<tr class=""><td class="line-num">7</td><td class="line-code">    <span class="kw">for</span> (<span class="type">int</span> i = <span class="num">0</span>; i &lt;= n; i++) {</td></tr>
+<tr class=""><td class="line-num">8</td><td class="line-code">        C[i][<span class="num">0</span>] = <span class="num">1</span>;</td></tr>
+<tr class=""><td class="line-num">9</td><td class="line-code">        <span class="kw">for</span> (<span class="type">int</span> j = <span class="num">1</span>; j &lt;= i; j++)</td></tr>
+<tr class=""><td class="line-num">10</td><td class="line-code">            C[i][j] = C[i-<span class="num">1</span>][j-<span class="num">1</span>] + C[i-<span class="num">1</span>][j];</td></tr>
+<tr class=""><td class="line-num">11</td><td class="line-code">    }</td></tr>
+<tr class=""><td class="line-num">12</td><td class="line-code">    </td></tr>
+<tr class=""><td class="line-num">13</td><td class="line-code">    <span class="fn">printf</span>(<span class="str">"파스칼 삼각형 (0~10행):<span class="esc">\n</span>"</span>);</td></tr>
+<tr class=""><td class="line-num">14</td><td class="line-code">    <span class="kw">for</span> (<span class="type">int</span> i = <span class="num">0</span>; i &lt;= n; i++) {</td></tr>
+<tr class=""><td class="line-num">15</td><td class="line-code">        <span class="kw">for</span> (<span class="type">int</span> s = <span class="num">0</span>; s &lt; n-i; s++) <span class="fn">printf</span>(<span class="str">"  "</span>);</td></tr>
+<tr class=""><td class="line-num">16</td><td class="line-code">        <span class="kw">for</span> (<span class="type">int</span> j = <span class="num">0</span>; j &lt;= i; j++)</td></tr>
+<tr class=""><td class="line-num">17</td><td class="line-code">            <span class="fn">printf</span>(<span class="str">"<span class="fmt">%4d</span>"</span>, C[i][j]);</td></tr>
+<tr class=""><td class="line-num">18</td><td class="line-code">        <span class="fn">printf</span>(<span class="str">"<span class="esc">\n</span>"</span>);</td></tr>
+<tr class=""><td class="line-num">19</td><td class="line-code">    }</td></tr>
+<tr class=""><td class="line-num">20</td><td class="line-code">    </td></tr>
+<tr class=""><td class="line-num">21</td><td class="line-code">    <span class="fn">printf</span>(<span class="str">"<span class="esc">\n</span>C(10,3) = <span class="fmt">%d</span><span class="esc">\n</span>"</span>, C[<span class="num">10</span>][<span class="num">3</span>]);</td></tr>
+<tr class=""><td class="line-num">22</td><td class="line-code">    <span class="fn">printf</span>(<span class="str">"C(10,5) = <span class="fmt">%d</span><span class="esc">\n</span>"</span>, C[<span class="num">10</span>][<span class="num">5</span>]);</td></tr>
+<tr class=""><td class="line-num">23</td><td class="line-code">    <span class="kw">return</span> <span class="num">0</span>;</td></tr>
+<tr class=""><td class="line-num">24</td><td class="line-code">}</td></tr></table></div>
+<div class="output-block avoid-break"><span class="output-label">실행 결과</span><div class="output-text">파스칼 삼각형 (0~10행):
+                       1
+                     1   1
+                   1   2   1
+                 1   3   3   1
+               1   4   6   4   1
+             1   5  10  10   5   1
+           1   6  15  20  15   6   1
+         1   7  21  35  35  21   7   1
+       1   8  28  56  70  56  28   8   1
+     1   9  36  84 126 126  84  36   9   1
+   1  10  45 120 210 252 210 120  45  10   1
+
+C(10,3) = 120
+C(10,5) = 252</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">8,145,060</div><div class="fact-bite-text">로또 1등 확률의 분모 = C(45,6). 45개 숫자에서 6개 맞추기!</div></div>
+<div class="box box-tip avoid-break"><span class="box-label">[활동] 순열/조합 판별 연습</span><div class="box-content">다음 문제가 순열(P)인지 조합(C)인지 판별하세요:<br><br>1. 5명 중 반장+부반장 선출 → P (순서 있음)<br>2. 10명 중 3명 대표 선발 → C (순서 없음)<br>3. 숫자 1~9로 3자리 수 만들기 → P<br>4. 52장에서 포커 5장 → C<br>5. 4명이 릴레이 주자 순서 → P<br>6. 반에서 청소 당번 4명 → C<br>7. 비밀번호 4자리 → P (중복 순열)<br>8. 뷔페에서 3가지 반찬 고르기 → C<br><br><b>핵심:</b> "순서가 중요하면 순열, 아니면 조합"</div></div>
+<div class="mascot-speech  avoid-break">
+        <img class="mascot-speech-img " src="svg-assets/mascot-eureka.svg" alt="마스코트" />
+        <div class="mascot-bubble eureka">순열과 조합의 차이: "대통령+부통령 뽑기"는 순열 (AB≠BA), "위원 2명 뽑기"는 조합 (AB=BA). 순서가 의미 있느냐가 핵심!</div>
+      </div>
+<div class="box box-key avoid-break"><span class="box-label">[심화 내용] 카탈란 수</span><div class="box-content"><b>카탈란 수(Catalan Number):</b><br>C_n = C(2n,n) / (n+1)<br><br>C_0=1, C_1=1, C_2=2, C_3=5, C_4=14, C_5=42<br><br><b>카탈란 수가 나타나는 곳:</b><br>1. n쌍 괄호의 올바른 배열 수<br>2. n+1개 잎을 가진 이진 트리 수<br>3. n*n 격자에서 대각선 위로 안 가는 경로 수<br>4. 볼록 n+2각형의 삼각분할 수<br>5. 스택 순열의 수<br><br>조합론에서 가장 자주 등장하는 수열 중 하나!</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">42</div><div class="fact-bite-text">C_5 = 42. 카탈란 수 5번째. "인생, 우주, 그리고 모든 것의 답"과도 같은 수!</div></div>
+<div class="mascot-speech  avoid-break">
+        <img class="mascot-speech-img " src="svg-assets/mascot-hello.svg" alt="마스코트" />
+        <div class="mascot-bubble hello">순열 조합을 코드로 생성할 때는 백트래킹이 왕도야! next_permutation은 C++의 꿀기능이고, C에서는 직접 구현해야 해. 좋은 연습이 될 거야!</div>
+      </div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">n!</div><div class="fact-bite-text">n개 원소의 순열 수. 팩토리얼은 매우 빠르게 증가! 10!=3,628,800, 20!=약 2.4*10^18</div></div>
+<div class="glossary avoid-break"><div class="glossary-item"><dt class="glossary-term">순열 (Permutation)</dt><dd class="glossary-def">n개에서 r개를 순서 있게 뽑는 것. nPr = n!/(n-r)!.</dd></div><div class="glossary-item"><dt class="glossary-term">조합 (Combination)</dt><dd class="glossary-def">n개에서 r개를 순서 없이 뽑는 것. nCr = n!/(r!(n-r)!).</dd></div><div class="glossary-item"><dt class="glossary-term">팩토리얼 (!)</dt><dd class="glossary-def">n! = n×(n-1)×...×1. 0!=1.</dd></div><div class="glossary-item"><dt class="glossary-term">중복 순열</dt><dd class="glossary-def">같은 원소를 여러 번 쓸 수 있는 순열. nʳ.</dd></div><div class="glossary-item"><dt class="glossary-term">중복 조합</dt><dd class="glossary-def">같은 원소를 여러 번 뽑을 수 있는 조합. H(n,r)=n+r-1Cr.</dd></div><div class="glossary-item"><dt class="glossary-term">파스칼 삼각형</dt><dd class="glossary-def">이항 계수를 삼각형으로 배열. nCr = n-1Cr-1 + n-1Cr.</dd></div><div class="glossary-item"><dt class="glossary-term">이항 정리</dt><dd class="glossary-def">(a+b)ⁿ = Σ nCk × aⁿ⁻ᵏ × bᵏ.</dd></div><div class="glossary-item"><dt class="glossary-term">카탈란 수</dt><dd class="glossary-def">괄호 배열, 이진 트리 등에 등장하는 수열. Cₙ=(2n)!/((n+1)!n!).</dd></div><div class="glossary-item"><dt class="glossary-term">next_permutation</dt><dd class="glossary-def">사전순으로 다음 순열을 구하는 알고리즘. O(n) 시간, O(1) 공간.</dd></div><div class="glossary-item"><dt class="glossary-term">파스칼 규칙</dt><dd class="glossary-def">C(n,r) = C(n-1,r-1) + C(n-1,r). 파스칼 삼각형의 재귀적 성질.</dd></div><div class="glossary-item"><dt class="glossary-term">반더몬드 항등식</dt><dd class="glossary-def">두 집합에서 각각 뽑아 합치는 조합 수. C(m+n,r) = sum C(m,k)*C(n,r-k).</dd></div><div class="glossary-item"><dt class="glossary-term">하키 스틱 항등식</dt><dd class="glossary-def">파스칼 삼각형의 대각선 합. C(r,r)+...+C(n,r) = C(n+1,r+1).</dd></div></div>
+<div class="visual-summary avoid-break"><div class="visual-summary-title">이번 유닛 핵심 정리</div><div class="visual-summary-items"><div class="visual-summary-item"><div class="visual-summary-num">1</div><span>순열=순서O(nPr), 조합=순서X(nCr)</span></div><div class="visual-summary-item"><div class="visual-summary-num">2</div><span>n! = n×(n-1)×...×1, 0!=1</span></div><div class="visual-summary-item"><div class="visual-summary-num">3</div><span>nCr = nC(n-r) (대칭!)</span></div><div class="visual-summary-item"><div class="visual-summary-num">4</div><span>[심화] 중복 순열=nʳ, 중복 조합=H(n,r)</span></div><div class="visual-summary-item"><div class="visual-summary-num">5</div><span>[심화] 재귀로 순열/조합 생성</span></div><div class="visual-summary-item"><div class="visual-summary-num">6</div><span>[심화 내용] 파스칼 삼각형, 이항 정리</span></div><div class="visual-summary-item"><div class="visual-summary-num">7</div><span>[심화 내용] 카탈란 수</span></div></div></div>
+<div class="box box-summary avoid-break"><span class="box-label">이 유닛에서 연결된 축</span><div class="box-content"><b>[수학연결]</b> 순열·조합 = 경우의 수의 핵심<br><b>[C언어]</b> 팩토리얼 함수, 재귀 조합 생성<br><b>[KOI]</b> 경우의 수 + 완전 탐색 연결<br><b>[컴퓨팅 사고력]</b> 문제 분류 (순서 O/X)<br><b>[코딩기초]</b> 재귀, DP(파스칼 삼각형)<br><b>[디버깅]</b> 순열/조합 혼동 = 흔한 실수</div></div>
+<h2>실전 활용 연습</h2>
+<p>지금까지 배운 개념을 활용한 다양한 실전 예제와 연습문제입니다.</p>
+<div class="mascot-speech  avoid-break">
+        <img class="mascot-speech-img small" src="svg-assets/mascot-thinking.svg" alt="마스코트" />
+        <div class="mascot-bubble tip">직접 손으로 써보면서 연습해 보세요! 머릿속으로만 하면 금방 잊어버려요.</div>
+      </div>
+<h2>실생활 연결</h2>
+<div class="box box-tip avoid-break"><span class="box-label">[실생활] 이 개념은 어디에 쓰일까?</span><div class="box-content">게임 개발, 앱 만들기, 웹사이트, 로봇 제어, AI 학습 등 모든 분야에서 사용돼요!</div></div>
+<div class="mascot-speech  avoid-break">
+        <img class="mascot-speech-img small" src="svg-assets/mascot-hello.svg" alt="마스코트" />
+        <div class="mascot-bubble ">이 개념은 나중에 코딩할 때 반드시 필요해요!</div>
+      </div>
+<h2>추가 연습문제</h2>
+<div class="exercise avoid-break"><div class="exercise-title">문제 20 <span class="difficulty diff-2">★★ 도전</span></div><div class="exercise-item"><p>이번 유닛에서 배운 핵심 개념 3가지를 자신의 말로 설명해 보세요.</p></div><div class="memo-area"><span class="memo-label">여기에 답을 써 보세요</span></div></div>
+<div class="exercise avoid-break"><div class="exercise-title">문제 21 <span class="difficulty diff-2">★★ 도전</span></div><div class="exercise-item"><p>이번 유닛의 개념을 활용한 자신만의 문제를 1개 만들어 보세요.</p></div><div class="memo-area"><span class="memo-label">여기에 답을 써 보세요</span></div></div>
+<div class="exercise avoid-break"><div class="exercise-title">문제 22 <span class="difficulty diff-3">★★★ 심화</span></div><div class="exercise-item"><p>이번 유닛의 개념이 C언어에서 어떻게 사용되는지 조사해 보세요.</p></div><div class="memo-area"><span class="memo-label">여기에 답을 써 보세요</span></div></div>
+<h2>[심화] 더 알아보기</h2>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">undefined</div><div class="fact-bite-text">컴퓨팅 사고력(CT) = 문제를 컴퓨터처럼 분석하고 해결하는 능력. 모든 코딩의 기본!</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">undefined</div><div class="fact-bite-text">문제 해결 4단계: 이해 → 계획 → 실행 → 검증. 코딩만이 아니라 모든 문제에 적용!</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">undefined</div><div class="fact-bite-text">추상화 = 복잡한 것에서 핵심만 뽑아내기. 지하철 노선도 = 실제 도시의 추상화!</div></div>
+<div class="mascot-speech right avoid-break">
+        <img class="mascot-speech-img small" src="svg-assets/mascot-celebrate.svg" alt="마스코트" />
+        <div class="mascot-bubble success">이번 유닛 완전 정복! 다음 유닛으로 고고!</div>
+      </div>
+<p>이번 유닛의 모든 개념을 완전히 이해했습니다. 다음 유닛에서 더 발전된 개념을 배워보세요!</p>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">undefined</div><div class="fact-bite-text">알고리즘 = 문제를 해결하는 단계별 방법. 요리 레시피도 알고리즘!</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">undefined</div><div class="fact-bite-text">패턴 = 반복되는 규칙. 패턴을 찾으면 문제가 쉽어져요!</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">undefined</div><div class="fact-bite-text">분해 = 큰 문제를 작은 조각으로 나누기. "어려운 문제는 없다, 모아놓은 쉬운 문제가 있을 뿐"</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">undefined</div><div class="fact-bite-text">논리 = 코딩의 핵심. 논리적으로 생각하는 능력이 가장 중요해요!</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">undefined</div><div class="fact-bite-text">번역기 = 컴파일러. C 코드를 기계어로 번역해주는 프로그램!</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">undefined</div><div class="fact-bite-text">KOI = 한국정보올림피아드. 초등부/중등부/고등부. 알고리즘+논리 대회!</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">undefined</div><div class="fact-bite-text">반복문 = 같은 일을 여러 번. for, while, do-while. 컴퓨터의 최대 장점!</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">undefined</div><div class="fact-bite-text">변수 = 값을 저장하는 상자. 이름을 붙여서 구별해요. int score = 100;</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">undefined</div><div class="fact-bite-text">함수 = 기능을 묶어놓은 상자. 한 번 만들면 여러 번 재사용!</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">undefined</div><div class="fact-bite-text">배열 = 같은 종류의 데이터를 여러 개 저장. int a[10] = 10칸짜리 상자!</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">undefined</div><div class="fact-bite-text">알고리즘 = 문제를 해결하는 단계별 방법. 요리 레시피도 알고리즘!</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">undefined</div><div class="fact-bite-text">패턴 = 반복되는 규칙. 패턴을 찾으면 문제가 쉽어져요!</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">undefined</div><div class="fact-bite-text">분해 = 큰 문제를 작은 조각으로 나누기. "어려운 문제는 없다, 모아놓은 쉬운 문제가 있을 뿐"</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">undefined</div><div class="fact-bite-text">논리 = 코딩의 핵심. 논리적으로 생각하는 능력이 가장 중요해요!</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">undefined</div><div class="fact-bite-text">번역기 = 컴파일러. C 코드를 기계어로 번역해주는 프로그램!</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">undefined</div><div class="fact-bite-text">KOI = 한국정보올림피아드. 초등부/중등부/고등부. 알고리즘+논리 대회!</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">undefined</div><div class="fact-bite-text">반복문 = 같은 일을 여러 번. for, while, do-while. 컴퓨터의 최대 장점!</div></div>
+<div class="box box-question avoid-break"><span class="box-label">[다음 유닛 미리보기]</span><div class="box-content">순열과 조합을 배웠으니, 이제 <b>재귀(Recursion)</b>를 배울 차례! 함수가 자기 자신을 호출하는 마법!</div></div>
+<div class="mascot-speech  avoid-break">
+        <img class="mascot-speech-img " src="svg-assets/mascot-hello.svg" alt="마스코트" />
+        <div class="mascot-bubble celebrate">순열과 조합 마스터! '순서가 중요한가?'만 생각하면 구분 끝. 다음은 재귀야!</div>
+      </div>
+</article>
+</body>
+</html>

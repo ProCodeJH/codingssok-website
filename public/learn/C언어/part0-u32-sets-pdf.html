@@ -1,0 +1,1536 @@
+﻿<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<base href="/learn/C언어/">
+<title>코딩쏙 교재 — 집합 — 조건을 만족하는 것들의 모임</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+/* ═══════════════════════════════════════════════════════════════
+   코딩쏙 프리미엄 PDF 교재 스타일시트 v5.0
+   Paged.js + A4 인쇄 최적화 + 아동교육 디자인 시스템
+   ═══════════════════════════════════════════════════════════════ */
+
+/* ── 리셋 & 기본 ── */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --c-primary: #FF6B6B;
+  --c-primary-light: #FFE8E8;
+  --c-primary-dark: #E84545;
+  --c-accent: #4ECDC4;
+  --c-accent-light: #E8FFF9;
+  --c-blue: #3B82F6;
+  --c-blue-light: #EFF6FF;
+  --c-purple: #8B5CF6;
+  --c-purple-light: #F5F3FF;
+  --c-orange: #F59E0B;
+  --c-orange-light: #FFFBEB;
+  --c-green: #10B981;
+  --c-green-light: #ECFDF5;
+  --c-red: #EF4444;
+  --c-red-light: #FEF2F2;
+  --c-teal: #14B8A6;
+  --c-teal-light: #F0FDFA;
+  --c-pink: #EC4899;
+  --c-text: #1E293B;
+  --c-text-secondary: #64748B;
+  --c-text-muted: #94A3B8;
+  --c-border: #E2E8F0;
+  --c-bg-subtle: #F8FAFC;
+  --c-bg-warm: #FFFBF5;
+  --font-body: 'Pretendard', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-code: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --radius-xl: 18px;
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.08);
+  --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
+  --shadow-lg: 0 8px 24px rgba(0,0,0,0.10);
+}
+
+/* ── 페이지 설정 ── */
+@page {
+  size: A4;
+  margin: 18mm 17mm 15mm 22mm;
+  @bottom-center {
+    content: counter(page);
+    font-family: var(--font-body);
+    font-size: 9pt;
+    color: var(--c-text-muted);
+    letter-spacing: 1px;
+  }
+}
+@page :first { @bottom-center { content: none; } }
+
+body {
+  font-family: var(--font-body);
+  color: var(--c-text);
+  background: white;
+  font-size: 11.5pt;
+  line-height: 180%;
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+  word-break: keep-all;
+  overflow-wrap: break-word;
+}
+
+/* ── 페이지 제어 ── */
+.avoid-break { break-inside: avoid !important; page-break-inside: avoid !important; }
+h2, h3 { break-after: avoid !important; page-break-after: avoid !important; }
+.page-break-hint { break-before: page !important; page-break-before: always !important; height: 0; margin: 0; padding: 0; }
+p { orphans: 3; widows: 3; }
+
+/* ═══════════════════════════════════════
+   레슨 헤더 — 프리미엄 그래디언트 배너
+   ═══════════════════════════════════════ */
+.lesson-header {
+  margin-bottom: 6mm;
+  padding: 6mm 5mm 5mm;
+  background: linear-gradient(135deg, #FF6B6B 0%, #FF8E53 50%, #FEC89A 100%);
+  border-radius: var(--radius-xl);
+  color: white;
+  position: relative;
+  overflow: hidden;
+  box-shadow: var(--shadow-lg);
+}
+.lesson-header::before {
+  content: '';
+  position: absolute;
+  top: -30%;
+  right: -10%;
+  width: 140px;
+  height: 140px;
+  background: rgba(255,255,255,0.12);
+  border-radius: 50%;
+}
+.lesson-header::after {
+  content: '';
+  position: absolute;
+  bottom: -20%;
+  left: 15%;
+  width: 80px;
+  height: 80px;
+  background: rgba(255,255,255,0.08);
+  border-radius: 50%;
+}
+.lesson-number {
+  font-size: 10pt;
+  font-weight: 700;
+  color: rgba(255,255,255,0.85);
+  margin-bottom: 2mm;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  position: relative;
+  z-index: 1;
+}
+.lesson-title {
+  font-size: 24pt;
+  font-weight: 900;
+  line-height: 125%;
+  color: white;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.15);
+  position: relative;
+  z-index: 1;
+}
+.lesson-summary {
+  font-size: 11pt;
+  color: rgba(255,255,255,0.9);
+  margin-top: 2.5mm;
+  font-weight: 400;
+  position: relative;
+  z-index: 1;
+}
+
+/* ═══════════════════════════════════════
+   제목 계층 — 프리미엄 타이포그래피
+   ═══════════════════════════════════════ */
+h2 {
+  font-size: 16pt;
+  font-weight: 800;
+  margin: 6mm 0 3mm;
+  padding: 2mm 0 2mm 4.5mm;
+  border-left: 4.5px solid var(--c-primary);
+  color: var(--c-text);
+  background: linear-gradient(90deg, var(--c-primary-light) 0%, transparent 60%);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  letter-spacing: -0.3px;
+}
+h3 {
+  font-size: 13.5pt;
+  font-weight: 700;
+  color: #334155;
+  margin: 4mm 0 2.5mm;
+  padding-bottom: 1mm;
+  border-bottom: 2px solid #F1F5F9;
+}
+p {
+  margin-bottom: 2.5mm;
+  text-align: justify;
+  line-height: 175%;
+  font-size: 11.5pt;
+}
+
+/* ── 인라인 코드 ── */
+code {
+  font-family: var(--font-code);
+  font-size: 9.5pt;
+  background: linear-gradient(135deg, #FEF3C7, #FDE68A);
+  padding: 0.5mm 2mm;
+  border-radius: 4px;
+  color: #92400E;
+  border: 1px solid #FCD34D;
+  font-weight: 500;
+}
+
+/* ═══════════════════════════════════════
+   코드 블록 — 프리미엄 IDE 스타일
+   ═══════════════════════════════════════ */
+.code-block {
+  background: #0F172A;
+  border-radius: var(--radius-md);
+  padding: 0;
+  margin: 3mm 0;
+  box-shadow: var(--shadow-md), inset 0 1px 0 rgba(255,255,255,0.05);
+  overflow: hidden;
+  border: 1px solid #1E293B;
+}
+.code-block-header {
+  font-family: var(--font-body);
+  font-size: 8.5pt;
+  font-weight: 600;
+  color: #94A3B8;
+  padding: 2.5mm 4.5mm;
+  background: #1E293B;
+  border-bottom: 1px solid #334155;
+  letter-spacing: 0.5px;
+  display: flex;
+  align-items: center;
+  gap: 2mm;
+}
+.code-block-header::before {
+  content: '';
+  display: inline-flex;
+  width: 8px; height: 8px;
+  background: #EF4444;
+  border-radius: 50%;
+  box-shadow: 14px 0 0 #F59E0B, 28px 0 0 #22C55E;
+  flex-shrink: 0;
+}
+.code-table { width: 100%; border-collapse: collapse; table-layout: fixed; }
+.code-table td { vertical-align: top; padding: 0; }
+.line-num {
+  width: 12mm;
+  min-width: 12mm;
+  max-width: 12mm;
+  text-align: right;
+  padding: 0.5mm 3mm 0.5mm 2mm;
+  font-family: var(--font-code);
+  font-size: 8pt;
+  color: #475569;
+  line-height: 165%;
+  user-select: none;
+  background: rgba(0,0,0,0.15);
+  border-right: 1px solid rgba(255,255,255,0.06);
+}
+.line-code {
+  width: auto;
+  font-family: var(--font-code);
+  font-size: 10pt;
+  color: #E2E8F0;
+  line-height: 165%;
+  padding: 0.5mm 4mm 0.5mm 4mm;
+  white-space: pre;
+  overflow-x: auto;
+}
+.line-highlight td { background: rgba(59,130,246,0.12) !important; }
+.line-highlight .line-num { color: var(--c-blue) !important; font-weight: 700; }
+
+/* 신택스 컬러 — VS Code Dark+ 영감 */
+.kw { color: #C084FC; font-weight: 500; }
+.str { color: #86EFAC; }
+.cmt { color: #6B7280; font-style: italic; }
+.fn { color: #FDBA74; }
+.pp { color: #F472B6; font-weight: 600; }
+.num { color: #7DD3FC; }
+.type { color: #5EEAD4; font-weight: 500; }
+.mc { color: #67E8F9; }
+.esc { color: #FCD34D; font-weight: 600; }
+.fmt { color: #FCD34D; }
+
+/* ═══════════════════════════════════════
+   실행 결과 — 터미널 스타일
+   ═══════════════════════════════════════ */
+.output-block {
+  background: #F0FDF4;
+  border: 1.5px solid #86EFAC;
+  border-radius: var(--radius-md);
+  padding: 3mm 4mm;
+  margin: 3mm 0;
+  position: relative;
+}
+.output-label {
+  font-family: var(--font-body);
+  font-size: 8.5pt;
+  color: var(--c-green);
+  display: block;
+  margin-bottom: 1.5mm;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+.output-text {
+  font-family: var(--font-code);
+  font-size: 10.5pt;
+  line-height: 160%;
+  color: #166534;
+}
+
+/* ═══════════════════════════════════════
+   박스 시스템 — 프리미엄 카드 디자인
+   ═══════════════════════════════════════ */
+.box {
+  border-radius: var(--radius-md);
+  padding: 3.5mm 4.5mm;
+  margin: 3mm 0;
+  position: relative;
+  box-shadow: var(--shadow-sm);
+}
+.box-label {
+  font-size: 10.5pt;
+  font-weight: 800;
+  margin-bottom: 2mm;
+  display: flex;
+  align-items: center;
+  gap: 2mm;
+}
+.box-content { font-size: 11pt; line-height: 170%; overflow-wrap: break-word; word-break: keep-all; }
+.box-warning {
+  border-left: 5px solid var(--c-red);
+  background: linear-gradient(135deg, #FEF2F2 0%, #FFF1F2 100%);
+}
+.box-warning .box-label { color: var(--c-red); }
+.box-key {
+  border-left: 5px solid var(--c-blue);
+  background: linear-gradient(135deg, #EFF6FF 0%, #F0F9FF 100%);
+}
+.box-key .box-label { color: var(--c-blue); }
+.box-tip {
+  border-left: 5px solid var(--c-orange);
+  background: linear-gradient(135deg, #FFFBEB 0%, #FEF9C3 50%, #FFFBEB 100%);
+}
+.box-tip .box-label { color: var(--c-orange); }
+.box-summary {
+  border-left: 5px solid var(--c-green);
+  background: linear-gradient(135deg, #ECFDF5 0%, #D1FAE5 100%);
+  border: 1.5px solid #A7F3D0;
+  border-left: 5px solid var(--c-green);
+}
+.box-summary .box-label { color: var(--c-green); }
+.box-question {
+  border-left: 5px solid var(--c-purple);
+  background: linear-gradient(135deg, #F5F3FF 0%, #EDE9FE 100%);
+}
+.box-question .box-label { color: var(--c-purple); }
+.box-history {
+  border-left: 5px solid var(--c-teal);
+  background: linear-gradient(135deg, #F0FDFA 0%, #CCFBF1 100%);
+}
+.box-history .box-label { color: var(--c-teal); }
+
+/* ═══════════════════════════════════════
+   연습문제 — 프리미엄 카드
+   ═══════════════════════════════════════ */
+.exercise {
+  background: white;
+  border: 1.5px solid #E2E8F0;
+  border-radius: var(--radius-lg);
+  padding: 3.5mm 4.5mm;
+  margin: 3mm 0;
+  border-left: 5px solid var(--c-primary);
+  box-shadow: var(--shadow-sm);
+  position: relative;
+}
+.exercise-title {
+  font-size: 13pt;
+  font-weight: 800;
+  color: var(--c-primary);
+  margin-bottom: 2.5mm;
+  display: flex;
+  align-items: center;
+  gap: 2mm;
+}
+.difficulty {
+  display: inline-flex;
+  align-items: center;
+  font-size: 8pt;
+  padding: 0.5mm 2.5mm;
+  border-radius: 20px;
+  margin-left: 2mm;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+}
+.diff-1 { background: #D1FAE5; color: #059669; }
+.diff-2 { background: #FEF3C7; color: #D97706; }
+.diff-3 { background: #FEE2E2; color: #DC2626; }
+.memo-area {
+  border: 2px dashed #CBD5E1;
+  border-radius: var(--radius-md);
+  padding: 3mm;
+  min-height: 15mm;
+  margin-top: 2.5mm;
+  background: repeating-linear-gradient(
+    transparent, transparent 7mm, #F1F5F9 7mm, #F1F5F9 7.5mm
+  );
+}
+.memo-label { font-size: 8.5pt; color: var(--c-text-muted); font-style: italic; }
+
+/* ── OX/Choice/Short ── */
+.exercise-answer {
+  font-size: 10pt;
+  color: var(--c-green);
+  margin-top: 2mm;
+  padding: 1.5mm 3mm;
+  background: var(--c-green-light);
+  border-radius: var(--radius-sm);
+  font-weight: 600;
+  border: 1px solid #A7F3D0;
+}
+.exercise-explain {
+  font-size: 9.5pt;
+  color: var(--c-text-secondary);
+  margin-top: 1.5mm;
+  padding: 2mm 3mm;
+  background: #F8FAFC;
+  border-radius: var(--radius-sm);
+  border-left: 3px solid #E2E8F0;
+}
+.choice-list { padding-left: 6mm; margin: 2mm 0; }
+.choice-list li { font-size: 10.5pt; margin-bottom: 1.5mm; line-height: 150%; }
+.choice-list li.choice-correct { color: var(--c-green); font-weight: 700; }
+
+/* ═══════════════════════════════════════
+   Before/After 비교 — 프리미엄 2컬럼
+   ═══════════════════════════════════════ */
+.compare {
+  display: flex;
+  gap: 3mm;
+  margin: 3mm 0;
+  overflow: hidden;
+}
+.compare-bad {
+  flex: 1;
+  min-width: 0;
+  background: linear-gradient(135deg, #FEF2F2, #FFF1F2);
+  border: 1.5px solid #FECACA;
+  border-radius: var(--radius-md);
+  padding: 3mm;
+  overflow: hidden;
+}
+.compare-good {
+  flex: 1;
+  min-width: 0;
+  background: linear-gradient(135deg, #ECFDF5, #D1FAE5);
+  border: 1.5px solid #A7F3D0;
+  border-radius: var(--radius-md);
+  padding: 3mm;
+  overflow: hidden;
+}
+.compare code {
+  font-size: 9pt;
+  word-break: break-all;
+  overflow-wrap: break-word;
+  display: block;
+  background: rgba(0,0,0,0.05);
+  padding: 2mm 3mm;
+  border-radius: var(--radius-sm);
+  margin: 1.5mm 0;
+  line-height: 155%;
+  white-space: pre-wrap;
+  border: none;
+  color: inherit;
+}
+.compare-label { font-size: 9.5pt; font-weight: 800; margin-bottom: 1.5mm; }
+.compare-bad .compare-label { color: var(--c-red); }
+.compare-good .compare-label { color: var(--c-green); }
+.compare-msg-bad { font-size: 9pt; color: var(--c-red); }
+.compare-msg-good { font-size: 9pt; color: var(--c-green); }
+
+/* ═══════════════════════════════════════
+   챕터 시작 — 프리미엄 카드
+   ═══════════════════════════════════════ */
+.chapter-start-box { margin-bottom: 3mm; }
+.learning-goals {
+  background: linear-gradient(135deg, #FFF7ED 0%, #FFFBEB 100%);
+  border-radius: var(--radius-lg);
+  padding: 4mm 5mm;
+  margin-bottom: 3mm;
+  border: 1.5px solid #FED7AA;
+  box-shadow: var(--shadow-sm);
+}
+.learning-goals h3 {
+  font-size: 12pt;
+  font-weight: 800;
+  color: #EA580C;
+  margin: 0 0 2.5mm;
+  border: none;
+  padding: 0;
+}
+.learning-goals ul { padding-left: 5mm; margin: 0; }
+.learning-goals li { font-size: 11pt; margin-bottom: 1.5mm; line-height: 160%; color: #431407; }
+.prereq-check {
+  background: var(--c-blue-light);
+  border-left: 5px solid var(--c-blue);
+  border-radius: var(--radius-md);
+  padding: 3mm 4mm;
+  margin-bottom: 2.5mm;
+}
+.prereq-check h3 {
+  font-size: 11pt;
+  font-weight: 700;
+  color: var(--c-blue);
+  margin: 0 0 1.5mm;
+  border: none;
+  padding: 0;
+}
+.checklist { list-style: none; padding-left: 4mm; margin: 0; }
+.checklist li { margin-bottom: 1mm; font-size: 10.5pt; }
+.checklist li::before { content: '\2610  '; font-size: 12pt; color: var(--c-text-muted); }
+.progress-section { margin-top: 2.5mm; }
+.progress-label { font-size: 9.5pt; color: var(--c-text-secondary); font-weight: 600; }
+.progress-bar {
+  background: #E2E8F0;
+  border-radius: 6px;
+  height: 4mm;
+  margin-top: 1.5mm;
+  overflow: hidden;
+}
+.progress-fill {
+  background: linear-gradient(90deg, var(--c-primary), #FF8E53, #FEC89A);
+  height: 100%;
+  border-radius: 6px;
+}
+
+/* ═══════════════════════════════════════
+   Predict — 생각해보기 카드
+   ═══════════════════════════════════════ */
+.predict-box {
+  display: flex;
+  gap: 3.5mm;
+  background: linear-gradient(135deg, #F5F3FF 0%, #EDE9FE 100%);
+  border: 1.5px solid #C4B5FD;
+  border-radius: var(--radius-lg);
+  padding: 3.5mm 4.5mm;
+  margin: 3mm 0;
+  box-shadow: var(--shadow-sm);
+}
+.predict-icon {
+  width: 10mm; height: 10mm;
+  background: linear-gradient(135deg, var(--c-purple), #A78BFA);
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16pt;
+  font-weight: 900;
+  flex-shrink: 0;
+  box-shadow: 0 2px 6px rgba(139,92,246,0.3);
+}
+.predict-content { flex: 1; }
+.predict-content p { font-size: 11pt; margin-bottom: 2mm; }
+
+/* ═══════════════════════════════════════
+   다이어그램 — 프리미엄 컨테이너
+   ═══════════════════════════════════════ */
+.diagram-box {
+  background: var(--c-bg-subtle);
+  border: 1.5px solid var(--c-border);
+  border-radius: var(--radius-lg);
+  padding: 4mm;
+  margin: 3.5mm 0;
+  box-shadow: var(--shadow-sm);
+}
+.diagram-title {
+  font-size: 11pt;
+  font-weight: 800;
+  color: var(--c-primary);
+  margin-bottom: 3mm;
+  text-align: center;
+  letter-spacing: 0.3px;
+}
+.diagram-content { font-size: 10.5pt; line-height: 170%; }
+.diagram-content .d-row { display: flex; align-items: center; justify-content: center; gap: 3mm; margin: 2mm 0; }
+.diagram-content .d-block { background: #1E293B; color: white; padding: 2mm 4mm; border-radius: var(--radius-sm); font-family: var(--font-code); font-size: 9.5pt; font-weight: 500; }
+.diagram-content .d-block-highlight { background: linear-gradient(135deg, var(--c-primary), #FF8E53); color: white; padding: 2mm 4mm; border-radius: var(--radius-sm); font-family: var(--font-code); font-size: 9.5pt; font-weight: 700; }
+.diagram-content .d-arrow { color: var(--c-text-muted); font-size: 14pt; }
+.diagram-content .d-label { font-size: 8.5pt; color: var(--c-text-secondary); }
+
+/* ═══════════════════════════════════════
+   Steps — 프리미엄 타임라인
+   ═══════════════════════════════════════ */
+.steps-visual { margin: 3mm 0; }
+.step-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 3.5mm;
+  margin-bottom: 1.5mm;
+}
+.step-num {
+  width: 8mm; height: 8mm;
+  background: linear-gradient(135deg, var(--c-primary), #FF8E53);
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10pt;
+  font-weight: 800;
+  flex-shrink: 0;
+  margin-top: 0.5mm;
+  box-shadow: 0 2px 4px rgba(255,107,107,0.3);
+}
+.step-body { flex: 1; }
+.step-title { font-size: 11pt; font-weight: 700; margin-bottom: 0.5mm; color: var(--c-text); }
+.step-desc { font-size: 10.5pt; color: var(--c-text-secondary); line-height: 160%; }
+.step-connector { width: 2.5px; height: 4mm; background: linear-gradient(180deg, var(--c-primary), transparent); margin-left: 3.7mm; }
+
+/* ═══════════════════════════════════════
+   Modify — 바꿔보기 카드
+   ═══════════════════════════════════════ */
+.modify-box {
+  background: linear-gradient(135deg, #F0F9FF 0%, #E0F2FE 100%);
+  border: 1.5px solid #7DD3FC;
+  border-left: 5px solid #0EA5E9;
+  border-radius: var(--radius-md);
+  padding: 3.5mm 4.5mm;
+  margin: 3mm 0;
+}
+.modify-label { font-size: 10.5pt; font-weight: 800; color: #0284C7; margin-bottom: 2mm; }
+.modify-hint { font-size: 9.5pt; color: var(--c-text-secondary); font-style: italic; margin: 1.5mm 0; }
+
+/* ═══════════════════════════════════════
+   정답 섹션
+   ═══════════════════════════════════════ */
+.answers-section {
+  background: white;
+  border: 1.5px solid #E9D5FF;
+  border-radius: var(--radius-md);
+  padding: 3mm 4mm;
+  margin: 3mm 0;
+  border-left: 5px solid var(--c-purple);
+}
+.answers-section h3 {
+  font-size: 12pt;
+  font-weight: 800;
+  color: var(--c-purple);
+  margin: 0 0 2.5mm;
+  border: none;
+  padding: 0;
+}
+.answer-item { margin-bottom: 1mm; font-size: 10pt; line-height: 150%; }
+.answer-num { font-weight: 700; color: var(--c-primary); margin-right: 2mm; }
+.answer-text { color: var(--c-text); }
+
+/* ═══════════════════════════════════════
+   코드 설명 (라인별)
+   ═══════════════════════════════════════ */
+.code-explain { margin: 3mm 0; padding-left: 2mm; }
+.code-explain-item {
+  display: flex;
+  align-items: flex-start;
+  margin-bottom: 2.5mm;
+  font-size: 11pt;
+  line-height: 165%;
+}
+.code-explain-line {
+  font-family: var(--font-code);
+  font-size: 9pt;
+  color: white;
+  background: linear-gradient(135deg, var(--c-primary), #FF8E53);
+  padding: 0.5mm 2.5mm;
+  border-radius: 4px;
+  margin-right: 3mm;
+  flex-shrink: 0;
+  font-weight: 700;
+  box-shadow: 0 1px 3px rgba(255,107,107,0.3);
+}
+
+/* ═══════════════════════════════════════
+   용어 정리 — 프리미엄 테이블
+   ═══════════════════════════════════════ */
+.glossary { margin: 3mm 0; break-inside: avoid; display: block !important; width: 100% !important; clear: both; }
+.glossary-item {
+  display: flex;
+  margin-bottom: 0;
+  font-size: 10pt;
+  padding: 2mm 3mm;
+  border-bottom: 1px solid #F1F5F9;
+  width: 100%;
+}
+.glossary-item:nth-child(odd) { background: #F8FAFC; }
+.glossary-item:first-child { border-radius: var(--radius-sm) var(--radius-sm) 0 0; }
+.glossary-item:last-child { border-radius: 0 0 var(--radius-sm) var(--radius-sm); border-bottom: none; }
+.glossary-term {
+  font-weight: 700;
+  min-width: 28mm;
+  max-width: 35mm;
+  flex-shrink: 0;
+  color: var(--c-text);
+  font-family: var(--font-code);
+  font-size: 9.5pt;
+  word-break: keep-all;
+}
+.glossary-def { color: var(--c-text-secondary); line-height: 155%; flex: 1; min-width: 0; }
+
+/* ═══════════════════════════════════════
+   추적 테이블 — 프리미엄 데이터 테이블
+   ═══════════════════════════════════════ */
+.trace-table { margin: 3.5mm 0; }
+.trace-caption { font-size: 10.5pt; font-weight: 700; color: var(--c-primary); margin-bottom: 2mm; }
+.trace-table table { width: 100%; border-collapse: collapse; font-size: 10pt; border-radius: var(--radius-sm); overflow: hidden; }
+.trace-table th {
+  background: linear-gradient(135deg, #1E293B, #334155);
+  color: white;
+  padding: 2mm 3.5mm;
+  text-align: left;
+  font-weight: 700;
+  font-size: 9.5pt;
+}
+.trace-table td { padding: 2mm 3.5mm; border-bottom: 1px solid #F1F5F9; font-family: var(--font-code); font-size: 9.5pt; }
+.trace-table tr:nth-child(even) td { background: #F8FAFC; }
+
+/* ═══════════════════════════════════════
+   마스코트 말풍선 — 프리미엄 디자인
+   ═══════════════════════════════════════ */
+.mascot-speech {
+  display: flex;
+  align-items: flex-start;
+  gap: 3.5mm;
+  margin: 3.5mm 0;
+}
+.mascot-speech.right { flex-direction: row-reverse; }
+.mascot-speech-img {
+  flex-shrink: 0;
+  width: 60px;
+  height: 60px;
+  object-fit: contain;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.15));
+}
+.mascot-speech-img.small { width: 48px; height: 48px; }
+.mascot-speech-img.large { width: 80px; height: 80px; }
+.mascot-bubble {
+  position: relative;
+  background: linear-gradient(135deg, #EFF6FF 0%, #DBEAFE 100%);
+  border: 1.5px solid #93C5FD;
+  border-radius: var(--radius-lg);
+  padding: 3.5mm 4.5mm;
+  font-size: 10.5pt;
+  color: #1E3A5F;
+  line-height: 1.6;
+  flex: 1;
+  max-width: 85%;
+  box-shadow: var(--shadow-sm);
+}
+.mascot-bubble.warn {
+  background: linear-gradient(135deg, #FEF2F2, #FEE2E2);
+  border-color: #FCA5A5;
+  color: #7F1D1D;
+}
+.mascot-bubble.success {
+  background: linear-gradient(135deg, #ECFDF5, #D1FAE5);
+  border-color: #6EE7B7;
+  color: #14532D;
+}
+.mascot-bubble.tip {
+  background: linear-gradient(135deg, #FFFBEB, #FEF3C7);
+  border-color: #FCD34D;
+  color: #78350F;
+}
+.mascot-bubble::before {
+  content: '';
+  position: absolute;
+  top: 14px;
+  left: -9px;
+  border: 7px solid transparent;
+  border-right-color: #93C5FD;
+}
+.mascot-bubble::after {
+  content: '';
+  position: absolute;
+  top: 15px;
+  left: -7px;
+  border: 6px solid transparent;
+  border-right-color: #EFF6FF;
+}
+.mascot-speech.right .mascot-bubble::before {
+  left: auto; right: -9px;
+  border-right-color: transparent;
+  border-left-color: #93C5FD;
+}
+.mascot-speech.right .mascot-bubble::after {
+  left: auto; right: -7px;
+  border-right-color: transparent;
+  border-left-color: #EFF6FF;
+}
+.mascot-bubble.warn::before { border-right-color: #FCA5A5; }
+.mascot-bubble.warn::after { border-right-color: #FEF2F2; }
+.mascot-speech.right .mascot-bubble.warn::before { border-right-color: transparent; border-left-color: #FCA5A5; }
+.mascot-speech.right .mascot-bubble.warn::after { border-right-color: transparent; border-left-color: #FEF2F2; }
+.mascot-bubble.success::before { border-right-color: #6EE7B7; }
+.mascot-bubble.success::after { border-right-color: #ECFDF5; }
+.mascot-speech.right .mascot-bubble.success::before { border-right-color: transparent; border-left-color: #6EE7B7; }
+.mascot-speech.right .mascot-bubble.success::after { border-right-color: transparent; border-left-color: #ECFDF5; }
+.mascot-bubble.tip::before { border-right-color: #FCD34D; }
+.mascot-bubble.tip::after { border-right-color: #FFFBEB; }
+.mascot-speech.right .mascot-bubble.tip::before { border-right-color: transparent; border-left-color: #FCD34D; }
+.mascot-speech.right .mascot-bubble.tip::after { border-right-color: transparent; border-left-color: #FFFBEB; }
+
+/* ═══════════════════════════════════════
+   Fact Bite — 숫자/팩트 강조 카드
+   ═══════════════════════════════════════ */
+.fact-bite {
+  display: flex;
+  align-items: center;
+  gap: 4mm;
+  margin: 3mm 0;
+  background: linear-gradient(135deg, #FFF1F2 0%, #FFE4E6 50%, #FFF1F2 100%);
+  border-radius: var(--radius-lg);
+  padding: 3.5mm 5mm;
+  border: 1.5px solid #FECDD3;
+  box-shadow: var(--shadow-sm);
+}
+.fact-bite-number {
+  font: 900 18pt var(--font-body);
+  background: linear-gradient(135deg, var(--c-primary), #FF8E53);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  white-space: nowrap;
+  flex-shrink: 0;
+  max-width: 40%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.fact-bite-text { font-size: 10pt; color: var(--c-text-secondary); line-height: 1.5; flex: 1; min-width: 0; }
+
+/* ═══════════════════════════════════════
+   Visual Summary — 핵심 정리 카드
+   ═══════════════════════════════════════ */
+.visual-summary {
+  background: linear-gradient(135deg, #ECFDF5 0%, #D1FAE5 50%, #A7F3D0 100%);
+  border: 1.5px solid #6EE7B7;
+  border-radius: var(--radius-xl);
+  padding: 5mm;
+  margin: 4mm 0;
+  box-shadow: var(--shadow-md);
+  display: block !important;
+  width: 100% !important;
+  clear: both;
+}
+.visual-summary-title {
+  font-size: 14pt;
+  font-weight: 900;
+  color: #065F46;
+  text-align: center;
+  margin-bottom: 3mm;
+}
+.visual-summary-items { display: flex; flex-direction: column; gap: 2mm; }
+.visual-summary-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 3mm;
+  background: rgba(255,255,255,0.7);
+  padding: 2.5mm 3.5mm;
+  border-radius: var(--radius-md);
+  backdrop-filter: blur(4px);
+}
+.visual-summary-num {
+  width: 7mm; height: 7mm;
+  background: linear-gradient(135deg, #059669, #10B981);
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 9pt;
+  font-weight: 800;
+  flex-shrink: 0;
+  box-shadow: 0 1px 3px rgba(5,150,105,0.3);
+}
+
+/* ═══════════════════════════════════════
+   10축 매핑 전용 스타일
+   ═══════════════════════════════════════ */
+.axis-section {
+  background: linear-gradient(135deg, #F8FAFC 0%, #F1F5F9 100%);
+  border: 1.5px solid #CBD5E1;
+  border-radius: var(--radius-xl);
+  padding: 5mm;
+  margin: 5mm 0;
+  box-shadow: var(--shadow-md);
+  page-break-inside: avoid;
+}
+.axis-title {
+  font-size: 14pt;
+  font-weight: 900;
+  text-align: center;
+  margin-bottom: 4mm;
+  color: var(--c-text);
+  letter-spacing: -0.3px;
+}
+.axis-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2.5mm;
+}
+.axis-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 2mm;
+  padding: 2.5mm 3mm;
+  border-radius: var(--radius-md);
+  background: white;
+  border: 1px solid #E2E8F0;
+}
+.axis-badge {
+  font-size: 7.5pt;
+  font-weight: 800;
+  padding: 0.5mm 2.5mm;
+  border-radius: 20px;
+  flex-shrink: 0;
+  letter-spacing: 0.3px;
+  white-space: nowrap;
+}
+.axis-badge.c-lang { background: #DBEAFE; color: #1D4ED8; }
+.axis-badge.thinking { background: #E0E7FF; color: #4338CA; }
+.axis-badge.debug { background: #FEE2E2; color: #DC2626; }
+.axis-badge.koi { background: #FEF3C7; color: #B45309; }
+.axis-badge.basics { background: #D1FAE5; color: #059669; }
+.axis-badge.reallife { background: #CCFBF1; color: #0D9488; }
+.axis-badge.crosssubj { background: #E9D5FF; color: #7C3AED; }
+.axis-badge.project { background: #FFE4E6; color: #BE123C; }
+.axis-badge.ai { background: #FCE7F3; color: #DB2777; }
+.axis-badge.hardware { background: #CFFAFE; color: #0891B2; }
+.axis-text { font-size: 9.5pt; line-height: 150%; color: var(--c-text-secondary); }
+
+/* ── TOC ── */
+.toc { margin: 5mm 0; }
+.toc h2 { border: none; padding: 0; margin-bottom: 3mm; background: none; }
+.toc ul { list-style: none; padding: 0; }
+.toc-h2 { display: flex; align-items: baseline; margin-bottom: 1.5mm; font-size: 11pt; }
+.toc-text { flex-shrink: 0; }
+.toc-dots { flex: 1; border-bottom: 1.5px dotted #CBD5E1; margin: 0 2mm; min-width: 10mm; }
+.toc-page { flex-shrink: 0; color: var(--c-text-muted); font-size: 10pt; }
+
+/* ── Margin Note ── */
+.margin-note {
+  float: right;
+  width: 30mm;
+  font-size: 8.5pt;
+  color: var(--c-text-secondary);
+  background: linear-gradient(135deg, #FFFBEB, #FEF3C7);
+  padding: 2mm 2.5mm;
+  border-radius: var(--radius-sm);
+  margin: 0 -35mm 2mm 2mm;
+  border-left: 2.5px solid var(--c-orange);
+}
+
+/* ── Cross Reference ── */
+.crossref { font-size: 9pt; color: var(--c-blue); font-style: italic; font-weight: 500; }
+
+/* ── Image ── */
+.image-block { margin: 3.5mm 0; text-align: center; }
+.image-block img { max-width: 100%; border-radius: var(--radius-md); box-shadow: var(--shadow-sm); }
+.image-caption {
+  font-size: 9pt;
+  color: var(--c-text-secondary);
+  margin-top: 2mm;
+  font-style: italic;
+  background: var(--c-bg-subtle);
+  padding: 1.5mm 4mm;
+  border-radius: 20px;
+  display: inline-block;
+}
+
+/* ═══════════════════════════════════════
+   v7.0 — 80레이어 리서치 증강분
+   v5 프리미엄 기반 + TEXTBOOK-DESIGN-DEEP P1~P6 합성
+   ═══════════════════════════════════════ */
+
+/* ── Layer 26: 게슈탈트 근접성 강화 ── */
+h2 + p,
+h3 + p,
+h2 + .code-block,
+h3 + .code-block { margin-top: 1mm !important; }
+.code-block + .code-explain { margin-top: 0.5mm; }
+.code-block + .output-block { margin-top: 1mm; }
+.exercise + .exercise { margin-top: 1.5mm; }
+
+/* ── Layer 28: 마이크로 타이포그래피 ── */
+body {
+  font-kerning: auto;
+  font-variant-ligatures: common-ligatures;
+  hanging-punctuation: first last;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+.line-num { font-variant-numeric: tabular-nums; }
+.trace-table td { font-variant-numeric: tabular-nums; }
+
+/* ── Layer 29: 연습문제 유형별 스타일 ── */
+.exercise-item { margin-bottom: 2mm; font-size: 11pt; line-height: 165%; }
+.exercise-item p { margin-bottom: 1.5mm; }
+.exercise-blank { display: inline-block; min-width: 20mm; border-bottom: 2px solid var(--c-primary); margin: 0 1mm; }
+.exercise-ox-grid { display: flex; gap: 3mm; margin-top: 2mm; }
+.exercise-ox-item { flex: 1; padding: 2mm 3mm; border: 1px solid var(--c-border); border-radius: var(--radius-sm); font-size: 10pt; }
+.exercise-matching { display: grid; grid-template-columns: 1fr auto 1fr; gap: 1.5mm; font-size: 10pt; }
+.exercise-reorder { display: flex; flex-direction: column; gap: 1mm; font-family: var(--font-code); font-size: 9.5pt; }
+.exercise-reorder-item { background: var(--c-bg-subtle); padding: 1.5mm 3mm; border-radius: var(--radius-sm); border: 1px solid var(--c-border); }
+
+/* ── Layer 30: 교사용 에디션 ── */
+.teacher-only { background: #FFF5F5; border: 2px dashed #E74C3C; padding: 3mm; border-radius: var(--radius-md); }
+.teacher-note { font-size: 9pt; color: #C0392B; font-style: italic; }
+
+/* ── Layer 32: 디자인 토큰 — 인쇄용 간격 ── */
+article > * + * { margin-top: 2.5mm; }
+article > h2 { margin-top: 5mm; }
+article > h3 { margin-top: 3.5mm; }
+
+/* ── Layer 51: 황금비 타이포 ──
+   24pt / 16pt / 13.5pt / 11.5pt = 1:0.67:0.56:0.48 ≈ 피보나치 */
+
+/* ── Layer 55: 인지부하 최적화 — 시각 앵커 ── */
+h2::before {
+  /* 빈 블록으로 스크롤 앵커 역할 — Paged.js에서 러닝헤드 지원 */
+}
+
+/* ── Layer 56: 아이트래킹 — F패턴 강화 ── */
+.lesson-header .lesson-number { font-weight: 700; }
+.box-label::before {
+  content: '';
+  display: inline-block;
+  width: 3px; height: 14px;
+  border-radius: 2px;
+  margin-right: 1.5mm;
+  flex-shrink: 0;
+}
+.box-warning .box-label::before { background: var(--c-red); }
+.box-key .box-label::before { background: var(--c-blue); }
+.box-tip .box-label::before { background: var(--c-orange); }
+.box-summary .box-label::before { background: var(--c-green); }
+.box-question .box-label::before { background: var(--c-purple); }
+.box-history .box-label::before { background: var(--c-teal); }
+
+/* ── Layer 58: 색상 조화 60-30-10 강화 ── */
+/* 60% = white/neutral, 30% = brand gradient accents, 10% = c-primary strong */
+
+/* ── Layer 60: 코드 블록 — 브래킷 컬러링 (Layer 30 from Deep) ── */
+.brace-1 { color: #C084FC; font-weight: bold; }
+.brace-2 { color: #86EFAC; font-weight: bold; }
+.brace-3 { color: #FDBA74; font-weight: bold; }
+.brace-4 { color: #7DD3FC; font-weight: bold; }
+
+/* ── Layer 61: 인덴트 가이드 ── */
+.indent-guide { border-left: 1px solid rgba(255,255,255,0.08); }
+
+/* ── Layer 65: 10축 매핑 강화 ── */
+.axis-item { transition: none; }
+.axis-section .box-content { font-size: 10pt; }
+
+/* ── Layer 67: 자료구조 시각화 ── */
+.ds-visual { font-family: var(--font-code); font-size: 9pt; text-align: center; margin: 3mm 0; }
+.ds-array { display: flex; justify-content: center; gap: 0; }
+.ds-cell { width: 9mm; height: 9mm; border: 1.5px solid var(--c-blue); display: flex; align-items: center; justify-content: center; font-weight: 700; }
+.ds-cell:first-child { border-radius: var(--radius-sm) 0 0 var(--radius-sm); }
+.ds-cell:last-child { border-radius: 0 var(--radius-sm) var(--radius-sm) 0; }
+.ds-index { font-size: 7pt; color: var(--c-text-muted); text-align: center; margin-top: 0.5mm; }
+
+/* ── Layer 68: 학습 저널 공간 ── */
+.reflection-box {
+  background: var(--c-bg-warm);
+  border: 1.5px dashed #FCD34D;
+  border-radius: var(--radius-lg);
+  padding: 4mm;
+  margin: 4mm 0;
+}
+.reflection-prompt { font-size: 10pt; color: var(--c-orange); font-weight: 700; margin-bottom: 2mm; }
+.reflection-lines {
+  min-height: 20mm;
+  background: repeating-linear-gradient(transparent, transparent 7mm, #FEF3C7 7mm, #FEF3C7 7.5mm);
+}
+
+/* ── Layer 69: 루브릭/자기평가 ── */
+.rubric-table { width: 100%; border-collapse: collapse; font-size: 9pt; margin: 3mm 0; }
+.rubric-table th { background: var(--c-purple); color: white; padding: 2mm; text-align: center; }
+.rubric-table td { padding: 2mm; border: 1px solid var(--c-border); text-align: center; }
+.self-check { display: flex; gap: 5mm; justify-content: center; margin: 3mm 0; }
+.self-check-item { text-align: center; font-size: 18pt; }
+.self-check-label { font-size: 7.5pt; color: var(--c-text-secondary); }
+
+/* ── Layer 72: 교실 게임 보드 ── */
+.bingo-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 1px; background: var(--c-border); border-radius: var(--radius-md); overflow: hidden; margin: 3mm 0; }
+.bingo-cell { background: white; padding: 3mm; text-align: center; font-size: 8.5pt; font-family: var(--font-code); min-height: 10mm; display: flex; align-items: center; justify-content: center; }
+.bingo-free { background: var(--c-primary-light); font-weight: 800; color: var(--c-primary); }
+
+/* ── Layer 77: 북마크/읽기 가이드 ──  */
+.reading-ruler { border-top: 3px solid var(--c-primary); margin: 4mm 0; opacity: 0.3; }
+
+/* ── Layer 78: 고급 그리드 — 2컬럼 레이아웃 ── */
+.two-col { display: flex; gap: 4mm; }
+.two-col > * { flex: 1; min-width: 0; }
+.three-col { display: flex; gap: 3mm; }
+.three-col > * { flex: 1; min-width: 0; }
+
+/* ── Layer 80: 인쇄 품질 마커 ── */
+.print-crop-mark { display: none; }
+
+/* ═══════════════════════════════════════
+   인쇄 최적화 — 강화 버전 (Layer 77~80)
+   ═══════════════════════════════════════ */
+@media print {
+  body {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  .lesson-header,
+  .code-block,
+  .box,
+  .exercise,
+  .predict-box,
+  .compare-bad,
+  .compare-good,
+  .step-num,
+  .mascot-bubble,
+  .visual-summary,
+  .axis-section,
+  .trace-table th,
+  .progress-fill,
+  .code-explain-line,
+  .fact-bite,
+  .diff-1, .diff-2, .diff-3,
+  .diagram-box,
+  .modify-box,
+  .answers-section {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  .no-print { display: none !important; }
+  /* orphan/widow 강화 */
+  p { orphans: 3; widows: 3; }
+  h2, h3 { break-after: avoid; }
+  .avoid-break { break-inside: avoid; }
+}
+
+/* ═══════════════════════════════════════
+   레이아웃 겹침 방지 — 모든 주요 섹션 블록 강제
+   ═══════════════════════════════════════ */
+article > .glossary,
+article > .visual-summary,
+article > .box,
+article > .fact-bite,
+article > .exercise,
+article > .answers-section,
+article > .mascot-speech,
+article > .code-block,
+article > .output-block,
+article > .compare,
+article > .predict-box {
+  display: block !important;
+  width: 100% !important;
+  float: none !important;
+  clear: both !important;
+}
+
+/* 박스 내부 테이블 오버플로 방지 */
+.box-content table { width: 100%; table-layout: fixed; }
+.box-content td, .box-content th { word-break: keep-all; overflow-wrap: break-word; }
+
+/* 마스코트 버블 너비 제한 완화 */
+.mascot-bubble { max-width: 100%; }
+
+/* Paged.js 컬럼 방지 */
+article { column-count: 1 !important; columns: 1 !important; }
+
+</style>
+<script src="https://unpkg.com/pagedjs/dist/paged.polyfill.js"></script>
+<script>
+  class PagedReadyHandler extends Paged.Handler {
+    constructor(chunker, polisher, caller) { super(chunker, polisher, caller); }
+    afterRendered(pages) {
+      document.body.setAttribute('data-paged-rendered', 'true');
+      document.body.setAttribute('data-page-count', pages.length);
+      console.log('PAGED_READY:' + pages.length);
+    }
+  }
+  Paged.registerHandlers(PagedReadyHandler);
+</script>
+</head>
+<body data-section-title="집합 — 조건을 만족하는 것들의 모임">
+<article id="content">
+  <header class="lesson-header" role="banner">
+    <div class="lesson-number">Lesson 0-32</div>
+    <h1 class="lesson-title">집합 — 조건을 만족하는 것들의 모임</h1>
+    <div class="lesson-summary">집합, 원소, 부분집합의 개념을 배우고, 합집합·교집합·차집합 연산과 벤 다이어그램을 이해해요.</div>
+  </header>
+<div class="chapter-start-box avoid-break"><div class="learning-goals"><h3>📚 이번에 배울 것</h3><ul><li>집합과 원소의 뜻을 설명할 수 있어요.</li><li>합집합, 교집합, 차집합을 구할 수 있어요.</li><li>벤 다이어그램을 그리고 읽을 수 있어요.</li><li>부분집합의 개수를 구할 수 있어요.</li><li>[심화] 비트마스크로 집합 연산을 구현할 수 있어요.</li><li>[심화] 배열로 집합을 표현하고 연산할 수 있어요.</li><li>[심화 내용] 멱집합, 카르테시안 곱, 집합론 기초를 알아요.</li></ul></div><div class="prereq-check"><h3>✅ 시작 전 체크</h3><ul class="checklist"><li>수의 분류 (홀수/짝수, 배수)</li><li>논리 연산 (AND, OR) 기본</li></ul></div><div class="progress-section"><span class="progress-label">Part 1 진행률: 32%</span><div class="progress-bar"><div class="progress-fill" style="width:32%"></div></div></div></div>
+<h2>집합이 뭘까?</h2>
+<div class="mascot-speech  avoid-break">
+        <img class="mascot-speech-img " src="svg-assets/mascot-hello.svg" alt="마스코트" />
+        <div class="mascot-bubble hello">'우리 반 남학생 모임', '10보다 작은 소수 모임'... 이렇게 <b>조건을 만족하는 것들을 모아 놓은 것</b>이 집합이야!</div>
+      </div>
+<div class="box box-key avoid-break"><span class="box-label">[핵심] 집합이란?</span><div class="box-content"><b>집합(Set)</b> = 조건을 만족하는 것들의 모임<br><br>표기: A = {1, 3, 5, 7, 9} (중괄호 사용)<br><br>규칙:<br>1. <b>순서 없음</b>: {1,2,3} = {3,1,2}<br>2. <b>중복 없음</b>: {1,1,2} = {1,2}<br>3. <b>원소</b>: 집합에 속한 각 것. 1 ∈ A (1은 A의 원소)</div></div>
+<p>집합을 표현하는 방법은 2가지가 있어요.</p>
+<div class="trace-table avoid-break"><div class="trace-caption">집합 표현 방법</div><table><thead><tr><th>방법</th><th>예시</th><th>설명</th></tr></thead><tbody><tr><td>원소나열법</td><td>{2, 4, 6, 8, 10}</td><td>원소를 직접 나열</td></tr><tr><td>조건제시법</td><td>{x | x는 10 이하 짝수}</td><td>조건으로 표현</td></tr></tbody></table></div>
+<h2>원소와 포함 관계</h2>
+<div class="box box-key avoid-break"><span class="box-label">[핵심] 원소 기호</span><div class="box-content">A = {1, 3, 5, 7}<br><br>3 <b>∈</b> A → '3은 A의 원소' (포함됨)<br>4 <b>∉</b> A → '4는 A의 원소가 아님' (포함 안 됨)<br><br>공집합: <b>∅</b> = {} (원소가 하나도 없는 집합)</div></div>
+<h2>부분집합</h2>
+<div class="box box-key avoid-break"><span class="box-label">[핵심] 부분집합</span><div class="box-content">A의 모든 원소가 B에도 있으면: A <b>⊂</b> B (A는 B의 부분집합)<br><br>예: {1, 3} ⊂ {1, 2, 3, 4, 5}<br><br><b>부분집합의 개수</b>: 원소 N개 → 부분집합 <b>2ⁿ</b>개<br>• {1, 2}: 부분집합 = {}, {1}, {2}, {1,2} → 2² = 4개<br>• {1, 2, 3}: 2³ = 8개</div></div>
+<div class="mascot-speech right avoid-break">
+        <img class="mascot-speech-img " src="svg-assets/mascot-eureka.svg" alt="마스코트" />
+        <div class="mascot-bubble eureka">부분집합 개수가 2ⁿ인 이유? 각 원소마다 '포함(1)/미포함(0)' 2가지 선택! N개 원소면 2×2×...×2 = 2ⁿ! 이거 비트마스크랑 같아!</div>
+      </div>
+<h2>합집합, 교집합, 차집합</h2>
+<div class="box box-key avoid-break"><span class="box-label">[핵심] 집합 연산 3가지</span><div class="box-content">A = {1, 2, 3, 4}, B = {3, 4, 5, 6}<br><br><b>합집합</b> A ∪ B = {1, 2, 3, 4, 5, 6}<br>→ 둘 중 <b>하나라도</b> 속하면 포함 (OR)<br><br><b>교집합</b> A ∩ B = {3, 4}<br>→ <b>둘 다</b> 속해야 포함 (AND)<br><br><b>차집합</b> A - B = {1, 2}<br>→ A에는 있지만 B에는 <b>없는</b> 것</div></div>
+<div class="compare avoid-break"><div class="compare-bad"><div class="compare-label">✕ 잘못된 코드</div><code></code><br><span class="compare-msg-bad"></span></div><div class="compare-good"><div class="compare-label">✓ 올바른 코드</div><code></code><br><span class="compare-msg-good"></span></div></div>
+<h2>벤 다이어그램</h2>
+<p>집합의 관계를 <b>그림</b>으로 나타낸 것이 벤 다이어그램이에요.</p>
+<div class="image-block avoid-break"><img src="visuals/part0-u32-venn-diagram.svg" alt="벤 다이어그램" style="max-width:100%"/><div class="image-caption">두 원이 겹치는 부분 = 교집합!</div></div>
+<div class="box box-tip avoid-break"><span class="box-label">[팁] 벤 다이어그램 읽기</span><div class="box-content">• 왼쪽 원만 = A - B (차집합)<br>• 겹치는 부분 = A ∩ B (교집합)<br>• 오른쪽 원만 = B - A<br>• 두 원 전체 = A ∪ B (합집합)<br>• 두 원 밖 = (A ∪ B)ᶜ (여집합)</div></div>
+<h2>[심화] C에서 배열로 집합 구현</h2>
+<div class="code-block avoid-break"><div class="code-block-header">set_array.c</div>
+        <table class="code-table"><tr class=""><td class="line-num">1</td><td class="line-code"><span class="pp">#include</span> <span class="str">&lt;stdio.h&gt;</span></td></tr>
+<tr class=""><td class="line-num">2</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">3</td><td class="line-code"><span class="cmt">// 합집합: A ∪ B</span></td></tr>
+<tr class=""><td class="line-num">4</td><td class="line-code"><span class="type">int</span> <span class="fn">setUnion</span>(<span class="type">int</span> A[], <span class="type">int</span> nA, <span class="type">int</span> B[], <span class="type">int</span> nB, <span class="type">int</span> result[]) {</td></tr>
+<tr class=""><td class="line-num">5</td><td class="line-code">    <span class="type">int</span> n = <span class="num">0</span>;</td></tr>
+<tr class=""><td class="line-num">6</td><td class="line-code">    <span class="cmt">// A의 모든 원소 추가</span></td></tr>
+<tr class=""><td class="line-num">7</td><td class="line-code">    <span class="kw">for</span> (<span class="type">int</span> i = <span class="num">0</span>; i &lt; nA; i++) result[n++] = A[i];</td></tr>
+<tr class=""><td class="line-num">8</td><td class="line-code">    <span class="cmt">// B에서 A에 없는 것만 추가</span></td></tr>
+<tr class=""><td class="line-num">9</td><td class="line-code">    <span class="kw">for</span> (<span class="type">int</span> i = <span class="num">0</span>; i &lt; nB; i++) {</td></tr>
+<tr class=""><td class="line-num">10</td><td class="line-code">        <span class="type">int</span> found = <span class="num">0</span>;</td></tr>
+<tr class=""><td class="line-num">11</td><td class="line-code">        <span class="kw">for</span> (<span class="type">int</span> j = <span class="num">0</span>; j &lt; nA; j++)</td></tr>
+<tr class=""><td class="line-num">12</td><td class="line-code">            <span class="kw">if</span> (B[i] == A[j]) { found = <span class="num">1</span>; <span class="kw">break</span>; }</td></tr>
+<tr class=""><td class="line-num">13</td><td class="line-code">        <span class="kw">if</span> (!found) result[n++] = B[i];</td></tr>
+<tr class=""><td class="line-num">14</td><td class="line-code">    }</td></tr>
+<tr class=""><td class="line-num">15</td><td class="line-code">    <span class="kw">return</span> n;</td></tr>
+<tr class=""><td class="line-num">16</td><td class="line-code">}</td></tr>
+<tr class=""><td class="line-num">17</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">18</td><td class="line-code"><span class="cmt">// 교집합: A ∩ B</span></td></tr>
+<tr class=""><td class="line-num">19</td><td class="line-code"><span class="type">int</span> <span class="fn">setIntersect</span>(<span class="type">int</span> A[], <span class="type">int</span> nA, <span class="type">int</span> B[], <span class="type">int</span> nB, <span class="type">int</span> result[]) {</td></tr>
+<tr class=""><td class="line-num">20</td><td class="line-code">    <span class="type">int</span> n = <span class="num">0</span>;</td></tr>
+<tr class=""><td class="line-num">21</td><td class="line-code">    <span class="kw">for</span> (<span class="type">int</span> i = <span class="num">0</span>; i &lt; nA; i++)</td></tr>
+<tr class=""><td class="line-num">22</td><td class="line-code">        <span class="kw">for</span> (<span class="type">int</span> j = <span class="num">0</span>; j &lt; nB; j++)</td></tr>
+<tr class=""><td class="line-num">23</td><td class="line-code">            <span class="kw">if</span> (A[i] == B[j]) { result[n++] = A[i]; <span class="kw">break</span>; }</td></tr>
+<tr class=""><td class="line-num">24</td><td class="line-code">    <span class="kw">return</span> n;</td></tr>
+<tr class=""><td class="line-num">25</td><td class="line-code">}</td></tr>
+<tr class=""><td class="line-num">26</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">27</td><td class="line-code"><span class="type">int</span> <span class="fn">main</span>(<span class="type">void</span>) {</td></tr>
+<tr class=""><td class="line-num">28</td><td class="line-code">    <span class="type">int</span> A[] = {<span class="num">1</span>, <span class="num">2</span>, <span class="num">3</span>, <span class="num">4</span>};</td></tr>
+<tr class=""><td class="line-num">29</td><td class="line-code">    <span class="type">int</span> B[] = {<span class="num">3</span>, <span class="num">4</span>, <span class="num">5</span>, <span class="num">6</span>};</td></tr>
+<tr class=""><td class="line-num">30</td><td class="line-code">    <span class="type">int</span> result[<span class="num">10</span>];</td></tr>
+<tr class=""><td class="line-num">31</td><td class="line-code">    </td></tr>
+<tr class=""><td class="line-num">32</td><td class="line-code">    <span class="type">int</span> n = <span class="fn">setUnion</span>(A, <span class="num">4</span>, B, <span class="num">4</span>, result);</td></tr>
+<tr class=""><td class="line-num">33</td><td class="line-code">    <span class="fn">printf</span>(<span class="str">"A ∪ B = {"</span>);</td></tr>
+<tr class=""><td class="line-num">34</td><td class="line-code">    <span class="kw">for</span> (<span class="type">int</span> i = <span class="num">0</span>; i &lt; n; i++) <span class="fn">printf</span>(<span class="str">"<span class="fmt">%d</span><span class="fmt">%s</span>"</span>, result[i], i&lt;n-<span class="num">1</span>?<span class="str">","</span>:<span class="str">""</span>);</td></tr>
+<tr class=""><td class="line-num">35</td><td class="line-code">    <span class="fn">printf</span>(<span class="str">"}<span class="esc">\n</span>"</span>);</td></tr>
+<tr class=""><td class="line-num">36</td><td class="line-code">    </td></tr>
+<tr class=""><td class="line-num">37</td><td class="line-code">    n = <span class="fn">setIntersect</span>(A, <span class="num">4</span>, B, <span class="num">4</span>, result);</td></tr>
+<tr class=""><td class="line-num">38</td><td class="line-code">    <span class="fn">printf</span>(<span class="str">"A ∩ B = {"</span>);</td></tr>
+<tr class=""><td class="line-num">39</td><td class="line-code">    <span class="kw">for</span> (<span class="type">int</span> i = <span class="num">0</span>; i &lt; n; i++) <span class="fn">printf</span>(<span class="str">"<span class="fmt">%d</span><span class="fmt">%s</span>"</span>, result[i], i&lt;n-<span class="num">1</span>?<span class="str">","</span>:<span class="str">""</span>);</td></tr>
+<tr class=""><td class="line-num">40</td><td class="line-code">    <span class="fn">printf</span>(<span class="str">"}<span class="esc">\n</span>"</span>);</td></tr>
+<tr class=""><td class="line-num">41</td><td class="line-code">    <span class="kw">return</span> <span class="num">0</span>;</td></tr>
+<tr class=""><td class="line-num">42</td><td class="line-code">}</td></tr></table></div>
+<div class="output-block avoid-break"><span class="output-label">실행 결과</span><div class="output-text">A ∪ B = {1,2,3,4,5,6}
+A ∩ B = {3,4}</div></div>
+<h2>[심화] 비트마스크로 집합 연산</h2>
+<div class="box box-key avoid-break"><span class="box-label">[심화] 비트마스크 집합</span><div class="box-content">전체 집합 = {0, 1, 2, 3, 4}일 때:<br><br>A = {1, 3, 4} → 비트: <b>11010</b> (= 26)<br>B = {0, 1, 2} → 비트: <b>00111</b> (= 7)<br><br>합집합: A | B = 11111 = {0,1,2,3,4}<br>교집합: A & B = 00010 = {1}<br>차집합: A & ~B = 11000 = {3,4}<br>여집합: ~A & 11111 = 00101 = {0,2}</div></div>
+<div class="code-block avoid-break"><div class="code-block-header">set_bitmask.c</div>
+        <table class="code-table"><tr class=""><td class="line-num">1</td><td class="line-code"><span class="pp">#include</span> <span class="str">&lt;stdio.h&gt;</span></td></tr>
+<tr class=""><td class="line-num">2</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">3</td><td class="line-code"><span class="type">void</span> <span class="fn">printSet</span>(<span class="type">int</span> mask, <span class="type">int</span> n) {</td></tr>
+<tr class=""><td class="line-num">4</td><td class="line-code">    <span class="fn">printf</span>(<span class="str">"{"</span>);</td></tr>
+<tr class=""><td class="line-num">5</td><td class="line-code">    <span class="type">int</span> first = <span class="num">1</span>;</td></tr>
+<tr class=""><td class="line-num">6</td><td class="line-code">    <span class="kw">for</span> (<span class="type">int</span> i = <span class="num">0</span>; i &lt; n; i++)</td></tr>
+<tr class=""><td class="line-num">7</td><td class="line-code">        <span class="kw">if</span> (mask &amp; (<span class="num">1</span> &lt;&lt; i)) {</td></tr>
+<tr class=""><td class="line-num">8</td><td class="line-code">            <span class="kw">if</span> (!first) <span class="fn">printf</span>(<span class="str">","</span>);</td></tr>
+<tr class=""><td class="line-num">9</td><td class="line-code">            <span class="fn">printf</span>(<span class="str">"<span class="fmt">%d</span>"</span>, i);</td></tr>
+<tr class=""><td class="line-num">10</td><td class="line-code">            first = <span class="num">0</span>;</td></tr>
+<tr class=""><td class="line-num">11</td><td class="line-code">        }</td></tr>
+<tr class=""><td class="line-num">12</td><td class="line-code">    <span class="fn">printf</span>(<span class="str">"}"</span>);</td></tr>
+<tr class=""><td class="line-num">13</td><td class="line-code">}</td></tr>
+<tr class=""><td class="line-num">14</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">15</td><td class="line-code"><span class="type">int</span> <span class="fn">main</span>(<span class="type">void</span>) {</td></tr>
+<tr class=""><td class="line-num">16</td><td class="line-code">    <span class="type">int</span> n = <span class="num">5</span>;  <span class="cmt">// 전체 = {0,1,2,3,4}</span></td></tr>
+<tr class=""><td class="line-num">17</td><td class="line-code">    <span class="type">int</span> A = (<span class="num">1</span>&lt;&lt;<span class="num">1</span>) | (<span class="num">1</span>&lt;&lt;<span class="num">3</span>) | (<span class="num">1</span>&lt;&lt;<span class="num">4</span>);  <span class="cmt">// {1,3,4}</span></td></tr>
+<tr class=""><td class="line-num">18</td><td class="line-code">    <span class="type">int</span> B = (<span class="num">1</span>&lt;&lt;<span class="num">0</span>) | (<span class="num">1</span>&lt;&lt;<span class="num">1</span>) | (<span class="num">1</span>&lt;&lt;<span class="num">2</span>);  <span class="cmt">// {0,1,2}</span></td></tr>
+<tr class=""><td class="line-num">19</td><td class="line-code">    </td></tr>
+<tr class=""><td class="line-num">20</td><td class="line-code">    <span class="fn">printf</span>(<span class="str">"A = "</span>); <span class="fn">printSet</span>(A, n); <span class="fn">printf</span>(<span class="str">"<span class="esc">\n</span>"</span>);</td></tr>
+<tr class=""><td class="line-num">21</td><td class="line-code">    <span class="fn">printf</span>(<span class="str">"B = "</span>); <span class="fn">printSet</span>(B, n); <span class="fn">printf</span>(<span class="str">"<span class="esc">\n</span>"</span>);</td></tr>
+<tr class=""><td class="line-num">22</td><td class="line-code">    <span class="fn">printf</span>(<span class="str">"A∪B = "</span>); <span class="fn">printSet</span>(A | B, n); <span class="fn">printf</span>(<span class="str">"<span class="esc">\n</span>"</span>);</td></tr>
+<tr class=""><td class="line-num">23</td><td class="line-code">    <span class="fn">printf</span>(<span class="str">"A∩B = "</span>); <span class="fn">printSet</span>(A &amp; B, n); <span class="fn">printf</span>(<span class="str">"<span class="esc">\n</span>"</span>);</td></tr>
+<tr class=""><td class="line-num">24</td><td class="line-code">    <span class="fn">printf</span>(<span class="str">"A-B = "</span>); <span class="fn">printSet</span>(A &amp; ~B, n); <span class="fn">printf</span>(<span class="str">"<span class="esc">\n</span>"</span>);</td></tr>
+<tr class=""><td class="line-num">25</td><td class="line-code">    <span class="kw">return</span> <span class="num">0</span>;</td></tr>
+<tr class=""><td class="line-num">26</td><td class="line-code">}</td></tr></table></div>
+<div class="output-block avoid-break"><span class="output-label">실행 결과</span><div class="output-text">A = {1,3,4}
+B = {0,1,2}
+A∪B = {0,1,2,3,4}
+A∩B = {1}
+A-B = {3,4}</div></div>
+<div class="box box-tip avoid-break"><span class="box-label">[KOI 필수] 비트마스크 집합 공식</span><div class="box-content">원소 i 추가: set |= (1 << i)<br>원소 i 제거: set &= ~(1 << i)<br>원소 i 포함?: set & (1 << i)<br>원소 i 토글: set ^= (1 << i)<br>합집합: A | B<br>교집합: A & B<br>차집합: A & ~B<br>원소 수: __builtin_popcount(set)</div></div>
+<h2>[심화] 포함-배제 원리</h2>
+<div class="box box-key avoid-break"><span class="box-label">[심화] 포함-배제 원리</span><div class="box-content">|A ∪ B| = |A| + |B| - |A ∩ B|<br><br>왜? A와 B를 더하면 겹치는 부분이 <b>2번</b> 세어지니까 1번 빼주는 것!<br><br>3개: |A ∪ B ∪ C| = |A|+|B|+|C| - |A∩B|-|A∩C|-|B∩C| + |A∩B∩C|<br><br>KOI 필기에서 '~이거나 ~인 학생 수' 문제로 자주 출제!</div></div>
+<h2>[심화 내용] 멱집합 (Power Set)</h2>
+<div class="box box-key avoid-break"><span class="box-label">[심화 내용] 멱집합</span><div class="box-content"><b>멱집합(Power Set)</b> = 어떤 집합의 <b>모든 부분집합</b>의 집합<br><br>P({1,2}) = {∅, {1}, {2}, {1,2}}<br><br>|P(A)| = 2^|A| (원소 수의 2의 거듭제곱)<br><br>집합론에서 P(A)의 크기는 항상 A보다 크다 → <b>칸토어의 정리</b></div></div>
+<h2>[심화 내용] 카르테시안 곱</h2>
+<div class="box box-key avoid-break"><span class="box-label">[심화 내용] 카르테시안 곱 (Cartesian Product)</span><div class="box-content">A × B = {(a, b) | a ∈ A, b ∈ B}<br><br>A = {1, 2}, B = {x, y, z}<br>A × B = {(1,x), (1,y), (1,z), (2,x), (2,y), (2,z)}<br><br>|A × B| = |A| × |B| = 2 × 3 = 6<br><br>활용: 데이터베이스 JOIN, 좌표계(ℝ² = ℝ × ℝ)</div></div>
+<h2>[심화 내용] 집합론과 프로그래밍</h2>
+<div class="trace-table avoid-break"><div class="trace-caption">집합 개념 → 프로그래밍 대응</div><table><thead><tr><th>집합론</th><th>프로그래밍</th><th>예시</th></tr></thead><tbody><tr><td>집합</td><td>Set/HashSet</td><td>Python set(), Java HashSet</td></tr><tr><td>원소</td><td>요소/엔트리</td><td>값 하나</td></tr><tr><td>∈ (포함)</td><td>contains/in</td><td>if x in mySet</td></tr><tr><td>∪ (합집합)</td><td>union</td><td>setA.union(setB)</td></tr><tr><td>∩ (교집합)</td><td>intersection</td><td>setA & setB</td></tr><tr><td>∅ (공집합)</td><td>빈 컬렉션</td><td>set()</td></tr><tr><td>카르테시안 곱</td><td>이중 for문</td><td>모든 쌍 생성</td></tr></tbody></table></div>
+<h2>활동: 벤 다이어그램 그리기</h2>
+<div class="box box-tip avoid-break"><span class="box-label">[활동] 우리 반 집합 만들기</span><div class="box-content">A = 안경 쓴 친구, B = 왼손잡이 친구<br><br>1. 벤 다이어그램 그리기<br>2. A ∩ B (안경+왼손잡이)에 해당하는 친구는?<br>3. |A ∪ B| = |A| + |B| - |A ∩ B| 확인하기!</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">1880</div><div class="fact-bite-text">집합론은 1874년 수학자 <b>칸토어</b>가 창시했어요. '무한의 크기가 다를 수 있다'는 놀라운 발견! 자연수보다 실수가 더 많다는 걸 증명했어요.</div></div>
+<h2>OX 퀴즈</h2>
+<div class="exercise avoid-break"><div class="exercise-title">OX 퀴즈</div><div class="exercise-item"><p></p></div><div class="exercise-answer"><b>정답:</b> ❌ X</div></div>
+<h2>연습문제</h2>
+<div class="exercise avoid-break"><div class="exercise-title">문제 1 <span class="difficulty diff-1">★ 기본</span></div><div class="exercise-item"><p>집합이란 무엇인지 한 문장으로 설명하세요.</p></div><div class="memo-area"><span class="memo-label">여기에 답을 써 보세요</span></div></div>
+<div class="exercise avoid-break"><div class="exercise-title">문제 2 <span class="difficulty diff-1">★ 기본</span></div><div class="exercise-item"><p>A={1,2,3,4}, B={3,4,5,6}일 때 A ∪ B를 구하세요.</p></div><div class="memo-area"><span class="memo-label">여기에 답을 써 보세요</span></div></div>
+<div class="exercise avoid-break"><div class="exercise-title">문제 3 <span class="difficulty diff-1">★ 기본</span></div><div class="exercise-item"><p>위와 같을 때 A ∩ B를 구하세요.</p></div><div class="memo-area"><span class="memo-label">여기에 답을 써 보세요</span></div></div>
+<div class="exercise avoid-break"><div class="exercise-title">문제 4 <span class="difficulty diff-1">★ 기본</span></div><div class="exercise-item"><p>A - B를 구하세요.</p></div><div class="memo-area"><span class="memo-label">여기에 답을 써 보세요</span></div></div>
+<div class="exercise avoid-break"><div class="exercise-title">문제 5 <span class="difficulty diff-1">★ 기본</span></div><div class="exercise-item"><p>{1,2,3}의 부분집합 개수는?</p></div><div class="memo-area"><span class="memo-label">여기에 답을 써 보세요</span></div></div>
+<div class="exercise avoid-break"><div class="exercise-title">문제 6 <span class="difficulty diff-2">★★ 도전</span></div><div class="exercise-item"><p>3 ∈ {1,2,3,4}는 참인가요? 5 ∈ {1,2,3,4}는?</p></div><div class="memo-area"><span class="memo-label">여기에 답을 써 보세요</span></div></div>
+<div class="exercise avoid-break"><div class="exercise-title">문제 7 <span class="difficulty diff-2">★★ 도전</span></div><div class="exercise-item"><p>포함-배제 원리로 |A ∪ B| = 10, |A|=7, |B|=5일 때 |A ∩ B|를 구하세요.</p></div><div class="memo-area"><span class="memo-label">여기에 답을 써 보세요</span></div></div>
+<div class="exercise avoid-break"><div class="exercise-title">문제 8 <span class="difficulty diff-2">★★ 도전</span></div><div class="exercise-item"><p>벤 다이어그램에서 왼쪽 원만 색칠된 부분은 무엇을 나타내나요?</p></div><div class="memo-area"><span class="memo-label">여기에 답을 써 보세요</span></div></div>
+<div class="exercise avoid-break"><div class="exercise-title">문제 9 <span class="difficulty diff-2">★★ 도전</span></div><div class="exercise-item"><p>비트마스크로 집합 {0,2,4}를 표현하면 몇인가요?</p></div><div class="memo-area"><span class="memo-label">여기에 답을 써 보세요</span></div></div>
+<div class="exercise avoid-break"><div class="exercise-title">문제 10 <span class="difficulty diff-2">★★ 도전</span></div><div class="exercise-item"><p>비트마스크 A=0b1010, B=0b1100일 때 A|B, A&B를 구하세요.</p></div><div class="memo-area"><span class="memo-label">여기에 답을 써 보세요</span></div></div>
+<div class="exercise avoid-break"><div class="exercise-title">문제 11 <span class="difficulty diff-3">★★★ 심화</span></div><div class="exercise-item"><p>[심화] 비트마스크에서 원소 3을 추가하는 연산을 쓰세요.</p></div><div class="memo-area"><span class="memo-label">여기에 답을 써 보세요</span></div></div>
+<div class="exercise avoid-break"><div class="exercise-title">문제 12 <span class="difficulty diff-3">★★★ 심화</span></div><div class="exercise-item"><p>[심화] __builtin_popcount(0b10110)의 결과는?</p></div><div class="memo-area"><span class="memo-label">여기에 답을 써 보세요</span></div></div>
+<div class="exercise avoid-break"><div class="exercise-title">문제 13 <span class="difficulty diff-3">★★★ 심화</span></div><div class="exercise-item"><p>[심화] A={1,2}, B={a,b,c}일 때 A×B를 모두 쓰세요.</p></div><div class="memo-area"><span class="memo-label">여기에 답을 써 보세요</span></div></div>
+<div class="exercise avoid-break"><div class="exercise-title">문제 14 <span class="difficulty diff-3">★★★ 심화</span></div><div class="exercise-item"><p>[심화 내용] 멱집합 P({a,b,c})의 원소 수는?</p></div><div class="memo-area"><span class="memo-label">여기에 답을 써 보세요</span></div></div>
+<div class="exercise avoid-break"><div class="exercise-title">문제 15 <span class="difficulty diff-3">★★★ 심화</span></div><div class="exercise-item"><p>[심화 내용] 칸토어의 정리가 말하는 것을 간단히 설명하세요.</p></div><div class="memo-area"><span class="memo-label">여기에 답을 써 보세요</span></div></div>
+<h2>정답</h2>
+<div class="answers-section avoid-break"><h3>정답</h3><div class="answer-item"><span class="answer-num">문제 1</span> <span class="answer-text">조건을 만족하는 것들을 중복 없이 모아 놓은 것.</span></div><div class="answer-item"><span class="answer-num">문제 2</span> <span class="answer-text">{1,2,3,4,5,6}.</span></div><div class="answer-item"><span class="answer-num">문제 3</span> <span class="answer-text">{3,4}.</span></div><div class="answer-item"><span class="answer-num">문제 4</span> <span class="answer-text">{1,2}. A에 있고 B에 없는 것.</span></div><div class="answer-item"><span class="answer-num">문제 5</span> <span class="answer-text">2³ = 8개. {},{1},{2},{3},{1,2},{1,3},{2,3},{1,2,3}.</span></div><div class="answer-item"><span class="answer-num">문제 6</span> <span class="answer-text">3 ∈ {1,2,3,4}는 참(O). 5 ∈ {1,2,3,4}는 거짓(X).</span></div><div class="answer-item"><span class="answer-num">문제 7</span> <span class="answer-text">|A∩B| = |A|+|B|-|A∪B| = 7+5-10 = 2.</span></div><div class="answer-item"><span class="answer-num">문제 8</span> <span class="answer-text">A - B (차집합). A에만 있고 B에는 없는 원소.</span></div><div class="answer-item"><span class="answer-num">문제 9</span> <span class="answer-text">(1<<0)|(1<<2)|(1<<4) = 1+4+16 = 21. 이진수 10101.</span></div><div class="answer-item"><span class="answer-num">문제 10</span> <span class="answer-text">A|B = 0b1110 = 14. A&B = 0b1000 = 8.</span></div><div class="answer-item"><span class="answer-num">문제 11</span> <span class="answer-text">set |= (1 << 3);</span></div><div class="answer-item"><span class="answer-num">문제 12</span> <span class="answer-text">3. 이진수 10110에서 1의 개수 = 3.</span></div><div class="answer-item"><span class="answer-num">문제 13</span> <span class="answer-text">{(1,a),(1,b),(1,c),(2,a),(2,b),(2,c)}. 총 6개.</span></div><div class="answer-item"><span class="answer-num">문제 14</span> <span class="answer-text">2³ = 8개.</span></div><div class="answer-item"><span class="answer-num">문제 15</span> <span class="answer-text">어떤 집합의 멱집합은 항상 원래 집합보다 크기가 크다. 무한 집합에도 적용됨.</span></div></div>
+<h2>용어 정리</h2>
+<h2>[심화] C로 집합 연산 구현</h2>
+<div class="code-block avoid-break"><div class="code-block-header">[C 코드] 비트마스크로 집합 구현</div>
+        <table class="code-table"><tr class=""><td class="line-num">1</td><td class="line-code"><span class="pp">#include</span> <span class="str">&lt;stdio.h&gt;</span></td></tr>
+<tr class=""><td class="line-num">2</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">3</td><td class="line-code"><span class="cmt">// 비트마스크 집합: 0~31까지의 원소를 32비트 int로 표현</span></td></tr>
+<tr class=""><td class="line-num">4</td><td class="line-code"><span class="kw">typedef</span> <span class="type">unsigned</span> <span class="type">int</span> Set;</td></tr>
+<tr class=""><td class="line-num">5</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">6</td><td class="line-code">Set <span class="fn">empty</span>() { <span class="kw">return</span> <span class="num">0</span>; }</td></tr>
+<tr class=""><td class="line-num">7</td><td class="line-code">Set <span class="fn">add_elem</span>(Set s, <span class="type">int</span> e) { <span class="kw">return</span> s | (<span class="num">1u</span> &lt;&lt; e); }</td></tr>
+<tr class=""><td class="line-num">8</td><td class="line-code">Set <span class="fn">remove_elem</span>(Set s, <span class="type">int</span> e) { <span class="kw">return</span> s &amp; ~(<span class="num">1u</span> &lt;&lt; e); }</td></tr>
+<tr class=""><td class="line-num">9</td><td class="line-code"><span class="type">int</span> <span class="fn">contains</span>(Set s, <span class="type">int</span> e) { <span class="kw">return</span> (s &gt;&gt; e) &amp; <span class="num">1</span>; }</td></tr>
+<tr class=""><td class="line-num">10</td><td class="line-code">Set <span class="fn">union_set</span>(Set a, Set b) { <span class="kw">return</span> a | b; }</td></tr>
+<tr class=""><td class="line-num">11</td><td class="line-code">Set <span class="fn">intersect</span>(Set a, Set b) { <span class="kw">return</span> a &amp; b; }</td></tr>
+<tr class=""><td class="line-num">12</td><td class="line-code">Set <span class="fn">difference</span>(Set a, Set b) { <span class="kw">return</span> a &amp; ~b; }</td></tr>
+<tr class=""><td class="line-num">13</td><td class="line-code"><span class="type">int</span> <span class="fn">size</span>(Set s) { <span class="type">int</span> c=<span class="num">0</span>; <span class="kw">while</span>(s){c+=s&amp;<span class="num">1</span>;s&gt;&gt;=<span class="num">1</span>;} <span class="kw">return</span> c; }</td></tr>
+<tr class=""><td class="line-num">14</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">15</td><td class="line-code"><span class="type">void</span> <span class="fn">print_set</span>(Set s) {</td></tr>
+<tr class=""><td class="line-num">16</td><td class="line-code">    <span class="fn">printf</span>(<span class="str">"{"</span>);</td></tr>
+<tr class=""><td class="line-num">17</td><td class="line-code">    <span class="type">int</span> first = <span class="num">1</span>;</td></tr>
+<tr class=""><td class="line-num">18</td><td class="line-code">    <span class="kw">for</span> (<span class="type">int</span> i = <span class="num">0</span>; i &lt; <span class="num">32</span>; i++) {</td></tr>
+<tr class=""><td class="line-num">19</td><td class="line-code">        <span class="kw">if</span> (<span class="fn">contains</span>(s, i)) {</td></tr>
+<tr class=""><td class="line-num">20</td><td class="line-code">            <span class="kw">if</span> (!first) <span class="fn">printf</span>(<span class="str">","</span>);</td></tr>
+<tr class=""><td class="line-num">21</td><td class="line-code">            <span class="fn">printf</span>(<span class="str">"<span class="fmt">%d</span>"</span>, i);</td></tr>
+<tr class=""><td class="line-num">22</td><td class="line-code">            first = <span class="num">0</span>;</td></tr>
+<tr class=""><td class="line-num">23</td><td class="line-code">        }</td></tr>
+<tr class=""><td class="line-num">24</td><td class="line-code">    }</td></tr>
+<tr class=""><td class="line-num">25</td><td class="line-code">    <span class="fn">printf</span>(<span class="str">"}"</span>);</td></tr>
+<tr class=""><td class="line-num">26</td><td class="line-code">}</td></tr>
+<tr class=""><td class="line-num">27</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">28</td><td class="line-code"><span class="type">int</span> <span class="fn">main</span>() {</td></tr>
+<tr class=""><td class="line-num">29</td><td class="line-code">    Set A = <span class="fn">empty</span>();</td></tr>
+<tr class=""><td class="line-num">30</td><td class="line-code">    A = <span class="fn">add_elem</span>(A, <span class="num">1</span>); A = <span class="fn">add_elem</span>(A, <span class="num">3</span>);</td></tr>
+<tr class=""><td class="line-num">31</td><td class="line-code">    A = <span class="fn">add_elem</span>(A, <span class="num">5</span>); A = <span class="fn">add_elem</span>(A, <span class="num">7</span>);</td></tr>
+<tr class=""><td class="line-num">32</td><td class="line-code">    </td></tr>
+<tr class=""><td class="line-num">33</td><td class="line-code">    Set B = <span class="fn">empty</span>();</td></tr>
+<tr class=""><td class="line-num">34</td><td class="line-code">    B = <span class="fn">add_elem</span>(B, <span class="num">2</span>); B = <span class="fn">add_elem</span>(B, <span class="num">3</span>);</td></tr>
+<tr class=""><td class="line-num">35</td><td class="line-code">    B = <span class="fn">add_elem</span>(B, <span class="num">5</span>); B = <span class="fn">add_elem</span>(B, <span class="num">8</span>);</td></tr>
+<tr class=""><td class="line-num">36</td><td class="line-code">    </td></tr>
+<tr class=""><td class="line-num">37</td><td class="line-code">    <span class="fn">printf</span>(<span class="str">"A = "</span>); <span class="fn">print_set</span>(A); <span class="fn">printf</span>(<span class="str">"<span class="esc">\n</span>"</span>);</td></tr>
+<tr class=""><td class="line-num">38</td><td class="line-code">    <span class="fn">printf</span>(<span class="str">"B = "</span>); <span class="fn">print_set</span>(B); <span class="fn">printf</span>(<span class="str">"<span class="esc">\n</span>"</span>);</td></tr>
+<tr class=""><td class="line-num">39</td><td class="line-code">    <span class="fn">printf</span>(<span class="str">"A U B = "</span>); <span class="fn">print_set</span>(<span class="fn">union_set</span>(A,B)); <span class="fn">printf</span>(<span class="str">"<span class="esc">\n</span>"</span>);</td></tr>
+<tr class=""><td class="line-num">40</td><td class="line-code">    <span class="fn">printf</span>(<span class="str">"A n B = "</span>); <span class="fn">print_set</span>(<span class="fn">intersect</span>(A,B)); <span class="fn">printf</span>(<span class="str">"<span class="esc">\n</span>"</span>);</td></tr>
+<tr class=""><td class="line-num">41</td><td class="line-code">    <span class="fn">printf</span>(<span class="str">"A - B = "</span>); <span class="fn">print_set</span>(<span class="fn">difference</span>(A,B)); <span class="fn">printf</span>(<span class="str">"<span class="esc">\n</span>"</span>);</td></tr>
+<tr class=""><td class="line-num">42</td><td class="line-code">    <span class="fn">printf</span>(<span class="str">"|A| = <span class="fmt">%d</span><span class="esc">\n</span>"</span>, <span class="fn">size</span>(A));</td></tr>
+<tr class=""><td class="line-num">43</td><td class="line-code">    <span class="kw">return</span> <span class="num">0</span>;</td></tr>
+<tr class=""><td class="line-num">44</td><td class="line-code">}</td></tr></table></div>
+<div class="output-block avoid-break"><span class="output-label">실행 결과</span><div class="output-text">A = {1,3,5,7}
+B = {2,3,5,8}
+A U B = {1,2,3,5,7,8}
+A n B = {3,5}
+A - B = {1,7}
+|A| = 4</div></div>
+<h2>[심화 내용] 집합론의 기초</h2>
+<div class="box box-key avoid-break"><span class="box-label">[심화 내용] 집합론 — 수학의 기초</span><div class="box-content"><b>칸토어 (Georg Cantor, 1874):</b><br>집합론의 창시자<br><br><b>핵심 개념:</b><br>- <b>기수(Cardinality)</b>: 집합의 크기<br>  |{1,2,3}| = 3<br>- <b>멱집합(Power Set)</b>: 모든 부분집합의 집합<br>  P({1,2}) = {{}, {1}, {2}, {1,2}}<br>  |P(S)| = 2^|S|<br>- <b>가산 무한</b>: 자연수와 1:1 대응 가능<br>  정수, 유리수 = 가산 무한 (놀랍게도!)<br>- <b>비가산 무한</b>: 실수 = 비가산 무한<br>  대각선 논법으로 증명 (칸토어)<br><br><b>프로그래밍 연결:</b><br>- Set 자료구조 (HashSet, TreeSet)<br>- SQL의 UNION, INTERSECT, EXCEPT<br>- 비트마스크 = 유한 집합의 효율적 표현</div></div>
+<h2>[심화 내용] 해시 집합 vs 트리 집합</h2>
+<div class="compare avoid-break"><div class="compare-bad"><div class="compare-label">✕ 잘못된 코드</div><code></code><br><span class="compare-msg-bad"></span></div><div class="compare-good"><div class="compare-label">✓ 올바른 코드</div><code></code><br><span class="compare-msg-good"></span></div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">2^|S|</div><div class="fact-bite-text">집합 S의 부분집합(멱집합) 수. 원소 3개면 8개, 10개면 1024개의 부분집합!</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">1874년</div><div class="fact-bite-text">칸토어가 집합론을 발표한 해. "무한에도 크기가 다른 종류가 있다"는 혁명적 발견!</div></div>
+<h2>[심화 내용] 집합과 데이터베이스</h2>
+<div class="box box-key avoid-break"><span class="box-label">[심화 내용] SQL = 집합 연산</span><div class="box-content">관계형 데이터베이스의 기초 = 집합론!<br><br><b>테이블 = 튜플의 집합</b><br>SELECT = 원소 선택 (조건으로 부분집합)<br><br><b>집합 연산:</b><br>UNION = 합집합<br>INTERSECT = 교집합<br>EXCEPT = 차집합<br>JOIN = 카르테시안 곱의 부분집합<br><br><b>예:</b><br>SELECT * FROM A UNION SELECT * FROM B<br>→ A ∪ B<br><br>SELECT * FROM A INTERSECT SELECT * FROM B<br>→ A ∩ B<br><br>관계 대수(Relational Algebra) = 집합 연산의 확장<br>에드거 코드(E.F. Codd)가 1970년 제안</div></div>
+<div class="code-block avoid-break"><div class="code-block-header">[C 코드] 집합 연산 응용: 두 배열의 교집합</div>
+        <table class="code-table"><tr class=""><td class="line-num">1</td><td class="line-code"><span class="pp">#include</span> <span class="str">&lt;stdio.h&gt;</span></td></tr>
+<tr class=""><td class="line-num">2</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">3</td><td class="line-code"><span class="cmt">// 정렬된 두 배열의 교집합</span></td></tr>
+<tr class=""><td class="line-num">4</td><td class="line-code"><span class="type">int</span> <span class="fn">intersection</span>(<span class="type">int</span> a[], <span class="type">int</span> na, <span class="type">int</span> b[], <span class="type">int</span> nb, <span class="type">int</span> result[]) {</td></tr>
+<tr class=""><td class="line-num">5</td><td class="line-code">    <span class="type">int</span> i = <span class="num">0</span>, j = <span class="num">0</span>, k = <span class="num">0</span>;</td></tr>
+<tr class=""><td class="line-num">6</td><td class="line-code">    <span class="kw">while</span> (i &lt; na &amp;&amp; j &lt; nb) {</td></tr>
+<tr class=""><td class="line-num">7</td><td class="line-code">        <span class="kw">if</span> (a[i] == b[j]) {</td></tr>
+<tr class=""><td class="line-num">8</td><td class="line-code">            result[k++] = a[i];</td></tr>
+<tr class=""><td class="line-num">9</td><td class="line-code">            i++; j++;</td></tr>
+<tr class=""><td class="line-num">10</td><td class="line-code">        } <span class="kw">else</span> <span class="kw">if</span> (a[i] &lt; b[j]) i++;</td></tr>
+<tr class=""><td class="line-num">11</td><td class="line-code">        <span class="kw">else</span> j++;</td></tr>
+<tr class=""><td class="line-num">12</td><td class="line-code">    }</td></tr>
+<tr class=""><td class="line-num">13</td><td class="line-code">    <span class="kw">return</span> k;</td></tr>
+<tr class=""><td class="line-num">14</td><td class="line-code">}</td></tr>
+<tr class=""><td class="line-num">15</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">16</td><td class="line-code"><span class="type">int</span> <span class="fn">main</span>() {</td></tr>
+<tr class=""><td class="line-num">17</td><td class="line-code">    <span class="type">int</span> a[] = {<span class="num">1</span>, <span class="num">3</span>, <span class="num">5</span>, <span class="num">7</span>, <span class="num">9</span>, <span class="num">11</span>};</td></tr>
+<tr class=""><td class="line-num">18</td><td class="line-code">    <span class="type">int</span> b[] = {<span class="num">2</span>, <span class="num">3</span>, <span class="num">5</span>, <span class="num">8</span>, <span class="num">9</span>, <span class="num">12</span>};</td></tr>
+<tr class=""><td class="line-num">19</td><td class="line-code">    <span class="type">int</span> result[<span class="num">20</span>];</td></tr>
+<tr class=""><td class="line-num">20</td><td class="line-code">    <span class="type">int</span> n = <span class="fn">intersection</span>(a, <span class="num">6</span>, b, <span class="num">6</span>, result);</td></tr>
+<tr class=""><td class="line-num">21</td><td class="line-code">    </td></tr>
+<tr class=""><td class="line-num">22</td><td class="line-code">    <span class="fn">printf</span>(<span class="str">"A = {1,3,5,7,9,11}<span class="esc">\n</span>"</span>);</td></tr>
+<tr class=""><td class="line-num">23</td><td class="line-code">    <span class="fn">printf</span>(<span class="str">"B = {2,3,5,8,9,12}<span class="esc">\n</span>"</span>);</td></tr>
+<tr class=""><td class="line-num">24</td><td class="line-code">    <span class="fn">printf</span>(<span class="str">"A n B = {"</span>);</td></tr>
+<tr class=""><td class="line-num">25</td><td class="line-code">    <span class="kw">for</span> (<span class="type">int</span> i = <span class="num">0</span>; i &lt; n; i++) {</td></tr>
+<tr class=""><td class="line-num">26</td><td class="line-code">        <span class="kw">if</span> (i) <span class="fn">printf</span>(<span class="str">","</span>);</td></tr>
+<tr class=""><td class="line-num">27</td><td class="line-code">        <span class="fn">printf</span>(<span class="str">"<span class="fmt">%d</span>"</span>, result[i]);</td></tr>
+<tr class=""><td class="line-num">28</td><td class="line-code">    }</td></tr>
+<tr class=""><td class="line-num">29</td><td class="line-code">    <span class="fn">printf</span>(<span class="str">"} (크기: <span class="fmt">%d</span>)<span class="esc">\n</span>"</span>, n);</td></tr>
+<tr class=""><td class="line-num">30</td><td class="line-code">    <span class="kw">return</span> <span class="num">0</span>;</td></tr>
+<tr class=""><td class="line-num">31</td><td class="line-code">}</td></tr></table></div>
+<div class="output-block avoid-break"><span class="output-label">실행 결과</span><div class="output-text">A = {1,3,5,7,9,11}
+B = {2,3,5,8,9,12}
+A n B = {3,5,9} (크기: 3)</div></div>
+<div class="mascot-speech  avoid-break">
+        <img class="mascot-speech-img " src="svg-assets/mascot-eureka.svg" alt="마스코트" />
+        <div class="mascot-bubble eureka">집합은 수학의 기초이자 컴퓨터 과학의 뼈대야! 데이터베이스, 알고리즘, 논리학 전부 집합론 위에 세워져 있어!</div>
+      </div>
+<h2>[심화] 집합 활용 실전 문제</h2>
+<div class="code-block avoid-break"><div class="code-block-header">[C 코드] 두 배열의 합집합/차집합</div>
+        <table class="code-table"><tr class=""><td class="line-num">1</td><td class="line-code"><span class="pp">#include</span> <span class="str">&lt;stdio.h&gt;</span></td></tr>
+<tr class=""><td class="line-num">2</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">3</td><td class="line-code"><span class="cmt">// 정렬된 배열의 합집합</span></td></tr>
+<tr class=""><td class="line-num">4</td><td class="line-code"><span class="type">int</span> <span class="fn">union_arr</span>(<span class="type">int</span> a[], <span class="type">int</span> na, <span class="type">int</span> b[], <span class="type">int</span> nb, <span class="type">int</span> res[]) {</td></tr>
+<tr class=""><td class="line-num">5</td><td class="line-code">    <span class="type">int</span> i=<span class="num">0</span>, j=<span class="num">0</span>, k=<span class="num">0</span>;</td></tr>
+<tr class=""><td class="line-num">6</td><td class="line-code">    <span class="kw">while</span> (i &lt; na &amp;&amp; j &lt; nb) {</td></tr>
+<tr class=""><td class="line-num">7</td><td class="line-code">        <span class="kw">if</span> (a[i] &lt; b[j]) res[k++] = a[i++];</td></tr>
+<tr class=""><td class="line-num">8</td><td class="line-code">        <span class="kw">else</span> <span class="kw">if</span> (a[i] &gt; b[j]) res[k++] = b[j++];</td></tr>
+<tr class=""><td class="line-num">9</td><td class="line-code">        <span class="kw">else</span> { res[k++] = a[i]; i++; j++; }</td></tr>
+<tr class=""><td class="line-num">10</td><td class="line-code">    }</td></tr>
+<tr class=""><td class="line-num">11</td><td class="line-code">    <span class="kw">while</span> (i &lt; na) res[k++] = a[i++];</td></tr>
+<tr class=""><td class="line-num">12</td><td class="line-code">    <span class="kw">while</span> (j &lt; nb) res[k++] = b[j++];</td></tr>
+<tr class=""><td class="line-num">13</td><td class="line-code">    <span class="kw">return</span> k;</td></tr>
+<tr class=""><td class="line-num">14</td><td class="line-code">}</td></tr>
+<tr class=""><td class="line-num">15</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">16</td><td class="line-code"><span class="cmt">// 차집합 A - B</span></td></tr>
+<tr class=""><td class="line-num">17</td><td class="line-code"><span class="type">int</span> <span class="fn">diff_arr</span>(<span class="type">int</span> a[], <span class="type">int</span> na, <span class="type">int</span> b[], <span class="type">int</span> nb, <span class="type">int</span> res[]) {</td></tr>
+<tr class=""><td class="line-num">18</td><td class="line-code">    <span class="type">int</span> i=<span class="num">0</span>, j=<span class="num">0</span>, k=<span class="num">0</span>;</td></tr>
+<tr class=""><td class="line-num">19</td><td class="line-code">    <span class="kw">while</span> (i &lt; na &amp;&amp; j &lt; nb) {</td></tr>
+<tr class=""><td class="line-num">20</td><td class="line-code">        <span class="kw">if</span> (a[i] &lt; b[j]) res[k++] = a[i++];</td></tr>
+<tr class=""><td class="line-num">21</td><td class="line-code">        <span class="kw">else</span> <span class="kw">if</span> (a[i] &gt; b[j]) j++;</td></tr>
+<tr class=""><td class="line-num">22</td><td class="line-code">        <span class="kw">else</span> { i++; j++; }</td></tr>
+<tr class=""><td class="line-num">23</td><td class="line-code">    }</td></tr>
+<tr class=""><td class="line-num">24</td><td class="line-code">    <span class="kw">while</span> (i &lt; na) res[k++] = a[i++];</td></tr>
+<tr class=""><td class="line-num">25</td><td class="line-code">    <span class="kw">return</span> k;</td></tr>
+<tr class=""><td class="line-num">26</td><td class="line-code">}</td></tr>
+<tr class=""><td class="line-num">27</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">28</td><td class="line-code"><span class="type">void</span> <span class="fn">print_arr</span>(<span class="type">int</span> a[], <span class="type">int</span> n) {</td></tr>
+<tr class=""><td class="line-num">29</td><td class="line-code">    <span class="fn">printf</span>(<span class="str">"{"</span>);</td></tr>
+<tr class=""><td class="line-num">30</td><td class="line-code">    <span class="kw">for</span> (<span class="type">int</span> i = <span class="num">0</span>; i &lt; n; i++) { <span class="kw">if</span>(i) <span class="fn">printf</span>(<span class="str">","</span>); <span class="fn">printf</span>(<span class="str">"<span class="fmt">%d</span>"</span>,a[i]); }</td></tr>
+<tr class=""><td class="line-num">31</td><td class="line-code">    <span class="fn">printf</span>(<span class="str">"}"</span>);</td></tr>
+<tr class=""><td class="line-num">32</td><td class="line-code">}</td></tr>
+<tr class=""><td class="line-num">33</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">34</td><td class="line-code"><span class="type">int</span> <span class="fn">main</span>() {</td></tr>
+<tr class=""><td class="line-num">35</td><td class="line-code">    <span class="type">int</span> a[] = {<span class="num">1</span>,<span class="num">2</span>,<span class="num">3</span>,<span class="num">5</span>,<span class="num">7</span>,<span class="num">8</span>};</td></tr>
+<tr class=""><td class="line-num">36</td><td class="line-code">    <span class="type">int</span> b[] = {<span class="num">2</span>,<span class="num">4</span>,<span class="num">5</span>,<span class="num">6</span>,<span class="num">8</span>,<span class="num">9</span>};</td></tr>
+<tr class=""><td class="line-num">37</td><td class="line-code">    <span class="type">int</span> res[<span class="num">20</span>];</td></tr>
+<tr class=""><td class="line-num">38</td><td class="line-code">    <span class="type">int</span> n;</td></tr>
+<tr class=""><td class="line-num">39</td><td class="line-code">    </td></tr>
+<tr class=""><td class="line-num">40</td><td class="line-code">    <span class="fn">printf</span>(<span class="str">"A = "</span>); <span class="fn">print_arr</span>(a,<span class="num">6</span>); <span class="fn">printf</span>(<span class="str">"<span class="esc">\n</span>"</span>);</td></tr>
+<tr class=""><td class="line-num">41</td><td class="line-code">    <span class="fn">printf</span>(<span class="str">"B = "</span>); <span class="fn">print_arr</span>(b,<span class="num">6</span>); <span class="fn">printf</span>(<span class="str">"<span class="esc">\n</span>"</span>);</td></tr>
+<tr class=""><td class="line-num">42</td><td class="line-code">    </td></tr>
+<tr class=""><td class="line-num">43</td><td class="line-code">    n = <span class="fn">union_arr</span>(a,<span class="num">6</span>,b,<span class="num">6</span>,res);</td></tr>
+<tr class=""><td class="line-num">44</td><td class="line-code">    <span class="fn">printf</span>(<span class="str">"A U B = "</span>); <span class="fn">print_arr</span>(res,n); <span class="fn">printf</span>(<span class="str">"<span class="esc">\n</span>"</span>);</td></tr>
+<tr class=""><td class="line-num">45</td><td class="line-code">    </td></tr>
+<tr class=""><td class="line-num">46</td><td class="line-code">    n = <span class="fn">diff_arr</span>(a,<span class="num">6</span>,b,<span class="num">6</span>,res);</td></tr>
+<tr class=""><td class="line-num">47</td><td class="line-code">    <span class="fn">printf</span>(<span class="str">"A - B = "</span>); <span class="fn">print_arr</span>(res,n); <span class="fn">printf</span>(<span class="str">"<span class="esc">\n</span>"</span>);</td></tr>
+<tr class=""><td class="line-num">48</td><td class="line-code">    <span class="kw">return</span> <span class="num">0</span>;</td></tr>
+<tr class=""><td class="line-num">49</td><td class="line-code">}</td></tr></table></div>
+<div class="output-block avoid-break"><span class="output-label">실행 결과</span><div class="output-text">A = {1,2,3,5,7,8}
+B = {2,4,5,6,8,9}
+A U B = {1,2,3,4,5,6,7,8,9}
+A - B = {1,3,7}</div></div>
+<div class="box box-tip avoid-break"><span class="box-label">[활동] 집합 연습 문제</span><div class="box-content"><b>1. 벤 다이어그램</b><br>A={1,2,3,4,5}, B={3,4,5,6,7}일 때<br>A∩B, A∪B, A-B, B-A, (A∪B)-(A∩B) 구하기<br><br><b>2. 멱집합 나열</b><br>{a,b,c}의 모든 부분집합 8개 나열하기<br><br><b>3. 비트마스크</b><br>mask=0b10110일 때 포함된 원소는?<br>→ {1, 2, 4} (0-indexed)<br><br><b>4. SQL 변환</b><br>"A 테이블에는 있지만 B에는 없는 사람"<br>→ SELECT * FROM A EXCEPT SELECT * FROM B<br>→ 차집합 A-B!</div></div>
+<div class="box box-key avoid-break"><span class="box-label">[심화 내용] 드 모르간 법칙</span><div class="box-content"><b>드 모르간 법칙 (De Morgan's Laws):</b><br><br>(A ∪ B)ᶜ = Aᶜ ∩ Bᶜ<br>(A ∩ B)ᶜ = Aᶜ ∪ Bᶜ<br><br>"합집합의 여집합 = 여집합들의 교집합"<br>"교집합의 여집합 = 여집합들의 합집합"<br><br><b>프로그래밍에서:</b><br>!(a || b) == (!a && !b)<br>!(a && !b) == (!a || !b)<br><br>if 조건 최적화에 자주 사용!<br>복잡한 조건식을 단순화할 때 필수</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">1847년</div><div class="fact-bite-text">드 모르간이 집합/논리 법칙을 발표한 해. 프로그래밍 조건문의 핵심 도구!</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">O(V+E)</div><div class="fact-bite-text">그래프에서 집합 연산(인접 정점 교집합 등)의 시간 복잡도. 해시셋으로 O(min(|A|,|B|))까지 가능!</div></div>
+<div class="mascot-speech right avoid-break">
+        <img class="mascot-speech-img " src="svg-assets/mascot-thinking.svg" alt="마스코트" />
+        <div class="mascot-bubble thinking">집합 연산은 비트 연산과 1:1 대응! OR=합집합, AND=교집합, AND NOT=차집합. 비트를 알면 집합이 보이고, 집합을 알면 수학이 보여!</div>
+      </div>
+<div class="glossary avoid-break"><div class="glossary-item"><dt class="glossary-term">집합 (Set)</dt><dd class="glossary-def">조건을 만족하는 것들의 모임. 순서 없고 중복 없음.</dd></div><div class="glossary-item"><dt class="glossary-term">원소 (Element)</dt><dd class="glossary-def">집합에 속한 각각의 것. ∈ 기호 사용.</dd></div><div class="glossary-item"><dt class="glossary-term">부분집합</dt><dd class="glossary-def">한 집합의 원소가 모두 다른 집합에 포함될 때. A ⊂ B.</dd></div><div class="glossary-item"><dt class="glossary-term">합집합</dt><dd class="glossary-def">A ∪ B. 둘 중 하나라도 속하는 원소의 집합. OR.</dd></div><div class="glossary-item"><dt class="glossary-term">교집합</dt><dd class="glossary-def">A ∩ B. 둘 다 속하는 원소의 집합. AND.</dd></div><div class="glossary-item"><dt class="glossary-term">차집합</dt><dd class="glossary-def">A - B. A에는 있고 B에는 없는 원소의 집합.</dd></div><div class="glossary-item"><dt class="glossary-term">공집합</dt><dd class="glossary-def">∅. 원소가 하나도 없는 집합.</dd></div><div class="glossary-item"><dt class="glossary-term">벤 다이어그램</dt><dd class="glossary-def">집합의 관계를 원으로 표현한 그림.</dd></div><div class="glossary-item"><dt class="glossary-term">포함-배제</dt><dd class="glossary-def">|A∪B| = |A|+|B|-|A∩B|. 겹치는 부분 보정.</dd></div><div class="glossary-item"><dt class="glossary-term">멱집합</dt><dd class="glossary-def">모든 부분집합의 집합. 크기 = 2ⁿ.</dd></div><div class="glossary-item"><dt class="glossary-term">카르테시안 곱</dt><dd class="glossary-def">A×B. 모든 순서쌍 (a,b)의 집합.</dd></div><div class="glossary-item"><dt class="glossary-term">비트마스크 집합</dt><dd class="glossary-def">정수의 각 비트를 원소 존재 여부로 사용하는 집합 표현. O(1) 연산.</dd></div><div class="glossary-item"><dt class="glossary-term">멱집합</dt><dd class="glossary-def">어떤 집합의 모든 부분집합을 모은 집합. 크기 = 2^n.</dd></div><div class="glossary-item"><dt class="glossary-term">가산 무한</dt><dd class="glossary-def">자연수와 1:1 대응 가능한 무한. 정수, 유리수가 해당.</dd></div><div class="glossary-item"><dt class="glossary-term">비가산 무한</dt><dd class="glossary-def">자연수와 1:1 대응 불가능한 무한. 실수가 대표적.</dd></div><div class="glossary-item"><dt class="glossary-term">HashSet</dt><dd class="glossary-def">해시 테이블 기반 집합. 평균 O(1) 연산. 순서 없음.</dd></div><div class="glossary-item"><dt class="glossary-term">TreeSet</dt><dd class="glossary-def">균형 트리 기반 집합. O(log n) 연산. 정렬 순서 유지.</dd></div></div>
+<div class="visual-summary avoid-break"><div class="visual-summary-title">이번 유닛 핵심 정리</div><div class="visual-summary-items"><div class="visual-summary-item"><div class="visual-summary-num">1</div><span>집합 = 순서 없고 중복 없는 원소의 모임</span></div><div class="visual-summary-item"><div class="visual-summary-num">2</div><span>합집합(∪)=OR, 교집합(∩)=AND, 차집합(-)</span></div><div class="visual-summary-item"><div class="visual-summary-num">3</div><span>부분집합 개수 = 2ⁿ</span></div><div class="visual-summary-item"><div class="visual-summary-num">4</div><span>벤 다이어그램으로 시각화</span></div><div class="visual-summary-item"><div class="visual-summary-num">5</div><span>[심화] 비트마스크로 집합 연산: |, &, &~</span></div><div class="visual-summary-item"><div class="visual-summary-num">6</div><span>[심화] 포함-배제 원리: |A∪B|=|A|+|B|-|A∩B|</span></div><div class="visual-summary-item"><div class="visual-summary-num">7</div><span>[심화 내용] 멱집합, 카르테시안 곱, 칸토어</span></div></div></div>
+<div class="box box-summary avoid-break"><span class="box-label">이 유닛에서 연결된 축</span><div class="box-content"><b>[수학연결]</b> 집합론 = 현대 수학의 기초<br><b>[C언어]</b> 비트 연산으로 집합 구현<br><b>[KOI]</b> 포함-배제, 비트마스크 부분집합<br><b>[컴퓨팅 사고력]</b> 분류와 그룹화<br><b>[코딩기초]</b> 배열/해시로 집합 표현<br><b>[디버깅]</b> 중복 원소, 순서 착각 주의</div></div>
+<h2>실전 활용 연습</h2>
+<p>지금까지 배운 개념을 활용한 다양한 실전 예제와 연습문제입니다.</p>
+<div class="mascot-speech  avoid-break">
+        <img class="mascot-speech-img small" src="svg-assets/mascot-thinking.svg" alt="마스코트" />
+        <div class="mascot-bubble tip">직접 손으로 써보면서 연습해 보세요! 머릿속으로만 하면 금방 잊어버려요.</div>
+      </div>
+<h2>실생활 연결</h2>
+<div class="box box-tip avoid-break"><span class="box-label">[실생활] 이 개념은 어디에 쓰일까?</span><div class="box-content">게임 개발, 앱 만들기, 웹사이트, 로봇 제어, AI 학습 등 모든 분야에서 사용돼요!</div></div>
+<div class="mascot-speech  avoid-break">
+        <img class="mascot-speech-img small" src="svg-assets/mascot-hello.svg" alt="마스코트" />
+        <div class="mascot-bubble ">이 개념은 나중에 코딩할 때 반드시 필요해요!</div>
+      </div>
+<h2>추가 연습문제</h2>
+<div class="exercise avoid-break"><div class="exercise-title">문제 20 <span class="difficulty diff-2">★★ 도전</span></div><div class="exercise-item"><p>이번 유닛에서 배운 핵심 개념 3가지를 자신의 말로 설명해 보세요.</p></div><div class="memo-area"><span class="memo-label">여기에 답을 써 보세요</span></div></div>
+<div class="exercise avoid-break"><div class="exercise-title">문제 21 <span class="difficulty diff-2">★★ 도전</span></div><div class="exercise-item"><p>이번 유닛의 개념을 활용한 자신만의 문제를 1개 만들어 보세요.</p></div><div class="memo-area"><span class="memo-label">여기에 답을 써 보세요</span></div></div>
+<div class="exercise avoid-break"><div class="exercise-title">문제 22 <span class="difficulty diff-3">★★★ 심화</span></div><div class="exercise-item"><p>이번 유닛의 개념이 C언어에서 어떻게 사용되는지 조사해 보세요.</p></div><div class="memo-area"><span class="memo-label">여기에 답을 써 보세요</span></div></div>
+<h2>[심화] 더 알아보기</h2>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">undefined</div><div class="fact-bite-text">컴퓨팅 사고력(CT) = 문제를 컴퓨터처럼 분석하고 해결하는 능력. 모든 코딩의 기본!</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">undefined</div><div class="fact-bite-text">문제 해결 4단계: 이해 → 계획 → 실행 → 검증. 코딩만이 아니라 모든 문제에 적용!</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">undefined</div><div class="fact-bite-text">추상화 = 복잡한 것에서 핵심만 뽑아내기. 지하철 노선도 = 실제 도시의 추상화!</div></div>
+<div class="mascot-speech right avoid-break">
+        <img class="mascot-speech-img small" src="svg-assets/mascot-celebrate.svg" alt="마스코트" />
+        <div class="mascot-bubble success">이번 유닛 완전 정복! 다음 유닛으로 고고!</div>
+      </div>
+<p>이번 유닛의 모든 개념을 완전히 이해했습니다. 다음 유닛에서 더 발전된 개념을 배워보세요!</p>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">undefined</div><div class="fact-bite-text">알고리즘 = 문제를 해결하는 단계별 방법. 요리 레시피도 알고리즘!</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">undefined</div><div class="fact-bite-text">패턴 = 반복되는 규칙. 패턴을 찾으면 문제가 쉽어져요!</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">undefined</div><div class="fact-bite-text">분해 = 큰 문제를 작은 조각으로 나누기. "어려운 문제는 없다, 모아놓은 쉬운 문제가 있을 뿐"</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">undefined</div><div class="fact-bite-text">논리 = 코딩의 핵심. 논리적으로 생각하는 능력이 가장 중요해요!</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">undefined</div><div class="fact-bite-text">번역기 = 컴파일러. C 코드를 기계어로 번역해주는 프로그램!</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">undefined</div><div class="fact-bite-text">KOI = 한국정보올림피아드. 초등부/중등부/고등부. 알고리즘+논리 대회!</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">undefined</div><div class="fact-bite-text">반복문 = 같은 일을 여러 번. for, while, do-while. 컴퓨터의 최대 장점!</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">undefined</div><div class="fact-bite-text">변수 = 값을 저장하는 상자. 이름을 붙여서 구별해요. int score = 100;</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">undefined</div><div class="fact-bite-text">함수 = 기능을 묶어놓은 상자. 한 번 만들면 여러 번 재사용!</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">undefined</div><div class="fact-bite-text">배열 = 같은 종류의 데이터를 여러 개 저장. int a[10] = 10칸짜리 상자!</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">undefined</div><div class="fact-bite-text">알고리즘 = 문제를 해결하는 단계별 방법. 요리 레시피도 알고리즘!</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">undefined</div><div class="fact-bite-text">패턴 = 반복되는 규칙. 패턴을 찾으면 문제가 쉽어져요!</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">undefined</div><div class="fact-bite-text">분해 = 큰 문제를 작은 조각으로 나누기. "어려운 문제는 없다, 모아놓은 쉬운 문제가 있을 뿐"</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">undefined</div><div class="fact-bite-text">논리 = 코딩의 핵심. 논리적으로 생각하는 능력이 가장 중요해요!</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">undefined</div><div class="fact-bite-text">번역기 = 컴파일러. C 코드를 기계어로 번역해주는 프로그램!</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">undefined</div><div class="fact-bite-text">KOI = 한국정보올림피아드. 초등부/중등부/고등부. 알고리즘+논리 대회!</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">undefined</div><div class="fact-bite-text">반복문 = 같은 일을 여러 번. for, while, do-while. 컴퓨터의 최대 장점!</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">undefined</div><div class="fact-bite-text">변수 = 값을 저장하는 상자. 이름을 붙여서 구별해요. int score = 100;</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">undefined</div><div class="fact-bite-text">함수 = 기능을 묶어놓은 상자. 한 번 만들면 여러 번 재사용!</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">undefined</div><div class="fact-bite-text">배열 = 같은 종류의 데이터를 여러 개 저장. int a[10] = 10칸짜리 상자!</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">undefined</div><div class="fact-bite-text">알고리즘 = 문제를 해결하는 단계별 방법. 요리 레시피도 알고리즘!</div></div>
+<div class="box box-question avoid-break"><span class="box-label">[다음 유닛 미리보기]</span><div class="box-content">집합의 원소를 <b>나열하는 방법</b>이 궁금하다면? 다음은 <b>순열과 조합</b>이에요!</div></div>
+<div class="mascot-speech  avoid-break">
+        <img class="mascot-speech-img " src="svg-assets/mascot-hello.svg" alt="마스코트" />
+        <div class="mascot-bubble celebrate">집합 마스터! 합집합, 교집합, 차집합을 비트 연산으로 쏙쏙 구현할 수 있게 됐어. 다음은 순열과 조합이야!</div>
+      </div>
+</article>
+</body>
+</html>

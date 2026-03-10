@@ -1,0 +1,1513 @@
+﻿<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<base href="/learn/C언어/">
+<title>코딩쏙 교재 — 분해 (Decomposition)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+/* ═══════════════════════════════════════════════════════════════
+   코딩쏙 프리미엄 PDF 교재 스타일시트 v5.0
+   Paged.js + A4 인쇄 최적화 + 아동교육 디자인 시스템
+   ═══════════════════════════════════════════════════════════════ */
+
+/* ── 리셋 & 기본 ── */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --c-primary: #FF6B6B;
+  --c-primary-light: #FFE8E8;
+  --c-primary-dark: #E84545;
+  --c-accent: #4ECDC4;
+  --c-accent-light: #E8FFF9;
+  --c-blue: #3B82F6;
+  --c-blue-light: #EFF6FF;
+  --c-purple: #8B5CF6;
+  --c-purple-light: #F5F3FF;
+  --c-orange: #F59E0B;
+  --c-orange-light: #FFFBEB;
+  --c-green: #10B981;
+  --c-green-light: #ECFDF5;
+  --c-red: #EF4444;
+  --c-red-light: #FEF2F2;
+  --c-teal: #14B8A6;
+  --c-teal-light: #F0FDFA;
+  --c-pink: #EC4899;
+  --c-text: #1E293B;
+  --c-text-secondary: #64748B;
+  --c-text-muted: #94A3B8;
+  --c-border: #E2E8F0;
+  --c-bg-subtle: #F8FAFC;
+  --c-bg-warm: #FFFBF5;
+  --font-body: 'Pretendard', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-code: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --radius-xl: 18px;
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.08);
+  --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
+  --shadow-lg: 0 8px 24px rgba(0,0,0,0.10);
+}
+
+/* ── 페이지 설정 ── */
+@page {
+  size: A4;
+  margin: 18mm 17mm 15mm 22mm;
+  @bottom-center {
+    content: counter(page);
+    font-family: var(--font-body);
+    font-size: 9pt;
+    color: var(--c-text-muted);
+    letter-spacing: 1px;
+  }
+}
+@page :first { @bottom-center { content: none; } }
+
+body {
+  font-family: var(--font-body);
+  color: var(--c-text);
+  background: white;
+  font-size: 11.5pt;
+  line-height: 180%;
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+  word-break: keep-all;
+  overflow-wrap: break-word;
+}
+
+/* ── 페이지 제어 ── */
+.avoid-break { break-inside: avoid !important; page-break-inside: avoid !important; }
+h2, h3 { break-after: avoid !important; page-break-after: avoid !important; }
+.page-break-hint { break-before: page !important; page-break-before: always !important; height: 0; margin: 0; padding: 0; }
+p { orphans: 3; widows: 3; }
+
+/* ═══════════════════════════════════════
+   레슨 헤더 — 프리미엄 그래디언트 배너
+   ═══════════════════════════════════════ */
+.lesson-header {
+  margin-bottom: 6mm;
+  padding: 6mm 5mm 5mm;
+  background: linear-gradient(135deg, #FF6B6B 0%, #FF8E53 50%, #FEC89A 100%);
+  border-radius: var(--radius-xl);
+  color: white;
+  position: relative;
+  overflow: hidden;
+  box-shadow: var(--shadow-lg);
+}
+.lesson-header::before {
+  content: '';
+  position: absolute;
+  top: -30%;
+  right: -10%;
+  width: 140px;
+  height: 140px;
+  background: rgba(255,255,255,0.12);
+  border-radius: 50%;
+}
+.lesson-header::after {
+  content: '';
+  position: absolute;
+  bottom: -20%;
+  left: 15%;
+  width: 80px;
+  height: 80px;
+  background: rgba(255,255,255,0.08);
+  border-radius: 50%;
+}
+.lesson-number {
+  font-size: 10pt;
+  font-weight: 700;
+  color: rgba(255,255,255,0.85);
+  margin-bottom: 2mm;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  position: relative;
+  z-index: 1;
+}
+.lesson-title {
+  font-size: 24pt;
+  font-weight: 900;
+  line-height: 125%;
+  color: white;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.15);
+  position: relative;
+  z-index: 1;
+}
+.lesson-summary {
+  font-size: 11pt;
+  color: rgba(255,255,255,0.9);
+  margin-top: 2.5mm;
+  font-weight: 400;
+  position: relative;
+  z-index: 1;
+}
+
+/* ═══════════════════════════════════════
+   제목 계층 — 프리미엄 타이포그래피
+   ═══════════════════════════════════════ */
+h2 {
+  font-size: 16pt;
+  font-weight: 800;
+  margin: 6mm 0 3mm;
+  padding: 2mm 0 2mm 4.5mm;
+  border-left: 4.5px solid var(--c-primary);
+  color: var(--c-text);
+  background: linear-gradient(90deg, var(--c-primary-light) 0%, transparent 60%);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  letter-spacing: -0.3px;
+}
+h3 {
+  font-size: 13.5pt;
+  font-weight: 700;
+  color: #334155;
+  margin: 4mm 0 2.5mm;
+  padding-bottom: 1mm;
+  border-bottom: 2px solid #F1F5F9;
+}
+p {
+  margin-bottom: 2.5mm;
+  text-align: justify;
+  line-height: 175%;
+  font-size: 11.5pt;
+}
+
+/* ── 인라인 코드 ── */
+code {
+  font-family: var(--font-code);
+  font-size: 9.5pt;
+  background: linear-gradient(135deg, #FEF3C7, #FDE68A);
+  padding: 0.5mm 2mm;
+  border-radius: 4px;
+  color: #92400E;
+  border: 1px solid #FCD34D;
+  font-weight: 500;
+}
+
+/* ═══════════════════════════════════════
+   코드 블록 — 프리미엄 IDE 스타일
+   ═══════════════════════════════════════ */
+.code-block {
+  background: #0F172A;
+  border-radius: var(--radius-md);
+  padding: 0;
+  margin: 3mm 0;
+  box-shadow: var(--shadow-md), inset 0 1px 0 rgba(255,255,255,0.05);
+  overflow: hidden;
+  border: 1px solid #1E293B;
+}
+.code-block-header {
+  font-family: var(--font-body);
+  font-size: 8.5pt;
+  font-weight: 600;
+  color: #94A3B8;
+  padding: 2.5mm 4.5mm;
+  background: #1E293B;
+  border-bottom: 1px solid #334155;
+  letter-spacing: 0.5px;
+  display: flex;
+  align-items: center;
+  gap: 2mm;
+}
+.code-block-header::before {
+  content: '';
+  display: inline-flex;
+  width: 8px; height: 8px;
+  background: #EF4444;
+  border-radius: 50%;
+  box-shadow: 14px 0 0 #F59E0B, 28px 0 0 #22C55E;
+  flex-shrink: 0;
+}
+.code-table { width: 100%; border-collapse: collapse; table-layout: fixed; }
+.code-table td { vertical-align: top; padding: 0; }
+.line-num {
+  width: 12mm;
+  min-width: 12mm;
+  max-width: 12mm;
+  text-align: right;
+  padding: 0.5mm 3mm 0.5mm 2mm;
+  font-family: var(--font-code);
+  font-size: 8pt;
+  color: #475569;
+  line-height: 165%;
+  user-select: none;
+  background: rgba(0,0,0,0.15);
+  border-right: 1px solid rgba(255,255,255,0.06);
+}
+.line-code {
+  width: auto;
+  font-family: var(--font-code);
+  font-size: 10pt;
+  color: #E2E8F0;
+  line-height: 165%;
+  padding: 0.5mm 4mm 0.5mm 4mm;
+  white-space: pre;
+  overflow-x: auto;
+}
+.line-highlight td { background: rgba(59,130,246,0.12) !important; }
+.line-highlight .line-num { color: var(--c-blue) !important; font-weight: 700; }
+
+/* 신택스 컬러 — VS Code Dark+ 영감 */
+.kw { color: #C084FC; font-weight: 500; }
+.str { color: #86EFAC; }
+.cmt { color: #6B7280; font-style: italic; }
+.fn { color: #FDBA74; }
+.pp { color: #F472B6; font-weight: 600; }
+.num { color: #7DD3FC; }
+.type { color: #5EEAD4; font-weight: 500; }
+.mc { color: #67E8F9; }
+.esc { color: #FCD34D; font-weight: 600; }
+.fmt { color: #FCD34D; }
+
+/* ═══════════════════════════════════════
+   실행 결과 — 터미널 스타일
+   ═══════════════════════════════════════ */
+.output-block {
+  background: #F0FDF4;
+  border: 1.5px solid #86EFAC;
+  border-radius: var(--radius-md);
+  padding: 3mm 4mm;
+  margin: 3mm 0;
+  position: relative;
+}
+.output-label {
+  font-family: var(--font-body);
+  font-size: 8.5pt;
+  color: var(--c-green);
+  display: block;
+  margin-bottom: 1.5mm;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+.output-text {
+  font-family: var(--font-code);
+  font-size: 10.5pt;
+  line-height: 160%;
+  color: #166534;
+}
+
+/* ═══════════════════════════════════════
+   박스 시스템 — 프리미엄 카드 디자인
+   ═══════════════════════════════════════ */
+.box {
+  border-radius: var(--radius-md);
+  padding: 3.5mm 4.5mm;
+  margin: 3mm 0;
+  position: relative;
+  box-shadow: var(--shadow-sm);
+}
+.box-label {
+  font-size: 10.5pt;
+  font-weight: 800;
+  margin-bottom: 2mm;
+  display: flex;
+  align-items: center;
+  gap: 2mm;
+}
+.box-content { font-size: 11pt; line-height: 170%; overflow-wrap: break-word; word-break: keep-all; }
+.box-warning {
+  border-left: 5px solid var(--c-red);
+  background: linear-gradient(135deg, #FEF2F2 0%, #FFF1F2 100%);
+}
+.box-warning .box-label { color: var(--c-red); }
+.box-key {
+  border-left: 5px solid var(--c-blue);
+  background: linear-gradient(135deg, #EFF6FF 0%, #F0F9FF 100%);
+}
+.box-key .box-label { color: var(--c-blue); }
+.box-tip {
+  border-left: 5px solid var(--c-orange);
+  background: linear-gradient(135deg, #FFFBEB 0%, #FEF9C3 50%, #FFFBEB 100%);
+}
+.box-tip .box-label { color: var(--c-orange); }
+.box-summary {
+  border-left: 5px solid var(--c-green);
+  background: linear-gradient(135deg, #ECFDF5 0%, #D1FAE5 100%);
+  border: 1.5px solid #A7F3D0;
+  border-left: 5px solid var(--c-green);
+}
+.box-summary .box-label { color: var(--c-green); }
+.box-question {
+  border-left: 5px solid var(--c-purple);
+  background: linear-gradient(135deg, #F5F3FF 0%, #EDE9FE 100%);
+}
+.box-question .box-label { color: var(--c-purple); }
+.box-history {
+  border-left: 5px solid var(--c-teal);
+  background: linear-gradient(135deg, #F0FDFA 0%, #CCFBF1 100%);
+}
+.box-history .box-label { color: var(--c-teal); }
+
+/* ═══════════════════════════════════════
+   연습문제 — 프리미엄 카드
+   ═══════════════════════════════════════ */
+.exercise {
+  background: white;
+  border: 1.5px solid #E2E8F0;
+  border-radius: var(--radius-lg);
+  padding: 3.5mm 4.5mm;
+  margin: 3mm 0;
+  border-left: 5px solid var(--c-primary);
+  box-shadow: var(--shadow-sm);
+  position: relative;
+}
+.exercise-title {
+  font-size: 13pt;
+  font-weight: 800;
+  color: var(--c-primary);
+  margin-bottom: 2.5mm;
+  display: flex;
+  align-items: center;
+  gap: 2mm;
+}
+.difficulty {
+  display: inline-flex;
+  align-items: center;
+  font-size: 8pt;
+  padding: 0.5mm 2.5mm;
+  border-radius: 20px;
+  margin-left: 2mm;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+}
+.diff-1 { background: #D1FAE5; color: #059669; }
+.diff-2 { background: #FEF3C7; color: #D97706; }
+.diff-3 { background: #FEE2E2; color: #DC2626; }
+.memo-area {
+  border: 2px dashed #CBD5E1;
+  border-radius: var(--radius-md);
+  padding: 3mm;
+  min-height: 15mm;
+  margin-top: 2.5mm;
+  background: repeating-linear-gradient(
+    transparent, transparent 7mm, #F1F5F9 7mm, #F1F5F9 7.5mm
+  );
+}
+.memo-label { font-size: 8.5pt; color: var(--c-text-muted); font-style: italic; }
+
+/* ── OX/Choice/Short ── */
+.exercise-answer {
+  font-size: 10pt;
+  color: var(--c-green);
+  margin-top: 2mm;
+  padding: 1.5mm 3mm;
+  background: var(--c-green-light);
+  border-radius: var(--radius-sm);
+  font-weight: 600;
+  border: 1px solid #A7F3D0;
+}
+.exercise-explain {
+  font-size: 9.5pt;
+  color: var(--c-text-secondary);
+  margin-top: 1.5mm;
+  padding: 2mm 3mm;
+  background: #F8FAFC;
+  border-radius: var(--radius-sm);
+  border-left: 3px solid #E2E8F0;
+}
+.choice-list { padding-left: 6mm; margin: 2mm 0; }
+.choice-list li { font-size: 10.5pt; margin-bottom: 1.5mm; line-height: 150%; }
+.choice-list li.choice-correct { color: var(--c-green); font-weight: 700; }
+
+/* ═══════════════════════════════════════
+   Before/After 비교 — 프리미엄 2컬럼
+   ═══════════════════════════════════════ */
+.compare {
+  display: flex;
+  gap: 3mm;
+  margin: 3mm 0;
+  overflow: hidden;
+}
+.compare-bad {
+  flex: 1;
+  min-width: 0;
+  background: linear-gradient(135deg, #FEF2F2, #FFF1F2);
+  border: 1.5px solid #FECACA;
+  border-radius: var(--radius-md);
+  padding: 3mm;
+  overflow: hidden;
+}
+.compare-good {
+  flex: 1;
+  min-width: 0;
+  background: linear-gradient(135deg, #ECFDF5, #D1FAE5);
+  border: 1.5px solid #A7F3D0;
+  border-radius: var(--radius-md);
+  padding: 3mm;
+  overflow: hidden;
+}
+.compare code {
+  font-size: 9pt;
+  word-break: break-all;
+  overflow-wrap: break-word;
+  display: block;
+  background: rgba(0,0,0,0.05);
+  padding: 2mm 3mm;
+  border-radius: var(--radius-sm);
+  margin: 1.5mm 0;
+  line-height: 155%;
+  white-space: pre-wrap;
+  border: none;
+  color: inherit;
+}
+.compare-label { font-size: 9.5pt; font-weight: 800; margin-bottom: 1.5mm; }
+.compare-bad .compare-label { color: var(--c-red); }
+.compare-good .compare-label { color: var(--c-green); }
+.compare-msg-bad { font-size: 9pt; color: var(--c-red); }
+.compare-msg-good { font-size: 9pt; color: var(--c-green); }
+
+/* ═══════════════════════════════════════
+   챕터 시작 — 프리미엄 카드
+   ═══════════════════════════════════════ */
+.chapter-start-box { margin-bottom: 3mm; }
+.learning-goals {
+  background: linear-gradient(135deg, #FFF7ED 0%, #FFFBEB 100%);
+  border-radius: var(--radius-lg);
+  padding: 4mm 5mm;
+  margin-bottom: 3mm;
+  border: 1.5px solid #FED7AA;
+  box-shadow: var(--shadow-sm);
+}
+.learning-goals h3 {
+  font-size: 12pt;
+  font-weight: 800;
+  color: #EA580C;
+  margin: 0 0 2.5mm;
+  border: none;
+  padding: 0;
+}
+.learning-goals ul { padding-left: 5mm; margin: 0; }
+.learning-goals li { font-size: 11pt; margin-bottom: 1.5mm; line-height: 160%; color: #431407; }
+.prereq-check {
+  background: var(--c-blue-light);
+  border-left: 5px solid var(--c-blue);
+  border-radius: var(--radius-md);
+  padding: 3mm 4mm;
+  margin-bottom: 2.5mm;
+}
+.prereq-check h3 {
+  font-size: 11pt;
+  font-weight: 700;
+  color: var(--c-blue);
+  margin: 0 0 1.5mm;
+  border: none;
+  padding: 0;
+}
+.checklist { list-style: none; padding-left: 4mm; margin: 0; }
+.checklist li { margin-bottom: 1mm; font-size: 10.5pt; }
+.checklist li::before { content: '\2610  '; font-size: 12pt; color: var(--c-text-muted); }
+.progress-section { margin-top: 2.5mm; }
+.progress-label { font-size: 9.5pt; color: var(--c-text-secondary); font-weight: 600; }
+.progress-bar {
+  background: #E2E8F0;
+  border-radius: 6px;
+  height: 4mm;
+  margin-top: 1.5mm;
+  overflow: hidden;
+}
+.progress-fill {
+  background: linear-gradient(90deg, var(--c-primary), #FF8E53, #FEC89A);
+  height: 100%;
+  border-radius: 6px;
+}
+
+/* ═══════════════════════════════════════
+   Predict — 생각해보기 카드
+   ═══════════════════════════════════════ */
+.predict-box {
+  display: flex;
+  gap: 3.5mm;
+  background: linear-gradient(135deg, #F5F3FF 0%, #EDE9FE 100%);
+  border: 1.5px solid #C4B5FD;
+  border-radius: var(--radius-lg);
+  padding: 3.5mm 4.5mm;
+  margin: 3mm 0;
+  box-shadow: var(--shadow-sm);
+}
+.predict-icon {
+  width: 10mm; height: 10mm;
+  background: linear-gradient(135deg, var(--c-purple), #A78BFA);
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16pt;
+  font-weight: 900;
+  flex-shrink: 0;
+  box-shadow: 0 2px 6px rgba(139,92,246,0.3);
+}
+.predict-content { flex: 1; }
+.predict-content p { font-size: 11pt; margin-bottom: 2mm; }
+
+/* ═══════════════════════════════════════
+   다이어그램 — 프리미엄 컨테이너
+   ═══════════════════════════════════════ */
+.diagram-box {
+  background: var(--c-bg-subtle);
+  border: 1.5px solid var(--c-border);
+  border-radius: var(--radius-lg);
+  padding: 4mm;
+  margin: 3.5mm 0;
+  box-shadow: var(--shadow-sm);
+}
+.diagram-title {
+  font-size: 11pt;
+  font-weight: 800;
+  color: var(--c-primary);
+  margin-bottom: 3mm;
+  text-align: center;
+  letter-spacing: 0.3px;
+}
+.diagram-content { font-size: 10.5pt; line-height: 170%; }
+.diagram-content .d-row { display: flex; align-items: center; justify-content: center; gap: 3mm; margin: 2mm 0; }
+.diagram-content .d-block { background: #1E293B; color: white; padding: 2mm 4mm; border-radius: var(--radius-sm); font-family: var(--font-code); font-size: 9.5pt; font-weight: 500; }
+.diagram-content .d-block-highlight { background: linear-gradient(135deg, var(--c-primary), #FF8E53); color: white; padding: 2mm 4mm; border-radius: var(--radius-sm); font-family: var(--font-code); font-size: 9.5pt; font-weight: 700; }
+.diagram-content .d-arrow { color: var(--c-text-muted); font-size: 14pt; }
+.diagram-content .d-label { font-size: 8.5pt; color: var(--c-text-secondary); }
+
+/* ═══════════════════════════════════════
+   Steps — 프리미엄 타임라인
+   ═══════════════════════════════════════ */
+.steps-visual { margin: 3mm 0; }
+.step-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 3.5mm;
+  margin-bottom: 1.5mm;
+}
+.step-num {
+  width: 8mm; height: 8mm;
+  background: linear-gradient(135deg, var(--c-primary), #FF8E53);
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10pt;
+  font-weight: 800;
+  flex-shrink: 0;
+  margin-top: 0.5mm;
+  box-shadow: 0 2px 4px rgba(255,107,107,0.3);
+}
+.step-body { flex: 1; }
+.step-title { font-size: 11pt; font-weight: 700; margin-bottom: 0.5mm; color: var(--c-text); }
+.step-desc { font-size: 10.5pt; color: var(--c-text-secondary); line-height: 160%; }
+.step-connector { width: 2.5px; height: 4mm; background: linear-gradient(180deg, var(--c-primary), transparent); margin-left: 3.7mm; }
+
+/* ═══════════════════════════════════════
+   Modify — 바꿔보기 카드
+   ═══════════════════════════════════════ */
+.modify-box {
+  background: linear-gradient(135deg, #F0F9FF 0%, #E0F2FE 100%);
+  border: 1.5px solid #7DD3FC;
+  border-left: 5px solid #0EA5E9;
+  border-radius: var(--radius-md);
+  padding: 3.5mm 4.5mm;
+  margin: 3mm 0;
+}
+.modify-label { font-size: 10.5pt; font-weight: 800; color: #0284C7; margin-bottom: 2mm; }
+.modify-hint { font-size: 9.5pt; color: var(--c-text-secondary); font-style: italic; margin: 1.5mm 0; }
+
+/* ═══════════════════════════════════════
+   정답 섹션
+   ═══════════════════════════════════════ */
+.answers-section {
+  background: white;
+  border: 1.5px solid #E9D5FF;
+  border-radius: var(--radius-md);
+  padding: 3mm 4mm;
+  margin: 3mm 0;
+  border-left: 5px solid var(--c-purple);
+}
+.answers-section h3 {
+  font-size: 12pt;
+  font-weight: 800;
+  color: var(--c-purple);
+  margin: 0 0 2.5mm;
+  border: none;
+  padding: 0;
+}
+.answer-item { margin-bottom: 1mm; font-size: 10pt; line-height: 150%; }
+.answer-num { font-weight: 700; color: var(--c-primary); margin-right: 2mm; }
+.answer-text { color: var(--c-text); }
+
+/* ═══════════════════════════════════════
+   코드 설명 (라인별)
+   ═══════════════════════════════════════ */
+.code-explain { margin: 3mm 0; padding-left: 2mm; }
+.code-explain-item {
+  display: flex;
+  align-items: flex-start;
+  margin-bottom: 2.5mm;
+  font-size: 11pt;
+  line-height: 165%;
+}
+.code-explain-line {
+  font-family: var(--font-code);
+  font-size: 9pt;
+  color: white;
+  background: linear-gradient(135deg, var(--c-primary), #FF8E53);
+  padding: 0.5mm 2.5mm;
+  border-radius: 4px;
+  margin-right: 3mm;
+  flex-shrink: 0;
+  font-weight: 700;
+  box-shadow: 0 1px 3px rgba(255,107,107,0.3);
+}
+
+/* ═══════════════════════════════════════
+   용어 정리 — 프리미엄 테이블
+   ═══════════════════════════════════════ */
+.glossary { margin: 3mm 0; break-inside: avoid; display: block !important; width: 100% !important; clear: both; }
+.glossary-item {
+  display: flex;
+  margin-bottom: 0;
+  font-size: 10pt;
+  padding: 2mm 3mm;
+  border-bottom: 1px solid #F1F5F9;
+  width: 100%;
+}
+.glossary-item:nth-child(odd) { background: #F8FAFC; }
+.glossary-item:first-child { border-radius: var(--radius-sm) var(--radius-sm) 0 0; }
+.glossary-item:last-child { border-radius: 0 0 var(--radius-sm) var(--radius-sm); border-bottom: none; }
+.glossary-term {
+  font-weight: 700;
+  min-width: 28mm;
+  max-width: 35mm;
+  flex-shrink: 0;
+  color: var(--c-text);
+  font-family: var(--font-code);
+  font-size: 9.5pt;
+  word-break: keep-all;
+}
+.glossary-def { color: var(--c-text-secondary); line-height: 155%; flex: 1; min-width: 0; }
+
+/* ═══════════════════════════════════════
+   추적 테이블 — 프리미엄 데이터 테이블
+   ═══════════════════════════════════════ */
+.trace-table { margin: 3.5mm 0; }
+.trace-caption { font-size: 10.5pt; font-weight: 700; color: var(--c-primary); margin-bottom: 2mm; }
+.trace-table table { width: 100%; border-collapse: collapse; font-size: 10pt; border-radius: var(--radius-sm); overflow: hidden; }
+.trace-table th {
+  background: linear-gradient(135deg, #1E293B, #334155);
+  color: white;
+  padding: 2mm 3.5mm;
+  text-align: left;
+  font-weight: 700;
+  font-size: 9.5pt;
+}
+.trace-table td { padding: 2mm 3.5mm; border-bottom: 1px solid #F1F5F9; font-family: var(--font-code); font-size: 9.5pt; }
+.trace-table tr:nth-child(even) td { background: #F8FAFC; }
+
+/* ═══════════════════════════════════════
+   마스코트 말풍선 — 프리미엄 디자인
+   ═══════════════════════════════════════ */
+.mascot-speech {
+  display: flex;
+  align-items: flex-start;
+  gap: 3.5mm;
+  margin: 3.5mm 0;
+}
+.mascot-speech.right { flex-direction: row-reverse; }
+.mascot-speech-img {
+  flex-shrink: 0;
+  width: 60px;
+  height: 60px;
+  object-fit: contain;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.15));
+}
+.mascot-speech-img.small { width: 48px; height: 48px; }
+.mascot-speech-img.large { width: 80px; height: 80px; }
+.mascot-bubble {
+  position: relative;
+  background: linear-gradient(135deg, #EFF6FF 0%, #DBEAFE 100%);
+  border: 1.5px solid #93C5FD;
+  border-radius: var(--radius-lg);
+  padding: 3.5mm 4.5mm;
+  font-size: 10.5pt;
+  color: #1E3A5F;
+  line-height: 1.6;
+  flex: 1;
+  max-width: 85%;
+  box-shadow: var(--shadow-sm);
+}
+.mascot-bubble.warn {
+  background: linear-gradient(135deg, #FEF2F2, #FEE2E2);
+  border-color: #FCA5A5;
+  color: #7F1D1D;
+}
+.mascot-bubble.success {
+  background: linear-gradient(135deg, #ECFDF5, #D1FAE5);
+  border-color: #6EE7B7;
+  color: #14532D;
+}
+.mascot-bubble.tip {
+  background: linear-gradient(135deg, #FFFBEB, #FEF3C7);
+  border-color: #FCD34D;
+  color: #78350F;
+}
+.mascot-bubble::before {
+  content: '';
+  position: absolute;
+  top: 14px;
+  left: -9px;
+  border: 7px solid transparent;
+  border-right-color: #93C5FD;
+}
+.mascot-bubble::after {
+  content: '';
+  position: absolute;
+  top: 15px;
+  left: -7px;
+  border: 6px solid transparent;
+  border-right-color: #EFF6FF;
+}
+.mascot-speech.right .mascot-bubble::before {
+  left: auto; right: -9px;
+  border-right-color: transparent;
+  border-left-color: #93C5FD;
+}
+.mascot-speech.right .mascot-bubble::after {
+  left: auto; right: -7px;
+  border-right-color: transparent;
+  border-left-color: #EFF6FF;
+}
+.mascot-bubble.warn::before { border-right-color: #FCA5A5; }
+.mascot-bubble.warn::after { border-right-color: #FEF2F2; }
+.mascot-speech.right .mascot-bubble.warn::before { border-right-color: transparent; border-left-color: #FCA5A5; }
+.mascot-speech.right .mascot-bubble.warn::after { border-right-color: transparent; border-left-color: #FEF2F2; }
+.mascot-bubble.success::before { border-right-color: #6EE7B7; }
+.mascot-bubble.success::after { border-right-color: #ECFDF5; }
+.mascot-speech.right .mascot-bubble.success::before { border-right-color: transparent; border-left-color: #6EE7B7; }
+.mascot-speech.right .mascot-bubble.success::after { border-right-color: transparent; border-left-color: #ECFDF5; }
+.mascot-bubble.tip::before { border-right-color: #FCD34D; }
+.mascot-bubble.tip::after { border-right-color: #FFFBEB; }
+.mascot-speech.right .mascot-bubble.tip::before { border-right-color: transparent; border-left-color: #FCD34D; }
+.mascot-speech.right .mascot-bubble.tip::after { border-right-color: transparent; border-left-color: #FFFBEB; }
+
+/* ═══════════════════════════════════════
+   Fact Bite — 숫자/팩트 강조 카드
+   ═══════════════════════════════════════ */
+.fact-bite {
+  display: flex;
+  align-items: center;
+  gap: 4mm;
+  margin: 3mm 0;
+  background: linear-gradient(135deg, #FFF1F2 0%, #FFE4E6 50%, #FFF1F2 100%);
+  border-radius: var(--radius-lg);
+  padding: 3.5mm 5mm;
+  border: 1.5px solid #FECDD3;
+  box-shadow: var(--shadow-sm);
+}
+.fact-bite-number {
+  font: 900 18pt var(--font-body);
+  background: linear-gradient(135deg, var(--c-primary), #FF8E53);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  white-space: nowrap;
+  flex-shrink: 0;
+  max-width: 40%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.fact-bite-text { font-size: 10pt; color: var(--c-text-secondary); line-height: 1.5; flex: 1; min-width: 0; }
+
+/* ═══════════════════════════════════════
+   Visual Summary — 핵심 정리 카드
+   ═══════════════════════════════════════ */
+.visual-summary {
+  background: linear-gradient(135deg, #ECFDF5 0%, #D1FAE5 50%, #A7F3D0 100%);
+  border: 1.5px solid #6EE7B7;
+  border-radius: var(--radius-xl);
+  padding: 5mm;
+  margin: 4mm 0;
+  box-shadow: var(--shadow-md);
+  display: block !important;
+  width: 100% !important;
+  clear: both;
+}
+.visual-summary-title {
+  font-size: 14pt;
+  font-weight: 900;
+  color: #065F46;
+  text-align: center;
+  margin-bottom: 3mm;
+}
+.visual-summary-items { display: flex; flex-direction: column; gap: 2mm; }
+.visual-summary-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 3mm;
+  background: rgba(255,255,255,0.7);
+  padding: 2.5mm 3.5mm;
+  border-radius: var(--radius-md);
+  backdrop-filter: blur(4px);
+}
+.visual-summary-num {
+  width: 7mm; height: 7mm;
+  background: linear-gradient(135deg, #059669, #10B981);
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 9pt;
+  font-weight: 800;
+  flex-shrink: 0;
+  box-shadow: 0 1px 3px rgba(5,150,105,0.3);
+}
+
+/* ═══════════════════════════════════════
+   10축 매핑 전용 스타일
+   ═══════════════════════════════════════ */
+.axis-section {
+  background: linear-gradient(135deg, #F8FAFC 0%, #F1F5F9 100%);
+  border: 1.5px solid #CBD5E1;
+  border-radius: var(--radius-xl);
+  padding: 5mm;
+  margin: 5mm 0;
+  box-shadow: var(--shadow-md);
+  page-break-inside: avoid;
+}
+.axis-title {
+  font-size: 14pt;
+  font-weight: 900;
+  text-align: center;
+  margin-bottom: 4mm;
+  color: var(--c-text);
+  letter-spacing: -0.3px;
+}
+.axis-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2.5mm;
+}
+.axis-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 2mm;
+  padding: 2.5mm 3mm;
+  border-radius: var(--radius-md);
+  background: white;
+  border: 1px solid #E2E8F0;
+}
+.axis-badge {
+  font-size: 7.5pt;
+  font-weight: 800;
+  padding: 0.5mm 2.5mm;
+  border-radius: 20px;
+  flex-shrink: 0;
+  letter-spacing: 0.3px;
+  white-space: nowrap;
+}
+.axis-badge.c-lang { background: #DBEAFE; color: #1D4ED8; }
+.axis-badge.thinking { background: #E0E7FF; color: #4338CA; }
+.axis-badge.debug { background: #FEE2E2; color: #DC2626; }
+.axis-badge.koi { background: #FEF3C7; color: #B45309; }
+.axis-badge.basics { background: #D1FAE5; color: #059669; }
+.axis-badge.reallife { background: #CCFBF1; color: #0D9488; }
+.axis-badge.crosssubj { background: #E9D5FF; color: #7C3AED; }
+.axis-badge.project { background: #FFE4E6; color: #BE123C; }
+.axis-badge.ai { background: #FCE7F3; color: #DB2777; }
+.axis-badge.hardware { background: #CFFAFE; color: #0891B2; }
+.axis-text { font-size: 9.5pt; line-height: 150%; color: var(--c-text-secondary); }
+
+/* ── TOC ── */
+.toc { margin: 5mm 0; }
+.toc h2 { border: none; padding: 0; margin-bottom: 3mm; background: none; }
+.toc ul { list-style: none; padding: 0; }
+.toc-h2 { display: flex; align-items: baseline; margin-bottom: 1.5mm; font-size: 11pt; }
+.toc-text { flex-shrink: 0; }
+.toc-dots { flex: 1; border-bottom: 1.5px dotted #CBD5E1; margin: 0 2mm; min-width: 10mm; }
+.toc-page { flex-shrink: 0; color: var(--c-text-muted); font-size: 10pt; }
+
+/* ── Margin Note ── */
+.margin-note {
+  float: right;
+  width: 30mm;
+  font-size: 8.5pt;
+  color: var(--c-text-secondary);
+  background: linear-gradient(135deg, #FFFBEB, #FEF3C7);
+  padding: 2mm 2.5mm;
+  border-radius: var(--radius-sm);
+  margin: 0 -35mm 2mm 2mm;
+  border-left: 2.5px solid var(--c-orange);
+}
+
+/* ── Cross Reference ── */
+.crossref { font-size: 9pt; color: var(--c-blue); font-style: italic; font-weight: 500; }
+
+/* ── Image ── */
+.image-block { margin: 3.5mm 0; text-align: center; }
+.image-block img { max-width: 100%; border-radius: var(--radius-md); box-shadow: var(--shadow-sm); }
+.image-caption {
+  font-size: 9pt;
+  color: var(--c-text-secondary);
+  margin-top: 2mm;
+  font-style: italic;
+  background: var(--c-bg-subtle);
+  padding: 1.5mm 4mm;
+  border-radius: 20px;
+  display: inline-block;
+}
+
+/* ═══════════════════════════════════════
+   v7.0 — 80레이어 리서치 증강분
+   v5 프리미엄 기반 + TEXTBOOK-DESIGN-DEEP P1~P6 합성
+   ═══════════════════════════════════════ */
+
+/* ── Layer 26: 게슈탈트 근접성 강화 ── */
+h2 + p,
+h3 + p,
+h2 + .code-block,
+h3 + .code-block { margin-top: 1mm !important; }
+.code-block + .code-explain { margin-top: 0.5mm; }
+.code-block + .output-block { margin-top: 1mm; }
+.exercise + .exercise { margin-top: 1.5mm; }
+
+/* ── Layer 28: 마이크로 타이포그래피 ── */
+body {
+  font-kerning: auto;
+  font-variant-ligatures: common-ligatures;
+  hanging-punctuation: first last;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+.line-num { font-variant-numeric: tabular-nums; }
+.trace-table td { font-variant-numeric: tabular-nums; }
+
+/* ── Layer 29: 연습문제 유형별 스타일 ── */
+.exercise-item { margin-bottom: 2mm; font-size: 11pt; line-height: 165%; }
+.exercise-item p { margin-bottom: 1.5mm; }
+.exercise-blank { display: inline-block; min-width: 20mm; border-bottom: 2px solid var(--c-primary); margin: 0 1mm; }
+.exercise-ox-grid { display: flex; gap: 3mm; margin-top: 2mm; }
+.exercise-ox-item { flex: 1; padding: 2mm 3mm; border: 1px solid var(--c-border); border-radius: var(--radius-sm); font-size: 10pt; }
+.exercise-matching { display: grid; grid-template-columns: 1fr auto 1fr; gap: 1.5mm; font-size: 10pt; }
+.exercise-reorder { display: flex; flex-direction: column; gap: 1mm; font-family: var(--font-code); font-size: 9.5pt; }
+.exercise-reorder-item { background: var(--c-bg-subtle); padding: 1.5mm 3mm; border-radius: var(--radius-sm); border: 1px solid var(--c-border); }
+
+/* ── Layer 30: 교사용 에디션 ── */
+.teacher-only { background: #FFF5F5; border: 2px dashed #E74C3C; padding: 3mm; border-radius: var(--radius-md); }
+.teacher-note { font-size: 9pt; color: #C0392B; font-style: italic; }
+
+/* ── Layer 32: 디자인 토큰 — 인쇄용 간격 ── */
+article > * + * { margin-top: 2.5mm; }
+article > h2 { margin-top: 5mm; }
+article > h3 { margin-top: 3.5mm; }
+
+/* ── Layer 51: 황금비 타이포 ──
+   24pt / 16pt / 13.5pt / 11.5pt = 1:0.67:0.56:0.48 ≈ 피보나치 */
+
+/* ── Layer 55: 인지부하 최적화 — 시각 앵커 ── */
+h2::before {
+  /* 빈 블록으로 스크롤 앵커 역할 — Paged.js에서 러닝헤드 지원 */
+}
+
+/* ── Layer 56: 아이트래킹 — F패턴 강화 ── */
+.lesson-header .lesson-number { font-weight: 700; }
+.box-label::before {
+  content: '';
+  display: inline-block;
+  width: 3px; height: 14px;
+  border-radius: 2px;
+  margin-right: 1.5mm;
+  flex-shrink: 0;
+}
+.box-warning .box-label::before { background: var(--c-red); }
+.box-key .box-label::before { background: var(--c-blue); }
+.box-tip .box-label::before { background: var(--c-orange); }
+.box-summary .box-label::before { background: var(--c-green); }
+.box-question .box-label::before { background: var(--c-purple); }
+.box-history .box-label::before { background: var(--c-teal); }
+
+/* ── Layer 58: 색상 조화 60-30-10 강화 ── */
+/* 60% = white/neutral, 30% = brand gradient accents, 10% = c-primary strong */
+
+/* ── Layer 60: 코드 블록 — 브래킷 컬러링 (Layer 30 from Deep) ── */
+.brace-1 { color: #C084FC; font-weight: bold; }
+.brace-2 { color: #86EFAC; font-weight: bold; }
+.brace-3 { color: #FDBA74; font-weight: bold; }
+.brace-4 { color: #7DD3FC; font-weight: bold; }
+
+/* ── Layer 61: 인덴트 가이드 ── */
+.indent-guide { border-left: 1px solid rgba(255,255,255,0.08); }
+
+/* ── Layer 65: 10축 매핑 강화 ── */
+.axis-item { transition: none; }
+.axis-section .box-content { font-size: 10pt; }
+
+/* ── Layer 67: 자료구조 시각화 ── */
+.ds-visual { font-family: var(--font-code); font-size: 9pt; text-align: center; margin: 3mm 0; }
+.ds-array { display: flex; justify-content: center; gap: 0; }
+.ds-cell { width: 9mm; height: 9mm; border: 1.5px solid var(--c-blue); display: flex; align-items: center; justify-content: center; font-weight: 700; }
+.ds-cell:first-child { border-radius: var(--radius-sm) 0 0 var(--radius-sm); }
+.ds-cell:last-child { border-radius: 0 var(--radius-sm) var(--radius-sm) 0; }
+.ds-index { font-size: 7pt; color: var(--c-text-muted); text-align: center; margin-top: 0.5mm; }
+
+/* ── Layer 68: 학습 저널 공간 ── */
+.reflection-box {
+  background: var(--c-bg-warm);
+  border: 1.5px dashed #FCD34D;
+  border-radius: var(--radius-lg);
+  padding: 4mm;
+  margin: 4mm 0;
+}
+.reflection-prompt { font-size: 10pt; color: var(--c-orange); font-weight: 700; margin-bottom: 2mm; }
+.reflection-lines {
+  min-height: 20mm;
+  background: repeating-linear-gradient(transparent, transparent 7mm, #FEF3C7 7mm, #FEF3C7 7.5mm);
+}
+
+/* ── Layer 69: 루브릭/자기평가 ── */
+.rubric-table { width: 100%; border-collapse: collapse; font-size: 9pt; margin: 3mm 0; }
+.rubric-table th { background: var(--c-purple); color: white; padding: 2mm; text-align: center; }
+.rubric-table td { padding: 2mm; border: 1px solid var(--c-border); text-align: center; }
+.self-check { display: flex; gap: 5mm; justify-content: center; margin: 3mm 0; }
+.self-check-item { text-align: center; font-size: 18pt; }
+.self-check-label { font-size: 7.5pt; color: var(--c-text-secondary); }
+
+/* ── Layer 72: 교실 게임 보드 ── */
+.bingo-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 1px; background: var(--c-border); border-radius: var(--radius-md); overflow: hidden; margin: 3mm 0; }
+.bingo-cell { background: white; padding: 3mm; text-align: center; font-size: 8.5pt; font-family: var(--font-code); min-height: 10mm; display: flex; align-items: center; justify-content: center; }
+.bingo-free { background: var(--c-primary-light); font-weight: 800; color: var(--c-primary); }
+
+/* ── Layer 77: 북마크/읽기 가이드 ──  */
+.reading-ruler { border-top: 3px solid var(--c-primary); margin: 4mm 0; opacity: 0.3; }
+
+/* ── Layer 78: 고급 그리드 — 2컬럼 레이아웃 ── */
+.two-col { display: flex; gap: 4mm; }
+.two-col > * { flex: 1; min-width: 0; }
+.three-col { display: flex; gap: 3mm; }
+.three-col > * { flex: 1; min-width: 0; }
+
+/* ── Layer 80: 인쇄 품질 마커 ── */
+.print-crop-mark { display: none; }
+
+/* ═══════════════════════════════════════
+   인쇄 최적화 — 강화 버전 (Layer 77~80)
+   ═══════════════════════════════════════ */
+@media print {
+  body {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  .lesson-header,
+  .code-block,
+  .box,
+  .exercise,
+  .predict-box,
+  .compare-bad,
+  .compare-good,
+  .step-num,
+  .mascot-bubble,
+  .visual-summary,
+  .axis-section,
+  .trace-table th,
+  .progress-fill,
+  .code-explain-line,
+  .fact-bite,
+  .diff-1, .diff-2, .diff-3,
+  .diagram-box,
+  .modify-box,
+  .answers-section {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  .no-print { display: none !important; }
+  /* orphan/widow 강화 */
+  p { orphans: 3; widows: 3; }
+  h2, h3 { break-after: avoid; }
+  .avoid-break { break-inside: avoid; }
+}
+
+/* ═══════════════════════════════════════
+   레이아웃 겹침 방지 — 모든 주요 섹션 블록 강제
+   ═══════════════════════════════════════ */
+article > .glossary,
+article > .visual-summary,
+article > .box,
+article > .fact-bite,
+article > .exercise,
+article > .answers-section,
+article > .mascot-speech,
+article > .code-block,
+article > .output-block,
+article > .compare,
+article > .predict-box {
+  display: block !important;
+  width: 100% !important;
+  float: none !important;
+  clear: both !important;
+}
+
+/* 박스 내부 테이블 오버플로 방지 */
+.box-content table { width: 100%; table-layout: fixed; }
+.box-content td, .box-content th { word-break: keep-all; overflow-wrap: break-word; }
+
+/* 마스코트 버블 너비 제한 완화 */
+.mascot-bubble { max-width: 100%; }
+
+/* Paged.js 컬럼 방지 */
+article { column-count: 1 !important; columns: 1 !important; }
+
+</style>
+<script src="https://unpkg.com/pagedjs/dist/paged.polyfill.js"></script>
+<script>
+  class PagedReadyHandler extends Paged.Handler {
+    constructor(chunker, polisher, caller) { super(chunker, polisher, caller); }
+    afterRendered(pages) {
+      document.body.setAttribute('data-paged-rendered', 'true');
+      document.body.setAttribute('data-page-count', pages.length);
+      console.log('PAGED_READY:' + pages.length);
+    }
+  }
+  Paged.registerHandlers(PagedReadyHandler);
+</script>
+</head>
+<body data-section-title="분해 (Decomposition)">
+<article id="content">
+  <header class="lesson-header" role="banner">
+    <div class="lesson-number">Lesson 0-23</div>
+    <h1 class="lesson-title">분해 (Decomposition)</h1>
+    <div class="lesson-summary">큰 문제를 작은 조각으로 나누면 쉽게 풀 수 있어요. 분해는 컴퓨팅 사고력의 첫 번째 단계예요.</div>
+  </header>
+<div class="chapter-start-box avoid-break"><div class="learning-goals"><h3>📚 이번에 배울 것</h3><ul><li>문제를 작은 부분으로 나누는 분해 전략을 이해해요.</li><li>큰 문제를 단계별로 쪼개서 풀 수 있어요.</li><li>프로그래밍에서 함수로 분해하는 방법을 알아요.</li><li>[심화] 하향식(Top-down)과 상향식(Bottom-up) 분해를 비교해요.</li><li>[심화] 모듈화와 재사용성의 가치를 이해해요.</li><li>[심화 내용] 분할 정복(Divide and Conquer) 알고리즘을 이해해요.</li><li>[심화 내용] 소프트웨어 아키텍처의 분해 원칙을 알아요.</li><li>[심화 내용] 마이크로서비스와 모놀리식의 차이를 이해해요.</li><li>[심화 내용] Unix 철학과 단일 책임 원칙을 알아요.</li></ul></div><div class="prereq-check"><h3>✅ 시작 전 체크</h3><ul class="checklist"><li>일상생활에서 순서대로 일을 해 본 경험</li><li>함수 호출 개념 (맛보기 수준)</li></ul></div><div class="progress-section"><span class="progress-label">Part 1 진행률: 23%</span><div class="progress-bar"><div class="progress-fill" style="width:23%"></div></div></div></div>
+<h2>문제가 너무 커! 어떡하지?</h2>
+<div class="mascot-speech  avoid-break">
+        <img class="mascot-speech-img " src="svg-assets/mascot-thinking.svg" alt="마스코트" />
+        <div class="mascot-bubble thinking">시험 범위가 100페이지라고? 한꺼번에 다 외우려면 머리가 터질 거야. 그런데 하루에 10페이지씩 10일이면? 갑자기 할 만하지 않아?</div>
+      </div>
+<p>세상의 모든 큰 문제는 사실 <b>작은 문제들의 모음</b>이에요. 100페이지 공부도, 학교 축제 준비도, 게임 만들기도 — 전부 작은 조각으로 나눌 수 있어요. 이렇게 큰 문제를 작은 조각으로 쪼개는 것을 <b>분해(Decomposition)</b>라고 해요.</p>
+<div class="box box-key avoid-break"><span class="box-label">[핵심] 분해란?</span><div class="box-content"><b>분해(Decomposition)</b> = 크고 복잡한 문제를 <b>작고 간단한 조각</b>으로 나누는 것<br><br>왜 분해할까?<br>1. 작은 문제는 <b>풀기 쉬워요</b><br>2. 한 조각씩 <b>차근차근</b> 해결할 수 있어요<br>3. 여러 사람이 <b>나눠서</b> 할 수 있어요<br>4. 버그가 생기면 <b>어디서 틀렸는지</b> 찾기 쉬워요</div></div>
+<div class="image-block avoid-break"><img src="visuals/part0-u23-decomposition-diagram.svg" alt="큰 문제를 작은 조각으로 분해하는 과정" style="max-width:100%"/><div class="image-caption">큰 문제 → 작은 조각으로 쪼개기 → 각각 해결 → 합치면 완성!</div></div>
+<h2>예시 1: 아침 등교 분해하기</h2>
+<p>"학교에 가기"는 꽤 큰 일이에요. 하지만 분해하면 이렇게 돼요.</p>
+<div class="image-block avoid-break"><img src="visuals/part0-u23-morning-routine.svg" alt="아침 등교를 6단계로 분해" style="max-width:100%"/><div class="image-caption">알람끄기 → 세수 → 옷입기 → 밥먹기 → 가방챙기기 → 출발!</div></div>
+<div class="mascot-speech right avoid-break">
+        <img class="mascot-speech-img small" src="svg-assets/mascot-eureka.svg" alt="마스코트" />
+        <div class="mascot-bubble eureka">분해하면 '뭐부터 하지?' 고민이 사라져! 그냥 1번부터 순서대로 하면 돼. 프로그래밍도 똑같아!</div>
+      </div>
+<h2>예시 2: 자판기 분해하기</h2>
+<div class="image-block avoid-break"><img src="visuals/part0-u23-vending-machine.svg" alt="자판기 동작을 4단계로 분해" style="max-width:100%"/><div class="image-caption">돈넣기 → 버튼누르기 → 음료나오기 → 거스름돈</div></div>
+<h2>C 언어에서의 분해 = 함수!</h2>
+<p>프로그래밍에서 분해는 <b>함수</b>로 구현해요. main() 안에 모든 코드를 넣는 대신, 작은 함수들로 쪼개면 읽기도 쉽고 수정하기도 쉬워요.</p>
+<div class="code-block avoid-break"><div class="code-block-header">no_decompose.c</div>
+        <table class="code-table"><tr class=""><td class="line-num">1</td><td class="line-code"><span class="cmt">// ❌ 분해 안 한 코드 — main에 다 넣기</span></td></tr>
+<tr class=""><td class="line-num">2</td><td class="line-code"><span class="pp">#include</span> <span class="str">&lt;stdio.h&gt;</span></td></tr>
+<tr class=""><td class="line-num">3</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">4</td><td class="line-code"><span class="type">int</span> <span class="fn">main</span>(<span class="type">void</span>) {</td></tr>
+<tr class=""><td class="line-num">5</td><td class="line-code">    <span class="cmt">// 물 끓이기</span></td></tr>
+<tr class=""><td class="line-num">6</td><td class="line-code">    <span class="fn">printf</span>(<span class="str">"물을 냄비에 넣습니다<span class="esc">\n</span>"</span>);</td></tr>
+<tr class=""><td class="line-num">7</td><td class="line-code">    <span class="fn">printf</span>(<span class="str">"불을 켭니다<span class="esc">\n</span>"</span>);</td></tr>
+<tr class=""><td class="line-num">8</td><td class="line-code">    <span class="fn">printf</span>(<span class="str">"물이 끓을 때까지 기다립니다<span class="esc">\n</span>"</span>);</td></tr>
+<tr class=""><td class="line-num">9</td><td class="line-code">    <span class="cmt">// 스프 넣기</span></td></tr>
+<tr class=""><td class="line-num">10</td><td class="line-code">    <span class="fn">printf</span>(<span class="str">"스프 봉지를 뜯습니다<span class="esc">\n</span>"</span>);</td></tr>
+<tr class=""><td class="line-num">11</td><td class="line-code">    <span class="fn">printf</span>(<span class="str">"스프를 물에 넣습니다<span class="esc">\n</span>"</span>);</td></tr>
+<tr class=""><td class="line-num">12</td><td class="line-code">    <span class="cmt">// 면 넣기</span></td></tr>
+<tr class=""><td class="line-num">13</td><td class="line-code">    <span class="fn">printf</span>(<span class="str">"면을 넣습니다<span class="esc">\n</span>"</span>);</td></tr>
+<tr class=""><td class="line-num">14</td><td class="line-code">    <span class="fn">printf</span>(<span class="str">"3분 기다립니다<span class="esc">\n</span>"</span>);</td></tr>
+<tr class=""><td class="line-num">15</td><td class="line-code">    <span class="cmt">// 완성</span></td></tr>
+<tr class=""><td class="line-num">16</td><td class="line-code">    <span class="fn">printf</span>(<span class="str">"그릇에 담습니다<span class="esc">\n</span>"</span>);</td></tr>
+<tr class=""><td class="line-num">17</td><td class="line-code">    <span class="kw">return</span> <span class="num">0</span>;</td></tr>
+<tr class=""><td class="line-num">18</td><td class="line-code">}</td></tr></table></div>
+<div class="code-block avoid-break"><div class="code-block-header">decompose.c</div>
+        <table class="code-table"><tr class=""><td class="line-num">1</td><td class="line-code"><span class="cmt">// ✅ 분해한 코드 — 함수로 쪼개기</span></td></tr>
+<tr class=""><td class="line-num">2</td><td class="line-code"><span class="pp">#include</span> <span class="str">&lt;stdio.h&gt;</span></td></tr>
+<tr class=""><td class="line-num">3</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">4</td><td class="line-code"><span class="type">void</span> <span class="fn">boilWater</span>(<span class="type">void</span>) {</td></tr>
+<tr class=""><td class="line-num">5</td><td class="line-code">    <span class="fn">printf</span>(<span class="str">"물을 냄비에 넣습니다<span class="esc">\n</span>"</span>);</td></tr>
+<tr class=""><td class="line-num">6</td><td class="line-code">    <span class="fn">printf</span>(<span class="str">"불을 켭니다<span class="esc">\n</span>"</span>);</td></tr>
+<tr class=""><td class="line-num">7</td><td class="line-code">    <span class="fn">printf</span>(<span class="str">"물이 끓을 때까지 기다립니다<span class="esc">\n</span>"</span>);</td></tr>
+<tr class=""><td class="line-num">8</td><td class="line-code">}</td></tr>
+<tr class=""><td class="line-num">9</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">10</td><td class="line-code"><span class="type">void</span> <span class="fn">addSoup</span>(<span class="type">void</span>) {</td></tr>
+<tr class=""><td class="line-num">11</td><td class="line-code">    <span class="fn">printf</span>(<span class="str">"스프 봉지를 뜯습니다<span class="esc">\n</span>"</span>);</td></tr>
+<tr class=""><td class="line-num">12</td><td class="line-code">    <span class="fn">printf</span>(<span class="str">"스프를 물에 넣습니다<span class="esc">\n</span>"</span>);</td></tr>
+<tr class=""><td class="line-num">13</td><td class="line-code">}</td></tr>
+<tr class=""><td class="line-num">14</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">15</td><td class="line-code"><span class="type">void</span> <span class="fn">addNoodle</span>(<span class="type">void</span>) {</td></tr>
+<tr class=""><td class="line-num">16</td><td class="line-code">    <span class="fn">printf</span>(<span class="str">"면을 넣습니다<span class="esc">\n</span>"</span>);</td></tr>
+<tr class=""><td class="line-num">17</td><td class="line-code">    <span class="fn">printf</span>(<span class="str">"3분 기다립니다<span class="esc">\n</span>"</span>);</td></tr>
+<tr class=""><td class="line-num">18</td><td class="line-code">}</td></tr>
+<tr class=""><td class="line-num">19</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">20</td><td class="line-code"><span class="type">void</span> <span class="fn">serve</span>(<span class="type">void</span>) {</td></tr>
+<tr class=""><td class="line-num">21</td><td class="line-code">    <span class="fn">printf</span>(<span class="str">"그릇에 담습니다<span class="esc">\n</span>"</span>);</td></tr>
+<tr class=""><td class="line-num">22</td><td class="line-code">}</td></tr>
+<tr class=""><td class="line-num">23</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">24</td><td class="line-code"><span class="type">int</span> <span class="fn">main</span>(<span class="type">void</span>) {</td></tr>
+<tr class=""><td class="line-num">25</td><td class="line-code">    <span class="fn">boilWater</span>();   <span class="cmt">// 1. 물 끓이기</span></td></tr>
+<tr class=""><td class="line-num">26</td><td class="line-code">    <span class="fn">addSoup</span>();     <span class="cmt">// 2. 스프 넣기</span></td></tr>
+<tr class=""><td class="line-num">27</td><td class="line-code">    <span class="fn">addNoodle</span>();   <span class="cmt">// 3. 면 넣기</span></td></tr>
+<tr class=""><td class="line-num">28</td><td class="line-code">    <span class="fn">serve</span>();       <span class="cmt">// 4. 담기</span></td></tr>
+<tr class=""><td class="line-num">29</td><td class="line-code">    <span class="kw">return</span> <span class="num">0</span>;</td></tr>
+<tr class=""><td class="line-num">30</td><td class="line-code">}</td></tr></table></div>
+<div class="image-block avoid-break"><img src="visuals/part0-u23-function-decompose.svg" alt="분해 안 한 코드 vs 함수로 분해한 코드 비교" style="max-width:100%"/><div class="image-caption">왼쪽: 모든 걸 main에 (복잡!) / 오른쪽: 함수로 쪼갠 (깔끔!)</div></div>
+<div class="box box-tip avoid-break"><span class="box-label">[팁] 함수 이름 짓기</span><div class="box-content">함수 이름은 <b>뭘 하는지</b> 바로 알 수 있게 지어요.<br>• boilWater() — 물 끓이기<br>• addSoup() — 스프 넣기<br>• calculateScore() — 점수 계산하기<br><br>동사로 시작하면 좋아요!</div></div>
+<h2>[심화] 함수의 입력과 출력</h2>
+<p>함수는 <b>입력(매개변수)</b>을 받아서 <b>출력(반환값)</b>을 내놓을 수 있어요.</p>
+<div class="code-block avoid-break"><div class="code-block-header">function_io.c</div>
+        <table class="code-table"><tr class=""><td class="line-num">1</td><td class="line-code"><span class="pp">#include</span> <span class="str">&lt;stdio.h&gt;</span></td></tr>
+<tr class=""><td class="line-num">2</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">3</td><td class="line-code"><span class="cmt">// 입력: 두 정수 a, b</span></td></tr>
+<tr class=""><td class="line-num">4</td><td class="line-code"><span class="cmt">// 출력: 두 수의 합 (int)</span></td></tr>
+<tr class=""><td class="line-num">5</td><td class="line-code"><span class="type">int</span> <span class="fn">add</span>(<span class="type">int</span> a, <span class="type">int</span> b) {</td></tr>
+<tr class=""><td class="line-num">6</td><td class="line-code">    <span class="kw">return</span> a + b;</td></tr>
+<tr class=""><td class="line-num">7</td><td class="line-code">}</td></tr>
+<tr class=""><td class="line-num">8</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">9</td><td class="line-code"><span class="cmt">// 입력: 정수 n</span></td></tr>
+<tr class=""><td class="line-num">10</td><td class="line-code"><span class="cmt">// 출력: 없음 (void) — 화면에 출력만</span></td></tr>
+<tr class=""><td class="line-num">11</td><td class="line-code"><span class="type">void</span> <span class="fn">printSquare</span>(<span class="type">int</span> n) {</td></tr>
+<tr class=""><td class="line-num">12</td><td class="line-code">    <span class="fn">printf</span>(<span class="str">"<span class="fmt">%d</span>의 제곱 = <span class="fmt">%d</span><span class="esc">\n</span>"</span>, n, n * n);</td></tr>
+<tr class=""><td class="line-num">13</td><td class="line-code">}</td></tr>
+<tr class=""><td class="line-num">14</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">15</td><td class="line-code"><span class="cmt">// 입력: 없음</span></td></tr>
+<tr class=""><td class="line-num">16</td><td class="line-code"><span class="cmt">// 출력: 없음 — 인사만</span></td></tr>
+<tr class=""><td class="line-num">17</td><td class="line-code"><span class="type">void</span> <span class="fn">greet</span>(<span class="type">void</span>) {</td></tr>
+<tr class=""><td class="line-num">18</td><td class="line-code">    <span class="fn">printf</span>(<span class="str">"안녕하세요!<span class="esc">\n</span>"</span>);</td></tr>
+<tr class=""><td class="line-num">19</td><td class="line-code">}</td></tr>
+<tr class=""><td class="line-num">20</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">21</td><td class="line-code"><span class="type">int</span> <span class="fn">main</span>(<span class="type">void</span>) {</td></tr>
+<tr class=""><td class="line-num">22</td><td class="line-code">    <span class="fn">greet</span>();                          <span class="cmt">// 입력X, 출력X</span></td></tr>
+<tr class=""><td class="line-num">23</td><td class="line-code">    <span class="fn">printSquare</span>(<span class="num">5</span>);                   <span class="cmt">// 입력O, 출력X</span></td></tr>
+<tr class=""><td class="line-num">24</td><td class="line-code">    <span class="type">int</span> result = <span class="fn">add</span>(<span class="num">3</span>, <span class="num">4</span>);           <span class="cmt">// 입력O, 출력O</span></td></tr>
+<tr class=""><td class="line-num">25</td><td class="line-code">    <span class="fn">printf</span>(<span class="str">"3 + 4 = <span class="fmt">%d</span><span class="esc">\n</span>"</span>, result);  <span class="cmt">// 7</span></td></tr>
+<tr class=""><td class="line-num">26</td><td class="line-code">    <span class="kw">return</span> <span class="num">0</span>;</td></tr>
+<tr class=""><td class="line-num">27</td><td class="line-code">}</td></tr></table></div>
+<div class="output-block avoid-break"><span class="output-label">실행 결과</span><div class="output-text">안녕하세요!
+5의 제곱 = 25
+3 + 4 = 7</div></div>
+<div class="trace-table avoid-break"><div class="trace-caption">함수 분류</div><table><thead><tr><th>유형</th><th>입력</th><th>출력</th><th>예시</th></tr></thead><tbody><tr><td>둘 다 없음</td><td>없음 (void)</td><td>없음 (void)</td><td>greet()</td></tr><tr><td>입력만</td><td>있음 (int n)</td><td>없음 (void)</td><td>printSquare(5)</td></tr><tr><td>출력만</td><td>없음</td><td>있음 (int)</td><td>getAge()</td></tr><tr><td>둘 다</td><td>있음 (int a, b)</td><td>있음 (int)</td><td>add(3, 4)</td></tr></tbody></table></div>
+<h2>[심화] Top-down vs Bottom-up</h2>
+<div class="compare avoid-break"><div class="compare-bad"><div class="compare-label">✕ 잘못된 코드</div><code></code><br><span class="compare-msg-bad"></span></div><div class="compare-good"><div class="compare-label">✓ 올바른 코드</div><code></code><br><span class="compare-msg-good"></span></div></div>
+<div class="mascot-speech  avoid-break">
+        <img class="mascot-speech-img small" src="svg-assets/mascot-thinking.svg" alt="마스코트" />
+        <div class="mascot-bubble thinking">Top-down은 '큰 그림부터', Bottom-up은 '작은 블록부터'. 둘 다 중요한데, 보통 Top-down으로 설계하고 Bottom-up으로 구현해!</div>
+      </div>
+<h2>[심화] 좋은 분해의 원칙</h2>
+<div class="box box-key avoid-break"><span class="box-label">[심화] 좋은 함수의 조건</span><div class="box-content">1. <b>한 가지 일만</b> 한다 (SRP: Single Responsibility Principle)<br>2. <b>이름만 봐도</b> 뭘 하는지 안다<br>3. 너무 길지 않다 (20~30줄 이하 권장)<br>4. 다른 함수에 <b>의존이 적다</b> (독립적)<br>5. <b>재사용</b> 가능하다 (다른 곳에서도 쓸 수 있다)</div></div>
+<div class="code-block avoid-break"><div class="code-block-header">bad_vs_good.c</div>
+        <table class="code-table"><tr class=""><td class="line-num">1</td><td class="line-code"><span class="cmt">// ❌ 나쁜 함수: 너무 많은 일을 함</span></td></tr>
+<tr class=""><td class="line-num">2</td><td class="line-code"><span class="type">void</span> <span class="fn">doEverything</span>(<span class="type">int</span> data[], <span class="type">int</span> n) {</td></tr>
+<tr class=""><td class="line-num">3</td><td class="line-code">    <span class="cmt">// 정렬도 하고, 검색도 하고, 출력도 하고...</span></td></tr>
+<tr class=""><td class="line-num">4</td><td class="line-code">    <span class="cmt">// 200줄짜리 괴물 함수</span></td></tr>
+<tr class=""><td class="line-num">5</td><td class="line-code">}</td></tr>
+<tr class=""><td class="line-num">6</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">7</td><td class="line-code"><span class="cmt">// ✅ 좋은 분해: 각각 한 가지 일만</span></td></tr>
+<tr class=""><td class="line-num">8</td><td class="line-code"><span class="type">void</span> <span class="fn">sortData</span>(<span class="type">int</span> data[], <span class="type">int</span> n) {</td></tr>
+<tr class=""><td class="line-num">9</td><td class="line-code">    <span class="cmt">// 정렬만!</span></td></tr>
+<tr class=""><td class="line-num">10</td><td class="line-code">}</td></tr>
+<tr class=""><td class="line-num">11</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">12</td><td class="line-code"><span class="type">int</span> <span class="fn">findMax</span>(<span class="type">int</span> data[], <span class="type">int</span> n) {</td></tr>
+<tr class=""><td class="line-num">13</td><td class="line-code">    <span class="cmt">// 최댓값 찾기만!</span></td></tr>
+<tr class=""><td class="line-num">14</td><td class="line-code">    <span class="type">int</span> max = data[<span class="num">0</span>];</td></tr>
+<tr class=""><td class="line-num">15</td><td class="line-code">    <span class="kw">for</span> (<span class="type">int</span> i = <span class="num">1</span>; i &lt; n; i++)</td></tr>
+<tr class=""><td class="line-num">16</td><td class="line-code">        <span class="kw">if</span> (data[i] &gt; max) max = data[i];</td></tr>
+<tr class=""><td class="line-num">17</td><td class="line-code">    <span class="kw">return</span> max;</td></tr>
+<tr class=""><td class="line-num">18</td><td class="line-code">}</td></tr>
+<tr class=""><td class="line-num">19</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">20</td><td class="line-code"><span class="type">void</span> <span class="fn">printData</span>(<span class="type">int</span> data[], <span class="type">int</span> n) {</td></tr>
+<tr class=""><td class="line-num">21</td><td class="line-code">    <span class="cmt">// 출력만!</span></td></tr>
+<tr class=""><td class="line-num">22</td><td class="line-code">    <span class="kw">for</span> (<span class="type">int</span> i = <span class="num">0</span>; i &lt; n; i++)</td></tr>
+<tr class=""><td class="line-num">23</td><td class="line-code">        <span class="fn">printf</span>(<span class="str">"<span class="fmt">%d</span> "</span>, data[i]);</td></tr>
+<tr class=""><td class="line-num">24</td><td class="line-code">    <span class="fn">printf</span>(<span class="str">"<span class="esc">\n</span>"</span>);</td></tr>
+<tr class=""><td class="line-num">25</td><td class="line-code">}</td></tr></table></div>
+<h2>[심화] 헤더 파일과 모듈화</h2>
+<p>함수가 많아지면 하나의 파일에 다 넣으면 복잡해져요. <b>헤더 파일(.h)</b>로 선언을 분리하고, <b>소스 파일(.c)</b>에 구현을 넣어요.</p>
+<div class="code-block avoid-break"><div class="code-block-header">math_utils.h</div>
+        <table class="code-table"><tr class=""><td class="line-num">1</td><td class="line-code"><span class="cmt">// math_utils.h — 함수 선언 (인터페이스)</span></td></tr>
+<tr class=""><td class="line-num">2</td><td class="line-code"><span class="pp">#ifndef</span> MATH_UTILS_H</td></tr>
+<tr class=""><td class="line-num">3</td><td class="line-code"><span class="pp">#define</span> MATH_UTILS_H</td></tr>
+<tr class=""><td class="line-num">4</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">5</td><td class="line-code"><span class="type">int</span> <span class="fn">add</span>(<span class="type">int</span> a, <span class="type">int</span> b);</td></tr>
+<tr class=""><td class="line-num">6</td><td class="line-code"><span class="type">int</span> <span class="fn">multiply</span>(<span class="type">int</span> a, <span class="type">int</span> b);</td></tr>
+<tr class=""><td class="line-num">7</td><td class="line-code"><span class="type">int</span> <span class="fn">factorial</span>(<span class="type">int</span> n);</td></tr>
+<tr class=""><td class="line-num">8</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">9</td><td class="line-code"><span class="pp">#endif</span></td></tr></table></div>
+<div class="code-block avoid-break"><div class="code-block-header">math_utils.c</div>
+        <table class="code-table"><tr class=""><td class="line-num">1</td><td class="line-code"><span class="cmt">// math_utils.c — 함수 구현</span></td></tr>
+<tr class=""><td class="line-num">2</td><td class="line-code"><span class="pp">#include</span> <span class="str">"math_utils.h"</span></td></tr>
+<tr class=""><td class="line-num">3</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">4</td><td class="line-code"><span class="type">int</span> <span class="fn">add</span>(<span class="type">int</span> a, <span class="type">int</span> b) { <span class="kw">return</span> a + b; }</td></tr>
+<tr class=""><td class="line-num">5</td><td class="line-code"><span class="type">int</span> <span class="fn">multiply</span>(<span class="type">int</span> a, <span class="type">int</span> b) { <span class="kw">return</span> a * b; }</td></tr>
+<tr class=""><td class="line-num">6</td><td class="line-code"><span class="type">int</span> <span class="fn">factorial</span>(<span class="type">int</span> n) {</td></tr>
+<tr class=""><td class="line-num">7</td><td class="line-code">    <span class="kw">if</span> (n &lt;= <span class="num">1</span>) <span class="kw">return</span> <span class="num">1</span>;</td></tr>
+<tr class=""><td class="line-num">8</td><td class="line-code">    <span class="kw">return</span> n * <span class="fn">factorial</span>(n - <span class="num">1</span>);</td></tr>
+<tr class=""><td class="line-num">9</td><td class="line-code">}</td></tr></table></div>
+<div class="code-block avoid-break"><div class="code-block-header">main.c</div>
+        <table class="code-table"><tr class=""><td class="line-num">1</td><td class="line-code"><span class="cmt">// main.c — 메인 프로그램</span></td></tr>
+<tr class=""><td class="line-num">2</td><td class="line-code"><span class="pp">#include</span> <span class="str">&lt;stdio.h&gt;</span></td></tr>
+<tr class=""><td class="line-num">3</td><td class="line-code"><span class="pp">#include</span> <span class="str">"math_utils.h"</span>  <span class="cmt">// 선언만 가져오기</span></td></tr>
+<tr class=""><td class="line-num">4</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">5</td><td class="line-code"><span class="type">int</span> <span class="fn">main</span>(<span class="type">void</span>) {</td></tr>
+<tr class=""><td class="line-num">6</td><td class="line-code">    <span class="fn">printf</span>(<span class="str">"<span class="fmt">%d</span><span class="esc">\n</span>"</span>, <span class="fn">add</span>(<span class="num">3</span>, <span class="num">4</span>));        <span class="cmt">// 7</span></td></tr>
+<tr class=""><td class="line-num">7</td><td class="line-code">    <span class="fn">printf</span>(<span class="str">"<span class="fmt">%d</span><span class="esc">\n</span>"</span>, <span class="fn">factorial</span>(<span class="num">5</span>));      <span class="cmt">// 120</span></td></tr>
+<tr class=""><td class="line-num">8</td><td class="line-code">    <span class="kw">return</span> <span class="num">0</span>;</td></tr>
+<tr class=""><td class="line-num">9</td><td class="line-code">}</td></tr></table></div>
+<div class="box box-tip avoid-break"><span class="box-label">[팁] #ifndef / #endif = 인클루드 가드</span><div class="box-content">같은 헤더가 여러 번 포함되는 것을 방지!<br><br>#ifndef MATH_UTILS_H → '이 이름이 정의 안 됐으면'<br>#define MATH_UTILS_H → '이 이름을 정의해'<br>...내용...<br>#endif → '끝'<br><br>두 번째 포함 시 이미 정의되어 있으므로 건너뜀.</div></div>
+<h2>[심화 내용] 분할정복 (Divide and Conquer)</h2>
+<p>분해의 알고리즘 버전! 문제를 <b>나누고(Divide)</b>, 각각 <b>풀고(Conquer)</b>, <b>합치는(Combine)</b> 전략이에요.</p>
+<div class="box box-key avoid-break"><span class="box-label">[심화 내용] 분할정복의 3단계</span><div class="box-content">1. <b>Divide</b>: 문제를 2개 이상의 하위 문제로 나눈다<br>2. <b>Conquer</b>: 각 하위 문제를 재귀적으로 풀거나, 충분히 작으면 직접 푼다<br>3. <b>Combine</b>: 하위 문제의 해답을 합쳐 원래 문제의 해답을 만든다</div></div>
+<div class="code-block avoid-break"><div class="code-block-header">merge_sort.c</div>
+        <table class="code-table"><tr class=""><td class="line-num">1</td><td class="line-code"><span class="cmt">// 병합 정렬 — 분할정복의 대표 예시</span></td></tr>
+<tr class=""><td class="line-num">2</td><td class="line-code"><span class="pp">#include</span> <span class="str">&lt;stdio.h&gt;</span></td></tr>
+<tr class=""><td class="line-num">3</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">4</td><td class="line-code"><span class="type">void</span> <span class="fn">merge</span>(<span class="type">int</span> arr[], <span class="type">int</span> l, <span class="type">int</span> m, <span class="type">int</span> r) {</td></tr>
+<tr class=""><td class="line-num">5</td><td class="line-code">    <span class="type">int</span> i = l, j = m + <span class="num">1</span>, k = <span class="num">0</span>;</td></tr>
+<tr class=""><td class="line-num">6</td><td class="line-code">    <span class="type">int</span> temp[r - l + <span class="num">1</span>];</td></tr>
+<tr class=""><td class="line-num">7</td><td class="line-code">    <span class="kw">while</span> (i &lt;= m &amp;&amp; j &lt;= r) {</td></tr>
+<tr class=""><td class="line-num">8</td><td class="line-code">        <span class="kw">if</span> (arr[i] &lt;= arr[j]) temp[k++] = arr[i++];</td></tr>
+<tr class=""><td class="line-num">9</td><td class="line-code">        <span class="kw">else</span> temp[k++] = arr[j++];</td></tr>
+<tr class=""><td class="line-num">10</td><td class="line-code">    }</td></tr>
+<tr class=""><td class="line-num">11</td><td class="line-code">    <span class="kw">while</span> (i &lt;= m) temp[k++] = arr[i++];</td></tr>
+<tr class=""><td class="line-num">12</td><td class="line-code">    <span class="kw">while</span> (j &lt;= r) temp[k++] = arr[j++];</td></tr>
+<tr class=""><td class="line-num">13</td><td class="line-code">    <span class="kw">for</span> (<span class="type">int</span> p = <span class="num">0</span>; p &lt; k; p++) arr[l + p] = temp[p];</td></tr>
+<tr class=""><td class="line-num">14</td><td class="line-code">}</td></tr>
+<tr class=""><td class="line-num">15</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">16</td><td class="line-code"><span class="type">void</span> <span class="fn">mergeSort</span>(<span class="type">int</span> arr[], <span class="type">int</span> l, <span class="type">int</span> r) {</td></tr>
+<tr class=""><td class="line-num">17</td><td class="line-code">    <span class="kw">if</span> (l &gt;= r) <span class="kw">return</span>;           <span class="cmt">// 충분히 작으면 멈춤</span></td></tr>
+<tr class=""><td class="line-num">18</td><td class="line-code">    <span class="type">int</span> m = (l + r) / <span class="num">2</span>;</td></tr>
+<tr class=""><td class="line-num">19</td><td class="line-code">    <span class="fn">mergeSort</span>(arr, l, m);         <span class="cmt">// 왼쪽 반 정렬</span></td></tr>
+<tr class=""><td class="line-num">20</td><td class="line-code">    <span class="fn">mergeSort</span>(arr, m + <span class="num">1</span>, r);     <span class="cmt">// 오른쪽 반 정렬</span></td></tr>
+<tr class=""><td class="line-num">21</td><td class="line-code">    <span class="fn">merge</span>(arr, l, m, r);          <span class="cmt">// 합치기</span></td></tr>
+<tr class=""><td class="line-num">22</td><td class="line-code">}</td></tr>
+<tr class=""><td class="line-num">23</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">24</td><td class="line-code"><span class="type">int</span> <span class="fn">main</span>(<span class="type">void</span>) {</td></tr>
+<tr class=""><td class="line-num">25</td><td class="line-code">    <span class="type">int</span> arr[] = {<span class="num">5</span>, <span class="num">2</span>, <span class="num">8</span>, <span class="num">1</span>, <span class="num">9</span>, <span class="num">3</span>};</td></tr>
+<tr class=""><td class="line-num">26</td><td class="line-code">    <span class="type">int</span> n = <span class="num">6</span>;</td></tr>
+<tr class=""><td class="line-num">27</td><td class="line-code">    <span class="fn">mergeSort</span>(arr, <span class="num">0</span>, n - <span class="num">1</span>);</td></tr>
+<tr class=""><td class="line-num">28</td><td class="line-code">    <span class="kw">for</span> (<span class="type">int</span> i = <span class="num">0</span>; i &lt; n; i++) <span class="fn">printf</span>(<span class="str">"<span class="fmt">%d</span> "</span>, arr[i]);</td></tr>
+<tr class=""><td class="line-num">29</td><td class="line-code">    <span class="fn">printf</span>(<span class="str">"<span class="esc">\n</span>"</span>);  <span class="cmt">// 1 2 3 5 8 9</span></td></tr>
+<tr class=""><td class="line-num">30</td><td class="line-code">    <span class="kw">return</span> <span class="num">0</span>;</td></tr>
+<tr class=""><td class="line-num">31</td><td class="line-code">}</td></tr></table></div>
+<div class="output-block avoid-break"><span class="output-label">실행 결과</span><div class="output-text">1 2 3 5 8 9</div></div>
+<div class="trace-table avoid-break"><div class="trace-caption">분할정복 알고리즘 모음</div><table><thead><tr><th>알고리즘</th><th>Divide</th><th>Conquer</th><th>Combine</th><th>시간</th></tr></thead><tbody><tr><td>병합 정렬</td><td>반으로 나눔</td><td>각각 정렬</td><td>합병</td><td>O(n log n)</td></tr><tr><td>퀵 정렬</td><td>피벗 기준 분할</td><td>각각 정렬</td><td>없음(제자리)</td><td>O(n log n)</td></tr><tr><td>이진 탐색</td><td>반으로 나눔</td><td>한쪽만 탐색</td><td>없음</td><td>O(log n)</td></tr><tr><td>거듭제곱</td><td>지수를 반으로</td><td>재귀 계산</td><td>곱셈</td><td>O(log n)</td></tr></tbody></table></div>
+<h2>[심화 내용] 리팩토링 — 코드 분해 개선</h2>
+<div class="box box-key avoid-break"><span class="box-label">[심화 내용] 리팩토링이란?</span><div class="box-content"><b>리팩토링(Refactoring)</b> = 동작은 바꾸지 않으면서 코드 구조를 개선하는 것<br><br>대표적인 리팩토링:<br>• <b>함수 추출(Extract Function)</b>: 긴 코드에서 일부를 함수로 분리<br>• <b>변수 인라인</b>: 불필요한 임시 변수 제거<br>• <b>이름 바꾸기</b>: 의미 있는 이름으로 교체<br><br>마틴 파울러의 《Refactoring》 참조</div></div>
+<h2>활동: 라면 끓이기 분해!</h2>
+<div class="image-block avoid-break"><img src="visuals/part0-u23-ramen-steps.svg" alt="라면 끓이기를 분해" style="max-width:100%"/><div class="image-caption">라면 끓이기도 여러 단계로 분해할 수 있어요!</div></div>
+<div class="box box-tip avoid-break"><span class="box-label">[활동] 나만의 분해 도전!</span><div class="box-content">다음 중 하나를 골라서 <b>최소 8단계</b>로 분해해 보세요!<br><br>1. 게임 한 판 하기<br>2. 햄버거 만들기<br>3. 도서관에서 책 빌리기<br>4. 생일 파티 준비하기<br><br>각 단계가 크면 더 작은 단계로 또 쪼개!</div></div>
+<h2>KOI 연결: 문제 분석의 첫걸음</h2>
+<div class="box box-tip avoid-break"><span class="box-label">[KOI] 문제 분해 3단계</span><div class="box-content">KOI 문제를 풀 때 가장 먼저 하는 것이 <b>분해</b>예요.<br><br>1. <b>입력</b>: 뭘 받지? (N, 배열, 좌표...)<br>2. <b>처리</b>: 뭘 해야 하지? (정렬, 탐색, 시뮬레이션...)<br>3. <b>출력</b>: 뭘 내놓지? (최댓값, 경로, 개수...)<br><br>이 3단계로 나누면 복잡한 문제도 길이 보여요!</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">4</div><div class="fact-bite-text">컴퓨팅 사고력의 4가지 핵심: 분해(Decomposition) → 패턴 인식 → 추상화 → 알고리즘 설계. 분해가 첫 번째!</div></div>
+<h2>OX 퀴즈</h2>
+<div class="exercise avoid-break"><div class="exercise-title">OX 퀴즈</div><div class="exercise-item"><p></p></div><div class="exercise-answer"><b>정답:</b> ❌ X</div></div>
+<h2>연습문제</h2>
+<div class="exercise avoid-break"><div class="exercise-title">문제 1 <span class="difficulty diff-1">★ 기본</span></div><div class="exercise-item"><p>분해(Decomposition)란 무엇인지 한 문장으로 설명하세요.</p></div><div class="memo-area"><span class="memo-label">여기에 답을 써 보세요</span></div></div>
+<div class="exercise avoid-break"><div class="exercise-title">문제 2 <span class="difficulty diff-1">★ 기본</span></div><div class="exercise-item"><p>C에서 코드를 분해할 때 사용하는 것은? (1)변수 (2)배열 (3)함수 (4)for문</p></div><div class="memo-area"><span class="memo-label">여기에 답을 써 보세요</span></div></div>
+<div class="exercise avoid-break"><div class="exercise-title">문제 3 <span class="difficulty diff-1">★ 기본</span></div><div class="exercise-item"><p>분해의 장점 3가지를 쓰세요.</p></div><div class="memo-area"><span class="memo-label">여기에 답을 써 보세요</span></div></div>
+<div class="exercise avoid-break"><div class="exercise-title">문제 4 <span class="difficulty diff-1">★ 기본</span></div><div class="exercise-item"><p>아침 등교를 5단계로 분해해 보세요.</p></div><div class="memo-area"><span class="memo-label">여기에 답을 써 보세요</span></div></div>
+<div class="exercise avoid-break"><div class="exercise-title">문제 5 <span class="difficulty diff-1">★ 기본</span></div><div class="exercise-item"><p>함수 이름을 지을 때 어떤 품사로 시작하면 좋나요?</p></div><div class="memo-area"><span class="memo-label">여기에 답을 써 보세요</span></div></div>
+<div class="exercise avoid-break"><div class="exercise-title">문제 6 <span class="difficulty diff-2">★★ 도전</span></div><div class="exercise-item"><p>"도서관에서 책 빌리기"를 6단계 이상으로 분해하세요.</p></div><div class="memo-area"><span class="memo-label">여기에 답을 써 보세요</span></div></div>
+<div class="exercise avoid-break"><div class="exercise-title">문제 7 <span class="difficulty diff-2">★★ 도전</span></div><div class="exercise-item"><p>SRP(단일 책임 원칙)가 무엇인지 설명하고, 위반 예시를 하나 드세요.</p></div><div class="memo-area"><span class="memo-label">여기에 답을 써 보세요</span></div></div>
+<div class="exercise avoid-break"><div class="exercise-title">문제 8 <span class="difficulty diff-2">★★ 도전</span></div><div class="exercise-item"><p>Top-down과 Bottom-up 분해의 차이를 레고 비유로 설명하세요.</p></div><div class="memo-area"><span class="memo-label">여기에 답을 써 보세요</span></div></div>
+<div class="exercise avoid-break"><div class="exercise-title">문제 9 <span class="difficulty diff-2">★★ 도전</span></div><div class="exercise-item"><p>헤더 파일(.h)과 소스 파일(.c)을 분리하는 이유를 설명하세요.</p></div><div class="memo-area"><span class="memo-label">여기에 답을 써 보세요</span></div></div>
+<div class="exercise avoid-break"><div class="exercise-title">문제 10 <span class="difficulty diff-2">★★ 도전</span></div><div class="exercise-item"><p>KOI 문제를 입력/처리/출력 3단계로 분해하는 예시를 하나 드세요.</p></div><div class="memo-area"><span class="memo-label">여기에 답을 써 보세요</span></div></div>
+<div class="exercise avoid-break"><div class="exercise-title">문제 11 <span class="difficulty diff-3">★★★ 심화</span></div><div class="exercise-item"><p>[심화] 인클루드 가드(#ifndef)가 필요한 이유를 설명하세요.</p></div><div class="memo-area"><span class="memo-label">여기에 답을 써 보세요</span></div></div>
+<div class="exercise avoid-break"><div class="exercise-title">문제 12 <span class="difficulty diff-3">★★★ 심화</span></div><div class="exercise-item"><p>[심화] 함수 추출 리팩토링이란 무엇인가요?</p></div><div class="memo-area"><span class="memo-label">여기에 답을 써 보세요</span></div></div>
+<div class="exercise avoid-break"><div class="exercise-title">문제 13 <span class="difficulty diff-3">★★★ 심화</span></div><div class="exercise-item"><p>[심화] 분할정복의 3단계(Divide, Conquer, Combine)를 병합 정렬로 설명하세요.</p></div><div class="memo-area"><span class="memo-label">여기에 답을 써 보세요</span></div></div>
+<div class="exercise avoid-break"><div class="exercise-title">문제 14 <span class="difficulty diff-3">★★★ 심화</span></div><div class="exercise-item"><p>[심화 내용] 이진 탐색이 분할정복인 이유를 설명하세요.</p></div><div class="memo-area"><span class="memo-label">여기에 답을 써 보세요</span></div></div>
+<div class="exercise avoid-break"><div class="exercise-title">문제 15 <span class="difficulty diff-3">★★★ 심화</span></div><div class="exercise-item"><p>[심화 내용] 병합 정렬의 시간 복잡도가 O(n log n)인 이유를 분해 깊이와 각 단계의 작업량으로 설명하세요.</p></div><div class="memo-area"><span class="memo-label">여기에 답을 써 보세요</span></div></div>
+<h2>정답</h2>
+<div class="answers-section avoid-break"><h3>정답</h3><div class="answer-item"><span class="answer-num">문제 1</span> <span class="answer-text">크고 복잡한 문제를 작고 간단한 조각으로 나누는 것.</span></div><div class="answer-item"><span class="answer-num">문제 2</span> <span class="answer-text">(3) 함수. 코드를 함수로 쪼개서 분해.</span></div><div class="answer-item"><span class="answer-num">문제 3</span> <span class="answer-text">①작은 문제는 풀기 쉬움 ②차근차근 해결 가능 ③여러 사람이 나눠서 할 수 있음 (④버그 찾기 쉬움도 가능).</span></div><div class="answer-item"><span class="answer-num">문제 4</span> <span class="answer-text">예: ①알람끄기 ②세수하기 ③옷입기 ④밥먹기 ⑤출발하기.</span></div><div class="answer-item"><span class="answer-num">문제 5</span> <span class="answer-text">동사. boilWater, calculateScore, printResult 등.</span></div><div class="answer-item"><span class="answer-num">문제 6</span> <span class="answer-text">예: ①도서관 가기 ②검색 컴퓨터에서 책 찾기 ③서가 위치 확인 ④서가에서 책 찾기 ⑤대출 데스크로 가기 ⑥학생증 제시 후 대출.</span></div><div class="answer-item"><span class="answer-num">문제 7</span> <span class="answer-text">SRP = 함수/클래스가 하나의 책임만 가져야 함. 위반: doEverything() — 정렬+검색+출력을 모두 하는 함수.</span></div><div class="answer-item"><span class="answer-num">문제 8</span> <span class="answer-text">Top-down: 완성된 모양 설계도 → 부품 제작. Bottom-up: 레고 블록 → 자유롭게 조립.</span></div><div class="answer-item"><span class="answer-num">문제 9</span> <span class="answer-text">선언(인터페이스)과 구현을 분리해서 ①여러 파일에서 공유 ②컴파일 시간 단축 ③구현 변경 시 선언만 유지.</span></div><div class="answer-item"><span class="answer-num">문제 10</span> <span class="answer-text">예: '최대값 구하기' → 입력: 정수 N개 / 처리: 배열 순회하며 최대 찾기 / 출력: 최대값 출력.</span></div><div class="answer-item"><span class="answer-num">문제 11</span> <span class="answer-text">같은 헤더가 여러 번 #include되면 중복 선언 에러. 인클루드 가드로 한 번만 포함되게 보호.</span></div><div class="answer-item"><span class="answer-num">문제 12</span> <span class="answer-text">긴 함수에서 일부 코드를 별도 함수로 분리하는 것. 동작은 변하지 않고 구조만 개선.</span></div><div class="answer-item"><span class="answer-num">문제 13</span> <span class="answer-text">Divide: 배열을 반으로 나눔. Conquer: 각 반을 재귀적으로 정렬. Combine: 정렬된 두 반을 합병(merge).</span></div><div class="answer-item"><span class="answer-num">문제 14</span> <span class="answer-text">배열을 반으로 나누고(Divide), 한쪽만 탐색하고(Conquer), 합치기 없음(Combine=없음). 한쪽을 버리므로 O(log n).</span></div><div class="answer-item"><span class="answer-num">문제 15</span> <span class="answer-text">n개를 반씩 나누면 log₂n 단계. 각 단계에서 모든 원소를 한 번씩 비교(O(n)). 총: O(n) × O(log n) = O(n log n).</span></div></div>
+<h2>용어 정리</h2>
+<h2>[심화 내용] 분할 정복 알고리즘</h2>
+<div class="box box-key avoid-break"><span class="box-label">[심화 내용] 분할 정복 (Divide and Conquer)</span><div class="box-content"><b>3단계:</b><br>1. <b>분할(Divide)</b>: 문제를 작은 부분 문제로 나눔<br>2. <b>정복(Conquer)</b>: 각 부분 문제를 재귀적으로 해결<br>3. <b>결합(Combine)</b>: 부분 해를 합쳐서 전체 해 구성<br><br><b>대표 알고리즘:</b><br>- Merge Sort: 반으로 나누고, 정렬하고, 합치기 O(n log n)<br>- Quick Sort: 피벗 기준 분할, 재귀 O(n log n) 평균<br>- Binary Search: 반으로 나누고, 한쪽만 탐색 O(log n)<br>- Karatsuba 곱셈: 큰 수 곱셈 O(n^1.585)<br>- Strassen 행렬 곱: O(n^2.807) vs 일반 O(n^3)<br><br><b>마스터 정리:</b> T(n) = aT(n/b) + O(n^d)</div></div>
+<div class="code-block avoid-break"><div class="code-block-header">[C 코드] 분할 정복 — 머지 소트</div>
+        <table class="code-table"><tr class=""><td class="line-num">1</td><td class="line-code"><span class="pp">#include</span> <span class="str">&lt;stdio.h&gt;</span></td></tr>
+<tr class=""><td class="line-num">2</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">3</td><td class="line-code"><span class="type">void</span> <span class="fn">merge</span>(<span class="type">int</span> arr[], <span class="type">int</span> l, <span class="type">int</span> m, <span class="type">int</span> r) {</td></tr>
+<tr class=""><td class="line-num">4</td><td class="line-code">    <span class="type">int</span> temp[<span class="num">100</span>], i = l, j = m+<span class="num">1</span>, k = <span class="num">0</span>;</td></tr>
+<tr class=""><td class="line-num">5</td><td class="line-code">    <span class="kw">while</span> (i &lt;= m &amp;&amp; j &lt;= r)</td></tr>
+<tr class=""><td class="line-num">6</td><td class="line-code">        temp[k++] = (arr[i] &lt;= arr[j]) ? arr[i++] : arr[j++];</td></tr>
+<tr class=""><td class="line-num">7</td><td class="line-code">    <span class="kw">while</span> (i &lt;= m) temp[k++] = arr[i++];</td></tr>
+<tr class=""><td class="line-num">8</td><td class="line-code">    <span class="kw">while</span> (j &lt;= r) temp[k++] = arr[j++];</td></tr>
+<tr class=""><td class="line-num">9</td><td class="line-code">    <span class="kw">for</span> (<span class="type">int</span> t = <span class="num">0</span>; t &lt; k; t++) arr[l+t] = temp[t];</td></tr>
+<tr class=""><td class="line-num">10</td><td class="line-code">}</td></tr>
+<tr class=""><td class="line-num">11</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">12</td><td class="line-code"><span class="type">void</span> <span class="fn">merge_sort</span>(<span class="type">int</span> arr[], <span class="type">int</span> l, <span class="type">int</span> r) {</td></tr>
+<tr class=""><td class="line-num">13</td><td class="line-code">    <span class="kw">if</span> (l &gt;= r) <span class="kw">return</span>;</td></tr>
+<tr class=""><td class="line-num">14</td><td class="line-code">    <span class="type">int</span> m = (l + r) / <span class="num">2</span>;</td></tr>
+<tr class=""><td class="line-num">15</td><td class="line-code">    <span class="fn">merge_sort</span>(arr, l, m);     <span class="cmt">// 왼쪽 정복</span></td></tr>
+<tr class=""><td class="line-num">16</td><td class="line-code">    <span class="fn">merge_sort</span>(arr, m+<span class="num">1</span>, r);   <span class="cmt">// 오른쪽 정복</span></td></tr>
+<tr class=""><td class="line-num">17</td><td class="line-code">    <span class="fn">merge</span>(arr, l, m, r);       <span class="cmt">// 결합!</span></td></tr>
+<tr class=""><td class="line-num">18</td><td class="line-code">}</td></tr>
+<tr class=""><td class="line-num">19</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">20</td><td class="line-code"><span class="type">int</span> <span class="fn">main</span>() {</td></tr>
+<tr class=""><td class="line-num">21</td><td class="line-code">    <span class="type">int</span> arr[] = {<span class="num">38</span>, <span class="num">27</span>, <span class="num">43</span>, <span class="num">3</span>, <span class="num">9</span>, <span class="num">82</span>, <span class="num">10</span>};</td></tr>
+<tr class=""><td class="line-num">22</td><td class="line-code">    <span class="type">int</span> n = <span class="num">7</span>;</td></tr>
+<tr class=""><td class="line-num">23</td><td class="line-code">    <span class="fn">merge_sort</span>(arr, <span class="num">0</span>, n-<span class="num">1</span>);</td></tr>
+<tr class=""><td class="line-num">24</td><td class="line-code">    <span class="kw">for</span> (<span class="type">int</span> i = <span class="num">0</span>; i &lt; n; i++) <span class="fn">printf</span>(<span class="str">"<span class="fmt">%d</span> "</span>, arr[i]);</td></tr>
+<tr class=""><td class="line-num">25</td><td class="line-code">    <span class="fn">printf</span>(<span class="str">"<span class="esc">\n</span>"</span>);</td></tr>
+<tr class=""><td class="line-num">26</td><td class="line-code">    <span class="kw">return</span> <span class="num">0</span>;</td></tr>
+<tr class=""><td class="line-num">27</td><td class="line-code">}</td></tr></table></div>
+<div class="output-block avoid-break"><span class="output-label">실행 결과</span><div class="output-text">3 9 10 27 38 43 82</div></div>
+<h2>[심화 내용] 소프트웨어 분해 원칙</h2>
+<div class="box box-key avoid-break"><span class="box-label">[심화 내용] SOLID와 단일 책임 원칙</span><div class="box-content"><b>Unix 철학:</b><br>"한 가지 일을 잘 하는 작은 프로그램을 만들어라"<br>ls | grep ".txt" | wc -l (파이프로 조합!)<br><br><b>단일 책임 원칙 (SRP):</b><br>각 모듈/함수/클래스는 하나의 책임만 가져야 한다<br><br><b>높은 응집도(Cohesion):</b><br>관련된 기능은 함께 모아두기<br><br><b>낮은 결합도(Coupling):</b><br>모듈 간 의존성을 최소화<br><br><b>인터페이스 분리:</b><br>필요한 것만 공개, 나머지는 숨기기 (캡슐화)</div></div>
+<div class="compare avoid-break"><div class="compare-bad"><div class="compare-label">✕ 잘못된 코드</div><code></code><br><span class="compare-msg-bad"></span></div><div class="compare-good"><div class="compare-label">✓ 올바른 코드</div><code></code><br><span class="compare-msg-good"></span></div></div>
+<h2>[심화 내용] 분해의 역사</h2>
+<div class="box box-key avoid-break"><span class="box-label">[심화 내용] 프로그래밍 분해의 진화</span><div class="box-content"><b>1950s</b> — 서브루틴: GOTO 대신 CALL/RETURN<br><b>1960s</b> — 구조적 프로그래밍: 함수 단위 분해 (Dijkstra)<br><b>1970s</b> — 모듈: 관련 함수를 파일로 묶기 (Modula-2)<br><b>1980s</b> — 객체지향: 데이터+함수를 클래스로 캡슐화 (C++)<br><b>1990s</b> — 컴포넌트: 재사용 가능한 독립 단위 (COM, JavaBeans)<br><b>2000s</b> — SOA: 서비스 단위 분해 (웹 서비스)<br><b>2010s</b> — 마이크로서비스: 더 작은 독립 서비스 (Docker, K8s)<br><b>2020s</b> — 서버리스: 함수 단위 배포 (AWS Lambda)</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">1968년</div><div class="fact-bite-text">다익스트라가 "GOTO문을 해롭다"고 선언한 해. 구조적 프로그래밍(함수 분해)의 시작!</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">1가지</div><div class="fact-bite-text">Unix 철학의 핵심: "한 가지 일을 잘 하라". 분해의 정신!</div></div>
+<div class="glossary avoid-break"><div class="glossary-item"><dt class="glossary-term">분해 (Decomposition)</dt><dd class="glossary-def">크고 복잡한 문제를 작고 관리 가능한 조각으로 나누는 것.</dd></div><div class="glossary-item"><dt class="glossary-term">함수 (Function)</dt><dd class="glossary-def">특정 작업을 수행하는 코드 덩어리. 분해의 프로그래밍 도구.</dd></div><div class="glossary-item"><dt class="glossary-term">매개변수 (Parameter)</dt><dd class="glossary-def">함수에 전달하는 입력값. 예: add(3, 4)에서 3과 4.</dd></div><div class="glossary-item"><dt class="glossary-term">반환값 (Return Value)</dt><dd class="glossary-def">함수가 돌려주는 출력값. return으로 반환.</dd></div><div class="glossary-item"><dt class="glossary-term">SRP</dt><dd class="glossary-def">Single Responsibility Principle. 함수/클래스는 한 가지 일만 해야 한다.</dd></div><div class="glossary-item"><dt class="glossary-term">Top-down</dt><dd class="glossary-def">큰 문제부터 분해해 내려가는 방식. 설계도 먼저.</dd></div><div class="glossary-item"><dt class="glossary-term">Bottom-up</dt><dd class="glossary-def">작은 부품부터 쌓아 올리는 방식. 레고 블록 조립.</dd></div><div class="glossary-item"><dt class="glossary-term">헤더 파일 (.h)</dt><dd class="glossary-def">함수 선언을 모아둔 파일. 여러 소스에서 공유.</dd></div><div class="glossary-item"><dt class="glossary-term">분할정복</dt><dd class="glossary-def">Divide and Conquer. 나누고 → 풀고 → 합치기.</dd></div><div class="glossary-item"><dt class="glossary-term">리팩토링</dt><dd class="glossary-def">동작은 유지하면서 코드 구조를 개선하는 것.</dd></div><div class="glossary-item"><dt class="glossary-term">모듈화</dt><dd class="glossary-def">프로그램을 독립적인 부분(모듈)으로 나누는 것.</dd></div><div class="glossary-item"><dt class="glossary-term">분할 정복</dt><dd class="glossary-def">문제를 작은 부분으로 나누고(분할), 각각 풀고(정복), 합치는(결합) 알고리즘 설계 기법.</dd></div><div class="glossary-item"><dt class="glossary-term">단일 책임 원칙</dt><dd class="glossary-def">모듈/함수/클래스는 하나의 책임만 가져야 한다는 원칙.</dd></div><div class="glossary-item"><dt class="glossary-term">응집도(Cohesion)</dt><dd class="glossary-def">모듈 내부의 기능이 얼마나 관련되어 있는지. 높을수록 좋음.</dd></div><div class="glossary-item"><dt class="glossary-term">결합도(Coupling)</dt><dd class="glossary-def">모듈 간의 의존성 정도. 낮을수록 좋음.</dd></div><div class="glossary-item"><dt class="glossary-term">마이크로서비스</dt><dd class="glossary-def">큰 시스템을 작은 독립 서비스로 분해하는 아키텍처.</dd></div><div class="glossary-item"><dt class="glossary-term">서버리스</dt><dd class="glossary-def">함수 단위로 배포하고 실행하는 클라우드 컴퓨팅 모델.</dd></div></div>
+<div class="visual-summary avoid-break"><div class="visual-summary-title">이번 유닛 핵심 정리</div><div class="visual-summary-items"><div class="visual-summary-item"><div class="visual-summary-num">1</div><span>분해 = 큰 문제를 작은 조각으로 나누기</span></div><div class="visual-summary-item"><div class="visual-summary-num">2</div><span>하향식: 큰 그림부터 → 세부사항</span></div><div class="visual-summary-item"><div class="visual-summary-num">3</div><span>상향식: 작은 조각부터 → 조합</span></div><div class="visual-summary-item"><div class="visual-summary-num">4</div><span>함수 = 코드의 분해 단위</span></div><div class="visual-summary-item"><div class="visual-summary-num">5</div><span>[심화] 모듈화: 관련 함수를 파일로 묶기</span></div><div class="visual-summary-item"><div class="visual-summary-num">6</div><span>[심화 내용] 분할 정복: 나누고 → 풀고 → 합치기</span></div><div class="visual-summary-item"><div class="visual-summary-num">7</div><span>[심화 내용] Unix 철학: 한 가지 일을 잘 하라</span></div><div class="visual-summary-item"><div class="visual-summary-num">8</div><span>[심화 내용] 마이크로서비스: 현대 웹의 분해 방식</span></div></div></div>
+<div class="box box-summary avoid-break"><span class="box-label">이 유닛에서 연결된 축</span><div class="box-content"><b>[컴퓨팅 사고력]</b> 분해 = 4대 핵심 중 첫 번째!<br><b>[C언어]</b> 함수, 헤더 파일, 모듈화<br><b>[KOI]</b> 문제 분석 = 입력/처리/출력 분해<br><b>[실생활]</b> 큰 일도 쪼개면 쉬워요<br><b>[디버깅]</b> 함수별로 쪼개면 버그 찾기 쉬움<br><b>[코딩기초]</b> 함수 = 프로그래밍의 기본 단위</div></div>
+<h2>실전 활용 연습</h2>
+<p>지금까지 배운 개념을 활용한 다양한 실전 예제와 연습문제입니다.</p>
+<div class="mascot-speech  avoid-break">
+        <img class="mascot-speech-img small" src="svg-assets/mascot-thinking.svg" alt="마스코트" />
+        <div class="mascot-bubble tip">직접 손으로 써보면서 연습해 보세요! 머릿속으로만 하면 금방 잊어버려요.</div>
+      </div>
+<h2>실생활 연결</h2>
+<div class="box box-tip avoid-break"><span class="box-label">[실생활] 이 개념은 어디에 쓰일까?</span><div class="box-content">게임 개발, 앱 만들기, 웹사이트, 로봇 제어, AI 학습 등 모든 분야에서 사용돼요!</div></div>
+<div class="mascot-speech  avoid-break">
+        <img class="mascot-speech-img small" src="svg-assets/mascot-hello.svg" alt="마스코트" />
+        <div class="mascot-bubble ">이 개념은 나중에 코딩할 때 반드시 필요해요!</div>
+      </div>
+<h2>추가 연습문제</h2>
+<div class="exercise avoid-break"><div class="exercise-title">문제 20 <span class="difficulty diff-2">★★ 도전</span></div><div class="exercise-item"><p>이번 유닛에서 배운 핵심 개념 3가지를 자신의 말로 설명해 보세요.</p></div><div class="memo-area"><span class="memo-label">여기에 답을 써 보세요</span></div></div>
+<div class="exercise avoid-break"><div class="exercise-title">문제 21 <span class="difficulty diff-2">★★ 도전</span></div><div class="exercise-item"><p>이번 유닛의 개념을 활용한 자신만의 문제를 1개 만들어 보세요.</p></div><div class="memo-area"><span class="memo-label">여기에 답을 써 보세요</span></div></div>
+<div class="exercise avoid-break"><div class="exercise-title">문제 22 <span class="difficulty diff-3">★★★ 심화</span></div><div class="exercise-item"><p>이번 유닛의 개념이 C언어에서 어떻게 사용되는지 조사해 보세요.</p></div><div class="memo-area"><span class="memo-label">여기에 답을 써 보세요</span></div></div>
+<h2>[심화] 더 알아보기</h2>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">undefined</div><div class="fact-bite-text">컴퓨팅 사고력(CT) = 문제를 컴퓨터처럼 분석하고 해결하는 능력. 모든 코딩의 기본!</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">undefined</div><div class="fact-bite-text">문제 해결 4단계: 이해 → 계획 → 실행 → 검증. 코딩만이 아니라 모든 문제에 적용!</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">undefined</div><div class="fact-bite-text">추상화 = 복잡한 것에서 핵심만 뽑아내기. 지하철 노선도 = 실제 도시의 추상화!</div></div>
+<div class="mascot-speech right avoid-break">
+        <img class="mascot-speech-img small" src="svg-assets/mascot-celebrate.svg" alt="마스코트" />
+        <div class="mascot-bubble success">이번 유닛 완전 정복! 다음 유닛으로 고고!</div>
+      </div>
+<p>이번 유닛의 모든 개념을 완전히 이해했습니다. 다음 유닛에서 더 발전된 개념을 배워보세요!</p>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">undefined</div><div class="fact-bite-text">알고리즘 = 문제를 해결하는 단계별 방법. 요리 레시피도 알고리즘!</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">undefined</div><div class="fact-bite-text">패턴 = 반복되는 규칙. 패턴을 찾으면 문제가 쉽어져요!</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">undefined</div><div class="fact-bite-text">분해 = 큰 문제를 작은 조각으로 나누기. "어려운 문제는 없다, 모아놓은 쉬운 문제가 있을 뿐"</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">undefined</div><div class="fact-bite-text">논리 = 코딩의 핵심. 논리적으로 생각하는 능력이 가장 중요해요!</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">undefined</div><div class="fact-bite-text">번역기 = 컴파일러. C 코드를 기계어로 번역해주는 프로그램!</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">undefined</div><div class="fact-bite-text">KOI = 한국정보올림피아드. 초등부/중등부/고등부. 알고리즘+논리 대회!</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">undefined</div><div class="fact-bite-text">반복문 = 같은 일을 여러 번. for, while, do-while. 컴퓨터의 최대 장점!</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">undefined</div><div class="fact-bite-text">변수 = 값을 저장하는 상자. 이름을 붙여서 구별해요. int score = 100;</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">undefined</div><div class="fact-bite-text">함수 = 기능을 묶어놓은 상자. 한 번 만들면 여러 번 재사용!</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">undefined</div><div class="fact-bite-text">배열 = 같은 종류의 데이터를 여러 개 저장. int a[10] = 10칸짜리 상자!</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">undefined</div><div class="fact-bite-text">알고리즘 = 문제를 해결하는 단계별 방법. 요리 레시피도 알고리즘!</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">undefined</div><div class="fact-bite-text">패턴 = 반복되는 규칙. 패턴을 찾으면 문제가 쉽어져요!</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">undefined</div><div class="fact-bite-text">분해 = 큰 문제를 작은 조각으로 나누기. "어려운 문제는 없다, 모아놓은 쉬운 문제가 있을 뿐"</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">undefined</div><div class="fact-bite-text">논리 = 코딩의 핵심. 논리적으로 생각하는 능력이 가장 중요해요!</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">undefined</div><div class="fact-bite-text">번역기 = 컴파일러. C 코드를 기계어로 번역해주는 프로그램!</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">undefined</div><div class="fact-bite-text">KOI = 한국정보올림피아드. 초등부/중등부/고등부. 알고리즘+논리 대회!</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">undefined</div><div class="fact-bite-text">반복문 = 같은 일을 여러 번. for, while, do-while. 컴퓨터의 최대 장점!</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">undefined</div><div class="fact-bite-text">변수 = 값을 저장하는 상자. 이름을 붙여서 구별해요. int score = 100;</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">undefined</div><div class="fact-bite-text">함수 = 기능을 묶어놓은 상자. 한 번 만들면 여러 번 재사용!</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">undefined</div><div class="fact-bite-text">배열 = 같은 종류의 데이터를 여러 개 저장. int a[10] = 10칸짜리 상자!</div></div>
+<div class="box box-question avoid-break"><span class="box-label">[다음 유닛 미리보기]</span><div class="box-content">문제를 작은 조각으로 나눴어요. 그 조각들 속에서 <b>반복되는 규칙</b>이 보이면? 더 효율적으로 풀 수 있어요! 다음은 <b>패턴 인식</b>!</div></div>
+<div class="mascot-speech  avoid-break">
+        <img class="mascot-speech-img " src="svg-assets/mascot-hello.svg" alt="마스코트" />
+        <div class="mascot-bubble celebrate">분해의 달인이 되었어! 이제 어떤 큰 문제가 와도 '일단 쪼개자!'라고 생각할 수 있지? 다음에는 패턴을 찾아볼 거야!</div>
+      </div>
+</article>
+</body>
+</html>

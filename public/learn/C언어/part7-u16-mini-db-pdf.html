@@ -1,0 +1,1874 @@
+﻿<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<base href="/learn/C언어/">
+<title>코딩쏙 교재 — 간단한 데이터베이스 프로젝트</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+/* ═══════════════════════════════════════════════════════════════
+   코딩쏙 프리미엄 PDF 교재 스타일시트 v5.0
+   Paged.js + A4 인쇄 최적화 + 아동교육 디자인 시스템
+   ═══════════════════════════════════════════════════════════════ */
+
+/* ── 리셋 & 기본 ── */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --c-primary: #FF6B6B;
+  --c-primary-light: #FFE8E8;
+  --c-primary-dark: #E84545;
+  --c-accent: #4ECDC4;
+  --c-accent-light: #E8FFF9;
+  --c-blue: #3B82F6;
+  --c-blue-light: #EFF6FF;
+  --c-purple: #8B5CF6;
+  --c-purple-light: #F5F3FF;
+  --c-orange: #F59E0B;
+  --c-orange-light: #FFFBEB;
+  --c-green: #10B981;
+  --c-green-light: #ECFDF5;
+  --c-red: #EF4444;
+  --c-red-light: #FEF2F2;
+  --c-teal: #14B8A6;
+  --c-teal-light: #F0FDFA;
+  --c-pink: #EC4899;
+  --c-text: #1E293B;
+  --c-text-secondary: #64748B;
+  --c-text-muted: #94A3B8;
+  --c-border: #E2E8F0;
+  --c-bg-subtle: #F8FAFC;
+  --c-bg-warm: #FFFBF5;
+  --font-body: 'Pretendard', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-code: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --radius-xl: 18px;
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.08);
+  --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
+  --shadow-lg: 0 8px 24px rgba(0,0,0,0.10);
+}
+
+/* ── 페이지 설정 ── */
+@page {
+  size: A4;
+  margin: 18mm 17mm 15mm 22mm;
+  @bottom-center {
+    content: counter(page);
+    font-family: var(--font-body);
+    font-size: 9pt;
+    color: var(--c-text-muted);
+    letter-spacing: 1px;
+  }
+}
+@page :first { @bottom-center { content: none; } }
+
+body {
+  font-family: var(--font-body);
+  color: var(--c-text);
+  background: white;
+  font-size: 11.5pt;
+  line-height: 180%;
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+  word-break: keep-all;
+  overflow-wrap: break-word;
+}
+
+/* ── 페이지 제어 ── */
+.avoid-break { break-inside: avoid !important; page-break-inside: avoid !important; }
+h2, h3 { break-after: avoid !important; page-break-after: avoid !important; }
+.page-break-hint { break-before: page !important; page-break-before: always !important; height: 0; margin: 0; padding: 0; }
+p { orphans: 3; widows: 3; }
+
+/* ═══════════════════════════════════════
+   레슨 헤더 — 프리미엄 그래디언트 배너
+   ═══════════════════════════════════════ */
+.lesson-header {
+  margin-bottom: 6mm;
+  padding: 6mm 5mm 5mm;
+  background: linear-gradient(135deg, #FF6B6B 0%, #FF8E53 50%, #FEC89A 100%);
+  border-radius: var(--radius-xl);
+  color: white;
+  position: relative;
+  overflow: hidden;
+  box-shadow: var(--shadow-lg);
+}
+.lesson-header::before {
+  content: '';
+  position: absolute;
+  top: -30%;
+  right: -10%;
+  width: 140px;
+  height: 140px;
+  background: rgba(255,255,255,0.12);
+  border-radius: 50%;
+}
+.lesson-header::after {
+  content: '';
+  position: absolute;
+  bottom: -20%;
+  left: 15%;
+  width: 80px;
+  height: 80px;
+  background: rgba(255,255,255,0.08);
+  border-radius: 50%;
+}
+.lesson-number {
+  font-size: 10pt;
+  font-weight: 700;
+  color: rgba(255,255,255,0.85);
+  margin-bottom: 2mm;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  position: relative;
+  z-index: 1;
+}
+.lesson-title {
+  font-size: 24pt;
+  font-weight: 900;
+  line-height: 125%;
+  color: white;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.15);
+  position: relative;
+  z-index: 1;
+}
+.lesson-summary {
+  font-size: 11pt;
+  color: rgba(255,255,255,0.9);
+  margin-top: 2.5mm;
+  font-weight: 400;
+  position: relative;
+  z-index: 1;
+}
+
+/* ═══════════════════════════════════════
+   제목 계층 — 프리미엄 타이포그래피
+   ═══════════════════════════════════════ */
+h2 {
+  font-size: 16pt;
+  font-weight: 800;
+  margin: 6mm 0 3mm;
+  padding: 2mm 0 2mm 4.5mm;
+  border-left: 4.5px solid var(--c-primary);
+  color: var(--c-text);
+  background: linear-gradient(90deg, var(--c-primary-light) 0%, transparent 60%);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  letter-spacing: -0.3px;
+}
+h3 {
+  font-size: 13.5pt;
+  font-weight: 700;
+  color: #334155;
+  margin: 4mm 0 2.5mm;
+  padding-bottom: 1mm;
+  border-bottom: 2px solid #F1F5F9;
+}
+p {
+  margin-bottom: 2.5mm;
+  text-align: justify;
+  line-height: 175%;
+  font-size: 11.5pt;
+}
+
+/* ── 인라인 코드 ── */
+code {
+  font-family: var(--font-code);
+  font-size: 9.5pt;
+  background: linear-gradient(135deg, #FEF3C7, #FDE68A);
+  padding: 0.5mm 2mm;
+  border-radius: 4px;
+  color: #92400E;
+  border: 1px solid #FCD34D;
+  font-weight: 500;
+}
+
+/* ═══════════════════════════════════════
+   코드 블록 — 프리미엄 IDE 스타일
+   ═══════════════════════════════════════ */
+.code-block {
+  background: #0F172A;
+  border-radius: var(--radius-md);
+  padding: 0;
+  margin: 3mm 0;
+  box-shadow: var(--shadow-md), inset 0 1px 0 rgba(255,255,255,0.05);
+  overflow: hidden;
+  border: 1px solid #1E293B;
+}
+.code-block-header {
+  font-family: var(--font-body);
+  font-size: 8.5pt;
+  font-weight: 600;
+  color: #94A3B8;
+  padding: 2.5mm 4.5mm;
+  background: #1E293B;
+  border-bottom: 1px solid #334155;
+  letter-spacing: 0.5px;
+  display: flex;
+  align-items: center;
+  gap: 2mm;
+}
+.code-block-header::before {
+  content: '';
+  display: inline-flex;
+  width: 8px; height: 8px;
+  background: #EF4444;
+  border-radius: 50%;
+  box-shadow: 14px 0 0 #F59E0B, 28px 0 0 #22C55E;
+  flex-shrink: 0;
+}
+.code-table { width: 100%; border-collapse: collapse; table-layout: fixed; }
+.code-table td { vertical-align: top; padding: 0; }
+.line-num {
+  width: 12mm;
+  min-width: 12mm;
+  max-width: 12mm;
+  text-align: right;
+  padding: 0.5mm 3mm 0.5mm 2mm;
+  font-family: var(--font-code);
+  font-size: 8pt;
+  color: #475569;
+  line-height: 165%;
+  user-select: none;
+  background: rgba(0,0,0,0.15);
+  border-right: 1px solid rgba(255,255,255,0.06);
+}
+.line-code {
+  width: auto;
+  font-family: var(--font-code);
+  font-size: 10pt;
+  color: #E2E8F0;
+  line-height: 165%;
+  padding: 0.5mm 4mm 0.5mm 4mm;
+  white-space: pre;
+  overflow-x: auto;
+}
+.line-highlight td { background: rgba(59,130,246,0.12) !important; }
+.line-highlight .line-num { color: var(--c-blue) !important; font-weight: 700; }
+
+/* 신택스 컬러 — VS Code Dark+ 영감 */
+.kw { color: #C084FC; font-weight: 500; }
+.str { color: #86EFAC; }
+.cmt { color: #6B7280; font-style: italic; }
+.fn { color: #FDBA74; }
+.pp { color: #F472B6; font-weight: 600; }
+.num { color: #7DD3FC; }
+.type { color: #5EEAD4; font-weight: 500; }
+.mc { color: #67E8F9; }
+.esc { color: #FCD34D; font-weight: 600; }
+.fmt { color: #FCD34D; }
+
+/* ═══════════════════════════════════════
+   실행 결과 — 터미널 스타일
+   ═══════════════════════════════════════ */
+.output-block {
+  background: #F0FDF4;
+  border: 1.5px solid #86EFAC;
+  border-radius: var(--radius-md);
+  padding: 3mm 4mm;
+  margin: 3mm 0;
+  position: relative;
+}
+.output-label {
+  font-family: var(--font-body);
+  font-size: 8.5pt;
+  color: var(--c-green);
+  display: block;
+  margin-bottom: 1.5mm;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+.output-text {
+  font-family: var(--font-code);
+  font-size: 10.5pt;
+  line-height: 160%;
+  color: #166534;
+}
+
+/* ═══════════════════════════════════════
+   박스 시스템 — 프리미엄 카드 디자인
+   ═══════════════════════════════════════ */
+.box {
+  border-radius: var(--radius-md);
+  padding: 3.5mm 4.5mm;
+  margin: 3mm 0;
+  position: relative;
+  box-shadow: var(--shadow-sm);
+}
+.box-label {
+  font-size: 10.5pt;
+  font-weight: 800;
+  margin-bottom: 2mm;
+  display: flex;
+  align-items: center;
+  gap: 2mm;
+}
+.box-content { font-size: 11pt; line-height: 170%; overflow-wrap: break-word; word-break: keep-all; }
+.box-warning {
+  border-left: 5px solid var(--c-red);
+  background: linear-gradient(135deg, #FEF2F2 0%, #FFF1F2 100%);
+}
+.box-warning .box-label { color: var(--c-red); }
+.box-key {
+  border-left: 5px solid var(--c-blue);
+  background: linear-gradient(135deg, #EFF6FF 0%, #F0F9FF 100%);
+}
+.box-key .box-label { color: var(--c-blue); }
+.box-tip {
+  border-left: 5px solid var(--c-orange);
+  background: linear-gradient(135deg, #FFFBEB 0%, #FEF9C3 50%, #FFFBEB 100%);
+}
+.box-tip .box-label { color: var(--c-orange); }
+.box-summary {
+  border-left: 5px solid var(--c-green);
+  background: linear-gradient(135deg, #ECFDF5 0%, #D1FAE5 100%);
+  border: 1.5px solid #A7F3D0;
+  border-left: 5px solid var(--c-green);
+}
+.box-summary .box-label { color: var(--c-green); }
+.box-question {
+  border-left: 5px solid var(--c-purple);
+  background: linear-gradient(135deg, #F5F3FF 0%, #EDE9FE 100%);
+}
+.box-question .box-label { color: var(--c-purple); }
+.box-history {
+  border-left: 5px solid var(--c-teal);
+  background: linear-gradient(135deg, #F0FDFA 0%, #CCFBF1 100%);
+}
+.box-history .box-label { color: var(--c-teal); }
+
+/* ═══════════════════════════════════════
+   연습문제 — 프리미엄 카드
+   ═══════════════════════════════════════ */
+.exercise {
+  background: white;
+  border: 1.5px solid #E2E8F0;
+  border-radius: var(--radius-lg);
+  padding: 3.5mm 4.5mm;
+  margin: 3mm 0;
+  border-left: 5px solid var(--c-primary);
+  box-shadow: var(--shadow-sm);
+  position: relative;
+}
+.exercise-title {
+  font-size: 13pt;
+  font-weight: 800;
+  color: var(--c-primary);
+  margin-bottom: 2.5mm;
+  display: flex;
+  align-items: center;
+  gap: 2mm;
+}
+.difficulty {
+  display: inline-flex;
+  align-items: center;
+  font-size: 8pt;
+  padding: 0.5mm 2.5mm;
+  border-radius: 20px;
+  margin-left: 2mm;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+}
+.diff-1 { background: #D1FAE5; color: #059669; }
+.diff-2 { background: #FEF3C7; color: #D97706; }
+.diff-3 { background: #FEE2E2; color: #DC2626; }
+.memo-area {
+  border: 2px dashed #CBD5E1;
+  border-radius: var(--radius-md);
+  padding: 3mm;
+  min-height: 15mm;
+  margin-top: 2.5mm;
+  background: repeating-linear-gradient(
+    transparent, transparent 7mm, #F1F5F9 7mm, #F1F5F9 7.5mm
+  );
+}
+.memo-label { font-size: 8.5pt; color: var(--c-text-muted); font-style: italic; }
+
+/* ── OX/Choice/Short ── */
+.exercise-answer {
+  font-size: 10pt;
+  color: var(--c-green);
+  margin-top: 2mm;
+  padding: 1.5mm 3mm;
+  background: var(--c-green-light);
+  border-radius: var(--radius-sm);
+  font-weight: 600;
+  border: 1px solid #A7F3D0;
+}
+.exercise-explain {
+  font-size: 9.5pt;
+  color: var(--c-text-secondary);
+  margin-top: 1.5mm;
+  padding: 2mm 3mm;
+  background: #F8FAFC;
+  border-radius: var(--radius-sm);
+  border-left: 3px solid #E2E8F0;
+}
+.choice-list { padding-left: 6mm; margin: 2mm 0; }
+.choice-list li { font-size: 10.5pt; margin-bottom: 1.5mm; line-height: 150%; }
+.choice-list li.choice-correct { color: var(--c-green); font-weight: 700; }
+
+/* ═══════════════════════════════════════
+   Before/After 비교 — 프리미엄 2컬럼
+   ═══════════════════════════════════════ */
+.compare {
+  display: flex;
+  gap: 3mm;
+  margin: 3mm 0;
+  overflow: hidden;
+}
+.compare-bad {
+  flex: 1;
+  min-width: 0;
+  background: linear-gradient(135deg, #FEF2F2, #FFF1F2);
+  border: 1.5px solid #FECACA;
+  border-radius: var(--radius-md);
+  padding: 3mm;
+  overflow: hidden;
+}
+.compare-good {
+  flex: 1;
+  min-width: 0;
+  background: linear-gradient(135deg, #ECFDF5, #D1FAE5);
+  border: 1.5px solid #A7F3D0;
+  border-radius: var(--radius-md);
+  padding: 3mm;
+  overflow: hidden;
+}
+.compare code {
+  font-size: 9pt;
+  word-break: break-all;
+  overflow-wrap: break-word;
+  display: block;
+  background: rgba(0,0,0,0.05);
+  padding: 2mm 3mm;
+  border-radius: var(--radius-sm);
+  margin: 1.5mm 0;
+  line-height: 155%;
+  white-space: pre-wrap;
+  border: none;
+  color: inherit;
+}
+.compare-label { font-size: 9.5pt; font-weight: 800; margin-bottom: 1.5mm; }
+.compare-bad .compare-label { color: var(--c-red); }
+.compare-good .compare-label { color: var(--c-green); }
+.compare-msg-bad { font-size: 9pt; color: var(--c-red); }
+.compare-msg-good { font-size: 9pt; color: var(--c-green); }
+
+/* ═══════════════════════════════════════
+   챕터 시작 — 프리미엄 카드
+   ═══════════════════════════════════════ */
+.chapter-start-box { margin-bottom: 3mm; }
+.learning-goals {
+  background: linear-gradient(135deg, #FFF7ED 0%, #FFFBEB 100%);
+  border-radius: var(--radius-lg);
+  padding: 4mm 5mm;
+  margin-bottom: 3mm;
+  border: 1.5px solid #FED7AA;
+  box-shadow: var(--shadow-sm);
+}
+.learning-goals h3 {
+  font-size: 12pt;
+  font-weight: 800;
+  color: #EA580C;
+  margin: 0 0 2.5mm;
+  border: none;
+  padding: 0;
+}
+.learning-goals ul { padding-left: 5mm; margin: 0; }
+.learning-goals li { font-size: 11pt; margin-bottom: 1.5mm; line-height: 160%; color: #431407; }
+.prereq-check {
+  background: var(--c-blue-light);
+  border-left: 5px solid var(--c-blue);
+  border-radius: var(--radius-md);
+  padding: 3mm 4mm;
+  margin-bottom: 2.5mm;
+}
+.prereq-check h3 {
+  font-size: 11pt;
+  font-weight: 700;
+  color: var(--c-blue);
+  margin: 0 0 1.5mm;
+  border: none;
+  padding: 0;
+}
+.checklist { list-style: none; padding-left: 4mm; margin: 0; }
+.checklist li { margin-bottom: 1mm; font-size: 10.5pt; }
+.checklist li::before { content: '\2610  '; font-size: 12pt; color: var(--c-text-muted); }
+.progress-section { margin-top: 2.5mm; }
+.progress-label { font-size: 9.5pt; color: var(--c-text-secondary); font-weight: 600; }
+.progress-bar {
+  background: #E2E8F0;
+  border-radius: 6px;
+  height: 4mm;
+  margin-top: 1.5mm;
+  overflow: hidden;
+}
+.progress-fill {
+  background: linear-gradient(90deg, var(--c-primary), #FF8E53, #FEC89A);
+  height: 100%;
+  border-radius: 6px;
+}
+
+/* ═══════════════════════════════════════
+   Predict — 생각해보기 카드
+   ═══════════════════════════════════════ */
+.predict-box {
+  display: flex;
+  gap: 3.5mm;
+  background: linear-gradient(135deg, #F5F3FF 0%, #EDE9FE 100%);
+  border: 1.5px solid #C4B5FD;
+  border-radius: var(--radius-lg);
+  padding: 3.5mm 4.5mm;
+  margin: 3mm 0;
+  box-shadow: var(--shadow-sm);
+}
+.predict-icon {
+  width: 10mm; height: 10mm;
+  background: linear-gradient(135deg, var(--c-purple), #A78BFA);
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16pt;
+  font-weight: 900;
+  flex-shrink: 0;
+  box-shadow: 0 2px 6px rgba(139,92,246,0.3);
+}
+.predict-content { flex: 1; }
+.predict-content p { font-size: 11pt; margin-bottom: 2mm; }
+
+/* ═══════════════════════════════════════
+   다이어그램 — 프리미엄 컨테이너
+   ═══════════════════════════════════════ */
+.diagram-box {
+  background: var(--c-bg-subtle);
+  border: 1.5px solid var(--c-border);
+  border-radius: var(--radius-lg);
+  padding: 4mm;
+  margin: 3.5mm 0;
+  box-shadow: var(--shadow-sm);
+}
+.diagram-title {
+  font-size: 11pt;
+  font-weight: 800;
+  color: var(--c-primary);
+  margin-bottom: 3mm;
+  text-align: center;
+  letter-spacing: 0.3px;
+}
+.diagram-content { font-size: 10.5pt; line-height: 170%; }
+.diagram-content .d-row { display: flex; align-items: center; justify-content: center; gap: 3mm; margin: 2mm 0; }
+.diagram-content .d-block { background: #1E293B; color: white; padding: 2mm 4mm; border-radius: var(--radius-sm); font-family: var(--font-code); font-size: 9.5pt; font-weight: 500; }
+.diagram-content .d-block-highlight { background: linear-gradient(135deg, var(--c-primary), #FF8E53); color: white; padding: 2mm 4mm; border-radius: var(--radius-sm); font-family: var(--font-code); font-size: 9.5pt; font-weight: 700; }
+.diagram-content .d-arrow { color: var(--c-text-muted); font-size: 14pt; }
+.diagram-content .d-label { font-size: 8.5pt; color: var(--c-text-secondary); }
+
+/* ═══════════════════════════════════════
+   Steps — 프리미엄 타임라인
+   ═══════════════════════════════════════ */
+.steps-visual { margin: 3mm 0; }
+.step-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 3.5mm;
+  margin-bottom: 1.5mm;
+}
+.step-num {
+  width: 8mm; height: 8mm;
+  background: linear-gradient(135deg, var(--c-primary), #FF8E53);
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10pt;
+  font-weight: 800;
+  flex-shrink: 0;
+  margin-top: 0.5mm;
+  box-shadow: 0 2px 4px rgba(255,107,107,0.3);
+}
+.step-body { flex: 1; }
+.step-title { font-size: 11pt; font-weight: 700; margin-bottom: 0.5mm; color: var(--c-text); }
+.step-desc { font-size: 10.5pt; color: var(--c-text-secondary); line-height: 160%; }
+.step-connector { width: 2.5px; height: 4mm; background: linear-gradient(180deg, var(--c-primary), transparent); margin-left: 3.7mm; }
+
+/* ═══════════════════════════════════════
+   Modify — 바꿔보기 카드
+   ═══════════════════════════════════════ */
+.modify-box {
+  background: linear-gradient(135deg, #F0F9FF 0%, #E0F2FE 100%);
+  border: 1.5px solid #7DD3FC;
+  border-left: 5px solid #0EA5E9;
+  border-radius: var(--radius-md);
+  padding: 3.5mm 4.5mm;
+  margin: 3mm 0;
+}
+.modify-label { font-size: 10.5pt; font-weight: 800; color: #0284C7; margin-bottom: 2mm; }
+.modify-hint { font-size: 9.5pt; color: var(--c-text-secondary); font-style: italic; margin: 1.5mm 0; }
+
+/* ═══════════════════════════════════════
+   정답 섹션
+   ═══════════════════════════════════════ */
+.answers-section {
+  background: white;
+  border: 1.5px solid #E9D5FF;
+  border-radius: var(--radius-md);
+  padding: 3mm 4mm;
+  margin: 3mm 0;
+  border-left: 5px solid var(--c-purple);
+}
+.answers-section h3 {
+  font-size: 12pt;
+  font-weight: 800;
+  color: var(--c-purple);
+  margin: 0 0 2.5mm;
+  border: none;
+  padding: 0;
+}
+.answer-item { margin-bottom: 1mm; font-size: 10pt; line-height: 150%; }
+.answer-num { font-weight: 700; color: var(--c-primary); margin-right: 2mm; }
+.answer-text { color: var(--c-text); }
+
+/* ═══════════════════════════════════════
+   코드 설명 (라인별)
+   ═══════════════════════════════════════ */
+.code-explain { margin: 3mm 0; padding-left: 2mm; }
+.code-explain-item {
+  display: flex;
+  align-items: flex-start;
+  margin-bottom: 2.5mm;
+  font-size: 11pt;
+  line-height: 165%;
+}
+.code-explain-line {
+  font-family: var(--font-code);
+  font-size: 9pt;
+  color: white;
+  background: linear-gradient(135deg, var(--c-primary), #FF8E53);
+  padding: 0.5mm 2.5mm;
+  border-radius: 4px;
+  margin-right: 3mm;
+  flex-shrink: 0;
+  font-weight: 700;
+  box-shadow: 0 1px 3px rgba(255,107,107,0.3);
+}
+
+/* ═══════════════════════════════════════
+   용어 정리 — 프리미엄 테이블
+   ═══════════════════════════════════════ */
+.glossary { margin: 3mm 0; break-inside: avoid; display: block !important; width: 100% !important; clear: both; }
+.glossary-item {
+  display: flex;
+  margin-bottom: 0;
+  font-size: 10pt;
+  padding: 2mm 3mm;
+  border-bottom: 1px solid #F1F5F9;
+  width: 100%;
+}
+.glossary-item:nth-child(odd) { background: #F8FAFC; }
+.glossary-item:first-child { border-radius: var(--radius-sm) var(--radius-sm) 0 0; }
+.glossary-item:last-child { border-radius: 0 0 var(--radius-sm) var(--radius-sm); border-bottom: none; }
+.glossary-term {
+  font-weight: 700;
+  min-width: 28mm;
+  max-width: 35mm;
+  flex-shrink: 0;
+  color: var(--c-text);
+  font-family: var(--font-code);
+  font-size: 9.5pt;
+  word-break: keep-all;
+}
+.glossary-def { color: var(--c-text-secondary); line-height: 155%; flex: 1; min-width: 0; }
+
+/* ═══════════════════════════════════════
+   추적 테이블 — 프리미엄 데이터 테이블
+   ═══════════════════════════════════════ */
+.trace-table { margin: 3.5mm 0; }
+.trace-caption { font-size: 10.5pt; font-weight: 700; color: var(--c-primary); margin-bottom: 2mm; }
+.trace-table table { width: 100%; border-collapse: collapse; font-size: 10pt; border-radius: var(--radius-sm); overflow: hidden; }
+.trace-table th {
+  background: linear-gradient(135deg, #1E293B, #334155);
+  color: white;
+  padding: 2mm 3.5mm;
+  text-align: left;
+  font-weight: 700;
+  font-size: 9.5pt;
+}
+.trace-table td { padding: 2mm 3.5mm; border-bottom: 1px solid #F1F5F9; font-family: var(--font-code); font-size: 9.5pt; }
+.trace-table tr:nth-child(even) td { background: #F8FAFC; }
+
+/* ═══════════════════════════════════════
+   마스코트 말풍선 — 프리미엄 디자인
+   ═══════════════════════════════════════ */
+.mascot-speech {
+  display: flex;
+  align-items: flex-start;
+  gap: 3.5mm;
+  margin: 3.5mm 0;
+}
+.mascot-speech.right { flex-direction: row-reverse; }
+.mascot-speech-img {
+  flex-shrink: 0;
+  width: 60px;
+  height: 60px;
+  object-fit: contain;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.15));
+}
+.mascot-speech-img.small { width: 48px; height: 48px; }
+.mascot-speech-img.large { width: 80px; height: 80px; }
+.mascot-bubble {
+  position: relative;
+  background: linear-gradient(135deg, #EFF6FF 0%, #DBEAFE 100%);
+  border: 1.5px solid #93C5FD;
+  border-radius: var(--radius-lg);
+  padding: 3.5mm 4.5mm;
+  font-size: 10.5pt;
+  color: #1E3A5F;
+  line-height: 1.6;
+  flex: 1;
+  max-width: 85%;
+  box-shadow: var(--shadow-sm);
+}
+.mascot-bubble.warn {
+  background: linear-gradient(135deg, #FEF2F2, #FEE2E2);
+  border-color: #FCA5A5;
+  color: #7F1D1D;
+}
+.mascot-bubble.success {
+  background: linear-gradient(135deg, #ECFDF5, #D1FAE5);
+  border-color: #6EE7B7;
+  color: #14532D;
+}
+.mascot-bubble.tip {
+  background: linear-gradient(135deg, #FFFBEB, #FEF3C7);
+  border-color: #FCD34D;
+  color: #78350F;
+}
+.mascot-bubble::before {
+  content: '';
+  position: absolute;
+  top: 14px;
+  left: -9px;
+  border: 7px solid transparent;
+  border-right-color: #93C5FD;
+}
+.mascot-bubble::after {
+  content: '';
+  position: absolute;
+  top: 15px;
+  left: -7px;
+  border: 6px solid transparent;
+  border-right-color: #EFF6FF;
+}
+.mascot-speech.right .mascot-bubble::before {
+  left: auto; right: -9px;
+  border-right-color: transparent;
+  border-left-color: #93C5FD;
+}
+.mascot-speech.right .mascot-bubble::after {
+  left: auto; right: -7px;
+  border-right-color: transparent;
+  border-left-color: #EFF6FF;
+}
+.mascot-bubble.warn::before { border-right-color: #FCA5A5; }
+.mascot-bubble.warn::after { border-right-color: #FEF2F2; }
+.mascot-speech.right .mascot-bubble.warn::before { border-right-color: transparent; border-left-color: #FCA5A5; }
+.mascot-speech.right .mascot-bubble.warn::after { border-right-color: transparent; border-left-color: #FEF2F2; }
+.mascot-bubble.success::before { border-right-color: #6EE7B7; }
+.mascot-bubble.success::after { border-right-color: #ECFDF5; }
+.mascot-speech.right .mascot-bubble.success::before { border-right-color: transparent; border-left-color: #6EE7B7; }
+.mascot-speech.right .mascot-bubble.success::after { border-right-color: transparent; border-left-color: #ECFDF5; }
+.mascot-bubble.tip::before { border-right-color: #FCD34D; }
+.mascot-bubble.tip::after { border-right-color: #FFFBEB; }
+.mascot-speech.right .mascot-bubble.tip::before { border-right-color: transparent; border-left-color: #FCD34D; }
+.mascot-speech.right .mascot-bubble.tip::after { border-right-color: transparent; border-left-color: #FFFBEB; }
+
+/* ═══════════════════════════════════════
+   Fact Bite — 숫자/팩트 강조 카드
+   ═══════════════════════════════════════ */
+.fact-bite {
+  display: flex;
+  align-items: center;
+  gap: 4mm;
+  margin: 3mm 0;
+  background: linear-gradient(135deg, #FFF1F2 0%, #FFE4E6 50%, #FFF1F2 100%);
+  border-radius: var(--radius-lg);
+  padding: 3.5mm 5mm;
+  border: 1.5px solid #FECDD3;
+  box-shadow: var(--shadow-sm);
+}
+.fact-bite-number {
+  font: 900 18pt var(--font-body);
+  background: linear-gradient(135deg, var(--c-primary), #FF8E53);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  white-space: nowrap;
+  flex-shrink: 0;
+  max-width: 40%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.fact-bite-text { font-size: 10pt; color: var(--c-text-secondary); line-height: 1.5; flex: 1; min-width: 0; }
+
+/* ═══════════════════════════════════════
+   Visual Summary — 핵심 정리 카드
+   ═══════════════════════════════════════ */
+.visual-summary {
+  background: linear-gradient(135deg, #ECFDF5 0%, #D1FAE5 50%, #A7F3D0 100%);
+  border: 1.5px solid #6EE7B7;
+  border-radius: var(--radius-xl);
+  padding: 5mm;
+  margin: 4mm 0;
+  box-shadow: var(--shadow-md);
+  display: block !important;
+  width: 100% !important;
+  clear: both;
+}
+.visual-summary-title {
+  font-size: 14pt;
+  font-weight: 900;
+  color: #065F46;
+  text-align: center;
+  margin-bottom: 3mm;
+}
+.visual-summary-items { display: flex; flex-direction: column; gap: 2mm; }
+.visual-summary-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 3mm;
+  background: rgba(255,255,255,0.7);
+  padding: 2.5mm 3.5mm;
+  border-radius: var(--radius-md);
+  backdrop-filter: blur(4px);
+}
+.visual-summary-num {
+  width: 7mm; height: 7mm;
+  background: linear-gradient(135deg, #059669, #10B981);
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 9pt;
+  font-weight: 800;
+  flex-shrink: 0;
+  box-shadow: 0 1px 3px rgba(5,150,105,0.3);
+}
+
+/* ═══════════════════════════════════════
+   10축 매핑 전용 스타일
+   ═══════════════════════════════════════ */
+.axis-section {
+  background: linear-gradient(135deg, #F8FAFC 0%, #F1F5F9 100%);
+  border: 1.5px solid #CBD5E1;
+  border-radius: var(--radius-xl);
+  padding: 5mm;
+  margin: 5mm 0;
+  box-shadow: var(--shadow-md);
+  page-break-inside: avoid;
+}
+.axis-title {
+  font-size: 14pt;
+  font-weight: 900;
+  text-align: center;
+  margin-bottom: 4mm;
+  color: var(--c-text);
+  letter-spacing: -0.3px;
+}
+.axis-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2.5mm;
+}
+.axis-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 2mm;
+  padding: 2.5mm 3mm;
+  border-radius: var(--radius-md);
+  background: white;
+  border: 1px solid #E2E8F0;
+}
+.axis-badge {
+  font-size: 7.5pt;
+  font-weight: 800;
+  padding: 0.5mm 2.5mm;
+  border-radius: 20px;
+  flex-shrink: 0;
+  letter-spacing: 0.3px;
+  white-space: nowrap;
+}
+.axis-badge.c-lang { background: #DBEAFE; color: #1D4ED8; }
+.axis-badge.thinking { background: #E0E7FF; color: #4338CA; }
+.axis-badge.debug { background: #FEE2E2; color: #DC2626; }
+.axis-badge.koi { background: #FEF3C7; color: #B45309; }
+.axis-badge.basics { background: #D1FAE5; color: #059669; }
+.axis-badge.reallife { background: #CCFBF1; color: #0D9488; }
+.axis-badge.crosssubj { background: #E9D5FF; color: #7C3AED; }
+.axis-badge.project { background: #FFE4E6; color: #BE123C; }
+.axis-badge.ai { background: #FCE7F3; color: #DB2777; }
+.axis-badge.hardware { background: #CFFAFE; color: #0891B2; }
+.axis-text { font-size: 9.5pt; line-height: 150%; color: var(--c-text-secondary); }
+
+/* ── TOC ── */
+.toc { margin: 5mm 0; }
+.toc h2 { border: none; padding: 0; margin-bottom: 3mm; background: none; }
+.toc ul { list-style: none; padding: 0; }
+.toc-h2 { display: flex; align-items: baseline; margin-bottom: 1.5mm; font-size: 11pt; }
+.toc-text { flex-shrink: 0; }
+.toc-dots { flex: 1; border-bottom: 1.5px dotted #CBD5E1; margin: 0 2mm; min-width: 10mm; }
+.toc-page { flex-shrink: 0; color: var(--c-text-muted); font-size: 10pt; }
+
+/* ── Margin Note ── */
+.margin-note {
+  float: right;
+  width: 30mm;
+  font-size: 8.5pt;
+  color: var(--c-text-secondary);
+  background: linear-gradient(135deg, #FFFBEB, #FEF3C7);
+  padding: 2mm 2.5mm;
+  border-radius: var(--radius-sm);
+  margin: 0 -35mm 2mm 2mm;
+  border-left: 2.5px solid var(--c-orange);
+}
+
+/* ── Cross Reference ── */
+.crossref { font-size: 9pt; color: var(--c-blue); font-style: italic; font-weight: 500; }
+
+/* ── Image ── */
+.image-block { margin: 3.5mm 0; text-align: center; }
+.image-block img { max-width: 100%; border-radius: var(--radius-md); box-shadow: var(--shadow-sm); }
+.image-caption {
+  font-size: 9pt;
+  color: var(--c-text-secondary);
+  margin-top: 2mm;
+  font-style: italic;
+  background: var(--c-bg-subtle);
+  padding: 1.5mm 4mm;
+  border-radius: 20px;
+  display: inline-block;
+}
+
+/* ═══════════════════════════════════════
+   v7.0 — 80레이어 리서치 증강분
+   v5 프리미엄 기반 + TEXTBOOK-DESIGN-DEEP P1~P6 합성
+   ═══════════════════════════════════════ */
+
+/* ── Layer 26: 게슈탈트 근접성 강화 ── */
+h2 + p,
+h3 + p,
+h2 + .code-block,
+h3 + .code-block { margin-top: 1mm !important; }
+.code-block + .code-explain { margin-top: 0.5mm; }
+.code-block + .output-block { margin-top: 1mm; }
+.exercise + .exercise { margin-top: 1.5mm; }
+
+/* ── Layer 28: 마이크로 타이포그래피 ── */
+body {
+  font-kerning: auto;
+  font-variant-ligatures: common-ligatures;
+  hanging-punctuation: first last;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+.line-num { font-variant-numeric: tabular-nums; }
+.trace-table td { font-variant-numeric: tabular-nums; }
+
+/* ── Layer 29: 연습문제 유형별 스타일 ── */
+.exercise-item { margin-bottom: 2mm; font-size: 11pt; line-height: 165%; }
+.exercise-item p { margin-bottom: 1.5mm; }
+.exercise-blank { display: inline-block; min-width: 20mm; border-bottom: 2px solid var(--c-primary); margin: 0 1mm; }
+.exercise-ox-grid { display: flex; gap: 3mm; margin-top: 2mm; }
+.exercise-ox-item { flex: 1; padding: 2mm 3mm; border: 1px solid var(--c-border); border-radius: var(--radius-sm); font-size: 10pt; }
+.exercise-matching { display: grid; grid-template-columns: 1fr auto 1fr; gap: 1.5mm; font-size: 10pt; }
+.exercise-reorder { display: flex; flex-direction: column; gap: 1mm; font-family: var(--font-code); font-size: 9.5pt; }
+.exercise-reorder-item { background: var(--c-bg-subtle); padding: 1.5mm 3mm; border-radius: var(--radius-sm); border: 1px solid var(--c-border); }
+
+/* ── Layer 30: 교사용 에디션 ── */
+.teacher-only { background: #FFF5F5; border: 2px dashed #E74C3C; padding: 3mm; border-radius: var(--radius-md); }
+.teacher-note { font-size: 9pt; color: #C0392B; font-style: italic; }
+
+/* ── Layer 32: 디자인 토큰 — 인쇄용 간격 ── */
+article > * + * { margin-top: 2.5mm; }
+article > h2 { margin-top: 5mm; }
+article > h3 { margin-top: 3.5mm; }
+
+/* ── Layer 51: 황금비 타이포 ──
+   24pt / 16pt / 13.5pt / 11.5pt = 1:0.67:0.56:0.48 ≈ 피보나치 */
+
+/* ── Layer 55: 인지부하 최적화 — 시각 앵커 ── */
+h2::before {
+  /* 빈 블록으로 스크롤 앵커 역할 — Paged.js에서 러닝헤드 지원 */
+}
+
+/* ── Layer 56: 아이트래킹 — F패턴 강화 ── */
+.lesson-header .lesson-number { font-weight: 700; }
+.box-label::before {
+  content: '';
+  display: inline-block;
+  width: 3px; height: 14px;
+  border-radius: 2px;
+  margin-right: 1.5mm;
+  flex-shrink: 0;
+}
+.box-warning .box-label::before { background: var(--c-red); }
+.box-key .box-label::before { background: var(--c-blue); }
+.box-tip .box-label::before { background: var(--c-orange); }
+.box-summary .box-label::before { background: var(--c-green); }
+.box-question .box-label::before { background: var(--c-purple); }
+.box-history .box-label::before { background: var(--c-teal); }
+
+/* ── Layer 58: 색상 조화 60-30-10 강화 ── */
+/* 60% = white/neutral, 30% = brand gradient accents, 10% = c-primary strong */
+
+/* ── Layer 60: 코드 블록 — 브래킷 컬러링 (Layer 30 from Deep) ── */
+.brace-1 { color: #C084FC; font-weight: bold; }
+.brace-2 { color: #86EFAC; font-weight: bold; }
+.brace-3 { color: #FDBA74; font-weight: bold; }
+.brace-4 { color: #7DD3FC; font-weight: bold; }
+
+/* ── Layer 61: 인덴트 가이드 ── */
+.indent-guide { border-left: 1px solid rgba(255,255,255,0.08); }
+
+/* ── Layer 65: 10축 매핑 강화 ── */
+.axis-item { transition: none; }
+.axis-section .box-content { font-size: 10pt; }
+
+/* ── Layer 67: 자료구조 시각화 ── */
+.ds-visual { font-family: var(--font-code); font-size: 9pt; text-align: center; margin: 3mm 0; }
+.ds-array { display: flex; justify-content: center; gap: 0; }
+.ds-cell { width: 9mm; height: 9mm; border: 1.5px solid var(--c-blue); display: flex; align-items: center; justify-content: center; font-weight: 700; }
+.ds-cell:first-child { border-radius: var(--radius-sm) 0 0 var(--radius-sm); }
+.ds-cell:last-child { border-radius: 0 var(--radius-sm) var(--radius-sm) 0; }
+.ds-index { font-size: 7pt; color: var(--c-text-muted); text-align: center; margin-top: 0.5mm; }
+
+/* ── Layer 68: 학습 저널 공간 ── */
+.reflection-box {
+  background: var(--c-bg-warm);
+  border: 1.5px dashed #FCD34D;
+  border-radius: var(--radius-lg);
+  padding: 4mm;
+  margin: 4mm 0;
+}
+.reflection-prompt { font-size: 10pt; color: var(--c-orange); font-weight: 700; margin-bottom: 2mm; }
+.reflection-lines {
+  min-height: 20mm;
+  background: repeating-linear-gradient(transparent, transparent 7mm, #FEF3C7 7mm, #FEF3C7 7.5mm);
+}
+
+/* ── Layer 69: 루브릭/자기평가 ── */
+.rubric-table { width: 100%; border-collapse: collapse; font-size: 9pt; margin: 3mm 0; }
+.rubric-table th { background: var(--c-purple); color: white; padding: 2mm; text-align: center; }
+.rubric-table td { padding: 2mm; border: 1px solid var(--c-border); text-align: center; }
+.self-check { display: flex; gap: 5mm; justify-content: center; margin: 3mm 0; }
+.self-check-item { text-align: center; font-size: 18pt; }
+.self-check-label { font-size: 7.5pt; color: var(--c-text-secondary); }
+
+/* ── Layer 72: 교실 게임 보드 ── */
+.bingo-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 1px; background: var(--c-border); border-radius: var(--radius-md); overflow: hidden; margin: 3mm 0; }
+.bingo-cell { background: white; padding: 3mm; text-align: center; font-size: 8.5pt; font-family: var(--font-code); min-height: 10mm; display: flex; align-items: center; justify-content: center; }
+.bingo-free { background: var(--c-primary-light); font-weight: 800; color: var(--c-primary); }
+
+/* ── Layer 77: 북마크/읽기 가이드 ──  */
+.reading-ruler { border-top: 3px solid var(--c-primary); margin: 4mm 0; opacity: 0.3; }
+
+/* ── Layer 78: 고급 그리드 — 2컬럼 레이아웃 ── */
+.two-col { display: flex; gap: 4mm; }
+.two-col > * { flex: 1; min-width: 0; }
+.three-col { display: flex; gap: 3mm; }
+.three-col > * { flex: 1; min-width: 0; }
+
+/* ── Layer 80: 인쇄 품질 마커 ── */
+.print-crop-mark { display: none; }
+
+/* ═══════════════════════════════════════
+   인쇄 최적화 — 강화 버전 (Layer 77~80)
+   ═══════════════════════════════════════ */
+@media print {
+  body {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  .lesson-header,
+  .code-block,
+  .box,
+  .exercise,
+  .predict-box,
+  .compare-bad,
+  .compare-good,
+  .step-num,
+  .mascot-bubble,
+  .visual-summary,
+  .axis-section,
+  .trace-table th,
+  .progress-fill,
+  .code-explain-line,
+  .fact-bite,
+  .diff-1, .diff-2, .diff-3,
+  .diagram-box,
+  .modify-box,
+  .answers-section {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  .no-print { display: none !important; }
+  /* orphan/widow 강화 */
+  p { orphans: 3; widows: 3; }
+  h2, h3 { break-after: avoid; }
+  .avoid-break { break-inside: avoid; }
+}
+
+/* ═══════════════════════════════════════
+   레이아웃 겹침 방지 — 모든 주요 섹션 블록 강제
+   ═══════════════════════════════════════ */
+article > .glossary,
+article > .visual-summary,
+article > .box,
+article > .fact-bite,
+article > .exercise,
+article > .answers-section,
+article > .mascot-speech,
+article > .code-block,
+article > .output-block,
+article > .compare,
+article > .predict-box {
+  display: block !important;
+  width: 100% !important;
+  float: none !important;
+  clear: both !important;
+}
+
+/* 박스 내부 테이블 오버플로 방지 */
+.box-content table { width: 100%; table-layout: fixed; }
+.box-content td, .box-content th { word-break: keep-all; overflow-wrap: break-word; }
+
+/* 마스코트 버블 너비 제한 완화 */
+.mascot-bubble { max-width: 100%; }
+
+/* Paged.js 컬럼 방지 */
+article { column-count: 1 !important; columns: 1 !important; }
+
+</style>
+<script src="https://unpkg.com/pagedjs/dist/paged.polyfill.js"></script>
+<script>
+  class PagedReadyHandler extends Paged.Handler {
+    constructor(chunker, polisher, caller) { super(chunker, polisher, caller); }
+    afterRendered(pages) {
+      document.body.setAttribute('data-paged-rendered', 'true');
+      document.body.setAttribute('data-page-count', pages.length);
+      console.log('PAGED_READY:' + pages.length);
+    }
+  }
+  Paged.registerHandlers(PagedReadyHandler);
+</script>
+</head>
+<body data-section-title="간단한 데이터베이스 프로젝트">
+<article id="content">
+  <header class="lesson-header" role="banner">
+    <div class="lesson-number">Lesson 19-16</div>
+    <h1 class="lesson-title">간단한 데이터베이스 프로젝트</h1>
+    <div class="lesson-summary">파일을 이용해 학생 정보를 추가, 조회, 수정, 삭제하는 CRUD 프로그램을 만들어요.</div>
+  </header>
+<div class="chapter-start-box avoid-break"><div class="learning-goals"><h3>📚 이번에 배울 것</h3><ul><li>CRUD(Create, Read, Update, Delete)의 개념을 이해해요.</li><li>구조체 데이터를 파일에 저장하고 읽을 수 있어요.</li><li>fseek로 파일 내 특정 위치의 레코드에 접근할 수 있어요.</li><li>메뉴 기반 프로그램을 완성할 수 있어요.</li></ul></div><div class="prereq-check"><h3>✅ 시작 전 체크</h3><ul class="checklist"><li>구조체를 정의하고 사용할 수 있다</li><li>파일 입출력(fopen, fwrite, fread, fclose)을 알고 있다</li><li>문자열 비교(strcmp)를 알고 있다</li></ul></div><div class="progress-section"><span class="progress-label">Part 1 진행률: 16%</span><div class="progress-bar"><div class="progress-fill" style="width:16%"></div></div></div></div>
+<h2>프로젝트 소개: 나만의 데이터베이스</h2>
+<div class="mascot-speech  avoid-break">
+        <img class="mascot-speech-img " src="svg-assets/mascot-hello.svg" alt="마스코트" />
+        <div class="mascot-bubble ">엑셀이나 데이터베이스 없이도 C로 학생 정보를 관리할 수 있어! 파일에 저장하면 프로그램을 끄고 다시 켜도 데이터가 남아있지!</div>
+      </div>
+<div class="diagram-box avoid-break"><div class="diagram-content">undefined</div></div>
+<h2>1단계: 데이터 구조 설계</h2>
+<div class="code-block avoid-break">
+        <table class="code-table"><tr class=""><td class="line-num">1</td><td class="line-code"><span class="pp">#include</span> <span class="str">&lt;stdio.h&gt;</span></td></tr>
+<tr class=""><td class="line-num">2</td><td class="line-code"><span class="pp">#include</span> <span class="str">&lt;stdlib.h&gt;</span></td></tr>
+<tr class=""><td class="line-num">3</td><td class="line-code"><span class="pp">#include</span> <span class="str">&lt;string.h&gt;</span></td></tr>
+<tr class=""><td class="line-num">4</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">5</td><td class="line-code"><span class="pp">#define</span> MAX_NAME <span class="num">30</span></td></tr>
+<tr class=""><td class="line-num">6</td><td class="line-code"><span class="pp">#define</span> DB_FILE <span class="str">"students.dat"</span></td></tr>
+<tr class=""><td class="line-num">7</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">8</td><td class="line-code"><span class="kw">typedef</span> <span class="kw">struct</span> {</td></tr>
+<tr class=""><td class="line-num">9</td><td class="line-code">    <span class="type">int</span>  id;           <span class="cmt">// 학번</span></td></tr>
+<tr class=""><td class="line-num">10</td><td class="line-code">    <span class="type">char</span> name[MAX_NAME]; <span class="cmt">// 이름</span></td></tr>
+<tr class=""><td class="line-num">11</td><td class="line-code">    <span class="type">int</span>  score;        <span class="cmt">// 점수</span></td></tr>
+<tr class=""><td class="line-num">12</td><td class="line-code">    <span class="type">int</span>  active;       <span class="cmt">// 1=활성, 0=삭제됨</span></td></tr>
+<tr class=""><td class="line-num">13</td><td class="line-code">} Student;</td></tr></table></div>
+<p><code>active</code> 필드는 삭제 여부를 표시해요. 실제로 파일에서 데이터를 제거하는 대신, active를 0으로 바꿔서 '삭제됨' 표시를 하는 방식이에요. 이것을 <b>논리적 삭제</b>라고 해요.</p>
+<h2>2단계: CRUD 함수 구현</h2>
+<div class="diagram-box avoid-break"><div class="diagram-content">undefined</div></div>
+<h2>3단계: 전체 프로그램 완성</h2>
+<div class="code-block avoid-break">
+        <table class="code-table"><tr class=""><td class="line-num">1</td><td class="line-code"><span class="pp">#include</span> <span class="str">&lt;stdio.h&gt;</span></td></tr>
+<tr class=""><td class="line-num">2</td><td class="line-code"><span class="pp">#include</span> <span class="str">&lt;stdlib.h&gt;</span></td></tr>
+<tr class=""><td class="line-num">3</td><td class="line-code"><span class="pp">#include</span> <span class="str">&lt;string.h&gt;</span></td></tr>
+<tr class=""><td class="line-num">4</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">5</td><td class="line-code"><span class="pp">#define</span> MAX_NAME <span class="num">30</span></td></tr>
+<tr class=""><td class="line-num">6</td><td class="line-code"><span class="pp">#define</span> DB_FILE <span class="str">"students.dat"</span></td></tr>
+<tr class=""><td class="line-num">7</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">8</td><td class="line-code"><span class="kw">typedef</span> <span class="kw">struct</span> {</td></tr>
+<tr class=""><td class="line-num">9</td><td class="line-code">    <span class="type">int</span>  id;</td></tr>
+<tr class=""><td class="line-num">10</td><td class="line-code">    <span class="type">char</span> name[MAX_NAME];</td></tr>
+<tr class=""><td class="line-num">11</td><td class="line-code">    <span class="type">int</span>  score;</td></tr>
+<tr class=""><td class="line-num">12</td><td class="line-code">    <span class="type">int</span>  active;</td></tr>
+<tr class=""><td class="line-num">13</td><td class="line-code">} Student;</td></tr>
+<tr class=""><td class="line-num">14</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">15</td><td class="line-code"><span class="cmt">// 학생 추가 (Create)</span></td></tr>
+<tr class=""><td class="line-num">16</td><td class="line-code"><span class="type">void</span> <span class="fn">add_student</span>(<span class="type">void</span>) {</td></tr>
+<tr class=""><td class="line-num">17</td><td class="line-code">    Student s;</td></tr>
+<tr class=""><td class="line-num">18</td><td class="line-code">    <span class="fn">printf</span>(<span class="str">"학번: "</span>); <span class="fn">scanf</span>(<span class="str">"<span class="fmt">%d</span>"</span>, &amp;s.id);</td></tr>
+<tr class=""><td class="line-num">19</td><td class="line-code">    <span class="fn">printf</span>(<span class="str">"이름: "</span>); <span class="fn">scanf</span>(<span class="str">"<span class="fmt">%s</span>"</span>, s.name);</td></tr>
+<tr class=""><td class="line-num">20</td><td class="line-code">    <span class="fn">printf</span>(<span class="str">"점수: "</span>); <span class="fn">scanf</span>(<span class="str">"<span class="fmt">%d</span>"</span>, &amp;s.score);</td></tr>
+<tr class=""><td class="line-num">21</td><td class="line-code">    s.active = <span class="num">1</span>;</td></tr>
+<tr class=""><td class="line-num">22</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">23</td><td class="line-code">    <span class="type">FILE</span> *fp = <span class="fn">fopen</span>(DB_FILE, <span class="str">"ab"</span>);</td></tr>
+<tr class=""><td class="line-num">24</td><td class="line-code">    <span class="kw">if</span> (!fp) { <span class="fn">printf</span>(<span class="str">"파일 열기 실패<span class="esc">\n</span>"</span>); <span class="kw">return</span>; }</td></tr>
+<tr class=""><td class="line-num">25</td><td class="line-code">    <span class="fn">fwrite</span>(&amp;s, <span class="kw">sizeof</span>(Student), <span class="num">1</span>, fp);</td></tr>
+<tr class=""><td class="line-num">26</td><td class="line-code">    <span class="fn">fclose</span>(fp);</td></tr>
+<tr class=""><td class="line-num">27</td><td class="line-code">    <span class="fn">printf</span>(<span class="str">"추가 완료!<span class="esc">\n</span>"</span>);</td></tr>
+<tr class=""><td class="line-num">28</td><td class="line-code">}</td></tr>
+<tr class=""><td class="line-num">29</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">30</td><td class="line-code"><span class="cmt">// 전체 목록 (Read)</span></td></tr>
+<tr class=""><td class="line-num">31</td><td class="line-code"><span class="type">void</span> <span class="fn">list_students</span>(<span class="type">void</span>) {</td></tr>
+<tr class=""><td class="line-num">32</td><td class="line-code">    <span class="type">FILE</span> *fp = <span class="fn">fopen</span>(DB_FILE, <span class="str">"rb"</span>);</td></tr>
+<tr class=""><td class="line-num">33</td><td class="line-code">    <span class="kw">if</span> (!fp) { <span class="fn">printf</span>(<span class="str">"데이터가 없습니다.<span class="esc">\n</span>"</span>); <span class="kw">return</span>; }</td></tr>
+<tr class=""><td class="line-num">34</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">35</td><td class="line-code">    Student s;</td></tr>
+<tr class=""><td class="line-num">36</td><td class="line-code">    <span class="type">int</span> count = <span class="num">0</span>;</td></tr>
+<tr class=""><td class="line-num">37</td><td class="line-code">    <span class="fn">printf</span>(<span class="str">"<span class="esc">\n</span><span class="fmt">%-8s</span> <span class="fmt">%-15s</span> <span class="fmt">%-8s</span><span class="esc">\n</span>"</span>, <span class="str">"학번"</span>, <span class="str">"이름"</span>, <span class="str">"점수"</span>);</td></tr>
+<tr class=""><td class="line-num">38</td><td class="line-code">    <span class="fn">printf</span>(<span class="str">"-------------------------------<span class="esc">\n</span>"</span>);</td></tr>
+<tr class=""><td class="line-num">39</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">40</td><td class="line-code">    <span class="kw">while</span> (<span class="fn">fread</span>(&amp;s, <span class="kw">sizeof</span>(Student), <span class="num">1</span>, fp) == <span class="num">1</span>) {</td></tr>
+<tr class=""><td class="line-num">41</td><td class="line-code">        <span class="kw">if</span> (s.active) {</td></tr>
+<tr class=""><td class="line-num">42</td><td class="line-code">            <span class="fn">printf</span>(<span class="str">"<span class="fmt">%-8d</span> <span class="fmt">%-15s</span> <span class="fmt">%-8d</span><span class="esc">\n</span>"</span>, s.id, s.name, s.score);</td></tr>
+<tr class=""><td class="line-num">43</td><td class="line-code">            count++;</td></tr>
+<tr class=""><td class="line-num">44</td><td class="line-code">        }</td></tr>
+<tr class=""><td class="line-num">45</td><td class="line-code">    }</td></tr>
+<tr class=""><td class="line-num">46</td><td class="line-code">    <span class="fn">printf</span>(<span class="str">"총 <span class="fmt">%d</span>명<span class="esc">\n</span>"</span>, count);</td></tr>
+<tr class=""><td class="line-num">47</td><td class="line-code">    <span class="fn">fclose</span>(fp);</td></tr>
+<tr class=""><td class="line-num">48</td><td class="line-code">}</td></tr>
+<tr class=""><td class="line-num">49</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">50</td><td class="line-code"><span class="cmt">// 검색 (Read)</span></td></tr>
+<tr class=""><td class="line-num">51</td><td class="line-code"><span class="type">void</span> <span class="fn">search_student</span>(<span class="type">void</span>) {</td></tr>
+<tr class=""><td class="line-num">52</td><td class="line-code">    <span class="type">char</span> keyword[MAX_NAME];</td></tr>
+<tr class=""><td class="line-num">53</td><td class="line-code">    <span class="fn">printf</span>(<span class="str">"검색할 이름: "</span>); <span class="fn">scanf</span>(<span class="str">"<span class="fmt">%s</span>"</span>, keyword);</td></tr>
+<tr class=""><td class="line-num">54</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">55</td><td class="line-code">    <span class="type">FILE</span> *fp = <span class="fn">fopen</span>(DB_FILE, <span class="str">"rb"</span>);</td></tr>
+<tr class=""><td class="line-num">56</td><td class="line-code">    <span class="kw">if</span> (!fp) { <span class="fn">printf</span>(<span class="str">"데이터가 없습니다.<span class="esc">\n</span>"</span>); <span class="kw">return</span>; }</td></tr>
+<tr class=""><td class="line-num">57</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">58</td><td class="line-code">    Student s;</td></tr>
+<tr class=""><td class="line-num">59</td><td class="line-code">    <span class="type">int</span> found = <span class="num">0</span>;</td></tr>
+<tr class=""><td class="line-num">60</td><td class="line-code">    <span class="kw">while</span> (<span class="fn">fread</span>(&amp;s, <span class="kw">sizeof</span>(Student), <span class="num">1</span>, fp) == <span class="num">1</span>) {</td></tr>
+<tr class=""><td class="line-num">61</td><td class="line-code">        <span class="kw">if</span> (s.active &amp;&amp; <span class="fn">strstr</span>(s.name, keyword)) {</td></tr>
+<tr class=""><td class="line-num">62</td><td class="line-code">            <span class="fn">printf</span>(<span class="str">"학번: <span class="fmt">%d</span>, 이름: <span class="fmt">%s</span>, 점수: <span class="fmt">%d</span><span class="esc">\n</span>"</span>,</td></tr>
+<tr class=""><td class="line-num">63</td><td class="line-code">                   s.id, s.name, s.score);</td></tr>
+<tr class=""><td class="line-num">64</td><td class="line-code">            found = <span class="num">1</span>;</td></tr>
+<tr class=""><td class="line-num">65</td><td class="line-code">        }</td></tr>
+<tr class=""><td class="line-num">66</td><td class="line-code">    }</td></tr>
+<tr class=""><td class="line-num">67</td><td class="line-code">    <span class="kw">if</span> (!found) <span class="fn">printf</span>(<span class="str">"검색 결과가 없습니다.<span class="esc">\n</span>"</span>);</td></tr>
+<tr class=""><td class="line-num">68</td><td class="line-code">    <span class="fn">fclose</span>(fp);</td></tr>
+<tr class=""><td class="line-num">69</td><td class="line-code">}</td></tr>
+<tr class=""><td class="line-num">70</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">71</td><td class="line-code"><span class="cmt">// 수정 (Update)</span></td></tr>
+<tr class=""><td class="line-num">72</td><td class="line-code"><span class="type">void</span> <span class="fn">update_student</span>(<span class="type">void</span>) {</td></tr>
+<tr class=""><td class="line-num">73</td><td class="line-code">    <span class="type">int</span> target_id;</td></tr>
+<tr class=""><td class="line-num">74</td><td class="line-code">    <span class="fn">printf</span>(<span class="str">"수정할 학번: "</span>); <span class="fn">scanf</span>(<span class="str">"<span class="fmt">%d</span>"</span>, &amp;target_id);</td></tr>
+<tr class=""><td class="line-num">75</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">76</td><td class="line-code">    <span class="type">FILE</span> *fp = <span class="fn">fopen</span>(DB_FILE, <span class="str">"r+b"</span>);</td></tr>
+<tr class=""><td class="line-num">77</td><td class="line-code">    <span class="kw">if</span> (!fp) { <span class="fn">printf</span>(<span class="str">"데이터가 없습니다.<span class="esc">\n</span>"</span>); <span class="kw">return</span>; }</td></tr>
+<tr class=""><td class="line-num">78</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">79</td><td class="line-code">    Student s;</td></tr>
+<tr class=""><td class="line-num">80</td><td class="line-code">    <span class="kw">while</span> (<span class="fn">fread</span>(&amp;s, <span class="kw">sizeof</span>(Student), <span class="num">1</span>, fp) == <span class="num">1</span>) {</td></tr>
+<tr class=""><td class="line-num">81</td><td class="line-code">        <span class="kw">if</span> (s.active &amp;&amp; s.id == target_id) {</td></tr>
+<tr class=""><td class="line-num">82</td><td class="line-code">            <span class="fn">printf</span>(<span class="str">"현재: <span class="fmt">%s</span>, <span class="fmt">%d</span>점<span class="esc">\n</span>"</span>, s.name, s.score);</td></tr>
+<tr class=""><td class="line-num">83</td><td class="line-code">            <span class="fn">printf</span>(<span class="str">"새 점수: "</span>); <span class="fn">scanf</span>(<span class="str">"<span class="fmt">%d</span>"</span>, &amp;s.score);</td></tr>
+<tr class=""><td class="line-num">84</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">85</td><td class="line-code">            <span class="cmt">// 읽은 위치에서 한 레코드 뒤로 가서 덮어쓰기</span></td></tr>
+<tr class=""><td class="line-num">86</td><td class="line-code">            <span class="fn">fseek</span>(fp, -(<span class="type">long</span>)<span class="kw">sizeof</span>(Student), SEEK_CUR);</td></tr>
+<tr class=""><td class="line-num">87</td><td class="line-code">            <span class="fn">fwrite</span>(&amp;s, <span class="kw">sizeof</span>(Student), <span class="num">1</span>, fp);</td></tr>
+<tr class=""><td class="line-num">88</td><td class="line-code">            <span class="fn">printf</span>(<span class="str">"수정 완료!<span class="esc">\n</span>"</span>);</td></tr>
+<tr class=""><td class="line-num">89</td><td class="line-code">            <span class="fn">fclose</span>(fp);</td></tr>
+<tr class=""><td class="line-num">90</td><td class="line-code">            <span class="kw">return</span>;</td></tr>
+<tr class=""><td class="line-num">91</td><td class="line-code">        }</td></tr>
+<tr class=""><td class="line-num">92</td><td class="line-code">    }</td></tr>
+<tr class=""><td class="line-num">93</td><td class="line-code">    <span class="fn">printf</span>(<span class="str">"해당 학번을 찾을 수 없습니다.<span class="esc">\n</span>"</span>);</td></tr>
+<tr class=""><td class="line-num">94</td><td class="line-code">    <span class="fn">fclose</span>(fp);</td></tr>
+<tr class=""><td class="line-num">95</td><td class="line-code">}</td></tr>
+<tr class=""><td class="line-num">96</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">97</td><td class="line-code"><span class="cmt">// 삭제 (Delete - 논리적 삭제)</span></td></tr>
+<tr class=""><td class="line-num">98</td><td class="line-code"><span class="type">void</span> <span class="fn">delete_student</span>(<span class="type">void</span>) {</td></tr>
+<tr class=""><td class="line-num">99</td><td class="line-code">    <span class="type">int</span> target_id;</td></tr>
+<tr class=""><td class="line-num">100</td><td class="line-code">    <span class="fn">printf</span>(<span class="str">"삭제할 학번: "</span>); <span class="fn">scanf</span>(<span class="str">"<span class="fmt">%d</span>"</span>, &amp;target_id);</td></tr>
+<tr class=""><td class="line-num">101</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">102</td><td class="line-code">    <span class="type">FILE</span> *fp = <span class="fn">fopen</span>(DB_FILE, <span class="str">"r+b"</span>);</td></tr>
+<tr class=""><td class="line-num">103</td><td class="line-code">    <span class="kw">if</span> (!fp) { <span class="fn">printf</span>(<span class="str">"데이터가 없습니다.<span class="esc">\n</span>"</span>); <span class="kw">return</span>; }</td></tr>
+<tr class=""><td class="line-num">104</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">105</td><td class="line-code">    Student s;</td></tr>
+<tr class=""><td class="line-num">106</td><td class="line-code">    <span class="kw">while</span> (<span class="fn">fread</span>(&amp;s, <span class="kw">sizeof</span>(Student), <span class="num">1</span>, fp) == <span class="num">1</span>) {</td></tr>
+<tr class=""><td class="line-num">107</td><td class="line-code">        <span class="kw">if</span> (s.active &amp;&amp; s.id == target_id) {</td></tr>
+<tr class=""><td class="line-num">108</td><td class="line-code">            s.active = <span class="num">0</span>;  <span class="cmt">// 삭제 표시</span></td></tr>
+<tr class=""><td class="line-num">109</td><td class="line-code">            <span class="fn">fseek</span>(fp, -(<span class="type">long</span>)<span class="kw">sizeof</span>(Student), SEEK_CUR);</td></tr>
+<tr class=""><td class="line-num">110</td><td class="line-code">            <span class="fn">fwrite</span>(&amp;s, <span class="kw">sizeof</span>(Student), <span class="num">1</span>, fp);</td></tr>
+<tr class=""><td class="line-num">111</td><td class="line-code">            <span class="fn">printf</span>(<span class="str">"삭제 완료!<span class="esc">\n</span>"</span>);</td></tr>
+<tr class=""><td class="line-num">112</td><td class="line-code">            <span class="fn">fclose</span>(fp);</td></tr>
+<tr class=""><td class="line-num">113</td><td class="line-code">            <span class="kw">return</span>;</td></tr>
+<tr class=""><td class="line-num">114</td><td class="line-code">        }</td></tr>
+<tr class=""><td class="line-num">115</td><td class="line-code">    }</td></tr>
+<tr class=""><td class="line-num">116</td><td class="line-code">    <span class="fn">printf</span>(<span class="str">"해당 학번을 찾을 수 없습니다.<span class="esc">\n</span>"</span>);</td></tr>
+<tr class=""><td class="line-num">117</td><td class="line-code">    <span class="fn">fclose</span>(fp);</td></tr>
+<tr class=""><td class="line-num">118</td><td class="line-code">}</td></tr>
+<tr class=""><td class="line-num">119</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">120</td><td class="line-code"><span class="type">int</span> <span class="fn">main</span>(<span class="type">void</span>) {</td></tr>
+<tr class=""><td class="line-num">121</td><td class="line-code">    <span class="type">int</span> choice;</td></tr>
+<tr class=""><td class="line-num">122</td><td class="line-code">    <span class="kw">while</span> (<span class="num">1</span>) {</td></tr>
+<tr class=""><td class="line-num">123</td><td class="line-code">        <span class="fn">printf</span>(<span class="str">"<span class="esc">\n</span>=== Student DB ==="</span>);</td></tr>
+<tr class=""><td class="line-num">124</td><td class="line-code">        <span class="fn">printf</span>(<span class="str">"<span class="esc">\n</span>1. 추가"</span>);</td></tr>
+<tr class=""><td class="line-num">125</td><td class="line-code">        <span class="fn">printf</span>(<span class="str">"<span class="esc">\n</span>2. 전체 목록"</span>);</td></tr>
+<tr class=""><td class="line-num">126</td><td class="line-code">        <span class="fn">printf</span>(<span class="str">"<span class="esc">\n</span>3. 검색"</span>);</td></tr>
+<tr class=""><td class="line-num">127</td><td class="line-code">        <span class="fn">printf</span>(<span class="str">"<span class="esc">\n</span>4. 수정"</span>);</td></tr>
+<tr class=""><td class="line-num">128</td><td class="line-code">        <span class="fn">printf</span>(<span class="str">"<span class="esc">\n</span>5. 삭제"</span>);</td></tr>
+<tr class=""><td class="line-num">129</td><td class="line-code">        <span class="fn">printf</span>(<span class="str">"<span class="esc">\n</span>6. 종료"</span>);</td></tr>
+<tr class=""><td class="line-num">130</td><td class="line-code">        <span class="fn">printf</span>(<span class="str">"<span class="esc">\n</span>선택: "</span>);</td></tr>
+<tr class=""><td class="line-num">131</td><td class="line-code">        <span class="fn">scanf</span>(<span class="str">"<span class="fmt">%d</span>"</span>, &amp;choice);</td></tr>
+<tr class=""><td class="line-num">132</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">133</td><td class="line-code">        <span class="kw">switch</span> (choice) {</td></tr>
+<tr class=""><td class="line-num">134</td><td class="line-code">            <span class="kw">case</span> <span class="num">1</span>: <span class="fn">add_student</span>();    <span class="kw">break</span>;</td></tr>
+<tr class=""><td class="line-num">135</td><td class="line-code">            <span class="kw">case</span> <span class="num">2</span>: <span class="fn">list_students</span>();  <span class="kw">break</span>;</td></tr>
+<tr class=""><td class="line-num">136</td><td class="line-code">            <span class="kw">case</span> <span class="num">3</span>: <span class="fn">search_student</span>(); <span class="kw">break</span>;</td></tr>
+<tr class=""><td class="line-num">137</td><td class="line-code">            <span class="kw">case</span> <span class="num">4</span>: <span class="fn">update_student</span>(); <span class="kw">break</span>;</td></tr>
+<tr class=""><td class="line-num">138</td><td class="line-code">            <span class="kw">case</span> <span class="num">5</span>: <span class="fn">delete_student</span>(); <span class="kw">break</span>;</td></tr>
+<tr class=""><td class="line-num">139</td><td class="line-code">            <span class="kw">case</span> <span class="num">6</span>: <span class="fn">printf</span>(<span class="str">"종료합니다.<span class="esc">\n</span>"</span>); <span class="kw">return</span> <span class="num">0</span>;</td></tr>
+<tr class=""><td class="line-num">140</td><td class="line-code">            <span class="kw">default</span>: <span class="fn">printf</span>(<span class="str">"잘못된 입력<span class="esc">\n</span>"</span>);</td></tr>
+<tr class=""><td class="line-num">141</td><td class="line-code">        }</td></tr>
+<tr class=""><td class="line-num">142</td><td class="line-code">    }</td></tr>
+<tr class=""><td class="line-num">143</td><td class="line-code">}</td></tr></table></div>
+<div class="mascot-speech right avoid-break">
+        <img class="mascot-speech-img " src="svg-assets/mascot-celebrate.svg" alt="마스코트" />
+        <div class="mascot-bubble success">이 프로그램은 <b>파일 I/O</b>, <b>구조체</b>, <b>문자열 처리</b>, <b>메뉴 시스템</b>을 모두 활용하는 종합 프로젝트야! 실제 데이터베이스의 기본 원리이기도 해!</div>
+      </div>
+<h2>핵심 포인트 정리</h2>
+<div class="box box-key avoid-break"><span class="box-label">CRUD 핵심 기법</span><div class="box-content"><b>Create:</b> fopen("ab")로 파일 끝에 추가, fwrite로 구조체 저장<br><b>Read:</b> fopen("rb")로 읽기, fread로 구조체 단위로 읽기<br><b>Update:</b> fopen("r+b")로 읽기+쓰기, fseek으로 위치 이동 후 fwrite<br><b>Delete:</b> 논리적 삭제 (active=0으로 표시), 물리적으로는 남아있음</div></div>
+<h2>연습문제</h2>
+<div class="mascot-speech  avoid-break">
+        <img class="mascot-speech-img " src="svg-assets/mascot-thinking.svg" alt="마스코트" />
+        <div class="mascot-bubble ">데이터가 많아지면 배열 대신 파일이나 데이터베이스를 사용해야 해. 하지만 기본 원리는 같아 -- 저장, 검색, 수정, 삭제!</div>
+      </div>
+<div class="exercise avoid-break"><div class="exercise-title">OX 퀴즈</div><div class="exercise-item"><p>fopen("ab")의 'a'는 append(추가) 모드를 의미한다.</p></div><div class="exercise-answer"><b>정답:</b> ⭕ O</div><div class="exercise-explain">'a'는 파일 끝에 데이터를 추가하는 모드예요. 'b'는 바이너리 모드를 의미해요.</div></div>
+<div class="exercise avoid-break"><div class="exercise-title">객관식</div><div class="exercise-item"><p>fseek(fp, -sizeof(Student), SEEK_CUR)의 의미는?</p><ol class="choice-list"><li class="">파일의 시작으로 이동한다</li><li class="">현재 위치에서 Student 크기만큼 앞으로 이동한다</li><li class="">현재 위치에서 Student 크기만큼 뒤로 이동한다</li><li class="">파일의 끝으로 이동한다</li></ol></div><div class="exercise-answer"><b>정답:</b> 3</div><div class="exercise-explain">음수 오프셋은 현재 위치에서 뒤로(파일 시작 방향) 이동하는 것이에요. 방금 읽은 레코드 위치로 돌아가서 덮어쓰기 위해 사용해요.</div></div>
+<div class="exercise avoid-break"><div class="exercise-title">단답형</div><div class="exercise-item"><p>논리적 삭제란 무엇인가요?</p></div><div class="exercise-answer"><b>정답:</b> 데이터를 실제로 파일에서 제거하지 않고, 삭제 표시(active=0)만 해두는 방식이다.</div><div class="exercise-explain">물리적으로 파일을 재구성하는 것보다 간단하고 빠르지만, 파일 크기는 줄어들지 않아요.</div></div>
+<div class="exercise avoid-break"><div class="exercise-title">객관식</div><div class="exercise-item"><p>strstr(s.name, keyword)는 어떤 역할을 하나?</p><ol class="choice-list"><li class="">두 문자열이 같은지 비교한다</li><li class="">s.name에서 keyword가 포함되어 있는지 찾는다</li><li class="">s.name을 keyword로 복사한다</li><li class="">두 문자열을 이어붙인다</li></ol></div><div class="exercise-answer"><b>정답:</b> 2</div><div class="exercise-explain">strstr은 문자열 안에서 부분 문자열을 찾는 함수예요. 찾으면 포인터를, 못 찾으면 NULL을 반환해요.</div></div>
+<div class="exercise avoid-break"><div class="exercise-title">객관식</div><div class="exercise-item"><p>구조체 배열에서 특정 필드로 검색할 때 가장 기본적인 알고리즘은?</p><ol class="choice-list"><li class="">이진 탐색</li><li class="">해시 탐색</li><li class="">선형 탐색</li><li class="">트리 탐색</li></ol></div><div class="exercise-answer"><b>정답:</b> 2</div><div class="exercise-explain">정렬되지 않은 구조체 배열에서 특정 필드 값을 찾을 때는 처음부터 끝까지 순서대로 비교하는 선형 탐색이 가장 기본적입니다.</div></div>
+<h2>용어 정리</h2>
+<div class="code-block avoid-break"><div class="code-block-header">[C 코드] 미니 DB — SQL 풍 쿼리</div>
+        <table class="code-table"><tr class=""><td class="line-num">1</td><td class="line-code"><span class="pp">#include</span> <span class="str">&lt;stdio.h&gt;</span></td></tr>
+<tr class=""><td class="line-num">2</td><td class="line-code"><span class="pp">#include</span> <span class="str">&lt;string.h&gt;</span></td></tr>
+<tr class=""><td class="line-num">3</td><td class="line-code"><span class="pp">#include</span> <span class="str">&lt;stdlib.h&gt;</span></td></tr>
+<tr class=""><td class="line-num">4</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">5</td><td class="line-code"><span class="kw">typedef</span> <span class="kw">struct</span> { <span class="type">int</span> id; <span class="type">char</span> name[<span class="num">20</span>]; <span class="type">int</span> age; <span class="type">char</span> dept[<span class="num">15</span>]; <span class="type">int</span> salary; } Row;</td></tr>
+<tr class=""><td class="line-num">6</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">7</td><td class="line-code"><span class="pp">#define</span> MAX_ROWS <span class="num">100</span></td></tr>
+<tr class=""><td class="line-num">8</td><td class="line-code">Row table[MAX_ROWS];</td></tr>
+<tr class=""><td class="line-num">9</td><td class="line-code"><span class="type">int</span> nrows = <span class="num">0</span>;</td></tr>
+<tr class=""><td class="line-num">10</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">11</td><td class="line-code"><span class="type">void</span> <span class="fn">db_insert</span>(<span class="kw">const</span> <span class="type">char</span> *name, <span class="type">int</span> age, <span class="kw">const</span> <span class="type">char</span> *dept, <span class="type">int</span> salary) {</td></tr>
+<tr class=""><td class="line-num">12</td><td class="line-code">    Row *r = &amp;table[nrows];</td></tr>
+<tr class=""><td class="line-num">13</td><td class="line-code">    r-&gt;id = nrows + <span class="num">1</span>;</td></tr>
+<tr class=""><td class="line-num">14</td><td class="line-code">    <span class="fn">strncpy</span>(r-&gt;name, name, <span class="num">19</span>);</td></tr>
+<tr class=""><td class="line-num">15</td><td class="line-code">    r-&gt;age = age;</td></tr>
+<tr class=""><td class="line-num">16</td><td class="line-code">    <span class="fn">strncpy</span>(r-&gt;dept, dept, <span class="num">14</span>);</td></tr>
+<tr class=""><td class="line-num">17</td><td class="line-code">    r-&gt;salary = salary;</td></tr>
+<tr class=""><td class="line-num">18</td><td class="line-code">    nrows++;</td></tr>
+<tr class=""><td class="line-num">19</td><td class="line-code">}</td></tr>
+<tr class=""><td class="line-num">20</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">21</td><td class="line-code"><span class="cmt">// SELECT * WHERE</span></td></tr>
+<tr class=""><td class="line-num">22</td><td class="line-code"><span class="kw">typedef</span> <span class="type">int</span> (*WhereFunc)(<span class="kw">const</span> Row*);</td></tr>
+<tr class=""><td class="line-num">23</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">24</td><td class="line-code"><span class="type">void</span> <span class="fn">db_select</span>(WhereFunc where) {</td></tr>
+<tr class=""><td class="line-num">25</td><td class="line-code">    <span class="fn">printf</span>(<span class="str">"<span class="fmt">%-4s</span> <span class="fmt">%-12s</span> <span class="fmt">%4s</span> <span class="fmt">%-10s</span> <span class="fmt">%8s</span><span class="esc">\n</span>"</span>, <span class="str">"ID"</span>,<span class="str">"Name"</span>,<span class="str">"Age"</span>,<span class="str">"Dept"</span>,<span class="str">"Salary"</span>);</td></tr>
+<tr class=""><td class="line-num">26</td><td class="line-code">    <span class="fn">printf</span>(<span class="str">"-----------------------------------------------<span class="esc">\n</span>"</span>);</td></tr>
+<tr class=""><td class="line-num">27</td><td class="line-code">    <span class="type">int</span> count = <span class="num">0</span>;</td></tr>
+<tr class=""><td class="line-num">28</td><td class="line-code">    <span class="kw">for</span> (<span class="type">int</span> i = <span class="num">0</span>; i &lt; nrows; i++) {</td></tr>
+<tr class=""><td class="line-num">29</td><td class="line-code">        <span class="kw">if</span> (!where || <span class="fn">where</span>(&amp;table[i])) {</td></tr>
+<tr class=""><td class="line-num">30</td><td class="line-code">            <span class="fn">printf</span>(<span class="str">"<span class="fmt">%-4d</span> <span class="fmt">%-12s</span> <span class="fmt">%4d</span> <span class="fmt">%-10s</span> <span class="fmt">%8d</span><span class="esc">\n</span>"</span>,</td></tr>
+<tr class=""><td class="line-num">31</td><td class="line-code">                   table[i].id, table[i].name, table[i].age,</td></tr>
+<tr class=""><td class="line-num">32</td><td class="line-code">                   table[i].dept, table[i].salary);</td></tr>
+<tr class=""><td class="line-num">33</td><td class="line-code">            count++;</td></tr>
+<tr class=""><td class="line-num">34</td><td class="line-code">        }</td></tr>
+<tr class=""><td class="line-num">35</td><td class="line-code">    }</td></tr>
+<tr class=""><td class="line-num">36</td><td class="line-code">    <span class="fn">printf</span>(<span class="str">"(<span class="fmt">%d</span> rows)<span class="esc">\n</span><span class="esc">\n</span>"</span>, count);</td></tr>
+<tr class=""><td class="line-num">37</td><td class="line-code">}</td></tr>
+<tr class=""><td class="line-num">38</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">39</td><td class="line-code"><span class="cmt">// WHERE 조건들 (함수 포인터!)</span></td></tr>
+<tr class=""><td class="line-num">40</td><td class="line-code"><span class="type">int</span> <span class="fn">where_all</span>(<span class="kw">const</span> Row *r) { <span class="kw">return</span> <span class="num">1</span>; }</td></tr>
+<tr class=""><td class="line-num">41</td><td class="line-code"><span class="type">int</span> <span class="fn">where_dev</span>(<span class="kw">const</span> Row *r) { <span class="kw">return</span> <span class="fn">strcmp</span>(r-&gt;dept, <span class="str">"Dev"</span>) == <span class="num">0</span>; }</td></tr>
+<tr class=""><td class="line-num">42</td><td class="line-code"><span class="type">int</span> <span class="fn">where_senior</span>(<span class="kw">const</span> Row *r) { <span class="kw">return</span> r-&gt;age &gt;= <span class="num">35</span>; }</td></tr>
+<tr class=""><td class="line-num">43</td><td class="line-code"><span class="type">int</span> <span class="fn">where_high_salary</span>(<span class="kw">const</span> Row *r) { <span class="kw">return</span> r-&gt;salary &gt;= <span class="num">60000</span>; }</td></tr>
+<tr class=""><td class="line-num">44</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">45</td><td class="line-code"><span class="cmt">// GROUP BY + SUM</span></td></tr>
+<tr class=""><td class="line-num">46</td><td class="line-code"><span class="type">void</span> <span class="fn">db_group_by_dept</span>() {</td></tr>
+<tr class=""><td class="line-num">47</td><td class="line-code">    <span class="type">char</span> depts[<span class="num">10</span>][<span class="num">15</span>]; <span class="type">int</span> dcnt = <span class="num">0</span>;</td></tr>
+<tr class=""><td class="line-num">48</td><td class="line-code">    <span class="kw">for</span> (<span class="type">int</span> i = <span class="num">0</span>; i &lt; nrows; i++) {</td></tr>
+<tr class=""><td class="line-num">49</td><td class="line-code">        <span class="type">int</span> found = <span class="num">0</span>;</td></tr>
+<tr class=""><td class="line-num">50</td><td class="line-code">        <span class="kw">for</span> (<span class="type">int</span> j = <span class="num">0</span>; j &lt; dcnt; j++) <span class="kw">if</span> (<span class="fn">strcmp</span>(depts[j], table[i].dept)==<span class="num">0</span>) found=<span class="num">1</span>;</td></tr>
+<tr class=""><td class="line-num">51</td><td class="line-code">        <span class="kw">if</span> (!found) <span class="fn">strncpy</span>(depts[dcnt++], table[i].dept, <span class="num">14</span>);</td></tr>
+<tr class=""><td class="line-num">52</td><td class="line-code">    }</td></tr>
+<tr class=""><td class="line-num">53</td><td class="line-code">    <span class="fn">printf</span>(<span class="str">"<span class="fmt">%-10s</span> <span class="fmt">%5s</span> <span class="fmt">%10s</span> <span class="fmt">%10s</span><span class="esc">\n</span>"</span>, <span class="str">"Dept"</span>, <span class="str">"Count"</span>, <span class="str">"Avg Salary"</span>, <span class="str">"Total"</span>);</td></tr>
+<tr class=""><td class="line-num">54</td><td class="line-code">    <span class="fn">printf</span>(<span class="str">"--------------------------------------<span class="esc">\n</span>"</span>);</td></tr>
+<tr class=""><td class="line-num">55</td><td class="line-code">    <span class="kw">for</span> (<span class="type">int</span> d = <span class="num">0</span>; d &lt; dcnt; d++) {</td></tr>
+<tr class=""><td class="line-num">56</td><td class="line-code">        <span class="type">int</span> cnt=<span class="num">0</span>, total=<span class="num">0</span>;</td></tr>
+<tr class=""><td class="line-num">57</td><td class="line-code">        <span class="kw">for</span> (<span class="type">int</span> i = <span class="num">0</span>; i &lt; nrows; i++)</td></tr>
+<tr class=""><td class="line-num">58</td><td class="line-code">            <span class="kw">if</span> (<span class="fn">strcmp</span>(table[i].dept, depts[d])==<span class="num">0</span>) { cnt++; total+=table[i].salary; }</td></tr>
+<tr class=""><td class="line-num">59</td><td class="line-code">        <span class="fn">printf</span>(<span class="str">"<span class="fmt">%-10s</span> <span class="fmt">%5d</span> <span class="fmt">%10d</span> <span class="fmt">%10d</span><span class="esc">\n</span>"</span>, depts[d], cnt, total/cnt, total);</td></tr>
+<tr class=""><td class="line-num">60</td><td class="line-code">    }</td></tr>
+<tr class=""><td class="line-num">61</td><td class="line-code">}</td></tr>
+<tr class=""><td class="line-num">62</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">63</td><td class="line-code"><span class="type">int</span> <span class="fn">main</span>() {</td></tr>
+<tr class=""><td class="line-num">64</td><td class="line-code">    <span class="fn">db_insert</span>(<span class="str">"Kim"</span>, <span class="num">28</span>, <span class="str">"Dev"</span>, <span class="num">55000</span>);</td></tr>
+<tr class=""><td class="line-num">65</td><td class="line-code">    <span class="fn">db_insert</span>(<span class="str">"Lee"</span>, <span class="num">35</span>, <span class="str">"Dev"</span>, <span class="num">72000</span>);</td></tr>
+<tr class=""><td class="line-num">66</td><td class="line-code">    <span class="fn">db_insert</span>(<span class="str">"Park"</span>, <span class="num">42</span>, <span class="str">"Sales"</span>, <span class="num">65000</span>);</td></tr>
+<tr class=""><td class="line-num">67</td><td class="line-code">    <span class="fn">db_insert</span>(<span class="str">"Choi"</span>, <span class="num">25</span>, <span class="str">"Design"</span>, <span class="num">48000</span>);</td></tr>
+<tr class=""><td class="line-num">68</td><td class="line-code">    <span class="fn">db_insert</span>(<span class="str">"Jung"</span>, <span class="num">31</span>, <span class="str">"Dev"</span>, <span class="num">62000</span>);</td></tr>
+<tr class=""><td class="line-num">69</td><td class="line-code">    <span class="fn">db_insert</span>(<span class="str">"Kang"</span>, <span class="num">38</span>, <span class="str">"Sales"</span>, <span class="num">70000</span>);</td></tr>
+<tr class=""><td class="line-num">70</td><td class="line-code">    <span class="fn">db_insert</span>(<span class="str">"Yoon"</span>, <span class="num">29</span>, <span class="str">"Design"</span>, <span class="num">52000</span>);</td></tr>
+<tr class=""><td class="line-num">71</td><td class="line-code">    </td></tr>
+<tr class=""><td class="line-num">72</td><td class="line-code">    <span class="fn">printf</span>(<span class="str">"=== SELECT * ===<span class="esc">\n</span>"</span>); <span class="fn">db_select</span>(where_all);</td></tr>
+<tr class=""><td class="line-num">73</td><td class="line-code">    <span class="fn">printf</span>(<span class="str">"=== WHERE dept=Dev ===<span class="esc">\n</span>"</span>); <span class="fn">db_select</span>(where_dev);</td></tr>
+<tr class=""><td class="line-num">74</td><td class="line-code">    <span class="fn">printf</span>(<span class="str">"=== WHERE age&gt;=35 ===<span class="esc">\n</span>"</span>); <span class="fn">db_select</span>(where_senior);</td></tr>
+<tr class=""><td class="line-num">75</td><td class="line-code">    <span class="fn">printf</span>(<span class="str">"=== GROUP BY dept ===<span class="esc">\n</span>"</span>); <span class="fn">db_group_by_dept</span>();</td></tr>
+<tr class=""><td class="line-num">76</td><td class="line-code">    <span class="kw">return</span> <span class="num">0</span>;</td></tr>
+<tr class=""><td class="line-num">77</td><td class="line-code">}</td></tr></table></div>
+<div class="output-block avoid-break"><span class="output-label">실행 결과</span><div class="output-text">=== SELECT * ===
+ID   Name          Age Dept       Salary
+-----------------------------------------------
+1    Kim            28 Dev          55000
+2    Lee            35 Dev          72000
+3    Park           42 Sales        65000
+4    Choi           25 Design       48000
+5    Jung           31 Dev          62000
+6    Kang           38 Sales        70000
+7    Yoon           29 Design       52000
+(7 rows)
+
+=== WHERE dept=Dev ===
+(3 rows)
+
+=== WHERE age>=35 ===
+(3 rows)</div></div>
+<div class="box box-key avoid-break"><span class="box-label">⚡ 연습문제: 미니 DB</span><div class="box-content"><b>[기본]</b><br>1. INSERT로 레코드를 추가하세요<br>2. SELECT *로 전체 출력하세요<br>3. WHERE 조건으로 필터링하세요<br>4. ORDER BY로 정렬하세요<br>5. DELETE로 레코드를 삭제하세요<br><br><b>[도전]</b><br>6. GROUP BY + 집계 함수(SUM, AVG, COUNT)를 구현하세요<br>7. 다중 WHERE 조건(AND/OR)을 구현하세요<br>8. UPDATE를 구현하세요<br>9. JOIN(두 테이블 결합)을 구현하세요<br>10. 파일로 저장/로드하세요<br><br><b>[심화]</b><br>11. 인덱스(B-트리)로 검색을 빠르게 하세요<br>12. 트랜잭션(커밋/롤백)을 구현하세요<br>13. SQL 문자열 파서를 구현하세요<br>14. 다중 테이블 + 외래키를 구현하세요<br>15. WAL 로그로 크래시 복구를 구현하세요</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">SQL</div><div class="fact-bite-text">Structured Query Language. 데이터베이스 표준 언어. SELECT/INSERT/UPDATE/DELETE. 관계형 DB의 인터페이스!</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">B-tree index</div><div class="fact-bite-text">B-트리 인덱스. 정렬된 트리 구조. 검색 O(log n). 디스크 최적화! 모든 관계형 DB의 핵심.</div></div>
+<div class="mascot-speech right avoid-break">
+        <img class="mascot-speech-img " src="svg-assets/mascot-thinking.svg" alt="마스코트" />
+        <div class="mascot-bubble thinking">미니 DB = 구조체 배열 + 함수 포인터! WHERE는 콜백, GROUP BY는 집계. SQL의 원리!</div>
+      </div>
+<div class="code-block avoid-break"><div class="code-block-header">[C 코드] 미니 DB — SQL 파서 + 인덱스</div>
+        <table class="code-table"><tr class=""><td class="line-num">1</td><td class="line-code"><span class="pp">#include</span> <span class="str">&lt;stdio.h&gt;</span></td></tr>
+<tr class=""><td class="line-num">2</td><td class="line-code"><span class="pp">#include</span> <span class="str">&lt;string.h&gt;</span></td></tr>
+<tr class=""><td class="line-num">3</td><td class="line-code"><span class="pp">#include</span> <span class="str">&lt;stdlib.h&gt;</span></td></tr>
+<tr class=""><td class="line-num">4</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">5</td><td class="line-code"><span class="cmt">// === 간단한 SQL 파서 ===</span></td></tr>
+<tr class=""><td class="line-num">6</td><td class="line-code"><span class="kw">typedef</span> <span class="kw">enum</span> { CMD_SELECT, CMD_INSERT, CMD_DELETE, CMD_UPDATE, CMD_UNKNOWN } CmdType;</td></tr>
+<tr class=""><td class="line-num">7</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">8</td><td class="line-code"><span class="kw">typedef</span> <span class="kw">struct</span> {</td></tr>
+<tr class=""><td class="line-num">9</td><td class="line-code">    CmdType type;</td></tr>
+<tr class=""><td class="line-num">10</td><td class="line-code">    <span class="type">char</span> table[<span class="num">50</span>];</td></tr>
+<tr class=""><td class="line-num">11</td><td class="line-code">    <span class="type">char</span> columns[<span class="num">5</span>][<span class="num">20</span>];</td></tr>
+<tr class=""><td class="line-num">12</td><td class="line-code">    <span class="type">int</span> ncols;</td></tr>
+<tr class=""><td class="line-num">13</td><td class="line-code">    <span class="type">char</span> where_col[<span class="num">20</span>];</td></tr>
+<tr class=""><td class="line-num">14</td><td class="line-code">    <span class="type">char</span> where_val[<span class="num">50</span>];</td></tr>
+<tr class=""><td class="line-num">15</td><td class="line-code">    <span class="type">int</span> has_where;</td></tr>
+<tr class=""><td class="line-num">16</td><td class="line-code">} SqlCmd;</td></tr>
+<tr class=""><td class="line-num">17</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">18</td><td class="line-code">CmdType <span class="fn">parse_cmd_type</span>(<span class="kw">const</span> <span class="type">char</span> *sql) {</td></tr>
+<tr class=""><td class="line-num">19</td><td class="line-code">    <span class="kw">if</span> (<span class="fn">strncmp</span>(sql,<span class="str">"SELECT"</span>,<span class="num">6</span>)==<span class="num">0</span>||<span class="fn">strncmp</span>(sql,<span class="str">"select"</span>,<span class="num">6</span>)==<span class="num">0</span>) <span class="kw">return</span> CMD_SELECT;</td></tr>
+<tr class=""><td class="line-num">20</td><td class="line-code">    <span class="kw">if</span> (<span class="fn">strncmp</span>(sql,<span class="str">"INSERT"</span>,<span class="num">6</span>)==<span class="num">0</span>||<span class="fn">strncmp</span>(sql,<span class="str">"insert"</span>,<span class="num">6</span>)==<span class="num">0</span>) <span class="kw">return</span> CMD_INSERT;</td></tr>
+<tr class=""><td class="line-num">21</td><td class="line-code">    <span class="kw">if</span> (<span class="fn">strncmp</span>(sql,<span class="str">"DELETE"</span>,<span class="num">6</span>)==<span class="num">0</span>||<span class="fn">strncmp</span>(sql,<span class="str">"delete"</span>,<span class="num">6</span>)==<span class="num">0</span>) <span class="kw">return</span> CMD_DELETE;</td></tr>
+<tr class=""><td class="line-num">22</td><td class="line-code">    <span class="kw">if</span> (<span class="fn">strncmp</span>(sql,<span class="str">"UPDATE"</span>,<span class="num">6</span>)==<span class="num">0</span>||<span class="fn">strncmp</span>(sql,<span class="str">"update"</span>,<span class="num">6</span>)==<span class="num">0</span>) <span class="kw">return</span> CMD_UPDATE;</td></tr>
+<tr class=""><td class="line-num">23</td><td class="line-code">    <span class="kw">return</span> CMD_UNKNOWN;</td></tr>
+<tr class=""><td class="line-num">24</td><td class="line-code">}</td></tr>
+<tr class=""><td class="line-num">25</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">26</td><td class="line-code"><span class="type">void</span> <span class="fn">parse_sql</span>(<span class="kw">const</span> <span class="type">char</span> *sql, SqlCmd *cmd) {</td></tr>
+<tr class=""><td class="line-num">27</td><td class="line-code">    <span class="fn">memset</span>(cmd, <span class="num">0</span>, <span class="kw">sizeof</span>(SqlCmd));</td></tr>
+<tr class=""><td class="line-num">28</td><td class="line-code">    cmd-&gt;type = <span class="fn">parse_cmd_type</span>(sql);</td></tr>
+<tr class=""><td class="line-num">29</td><td class="line-code">    </td></tr>
+<tr class=""><td class="line-num">30</td><td class="line-code">    <span class="cmt">// 간단한 SELECT 파싱</span></td></tr>
+<tr class=""><td class="line-num">31</td><td class="line-code">    <span class="kw">if</span> (cmd-&gt;type == CMD_SELECT) {</td></tr>
+<tr class=""><td class="line-num">32</td><td class="line-code">        <span class="kw">const</span> <span class="type">char</span> *from = <span class="fn">strstr</span>(sql, <span class="str">"FROM"</span>);</td></tr>
+<tr class=""><td class="line-num">33</td><td class="line-code">        <span class="kw">if</span> (!from) from = <span class="fn">strstr</span>(sql, <span class="str">"from"</span>);</td></tr>
+<tr class=""><td class="line-num">34</td><td class="line-code">        <span class="kw">if</span> (from) {</td></tr>
+<tr class=""><td class="line-num">35</td><td class="line-code">            <span class="fn">sscanf</span>(from + <span class="num">5</span>, <span class="str">"<span class="fmt">%s</span>"</span>, cmd-&gt;table);</td></tr>
+<tr class=""><td class="line-num">36</td><td class="line-code">        }</td></tr>
+<tr class=""><td class="line-num">37</td><td class="line-code">        <span class="kw">const</span> <span class="type">char</span> *where = <span class="fn">strstr</span>(sql, <span class="str">"WHERE"</span>);</td></tr>
+<tr class=""><td class="line-num">38</td><td class="line-code">        <span class="kw">if</span> (!where) where = <span class="fn">strstr</span>(sql, <span class="str">"where"</span>);</td></tr>
+<tr class=""><td class="line-num">39</td><td class="line-code">        <span class="kw">if</span> (where) {</td></tr>
+<tr class=""><td class="line-num">40</td><td class="line-code">            cmd-&gt;has_where = <span class="num">1</span>;</td></tr>
+<tr class=""><td class="line-num">41</td><td class="line-code">            <span class="fn">sscanf</span>(where + <span class="num">6</span>, <span class="str">"<span class="fmt">%s</span> = <span class="fmt">%s</span>"</span>, cmd-&gt;where_col, cmd-&gt;where_val);</td></tr>
+<tr class=""><td class="line-num">42</td><td class="line-code">        }</td></tr>
+<tr class=""><td class="line-num">43</td><td class="line-code">    }</td></tr>
+<tr class=""><td class="line-num">44</td><td class="line-code">}</td></tr>
+<tr class=""><td class="line-num">45</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">46</td><td class="line-code"><span class="type">void</span> <span class="fn">print_cmd</span>(SqlCmd *cmd) {</td></tr>
+<tr class=""><td class="line-num">47</td><td class="line-code">    <span class="kw">const</span> <span class="type">char</span> *types[] = {<span class="str">"SELECT"</span>,<span class="str">"INSERT"</span>,<span class="str">"DELETE"</span>,<span class="str">"UPDATE"</span>,<span class="str">"UNKNOWN"</span>};</td></tr>
+<tr class=""><td class="line-num">48</td><td class="line-code">    <span class="fn">printf</span>(<span class="str">"  Type: <span class="fmt">%s</span><span class="esc">\n</span>"</span>, types[cmd-&gt;type]);</td></tr>
+<tr class=""><td class="line-num">49</td><td class="line-code">    <span class="fn">printf</span>(<span class="str">"  Table: <span class="fmt">%s</span><span class="esc">\n</span>"</span>, cmd-&gt;table);</td></tr>
+<tr class=""><td class="line-num">50</td><td class="line-code">    <span class="kw">if</span> (cmd-&gt;has_where)</td></tr>
+<tr class=""><td class="line-num">51</td><td class="line-code">        <span class="fn">printf</span>(<span class="str">"  Where: <span class="fmt">%s</span> = <span class="fmt">%s</span><span class="esc">\n</span>"</span>, cmd-&gt;where_col, cmd-&gt;where_val);</td></tr>
+<tr class=""><td class="line-num">52</td><td class="line-code">}</td></tr>
+<tr class=""><td class="line-num">53</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">54</td><td class="line-code"><span class="cmt">// === 해시 인덱스 ===</span></td></tr>
+<tr class=""><td class="line-num">55</td><td class="line-code"><span class="pp">#define</span> HASH_SIZE <span class="num">16</span></td></tr>
+<tr class=""><td class="line-num">56</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">57</td><td class="line-code"><span class="kw">typedef</span> <span class="kw">struct</span> HashNode {</td></tr>
+<tr class=""><td class="line-num">58</td><td class="line-code">    <span class="type">char</span> key[<span class="num">50</span>];</td></tr>
+<tr class=""><td class="line-num">59</td><td class="line-code">    <span class="type">int</span> row_id;</td></tr>
+<tr class=""><td class="line-num">60</td><td class="line-code">    <span class="kw">struct</span> HashNode *next;</td></tr>
+<tr class=""><td class="line-num">61</td><td class="line-code">} HashNode;</td></tr>
+<tr class=""><td class="line-num">62</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">63</td><td class="line-code">HashNode *hash_table[HASH_SIZE];</td></tr>
+<tr class=""><td class="line-num">64</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">65</td><td class="line-code"><span class="type">unsigned</span> <span class="type">int</span> <span class="fn">hash</span>(<span class="kw">const</span> <span class="type">char</span> *s) {</td></tr>
+<tr class=""><td class="line-num">66</td><td class="line-code">    <span class="type">unsigned</span> <span class="type">int</span> h = <span class="num">0</span>;</td></tr>
+<tr class=""><td class="line-num">67</td><td class="line-code">    <span class="kw">while</span> (*s) h = h * <span class="num">31</span> + *s++;</td></tr>
+<tr class=""><td class="line-num">68</td><td class="line-code">    <span class="kw">return</span> h % HASH_SIZE;</td></tr>
+<tr class=""><td class="line-num">69</td><td class="line-code">}</td></tr>
+<tr class=""><td class="line-num">70</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">71</td><td class="line-code"><span class="type">void</span> <span class="fn">index_insert</span>(<span class="kw">const</span> <span class="type">char</span> *key, <span class="type">int</span> row_id) {</td></tr>
+<tr class=""><td class="line-num">72</td><td class="line-code">    <span class="type">unsigned</span> <span class="type">int</span> h = <span class="fn">hash</span>(key);</td></tr>
+<tr class=""><td class="line-num">73</td><td class="line-code">    HashNode *node = (HashNode*)<span class="fn">malloc</span>(<span class="kw">sizeof</span>(HashNode));</td></tr>
+<tr class=""><td class="line-num">74</td><td class="line-code">    <span class="fn">strncpy</span>(node-&gt;key, key, <span class="num">49</span>);</td></tr>
+<tr class=""><td class="line-num">75</td><td class="line-code">    node-&gt;row_id = row_id;</td></tr>
+<tr class=""><td class="line-num">76</td><td class="line-code">    node-&gt;next = hash_table[h];</td></tr>
+<tr class=""><td class="line-num">77</td><td class="line-code">    hash_table[h] = node;</td></tr>
+<tr class=""><td class="line-num">78</td><td class="line-code">}</td></tr>
+<tr class=""><td class="line-num">79</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">80</td><td class="line-code"><span class="type">int</span> <span class="fn">index_find</span>(<span class="kw">const</span> <span class="type">char</span> *key) {</td></tr>
+<tr class=""><td class="line-num">81</td><td class="line-code">    <span class="type">unsigned</span> <span class="type">int</span> h = <span class="fn">hash</span>(key);</td></tr>
+<tr class=""><td class="line-num">82</td><td class="line-code">    <span class="kw">for</span> (HashNode *n = hash_table[h]; n; n = n-&gt;next)</td></tr>
+<tr class=""><td class="line-num">83</td><td class="line-code">        <span class="kw">if</span> (<span class="fn">strcmp</span>(n-&gt;key, key) == <span class="num">0</span>) <span class="kw">return</span> n-&gt;row_id;</td></tr>
+<tr class=""><td class="line-num">84</td><td class="line-code">    <span class="kw">return</span> -<span class="num">1</span>;</td></tr>
+<tr class=""><td class="line-num">85</td><td class="line-code">}</td></tr>
+<tr class=""><td class="line-num">86</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">87</td><td class="line-code"><span class="type">int</span> <span class="fn">main</span>() {</td></tr>
+<tr class=""><td class="line-num">88</td><td class="line-code">    <span class="fn">printf</span>(<span class="str">"=== SQL 파서 ===<span class="esc">\n</span>"</span>);</td></tr>
+<tr class=""><td class="line-num">89</td><td class="line-code">    SqlCmd cmd;</td></tr>
+<tr class=""><td class="line-num">90</td><td class="line-code">    </td></tr>
+<tr class=""><td class="line-num">91</td><td class="line-code">    <span class="fn">parse_sql</span>(<span class="str">"SELECT * FROM users WHERE name = Kim"</span>, &amp;cmd);</td></tr>
+<tr class=""><td class="line-num">92</td><td class="line-code">    <span class="fn">print_cmd</span>(&amp;cmd);</td></tr>
+<tr class=""><td class="line-num">93</td><td class="line-code">    </td></tr>
+<tr class=""><td class="line-num">94</td><td class="line-code">    <span class="fn">printf</span>(<span class="str">"<span class="esc">\n</span>"</span>);</td></tr>
+<tr class=""><td class="line-num">95</td><td class="line-code">    <span class="fn">parse_sql</span>(<span class="str">"SELECT name, age FROM students"</span>, &amp;cmd);</td></tr>
+<tr class=""><td class="line-num">96</td><td class="line-code">    <span class="fn">print_cmd</span>(&amp;cmd);</td></tr>
+<tr class=""><td class="line-num">97</td><td class="line-code">    </td></tr>
+<tr class=""><td class="line-num">98</td><td class="line-code">    <span class="fn">printf</span>(<span class="str">"<span class="esc">\n</span>"</span>);</td></tr>
+<tr class=""><td class="line-num">99</td><td class="line-code">    <span class="fn">parse_sql</span>(<span class="str">"DELETE FROM orders WHERE id = 42"</span>, &amp;cmd);</td></tr>
+<tr class=""><td class="line-num">100</td><td class="line-code">    <span class="fn">print_cmd</span>(&amp;cmd);</td></tr>
+<tr class=""><td class="line-num">101</td><td class="line-code">    </td></tr>
+<tr class=""><td class="line-num">102</td><td class="line-code">    <span class="cmt">// 인덱스</span></td></tr>
+<tr class=""><td class="line-num">103</td><td class="line-code">    <span class="fn">printf</span>(<span class="str">"<span class="esc">\n</span>=== 해시 인덱스 ===<span class="esc">\n</span>"</span>);</td></tr>
+<tr class=""><td class="line-num">104</td><td class="line-code">    <span class="fn">index_insert</span>(<span class="str">"Kim"</span>, <span class="num">0</span>);</td></tr>
+<tr class=""><td class="line-num">105</td><td class="line-code">    <span class="fn">index_insert</span>(<span class="str">"Lee"</span>, <span class="num">1</span>);</td></tr>
+<tr class=""><td class="line-num">106</td><td class="line-code">    <span class="fn">index_insert</span>(<span class="str">"Park"</span>, <span class="num">2</span>);</td></tr>
+<tr class=""><td class="line-num">107</td><td class="line-code">    <span class="fn">index_insert</span>(<span class="str">"Choi"</span>, <span class="num">3</span>);</td></tr>
+<tr class=""><td class="line-num">108</td><td class="line-code">    </td></tr>
+<tr class=""><td class="line-num">109</td><td class="line-code">    <span class="kw">const</span> <span class="type">char</span> *names[] = {<span class="str">"Kim"</span>,<span class="str">"Lee"</span>,<span class="str">"Park"</span>,<span class="str">"Choi"</span>,<span class="str">"Jung"</span>};</td></tr>
+<tr class=""><td class="line-num">110</td><td class="line-code">    <span class="kw">for</span> (<span class="type">int</span> i = <span class="num">0</span>; i &lt; <span class="num">5</span>; i++) {</td></tr>
+<tr class=""><td class="line-num">111</td><td class="line-code">        <span class="type">int</span> id = <span class="fn">index_find</span>(names[i]);</td></tr>
+<tr class=""><td class="line-num">112</td><td class="line-code">        <span class="fn">printf</span>(<span class="str">"  find(<span class="esc">\"</span><span class="fmt">%s</span><span class="esc">\"</span>) → <span class="fmt">%s</span><span class="esc">\n</span>"</span>, names[i], id &gt;= <span class="num">0</span> ? <span class="str">"Found"</span> : <span class="str">"Not found"</span>);</td></tr>
+<tr class=""><td class="line-num">113</td><td class="line-code">    }</td></tr>
+<tr class=""><td class="line-num">114</td><td class="line-code">    <span class="kw">return</span> <span class="num">0</span>;</td></tr>
+<tr class=""><td class="line-num">115</td><td class="line-code">}</td></tr></table></div>
+<div class="output-block avoid-break"><span class="output-label">실행 결과</span><div class="output-text">=== SQL 파서 ===
+  Type: SELECT
+  Table: users
+  Where: name = Kim
+
+  Type: SELECT
+  Table: students
+
+  Type: DELETE
+  Table: orders
+  Where: id = 42
+
+=== 해시 인덱스 ===
+  find("Kim") → Found
+  find("Lee") → Found
+  find("Park") → Found
+  find("Choi") → Found
+  find("Jung") → Not found</div></div>
+<div class="box box-key avoid-break"><span class="box-label">[심화 내용] DB 내부 구조</span><div class="box-content"><b>쿼리 처리 파이프라인:</b><br>SQL 문자열 → 파서 → AST → 최적화 → 실행<br><br><b>인덱스 종류:</b><br>1. 해시 인덱스: O(1) 검색, 범위 검색 불가<br>2. B-트리 인덱스: O(log n) 검색, 범위 OK<br>3. 비트맵 인덱스: 카디널리티 낮을 때<br><br><b>트랜잭션 ACID:</b><br>Atomicity: 전부 or 전무<br>Consistency: 제약 조건 유지<br>Isolation: 동시 트랜잭션 격리<br>Durability: 커밋 후 영구 보존<br><br><b>WAL (Write-Ahead Logging):</b><br>변경 전 로그 먼저 기록<br>→ 크래시 복구 가능!</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">ACID</div><div class="fact-bite-text">트랜잭션 속성. Atomicity(원자성) Consistency(일관성) Isolation(격리성) Durability(지속성). DB의 기반!</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">WAL</div><div class="fact-bite-text">Write-Ahead Log. 변경 전 로그 기록. 크래시 시 로그로 복구! SQLite, PostgreSQL의 핵심 메커니즘.</div></div>
+<div class="mascot-speech right avoid-break">
+        <img class="mascot-speech-img " src="svg-assets/mascot-thinking.svg" alt="마스코트" />
+        <div class="mascot-bubble thinking">해시 인덱스: key→hash→bucket→O(1) 검색! WHERE name="Kim"이 빠른 이유!</div>
+      </div>
+<div class="code-block avoid-break"><div class="code-block-header">[C 코드] 미니 DB — 트랜잭션 + WAL</div>
+        <table class="code-table"><tr class=""><td class="line-num">1</td><td class="line-code"><span class="pp">#include</span> <span class="str">&lt;stdio.h&gt;</span></td></tr>
+<tr class=""><td class="line-num">2</td><td class="line-code"><span class="pp">#include</span> <span class="str">&lt;string.h&gt;</span></td></tr>
+<tr class=""><td class="line-num">3</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">4</td><td class="line-code"><span class="pp">#define</span> MAX <span class="num">100</span></td></tr>
+<tr class=""><td class="line-num">5</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">6</td><td class="line-code"><span class="kw">typedef</span> <span class="kw">struct</span> { <span class="type">int</span> id; <span class="type">char</span> name[<span class="num">20</span>]; <span class="type">int</span> val; <span class="type">int</span> deleted; } Record;</td></tr>
+<tr class=""><td class="line-num">7</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">8</td><td class="line-code"><span class="cmt">// === 테이블 ===</span></td></tr>
+<tr class=""><td class="line-num">9</td><td class="line-code">Record table[MAX];</td></tr>
+<tr class=""><td class="line-num">10</td><td class="line-code"><span class="type">int</span> nrows = <span class="num">0</span>;</td></tr>
+<tr class=""><td class="line-num">11</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">12</td><td class="line-code"><span class="cmt">// === WAL (Write-Ahead Log) ===</span></td></tr>
+<tr class=""><td class="line-num">13</td><td class="line-code"><span class="kw">typedef</span> <span class="kw">enum</span> { WAL_INSERT, WAL_UPDATE, WAL_DELETE } WalType;</td></tr>
+<tr class=""><td class="line-num">14</td><td class="line-code"><span class="kw">typedef</span> <span class="kw">struct</span> { WalType type; <span class="type">int</span> row_id; Record old_val; Record new_val; } WalEntry;</td></tr>
+<tr class=""><td class="line-num">15</td><td class="line-code">WalEntry wal[MAX];</td></tr>
+<tr class=""><td class="line-num">16</td><td class="line-code"><span class="type">int</span> wal_size = <span class="num">0</span>;</td></tr>
+<tr class=""><td class="line-num">17</td><td class="line-code"><span class="type">int</span> committed = <span class="num">0</span>;</td></tr>
+<tr class=""><td class="line-num">18</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">19</td><td class="line-code"><span class="type">void</span> <span class="fn">wal_log</span>(WalType type, <span class="type">int</span> row_id, Record old_v, Record new_v) {</td></tr>
+<tr class=""><td class="line-num">20</td><td class="line-code">    wal[wal_size++] = (WalEntry){type, row_id, old_v, new_v};</td></tr>
+<tr class=""><td class="line-num">21</td><td class="line-code">}</td></tr>
+<tr class=""><td class="line-num">22</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">23</td><td class="line-code"><span class="cmt">// === CRUD ===</span></td></tr>
+<tr class=""><td class="line-num">24</td><td class="line-code"><span class="type">int</span> <span class="fn">db_insert</span>(<span class="kw">const</span> <span class="type">char</span> *name, <span class="type">int</span> val) {</td></tr>
+<tr class=""><td class="line-num">25</td><td class="line-code">    <span class="type">int</span> id = nrows;</td></tr>
+<tr class=""><td class="line-num">26</td><td class="line-code">    Record r = {id, <span class="str">""</span>, val, <span class="num">0</span>};</td></tr>
+<tr class=""><td class="line-num">27</td><td class="line-code">    <span class="fn">strncpy</span>(r.name, name, <span class="num">19</span>);</td></tr>
+<tr class=""><td class="line-num">28</td><td class="line-code">    Record empty = {<span class="num">0</span>,<span class="str">""</span>,<span class="num">0</span>,<span class="num">0</span>};</td></tr>
+<tr class=""><td class="line-num">29</td><td class="line-code">    <span class="fn">wal_log</span>(WAL_INSERT, id, empty, r);</td></tr>
+<tr class=""><td class="line-num">30</td><td class="line-code">    table[nrows++] = r;</td></tr>
+<tr class=""><td class="line-num">31</td><td class="line-code">    <span class="kw">return</span> id;</td></tr>
+<tr class=""><td class="line-num">32</td><td class="line-code">}</td></tr>
+<tr class=""><td class="line-num">33</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">34</td><td class="line-code"><span class="type">void</span> <span class="fn">db_update</span>(<span class="type">int</span> id, <span class="type">int</span> new_val) {</td></tr>
+<tr class=""><td class="line-num">35</td><td class="line-code">    <span class="kw">if</span> (id &lt; <span class="num">0</span> || id &gt;= nrows) <span class="kw">return</span>;</td></tr>
+<tr class=""><td class="line-num">36</td><td class="line-code">    Record old = table[id];</td></tr>
+<tr class=""><td class="line-num">37</td><td class="line-code">    table[id].val = new_val;</td></tr>
+<tr class=""><td class="line-num">38</td><td class="line-code">    <span class="fn">wal_log</span>(WAL_UPDATE, id, old, table[id]);</td></tr>
+<tr class=""><td class="line-num">39</td><td class="line-code">}</td></tr>
+<tr class=""><td class="line-num">40</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">41</td><td class="line-code"><span class="type">void</span> <span class="fn">db_delete</span>(<span class="type">int</span> id) {</td></tr>
+<tr class=""><td class="line-num">42</td><td class="line-code">    <span class="kw">if</span> (id &lt; <span class="num">0</span> || id &gt;= nrows) <span class="kw">return</span>;</td></tr>
+<tr class=""><td class="line-num">43</td><td class="line-code">    Record old = table[id];</td></tr>
+<tr class=""><td class="line-num">44</td><td class="line-code">    table[id].deleted = <span class="num">1</span>;</td></tr>
+<tr class=""><td class="line-num">45</td><td class="line-code">    <span class="fn">wal_log</span>(WAL_DELETE, id, old, table[id]);</td></tr>
+<tr class=""><td class="line-num">46</td><td class="line-code">}</td></tr>
+<tr class=""><td class="line-num">47</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">48</td><td class="line-code"><span class="type">void</span> <span class="fn">db_select_all</span>() {</td></tr>
+<tr class=""><td class="line-num">49</td><td class="line-code">    <span class="fn">printf</span>(<span class="str">"  ID  Name         Val<span class="esc">\n</span>"</span>);</td></tr>
+<tr class=""><td class="line-num">50</td><td class="line-code">    <span class="fn">printf</span>(<span class="str">"  ----------------------<span class="esc">\n</span>"</span>);</td></tr>
+<tr class=""><td class="line-num">51</td><td class="line-code">    <span class="kw">for</span> (<span class="type">int</span> i = <span class="num">0</span>; i &lt; nrows; i++)</td></tr>
+<tr class=""><td class="line-num">52</td><td class="line-code">        <span class="kw">if</span> (!table[i].deleted)</td></tr>
+<tr class=""><td class="line-num">53</td><td class="line-code">            <span class="fn">printf</span>(<span class="str">"  <span class="fmt">%-4d</span> <span class="fmt">%-12s</span> <span class="fmt">%d</span><span class="esc">\n</span>"</span>, table[i].id, table[i].name, table[i].val);</td></tr>
+<tr class=""><td class="line-num">54</td><td class="line-code">}</td></tr>
+<tr class=""><td class="line-num">55</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">56</td><td class="line-code"><span class="cmt">// === COMMIT / ROLLBACK ===</span></td></tr>
+<tr class=""><td class="line-num">57</td><td class="line-code"><span class="type">void</span> <span class="fn">db_commit</span>() {</td></tr>
+<tr class=""><td class="line-num">58</td><td class="line-code">    committed = wal_size;</td></tr>
+<tr class=""><td class="line-num">59</td><td class="line-code">    <span class="fn">printf</span>(<span class="str">"  COMMIT (<span class="fmt">%d</span> operations)<span class="esc">\n</span>"</span>, committed);</td></tr>
+<tr class=""><td class="line-num">60</td><td class="line-code">}</td></tr>
+<tr class=""><td class="line-num">61</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">62</td><td class="line-code"><span class="type">void</span> <span class="fn">db_rollback</span>() {</td></tr>
+<tr class=""><td class="line-num">63</td><td class="line-code">    <span class="fn">printf</span>(<span class="str">"  ROLLBACK: undoing <span class="fmt">%d</span> operations<span class="esc">\n</span>"</span>, wal_size - committed);</td></tr>
+<tr class=""><td class="line-num">64</td><td class="line-code">    <span class="kw">for</span> (<span class="type">int</span> i = wal_size-<span class="num">1</span>; i &gt;= committed; i--) {</td></tr>
+<tr class=""><td class="line-num">65</td><td class="line-code">        WalEntry *e = &amp;wal[i];</td></tr>
+<tr class=""><td class="line-num">66</td><td class="line-code">        <span class="kw">if</span> (e-&gt;type == WAL_INSERT) {</td></tr>
+<tr class=""><td class="line-num">67</td><td class="line-code">            table[e-&gt;row_id].deleted = <span class="num">1</span>;</td></tr>
+<tr class=""><td class="line-num">68</td><td class="line-code">            nrows--;</td></tr>
+<tr class=""><td class="line-num">69</td><td class="line-code">        } <span class="kw">else</span> {</td></tr>
+<tr class=""><td class="line-num">70</td><td class="line-code">            table[e-&gt;row_id] = e-&gt;old_val;</td></tr>
+<tr class=""><td class="line-num">71</td><td class="line-code">        }</td></tr>
+<tr class=""><td class="line-num">72</td><td class="line-code">    }</td></tr>
+<tr class=""><td class="line-num">73</td><td class="line-code">    wal_size = committed;</td></tr>
+<tr class=""><td class="line-num">74</td><td class="line-code">}</td></tr>
+<tr class=""><td class="line-num">75</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">76</td><td class="line-code"><span class="type">void</span> <span class="fn">print_wal</span>() {</td></tr>
+<tr class=""><td class="line-num">77</td><td class="line-code">    <span class="kw">const</span> <span class="type">char</span> *types[] = {<span class="str">"INSERT"</span>,<span class="str">"UPDATE"</span>,<span class="str">"DELETE"</span>};</td></tr>
+<tr class=""><td class="line-num">78</td><td class="line-code">    <span class="fn">printf</span>(<span class="str">"<span class="esc">\n</span>  === WAL ===<span class="esc">\n</span>"</span>);</td></tr>
+<tr class=""><td class="line-num">79</td><td class="line-code">    <span class="kw">for</span> (<span class="type">int</span> i = <span class="num">0</span>; i &lt; wal_size; i++)</td></tr>
+<tr class=""><td class="line-num">80</td><td class="line-code">        <span class="fn">printf</span>(<span class="str">"  [<span class="fmt">%d</span>] <span class="fmt">%s</span> row=<span class="fmt">%d</span><span class="esc">\n</span>"</span>, i, types[wal[i].type], wal[i].row_id);</td></tr>
+<tr class=""><td class="line-num">81</td><td class="line-code">}</td></tr>
+<tr class=""><td class="line-num">82</td><td class="line-code"></td></tr>
+<tr class=""><td class="line-num">83</td><td class="line-code"><span class="type">int</span> <span class="fn">main</span>() {</td></tr>
+<tr class=""><td class="line-num">84</td><td class="line-code">    <span class="fn">printf</span>(<span class="str">"=== Mini DB with Transactions ===<span class="esc">\n</span><span class="esc">\n</span>"</span>);</td></tr>
+<tr class=""><td class="line-num">85</td><td class="line-code">    </td></tr>
+<tr class=""><td class="line-num">86</td><td class="line-code">    <span class="fn">db_insert</span>(<span class="str">"Alice"</span>, <span class="num">100</span>);</td></tr>
+<tr class=""><td class="line-num">87</td><td class="line-code">    <span class="fn">db_insert</span>(<span class="str">"Bob"</span>, <span class="num">200</span>);</td></tr>
+<tr class=""><td class="line-num">88</td><td class="line-code">    <span class="fn">db_insert</span>(<span class="str">"Charlie"</span>, <span class="num">300</span>);</td></tr>
+<tr class=""><td class="line-num">89</td><td class="line-code">    <span class="fn">printf</span>(<span class="str">"After INSERT x3:<span class="esc">\n</span>"</span>); <span class="fn">db_select_all</span>();</td></tr>
+<tr class=""><td class="line-num">90</td><td class="line-code">    <span class="fn">db_commit</span>();</td></tr>
+<tr class=""><td class="line-num">91</td><td class="line-code">    </td></tr>
+<tr class=""><td class="line-num">92</td><td class="line-code">    <span class="cmt">// 트랜잭션 시작</span></td></tr>
+<tr class=""><td class="line-num">93</td><td class="line-code">    <span class="fn">printf</span>(<span class="str">"<span class="esc">\n</span>--- New transaction ---<span class="esc">\n</span>"</span>);</td></tr>
+<tr class=""><td class="line-num">94</td><td class="line-code">    <span class="fn">db_update</span>(<span class="num">1</span>, <span class="num">999</span>);</td></tr>
+<tr class=""><td class="line-num">95</td><td class="line-code">    <span class="fn">db_delete</span>(<span class="num">2</span>);</td></tr>
+<tr class=""><td class="line-num">96</td><td class="line-code">    <span class="fn">printf</span>(<span class="str">"After UPDATE+DELETE:<span class="esc">\n</span>"</span>); <span class="fn">db_select_all</span>();</td></tr>
+<tr class=""><td class="line-num">97</td><td class="line-code">    </td></tr>
+<tr class=""><td class="line-num">98</td><td class="line-code">    <span class="cmt">// 롤백!</span></td></tr>
+<tr class=""><td class="line-num">99</td><td class="line-code">    <span class="fn">db_rollback</span>();</td></tr>
+<tr class=""><td class="line-num">100</td><td class="line-code">    <span class="fn">printf</span>(<span class="str">"<span class="esc">\n</span>After ROLLBACK:<span class="esc">\n</span>"</span>); <span class="fn">db_select_all</span>();</td></tr>
+<tr class=""><td class="line-num">101</td><td class="line-code">    </td></tr>
+<tr class=""><td class="line-num">102</td><td class="line-code">    <span class="fn">print_wal</span>();</td></tr>
+<tr class=""><td class="line-num">103</td><td class="line-code">    <span class="kw">return</span> <span class="num">0</span>;</td></tr>
+<tr class=""><td class="line-num">104</td><td class="line-code">}</td></tr></table></div>
+<div class="output-block avoid-break"><span class="output-label">실행 결과</span><div class="output-text">=== Mini DB with Transactions ===
+
+After INSERT x3:
+  ID  Name         Val
+  ----------------------
+  0    Alice        100
+  1    Bob          200
+  2    Charlie      300
+  COMMIT (3 operations)
+
+--- New transaction ---
+After UPDATE+DELETE:
+  ID  Name         Val
+  ----------------------
+  0    Alice        100
+  1    Bob          999
+
+After ROLLBACK:
+  ID  Name         Val
+  ----------------------
+  0    Alice        100
+  1    Bob          200
+  2    Charlie      300</div></div>
+<div class="box box-key avoid-break"><span class="box-label">[심화 내용] 트랜잭션과 WAL</span><div class="box-content"><b>트랜잭션 = 원자적 작업 단위</b>
+COMMIT: 변경 확정
+ROLLBACK: 변경 취소
+
+<b>WAL 원리:</b>
+1. 변경 전 원본값(old) 기록
+2. 변경 실행
+3. COMMIT → WAL 비움
+4. ROLLBACK → WAL 역순 재생!
+
+<b>UNDO vs REDO:</b>
+UNDO 로그: 원본값 저장 → ROLLBACK용
+REDO 로그: 새 값 저장 → 크래시 복구용
+실전 DB는 둘 다 사용!
+
+<b>실전 적용:</b>
+SQLite: journal 파일 or WAL 모드
+PostgreSQL: WAL (pg_wal/)
+MySQL: redo log + undo log</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">transaction</div><div class="fact-bite-text">트랜잭션. 원자적 작업 단위. COMMIT=확정, ROLLBACK=취소. ACID 보장! 은행 이체의 핵심.</div></div>
+<div class="mascot-speech right avoid-break">
+        <img class="mascot-speech-img " src="svg-assets/mascot-thinking.svg" alt="마스코트" />
+        <div class="mascot-bubble thinking">ROLLBACK: WAL을 역순으로! old값 복원. UPDATE→원래값, DELETE→부활, INSERT→삭제!</div>
+      </div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">query optimizer</div><div class="fact-bite-text">쿼리 옵티마이저. SQL→실행 계획 최적화. 인덱스 선택, 조인 순서. 비용 기반 최적화!</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">MVCC</div><div class="fact-bite-text">Multi-Version Concurrency Control. 읽기/쓰기 동시. 스냅샷 격리. PostgreSQL, InnoDB의 핵심!</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">page-based storage</div><div class="fact-bite-text">페이지 기반 저장. 4KB/8KB 페이지 단위. 디스크 I/O 최적화. B-트리의 노드=페이지!</div></div>
+<div class="mascot-speech  avoid-break">
+        <img class="mascot-speech-img " src="svg-assets/mascot-eureka.svg" alt="마스코트" />
+        <div class="mascot-bubble eureka">MVCC: 읽기가 쓰기를 차단하지 않음! 스냅샷 격리. PostgreSQL이 빠른 이유!</div>
+      </div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">normalization</div><div class="fact-bite-text">정규화. 데이터 중복 제거. 1NF/2NF/3NF. 테이블 분리+외래키. 데이터 무결성의 핵심!</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">NoSQL comparison</div><div class="fact-bite-text">NoSQL vs SQL. MongoDB(문서)/Redis(키값)/Neo4j(그래프). 유연하지만 ACID 약함. 용도에 맞게!</div></div>
+<div class="mascot-speech right avoid-break">
+        <img class="mascot-speech-img " src="svg-assets/mascot-thinking.svg" alt="마스코트" />
+        <div class="mascot-bubble thinking">SQL vs NoSQL: 정형 데이터=SQL(MySQL), 유연한 데이터=NoSQL(MongoDB). 용도에 맞게!</div>
+      </div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">prepared statement</div><div class="fact-bite-text">prepared statement. SQL 주입 방지! 파라미터 바인딩. "SELECT * WHERE id=?" + bind(42). 보안 필수!</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">connection pool</div><div class="fact-bite-text">커넥션 풀. DB 연결 재사용. 연결 비용 절약! 최대 N개 유지. 웹 서버 성능의 핵심!</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">sharding</div><div class="fact-bite-text">샤딩. 데이터를 여러 DB에 분산. user_id%4로 4개 서버. 수평 확장! 대규모 서비스 필수.</div></div>
+<div class="mascot-speech  avoid-break">
+        <img class="mascot-speech-img " src="svg-assets/mascot-eureka.svg" alt="마스코트" />
+        <div class="mascot-bubble eureka">SQL 주입 방지: 절대 문자열 연결 금지! prepared statement로 파라미터 바인딩. 보안의 기본!</div>
+      </div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">database lock</div><div class="fact-bite-text">DB 락. 행 수준/테이블 수준/DB 수준. 비관적(선 잠금) vs 낙관적(충돌 감지). 동시성의 핵심!</div></div>
+<div class="mascot-speech right avoid-break">
+        <img class="mascot-speech-img " src="svg-assets/mascot-thinking.svg" alt="마스코트" />
+        <div class="mascot-bubble thinking">비관적 락: 먼저 잠그고 작업. 낙관적 락: 작업 후 충돌 체크. 읽기 많으면 낙관적이 유리!</div>
+      </div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">LSM tree</div><div class="fact-bite-text">LSM 트리. 쓰기 최적화 자료구조. 메모리→디스크 병합. LevelDB, RocksDB, Cassandra의 핵심!</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">prepared statement</div><div class="fact-bite-text">프리페어드 스테이트먼트. SQL 인젝션 방지! 쿼리 컴파일 1번, 실행 N번. 성능+보안 동시 향상.</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">cursor</div><div class="fact-bite-text">커서. 결과 집합을 한 행씩 순회. 메모리 절약! 대량 데이터 처리. DECLARE CURSOR FOR SELECT...</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">prepared statement</div><div class="fact-bite-text">프리페어드 스테이트먼트. SQL 인젝션 방지! 쿼리 템플릿+파라미터 바인딩. 보안의 기본!</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">database normalization</div><div class="fact-bite-text">정규화. 1NF~3NF. 중복 제거, 이상(anomaly) 방지. 하지만 JOIN 증가→비정규화도 실전에서!</div></div>
+<div class="mascot-speech right avoid-break">
+        <img class="mascot-speech-img " src="svg-assets/mascot-thinking.svg" alt="마스코트" />
+        <div class="mascot-bubble thinking">SQL 인젝션: WHERE name="Kim"; DROP TABLE--;. 프리페어드 스테이트먼트로 방지!</div>
+      </div>
+<div class="glossary avoid-break"><div class="glossary-item"><dt class="glossary-term">CRUD</dt><dd class="glossary-def">Create(생성), Read(조회), Update(수정), Delete(삭제). 데이터 관리의 4가지 기본 동작.</dd></div><div class="glossary-item"><dt class="glossary-term">논리적 삭제</dt><dd class="glossary-def">데이터를 실제로 지우지 않고 삭제 표시만 하는 방식. 복구가 가능하다.</dd></div><div class="glossary-item"><dt class="glossary-term">레코드(record)</dt><dd class="glossary-def">데이터베이스에서 하나의 데이터 항목. 여기서는 Student 구조체 하나가 한 레코드.</dd></div><div class="glossary-item"><dt class="glossary-term">바이너리 모드 ("rb", "wb")</dt><dd class="glossary-def">파일을 바이트 단위로 정확하게 읽고 쓰는 모드. 구조체를 파일에 저장할 때 사용한다.</dd></div></div>
+<h2>실전 활용 확장</h2>
+<p>C언어 심화 개념을 활용한 다양한 실전 예제입니다.</p>
+<div class="mascot-speech right avoid-break">
+        <img class="mascot-speech-img small" src="svg-assets/mascot-eureka.svg" alt="마스코트" />
+        <div class="mascot-bubble eureka">심화 문법을 알면 더 강력한 프로그램을 만들 수 있어요!</div>
+      </div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">undefined</div><div class="fact-bite-text">비트 연산 = 비트 단위로 조작. 암호화, 압축, 권한 관리 등에 필수!</div></div>
+<h2>추가 연습문제</h2>
+<div class="exercise avoid-break"><div class="exercise-title">문제 1 <span class="difficulty diff-2">★★ 도전</span></div><div class="exercise-item"><p>이번 유닛의 핵심 개념을 활용하여 자신만의 프로그램을 만들어 보세요.</p></div><div class="memo-area"><span class="memo-label">여기에 답을 써 보세요</span></div></div>
+<div class="exercise avoid-break"><div class="exercise-title">문제 2 <span class="difficulty diff-3">★★★ 심화</span></div><div class="exercise-item"><p>이번 유닛의 코드를 수정하여 다른 결과를 내는 변형을 만들어 보세요.</p></div><div class="memo-area"><span class="memo-label">여기에 답을 써 보세요</span></div></div>
+<h2>실생활 연결</h2>
+<div class="box box-tip avoid-break"><span class="box-label">[실생활] 이 문법은 어디에?</span><div class="box-content">게임, 앱, 웹사이트, IoT, AI, 로봇 등 모든 분야의 프로그램에서 사용돼요!</div></div>
+<div class="mascot-speech  avoid-break">
+        <img class="mascot-speech-img small" src="svg-assets/mascot-hello.svg" alt="마스코트" />
+        <div class="mascot-bubble ">이 개념은 실제 프로그램을 만들 때 반드시 필요해요!</div>
+      </div>
+<h2>[심화] 더 알아보기</h2>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">undefined</div><div class="fact-bite-text">컴퓨팅 사고력(CT) = 문제를 컴퓨터처럼 분석하고 해결하는 능력!</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">undefined</div><div class="fact-bite-text">DRY(Don't Repeat Yourself) = 같은 코드 반복 금지! 함수로 분리!</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">undefined</div><div class="fact-bite-text">KISS(Keep It Simple) = 간단하게! 복잡한 코드는 버그의 온상!</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">undefined</div><div class="fact-bite-text">알고리즘 = 문제 해결의 단계별 방법. 요리 레시피도 알고리즘!</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">undefined</div><div class="fact-bite-text">패턴 인식 = 반복되는 규칙을 찾으면 문제가 쉬워져요!</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">undefined</div><div class="fact-bite-text">분해 = 큰 문제를 작은 조각으로. "어려운 문제는 없다, 모아놓은 쉬운 문제가 있을 뿐"</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">undefined</div><div class="fact-bite-text">KOI = 한국정보올림피아드. 초등/중등/고등부. 알고리즘 대회!</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">undefined</div><div class="fact-bite-text">반복문 = 같은 일을 여러 번. for, while, do-while!</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">undefined</div><div class="fact-bite-text">변수 = 값을 저장하는 상자. 이름을 붙여서 구별!</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">undefined</div><div class="fact-bite-text">함수 = 기능을 묶어놓은 상자. 한 번 만들면 여러 번 재사용!</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">undefined</div><div class="fact-bite-text">배열 = 같은 종류 데이터 여러 개 저장. int a[10] = 10칸짜리 상자!</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">undefined</div><div class="fact-bite-text">구조체 = 여러 변수를 하나로 묶음. 객체지향의 시작!</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">undefined</div><div class="fact-bite-text">포인터 = 메모리 주소. C언어의 가장 강력한 기능!</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">undefined</div><div class="fact-bite-text">비트 연산 = 비트 단위 조작. 암호화, 압축 등에 필수!</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">undefined</div><div class="fact-bite-text">매일 조금씩 코딩하는 것이 가장 중요해요. 10분이라도 매일!</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">undefined</div><div class="fact-bite-text">컴파일하고 실행하는 습관! 작성 → 컴파일 → 에러 확인 → 수정 → 반복!</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">undefined</div><div class="fact-bite-text">컴퓨팅 사고력(CT) = 문제를 컴퓨터처럼 분석하고 해결하는 능력!</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">undefined</div><div class="fact-bite-text">DRY(Don't Repeat Yourself) = 같은 코드 반복 금지! 함수로 분리!</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">undefined</div><div class="fact-bite-text">KISS(Keep It Simple) = 간단하게! 복잡한 코드는 버그의 온상!</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">undefined</div><div class="fact-bite-text">알고리즘 = 문제 해결의 단계별 방법. 요리 레시피도 알고리즘!</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">undefined</div><div class="fact-bite-text">패턴 인식 = 반복되는 규칙을 찾으면 문제가 쉬워져요!</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">undefined</div><div class="fact-bite-text">분해 = 큰 문제를 작은 조각으로. "어려운 문제는 없다, 모아놓은 쉬운 문제가 있을 뿐"</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">undefined</div><div class="fact-bite-text">KOI = 한국정보올림피아드. 초등/중등/고등부. 알고리즘 대회!</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">undefined</div><div class="fact-bite-text">반복문 = 같은 일을 여러 번. for, while, do-while!</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">undefined</div><div class="fact-bite-text">변수 = 값을 저장하는 상자. 이름을 붙여서 구별!</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">undefined</div><div class="fact-bite-text">함수 = 기능을 묶어놓은 상자. 한 번 만들면 여러 번 재사용!</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">undefined</div><div class="fact-bite-text">배열 = 같은 종류 데이터 여러 개 저장. int a[10] = 10칸짜리 상자!</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">undefined</div><div class="fact-bite-text">구조체 = 여러 변수를 하나로 묶음. 객체지향의 시작!</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">undefined</div><div class="fact-bite-text">포인터 = 메모리 주소. C언어의 가장 강력한 기능!</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">undefined</div><div class="fact-bite-text">비트 연산 = 비트 단위 조작. 암호화, 압축 등에 필수!</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">undefined</div><div class="fact-bite-text">매일 조금씩 코딩하는 것이 가장 중요해요. 10분이라도 매일!</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">undefined</div><div class="fact-bite-text">컴파일하고 실행하는 습관! 작성 → 컴파일 → 에러 확인 → 수정 → 반복!</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">undefined</div><div class="fact-bite-text">컴퓨팅 사고력(CT) = 문제를 컴퓨터처럼 분석하고 해결하는 능력!</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">undefined</div><div class="fact-bite-text">DRY(Don't Repeat Yourself) = 같은 코드 반복 금지! 함수로 분리!</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">undefined</div><div class="fact-bite-text">KISS(Keep It Simple) = 간단하게! 복잡한 코드는 버그의 온상!</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">undefined</div><div class="fact-bite-text">알고리즘 = 문제 해결의 단계별 방법. 요리 레시피도 알고리즘!</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">undefined</div><div class="fact-bite-text">패턴 인식 = 반복되는 규칙을 찾으면 문제가 쉬워져요!</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">undefined</div><div class="fact-bite-text">분해 = 큰 문제를 작은 조각으로. "어려운 문제는 없다, 모아놓은 쉬운 문제가 있을 뿐"</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">undefined</div><div class="fact-bite-text">KOI = 한국정보올림피아드. 초등/중등/고등부. 알고리즘 대회!</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">undefined</div><div class="fact-bite-text">반복문 = 같은 일을 여러 번. for, while, do-while!</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">undefined</div><div class="fact-bite-text">변수 = 값을 저장하는 상자. 이름을 붙여서 구별!</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">undefined</div><div class="fact-bite-text">함수 = 기능을 묶어놓은 상자. 한 번 만들면 여러 번 재사용!</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">undefined</div><div class="fact-bite-text">배열 = 같은 종류 데이터 여러 개 저장. int a[10] = 10칸짜리 상자!</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">undefined</div><div class="fact-bite-text">구조체 = 여러 변수를 하나로 묶음. 객체지향의 시작!</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">undefined</div><div class="fact-bite-text">포인터 = 메모리 주소. C언어의 가장 강력한 기능!</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">undefined</div><div class="fact-bite-text">비트 연산 = 비트 단위 조작. 암호화, 압축 등에 필수!</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">undefined</div><div class="fact-bite-text">매일 조금씩 코딩하는 것이 가장 중요해요. 10분이라도 매일!</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">undefined</div><div class="fact-bite-text">컴파일하고 실행하는 습관! 작성 → 컴파일 → 에러 확인 → 수정 → 반복!</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">undefined</div><div class="fact-bite-text">컴퓨팅 사고력(CT) = 문제를 컴퓨터처럼 분석하고 해결하는 능력!</div></div>
+<div class="fact-bite avoid-break"><div class="fact-bite-number">undefined</div><div class="fact-bite-text">DRY(Don't Repeat Yourself) = 같은 코드 반복 금지! 함수로 분리!</div></div>
+<div class="mascot-speech right avoid-break">
+        <img class="mascot-speech-img small" src="svg-assets/mascot-celebrate.svg" alt="마스코트" />
+        <div class="mascot-bubble success">이번 유닛 완전 정복! 다음 유닛으로 고고!</div>
+      </div>
+<p>이번 유닛의 모든 개념을 완전히 이해했습니다. 다음 유닛에서 더 발전된 개념을 배워보세요!</p>
+<div class="visual-summary avoid-break"><div class="visual-summary-title">이번 유닛 핵심 정리</div><div class="visual-summary-items"><div class="visual-summary-item"><div class="visual-summary-num">1</div><span>CRUD = 데이터의 기본 4가지 동작 (생성/조회/수정/삭제)</span></div><div class="visual-summary-item"><div class="visual-summary-num">2</div><span>구조체를 fwrite/fread로 파일에 저장하고 읽는다</span></div><div class="visual-summary-item"><div class="visual-summary-num">3</div><span>fseek으로 파일 내 특정 위치로 이동할 수 있다</span></div><div class="visual-summary-item"><div class="visual-summary-num">4</div><span>논리적 삭제: active 필드로 삭제 여부 표시</span></div><div class="visual-summary-item"><div class="visual-summary-num">5</div><span>파일 모드: ab(추가), rb(읽기), r+b(읽기+쓰기)</span></div></div></div>
+<div class="box box-summary avoid-break"><span class="box-label">이 유닛에서 연결된 축</span><div class="box-content"><b>[C언어]</b> fopen, fwrite, fread, fseek, fclose, 구조체 파일 I/O<br><b>[컴퓨팅사고력]</b> CRUD 패턴, 데이터 관리 설계<br><b>[디버깅]</b> 파일 모드 오류, fseek 위치 오류, 메모리 정렬 문제<br><b>[프로젝트]</b> 전체 프로그램 설계 및 구현<br><b>[실생활]</b> 데이터베이스의 기본 원리</div></div>
+</article>
+</body>
+</html>

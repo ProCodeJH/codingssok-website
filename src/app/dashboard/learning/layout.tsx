@@ -13,6 +13,7 @@ import { Spotlight, MorphingGradient } from "@/components/motion/premium";
 /* ── Nav Items (한글화 + 새 메뉴) ── */
 const NAV_ITEMS = [
     { icon: "dashboard", label: "대시보드", href: "/dashboard/learning" },
+    { icon: "quiz", label: "문제 은행", href: "/dashboard/learning/problems" },
 ];
 
 const ADMIN_NAV_ITEMS = [

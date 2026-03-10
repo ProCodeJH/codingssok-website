@@ -57,13 +57,32 @@ export default function ParentDashboard() {
     const [error, setError] = useState("");
     const [activeTab, setActiveTab] = useState<"overview" | "activity" | "code">("overview");
 
-    const fetchStudentData = useCallback(async (userId: string) => {
+    const fetchStudentData = useCallback(async (query: string) => {
         setLoading(true); setError("");
         try {
-            // Fetch profile
-            const { data: profile } = await supabase
-                .from("profiles").select("*").eq("id", userId).single();
-            if (!profile) { setError("학생을 찾을 수 없습니다."); setLoading(false); return; }
+            // Try email first, then name, then UUID
+            let profile: any = null;
+            const q = query.trim();
+
+            // Check if it looks like email
+            if (q.includes("@")) {
+                const { data } = await supabase.from("profiles").select("*").eq("email", q).single();
+                profile = data;
+            }
+
+            // Try by name if not found
+            if (!profile) {
+                const { data } = await supabase.from("profiles").select("*").eq("name", q).maybeSingle();
+                profile = data;
+            }
+
+            // Try by UUID
+            if (!profile && q.length > 10) {
+                const { data } = await supabase.from("profiles").select("*").eq("id", q).single();
+                profile = data;
+            }
+
+            if (!profile) { setError("학생을 찾을 수 없습니다. 이름, 이메일, 또는 학생 ID를 확인해주세요."); setLoading(false); return; }
 
             setStudent({
                 id: profile.id,
@@ -78,18 +97,18 @@ export default function ParentDashboard() {
             // Fetch recent submissions (last 50)
             const { data: subs } = await supabase
                 .from("code_submissions").select("*")
-                .eq("user_id", userId)
+                .eq("user_id", profile.id)
                 .order("created_at", { ascending: false }).limit(50);
             setSubmissions(subs || []);
 
             // Fetch XP logs (last 30)
             const { data: logs } = await supabase
                 .from("xp_logs").select("*")
-                .eq("user_id", userId)
+                .eq("user_id", profile.id)
                 .order("created_at", { ascending: false }).limit(30);
             setXpLogs(logs || []);
 
-            localStorage.setItem("parent_student_id", userId);
+            localStorage.setItem("parent_student_id", profile.id);
         } catch (err: any) {
             setError(err?.message || "데이터를 불러올 수 없습니다.");
         }
@@ -205,14 +224,14 @@ export default function ParentDashboard() {
                     <h1 style={{ fontSize: 26, fontWeight: 800, color: "#1e1b4b", marginBottom: 8, letterSpacing: -0.5 }}>학부모 모니터링</h1>
                     <p style={{ fontSize: 14, color: "#64748b", marginBottom: 32, lineHeight: 1.6 }}>
                         자녀의 학습 현황을 실시간으로 확인합니다.<br />
-                        자녀의 <strong>학생 ID</strong>를 입력해주세요.
+                        자녀의 <strong>이름</strong>, <strong>이메일</strong>, 또는 <strong>학생 ID</strong>를 입력해주세요.
                     </p>
                     <div style={{ display: "flex", gap: 8, marginBottom: 16 }}>
                         <input
                             value={inputCode}
                             onChange={e => setInputCode(e.target.value)}
                             onKeyDown={e => e.key === "Enter" && handleConnect()}
-                            placeholder="학생 ID (UUID)"
+                            placeholder="이름, 이메일, 또는 학생 ID"
                             style={{
                                 flex: 1, padding: "12px 16px", borderRadius: 12, border: "1px solid #e2e8f0",
                                 fontSize: 14, outline: "none", fontFamily: "'JetBrains Mono', monospace",
@@ -233,7 +252,7 @@ export default function ParentDashboard() {
                     </div>
                     {error && <p style={{ fontSize: 12, color: "#ef4444", fontWeight: 600 }}>{error}</p>}
                     <p style={{ fontSize: 11, color: "#94a3b8", marginTop: 16 }}>
-                        학생 ID는 자녀의 프로필 페이지에서 확인할 수 있습니다.
+                        이름 또는 이메일로 검색 가능합니다.
                     </p>
                     <Link href="/" style={{ display: "inline-block", marginTop: 20, fontSize: 13, color: "#94a3b8", textDecoration: "none" }}>← 홈으로</Link>
                 </motion.div>

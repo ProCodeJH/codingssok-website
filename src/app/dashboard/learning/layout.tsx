@@ -222,6 +222,24 @@ function Navbar({ onMenuOpen }: { onMenuOpen: () => void }) {
                             }} placeholder="코스, 문제 검색..." type="text" />
                         </div>
 
+                        {/* C-Studio Button */}
+                        <motion.a
+                            href="/dashboard/compiler"
+                            whileHover={{ scale: 1.05, boxShadow: "0 4px 16px rgba(99,102,241,0.25)" }}
+                            whileTap={{ scale: 0.95 }}
+                            style={{
+                                padding: "6px 14px", borderRadius: 10, border: "none", cursor: "pointer",
+                                background: "linear-gradient(135deg, #1e1e2e, #0a0a0a)",
+                                color: "#a5b4fc", fontSize: 11, fontWeight: 700, textDecoration: "none",
+                                display: "flex", alignItems: "center", gap: 6,
+                                boxShadow: "0 2px 8px rgba(0,0,0,0.15), inset 0 1px 0 rgba(165,180,252,0.1)",
+                                letterSpacing: 0.5, whiteSpace: "nowrap" as const,
+                            }}
+                        >
+                            <span style={{ fontSize: 13, fontWeight: 800, fontFamily: "'JetBrains Mono', monospace" }}>&gt;_</span>
+                            C-Studio
+                        </motion.a>
+
                         {/* User */}
                         <div className="hidden sm:flex" style={{ alignItems: "center", gap: 16, paddingLeft: 20, borderLeft: "1px solid rgba(226,232,240,0.5)" }}>
                             <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end" }}>

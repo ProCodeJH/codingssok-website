@@ -43,8 +43,11 @@ export default function LearningContentPage() {
         }
         return basePgs;
     }, [unit, htmlContentPath]);
-    const currentPage = useMemo(() => pages.find(p => p.id === pageIdParam), [pages, pageIdParam]);
-    const currentPageIndex = useMemo(() => pages.findIndex(p => p.id === pageIdParam), [pages, pageIdParam]);
+    // Use local state for page switching to avoid full re-mount
+    const [activePageId, setActivePageId] = useState(pageIdParam);
+    useEffect(() => { setActivePageId(pageIdParam); }, [pageIdParam]);
+    const currentPage = useMemo(() => pages.find(p => p.id === activePageId), [pages, activePageId]);
+    const currentPageIndex = useMemo(() => pages.findIndex(p => p.id === activePageId), [pages, activePageId]);
 
     // Quiz state
     const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null);
@@ -134,7 +137,7 @@ export default function LearningContentPage() {
         setEditorCode({});
         setRunResult({});
         if (contentRef.current) contentRef.current.scrollTop = 0;
-    }, [pageIdParam]);
+    }, [activePageId]);
 
     // ── Inject __runCCode for in-content run buttons ──
     useEffect(() => {
@@ -195,16 +198,20 @@ export default function LearningContentPage() {
     // ── Navigation helpers ──
     const prevPage = currentPageIndex > 0 ? pages[currentPageIndex - 1] : null;
     const nextPage = currentPageIndex < pages.length - 1 ? pages[currentPageIndex + 1] : null;
-    const navigatePage = (pageId: string) => {
-        router.push(`/dashboard/learning/courses/${courseId}/units/${unitIdParam}/pages/${pageId}`);
-    };
+    const navigatePage = useCallback((pageId: string) => {
+        setActivePageId(pageId);
+        // Shallow URL update without full re-mount
+        window.history.replaceState(null, '', `/dashboard/learning/courses/${courseId}/units/${unitIdParam}/pages/${pageId}`);
+    }, [courseId, unitIdParam]);
 
     // ── Keyboard navigation (←→ arrow keys) ──
     useEffect(() => {
         const handleKeyDown = (e: KeyboardEvent) => {
-            // Don't interfere with input fields / code editors
-            const tag = (e.target as HTMLElement)?.tagName;
-            if (tag === 'INPUT' || tag === 'TEXTAREA' || (e.target as HTMLElement)?.isContentEditable) return;
+            const el = e.target as HTMLElement;
+            const tag = el?.tagName;
+            // Don't interfere with ANY text input contexts
+            if (tag === 'INPUT' || tag === 'TEXTAREA' || el?.isContentEditable) return;
+            if (el?.closest('[contenteditable]') || el?.closest('.notes-area') || el?.closest('iframe')) return;
             if (e.key === 'ArrowLeft' && prevPage) {
                 e.preventDefault();
                 navigatePage(prevPage.id);
@@ -305,7 +312,7 @@ export default function LearningContentPage() {
                 className="hide-scrollbar"
                 style={{ ...glassPanel, display: "flex", gap: 2, overflowX: "auto", marginBottom: 24, padding: 6, borderRadius: 18 }}>
                 {pages.map((pg, i) => {
-                    const isActive = pg.id === pageIdParam;
+                    const isActive = pg.id === activePageId;
                     const icon = pg.type === '퀴즈' ? '?' : pg.type === '핵심정리' ? '≡' : pg.type === 'QnA' ? '' : '';
                     const hasContent = !!(pg.content || pg.quiz || pg.problems);
                     return (

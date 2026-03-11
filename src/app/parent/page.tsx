@@ -103,7 +103,6 @@ interface AttendanceRecord {
     xp_earned: number;
     check_in_time: string;
     check_out_time: string;
-    note: string;
 }
 
 interface ParentFeedback {

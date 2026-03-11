@@ -30,7 +30,7 @@ const STATUS_COLORS: Record<string, { bg: string; text: string; label: string }>
 };
 
 export default function TeacherAdmin() {
-    const [activeTab, setActiveTab] = useState<"students" | "add" | "content" | "notify">("students");
+    const [activeTab, setActiveTab] = useState<"students" | "add" | "content" | "notify" | "feedback">("students");
     const [students, setStudents] = useState<Student[]>([]);
     const [loading, setLoading] = useState(true);
     const [notifyMsg, setNotifyMsg] = useState("");
@@ -50,6 +50,15 @@ export default function TeacherAdmin() {
 
     // 삭제 확인
     const [deleteId, setDeleteId] = useState<string | null>(null);
+
+    // 피드백
+    const [fbStudentId, setFbStudentId] = useState("");
+    const [fbCourse, setFbCourse] = useState("");
+    const [fbText, setFbText] = useState("");
+    const [fbSending, setFbSending] = useState(false);
+    const [fbHistory, setFbHistory] = useState<{id:string;parent_name:string;content:string;course_id:string;created_at:string;student_id:string}[]>([]);
+    const [fbMsg, setFbMsg] = useState<{ok:boolean;text:string}|null>(null);
+    const [profiles, setProfiles] = useState<{id:string;name:string}[]>([]);
 
     const [authed, setAuthed] = useState(false);
 
@@ -87,6 +96,47 @@ export default function TeacherAdmin() {
     }, []);
 
     useEffect(() => { fetchStudents(); }, [fetchStudents]);
+
+    /* ── 학생 프로필 목록 (피드백 드롭다운용) ── */
+    useEffect(() => {
+        (async () => {
+            const sb = createClient();
+            const { data } = await sb.from("profiles").select("id,name").order("name");
+            if (data) setProfiles(data);
+        })();
+    }, []);
+
+    /* ── 피드백 목록 불러오기 ── */
+    const fetchFeedbacks = useCallback(async (studentId?: string) => {
+        const sb = createClient();
+        let q = sb.from("parent_feedback").select("*").order("created_at", { ascending: false }).limit(50);
+        if (studentId) q = q.eq("student_id", studentId);
+        const { data } = await q;
+        setFbHistory(data || []);
+    }, []);
+
+    useEffect(() => { if (activeTab === "feedback") fetchFeedbacks(fbStudentId || undefined); }, [activeTab, fbStudentId, fetchFeedbacks]);
+
+    /* ── 피드백 보내기 ── */
+    const sendTeacherFeedback = async () => {
+        if (!fbText.trim() || !fbStudentId) return;
+        setFbSending(true); setFbMsg(null);
+        try {
+            const sb = createClient();
+            const { error } = await sb.from("parent_feedback").insert({
+                parent_name: "선생님",
+                student_id: fbStudentId,
+                content: fbText.trim(),
+                course_id: fbCourse || null,
+            });
+            if (error) throw error;
+            setFbMsg({ ok: true, text: "✅ 피드백이 전송되었습니다!" });
+            setFbText("");
+            fetchFeedbacks(fbStudentId);
+        } catch (err: unknown) {
+            setFbMsg({ ok: false, text: `오류: ${err instanceof Error ? err.message : String(err)}` });
+        } finally { setFbSending(false); }
+    };
 
     /* ── 학생 추가 ── */
     const handleAddStudent = async (e: React.FormEvent) => {
@@ -185,8 +235,9 @@ export default function TeacherAdmin() {
                     {([
                         { id: "students" as const, icon: "👥", label: "학생 목록" },
                         { id: "add" as const, icon: "➕", label: "학생 추가" },
-                        { id: "content" as const, icon: "📝", label: "콘텐츠 관리" },
-                        { id: "notify" as const, icon: "📢", label: "알림 발송" },
+                        { id: "feedback" as const, icon: "💬", label: "피드백" },
+                        { id: "content" as const, icon: "📝", label: "콘텐츠" },
+                        { id: "notify" as const, icon: "📢", label: "알림" },
                     ]).map(tab => (
                         <button key={tab.id} onClick={() => setActiveTab(tab.id)} style={{
                             flex: 1, padding: "10px 16px", borderRadius: 10, border: "none", cursor: "pointer",
@@ -552,6 +603,63 @@ export default function TeacherAdmin() {
                             >
                                 {notifySent ? "✅ 발송 완료!" : "📤 전체 학생에게 발송"}
                             </button>
+                        </div>
+                    </motion.div>
+                )}
+
+                {/* ═══ Feedback Tab ═══ */}
+                {activeTab === "feedback" && (
+                    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+                        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
+                            {/* Write */}
+                            <div style={{ background: "#fff", borderRadius: 16, padding: 24, border: "1px solid #e2e8f0" }}>
+                                <h3 style={{ fontSize: 16, fontWeight: 700, color: "#1e1b4b", marginBottom: 16 }}>💬 피드백 작성</h3>
+                                <select value={fbStudentId} onChange={e => setFbStudentId(e.target.value)} style={{
+                                    width: "100%", padding: "12px", borderRadius: 10, border: "1px solid #e2e8f0",
+                                    fontSize: 14, marginBottom: 10, outline: "none",
+                                }}>
+                                    <option value="">학생 선택...</option>
+                                    {profiles.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
+                                </select>
+                                <select value={fbCourse} onChange={e => setFbCourse(e.target.value)} style={{
+                                    width: "100%", padding: "10px", borderRadius: 10, border: "1px solid #e2e8f0",
+                                    fontSize: 13, marginBottom: 10, outline: "none",
+                                }}>
+                                    <option value="">전체 / 일반 피드백</option>
+                                    {COURSES.map(c => <option key={c.id} value={c.id}>{c.title}</option>)}
+                                </select>
+                                <textarea value={fbText} onChange={e => setFbText(e.target.value)} placeholder="피드백 내용을 작성하세요..."
+                                    style={{ width: "100%", minHeight: 120, padding: 14, borderRadius: 12, border: "1px solid #e2e8f0", fontSize: 14, outline: "none", resize: "vertical", boxSizing: "border-box" }} />
+                                {fbMsg && <div style={{ padding: "10px 14px", borderRadius: 10, fontSize: 13, marginTop: 8, background: fbMsg.ok ? "rgba(16,185,129,0.08)" : "rgba(239,68,68,0.06)", color: fbMsg.ok ? "#059669" : "#dc2626" }}>{fbMsg.text}</div>}
+                                <button onClick={sendTeacherFeedback} disabled={fbSending || !fbStudentId || !fbText.trim()} style={{
+                                    marginTop: 12, padding: "12px", borderRadius: 12, border: "none", width: "100%",
+                                    background: fbStudentId && fbText.trim() ? "#4F46E5" : "#e2e8f0",
+                                    color: fbStudentId && fbText.trim() ? "#fff" : "#94a3b8",
+                                    fontWeight: 700, fontSize: 14, cursor: fbStudentId && fbText.trim() ? "pointer" : "default",
+                                }}>{fbSending ? "보내는 중..." : "📤 피드백 보내기"}</button>
+                            </div>
+
+                            {/* History */}
+                            <div style={{ background: "#fff", borderRadius: 16, padding: 24, border: "1px solid #e2e8f0" }}>
+                                <h3 style={{ fontSize: 16, fontWeight: 700, color: "#1e1b4b", marginBottom: 16 }}>📋 피드백 이력 ({fbHistory.length}개)</h3>
+                                <div style={{ display: "flex", flexDirection: "column", gap: 8, maxHeight: 400, overflowY: "auto" }}>
+                                    {fbHistory.length === 0 ? (
+                                        <p style={{ fontSize: 13, color: "#94a3b8", textAlign: "center", padding: 24 }}>피드백이 없습니다</p>
+                                    ) : fbHistory.map(f => (
+                                        <div key={f.id} style={{ padding: "10px 14px", borderRadius: 10, background: "#f8fafc", borderLeft: `3px solid ${f.parent_name === "선생님" ? "#4F46E5" : "#10b981"}` }}>
+                                            <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 4 }}>
+                                                <span style={{ fontSize: 11, fontWeight: 700, color: f.parent_name === "선생님" ? "#4F46E5" : "#10b981" }}>
+                                                    {f.parent_name === "선생님" ? "👨‍🏫 선생님" : `👨‍👩‍👧 ${f.parent_name}`}
+                                                </span>
+                                                <span style={{ fontSize: 10, color: "#94a3b8" }}>
+                                                    {profiles.find(p => p.id === f.student_id)?.name || ""} · {new Date(f.created_at).toLocaleDateString("ko-KR")}
+                                                </span>
+                                            </div>
+                                            <p style={{ fontSize: 12, color: "#334155", lineHeight: 1.5, whiteSpace: "pre-wrap" }}>{f.content}</p>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
                         </div>
                     </motion.div>
                 )}

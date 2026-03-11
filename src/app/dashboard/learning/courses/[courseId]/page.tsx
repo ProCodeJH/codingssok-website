@@ -19,7 +19,7 @@ const HL_COLORS = [
     { id: "yellow", bg: "rgba(253,224,71,0.45)", solid: "#fde047", label: "노랑" },
     { id: "green", bg: "rgba(74,222,128,0.35)", solid: "#4ade80", label: "녹색" },
     { id: "blue", bg: "rgba(96,165,250,0.30)", solid: "#60a5fa", label: "파랑" },
-    { id: "purple", bg: "rgba(192,132,252,0.30)", solid: "#c084fc", label: "보라" },
+    { id: "purple", bg: "rgba(192,132,252,0.30)", solid: "#93c5fd", label: "보라" },
     { id: "red", bg: "rgba(252,165,165,0.40)", solid: "#fca5a5", label: "빨강" },
     { id: "orange", bg: "rgba(251,146,60,0.35)", solid: "#fb923c", label: "주황" },
 ];
@@ -28,7 +28,7 @@ const NOTE_BG: Record<string, { bg: string; border: string }> = {
     yellow: { bg: "#fef9c3", border: "#fde047" },
     green: { bg: "#dcfce7", border: "#86efac" },
     blue: { bg: "#dbeafe", border: "#93c5fd" },
-    purple: { bg: "#f3e8ff", border: "#c084fc" },
+    purple: { bg: "#dbeafe", border: "#93c5fd" },
     red: { bg: "#fee2e2", border: "#fca5a5" },
     orange: { bg: "#ffedd5", border: "#fdba74" },
 };
@@ -401,7 +401,7 @@ export default function CourseDetailPage() {
                     {/* Progress */}
                     <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 6 }}>
                         <span style={{ fontSize: 10, fontWeight: 700, color: "#64748b" }}>진행률</span>
-                        <span style={{ fontSize: 10, fontWeight: 800, color: progressPct === 100 ? "#10b981" : "#6366f1" }}>{progressPct}%</span>
+                        <span style={{ fontSize: 10, fontWeight: 800, color: progressPct === 100 ? "#10b981" : "#3b82f6" }}>{progressPct}%</span>
                     </div>
                     <div style={{ height: 6, background: "#f1f5f9", borderRadius: 999, overflow: "hidden" }}>
                         <motion.div initial={{ width: 0 }} animate={{ width: `${progressPct}%` }} style={{ height: "100%", background: courseData.gradient, borderRadius: 999 }} />
@@ -445,12 +445,12 @@ export default function CourseDetailPage() {
                                                             width: "100%", padding: "8px 16px 8px 40px", border: "none", cursor: locked || !hasContent ? "not-allowed" : "pointer",
                                                             display: "flex", alignItems: "center", gap: 8, textAlign: "left", transition: "all 0.15s",
                                                             background: isSelected ? "linear-gradient(90deg, rgba(99,102,241,0.08), transparent)" : "transparent",
-                                                            borderLeft: isSelected ? "3px solid #6366f1" : "3px solid transparent",
+                                                            borderLeft: isSelected ? "3px solid #3b82f6" : "3px solid transparent",
                                                             opacity: locked ? 0.4 : !hasContent ? 0.5 : 1,
                                                         }}>
                                                         <div style={{
                                                             width: 22, height: 22, borderRadius: "50%", flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center",
-                                                            background: done ? "#10b981" : locked ? "#e2e8f0" : isSelected ? "#6366f1" : "#f1f5f9",
+                                                            background: done ? "#10b981" : locked ? "#e2e8f0" : isSelected ? "#3b82f6" : "#f1f5f9",
                                                             color: (done || isSelected) ? "#fff" : locked ? "#cbd5e1" : "#64748b", fontSize: 9, fontWeight: 800,
                                                         }}>{done ? <span className="material-symbols-outlined" style={{fontSize:12}}>check</span> : locked ? <span className="material-symbols-outlined" style={{fontSize:12}}>lock</span> : unit.unitNumber}</div>
                                                         <div style={{ flex: 1, minWidth: 0 }}>
@@ -484,7 +484,7 @@ export default function CourseDetailPage() {
                     <>
                         {/* Highlighter Toolbar — 상단 중앙 */}
                         <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 6, borderBottom: "1px solid #e2e8f0", background: "#fff", padding: "10px 24px", flexShrink: 0 }}>
-                            <MI icon="ink_highlighter" style={{ fontSize: 16, color: activeHL ? HL_COLORS.find(c => c.id === activeHL)?.solid || "#6366f1" : "#94a3b8" }} />
+                            <MI icon="ink_highlighter" style={{ fontSize: 16, color: activeHL ? HL_COLORS.find(c => c.id === activeHL)?.solid || "#3b82f6" : "#94a3b8" }} />
                             {HL_COLORS.map(c => {
                                 const isOn = activeHL === c.id;
                                 return (
@@ -503,7 +503,7 @@ export default function CourseDetailPage() {
                             {activeHL && (
                                 <button onClick={() => setActiveHL(null)} title="형광펜 끄기" style={{ width: 20, height: 18, borderRadius: 6, border: "1px solid #e2e8f0", background: "#f8fafc", cursor: "pointer", fontSize: 10, color: "#94a3b8", fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center" }}>✕</button>
                             )}
-                            {activeHL && <span style={{ fontSize: 10, color: HL_COLORS.find(c => c.id === activeHL)?.solid || "#6366f1", fontWeight: 700, marginLeft: 4 }}>텍스트를 드래그하세요</span>}
+                            {activeHL && <span style={{ fontSize: 10, color: HL_COLORS.find(c => c.id === activeHL)?.solid || "#3b82f6", fontWeight: 700, marginLeft: 4 }}>텍스트를 드래그하세요</span>}
                         </div>
 
                         {/* Content */}
@@ -512,7 +512,7 @@ export default function CourseDetailPage() {
                             <div style={{ marginBottom: 28, paddingBottom: 20, borderBottom: "1px solid #f1f5f9" }}>
                                 <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 6 }}>
                                     <span style={{ fontSize: 10, fontWeight: 800, color: "#94a3b8", letterSpacing: 1.5 }}>UNIT {selectedUnit.unitNumber} · PAGE {activePage.id}</span>
-                                    <span style={{ padding: "2px 8px", borderRadius: 6, fontSize: 9, fontWeight: 700, background: activePage.type === "퀴즈" ? "#f5f3ff" : activePage.type === "핵심정리" ? "#f0f9ff" : "#f0fdf4", color: activePage.type === "퀴즈" ? "#7c3aed" : activePage.type === "핵심정리" ? "#0284c7" : "#059669" }}>{activePage.type}</span>
+                                    <span style={{ padding: "2px 8px", borderRadius: 6, fontSize: 9, fontWeight: 700, background: activePage.type === "퀴즈" ? "#eff6ff" : activePage.type === "핵심정리" ? "#f0f9ff" : "#f0fdf4", color: activePage.type === "퀴즈" ? "#1d4ed8" : activePage.type === "핵심정리" ? "#0284c7" : "#059669" }}>{activePage.type}</span>
                                 </div>
                                 <h1 style={{ fontSize: 24, fontWeight: 900, color: "#0f172a", margin: 0, lineHeight: 1.3, letterSpacing: -0.5 }}>{activePage.title}</h1>
                             </div>
@@ -542,7 +542,7 @@ export default function CourseDetailPage() {
                                     </button>
                                 ) : <div />}
                                 {nextPage ? (
-                                    <button onClick={() => navigatePage(nextPage)} style={{ padding: "10px 20px", borderRadius: 12, border: "none", background: "linear-gradient(135deg,#6366f1,#8b5cf6)", cursor: "pointer", fontSize: 12, fontWeight: 700, color: "#fff", display: "flex", alignItems: "center", gap: 6 }}>
+                                    <button onClick={() => navigatePage(nextPage)} style={{ padding: "10px 20px", borderRadius: 12, border: "none", background: "linear-gradient(135deg,#3b82f6,#2563eb)", cursor: "pointer", fontSize: 12, fontWeight: 700, color: "#fff", display: "flex", alignItems: "center", gap: 6 }}>
                                         {nextPage.title} <MI icon="arrow_forward" style={{ fontSize: 14 }} />
                                     </button>
                                 ) : (
@@ -575,11 +575,11 @@ export default function CourseDetailPage() {
                             {/* Book stack */}
                             <rect x="38" y="82" width="50" height="10" rx="2" fill="#c7d2fe" />
                             <rect x="40" y="72" width="46" height="10" rx="2" fill="#a5b4fc" />
-                            <rect x="42" y="62" width="42" height="10" rx="2" fill="#818cf8" />
+                            <rect x="42" y="62" width="42" height="10" rx="2" fill="#60a5fa" />
                             {/* Open book */}
                             <g transform="translate(70, 50)">
                                 <path d="M0 10 C0 4, 8 0, 30 0 L30 40 C8 40, 0 36, 0 30Z" fill="#dbeafe" stroke="#93c5fd" strokeWidth="1.5" />
-                                <path d="M60 10 C60 4, 52 0, 30 0 L30 40 C52 40, 60 36, 60 30Z" fill="#ede9fe" stroke="#c4b5fd" strokeWidth="1.5" />
+                                <path d="M60 10 C60 4, 52 0, 30 0 L30 40 C52 40, 60 36, 60 30Z" fill="#dbeafe" stroke="#c4b5fd" strokeWidth="1.5" />
                                 <line x1="30" y1="2" x2="30" y2="38" stroke="#cbd5e1" strokeWidth="1" />
                                 {/* Text lines on left page */}
                                 <line x1="6" y1="10" x2="24" y2="10" stroke="#93c5fd" strokeWidth="1.5" strokeLinecap="round" />
@@ -593,13 +593,13 @@ export default function CourseDetailPage() {
                             </g>
                             {/* Cursor/pointer arrow */}
                             <g transform="translate(108, 68)">
-                                <path d="M0 0 L0 20 L6 15 L12 24 L16 22 L10 13 L17 11Z" fill="#6366f1" stroke="#4f46e5" strokeWidth="1" strokeLinejoin="round" />
+                                <path d="M0 0 L0 20 L6 15 L12 24 L16 22 L10 13 L17 11Z" fill="#3b82f6" stroke="#2563eb" strokeWidth="1" strokeLinejoin="round" />
                             </g>
                             {/* Sparkles */}
                             <circle cx="55" cy="42" r="2" fill="#fbbf24" opacity="0.8">
                                 <animate attributeName="opacity" values="0.8;0.2;0.8" dur="2s" repeatCount="indefinite" />
                             </circle>
-                            <circle cx="140" cy="55" r="1.5" fill="#a78bfa" opacity="0.6">
+                            <circle cx="140" cy="55" r="1.5" fill="#60a5fa" opacity="0.6">
                                 <animate attributeName="opacity" values="0.6;0.1;0.6" dur="1.8s" repeatCount="indefinite" />
                             </circle>
                             <circle cx="25" cy="60" r="1.5" fill="#60a5fa" opacity="0.7">
@@ -636,8 +636,8 @@ export default function CourseDetailPage() {
                         return (
                             <button key={tab} onClick={() => setRightTab(tab)} style={{
                                 flex: 1, padding: "10px 0", border: "none", cursor: "pointer", background: "transparent",
-                                borderBottom: isActive ? "2px solid #6366f1" : "2px solid transparent",
-                                color: isActive ? "#6366f1" : "#94a3b8", fontSize: 10, fontWeight: isActive ? 800 : 600,
+                                borderBottom: isActive ? "2px solid #3b82f6" : "2px solid transparent",
+                                color: isActive ? "#3b82f6" : "#94a3b8", fontSize: 10, fontWeight: isActive ? 800 : 600,
                                 display: "flex", flexDirection: "column", alignItems: "center", gap: 2, transition: "all 0.15s",
                             }}>
                                 <MI icon={icons[tab]} style={{ fontSize: 16 }} />
@@ -680,7 +680,7 @@ export default function CourseDetailPage() {
                                     {(["focus", "short", "long"] as const).map(m => (
                                         <button key={m} onClick={() => resetTimer(m)} style={{
                                             padding: "6px 14px", borderRadius: 10, border: "none", cursor: "pointer", fontSize: 11, fontWeight: timerMode === m ? 700 : 500,
-                                            background: timerMode === m ? "#fff" : "transparent", color: timerMode === m ? "#6366f1" : "#64748b",
+                                            background: timerMode === m ? "#fff" : "transparent", color: timerMode === m ? "#3b82f6" : "#64748b",
                                             boxShadow: timerMode === m ? "0 2px 8px rgba(0,0,0,0.06)" : "none", transition: "all 0.15s",
                                         }}>{m === "focus" ? "집중" : m === "short" ? "짧은 휴식" : "긴 휴식"}</button>
                                     ))}
@@ -690,7 +690,7 @@ export default function CourseDetailPage() {
                                 <div style={{ position: "relative", width: 180, height: 180 }}>
                                     <svg width="180" height="180" style={{ transform: "rotate(-90deg)" }}>
                                         <circle cx="90" cy="90" r="80" fill="none" stroke="#f1f5f9" strokeWidth="8" />
-                                        <circle cx="90" cy="90" r="80" fill="none" stroke={timerMode === "focus" ? "#6366f1" : "#10b981"} strokeWidth="8" strokeLinecap="round" strokeDasharray={`${2 * Math.PI * 80}`} strokeDashoffset={`${2 * Math.PI * 80 * (1 - pct / 100)}`} style={{ transition: "stroke-dashoffset 0.5s" }} />
+                                        <circle cx="90" cy="90" r="80" fill="none" stroke={timerMode === "focus" ? "#3b82f6" : "#10b981"} strokeWidth="8" strokeLinecap="round" strokeDasharray={`${2 * Math.PI * 80}`} strokeDashoffset={`${2 * Math.PI * 80 * (1 - pct / 100)}`} style={{ transition: "stroke-dashoffset 0.5s" }} />
                                     </svg>
                                     <div style={{ position: "absolute", inset: 0, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
                                         <span style={{ fontSize: 40, fontWeight: 900, color: "#0f172a", fontFamily: "monospace", letterSpacing: 2 }}>{mm}:{ss}</span>
@@ -702,14 +702,14 @@ export default function CourseDetailPage() {
                                 <div style={{ display: "flex", gap: 10 }}>
                                     <button onClick={() => setTimerRunning(!timerRunning)} style={{
                                         padding: "10px 28px", borderRadius: 14, border: "none", cursor: "pointer", fontSize: 13, fontWeight: 700,
-                                        background: timerRunning ? "#f1f5f9" : "linear-gradient(135deg,#6366f1,#8b5cf6)",
+                                        background: timerRunning ? "#f1f5f9" : "linear-gradient(135deg,#3b82f6,#2563eb)",
                                         color: timerRunning ? "#475569" : "#fff",
                                     }}>{timerRunning ? "⏸ 일시정지" : timerSec < totalSec ? "▶ 계속" : "▶ 시작"}</button>
                                     <button onClick={() => resetTimer(timerMode)} style={{ padding: "10px 16px", borderRadius: 14, border: "1px solid #e2e8f0", background: "#fff", cursor: "pointer", fontSize: 13, fontWeight: 600, color: "#64748b" }}>↺</button>
                                 </div>
 
                                 {/* Sessions */}
-                                <div style={{ fontSize: 11, color: "#94a3b8", fontWeight: 600 }}>오늘 완료: <span style={{ color: "#6366f1", fontWeight: 800 }}>{timerSessions}</span> 세션</div>
+                                <div style={{ fontSize: 11, color: "#94a3b8", fontWeight: 600 }}>오늘 완료: <span style={{ color: "#3b82f6", fontWeight: 800 }}>{timerSessions}</span> 세션</div>
                             </div>
                         );
                     })()}
@@ -722,7 +722,7 @@ export default function CourseDetailPage() {
                                     <input value={qaInput} onChange={e => setQaInput(e.target.value)} onKeyDown={e => e.key === "Enter" && addQuestion()}
                                         placeholder="질문을 입력하세요..."
                                         style={{ flex: 1, padding: "8px 14px", borderRadius: 10, border: "1px solid #e2e8f0", fontSize: 12, outline: "none", background: "#f8fafc" }} />
-                                    <button onClick={addQuestion} style={{ padding: "8px 14px", borderRadius: 10, border: "none", background: "linear-gradient(135deg,#6366f1,#8b5cf6)", color: "#fff", fontSize: 11, fontWeight: 700, cursor: "pointer", whiteSpace: "nowrap" }}>등록</button>
+                                    <button onClick={addQuestion} style={{ padding: "8px 14px", borderRadius: 10, border: "none", background: "linear-gradient(135deg,#3b82f6,#2563eb)", color: "#fff", fontSize: 11, fontWeight: 700, cursor: "pointer", whiteSpace: "nowrap" }}>등록</button>
                                 </div>
                             </div>
                             <div className="hide-sb" style={{ flex: 1, overflowY: "auto", padding: "8px 16px" }}>
@@ -748,8 +748,8 @@ export default function CourseDetailPage() {
                                 <div style={{ padding: 16, borderBottom: "1px solid #f1f5f9" }}>
                                     <button onClick={addBookmark} disabled={isBookmarked} style={{
                                         width: "100%", padding: "10px", borderRadius: 12, border: isBookmarked ? "1px solid #c7d2fe" : "1px solid #e2e8f0",
-                                        background: isBookmarked ? "#eef2ff" : "#fff", cursor: isBookmarked ? "default" : "pointer",
-                                        fontSize: 12, fontWeight: 700, color: isBookmarked ? "#6366f1" : "#475569", display: "flex", alignItems: "center", justifyContent: "center", gap: 6,
+                                        background: isBookmarked ? "#EFF6FF" : "#fff", cursor: isBookmarked ? "default" : "pointer",
+                                        fontSize: 12, fontWeight: 700, color: isBookmarked ? "#3b82f6" : "#475569", display: "flex", alignItems: "center", justifyContent: "center", gap: 6,
                                     }}>
                                         <MI icon={isBookmarked ? "bookmark" : "bookmark_border"} style={{ fontSize: 16 }} />
                                         {isBookmarked ? "북마크됨" : "현재 페이지 북마크"}

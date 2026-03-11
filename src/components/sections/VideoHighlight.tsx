@@ -237,7 +237,7 @@ export default function VideoHighlight() {
                                 <path d="M2 14V4a2 2 0 012-2h10" stroke="#0ea5e9" strokeWidth="2" strokeLinecap="round" />
                             </svg>
                             <svg style={{ position: 'absolute', top: '16px', right: '16px', opacity: 0.4 }} width="40" height="40" viewBox="0 0 40 40" fill="none">
-                                <path d="M38 14V4a2 2 0 00-2-2H26" stroke="#6366f1" strokeWidth="2" strokeLinecap="round" />
+                                <path d="M38 14V4a2 2 0 00-2-2H26" stroke="#3b82f6" strokeWidth="2" strokeLinecap="round" />
                             </svg>
                             <svg style={{ position: 'absolute', bottom: '16px', left: '16px', opacity: 0.4 }} width="40" height="40" viewBox="0 0 40 40" fill="none">
                                 <path d="M2 26v10a2 2 0 002 2h10" stroke="#ef4444" strokeWidth="2" strokeLinecap="round" />

@@ -35,8 +35,8 @@ const cards = [
         holoStyle: { color: "#2dd4bf", textShadow: "0 0 10px rgba(45,212,191,0.8)" } as React.CSSProperties,
     },
     {
-        num: "03", tag: "Hardware", tagColor: "#6366f1",
-        icon: "memory", iconColor: "text-indigo-600",
+        num: "03", tag: "Hardware", tagColor: "#3b82f6",
+        icon: "memory", iconColor: "text-blue-600",
         title: "Arduino / IoT", titleKr: "하드웨어",
         desc: "LED부터 센서, 서보모터 제어까지. 코드가 실제 장치를 움직이는 경험을 선사합니다.",
         skills: "아두이노 · 전자 회로 · 센서 활용 · IoT · 3D 프린팅",
@@ -46,7 +46,7 @@ const cards = [
         img: "https://lh3.googleusercontent.com/aida-public/AB6AXuBKBV9pIxjMZ0oJ3TMnNBRk1kBjP9LP5h9NiY1YdHVf1z4C0_4Pti8zuOY9jZbNP1No1gbvfTAqTWxcNnCYcVY-W7YiHXpnVkKVnYZrTrGcMqnZT3uqkQwKv6qVd5yor7LlCnPmcAEVPWjNW9qz_HAXHFPijAQEjkLA0diMQAya76GmQSSa0dQt5ptrrlr-6mCrxNEb9-0uRICCSWE-V2IaWVusIm3QARpkP0_QJN_asM__DmyfSnfyLc4d19g-jtA07MqP4X653dD7",
         floatClass: "holo-float-3",
         hoverColor: "indigo", glowColor: "rgba(99,102,241,0.3)",
-        holoStyle: { color: "#818cf8", textShadow: "0 0 10px rgba(99,102,241,0.8)" } as React.CSSProperties,
+        holoStyle: { color: "#60a5fa", textShadow: "0 0 10px rgba(99,102,241,0.8)" } as React.CSSProperties,
     },
     {
         num: "04", tag: "Innovation", tagColor: "#f97316",
@@ -64,7 +64,7 @@ const cards = [
     },
     {
         num: "05", tag: "Expert", tagColor: "#9333ea",
-        icon: "verified", iconColor: "text-purple-600",
+        icon: "verified", iconColor: "text-blue-600",
         title: "Pro Certification", titleKr: "자격증",
         desc: "시험 유형별 집중 학습과 실전 모의고사로 합격률을 극대화합니다.",
         skills: "COS-Pro · PCCE · 정보올림피아드 · 프로그래밍기능사 · 컴활",
@@ -74,7 +74,7 @@ const cards = [
         img: "https://lh3.googleusercontent.com/aida-public/AB6AXuBnoss8UpmSxOZxOikwQhAadRJ8NdLlBpwGpUlZyt1d3hjaOxEA0wTZ0JeXBeBTcTZn0k1azp3kRnBcp21VaJ16-H-EyqyIETL-xlbgvBJrRnXjx7i6InbQEVzs8mghloyqbVGiWG5naoIQgBsODQ2_IirJZF3DwgiWkhEzLLYi2j2jH4TY4GRhN0QwxtTbRzKSygyE3eBeisy8bF0X7A9Iyc151hTwIV1EtrNzAhbKxTRlu4Q60fLB0qNNyH6zodNcGQDB6Krj7xZr",
         floatClass: "holo-float-5",
         hoverColor: "purple", glowColor: "rgba(147,51,234,0.3)",
-        holoStyle: { color: "#c084fc", textShadow: "0 0 10px rgba(147,51,234,0.8)" } as React.CSSProperties,
+        holoStyle: { color: "#93c5fd", textShadow: "0 0 10px rgba(147,51,234,0.8)" } as React.CSSProperties,
     },
 ];
 

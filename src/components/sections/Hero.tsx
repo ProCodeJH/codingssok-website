@@ -4,15 +4,27 @@ import { useRef, useEffect, useState } from "react";
 import { motion } from "framer-motion";
 
 // ═══════════════════════════════════════════════
-// Hero Component — Video Background
+// Hero Component — 3-Video Crossfade Background
 // ═══════════════════════════════════════════════
+
+const VIDEOS = [
+    { src: "/videos/hero-bg.mp4",       filter: "brightness(2.5)" },
+    { src: "/videos/hero-sphere-1.mp4", filter: "brightness(3.5) saturate(0.3)" },
+    { src: "/videos/hero-sphere-2.mp4", filter: "brightness(3.5) saturate(0.3)" },
+];
+
+const CROSSFADE_SEC = 1.5; // start fading this many seconds before video ends
+
 export default function Hero() {
     const sectionRef = useRef<HTMLElement>(null);
+    const videoRefs = useRef<(HTMLVideoElement | null)[]>([null, null, null]);
     const [scrollProgress, setScrollProgress] = useState(0);
+    const [activeIndex, setActiveIndex] = useState(0);
+    const transitioningRef = useRef(false);
 
+    // Scroll parallax
     useEffect(() => {
         if (!sectionRef.current) return;
-
         const handleScroll = () => {
             if (!sectionRef.current) return;
             const rect = sectionRef.current.getBoundingClientRect();
@@ -20,53 +32,100 @@ export default function Hero() {
             const progress = Math.max(0, Math.min(1, -rect.top / viewH));
             setScrollProgress(progress);
         };
-
-        window.addEventListener('scroll', handleScroll, { passive: true });
+        window.addEventListener("scroll", handleScroll, { passive: true });
         handleScroll();
-        return () => window.removeEventListener('scroll', handleScroll);
+        return () => window.removeEventListener("scroll", handleScroll);
     }, []);
+
+    // Start first video on mount
+    useEffect(() => {
+        const first = videoRefs.current[0];
+        if (first) first.play().catch(() => {});
+    }, []);
+
+    // Crossfade logic: use timeupdate to detect approaching end
+    useEffect(() => {
+        const activeVideo = videoRefs.current[activeIndex];
+        if (!activeVideo) return;
+
+        const onTimeUpdate = () => {
+            if (transitioningRef.current) return;
+            const remaining = activeVideo.duration - activeVideo.currentTime;
+            if (remaining > 0 && remaining <= CROSSFADE_SEC) {
+                transitioningRef.current = true;
+                const next = (activeIndex + 1) % VIDEOS.length;
+                // Prep & play next video so it's visible during crossfade overlap
+                const nextVideo = videoRefs.current[next];
+                if (nextVideo) {
+                    nextVideo.currentTime = 0;
+                    nextVideo.play().catch(() => {});
+                }
+                setActiveIndex(next);
+            }
+        };
+
+        const onEnded = () => {
+            // Safety: if timeupdate didn't trigger, force transition
+            if (!transitioningRef.current) {
+                const next = (activeIndex + 1) % VIDEOS.length;
+                const nextVideo = videoRefs.current[next];
+                if (nextVideo) {
+                    nextVideo.currentTime = 0;
+                    nextVideo.play().catch(() => {});
+                }
+                setActiveIndex(next);
+            }
+        };
+
+        activeVideo.addEventListener("timeupdate", onTimeUpdate);
+        activeVideo.addEventListener("ended", onEnded);
+        return () => {
+            activeVideo.removeEventListener("timeupdate", onTimeUpdate);
+            activeVideo.removeEventListener("ended", onEnded);
+        };
+    }, [activeIndex]);
+
+    // Reset transition lock when activeIndex changes
+    useEffect(() => {
+        transitioningRef.current = false;
+    }, [activeIndex]);
 
     return (
         <section ref={sectionRef} id="hero" className="relative w-full text-slate-800" style={{ minHeight: "100vh", background: "#ffffff" }}>
 
-            {/* VIDEO BACKGROUND — replaces Three.js Canvas */}
+            {/* VIDEO BACKGROUND — 3 videos with overlapping crossfade */}
             <motion.div
                 initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 1.5, ease: "easeOut" }}
                 className="absolute inset-0 w-full h-full z-0"
             >
-                <video
-                    autoPlay
-                    loop
-                    muted
-                    playsInline
-                    preload="auto"
-                    style={{
-                        position: "absolute",
-                        top: "50%",
-                        left: "50%",
-                        transform: `translate(-50%, -50%) scale(${1 + scrollProgress * 0.15})`,
-                        minWidth: "100%",
-                        minHeight: "100%",
-                        width: "auto",
-                        height: "auto",
-                        objectFit: "cover",
-                    }}
-                >
-                    <source src="/videos/hero-bg.mp4" type="video/mp4" />
-                </video>
+                {VIDEOS.map((v, i) => (
+                    <video
+                        key={v.src}
+                        ref={(el) => { videoRefs.current[i] = el; }}
+                        muted
+                        playsInline
+                        preload="auto"
+                        style={{
+                            position: "absolute",
+                            top: "70%",
+                            left: "50%",
+                            transform: `translate(-50%, -50%) scale(${1 + scrollProgress * 0.15})`,
+                            minWidth: "100%",
+                            minHeight: "100%",
+                            width: "auto",
+                            height: "auto",
+                            objectFit: "cover",
+                            mixBlendMode: "screen",
+                            filter: v.filter,
+                            opacity: activeIndex === i ? 1 : 0,
+                            zIndex: activeIndex === i ? 1 : 0,
+                            transition: "opacity 1.5s ease-in-out",
+                        }}
+                    >
+                        <source src={v.src} type="video/mp4" />
+                    </video>
+                ))}
             </motion.div>
-
-            {/* Data stream decorations */}
-            <style>{`
-                .data-stream { position:absolute; background:linear-gradient(90deg,transparent,#cbd5e1,transparent); height:1px; width:150px; opacity:0.3; filter:blur(0.5px); animation:stream 4s cubic-bezier(0.4,0,0.2,1) infinite; }
-                .data-stream-red { position:absolute; background:linear-gradient(90deg,transparent,#94a3b8,transparent); height:1px; width:120px; opacity:0.2; filter:blur(0.5px); animation:stream 5s cubic-bezier(0.4,0,0.2,1) infinite; }
-                @keyframes stream { 0%{transform:translateX(-200%) translateY(0);opacity:0} 10%{opacity:1} 90%{opacity:1} 100%{transform:translateX(120vw) translateY(50px);opacity:0} }
-            `}</style>
-
-            <div className="data-stream" style={{ top: '20%', left: 0, animationDuration: '5s' }} />
-            <div className="data-stream-red" style={{ top: '45%', left: 0, animationDelay: '1.5s', animationDuration: '6s' }} />
-            <div className="data-stream" style={{ top: '65%', left: 0, animationDelay: '2s', animationDuration: '4s' }} />
-            <div className="data-stream" style={{ top: '35%', right: 0, animationDelay: '1s', animationDirection: 'reverse', animationDuration: '6s' }} />
 
             <div
                 className="relative z-10 w-full min-h-[100vh] flex flex-col items-center justify-between pt-24 pb-32 pointer-events-none"
@@ -109,12 +168,11 @@ export default function Hero() {
                         margin: 0,
                     }}>
                         AI 시대,{" "}
-                        <span style={{ background: "linear-gradient(135deg, #3b82f6, #6366f1)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>
+                        <span style={{ background: "linear-gradient(135deg, #3b82f6, #3b82f6)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>
                             진짜 코딩
                         </span>을 배우세요
                     </p>
                 </div>
-
             </div>
 
             <style>{`
@@ -122,11 +180,6 @@ export default function Hero() {
                     0% { transform: perspective(600px) rotateY(-90deg) scale(0.5); opacity: 0; }
                     60% { transform: perspective(600px) rotateY(10deg) scale(1.05); opacity: 1; }
                     100% { transform: perspective(600px) rotateY(0deg) scale(1); opacity: 1; }
-                }
-                @keyframes blink { 50% { opacity: 0; } }
-                @keyframes fadeSlideUp {
-                    from { opacity: 0; transform: translateY(15px); }
-                    to { opacity: 1; transform: translateY(0); }
                 }
             `}</style>
         </section>

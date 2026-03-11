@@ -12,7 +12,7 @@ const STORIES = [
     {
         name: "김O민",
         initial: "김",
-        avatarStyle: { background: "linear-gradient(to bottom right, #3b82f6, #4f46e5)" } as React.CSSProperties,
+        avatarStyle: { background: "linear-gradient(to bottom right, #3b82f6, #2563eb)" } as React.CSSProperties,
         avatarShadow: "0 8px 20px rgba(79,70,229,0.3)",
         tagStyle: { background: "rgba(219,234,254,0.5)", border: "1px solid #bfdbfe", color: "#1d4ed8" } as React.CSSProperties,
         track: "Python Core",
@@ -22,7 +22,7 @@ const STORIES = [
         highlight: "구구단 알고리즘",
         hlStyle: { background: "#e0e7ff", color: "#4338ca" } as React.CSSProperties,
         achieveIcon: "trending_up",
-        achieveIconStyle: { color: "#4f46e5", background: "#eef2ff" } as React.CSSProperties,
+        achieveIconStyle: { color: "#2563eb", background: "#EFF6FF" } as React.CSSProperties,
         achievement: "정보올림피아드 예선 통과",
         tags: ["#Algorithm", "#Python"],
     },
@@ -65,13 +65,13 @@ const STORIES = [
         initial: "정",
         avatarStyle: { background: "linear-gradient(to bottom right, #a855f7, #d946ef)" } as React.CSSProperties,
         avatarShadow: "0 8px 20px rgba(168,85,247,0.3)",
-        tagStyle: { background: "rgba(243,232,255,0.5)", border: "1px solid #e9d5ff", color: "#7c3aed" } as React.CSSProperties,
+        tagStyle: { background: "rgba(243,232,255,0.5)", border: "1px solid #bfdbfe", color: "#1d4ed8" } as React.CSSProperties,
         track: "Web Dev",
         level: "Lv.6 Completed",
         stars: 3,
         quote: "학원에서 만든 포트폴리오로 학교 발표회 대상을 받았어요. 풀스택 개발자라는 구체적인 꿈을 가지게 되었습니다.",
         highlight: "풀스택 개발자",
-        hlStyle: { background: "#f3e8ff", color: "#7c3aed" } as React.CSSProperties,
+        hlStyle: { background: "#dbeafe", color: "#1d4ed8" } as React.CSSProperties,
         achieveIcon: "rocket_launch",
         achieveIconStyle: { color: "#9333ea", background: "#faf5ff" } as React.CSSProperties,
         achievement: "앱 개발 공모전 입상",
@@ -278,7 +278,7 @@ export default function Testimonials() {
 .ts-orb { position: absolute; border-radius: 50%; mix-blend-mode: multiply; filter: blur(120px); }
 .ts-orb1 { top: -20%; left: -10%; width: 60vw; height: 60vw; background: rgba(192,132,252,0.15); animation: tsHue 15s infinite linear; }
 .ts-orb2 { bottom: -20%; right: -10%; width: 60vw; height: 60vw; background: rgba(129,140,248,0.15); animation: tsHue 15s infinite linear; animation-delay: -5s; }
-.ts-spark { position: absolute; width: 4px; height: 4px; background: #6366f1; border-radius: 50%; filter: blur(1px); box-shadow: 0 0 10px #6366f1; animation: tsFloat 8s ease-in-out infinite; }
+.ts-spark { position: absolute; width: 4px; height: 4px; background: #3b82f6; border-radius: 50%; filter: blur(1px); box-shadow: 0 0 10px #3b82f6; animation: tsFloat 8s ease-in-out infinite; }
 .ts-sp1 { left: 10%; top: 80%; animation-duration: 7s; }
 .ts-sp2 { left: 30%; top: 40%; animation-duration: 9s; animation-delay: 1s; }
 .ts-sp3 { left: 70%; top: 60%; animation-duration: 6s; animation-delay: 2s; }
@@ -291,7 +291,7 @@ export default function Testimonials() {
 .ts-live-dot { width: 8px; height: 8px; border-radius: 50%; background: #22c55e; box-shadow: 0 0 10px #22c55e; }
 .ts-main-title { font-family: 'Pretendard', sans-serif !important; font-size: clamp(2.5rem, 6vw, 5rem) !important; font-weight: 900 !important; letter-spacing: -0.04em; color: #0f172a !important; -webkit-text-fill-color: #0f172a !important; }
 .ts-main-sub { margin-top: 16px; font-size: 16px; color: #64748b; font-weight: 500; background: rgba(255,255,255,0.1); padding: 12px 20px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.2); backdrop-filter: blur(4px); display: inline-block; }
-.ts-accent-num { color: #4F46E5; font-weight: 700; }
+.ts-accent-num { color: #2563eb; font-weight: 700; }
 
 /* ═══ 3D Carousel ═══ */
 .ts-carousel-3d { position: relative; z-index: 10; height: 620px; perspective: 1200px; margin: 0 auto; max-width: 1200px; }
@@ -304,7 +304,7 @@ export default function Testimonials() {
 .ts-nav-btn:hover { background: #fff; box-shadow: 0 8px 24px rgba(0,0,0,0.1); transform: scale(1.1); }
 .ts-dots { display: flex; gap: 8px; }
 .ts-dot { width: 10px; height: 10px; border-radius: 50%; border: none; background: #cbd5e1; cursor: pointer; transition: all 0.3s; }
-.ts-dot-active { background: #4f46e5; transform: scale(1.3); box-shadow: 0 0 12px rgba(79,70,229,0.4); }
+.ts-dot-active { background: #2563eb; transform: scale(1.3); box-shadow: 0 0 12px rgba(79,70,229,0.4); }
 
 /* Card */
 .ts-card-wrap { position: relative; height: 580px; }

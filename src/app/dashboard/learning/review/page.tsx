@@ -37,7 +37,7 @@ export default function ReviewPage() {
                 <span style={{ fontSize: 72, opacity: 0.3 }}></span>
                 <h2 style={{ fontSize: 22, fontWeight: 800, color: "#334155" }}>오답이 없습니다!</h2>
                 <p style={{ fontSize: 14, color: "#94a3b8" }}>퀴즈에서 틀린 문제가 자동으로 수집됩니다.</p>
-                <Link href="/dashboard/learning" style={{ color: "#4F46E5", fontWeight: 600, fontSize: 14, marginTop: 8 }}>
+                <Link href="/dashboard/learning" style={{ color: "#2563eb", fontWeight: 600, fontSize: 14, marginTop: 8 }}>
                     ← 학습으로 돌아가기
                 </Link>
             </div>
@@ -51,7 +51,7 @@ export default function ReviewPage() {
                 <Link href="/dashboard/learning" style={{ fontSize: 13, color: "#94a3b8", fontWeight: 500, textDecoration: "none" }}>
                     ← 학습 대시보드
                 </Link>
-                <h1 style={{ fontSize: 28, fontWeight: 800, color: "#1e1b4b", marginTop: 12, letterSpacing: "-0.03em" }}>
+                <h1 style={{ fontSize: 28, fontWeight: 800, color: "#172554", marginTop: 12, letterSpacing: "-0.03em" }}>
                      오답 노트
                 </h1>
                 <p style={{ fontSize: 14, color: "#64748b", marginTop: 4 }}>
@@ -64,7 +64,7 @@ export default function ReviewPage() {
                 display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 12, marginBottom: 24,
             }}>
                 {[
-                    { label: "전체", value: stats.total, color: "#4F46E5", bg: "#EEF2FF" },
+                    { label: "전체", value: stats.total, color: "#2563eb", bg: "#EFF6FF" },
                     { label: "복습 필요", value: stats.remaining, color: "#F59E0B", bg: "#FFFBEB" },
                     { label: "완료", value: stats.mastered, color: "#34D399", bg: "#ECFDF5" },
                 ].map(s => (
@@ -82,7 +82,7 @@ export default function ReviewPage() {
                 {FILTERS.map(f => (
                     <button key={f} onClick={() => setFilter(f)} style={{
                         padding: "6px 16px", borderRadius: 20, border: "none", cursor: "pointer",
-                        background: filter === f ? "#4F46E5" : "#f1f5f9",
+                        background: filter === f ? "#2563eb" : "#f1f5f9",
                         color: filter === f ? "#fff" : "#64748b",
                         fontWeight: 700, fontSize: 13, transition: "all 0.2s",
                     }}>
@@ -123,7 +123,7 @@ export default function ReviewPage() {
                                     {w.mastered ? "✓" : ""}
                                 </span>
                                 <div style={{ flex: 1, minWidth: 0 }}>
-                                    <div style={{ fontSize: 14, fontWeight: 700, color: "#1e1b4b", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                                    <div style={{ fontSize: 14, fontWeight: 700, color: "#172554", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                                         {w.question}
                                     </div>
                                     <div style={{ fontSize: 11, color: "#94a3b8", marginTop: 2 }}>
@@ -171,7 +171,7 @@ export default function ReviewPage() {
                                             <div style={{ display: "flex", gap: 8, marginTop: 16, flexWrap: "wrap" }}>
                                                 {!showAnswer[w.id] ? (
                                                     <button onClick={() => { setShowAnswer(p => ({ ...p, [w.id]: true })); markReviewed(w.id); }}
-                                                        style={{ padding: "8px 16px", borderRadius: 10, border: "none", background: "#4F46E5", color: "#fff", fontWeight: 700, fontSize: 12, cursor: "pointer" }}>
+                                                        style={{ padding: "8px 16px", borderRadius: 10, border: "none", background: "#2563eb", color: "#fff", fontWeight: 700, fontSize: 12, cursor: "pointer" }}>
                                                          정답 보기
                                                     </button>
                                                 ) : (

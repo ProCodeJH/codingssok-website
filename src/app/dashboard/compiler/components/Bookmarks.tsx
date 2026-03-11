@@ -5,7 +5,7 @@ interface Bookmark {
     id: string; line: number; text: string; color: string; timestamp: number;
 }
 
-const BOOKMARK_COLORS = ["#3b82f6", "#22c55e", "#f59e0b", "#ef4444", "#8b5cf6", "#ec4899", "#06b6d4"];
+const BOOKMARK_COLORS = ["#3b82f6", "#22c55e", "#f59e0b", "#ef4444", "#2563eb", "#ec4899", "#06b6d4"];
 const STORAGE_KEY = "codingssok-bookmarks";
 
 const loadBookmarks = (): Bookmark[] => {

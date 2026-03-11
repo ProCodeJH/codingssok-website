@@ -244,7 +244,7 @@ export default function AdminPage() {
                                 <div style={{
                                     width: 36, height: 36, borderRadius: 10,
                                     background: selectedStudent?.id === s.id
-                                        ? "linear-gradient(135deg, #0ea5e9, #6366f1)"
+                                        ? "linear-gradient(135deg, #0ea5e9, #3b82f6)"
                                         : "#e2e8f0",
                                     display: "flex", alignItems: "center", justifyContent: "center",
                                     color: selectedStudent?.id === s.id ? "#fff" : "#64748b",
@@ -278,7 +278,7 @@ export default function AdminPage() {
                             <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
                                 <div style={{
                                     width: 48, height: 48, borderRadius: 14,
-                                    background: "linear-gradient(135deg, #0ea5e9, #6366f1)",
+                                    background: "linear-gradient(135deg, #0ea5e9, #3b82f6)",
                                     display: "flex", alignItems: "center", justifyContent: "center",
                                     color: "#fff", fontWeight: 800, fontSize: 20,
                                     boxShadow: "0 8px 24px rgba(14,165,233,0.3)",

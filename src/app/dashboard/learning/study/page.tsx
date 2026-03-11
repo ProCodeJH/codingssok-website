@@ -28,7 +28,7 @@ interface Material {
 
 const TYPE_ICONS: Record<string, { icon: string; color: string; bg: string }> = {
     pdf: { icon: "picture_as_pdf", color: "#dc2626", bg: "#fee2e2" },
-    image: { icon: "image", color: "#7c3aed", bg: "#ede9fe" },
+    image: { icon: "image", color: "#1d4ed8", bg: "#dbeafe" },
     video: { icon: "movie", color: "#2563eb", bg: "#dbeafe" },
     link: { icon: "link", color: "#0891b2", bg: "#cffafe" },
 };
@@ -64,7 +64,7 @@ export default function StudyPage() {
             {/* 헤더 */}
             <div style={{ ...glassCard, borderRadius: 28, overflow: "hidden" }}>
                 <div style={{
-                    height: 100, background: "linear-gradient(135deg, #6366f1, #0ea5e9, #10b981)",
+                    height: 100, background: "linear-gradient(135deg, #3b82f6, #0ea5e9, #10b981)",
                     display: "flex", alignItems: "center", padding: "0 32px", gap: 16,
                 }}>
                     <span className="material-symbols-outlined" style={{ fontSize: 40, color: "#fff" }}>menu_book</span>
@@ -191,7 +191,7 @@ function FilterChip({ label, active, onClick, count }: { label: string; active: 
             transition={{ type: "spring", stiffness: 400, damping: 20 }}
             style={{
                 padding: "6px 14px", borderRadius: 20, border: "none",
-                background: active ? "linear-gradient(135deg, #0ea5e9, #6366f1)" : "#f1f5f9",
+                background: active ? "linear-gradient(135deg, #0ea5e9, #3b82f6)" : "#f1f5f9",
                 color: active ? "#fff" : "#64748b",
                 fontSize: 12, fontWeight: 700, cursor: "pointer",
                 display: "flex", alignItems: "center", gap: 4,

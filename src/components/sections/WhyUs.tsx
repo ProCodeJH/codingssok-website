@@ -86,7 +86,7 @@ const reasons = [
         desc: "선생님의 기준이 아닌 아이의 속도에 맞춘 밀착 코칭과 매주 발송되는 성장 리포트로 안심을 더합니다.",
         details: ["개인별 맞춤 커리큘럼", "실시간 1:1 피드백", "학부모 성장 리포트"],
         IconComponent: CoachIcon,
-        accentColor: "#6366f1",
+        accentColor: "#3b82f6",
         gradientFrom: "#e0e7ff",
         gradientTo: "#c7d2fe",
         countTo: 0,

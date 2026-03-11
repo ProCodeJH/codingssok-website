@@ -95,7 +95,7 @@ function LeftSidebar() {
                                             style={{
                                                 position: "absolute", left: 0, top: "50%", transform: "translateY(-50%)",
                                                 width: 3, height: 20, borderRadius: 4,
-                                                background: "linear-gradient(to bottom, #0ea5e9, #6366f1)",
+                                                background: "linear-gradient(to bottom, #0ea5e9, #3b82f6)",
                                                 boxShadow: "0 0 8px rgba(14,165,233,0.4)",
                                             }}
                                             transition={{ type: "spring", stiffness: 300, damping: 30 }}
@@ -127,7 +127,7 @@ function LeftSidebar() {
                         position: "relative", borderRadius: 24, padding: 20, overflow: "hidden",
                         boxShadow: "0 25px 50px -12px rgba(99,102,241,0.2)",
                     }}>
-                        <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to bottom right, #0f172a, #1e1b4b, #0f172a)" }} />
+                        <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to bottom right, #0f172a, #172554, #0f172a)" }} />
                         <div style={{ position: "absolute", right: -16, top: -16, width: 128, height: 128, background: "rgba(14,165,233,0.2)", borderRadius: "50%", filter: "blur(48px)" }} />
                         <div style={{ position: "relative", zIndex: 10 }}>
                             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 12 }}>
@@ -141,7 +141,7 @@ function LeftSidebar() {
                             <GlowPulse color="rgba(99,102,241,0.5)">
                                 <Link href="/dashboard/learning/courses" style={{
                                     display: "flex", width: "100%", padding: "10px 0", justifyContent: "center", alignItems: "center", gap: 8,
-                                    background: "linear-gradient(to right, #0ea5e9, #6366f1)", color: "#fff", borderRadius: 12, fontSize: 12, fontWeight: 700,
+                                    background: "linear-gradient(to right, #0ea5e9, #3b82f6)", color: "#fff", borderRadius: 12, fontSize: 12, fontWeight: 700,
                                     textDecoration: "none", boxShadow: "0 10px 15px -3px rgba(14,165,233,0.25)"
                                 }}>
                                     도전 시작
@@ -195,7 +195,7 @@ function Navbar({ onMenuOpen }: { onMenuOpen: () => void }) {
                             transition={{ type: "spring", stiffness: 400, damping: 15 }}
                             style={{
                                 width: 42, height: 42, borderRadius: 14, display: "flex", alignItems: "center", justifyContent: "center",
-                                background: "linear-gradient(135deg, #0ea5e9, #6366f1)", color: "#fff",
+                                background: "linear-gradient(135deg, #0ea5e9, #3b82f6)", color: "#fff",
                                 boxShadow: "0 8px 24px -4px rgba(14,165,233,0.35)"
                             }}
                         >
@@ -329,7 +329,7 @@ function MobileDrawer({ isOpen, onClose }: { isOpen: boolean; onClose: () => voi
                     >
                         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 28 }}>
                             <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-                                <div style={{ width: 36, height: 36, borderRadius: 12, background: "linear-gradient(135deg, #0ea5e9, #6366f1)", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff" }}>
+                                <div style={{ width: 36, height: 36, borderRadius: 12, background: "linear-gradient(135deg, #0ea5e9, #3b82f6)", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff" }}>
                                     <span className="material-symbols-outlined" style={{ fontSize: 20 }}>school</span>
                                 </div>
                                 <span style={{ fontSize: 18, fontWeight: 800, color: "#0f172a" }}>코딩<span style={{ color: "#0ea5e9" }}>쏙</span></span>

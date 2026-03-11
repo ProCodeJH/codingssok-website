@@ -189,7 +189,7 @@ export function FloatingCard({
  *  배경에 부드럽게 변화하는 오로라 효과
  * ═══════════════════════════════════════════ */
 export function MorphingGradient({
-    colors = ["#0ea5e9", "#6366f1", "#ec4899", "#14b8a6"],
+    colors = ["#0ea5e9", "#3b82f6", "#ec4899", "#14b8a6"],
     speed = 8,
     style,
     className,

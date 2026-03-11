@@ -21,11 +21,11 @@ export const cardFloating: React.CSSProperties = {
 };
 
 export const TYPE_STYLES: Record<string, { icon: string; color: string; bg: string }> = {
-    "이론": { icon: "", color: "#6366f1", bg: "#eef2ff" },
+    "이론": { icon: "", color: "#3b82f6", bg: "#EFF6FF" },
     "실습": { icon: "", color: "#10b981", bg: "#dcfce7" },
     "퀴즈": { icon: "?", color: "#f59e0b", bg: "#fef3c7" },
     "시험": { icon: "", color: "#ef4444", bg: "#fee2e2" },
-    "종합": { icon: "", color: "#8b5cf6", bg: "#f5f3ff" },
+    "종합": { icon: "", color: "#2563eb", bg: "#eff6ff" },
 };
 
 export const DIFF_LABELS = ["", "⭐", "⭐⭐", "⭐⭐⭐"];
@@ -39,12 +39,12 @@ export function QuizPanel({ quiz, unit, selectedAnswer, setSelectedAnswer, quizR
     return (
         <motion.div animate={shaking ? { x: [0, -8, 8, -6, 6, -3, 3, 0] } : {}} transition={{ duration: 0.5 }}
             style={{ padding: 24, borderRadius: 24, ...glassPanel, border: "1px solid rgba(14,165,233,0.15)", position: "relative", overflow: "hidden" }}>
-            <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 3, background: "linear-gradient(90deg, #0ea5e9, #6366f1)" }} />
+            <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 3, background: "linear-gradient(90deg, #0ea5e9, #3b82f6)" }} />
 
             <div style={{ marginBottom: 20, display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
                 <div>
                     <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8 }}>
-                        <span style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", width: 28, height: 28, borderRadius: 10, background: "linear-gradient(135deg, #0ea5e9, #6366f1)", color: "#fff", fontSize: 13 }}></span>
+                        <span style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", width: 28, height: 28, borderRadius: 10, background: "linear-gradient(135deg, #0ea5e9, #3b82f6)", color: "#fff", fontSize: 13 }}></span>
                         <span style={{ fontSize: 10, fontWeight: 800, color: "#0ea5e9", letterSpacing: 1.5, textTransform: "uppercase" as const }}>확인 퀴즈</span>
                     </div>
                     <p style={{ fontSize: 15, fontWeight: 700, color: "#0f172a", margin: 0, lineHeight: 1.6 }}>{quiz.question}</p>
@@ -114,7 +114,7 @@ export function QuizPanel({ quiz, unit, selectedAnswer, setSelectedAnswer, quizR
 
             {!quizResult && selectedAnswer !== null && (
                 <motion.button whileHover={{ scale: 1.02, y: -2 }} whileTap={{ scale: 0.97 }} onClick={onCheck}
-                    style={{ padding: "14px 32px", borderRadius: 16, border: "none", fontSize: 14, fontWeight: 800, background: "linear-gradient(135deg, #0ea5e9, #6366f1)", color: "#fff", cursor: "pointer", boxShadow: "0 8px 24px rgba(14,165,233,0.25)", display: "flex", alignItems: "center", gap: 8 }}>
+                    style={{ padding: "14px 32px", borderRadius: 16, border: "none", fontSize: 14, fontWeight: 800, background: "linear-gradient(135deg, #0ea5e9, #3b82f6)", color: "#fff", cursor: "pointer", boxShadow: "0 8px 24px rgba(14,165,233,0.25)", display: "flex", alignItems: "center", gap: 8 }}>
                     <span>◎</span> <span>정답 확인</span>
                 </motion.button>
             )}
@@ -135,11 +135,11 @@ export function CodeProblemCard({ prob, editorCode, setEditorCode, runResult, ru
     return (
         <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ type: "spring", stiffness: 200, damping: 25 }}
             style={{ borderRadius: 24, overflow: "hidden", background: "linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%)", border: "1px solid rgba(226,232,240,0.6)", boxShadow: "0 20px 40px -10px rgba(0,0,0,0.05)", position: "relative" }}>
-            <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 3, background: "linear-gradient(90deg, #6366f1, #0ea5e9, #10b981)" }} />
+            <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 3, background: "linear-gradient(90deg, #3b82f6, #0ea5e9, #10b981)" }} />
 
             <div style={{ padding: "22px 24px 18px", display: "flex", justifyContent: "space-between", alignItems: "center", borderBottom: "1px solid rgba(241,245,249,0.8)" }}>
                 <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-                    <div style={{ width: 36, height: 36, borderRadius: 12, background: "linear-gradient(135deg, #6366f1, #0ea5e9)", display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 4px 12px rgba(99,102,241,0.25)" }}>
+                    <div style={{ width: 36, height: 36, borderRadius: 12, background: "linear-gradient(135deg, #3b82f6, #0ea5e9)", display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 4px 12px rgba(99,102,241,0.25)" }}>
                         <span style={{ fontSize: 16, color: "#fff" }}></span>
                     </div>
                     <h5 style={{ fontSize: 15, fontWeight: 800, color: "#0f172a", margin: 0 }}>{prob.title}</h5>

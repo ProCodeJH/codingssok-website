@@ -37,7 +37,7 @@ export const BADGE_CATALOG: Omit<Badge, "unlockedAt">[] = [
 const RARITY_COLORS: Record<string, string> = {
     common: "#94a3b8",
     rare: "#3B82F6",
-    epic: "#8B5CF6",
+    epic: "#2563eb",
     legendary: "#F59E0B",
 };
 

@@ -73,7 +73,7 @@ export default function Achievements({ onClose, stats }: AchievementsProps) {
                     <div style={{ fontSize: 10, color: "#b0a898" }}>XP</div>
                 </div>
                 <div style={{ flex: 1, background: "#252320", borderRadius: 10, padding: "10px 14px", textAlign: "center", border: "1px solid #3a3632" }}>
-                    <div style={{ fontSize: 22, fontWeight: 900, color: "#818cf8" }}>{Math.round((unlockedCount / achievements.length) * 100)}%</div>
+                    <div style={{ fontSize: 22, fontWeight: 900, color: "#60a5fa" }}>{Math.round((unlockedCount / achievements.length) * 100)}%</div>
                     <div style={{ fontSize: 10, color: "#b0a898" }}>완료율</div>
                 </div>
             </div>

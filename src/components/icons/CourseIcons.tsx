@@ -74,7 +74,7 @@ export function PythonIcon({ size = 32, className, style }: IconProps) {
             <defs>
                 <linearGradient id="py-bg" x1="0" y1="0" x2="48" y2="48">
                     <stop offset="0%" stopColor="#3b82f6" />
-                    <stop offset="100%" stopColor="#6366f1" />
+                    <stop offset="100%" stopColor="#3b82f6" />
                 </linearGradient>
                 <linearGradient id="py-shine" x1="0" y1="0" x2="48" y2="48">
                     <stop offset="0%" stopColor="#fff" stopOpacity="0.2" />
@@ -185,7 +185,7 @@ export function CertificationIcon({ size = 32, className, style }: IconProps) {
         <svg width={size} height={size} viewBox="0 0 48 48" fill="none" className={className} style={style}>
             <defs>
                 <linearGradient id="ce-bg" x1="0" y1="0" x2="48" y2="48">
-                    <stop offset="0%" stopColor="#8b5cf6" />
+                    <stop offset="0%" stopColor="#2563eb" />
                     <stop offset="100%" stopColor="#d946ef" />
                 </linearGradient>
                 <linearGradient id="ce-shine" x1="0" y1="0" x2="48" y2="48">

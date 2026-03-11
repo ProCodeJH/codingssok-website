@@ -39,7 +39,7 @@ export default function BadgeNotification() {
                         <div style={{ fontSize: 10, fontWeight: 700, color: RARITY_COLORS[newBadge.rarity], textTransform: "uppercase", letterSpacing: "0.1em" }}>
                             🎉 배지 획득!
                         </div>
-                        <div style={{ fontSize: 16, fontWeight: 800, color: "#1e1b4b" }}>
+                        <div style={{ fontSize: 16, fontWeight: 800, color: "#172554" }}>
                             {newBadge.name}
                         </div>
                         <div style={{ fontSize: 11, color: "#94a3b8" }}>

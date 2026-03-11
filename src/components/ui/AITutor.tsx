@@ -72,7 +72,7 @@ export default function AITutor({ context }: { context?: string }) {
                 style={{
                     position: "fixed", bottom: 24, right: 24, zIndex: 9000,
                     width: 56, height: 56, borderRadius: "50%", border: "none",
-                    background: "linear-gradient(135deg, #4F46E5, #6366F1)",
+                    background: "linear-gradient(135deg, #2563eb, #6366F1)",
                     color: "#fff", fontSize: 24, cursor: "pointer",
                     boxShadow: "0 8px 24px rgba(79,70,229,0.4)",
                     display: "flex", alignItems: "center", justifyContent: "center",
@@ -101,7 +101,7 @@ export default function AITutor({ context }: { context?: string }) {
                         {/* Header */}
                         <div style={{
                             padding: "16px 20px", borderBottom: "1px solid #e2e8f0",
-                            background: "linear-gradient(135deg, #4F46E5, #6366F1)",
+                            background: "linear-gradient(135deg, #2563eb, #6366F1)",
                         }}>
                             <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
                                 <div style={{
@@ -137,7 +137,7 @@ export default function AITutor({ context }: { context?: string }) {
                                         {["변수가 뭐야?", "포인터 설명해줘", "배열 알려줘"].map(q => (
                                             <button key={q} onClick={() => { setInput(q); }} style={{
                                                 padding: "8px 12px", borderRadius: 10, border: "1px solid #e2e8f0",
-                                                background: "#f8fafc", fontSize: 12, color: "#4F46E5", fontWeight: 600,
+                                                background: "#f8fafc", fontSize: 12, color: "#2563eb", fontWeight: 600,
                                                 cursor: "pointer",
                                             }}>
                                                 {q}
@@ -159,8 +159,8 @@ export default function AITutor({ context }: { context?: string }) {
                                 >
                                     <div style={{
                                         padding: "10px 14px", borderRadius: 14,
-                                        background: msg.role === "user" ? "#4F46E5" : "#f1f5f9",
-                                        color: msg.role === "user" ? "#fff" : "#1e1b4b",
+                                        background: msg.role === "user" ? "#2563eb" : "#f1f5f9",
+                                        color: msg.role === "user" ? "#fff" : "#172554",
                                         fontSize: 13, lineHeight: 1.6, whiteSpace: "pre-wrap",
                                         borderBottomRightRadius: msg.role === "user" ? 4 : 14,
                                         borderBottomLeftRadius: msg.role === "assistant" ? 4 : 14,
@@ -212,7 +212,7 @@ export default function AITutor({ context }: { context?: string }) {
                                 disabled={!input.trim()}
                                 style={{
                                     padding: "10px 16px", borderRadius: 12, border: "none",
-                                    background: input.trim() ? "#4F46E5" : "#e2e8f0",
+                                    background: input.trim() ? "#2563eb" : "#e2e8f0",
                                     color: input.trim() ? "#fff" : "#94a3b8",
                                     fontWeight: 700, fontSize: 13, cursor: input.trim() ? "pointer" : "default",
                                 }}

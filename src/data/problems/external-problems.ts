@@ -281,14 +281,14 @@ const BACKTRACKING: ExternalProblem[] = [
 
 // ═══ Problem Sets ═══
 export const PROBLEM_SETS: ProblemSet[] = [
-    { id:'io',     title:'입출력 기초',     description:'프로그래밍의 첫 걸음: 입출력 연습',          icon:'terminal',     color:'#6366f1', problems: IO_BASICS },
+    { id:'io',     title:'입출력 기초',     description:'프로그래밍의 첫 걸음: 입출력 연습',          icon:'terminal',     color:'#3b82f6', problems: IO_BASICS },
     { id:'cond',   title:'조건문',          description:'if/else로 판단하고 분기하기',                icon:'call_split',   color:'#f59e0b', problems: CONDITIONS },
     { id:'loop',   title:'반복문',          description:'for/while로 패턴과 합계 구하기',            icon:'loop',         color:'#10b981', problems: LOOPS },
     { id:'array',  title:'배열 & 문자열',   description:'배열 활용과 문자열 처리',                    icon:'data_array',   color:'#3b82f6', problems: ARRAY_STR },
     { id:'math',   title:'수학',            description:'수학적 사고와 공식 활용',                    icon:'calculate',    color:'#a855f7', problems: MATH },
     { id:'sort',   title:'정렬 & 탐색',     description:'정렬 알고리즘과 이진 탐색',                 icon:'sort',         color:'#ec4899', problems: SORT_SEARCH },
     { id:'stack',  title:'스택 & 큐',       description:'스택/큐/덱 자료구조 활용',                  icon:'layers',       color:'#f97316', problems: STACK_QUEUE },
-    { id:'dp',     title:'재귀 & DP',       description:'재귀 함수와 동적 프로그래밍',               icon:'account_tree', color:'#8b5cf6', problems: RECURSION_DP },
+    { id:'dp',     title:'재귀 & DP',       description:'재귀 함수와 동적 프로그래밍',               icon:'account_tree', color:'#2563eb', problems: RECURSION_DP },
     { id:'graph',  title:'그래프 (BFS/DFS)', description:'그래프 탐색 알고리즘',                     icon:'hub',          color:'#ef4444', problems: GRAPH },
     { id:'greedy', title:'그리디',          description:'탐욕적 알고리즘으로 최적해 구하기',          icon:'trending_up',  color:'#14b8a6', problems: GREEDY },
     { id:'hash',   title:'해시 & 집합',     description:'해시맵과 집합으로 효율적 탐색',              icon:'tag',          color:'#0ea5e9', problems: HASH },

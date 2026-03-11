@@ -72,7 +72,7 @@ export default function ProfilePage() {
     intermediate: '#3B82F6',
     advanced: '#F59E0B',
     expert: '#EF4444',
-    master: '#8B5CF6',
+    master: '#2563eb',
   }
 
   // Generate heatmap grid (last 365 days)
@@ -174,7 +174,7 @@ export default function ProfilePage() {
             </div>
             <div className="flex items-center gap-3">
               <code className="text-2xl font-bold tracking-[0.3em] px-4 py-2 rounded-xl" 
-                style={{ background: 'rgba(99,102,241,0.1)', color: '#6366f1', fontFamily: "'JetBrains Mono', monospace" }}>
+                style={{ background: 'rgba(99,102,241,0.1)', color: '#3b82f6', fontFamily: "'JetBrains Mono', monospace" }}>
                 {pin}
               </code>
               <button onClick={regeneratePin} className="text-xs px-3 py-2 rounded-lg"
@@ -193,7 +193,7 @@ export default function ProfilePage() {
           { label: '풀은 문제', value: stats.solvedProblems, icon: <Target size={16} />, color: '#10B981' },
           { label: '총 제출', value: stats.totalSubmissions, icon: <BarChart3 size={16} />, color: '#3B82F6' },
           { label: '정답률', value: `${stats.accuracy}%`, icon: <TrendingUp size={16} />, color: '#F59E0B' },
-          { label: '학습 노트', value: stats.notesCount, icon: <FileText size={16} />, color: '#8B5CF6' },
+          { label: '학습 노트', value: stats.notesCount, icon: <FileText size={16} />, color: '#2563eb' },
           { label: '학습 자료', value: stats.materialsViewed, icon: <BookOpen size={16} />, color: '#06B6D4' },
         ].map((stat, i) => (
           <div key={i} className="glass-premium rounded-xl p-4 text-center" style={{ border: '1px solid var(--color-border)' }}>

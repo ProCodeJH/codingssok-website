@@ -30,7 +30,7 @@ const COLOR_FREQ_MAP: Record<string, number> = {
     "#ef4444": 698.46, // F5 — red
     "#ec4899": 783.99, // G5 — pink
     "#f97316": 880.00, // A5 — orange
-    "#8b5cf6": 987.77, // B5 — purple
+    "#2563eb": 987.77, // B5 — purple
 };
 
 function getFreqForColor(color: string): number {

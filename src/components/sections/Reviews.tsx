@@ -38,7 +38,7 @@ const REVIEWS = [
         subtext: "전국 코딩학원 상위",
         score: 4.8,
         fill: 96,
-        barGrad: "linear-gradient(to right, #3b82f6, #6366f1)",
+        barGrad: "linear-gradient(to right, #3b82f6, #3b82f6)",
         glowBg: "rgba(59,130,246,0.1)",
         dotBg: "#3b82f6",
         integrity: "89건",

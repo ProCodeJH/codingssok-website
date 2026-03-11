@@ -90,7 +90,7 @@ export default function LearningContentPage() {
         if (selectedAnswer === quiz.answer) {
             setQuizResult("correct");
             //  Confetti celebration!
-            confetti({ particleCount: 200, spread: 80, origin: { y: 0.75 }, colors: ['#4F46E5', '#F59E0B', '#34D399', '#818CF8'] });
+            confetti({ particleCount: 200, spread: 80, origin: { y: 0.75 }, colors: ['#2563eb', '#F59E0B', '#34D399', '#818CF8'] });
             if (user?.id) {
                 awardXP(user.id, XP_REWARDS.lesson_complete, "퀴즈 정답", "check_circle").then(r => {
                     if (r?.levelUp) setLevelUpInfo({ level: r.level });
@@ -269,7 +269,7 @@ export default function LearningContentPage() {
                 <h2 style={{ fontSize: 20, fontWeight: 800, color: "#334155" }}>페이지를 찾을 수 없습니다</h2>
                 <p style={{ fontSize: 13, color: "#94a3b8" }}>이 유닛에는 {pages.length}개의 페이지가 있습니다.</p>
                 {pages.length > 0 && (
-                    <button onClick={() => navigatePage(pages[0].id)} style={{ padding: "8px 20px", borderRadius: 12, border: "none", background: "linear-gradient(135deg, #0ea5e9, #6366f1)", color: "#fff", fontWeight: 700, fontSize: 13, cursor: "pointer" }}>
+                    <button onClick={() => navigatePage(pages[0].id)} style={{ padding: "8px 20px", borderRadius: 12, border: "none", background: "linear-gradient(135deg, #0ea5e9, #3b82f6)", color: "#fff", fontWeight: 700, fontSize: 13, cursor: "pointer" }}>
                         첫 번째 페이지로 이동
                     </button>
                 )}
@@ -328,7 +328,7 @@ export default function LearningContentPage() {
                                 transition: "all 0.2s",
                             }}>
                             {icon} {pg.id}. {pg.title}
-                            {isActive && <motion.div layoutId="page-tab-indicator" style={{ position: "absolute", bottom: 2, left: 8, right: 8, height: 2, background: "linear-gradient(90deg, #0ea5e9, #6366f1)", borderRadius: 999 }} />}
+                            {isActive && <motion.div layoutId="page-tab-indicator" style={{ position: "absolute", bottom: 2, left: 8, right: 8, height: 2, background: "linear-gradient(90deg, #0ea5e9, #3b82f6)", borderRadius: 999 }} />}
                         </motion.button>
                     );
                 })}
@@ -338,7 +338,7 @@ export default function LearningContentPage() {
             <motion.div ref={contentRef} initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}
                 style={{ ...glassPanel, borderRadius: 28, overflow: "hidden", position: "relative" }}>
                 {/* Gradient top bar */}
-                <div style={{ height: 3, background: "linear-gradient(90deg, #0ea5e9, #6366f1, #8b5cf6)" }} />
+                <div style={{ height: 3, background: "linear-gradient(90deg, #0ea5e9, #3b82f6, #2563eb)" }} />
 
                 {/* Page Header */}
                 <div style={{ padding: "32px 36px 0", borderBottom: "1px solid rgba(14,165,233,0.06)" }}>
@@ -349,7 +349,7 @@ export default function LearningContentPage() {
                         <span style={{
                             padding: "2px 10px", borderRadius: 8, fontSize: 10, fontWeight: 700,
                             background: currentPage.type === '퀴즈' ? "rgba(168,85,247,0.08)" : currentPage.type === '핵심정리' ? "rgba(14,165,233,0.08)" : "rgba(16,185,129,0.08)",
-                            color: currentPage.type === '퀴즈' ? "#7c3aed" : currentPage.type === '핵심정리' ? "#0284c7" : "#059669",
+                            color: currentPage.type === '퀴즈' ? "#1d4ed8" : currentPage.type === '핵심정리' ? "#0284c7" : "#059669",
                         }}>
                             {pageIcon} {currentPage.type}
                         </span>
@@ -427,7 +427,7 @@ export default function LearningContentPage() {
                         onClick={() => nextUnitInfo
                             ? router.push(`/dashboard/learning/courses/${courseId}/units/${nextUnitInfo.unitIdx}/pages/${nextUnitInfo.firstPageId}`)
                             : router.push(`/dashboard/learning/courses/${courseId}`)}
-                        style={{ padding: "14px 28px", border: "none", cursor: "pointer", borderRadius: 16, background: nextUnitInfo ? "linear-gradient(135deg, #6366f1, #8b5cf6)" : "linear-gradient(135deg, #10b981, #059669)", color: "#fff", fontWeight: 800, fontSize: 13, boxShadow: nextUnitInfo ? "0 4px 16px rgba(99,102,241,0.2)" : "0 4px 16px rgba(16,185,129,0.2)" }}>
+                        style={{ padding: "14px 28px", border: "none", cursor: "pointer", borderRadius: 16, background: nextUnitInfo ? "linear-gradient(135deg, #3b82f6, #2563eb)" : "linear-gradient(135deg, #10b981, #059669)", color: "#fff", fontWeight: 800, fontSize: 13, boxShadow: nextUnitInfo ? "0 4px 16px rgba(99,102,241,0.2)" : "0 4px 16px rgba(16,185,129,0.2)" }}>
                         {nextUnitInfo ? `다음 유닛 → ${nextUnitInfo.unit.title}` : "✓ 유닛 완료 · 목록으로 돌아가기"}
                     </motion.button>
                 )}
@@ -461,7 +461,7 @@ export default function LearningContentPage() {
                         onClick={() => navigatePage(nextPage.id)}
                         style={{
                             padding: "8px 20px", border: "none", borderRadius: 12,
-                            background: "linear-gradient(135deg, #6366f1, #8b5cf6)", cursor: "pointer",
+                            background: "linear-gradient(135deg, #3b82f6, #2563eb)", cursor: "pointer",
                             fontSize: 13, fontWeight: 700, color: "#fff",
                             display: "flex", alignItems: "center", gap: 6,
                             boxShadow: "0 4px 12px rgba(99,102,241,0.25)", transition: "all 0.2s",
@@ -475,7 +475,7 @@ export default function LearningContentPage() {
                             : router.push(`/dashboard/learning/courses/${courseId}`)}
                         style={{
                             padding: "8px 20px", border: "none", borderRadius: 12,
-                            background: nextUnitInfo ? "linear-gradient(135deg, #6366f1, #8b5cf6)" : "linear-gradient(135deg, #10b981, #059669)", cursor: "pointer",
+                            background: nextUnitInfo ? "linear-gradient(135deg, #3b82f6, #2563eb)" : "linear-gradient(135deg, #10b981, #059669)", cursor: "pointer",
                             fontSize: 13, fontWeight: 700, color: "#fff",
                             display: "flex", alignItems: "center", gap: 6,
                             boxShadow: nextUnitInfo ? "0 4px 12px rgba(99,102,241,0.25)" : "0 4px 12px rgba(16,185,129,0.25)",

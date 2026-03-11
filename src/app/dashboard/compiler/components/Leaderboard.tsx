@@ -18,7 +18,7 @@ const getToday = () => new Date().toISOString().split("T")[0];
 
 const getTierInfo = (solved: number): { name: string; color: string; nextTier: string; nextAt: number; emoji: string } => {
     if (solved >= 100) return { name: "Diamond", color: "#67e8f9", nextTier: "MAX", nextAt: 100, emoji: "" };
-    if (solved >= 50) return { name: "Platinum", color: "#a78bfa", nextTier: "Diamond", nextAt: 100, emoji: "★" };
+    if (solved >= 50) return { name: "Platinum", color: "#60a5fa", nextTier: "Diamond", nextAt: 100, emoji: "★" };
     if (solved >= 25) return { name: "Gold", color: "#fbbf24", nextTier: "Platinum", nextAt: 50, emoji: "" };
     if (solved >= 10) return { name: "Silver", color: "#94a3b8", nextTier: "Gold", nextAt: 25, emoji: "" };
     return { name: "Bronze", color: "#d97706", nextTier: "Silver", nextAt: 10, emoji: "" };
@@ -85,7 +85,7 @@ export function Leaderboard({ isOpen, onClose }: Props) {
                         { label: "총 해결", value: stats.totalSolved, icon: "◎", color: "#22c55e" },
                         { label: "연속일", value: stats.streak, icon: "", color: "#f59e0b" },
                         { label: "오늘 해결", value: todayCount, icon: "", color: "#3b82f6" },
-                        { label: "총 활동일", value: Object.keys(stats.dailyLog).length, icon: "≡", color: "#8b5cf6" },
+                        { label: "총 활동일", value: Object.keys(stats.dailyLog).length, icon: "≡", color: "#2563eb" },
                     ].map(s => (
                         <div key={s.label} style={{ padding: 14, background: "rgba(0,0,0,0.15)", borderRadius: 10, textAlign: "center" }}>
                             <div style={{ fontSize: 20, marginBottom: 4 }}>{s.icon}</div>

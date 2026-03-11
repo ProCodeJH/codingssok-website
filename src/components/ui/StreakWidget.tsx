@@ -29,7 +29,7 @@ export default function StreakWidget() {
                     {streak.currentStreak > 0 ? "🔥" : "💤"}
                 </motion.span>
                 <div style={{ flex: 1 }}>
-                    <div style={{ fontWeight: 800, fontSize: 22, color: "#1e1b4b", letterSpacing: "-0.03em" }}>
+                    <div style={{ fontWeight: 800, fontSize: 22, color: "#172554", letterSpacing: "-0.03em" }}>
                         {streak.currentStreak}일 연속
                     </div>
                     <div style={{ fontSize: 11, color: "#94a3b8" }}>
@@ -65,7 +65,7 @@ export default function StreakWidget() {
                                 animate={{ scale: 1 }}
                                 style={{
                                     width: "100%", aspectRatio: "1", borderRadius: 8,
-                                    background: isActive ? "linear-gradient(135deg, #4F46E5, #6366F1)"
+                                    background: isActive ? "linear-gradient(135deg, #2563eb, #6366F1)"
                                         : isFrozen ? "linear-gradient(135deg, #67E8F9, #22D3EE)"
                                             : "#f1f5f9",
                                     display: "flex", alignItems: "center", justifyContent: "center",

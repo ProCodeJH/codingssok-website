@@ -49,7 +49,7 @@ export default function TrialPage() {
             <div style={{ display: "flex", alignItems: "center", justifyContent: "center", minHeight: "100vh", flexDirection: "column", gap: 16 }}>
                 <span className="material-symbols-outlined" style={{ fontSize: 48, opacity: 0.3, color: "#94a3b8" }}>inbox</span>
                 <p style={{ color: "#64748b" }}>체험 가능한 콘텐츠가 없습니다.</p>
-                <Link href="/" style={{ color: "#4F46E5", fontWeight: 600 }}>← 홈으로</Link>
+                <Link href="/" style={{ color: "#2563eb", fontWeight: 600 }}>← 홈으로</Link>
             </div>
         );
     }
@@ -57,7 +57,7 @@ export default function TrialPage() {
     return (
         <div style={{
             minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center",
-            background: "linear-gradient(135deg, #EEF2FF 0%, #FDFAF5 50%, #FFFBEB 100%)",
+            background: "linear-gradient(135deg, #EFF6FF 0%, #FDFAF5 50%, #FFFBEB 100%)",
             padding: 20,
         }}>
             <motion.div
@@ -97,7 +97,7 @@ export default function TrialPage() {
                         무료 체험
                     </span>
 
-                    <h1 style={{ fontSize: 28, fontWeight: 800, color: "#1e1b4b", letterSpacing: "-0.03em", marginBottom: 8 }}>
+                    <h1 style={{ fontSize: 28, fontWeight: 800, color: "#172554", letterSpacing: "-0.03em", marginBottom: 8 }}>
                         {trialTarget.courseTitle}
                     </h1>
 
@@ -116,7 +116,7 @@ export default function TrialPage() {
                     onClick={() => router.push(`/dashboard/learning/courses/${trialTarget.courseId}/units/${trialTarget.unitIdx}/pages/${trialTarget.pageId}`)}
                     style={{
                         width: "100%", padding: "16px", border: "none", borderRadius: 16,
-                        background: "linear-gradient(135deg, #4F46E5, #6366F1)", color: "#fff",
+                        background: "linear-gradient(135deg, #2563eb, #6366F1)", color: "#fff",
                         fontSize: 16, fontWeight: 800, cursor: "pointer",
                         boxShadow: "0 8px 24px rgba(79,70,229,0.3)",
                     }}

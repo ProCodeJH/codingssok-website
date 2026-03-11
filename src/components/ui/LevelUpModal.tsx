@@ -17,7 +17,7 @@ export default function LevelUpModal({ level, onClose }: LevelUpModalProps) {
             id: i,
             x: Math.random() * 100,
             y: Math.random() * 100,
-            color: ['#fbbf24', '#f59e0b', '#6366f1', '#ec4899', '#10b981', '#0ea5e9', '#f43f5e'][Math.floor(Math.random() * 7)],
+            color: ['#fbbf24', '#f59e0b', '#3b82f6', '#ec4899', '#10b981', '#0ea5e9', '#f43f5e'][Math.floor(Math.random() * 7)],
             size: Math.random() * 8 + 4,
             delay: Math.random() * 0.5,
         }));
@@ -112,7 +112,7 @@ export default function LevelUpModal({ level, onClose }: LevelUpModalProps) {
 
                     <div style={{
                         fontSize: 80, fontWeight: 900,
-                        background: "linear-gradient(135deg, #fbbf24, #f59e0b, #6366f1)",
+                        background: "linear-gradient(135deg, #fbbf24, #f59e0b, #3b82f6)",
                         WebkitBackgroundClip: "text",
                         WebkitTextFillColor: "transparent",
                         animation: "lvlup-number 0.8s 0.2s cubic-bezier(0.34,1.56,0.64,1) both, lvlup-glow 2s 1s ease-in-out infinite",

@@ -41,7 +41,7 @@ export interface ExecutionStep {
 // ── Variable Box ──
 function VarBox({ cell }: { cell: MemoryCell }) {
     const typeColors: Record<string, string> = {
-        int: "#4F46E5", float: "#0EA5E9", char: "#F59E0B",
+        int: "#2563eb", float: "#0EA5E9", char: "#F59E0B",
         string: "#34D399", pointer: "#EF4444",
     };
     const color = typeColors[cell.type] || "#94a3b8";
@@ -70,7 +70,7 @@ function VarBox({ cell }: { cell: MemoryCell }) {
                     padding: "6px 14px", borderRadius: 8, minWidth: 40, textAlign: "center",
                     background: cell.highlight ? color + "15" : "#f8fafc",
                     border: `2px solid ${color}`,
-                    fontSize: 14, fontWeight: 700, color: "#1e1b4b",
+                    fontSize: 14, fontWeight: 700, color: "#172554",
                     fontFamily: "JetBrains Mono, monospace",
                 }}
             >
@@ -87,7 +87,7 @@ function VarBox({ cell }: { cell: MemoryCell }) {
 // ── Array visualization ──
 function ArrayViz({ arr }: { arr: ArrayCell }) {
     const typeColors: Record<string, string> = {
-        int: "#4F46E5", float: "#0EA5E9", char: "#F59E0B",
+        int: "#2563eb", float: "#0EA5E9", char: "#F59E0B",
     };
     const color = typeColors[arr.type] || "#94a3b8";
 
@@ -108,7 +108,7 @@ function ArrayViz({ arr }: { arr: ArrayCell }) {
                             borderRadius: idx === 0 ? "6px 0 0 6px" : idx === arr.values.length - 1 ? "0 6px 6px 0" : 0,
                             background: arr.highlightIndex === idx ? color + "20" : "#fff",
                             fontSize: 13, fontWeight: 700, fontFamily: "JetBrains Mono, monospace",
-                            color: "#1e1b4b",
+                            color: "#172554",
                         }}>
                             {val}
                         </div>
@@ -154,7 +154,7 @@ export default function CodeVisualizer({ steps }: { steps: ExecutionStep[] }) {
                 borderBottom: "1px solid #e2e8f0",
                 display: "flex", alignItems: "center", justifyContent: "space-between",
             }}>
-                <span style={{ fontSize: 12, fontWeight: 700, color: "#4F46E5" }}>
+                <span style={{ fontSize: 12, fontWeight: 700, color: "#2563eb" }}>
                     🔍 메모리 시각화
                 </span>
                 <span style={{ fontSize: 11, color: "#94a3b8" }}>
@@ -165,8 +165,8 @@ export default function CodeVisualizer({ steps }: { steps: ExecutionStep[] }) {
             <div style={{ padding: 16 }}>
                 {/* Step label */}
                 <div style={{
-                    padding: "8px 12px", borderRadius: 8, background: "#EEF2FF",
-                    fontSize: 12, color: "#4F46E5", fontWeight: 600, marginBottom: 12,
+                    padding: "8px 12px", borderRadius: 8, background: "#EFF6FF",
+                    fontSize: 12, color: "#2563eb", fontWeight: 600, marginBottom: 12,
                     fontFamily: "JetBrains Mono, monospace",
                 }}>
                     📍 Line {step.line}: {step.label}
@@ -213,7 +213,7 @@ export default function CodeVisualizer({ steps }: { steps: ExecutionStep[] }) {
                     disabled={currentStep === 0}
                     style={{
                         padding: "6px 14px", borderRadius: 8, border: "none",
-                        background: currentStep === 0 ? "#f1f5f9" : "#4F46E5",
+                        background: currentStep === 0 ? "#f1f5f9" : "#2563eb",
                         color: currentStep === 0 ? "#94a3b8" : "#fff",
                         fontWeight: 700, fontSize: 12, cursor: currentStep === 0 ? "default" : "pointer",
                     }}
@@ -229,7 +229,7 @@ export default function CodeVisualizer({ steps }: { steps: ExecutionStep[] }) {
                             onClick={() => setCurrentStep(i)}
                             style={{
                                 width: 8, height: 8, borderRadius: "50%",
-                                background: i === currentStep ? "#4F46E5" : i < currentStep ? "#818CF8" : "#e2e8f0",
+                                background: i === currentStep ? "#2563eb" : i < currentStep ? "#818CF8" : "#e2e8f0",
                                 cursor: "pointer", transition: "all 0.2s",
                             }}
                         />
@@ -241,7 +241,7 @@ export default function CodeVisualizer({ steps }: { steps: ExecutionStep[] }) {
                     disabled={currentStep === steps.length - 1}
                     style={{
                         padding: "6px 14px", borderRadius: 8, border: "none",
-                        background: currentStep === steps.length - 1 ? "#f1f5f9" : "#4F46E5",
+                        background: currentStep === steps.length - 1 ? "#f1f5f9" : "#2563eb",
                         color: currentStep === steps.length - 1 ? "#94a3b8" : "#fff",
                         fontWeight: 700, fontSize: 12, cursor: currentStep === steps.length - 1 ? "default" : "pointer",
                     }}

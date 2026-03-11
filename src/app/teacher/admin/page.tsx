@@ -203,7 +203,7 @@ export default function TeacherAdmin() {
         return (
             <div style={{ minHeight: "100vh", background: "#F8FAFC", display: "flex", alignItems: "center", justifyContent: "center", flexDirection: "column", gap: 12 }}>
                 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" />
-                <span className="material-symbols-outlined" style={{ fontSize: 32, color: "#6366f1", animation: "spin 1s linear infinite" }}>progress_activity</span>
+                <span className="material-symbols-outlined" style={{ fontSize: 32, color: "#3b82f6", animation: "spin 1s linear infinite" }}>progress_activity</span>
                 <span style={{ fontSize: 14, color: "#94a3b8", fontWeight: 500 }}>인증 확인 중...</span>
                 <style>{`@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }`}</style>
             </div>
@@ -221,7 +221,7 @@ export default function TeacherAdmin() {
             }}>
                 <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
                     <Link href="/" style={{ fontSize: 13, color: "#94a3b8", textDecoration: "none" }}>← 홈</Link>
-                    <h1 style={{ fontSize: 18, fontWeight: 800, color: "#1e1b4b" }}>👨‍🏫 선생님 관리 패널</h1>
+                    <h1 style={{ fontSize: 18, fontWeight: 800, color: "#172554" }}>👨‍🏫 선생님 관리 패널</h1>
                 </div>
                 <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                     <span style={{ fontSize: 12, color: "#64748b" }}>학생 {students.length}명</span>
@@ -241,7 +241,7 @@ export default function TeacherAdmin() {
                     ]).map(tab => (
                         <button key={tab.id} onClick={() => setActiveTab(tab.id)} style={{
                             flex: 1, padding: "10px 16px", borderRadius: 10, border: "none", cursor: "pointer",
-                            background: activeTab === tab.id ? "#4F46E5" : "transparent",
+                            background: activeTab === tab.id ? "#2563eb" : "transparent",
                             color: activeTab === tab.id ? "#fff" : "#64748b",
                             fontWeight: 700, fontSize: 13, transition: "all 0.2s",
                         }}>
@@ -256,7 +256,7 @@ export default function TeacherAdmin() {
                         {/* Summary cards */}
                         <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 12, marginBottom: 24 }}>
                             {[
-                                { label: "전체 학생", value: students.length, icon: "👥", color: "#4F46E5" },
+                                { label: "전체 학생", value: students.length, icon: "👥", color: "#2563eb" },
                                 { label: "이번 달 추가", value: students.filter(s => new Date(s.created_at).getMonth() === new Date().getMonth()).length, icon: "🆕", color: "#059669" },
                                 { label: "학년 분포", value: [...new Set(students.map(s => s.grade).filter(Boolean))].length + "개", icon: "📊", color: "#F59E0B" },
                             ].map(s => (
@@ -296,7 +296,7 @@ export default function TeacherAdmin() {
                                         alignItems: "center",
                                     }}>
                                         <div style={{ fontSize: 20 }}>{student.avatar || "🧒"}</div>
-                                        <div style={{ fontWeight: 700, fontSize: 14, color: "#1e1b4b" }}>{student.name}</div>
+                                        <div style={{ fontWeight: 700, fontSize: 14, color: "#172554" }}>{student.name}</div>
                                         <div style={{ fontSize: 13, color: "#64748b" }}>{formatBirthday(student.birthday)}</div>
                                         <div style={{ fontSize: 13, color: "#6366F1", fontWeight: 600 }}>{student.grade || "—"}</div>
                                         <div style={{ fontSize: 13, color: "#64748b" }}>{student.class || "—"}</div>
@@ -338,7 +338,7 @@ export default function TeacherAdmin() {
                             background: "#fff", borderRadius: 20, padding: "36px",
                             border: "1px solid #e2e8f0", maxWidth: 520, margin: "0 auto",
                         }}>
-                            <h3 style={{ fontSize: 20, fontWeight: 800, color: "#1e1b4b", marginBottom: 8, textAlign: "center" }}>
+                            <h3 style={{ fontSize: 20, fontWeight: 800, color: "#172554", marginBottom: 8, textAlign: "center" }}>
                                 ➕ 새 학생 추가
                             </h3>
                             <p style={{ fontSize: 13, color: "#94a3b8", textAlign: "center", marginBottom: 28 }}>
@@ -359,7 +359,7 @@ export default function TeacherAdmin() {
                                             border: "2px solid #e5e7eb", borderRadius: 14,
                                             fontSize: 15, outline: "none", boxSizing: "border-box",
                                         }}
-                                        onFocus={e => e.target.style.borderColor = "#6366f1"}
+                                        onFocus={e => e.target.style.borderColor = "#3b82f6"}
                                         onBlur={e => e.target.style.borderColor = "#e5e7eb"}
                                     />
                                 </div>
@@ -432,7 +432,7 @@ export default function TeacherAdmin() {
                                                 key={emoji} type="button"
                                                 onClick={() => setNewAvatar(emoji)}
                                                 style={{
-                                                    width: 44, height: 44, borderRadius: 12, border: newAvatar === emoji ? "2px solid #6366f1" : "2px solid #e5e7eb",
+                                                    width: 44, height: 44, borderRadius: 12, border: newAvatar === emoji ? "2px solid #3b82f6" : "2px solid #e5e7eb",
                                                     background: newAvatar === emoji ? "rgba(99,102,241,0.08)" : "#fff",
                                                     fontSize: 22, cursor: "pointer", transition: "all 0.15s",
                                                     display: "flex", alignItems: "center", justifyContent: "center",
@@ -462,7 +462,7 @@ export default function TeacherAdmin() {
                                     disabled={addLoading}
                                     style={{
                                         padding: "15px 24px", borderRadius: 14, border: "none",
-                                        background: "#4F46E5", color: "#fff",
+                                        background: "#2563eb", color: "#fff",
                                         fontWeight: 700, fontSize: 15, cursor: addLoading ? "not-allowed" : "pointer",
                                         opacity: addLoading ? 0.7 : 1, width: "100%",
                                     }}
@@ -492,7 +492,7 @@ export default function TeacherAdmin() {
                                         <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
                                             <CourseIcon courseId={course.id} size={28} />
                                             <div>
-                                                <div style={{ fontWeight: 700, fontSize: 14, color: "#1e1b4b" }}>{course.title}</div>
+                                                <div style={{ fontWeight: 700, fontSize: 14, color: "#172554" }}>{course.title}</div>
                                                 <div style={{ fontSize: 11, color: "#94a3b8" }}>
                                                     {course.chapters.reduce((a, ch) => a + ch.units.length, 0)}개 유닛 · {course.totalProblems}개 문제
                                                 </div>
@@ -520,8 +520,8 @@ export default function TeacherAdmin() {
                                                         }}>
                                                             <span style={{
                                                                 width: 24, height: 24, borderRadius: 6,
-                                                                background: "#EEF2FF", display: "flex", alignItems: "center", justifyContent: "center",
-                                                                fontSize: 11, fontWeight: 700, color: "#4F46E5",
+                                                                background: "#EFF6FF", display: "flex", alignItems: "center", justifyContent: "center",
+                                                                fontSize: 11, fontWeight: 700, color: "#2563eb",
                                                             }}>{idx + 1}</span>
                                                             <span style={{ flex: 1, fontSize: 13, fontWeight: 500, color: "#334155" }}>{unit.title}</span>
                                                             <span style={{ fontSize: 11, color: "#94a3b8" }}>
@@ -548,7 +548,7 @@ export default function TeacherAdmin() {
                 {activeTab === "notify" && (
                     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
                         <div style={{ background: "#fff", borderRadius: 16, padding: "24px", border: "1px solid #e2e8f0" }}>
-                            <h3 style={{ fontSize: 16, fontWeight: 700, color: "#1e1b4b", marginBottom: 16 }}>📢 전체 공지</h3>
+                            <h3 style={{ fontSize: 16, fontWeight: 700, color: "#172554", marginBottom: 16 }}>📢 전체 공지</h3>
 
                             <div style={{ display: "flex", gap: 6, marginBottom: 16, flexWrap: "wrap" }}>
                                 {[
@@ -560,7 +560,7 @@ export default function TeacherAdmin() {
                                     <button key={tmpl} onClick={() => setNotifyMsg(tmpl)} style={{
                                         padding: "6px 12px", borderRadius: 8, border: "1px solid #e2e8f0",
                                         background: "#f8fafc", fontSize: 11, fontWeight: 600,
-                                        color: "#4F46E5", cursor: "pointer",
+                                        color: "#2563eb", cursor: "pointer",
                                     }}>
                                         {tmpl}
                                     </button>
@@ -595,7 +595,7 @@ export default function TeacherAdmin() {
                                 disabled={!notifyMsg.trim()}
                                 style={{
                                     marginTop: 16, padding: "12px 24px", borderRadius: 12, border: "none",
-                                    background: notifyMsg.trim() ? "#4F46E5" : "#e2e8f0",
+                                    background: notifyMsg.trim() ? "#2563eb" : "#e2e8f0",
                                     color: notifyMsg.trim() ? "#fff" : "#94a3b8",
                                     fontWeight: 700, fontSize: 14, cursor: notifyMsg.trim() ? "pointer" : "default",
                                     width: "100%",
@@ -613,7 +613,7 @@ export default function TeacherAdmin() {
                         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
                             {/* Write */}
                             <div style={{ background: "#fff", borderRadius: 16, padding: 24, border: "1px solid #e2e8f0" }}>
-                                <h3 style={{ fontSize: 16, fontWeight: 700, color: "#1e1b4b", marginBottom: 16 }}>💬 피드백 작성</h3>
+                                <h3 style={{ fontSize: 16, fontWeight: 700, color: "#172554", marginBottom: 16 }}>💬 피드백 작성</h3>
                                 <select value={fbStudentId} onChange={e => setFbStudentId(e.target.value)} style={{
                                     width: "100%", padding: "12px", borderRadius: 10, border: "1px solid #e2e8f0",
                                     fontSize: 14, marginBottom: 10, outline: "none",
@@ -633,7 +633,7 @@ export default function TeacherAdmin() {
                                 {fbMsg && <div style={{ padding: "10px 14px", borderRadius: 10, fontSize: 13, marginTop: 8, background: fbMsg.ok ? "rgba(16,185,129,0.08)" : "rgba(239,68,68,0.06)", color: fbMsg.ok ? "#059669" : "#dc2626" }}>{fbMsg.text}</div>}
                                 <button onClick={sendTeacherFeedback} disabled={fbSending || !fbStudentId || !fbText.trim()} style={{
                                     marginTop: 12, padding: "12px", borderRadius: 12, border: "none", width: "100%",
-                                    background: fbStudentId && fbText.trim() ? "#4F46E5" : "#e2e8f0",
+                                    background: fbStudentId && fbText.trim() ? "#2563eb" : "#e2e8f0",
                                     color: fbStudentId && fbText.trim() ? "#fff" : "#94a3b8",
                                     fontWeight: 700, fontSize: 14, cursor: fbStudentId && fbText.trim() ? "pointer" : "default",
                                 }}>{fbSending ? "보내는 중..." : "📤 피드백 보내기"}</button>
@@ -641,14 +641,14 @@ export default function TeacherAdmin() {
 
                             {/* History */}
                             <div style={{ background: "#fff", borderRadius: 16, padding: 24, border: "1px solid #e2e8f0" }}>
-                                <h3 style={{ fontSize: 16, fontWeight: 700, color: "#1e1b4b", marginBottom: 16 }}>📋 피드백 이력 ({fbHistory.length}개)</h3>
+                                <h3 style={{ fontSize: 16, fontWeight: 700, color: "#172554", marginBottom: 16 }}>📋 피드백 이력 ({fbHistory.length}개)</h3>
                                 <div style={{ display: "flex", flexDirection: "column", gap: 8, maxHeight: 400, overflowY: "auto" }}>
                                     {fbHistory.length === 0 ? (
                                         <p style={{ fontSize: 13, color: "#94a3b8", textAlign: "center", padding: 24 }}>피드백이 없습니다</p>
                                     ) : fbHistory.map(f => (
-                                        <div key={f.id} style={{ padding: "10px 14px", borderRadius: 10, background: "#f8fafc", borderLeft: `3px solid ${f.parent_name === "선생님" ? "#4F46E5" : "#10b981"}` }}>
+                                        <div key={f.id} style={{ padding: "10px 14px", borderRadius: 10, background: "#f8fafc", borderLeft: `3px solid ${f.parent_name === "선생님" ? "#2563eb" : "#10b981"}` }}>
                                             <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 4 }}>
-                                                <span style={{ fontSize: 11, fontWeight: 700, color: f.parent_name === "선생님" ? "#4F46E5" : "#10b981" }}>
+                                                <span style={{ fontSize: 11, fontWeight: 700, color: f.parent_name === "선생님" ? "#2563eb" : "#10b981" }}>
                                                     {f.parent_name === "선생님" ? "👨‍🏫 선생님" : `👨‍👩‍👧 ${f.parent_name}`}
                                                 </span>
                                                 <span style={{ fontSize: 10, color: "#94a3b8" }}>

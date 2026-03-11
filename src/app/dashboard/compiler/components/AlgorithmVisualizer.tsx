@@ -171,7 +171,7 @@ export function AlgorithmVisualizer() {
             case "swapping": return "#f59e0b";
             case "sorted": return "#22c55e";
             case "pivot": return "#ec4899";
-            case "merging": return "#8b5cf6";
+            case "merging": return "#2563eb";
             default: return "#EC5212";
         }
     };
@@ -189,7 +189,7 @@ export function AlgorithmVisualizer() {
                 <div style={{ display: "flex", gap: 4, flexWrap: "wrap" }}>
                     {ALGORITHMS.map(a => (
                         <button key={a.id} onClick={() => !running && setAlgo(a.id)} style={{
-                            padding: "3px 8px", borderRadius: 6, border: `1px solid ${algo === a.id ? "#8b5cf6" : border}`,
+                            padding: "3px 8px", borderRadius: 6, border: `1px solid ${algo === a.id ? "#2563eb" : border}`,
                             background: algo === a.id ? "rgba(139,92,246,0.2)" : "transparent",
                             color: algo === a.id ? "#c4b5fd" : "rgba(255,255,255,0.4)", fontSize: 10, cursor: running ? "default" : "pointer", fontWeight: 600,
                         }}>{a.icon} {a.name}</button>
@@ -201,24 +201,24 @@ export function AlgorithmVisualizer() {
             <div style={{ padding: "8px 16px", borderBottom: `1px solid ${border}`, display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}>
                 <button onClick={running ? stop : start} style={{
                     padding: "6px 16px", borderRadius: 6, border: "none",
-                    background: running ? "#ef4444" : "#8b5cf6", color: "#fff", fontSize: 11, fontWeight: 700, cursor: "pointer"
+                    background: running ? "#ef4444" : "#2563eb", color: "#fff", fontSize: 11, fontWeight: 700, cursor: "pointer"
                 }}>{running ? "⏹ 정지" : "▶ 시작"}</button>
                 <button onClick={generateArray} disabled={running} style={{
                     padding: "6px 12px", borderRadius: 6, border: `1px solid ${border}`, background: "transparent",
                     color: "rgba(255,255,255,0.5)", fontSize: 11, cursor: running ? "default" : "pointer"
                 }}>🔄 새 배열</button>
                 <div style={{ display: "flex", alignItems: "center", gap: 4, fontSize: 10, color: "rgba(255,255,255,0.35)" }}>
-                    속도: <input type="range" min={5} max={200} value={200 - speed} onChange={e => setSpeed(200 - Number(e.target.value))} style={{ width: 60, accentColor: "#8b5cf6" }} />
+                    속도: <input type="range" min={5} max={200} value={200 - speed} onChange={e => setSpeed(200 - Number(e.target.value))} style={{ width: 60, accentColor: "#2563eb" }} />
                 </div>
                 <div style={{ display: "flex", alignItems: "center", gap: 4, fontSize: 10, color: "rgba(255,255,255,0.35)" }}>
-                    크기: <input type="range" min={5} max={50} value={size} onChange={e => { if (!running) setSize(Number(e.target.value)); }} style={{ width: 60, accentColor: "#8b5cf6" }} />
+                    크기: <input type="range" min={5} max={50} value={size} onChange={e => { if (!running) setSize(Number(e.target.value)); }} style={{ width: 60, accentColor: "#2563eb" }} />
                 </div>
             </div>
 
             {/* Algorithm info */}
             <div style={{ padding: "6px 16px", borderBottom: `1px solid ${border}`, display: "flex", gap: 12, fontSize: 10, color: "rgba(255,255,255,0.3)" }}>
                 <span>{ALGORITHMS.find(a => a.id === algo)?.desc}</span>
-                <span style={{ color: "#8b5cf6", fontWeight: 600 }}>{ALGORITHMS.find(a => a.id === algo)?.complexity}</span>
+                <span style={{ color: "#2563eb", fontWeight: 600 }}>{ALGORITHMS.find(a => a.id === algo)?.complexity}</span>
             </div>
 
             {/* Bars */}
@@ -235,7 +235,7 @@ export function AlgorithmVisualizer() {
 
             {/* Legend */}
             <div style={{ padding: "6px 12px", borderTop: `1px solid ${border}`, display: "flex", gap: 10, fontSize: 9, color: "rgba(255,255,255,0.3)" }}>
-                {[["기본", "#EC5212"], ["비교", "#3b82f6"], ["교환", "#f59e0b"], ["정렬", "#22c55e"], ["피봇", "#ec4899"], ["병합", "#8b5cf6"]].map(([l, c]) => (
+                {[["기본", "#EC5212"], ["비교", "#3b82f6"], ["교환", "#f59e0b"], ["정렬", "#22c55e"], ["피봇", "#ec4899"], ["병합", "#2563eb"]].map(([l, c]) => (
                     <span key={l as string} style={{ display: "flex", alignItems: "center", gap: 3 }}>
                         <span style={{ width: 8, height: 8, borderRadius: 2, background: c as string }} />{l}
                     </span>

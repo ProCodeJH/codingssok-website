@@ -12,7 +12,7 @@ const STORAGE_KEY = "codingssok-gamification";
 const LEVELS = [
     { level: 1, xp: 0, title: "코딩 새싹 ", color: "#22c55e" },
     { level: 2, xp: 100, title: "코딩 탐험가 ", color: "#3b82f6" },
-    { level: 3, xp: 300, title: "코딩 전사 ", color: "#8b5cf6" },
+    { level: 3, xp: 300, title: "코딩 전사 ", color: "#2563eb" },
     { level: 4, xp: 600, title: "코딩 마법사 ", color: "#f59e0b" },
     { level: 5, xp: 1000, title: "코딩 영웅 ", color: "#ef4444" },
     { level: 6, xp: 1500, title: "코딩 전설 ", color: "#ec4899" },
@@ -168,7 +168,7 @@ export function GamificationBar({ progress, compact = false }: Props) {
                     { icon: "", label: "총 XP", value: progress.xp, color: "#f59e0b" },
                     { icon: "", label: "연속일", value: progress.streak, color: "#ef4444" },
                     { icon: "", label: "오늘 XP", value: todayXp, color: "#2563eb" },
-                    { icon: "★", label: "뱃지", value: progress.badges.length, color: "#8b5cf6" },
+                    { icon: "★", label: "뱃지", value: progress.badges.length, color: "#2563eb" },
                 ].map(s => (
                     <div key={s.label} style={{
                         flex: 1, textAlign: "center", padding: "14px 8px", borderRadius: 14,

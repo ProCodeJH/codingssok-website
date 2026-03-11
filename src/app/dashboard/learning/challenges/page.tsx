@@ -54,7 +54,7 @@ const CHALLENGES = [
 const statusConfig: Record<string, { badge: string; badgeBg: string; badgeColor: string; borderColor: string }> = {
     solved: { badge: "Solved", badgeBg: "#dcfce7", badgeColor: "#15803d", borderColor: "transparent" },
     active: { badge: "Active", badgeBg: "rgba(17,82,212,0.1)", badgeColor: "#1152d4", borderColor: "rgba(17,82,212,0.4)" },
-    hard: { badge: "Hard", badgeBg: "#f3e8ff", badgeColor: "#7c3aed", borderColor: "rgba(124,58,237,0.3)" },
+    hard: { badge: "Hard", badgeBg: "#dbeafe", badgeColor: "#1d4ed8", borderColor: "rgba(124,58,237,0.3)" },
     pending: { badge: "Pending", badgeBg: "#f1f5f9", badgeColor: "#64748b", borderColor: "transparent" },
 };
 
@@ -132,7 +132,7 @@ export default function ChallengesPage() {
                                     >
                                         {/* Active left bar */}
                                         {isActive && <div style={{ position: "absolute", top: 0, left: 0, width: 4, height: "100%", background: "#1152d4", borderRadius: "16px 0 0 16px" }} />}
-                                        {ch.status === "hard" && <div style={{ position: "absolute", top: 0, left: 0, width: 4, height: "100%", background: "#7c3aed", borderRadius: "16px 0 0 16px", opacity: 0 }} />}
+                                        {ch.status === "hard" && <div style={{ position: "absolute", top: 0, left: 0, width: 4, height: "100%", background: "#1d4ed8", borderRadius: "16px 0 0 16px", opacity: 0 }} />}
 
                                         {/* Solved checkmark */}
                                         {isSolved && (
@@ -229,7 +229,7 @@ export default function ChallengesPage() {
                         <div style={{ height: 8, width: "100%", background: "#e2e8f0", borderRadius: 99, overflow: "hidden" }}>
                             <motion.div initial={{ width: 0 }} animate={{ width: `${(solved / CHALLENGES.length) * 100}%` }} transition={{ duration: 1, ease: "easeOut" }} style={{
                                 height: "100%", borderRadius: 99,
-                                background: "linear-gradient(90deg, #1152d4, #6366f1)",
+                                background: "linear-gradient(90deg, #1152d4, #3b82f6)",
                                 boxShadow: "0 0 10px rgba(17,82,212,0.5)",
                             }} />
                         </div>
@@ -253,7 +253,7 @@ export default function ChallengesPage() {
                         style={{
                             position: "relative", overflow: "hidden", borderRadius: 16, border: "none", cursor: "pointer",
                             padding: "14px 32px", fontWeight: 800, fontSize: 15, letterSpacing: "0.03em",
-                            background: "linear-gradient(135deg, #1152d4, #6366f1)",
+                            background: "linear-gradient(135deg, #1152d4, #3b82f6)",
                             color: "#fff", boxShadow: "0 8px 25px rgba(17,82,212,0.3)",
                             display: "flex", alignItems: "center", gap: 8,
                             flexShrink: 0,

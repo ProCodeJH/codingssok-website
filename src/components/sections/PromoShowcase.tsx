@@ -46,10 +46,10 @@ const slides = [
 /* ── Floating Code Symbols ── */
 const floatingSymbols = [
     { text: "< / >", color: "#3b82f6", size: 20, top: "10%", left: "4%" },
-    { text: "{ }", color: "#6366f1", size: 18, top: "20%", right: "5%" },
+    { text: "{ }", color: "#3b82f6", size: 18, top: "20%", right: "5%" },
     { text: "print()", color: "#0ea5e9", size: 14, bottom: "25%", left: "3%" },
-    { text: "→", color: "#8b5cf6", size: 22, bottom: "15%", right: "4%" },
-    { text: "#", color: "#4f46e5", size: 16, top: "50%", left: "2%" },
+    { text: "→", color: "#2563eb", size: 22, bottom: "15%", right: "4%" },
+    { text: "#", color: "#2563eb", size: 16, top: "50%", left: "2%" },
     { text: "[ ]", color: "#3b82f6", size: 18, top: "40%", right: "3%" },
 ];
 
@@ -188,7 +188,7 @@ export default function PromoShowcase() {
                     <span style={{
                         display: "inline-block", padding: "7px 22px", borderRadius: 999,
                         background: "linear-gradient(135deg, #dbeafe, #e0e7ff)",
-                        color: "#4F46E5", fontSize: 12, fontWeight: 700,
+                        color: "#2563eb", fontSize: 12, fontWeight: 700,
                         letterSpacing: "0.12em", marginBottom: 20,
                         border: "1px solid rgba(79,70,229,0.12)",
                     }}>
@@ -201,7 +201,7 @@ export default function PromoShowcase() {
                     }}>
                         코딩이 우리 아이 머리속으로{" "}
                         <span style={{
-                            background: "linear-gradient(135deg, #3b82f6, #6366f1)",
+                            background: "linear-gradient(135deg, #3b82f6, #3b82f6)",
                             WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent",
                         }}>쏙!</span>
                     </h2>
@@ -371,7 +371,7 @@ export default function PromoShowcase() {
                                     <motion.div
                                         style={{
                                             height: "100%",
-                                            background: "linear-gradient(90deg, #3b82f6, #6366f1)",
+                                            background: "linear-gradient(90deg, #3b82f6, #3b82f6)",
                                             width: `${progress * 100}%`,
                                             borderRadius: 3,
                                         }}

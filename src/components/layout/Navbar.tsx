@@ -19,6 +19,7 @@ const navLinks = [
     { name: "FAQ", href: "#faq" },
     { name: "문의", href: "#contact" },
     { name: "학습 플랫폼", href: "/dashboard/learning" },
+    { name: "학부모 포털", href: "/parent" },
 ];
 
 /* ── SVG Menu Underline — nodcoding menu-item__line ── */
@@ -239,7 +240,7 @@ export default function Navbar() {
                             style={{
                                 display: "flex", alignItems: "center", gap: "10px",
                                 padding: "14px 32px",
-                                background: "linear-gradient(135deg, #0ea5e9, #3b82f6, #6366f1)",
+                                background: "linear-gradient(135deg, #0ea5e9, #3b82f6, #3b82f6)",
                                 backgroundSize: "200% 200%",
                                 borderRadius: "16px",
                                 color: "white",

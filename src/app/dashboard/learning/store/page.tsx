@@ -30,7 +30,7 @@ const STORE_ITEMS = [
 const RARITY_STYLES: Record<string, { bg: string; color: string; label: string }> = {
     common: { bg: "#f1f5f9", color: "#64748b", label: "일반" },
     rare: { bg: "#dbeafe", color: "#2563eb", label: "레어" },
-    epic: { bg: "#f3e8ff", color: "#7c3aed", label: "에픽" },
+    epic: { bg: "#dbeafe", color: "#1d4ed8", label: "에픽" },
     legendary: { bg: "#fef3c7", color: "#d97706", label: "전설" },
 };
 
@@ -175,7 +175,7 @@ export default function StorePage() {
                                             whileTap={canBuy ? { scale: 0.95 } : {}}
                                             style={{
                                                 padding: "8px 20px", borderRadius: 12, border: "none", fontSize: 13, fontWeight: 700,
-                                                background: owned ? "#10b981" : canBuy ? "linear-gradient(135deg, #0ea5e9, #6366f1)" : "#e2e8f0",
+                                                background: owned ? "#10b981" : canBuy ? "linear-gradient(135deg, #0ea5e9, #3b82f6)" : "#e2e8f0",
                                                 color: owned ? "#fff" : canBuy ? "#fff" : "#94a3b8",
                                                 cursor: canBuy ? "pointer" : "not-allowed",
                                                 boxShadow: canBuy ? "0 4px 14px rgba(14,165,233,0.3)" : "none",

@@ -91,7 +91,7 @@ function VideoCard({ video, index }: { video: typeof videos[0]; index: number })
                             boxShadow: "0 8px 24px rgba(0,0,0,0.2)",
                         }}>
                             <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
-                                <path d="M8 5v14l11-7L8 5z" fill="#4F46E5" />
+                                <path d="M8 5v14l11-7L8 5z" fill="#2563eb" />
                             </svg>
                         </div>
                     </div>
@@ -101,7 +101,7 @@ function VideoCard({ video, index }: { video: typeof videos[0]; index: number })
             {/* Caption */}
             <div style={{ marginTop: 16, padding: "0 4px" }}>
                 <h4 style={{
-                    fontSize: 18, fontWeight: 700, color: "#1e1b4b",
+                    fontSize: 18, fontWeight: 700, color: "#172554",
                     margin: 0, lineHeight: 1.3,
                 }}>
                     {video.title}
@@ -146,7 +146,7 @@ export default function VideoGallery() {
                     </span>
                     <h2 style={{
                         fontSize: "clamp(24px, 3.5vw, 36px)", fontWeight: 800,
-                        color: "#1e1b4b", letterSpacing: "-0.03em", lineHeight: 1.2,
+                        color: "#172554", letterSpacing: "-0.03em", lineHeight: 1.2,
                         margin: "16px 0 0",
                     }}>
                         코딩쏙 교실에서 벌어지는 일

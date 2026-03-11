@@ -9,7 +9,7 @@ interface Note {
 }
 
 const STORAGE_KEY = "codingssok-study-notes";
-const COLORS = ["#eff6ff", "#f0fdf4", "#fefce8", "#fdf2f8", "#f5f3ff", "#fff7ed", "#f0f9ff"];
+const COLORS = ["#eff6ff", "#f0fdf4", "#fefce8", "#fdf2f8", "#eff6ff", "#fff7ed", "#f0f9ff"];
 const EMOJIS = ["", "", "", "", "◎", "", "", "", "", "", "≡", ""];
 const STICKERS = ["⭐", "", "", "", "", "", "", "", "", "", "", ""];
 

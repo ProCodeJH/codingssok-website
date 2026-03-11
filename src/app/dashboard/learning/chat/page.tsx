@@ -170,7 +170,7 @@ export default function ChatPage() {
                                 >
                                     <div style={{
                                         width: 36, height: 36, borderRadius: "50%", flexShrink: 0,
-                                        background: isMe ? "linear-gradient(135deg, #0ea5e9, #6366f1)" : "linear-gradient(135deg, #f97316, #ef4444)",
+                                        background: isMe ? "linear-gradient(135deg, #0ea5e9, #3b82f6)" : "linear-gradient(135deg, #f97316, #ef4444)",
                                         display: "flex", alignItems: "center", justifyContent: "center",
                                         color: "#fff", fontWeight: 700, fontSize: 13,
                                     }}>
@@ -184,7 +184,7 @@ export default function ChatPage() {
                                             whileHover={{ scale: 1.01 }}
                                             style={{
                                                 padding: "10px 16px", borderRadius: 16, fontSize: 14, lineHeight: 1.5,
-                                                background: isMe ? "linear-gradient(135deg, #0ea5e9, #6366f1)" : "#f1f5f9",
+                                                background: isMe ? "linear-gradient(135deg, #0ea5e9, #3b82f6)" : "#f1f5f9",
                                                 color: isMe ? "#fff" : "#1e293b",
                                                 borderBottomRightRadius: isMe ? 4 : 16,
                                                 borderBottomLeftRadius: isMe ? 16 : 4,
@@ -212,7 +212,7 @@ export default function ChatPage() {
                     />
                     <button onClick={sendMessage} disabled={!input.trim()} style={{
                         padding: "12px 20px", borderRadius: 14, border: "none", fontSize: 14, fontWeight: 700,
-                        background: input.trim() ? "linear-gradient(135deg, #0ea5e9, #6366f1)" : "#e2e8f0",
+                        background: input.trim() ? "linear-gradient(135deg, #0ea5e9, #3b82f6)" : "#e2e8f0",
                         color: input.trim() ? "#fff" : "#94a3b8", cursor: input.trim() ? "pointer" : "not-allowed",
                     }}>
                         <span className="material-symbols-outlined" style={{ fontSize: 20 }}>send</span>

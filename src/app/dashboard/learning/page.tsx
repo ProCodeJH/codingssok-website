@@ -186,7 +186,7 @@ export default function LearningDashboard() {
             <style>{`
                 .pg {
                     width:100%;height:100%;
-                    background:linear-gradient(145deg,#f0f4ff,#e8efff 40%,#f5f3ff 70%,#f0f4ff);
+                    background:linear-gradient(145deg,#f0f4ff,#e8efff 40%,#eff6ff 70%,#f0f4ff);
                     display:flex;flex-direction:column;
                     font-family:'Plus Jakarta Sans',system-ui,sans-serif;
                     position:relative;overflow:hidden;
@@ -458,7 +458,7 @@ export default function LearningDashboard() {
                 .ide-rain-col{
                     position:absolute;top:0;
                     font-family:'JetBrains Mono',monospace;font-size:10px;
-                    color:#818cf8;writing-mode:vertical-rl;
+                    color:#60a5fa;writing-mode:vertical-rl;
                     animation:ide-code-rain linear infinite;white-space:nowrap;
                 }
                 .ide-monitor-frame{
@@ -483,7 +483,7 @@ export default function LearningDashboard() {
                 .ide-code-num{color:#d19a66}
                 .ide-info{display:flex;flex-direction:column;align-items:flex-end;gap:6;flex-shrink:0;text-align:right}
                 .ide-title{font-size:clamp(18px,2vw,28px);font-weight:900;letter-spacing:-0.03em;line-height:1.1}
-                .ide-title-c{background:linear-gradient(135deg,#818cf8,#06b6d4);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+                .ide-title-c{background:linear-gradient(135deg,#60a5fa,#06b6d4);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
                 .ide-subtitle{font-size:clamp(9px,0.8vw,12px);color:rgba(148,163,184,0.7);font-weight:500}
                 .ide-badge{
                     display:inline-flex;align-items:center;gap:4;
@@ -492,7 +492,7 @@ export default function LearningDashboard() {
                     border:1px solid rgba(99,102,241,0.25);color:#a5b4fc;letter-spacing:0.5px;
                 }
                 .ide-enter-arrow{
-                    font-size:18px;color:#818cf8;
+                    font-size:18px;color:#60a5fa;
                     transition:transform 0.3s;
                 }
                 .ide-card:hover .ide-enter-arrow{transform:translateX(4px)}
@@ -563,7 +563,7 @@ export default function LearningDashboard() {
                                 <div><span className="ide-code-kw">int</span> <span className="ide-code-fn">main</span>{"() {"}</div>
                                 <div>{"    "}<span className="ide-code-fn">printf</span>(<span className="ide-code-str">{'"Hello!"'}</span>);</div>
                                 <div>{"    "}<span className="ide-code-kw">return</span> <span className="ide-code-num">0</span>;</div>
-                                <div>{"}"}<span style={{ animation: "ide-cursor-blink 1s infinite", color: "#818cf8", fontWeight: 700 }}>▌</span></div>
+                                <div>{"}"}<span style={{ animation: "ide-cursor-blink 1s infinite", color: "#60a5fa", fontWeight: 700 }}>▌</span></div>
                             </div>
 
                             {/* Title & Info */}

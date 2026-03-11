@@ -87,7 +87,7 @@ export default function HologramHUD({
         const endAngle = startAngle + (animProgress / 100) * Math.PI * 2;
         const gradient = ctx.createLinearGradient(0, 0, size, size);
         gradient.addColorStop(0, "#3b82f6");
-        gradient.addColorStop(1, "#8b5cf6");
+        gradient.addColorStop(1, "#2563eb");
 
         ctx.beginPath();
         ctx.arc(cx, cy, radius, startAngle, endAngle);

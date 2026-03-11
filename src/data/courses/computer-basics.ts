@@ -41,8 +41,8 @@ export const COMPUTER_BASICS: Chapter[] = [
   --c-accent-light: #E8FFF9;
   --c-blue: #3B82F6;
   --c-blue-light: #EFF6FF;
-  --c-purple: #8B5CF6;
-  --c-purple-light: #F5F3FF;
+  --c-purple: #2563eb;
+  --c-purple-light: #eff6ff;
   --c-orange: #F59E0B;
   --c-orange-light: #FFFBEB;
   --c-green: #10B981;
@@ -344,7 +344,7 @@ code {
 .box-summary .box-label { color: var(--c-green); }
 .box-question {
   border-left: 5px solid var(--c-purple);
-  background: linear-gradient(135deg, #F5F3FF 0%, #EDE9FE 100%);
+  background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
 }
 .box-question .box-label { color: var(--c-purple); }
 .box-history {
@@ -532,7 +532,7 @@ code {
 .predict-box {
   display: flex;
   gap: 3.5mm;
-  background: linear-gradient(135deg, #F5F3FF 0%, #EDE9FE 100%);
+  background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
   border: 1.5px solid #C4B5FD;
   border-radius: var(--radius-lg);
   padding: 3.5mm 4.5mm;
@@ -541,7 +541,7 @@ code {
 }
 .predict-icon {
   width: 10mm; height: 10mm;
-  background: linear-gradient(135deg, var(--c-purple), #A78BFA);
+  background: linear-gradient(135deg, var(--c-purple), #60a5fa);
   color: white;
   border-radius: 50%;
   display: flex;
@@ -629,7 +629,7 @@ code {
    ═══════════════════════════════════════ */
 .answers-section {
   background: white;
-  border: 1.5px solid #E9D5FF;
+  border: 1.5px solid #bfdbfe;
   border-radius: var(--radius-md);
   padding: 3mm 4mm;
   margin: 3mm 0;
@@ -914,7 +914,7 @@ code {
 .axis-badge.koi { background: #FEF3C7; color: #B45309; }
 .axis-badge.basics { background: #D1FAE5; color: #059669; }
 .axis-badge.reallife { background: #CCFBF1; color: #0D9488; }
-.axis-badge.crosssubj { background: #E9D5FF; color: #7C3AED; }
+.axis-badge.crosssubj { background: #bfdbfe; color: #1d4ed8; }
 .axis-badge.project { background: #FFE4E6; color: #BE123C; }
 .axis-badge.ai { background: #FCE7F3; color: #DB2777; }
 .axis-badge.hardware { background: #CFFAFE; color: #0891B2; }
@@ -1404,8 +1404,8 @@ h2::before {
   --c-accent-light: #E8FFF9;
   --c-blue: #3B82F6;
   --c-blue-light: #EFF6FF;
-  --c-purple: #8B5CF6;
-  --c-purple-light: #F5F3FF;
+  --c-purple: #2563eb;
+  --c-purple-light: #eff6ff;
   --c-orange: #F59E0B;
   --c-orange-light: #FFFBEB;
   --c-green: #10B981;
@@ -1707,7 +1707,7 @@ code {
 .box-summary .box-label { color: var(--c-green); }
 .box-question {
   border-left: 5px solid var(--c-purple);
-  background: linear-gradient(135deg, #F5F3FF 0%, #EDE9FE 100%);
+  background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
 }
 .box-question .box-label { color: var(--c-purple); }
 .box-history {
@@ -1895,7 +1895,7 @@ code {
 .predict-box {
   display: flex;
   gap: 3.5mm;
-  background: linear-gradient(135deg, #F5F3FF 0%, #EDE9FE 100%);
+  background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
   border: 1.5px solid #C4B5FD;
   border-radius: var(--radius-lg);
   padding: 3.5mm 4.5mm;
@@ -1904,7 +1904,7 @@ code {
 }
 .predict-icon {
   width: 10mm; height: 10mm;
-  background: linear-gradient(135deg, var(--c-purple), #A78BFA);
+  background: linear-gradient(135deg, var(--c-purple), #60a5fa);
   color: white;
   border-radius: 50%;
   display: flex;
@@ -1992,7 +1992,7 @@ code {
    ═══════════════════════════════════════ */
 .answers-section {
   background: white;
-  border: 1.5px solid #E9D5FF;
+  border: 1.5px solid #bfdbfe;
   border-radius: var(--radius-md);
   padding: 3mm 4mm;
   margin: 3mm 0;
@@ -2277,7 +2277,7 @@ code {
 .axis-badge.koi { background: #FEF3C7; color: #B45309; }
 .axis-badge.basics { background: #D1FAE5; color: #059669; }
 .axis-badge.reallife { background: #CCFBF1; color: #0D9488; }
-.axis-badge.crosssubj { background: #E9D5FF; color: #7C3AED; }
+.axis-badge.crosssubj { background: #bfdbfe; color: #1d4ed8; }
 .axis-badge.project { background: #FFE4E6; color: #BE123C; }
 .axis-badge.ai { background: #FCE7F3; color: #DB2777; }
 .axis-badge.hardware { background: #CFFAFE; color: #0891B2; }
@@ -2736,8 +2736,8 @@ h2::before {
   --c-accent-light: #E8FFF9;
   --c-blue: #3B82F6;
   --c-blue-light: #EFF6FF;
-  --c-purple: #8B5CF6;
-  --c-purple-light: #F5F3FF;
+  --c-purple: #2563eb;
+  --c-purple-light: #eff6ff;
   --c-orange: #F59E0B;
   --c-orange-light: #FFFBEB;
   --c-green: #10B981;
@@ -3039,7 +3039,7 @@ code {
 .box-summary .box-label { color: var(--c-green); }
 .box-question {
   border-left: 5px solid var(--c-purple);
-  background: linear-gradient(135deg, #F5F3FF 0%, #EDE9FE 100%);
+  background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
 }
 .box-question .box-label { color: var(--c-purple); }
 .box-history {
@@ -3227,7 +3227,7 @@ code {
 .predict-box {
   display: flex;
   gap: 3.5mm;
-  background: linear-gradient(135deg, #F5F3FF 0%, #EDE9FE 100%);
+  background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
   border: 1.5px solid #C4B5FD;
   border-radius: var(--radius-lg);
   padding: 3.5mm 4.5mm;
@@ -3236,7 +3236,7 @@ code {
 }
 .predict-icon {
   width: 10mm; height: 10mm;
-  background: linear-gradient(135deg, var(--c-purple), #A78BFA);
+  background: linear-gradient(135deg, var(--c-purple), #60a5fa);
   color: white;
   border-radius: 50%;
   display: flex;
@@ -3324,7 +3324,7 @@ code {
    ═══════════════════════════════════════ */
 .answers-section {
   background: white;
-  border: 1.5px solid #E9D5FF;
+  border: 1.5px solid #bfdbfe;
   border-radius: var(--radius-md);
   padding: 3mm 4mm;
   margin: 3mm 0;
@@ -3609,7 +3609,7 @@ code {
 .axis-badge.koi { background: #FEF3C7; color: #B45309; }
 .axis-badge.basics { background: #D1FAE5; color: #059669; }
 .axis-badge.reallife { background: #CCFBF1; color: #0D9488; }
-.axis-badge.crosssubj { background: #E9D5FF; color: #7C3AED; }
+.axis-badge.crosssubj { background: #bfdbfe; color: #1d4ed8; }
 .axis-badge.project { background: #FFE4E6; color: #BE123C; }
 .axis-badge.ai { background: #FCE7F3; color: #DB2777; }
 .axis-badge.hardware { background: #CFFAFE; color: #0891B2; }
@@ -4067,8 +4067,8 @@ h2::before {
   --c-accent-light: #E8FFF9;
   --c-blue: #3B82F6;
   --c-blue-light: #EFF6FF;
-  --c-purple: #8B5CF6;
-  --c-purple-light: #F5F3FF;
+  --c-purple: #2563eb;
+  --c-purple-light: #eff6ff;
   --c-orange: #F59E0B;
   --c-orange-light: #FFFBEB;
   --c-green: #10B981;
@@ -4370,7 +4370,7 @@ code {
 .box-summary .box-label { color: var(--c-green); }
 .box-question {
   border-left: 5px solid var(--c-purple);
-  background: linear-gradient(135deg, #F5F3FF 0%, #EDE9FE 100%);
+  background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
 }
 .box-question .box-label { color: var(--c-purple); }
 .box-history {
@@ -4558,7 +4558,7 @@ code {
 .predict-box {
   display: flex;
   gap: 3.5mm;
-  background: linear-gradient(135deg, #F5F3FF 0%, #EDE9FE 100%);
+  background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
   border: 1.5px solid #C4B5FD;
   border-radius: var(--radius-lg);
   padding: 3.5mm 4.5mm;
@@ -4567,7 +4567,7 @@ code {
 }
 .predict-icon {
   width: 10mm; height: 10mm;
-  background: linear-gradient(135deg, var(--c-purple), #A78BFA);
+  background: linear-gradient(135deg, var(--c-purple), #60a5fa);
   color: white;
   border-radius: 50%;
   display: flex;
@@ -4655,7 +4655,7 @@ code {
    ═══════════════════════════════════════ */
 .answers-section {
   background: white;
-  border: 1.5px solid #E9D5FF;
+  border: 1.5px solid #bfdbfe;
   border-radius: var(--radius-md);
   padding: 3mm 4mm;
   margin: 3mm 0;
@@ -4940,7 +4940,7 @@ code {
 .axis-badge.koi { background: #FEF3C7; color: #B45309; }
 .axis-badge.basics { background: #D1FAE5; color: #059669; }
 .axis-badge.reallife { background: #CCFBF1; color: #0D9488; }
-.axis-badge.crosssubj { background: #E9D5FF; color: #7C3AED; }
+.axis-badge.crosssubj { background: #bfdbfe; color: #1d4ed8; }
 .axis-badge.project { background: #FFE4E6; color: #BE123C; }
 .axis-badge.ai { background: #FCE7F3; color: #DB2777; }
 .axis-badge.hardware { background: #CFFAFE; color: #0891B2; }
@@ -5466,8 +5466,8 @@ h2::before {
   --c-accent-light: #E8FFF9;
   --c-blue: #3B82F6;
   --c-blue-light: #EFF6FF;
-  --c-purple: #8B5CF6;
-  --c-purple-light: #F5F3FF;
+  --c-purple: #2563eb;
+  --c-purple-light: #eff6ff;
   --c-orange: #F59E0B;
   --c-orange-light: #FFFBEB;
   --c-green: #10B981;
@@ -5769,7 +5769,7 @@ code {
 .box-summary .box-label { color: var(--c-green); }
 .box-question {
   border-left: 5px solid var(--c-purple);
-  background: linear-gradient(135deg, #F5F3FF 0%, #EDE9FE 100%);
+  background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
 }
 .box-question .box-label { color: var(--c-purple); }
 .box-history {
@@ -5957,7 +5957,7 @@ code {
 .predict-box {
   display: flex;
   gap: 3.5mm;
-  background: linear-gradient(135deg, #F5F3FF 0%, #EDE9FE 100%);
+  background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
   border: 1.5px solid #C4B5FD;
   border-radius: var(--radius-lg);
   padding: 3.5mm 4.5mm;
@@ -5966,7 +5966,7 @@ code {
 }
 .predict-icon {
   width: 10mm; height: 10mm;
-  background: linear-gradient(135deg, var(--c-purple), #A78BFA);
+  background: linear-gradient(135deg, var(--c-purple), #60a5fa);
   color: white;
   border-radius: 50%;
   display: flex;
@@ -6054,7 +6054,7 @@ code {
    ═══════════════════════════════════════ */
 .answers-section {
   background: white;
-  border: 1.5px solid #E9D5FF;
+  border: 1.5px solid #bfdbfe;
   border-radius: var(--radius-md);
   padding: 3mm 4mm;
   margin: 3mm 0;
@@ -6339,7 +6339,7 @@ code {
 .axis-badge.koi { background: #FEF3C7; color: #B45309; }
 .axis-badge.basics { background: #D1FAE5; color: #059669; }
 .axis-badge.reallife { background: #CCFBF1; color: #0D9488; }
-.axis-badge.crosssubj { background: #E9D5FF; color: #7C3AED; }
+.axis-badge.crosssubj { background: #bfdbfe; color: #1d4ed8; }
 .axis-badge.project { background: #FFE4E6; color: #BE123C; }
 .axis-badge.ai { background: #FCE7F3; color: #DB2777; }
 .axis-badge.hardware { background: #CFFAFE; color: #0891B2; }

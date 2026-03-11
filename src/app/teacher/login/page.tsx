@@ -76,14 +76,14 @@ export default function TeacherLogin() {
                         transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
                         style={{
                             width: 64, height: 64, borderRadius: 20, margin: "0 auto 16px",
-                            background: "linear-gradient(135deg, #4F46E5, #6366F1)",
+                            background: "linear-gradient(135deg, #2563eb, #6366F1)",
                             display: "flex", alignItems: "center", justifyContent: "center",
                             fontSize: 28,
                         }}
                     >
                         👨‍🏫
                     </motion.div>
-                    <h1 style={{ fontSize: 24, fontWeight: 800, color: "#1e1b4b", letterSpacing: "-0.03em" }}>
+                    <h1 style={{ fontSize: 24, fontWeight: 800, color: "#172554", letterSpacing: "-0.03em" }}>
                         선생님 로그인
                     </h1>
                     <p style={{ fontSize: 13, color: "#94a3b8", marginTop: 8 }}>
@@ -105,7 +105,7 @@ export default function TeacherLogin() {
                                 border: "1px solid #e2e8f0", fontSize: 14, outline: "none",
                                 transition: "border-color 0.2s", boxSizing: "border-box",
                             }}
-                            onFocus={e => e.target.style.borderColor = "#4F46E5"}
+                            onFocus={e => e.target.style.borderColor = "#2563eb"}
                             onBlur={e => e.target.style.borderColor = "#e2e8f0"}
                         />
                     </div>
@@ -123,7 +123,7 @@ export default function TeacherLogin() {
                                 border: "1px solid #e2e8f0", fontSize: 14, outline: "none",
                                 transition: "border-color 0.2s", boxSizing: "border-box",
                             }}
-                            onFocus={e => e.target.style.borderColor = "#4F46E5"}
+                            onFocus={e => e.target.style.borderColor = "#2563eb"}
                             onBlur={e => e.target.style.borderColor = "#e2e8f0"}
                         />
                     </div>
@@ -151,7 +151,7 @@ export default function TeacherLogin() {
                         disabled={loading}
                         style={{
                             width: "100%", padding: "14px", border: "none", borderRadius: 14,
-                            background: loading ? "#94a3b8" : "linear-gradient(135deg, #4F46E5, #6366F1)",
+                            background: loading ? "#94a3b8" : "linear-gradient(135deg, #2563eb, #6366F1)",
                             color: "#fff", fontSize: 15, fontWeight: 800, cursor: loading ? "not-allowed" : "pointer",
                             boxShadow: "0 6px 20px rgba(79,70,229,0.3)",
                         }}

@@ -31,7 +31,7 @@ const THEMES: Record<string, EnvironmentTheme> = {
         emoji: "🌅",
     },
     day: {
-        background: "linear-gradient(145deg, #f0f4ff, #e8efff 40%, #f5f3ff 70%, #f0f4ff)",
+        background: "linear-gradient(145deg, #f0f4ff, #e8efff 40%, #eff6ff 70%, #f0f4ff)",
         particleColor: "rgba(147, 197, 253, 0.25)",
         accentGlow: "rgba(96, 165, 250, 0.08)",
         ambientOpacity: 0.06,
@@ -39,7 +39,7 @@ const THEMES: Record<string, EnvironmentTheme> = {
         emoji: "☀️",
     },
     sunset: {
-        background: "linear-gradient(145deg, #fdf2f8, #fce7f3 30%, #ede9fe 60%, #e0e7ff 100%)",
+        background: "linear-gradient(145deg, #fdf2f8, #fce7f3 30%, #dbeafe 60%, #e0e7ff 100%)",
         particleColor: "rgba(192, 132, 252, 0.3)",
         accentGlow: "rgba(168, 85, 247, 0.1)",
         ambientOpacity: 0.1,
@@ -47,7 +47,7 @@ const THEMES: Record<string, EnvironmentTheme> = {
         emoji: "🌇",
     },
     night: {
-        background: "linear-gradient(145deg, #0f172a, #1e1b4b 35%, #1e293b 65%, #0f172a)",
+        background: "linear-gradient(145deg, #0f172a, #172554 35%, #1e293b 65%, #0f172a)",
         particleColor: "rgba(199, 210, 254, 0.2)",
         accentGlow: "rgba(129, 140, 248, 0.08)",
         ambientOpacity: 0.15,

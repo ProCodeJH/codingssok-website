@@ -97,7 +97,7 @@ export default function CodeStats({ code, onClose }: CodeStatsProps) {
                 {/* Lines Breakdown */}
                 <div style={{ background: "#252320", borderRadius: 10, padding: 14, border: "1px solid #3a3632", marginBottom: 12 }}>
                     <div style={{ fontSize: 12, fontWeight: 700, marginBottom: 10 }}> 줄 수 분석</div>
-                    <StatRow label="전체 줄 수" value={stats.totalLines} color="#818cf8" />
+                    <StatRow label="전체 줄 수" value={stats.totalLines} color="#60a5fa" />
                     <StatRow label="코드 줄" value={`${stats.codeLines} (${codePercent}%)`} color="#22c55e" />
                     <StatRow label="주석 줄" value={`${stats.commentLines} (${commentPercent}%)`} color="#fbbf24" />
                     <StatRow label="빈 줄" value={stats.blankLines} color="#b0a898" />
@@ -106,7 +106,7 @@ export default function CodeStats({ code, onClose }: CodeStatsProps) {
                 {/* Structure Breakdown */}
                 <div style={{ background: "#252320", borderRadius: 10, padding: 14, border: "1px solid #3a3632", marginBottom: 12 }}>
                     <div style={{ fontSize: 12, fontWeight: 700, marginBottom: 10 }}> 구조 분석</div>
-                    <BarStat label="함수" value={stats.functions} max={10} color="#818cf8" />
+                    <BarStat label="함수" value={stats.functions} max={10} color="#60a5fa" />
                     <BarStat label="변수 선언" value={stats.variables} max={20} color="#22c55e" />
                     <BarStat label="#include" value={stats.includes} max={10} color="#06b6d4" />
                 </div>

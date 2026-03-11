@@ -19,11 +19,11 @@ interface LiveEvent {
 
 const ACTIONS = [
     { action: "유닛 완료", emoji: "✅", color: "#059669" },
-    { action: "퀴즈 정답", emoji: "🎯", color: "#4F46E5" },
+    { action: "퀴즈 정답", emoji: "🎯", color: "#2563eb" },
     { action: "퀴즈 오답", emoji: "❌", color: "#DC2626" },
     { action: "코드 실행", emoji: "▶️", color: "#0EA5E9" },
     { action: "로그인", emoji: "👋", color: "#F59E0B" },
-    { action: "배지 획득", emoji: "🏅", color: "#8B5CF6" },
+    { action: "배지 획득", emoji: "🏅", color: "#2563eb" },
     { action: "스트릭 체크인", emoji: "🔥", color: "#EF4444" },
     { action: "레벨업!", emoji: "⬆️", color: "#6366F1" },
 ];
@@ -85,7 +85,7 @@ export default function LiveMonitor() {
                         transition={{ duration: 2, repeat: Infinity }}
                         style={{ width: 8, height: 8, borderRadius: "50%", background: isLive ? "#EF4444" : "#94a3b8" }}
                     />
-                    <span style={{ fontSize: 13, fontWeight: 700, color: "#1e1b4b" }}>실시간 모니터</span>
+                    <span style={{ fontSize: 13, fontWeight: 700, color: "#172554" }}>실시간 모니터</span>
                     <span style={{ fontSize: 11, color: "#94a3b8" }}>· {onlineCount}명 접속 중</span>
                 </div>
                 <button
@@ -118,7 +118,7 @@ export default function LiveMonitor() {
                         >
                             <span style={{ fontSize: 16 }}>{event.emoji}</span>
                             <div style={{ flex: 1 }}>
-                                <span style={{ fontSize: 12, fontWeight: 700, color: "#1e1b4b" }}>{event.studentName}</span>
+                                <span style={{ fontSize: 12, fontWeight: 700, color: "#172554" }}>{event.studentName}</span>
                                 <span style={{ fontSize: 12, color: "#94a3b8" }}> · {event.action}</span>
                             </div>
                             <span style={{ fontSize: 10, color: "#cbd5e1" }}>

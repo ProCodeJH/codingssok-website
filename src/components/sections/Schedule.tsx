@@ -31,10 +31,10 @@ const steps = [
         desc: "최적화된 맞춤 시간표 자동 배치.",
         procId: "Complete", progress: 100, progressLabel: "Sync",
         icon: "check_circle",
-        colorFrom: "from-violet-500", colorTo: "to-violet-600",
-        borderColor: "#8b5cf6", dotColor: "bg-violet-500",
-        textColor: "text-violet-600", barColor: "bg-violet-500",
-        glowColor: "#8b5cf6", cardBorderColor: "border-violet-500",
+        colorFrom: "from-blue-500", colorTo: "to-blue-600",
+        borderColor: "#2563eb", dotColor: "bg-blue-500",
+        textColor: "text-blue-600", barColor: "bg-blue-500",
+        glowColor: "#2563eb", cardBorderColor: "border-blue-500",
     },
 ];
 

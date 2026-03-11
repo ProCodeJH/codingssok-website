@@ -81,7 +81,7 @@ export default function ProblemBrowserPage() {
                     <span style={{ fontSize: 13, fontWeight: 700, color: "#0f172a" }}>
                         진행률 {currentSet ? `(${currentSet.title})` : ""}
                     </span>
-                    <span style={{ fontSize: 13, fontWeight: 800, color: "#6366f1" }}>
+                    <span style={{ fontSize: 13, fontWeight: 800, color: "#3b82f6" }}>
                         {solvedInSet}/{totalInSet} ({progressPct}%)
                     </span>
                 </div>
@@ -90,7 +90,7 @@ export default function ProblemBrowserPage() {
                         initial={{ width: 0 }}
                         animate={{ width: `${progressPct}%` }}
                         transition={{ duration: 0.6, ease: "easeOut" }}
-                        style={{ height: "100%", borderRadius: 4, background: "linear-gradient(90deg, #6366f1, #8b5cf6)" }}
+                        style={{ height: "100%", borderRadius: 4, background: "linear-gradient(90deg, #3b82f6, #2563eb)" }}
                     />
                 </div>
             </div>
@@ -100,11 +100,11 @@ export default function ProblemBrowserPage() {
                 <motion.button whileHover={{ y: -2 }} whileTap={{ scale: 0.97 }}
                     onClick={() => setActiveSet(null)}
                     style={{
-                        ...glassCard, padding: "12px 14px", border: activeSet === null ? "2px solid #6366f1" : "1px solid rgba(226,232,240,0.5)",
+                        ...glassCard, padding: "12px 14px", border: activeSet === null ? "2px solid #3b82f6" : "1px solid rgba(226,232,240,0.5)",
                         cursor: "pointer", textAlign: "left",
                     }}>
                     <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                        <span className="material-symbols-outlined" style={{ fontSize: 18, color: "#6366f1" }}>grid_view</span>
+                        <span className="material-symbols-outlined" style={{ fontSize: 18, color: "#3b82f6" }}>grid_view</span>
                         <div>
                             <div style={{ fontSize: 12, fontWeight: 700, color: "#0f172a" }}>전체</div>
                             <div style={{ fontSize: 9, color: "#94a3b8" }}>{solved.size}/{totalCount}</div>
@@ -144,7 +144,7 @@ export default function ProblemBrowserPage() {
                     {["all", "baekjoon", "programmers", "koistudy", "codeup"].map(s => (
                         <button key={s} onClick={() => setSourceFilter(s)} style={{
                             padding: "5px 10px", borderRadius: 7, border: "none", cursor: "pointer",
-                            background: sourceFilter === s ? (s === "all" ? "#6366f1" : SOURCE_INFO[s]?.color || "#6366f1") : "#f1f5f9",
+                            background: sourceFilter === s ? (s === "all" ? "#3b82f6" : SOURCE_INFO[s]?.color || "#3b82f6") : "#f1f5f9",
                             color: sourceFilter === s ? "#fff" : "#64748b", fontSize: 10, fontWeight: 600,
                         }}>{s === "all" ? "전체" : SOURCE_INFO[s]?.label || s}</button>
                     ))}
@@ -153,7 +153,7 @@ export default function ProblemBrowserPage() {
                     {["all", "bronze", "silver", "gold", "platinum"].map(d => (
                         <button key={d} onClick={() => setDiffFilter(d)} style={{
                             padding: "5px 8px", borderRadius: 7, border: "none", cursor: "pointer",
-                            background: diffFilter === d ? (d === "all" ? "#6366f1" : DIFFICULTY_COLORS[d]?.text || "#6366f1") : "#f1f5f9",
+                            background: diffFilter === d ? (d === "all" ? "#3b82f6" : DIFFICULTY_COLORS[d]?.text || "#3b82f6") : "#f1f5f9",
                             color: diffFilter === d ? "#fff" : "#64748b", fontSize: 10, fontWeight: 600,
                         }}>{d === "all" ? "전체" : DIFFICULTY_COLORS[d]?.label || d}</button>
                     ))}

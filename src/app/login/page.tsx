@@ -14,8 +14,8 @@ interface StudentRow {
   avatar: string | null;
 }
 
-const PRIMARY = "#6366f1";
-const ACCENT = "#8b5cf6";
+const PRIMARY = "#3b82f6";
+const ACCENT = "#2563eb";
 
 export default function LoginPage() {
   const [name, setName] = useState("");
@@ -157,7 +157,7 @@ export default function LoginPage() {
             alt="코딩쏙"
             style={{ height: 48, width: "auto", margin: "0 auto 20px", display: "block" }}
           />
-          <h1 style={{ fontSize: 28, fontWeight: 800, letterSpacing: -0.5, color: "#1e1b4b", margin: "0 0 8px" }}>
+          <h1 style={{ fontSize: 28, fontWeight: 800, letterSpacing: -0.5, color: "#172554", margin: "0 0 8px" }}>
             코딩쏙 아카데미
           </h1>
           <p style={{ fontSize: 14, color: "#6b7280", fontWeight: 400, margin: 0, lineHeight: 1.5 }}>
@@ -279,7 +279,7 @@ export default function LoginPage() {
           <p style={{ fontSize: 12, color: "#9ca3af", margin: 0, lineHeight: 1.6 }}>
             처음이라면 이름과 비밀번호를 정하면 자동으로 가입돼요!
             <br />
-            <span style={{ color: "#6366f1", fontWeight: 600 }}>이미 있는 이름이면 비밀번호로 로그인해요</span>
+            <span style={{ color: "#3b82f6", fontWeight: 600 }}>이미 있는 이름이면 비밀번호로 로그인해요</span>
           </p>
         </div>
       </div>

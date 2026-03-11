@@ -53,7 +53,7 @@ export const TIERS = [
     { name: 'Gold', nameKo: '골드', icon: '🥇', color: '#ca8a04', gradient: 'linear-gradient(135deg, #ca8a04, #eab308)', order: 4 },
     { name: 'Platinum', nameKo: '플래티넘', icon: '💎', color: '#0891b2', gradient: 'linear-gradient(135deg, #0891b2, #06b6d4)', order: 5 },
     { name: 'Diamond', nameKo: '다이아', icon: '💠', color: '#2563eb', gradient: 'linear-gradient(135deg, #2563eb, #3b82f6)', order: 6 },
-    { name: 'Grandmaster', nameKo: '그랜드마스터', icon: '🏆', color: '#7c3aed', gradient: 'linear-gradient(135deg, #7c3aed, #8b5cf6)', order: 7 },
+    { name: 'Grandmaster', nameKo: '그랜드마스터', icon: '🏆', color: '#1d4ed8', gradient: 'linear-gradient(135deg, #1d4ed8, #2563eb)', order: 7 },
     { name: 'Challenger', nameKo: '챌린저', icon: '👑', color: '#dc2626', gradient: 'linear-gradient(135deg, #dc2626, #ef4444)', order: 8 },
 ] as const;
 

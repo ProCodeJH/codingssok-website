@@ -7,14 +7,14 @@ const BG_COLORS = [
     { id: "yellow", bg: "#fef9c3", border: "#fde047", label: "노랑" },
     { id: "green", bg: "#dcfce7", border: "#86efac", label: "녹색" },
     { id: "blue", bg: "#dbeafe", border: "#93c5fd", label: "파랑" },
-    { id: "purple", bg: "#f3e8ff", border: "#c084fc", label: "보라" },
+    { id: "purple", bg: "#dbeafe", border: "#93c5fd", label: "보라" },
     { id: "red", bg: "#fee2e2", border: "#fca5a5", label: "빨강" },
     { id: "orange", bg: "#ffedd5", border: "#fdba74", label: "주황" },
 ];
 
 /* ── 텍스트 하이라이트 컬러 ── */
 const HL_PALETTE = [
-    "#fde047", "#86efac", "#93c5fd", "#c084fc", "#fca5a5", "#fdba74",
+    "#fde047", "#86efac", "#93c5fd", "#93c5fd", "#fca5a5", "#fdba74",
 ];
 
 /* ── 포맷팅 툴바 버튼 정의 ── */
@@ -116,7 +116,7 @@ export default function StudyNotesEditor({ initialContent, initialColor, unitTit
         checkbox.style.cssText = "display:inline-flex;align-items:center;gap:6px;cursor:pointer;user-select:none;margin-right:4px;";
         const input = document.createElement("input");
         input.type = "checkbox";
-        input.style.cssText = "width:16px;height:16px;accent-color:#6366f1;cursor:pointer;";
+        input.style.cssText = "width:16px;height:16px;accent-color:#3b82f6;cursor:pointer;";
         input.addEventListener("change", () => {
             const span = checkbox.nextSibling;
             if (span && span instanceof HTMLElement) {
@@ -206,7 +206,7 @@ export default function StudyNotesEditor({ initialContent, initialColor, unitTit
                     <button key={c.id} onClick={() => changeBg(c.id)} title={c.label}
                         style={{
                             width: 20, height: 20, borderRadius: 8, cursor: "pointer",
-                            border: bgColor === c.id ? `2.5px solid ${c.id === "white" ? "#6366f1" : c.border}` : c.id === "white" ? "1.5px solid #d1d5db" : "1px solid #e2e8f0",
+                            border: bgColor === c.id ? `2.5px solid ${c.id === "white" ? "#3b82f6" : c.border}` : c.id === "white" ? "1.5px solid #d1d5db" : "1px solid #e2e8f0",
                             background: c.bg, transition: "all 0.15s",
                             boxShadow: bgColor === c.id ? `0 0 0 2px ${c.id === "white" ? "rgba(99,102,241,0.15)" : "rgba(0,0,0,0.05)"}` : "none",
                         }} />
@@ -361,7 +361,7 @@ export default function StudyNotesEditor({ initialContent, initialColor, unitTit
                     [contenteditable] h2 { font-size: 17px; font-weight: 700; margin: 6px 0 3px; color: #1e293b; border: none; background: none; padding: 0; }
                     [contenteditable] h3 { font-size: 15px; font-weight: 600; margin: 4px 0 2px; color: #334155; border: none; }
                     [contenteditable] blockquote {
-                        border-left: 3px solid #6366f1; margin: 6px 0; padding: 4px 12px;
+                        border-left: 3px solid #3b82f6; margin: 6px 0; padding: 4px 12px;
                         background: rgba(99,102,241,0.04); color: #475569; font-style: italic;
                     }
                     [contenteditable] ul, [contenteditable] ol { padding-left: 20px; margin: 4px 0; }

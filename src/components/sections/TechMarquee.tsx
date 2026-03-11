@@ -33,15 +33,15 @@ const KEYWORDS = [
     { text: "C언어", color: "#3b82f6" },
     { text: "Python", color: "#eab308" },
     { text: "HTML/CSS", color: "#ef4444" },
-    { text: "알고리즘", color: "#8b5cf6" },
+    { text: "알고리즘", color: "#2563eb" },
     { text: "정보올림피아드", color: "#f59e0b" },
     { text: "정보처리기능사", color: "#0ea5e9" },
     { text: "게임 개발", color: "#ec4899" },
     { text: "앱 개발", color: "#10b981" },
-    { text: "AI / 머신러닝", color: "#6366f1" },
+    { text: "AI / 머신러닝", color: "#3b82f6" },
     { text: "프로젝트 포트폴리오", color: "#14b8a6" },
     { text: "소수 정예", color: "#f97316" },
-    { text: "1:6 밀착 코칭", color: "#4f46e5" },
+    { text: "1:6 밀착 코칭", color: "#2563eb" },
 ];
 
 /* ── Premium Magnetic Card ── */

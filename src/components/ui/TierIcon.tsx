@@ -67,8 +67,8 @@ const TIER_DESIGNS: Record<string, {
         paths: ["M50 10 L90 50 L50 90 L10 50 Z", "M50 20 L80 50 L50 80 L20 50 Z"], // Faceted diamond
     },
     Grandmaster: {
-        color: "#7c3aed",
-        gradient: ["#4c1d95", "#7c3aed", "#a78bfa"],
+        color: "#1d4ed8",
+        gradient: ["#4c1d95", "#1d4ed8", "#60a5fa"],
         glowColor: "rgba(124, 58, 237, 0.6)",
         symbol: <path d="M40 40 Q50 30 60 40 Q70 50 60 60 Q50 70 40 60 Q30 50 40 40" fill="currentColor" />,
         paths: ["M50 10 C80 10 90 40 90 60 C90 90 50 95 50 95 C50 95 10 90 10 60 C10 40 20 10 50 10 Z"], // Royal shield

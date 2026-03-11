@@ -26,7 +26,7 @@ export default function BadgesPage() {
             {/* Header */}
             <div style={{ marginBottom: 32 }}>
                 <Link href="/dashboard/learning" style={{ fontSize: 13, color: "#94a3b8", textDecoration: "none" }}>← 대시보드</Link>
-                <h1 style={{ fontSize: 28, fontWeight: 800, color: "#1e1b4b", marginTop: 8, letterSpacing: "-0.03em" }}>
+                <h1 style={{ fontSize: 28, fontWeight: 800, color: "#172554", marginTop: 8, letterSpacing: "-0.03em" }}>
                     ★ 배지 진열장
                 </h1>
                 <p style={{ fontSize: 14, color: "#64748b" }}>
@@ -45,7 +45,7 @@ export default function BadgesPage() {
 
             {/* Learning Badges */}
             <section style={{ marginBottom: 40 }}>
-                <h2 style={{ fontSize: 16, fontWeight: 700, color: "#1e1b4b", marginBottom: 16 }}> 학습 배지</h2>
+                <h2 style={{ fontSize: 16, fontWeight: 700, color: "#172554", marginBottom: 16 }}> 학습 배지</h2>
                 <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(160px, 1fr))", gap: 12 }}>
                     {learningBadges.map((b, i) => {
                         const unlocked = unlockedIds.includes(b.id);
@@ -76,7 +76,7 @@ export default function BadgesPage() {
                                 <div style={{ fontSize: 36, marginBottom: 8, filter: unlocked ? "none" : "grayscale(1)" }}>
                                     {b.emoji}
                                 </div>
-                                <div style={{ fontSize: 14, fontWeight: 700, color: "#1e1b4b", marginBottom: 4 }}>
+                                <div style={{ fontSize: 14, fontWeight: 700, color: "#172554", marginBottom: 4 }}>
                                     {b.name}
                                 </div>
                                 <div style={{ fontSize: 11, color: "#94a3b8", lineHeight: 1.4 }}>
@@ -93,7 +93,7 @@ export default function BadgesPage() {
 
             {/* Special Badges */}
             <section>
-                <h2 style={{ fontSize: 16, fontWeight: 700, color: "#1e1b4b", marginBottom: 16 }}> 특별 배지</h2>
+                <h2 style={{ fontSize: 16, fontWeight: 700, color: "#172554", marginBottom: 16 }}> 특별 배지</h2>
                 <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(160px, 1fr))", gap: 12 }}>
                     {specialBadges.map((b, i) => {
                         const unlocked = unlockedIds.includes(b.id);
@@ -124,7 +124,7 @@ export default function BadgesPage() {
                                 <div style={{ fontSize: 36, marginBottom: 8, filter: unlocked ? "none" : "grayscale(1)" }}>
                                     {b.emoji}
                                 </div>
-                                <div style={{ fontSize: 14, fontWeight: 700, color: "#1e1b4b", marginBottom: 4 }}>
+                                <div style={{ fontSize: 14, fontWeight: 700, color: "#172554", marginBottom: 4 }}>
                                     {b.name}
                                 </div>
                                 <div style={{ fontSize: 11, color: "#94a3b8", lineHeight: 1.4 }}>

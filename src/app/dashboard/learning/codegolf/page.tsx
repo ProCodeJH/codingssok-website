@@ -79,7 +79,7 @@ export default function CodeGolfPage() {
             {/* Header */}
             <div style={{ marginBottom: 24 }}>
                 <Link href="/dashboard/learning" style={{ fontSize: 13, color: "#94a3b8", textDecoration: "none" }}>← 대시보드</Link>
-                <h1 style={{ fontSize: 26, fontWeight: 800, color: "#1e1b4b", marginTop: 8 }}>
+                <h1 style={{ fontSize: 26, fontWeight: 800, color: "#172554", marginTop: 8 }}>
                      코드 골프 대회
                 </h1>
                 <p style={{ fontSize: 13, color: "#64748b", marginTop: 4 }}>
@@ -104,7 +104,7 @@ export default function CodeGolfPage() {
                                     onClick={() => { setSelectedProblem(problem); setCode(""); setSubmitted(false); }}
                                     style={{
                                         background: "#fff", borderRadius: 14, padding: "18px 20px",
-                                        border: isSelected ? "2px solid #4F46E5" : "1px solid #e2e8f0",
+                                        border: isSelected ? "2px solid #2563eb" : "1px solid #e2e8f0",
                                         cursor: "pointer", transition: "all 0.2s",
                                     }}
                                 >
@@ -114,7 +114,7 @@ export default function CodeGolfPage() {
                                                 padding: "2px 8px", borderRadius: 6, fontSize: 10, fontWeight: 700,
                                                 background: diff.bg, color: diff.color,
                                             }}>{diff.label}</span>
-                                            <span style={{ fontSize: 15, fontWeight: 700, color: "#1e1b4b" }}>{problem.title}</span>
+                                            <span style={{ fontSize: 15, fontWeight: 700, color: "#172554" }}>{problem.title}</span>
                                         </div>
                                         <span style={{ fontSize: 11, color: "#94a3b8" }}>{problem.timeLimit}</span>
                                     </div>
@@ -179,7 +179,7 @@ export default function CodeGolfPage() {
                                             disabled={!code.trim()}
                                             style={{
                                                 padding: "10px 20px", borderRadius: 10, border: "none",
-                                                background: submitted ? "#059669" : code.trim() ? "#4F46E5" : "#334155",
+                                                background: submitted ? "#059669" : code.trim() ? "#2563eb" : "#334155",
                                                 color: "#fff", fontWeight: 700, fontSize: 12,
                                                 cursor: code.trim() ? "pointer" : "default",
                                             }}
@@ -198,7 +198,7 @@ export default function CodeGolfPage() {
                     background: "#fff", borderRadius: 16, padding: "20px",
                     border: "1px solid #e2e8f0", position: "sticky", top: 20,
                 }}>
-                    <h3 style={{ fontSize: 15, fontWeight: 700, color: "#1e1b4b", marginBottom: 16 }}>
+                    <h3 style={{ fontSize: 15, fontWeight: 700, color: "#172554", marginBottom: 16 }}>
                          리더보드
                     </h3>
                     {LEADERBOARD.map((player, i) => (
@@ -216,7 +216,7 @@ export default function CodeGolfPage() {
                                 {player.badge || player.rank}
                             </span>
                             <div style={{ flex: 1 }}>
-                                <div style={{ fontSize: 13, fontWeight: 700, color: "#1e1b4b" }}>{player.name}</div>
+                                <div style={{ fontSize: 13, fontWeight: 700, color: "#172554" }}>{player.name}</div>
                                 <div style={{ fontSize: 10, color: "#94a3b8" }}>
                                     {player.solved}문제 · 평균 {player.avgChars}자
                                 </div>
@@ -228,8 +228,8 @@ export default function CodeGolfPage() {
                     {/* XP Reward */}
                     <div style={{
                         marginTop: 16, padding: "12px", borderRadius: 10,
-                        background: "linear-gradient(135deg, #EEF2FF, #F5F3FF)",
-                        fontSize: 11, color: "#4F46E5", textAlign: "center", lineHeight: 1.6,
+                        background: "linear-gradient(135deg, #EFF6FF, #eff6ff)",
+                        fontSize: 11, color: "#2563eb", textAlign: "center", lineHeight: 1.6,
                     }}>
                          <strong>보상</strong><br />
                          500 XP ·  300 XP ·  200 XP

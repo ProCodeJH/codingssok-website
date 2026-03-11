@@ -52,7 +52,7 @@ export default function Hero() {
                         objectFit: "cover",
                     }}
                 >
-                    <source src="/videos/codingssok-intro-web.mp4" type="video/mp4" />
+                    <source src="/videos/hero-bg.mp4" type="video/mp4" />
                 </video>
             </motion.div>
 

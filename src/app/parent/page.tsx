@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase";
 import { COURSES, getAllUnits } from "@/data/courses";
+import { verifyParentPin } from "@/hooks/useParentPin";
 
 interface StudentProfile { id:string; name:string; email:string; level:number; xp:number; streak_current:number; streak_max:number; }
 interface Submission { id:string; language:string; status:string; created_at:string; code:string; output:string; }
@@ -33,6 +34,7 @@ export default function ParentDashboard() {
         return localStorage.getItem("parent_name") || "";
     });
     const [inputCode, setInputCode] = useState("");
+    const [inputPin, setInputPin] = useState("");
     const [inputParentName, setInputParentName] = useState("");
     const [student, setStudent] = useState<StudentProfile | null>(null);
     const [submissions, setSubmissions] = useState<Submission[]>([]);
@@ -47,28 +49,32 @@ export default function ParentDashboard() {
     const [fbCourse, setFbCourse] = useState("");
     const [fbSending, setFbSending] = useState(false);
 
-    const fetchStudentData = useCallback(async (query: string) => {
+    const fetchStudentData = useCallback(async (query: string, pin?: string) => {
         setLoading(true); setError("");
         try {
-            let profile: any = null;
-            const q = query.trim();
-            if (q.includes("@")) { const { data } = await supabase.from("profiles").select("*").eq("email", q).single(); profile = data; }
-            if (!profile) { const { data } = await supabase.from("profiles").select("*").eq("name", q).maybeSingle(); profile = data; }
-            if (!profile && q.length > 10) { const { data } = await supabase.from("profiles").select("*").eq("id", q).single(); profile = data; }
-            if (!profile) { setError("학생을 찾을 수 없습니다."); setLoading(false); return; }
+            // If PIN provided, verify it
+            if (pin) {
+                const profile = await verifyParentPin(supabase, query, pin);
+                if (!profile) { setError("학생을 찾을 수 없거나 접속 코드가 일치하지 않습니다."); setLoading(false); return; }
+                const sid = profile.id;
+                setStudent({ id:sid, name:profile.name||"학생", email:profile.email||"", level:profile.level||1, xp:profile.xp||0, streak_current:profile.streak_current||0, streak_max:profile.streak_max||0 });
 
-            const sid = profile.id;
-            setStudent({ id:sid, name:profile.name||"학생", email:profile.email||"", level:profile.level||1, xp:profile.xp||0, streak_current:profile.streak_current||0, streak_max:profile.streak_max||0 });
-
-            const [r1,r2,r3,r4,r5] = await Promise.all([
-                supabase.from("code_submissions").select("*").eq("user_id",sid).order("created_at",{ascending:false}).limit(50),
-                supabase.from("xp_logs").select("*").eq("user_id",sid).order("created_at",{ascending:false}).limit(30),
-                supabase.from("study_progress").select("course_id,completed_units").eq("user_id",sid),
-                supabase.from("study_notes").select("note_key,content,color,updated_at").eq("user_id",sid).order("updated_at",{ascending:false}),
-                supabase.from("parent_feedback").select("*").eq("student_id",sid).order("created_at",{ascending:false}),
-            ]);
-            setSubmissions(r1.data||[]); setXpLogs(r2.data||[]); setProgress(r3.data||[]); setNotes(r4.data||[]); setFeedbacks(r5.data||[]);
-            localStorage.setItem("parent_student_id", sid);
+                const [r1,r2,r3,r4,r5] = await Promise.all([
+                    supabase.from("code_submissions").select("*").eq("user_id",sid).order("created_at",{ascending:false}).limit(50),
+                    supabase.from("xp_logs").select("*").eq("user_id",sid).order("created_at",{ascending:false}).limit(30),
+                    supabase.from("study_progress").select("course_id,completed_units").eq("user_id",sid).neq("course_id","__parent_pin__"),
+                    supabase.from("study_notes").select("note_key,content,color,updated_at").eq("user_id",sid).order("updated_at",{ascending:false}),
+                    supabase.from("parent_feedback").select("*").eq("student_id",sid).order("created_at",{ascending:false}),
+                ]);
+                setSubmissions(r1.data||[]); setXpLogs(r2.data||[]); setProgress(r3.data||[]); setNotes(r4.data||[]); setFeedbacks(r5.data||[]);
+                localStorage.setItem("parent_student_id", sid);
+                localStorage.setItem("parent_pin_cache", pin);
+            } else {
+                // Auto-reconnect from cache — use cached PIN
+                const cachedPin = localStorage.getItem("parent_pin_cache");
+                if (cachedPin) { await fetchStudentData(query, cachedPin); return; }
+                else { setError("접속 코드가 필요합니다."); setLoading(false); return; }
+            }
         } catch (err:any) { setError(err?.message||"데이터를 불러올 수 없습니다."); }
         setLoading(false);
     }, [supabase]);
@@ -87,8 +93,9 @@ export default function ParentDashboard() {
     }, [student, supabase]);
 
     const handleConnect = () => {
-        if (inputCode.trim()) { setStudentCode(inputCode.trim()); }
+        if (!inputCode.trim() || !inputPin.trim()) { setError("자녀 정보와 접속 코드를 모두 입력해주세요."); return; }
         if (inputParentName.trim()) { setParentName(inputParentName.trim()); localStorage.setItem("parent_name", inputParentName.trim()); }
+        fetchStudentData(inputCode.trim(), inputPin.trim());
     };
     const handleDisconnect = () => { setStudentCode(""); setStudent(null); setSubmissions([]); setXpLogs([]); setProgress([]); setNotes([]); setFeedbacks([]); localStorage.removeItem("parent_student_id"); };
 
@@ -120,17 +127,26 @@ export default function ParentDashboard() {
                     </p>
                     <input value={inputParentName} onChange={e=>setInputParentName(e.target.value)} placeholder="학부모 이름 (피드백 작성용)"
                         style={{ width:"100%",padding:"12px 16px",borderRadius:12,border:"1px solid #e2e8f0",fontSize:14,outline:"none",marginBottom:8,boxSizing:"border-box" }}/>
-                    <div style={{display:"flex",gap:8,marginBottom:16}}>
-                        <input value={inputCode} onChange={e=>setInputCode(e.target.value)} onKeyDown={e=>e.key==="Enter"&&handleConnect()}
-                            placeholder="자녀 이름, 이메일, 또는 학생 ID"
-                            style={{ flex:1,padding:"12px 16px",borderRadius:12,border:"1px solid #e2e8f0",fontSize:14,outline:"none" }}/>
+                    <input value={inputCode} onChange={e=>setInputCode(e.target.value)} placeholder="자녀 이름, 이메일, 또는 학생 ID"
+                        style={{ width:"100%",padding:"12px 16px",borderRadius:12,border:"1px solid #e2e8f0",fontSize:14,outline:"none",marginBottom:8,boxSizing:"border-box" }}/>
+                    <div style={{display:"flex",gap:8,marginBottom:12}}>
+                        <div style={{position:"relative",flex:1}}>
+                            <span className="material-symbols-outlined" style={{position:"absolute",left:12,top:"50%",transform:"translateY(-50%)",fontSize:18,color:"#94a3b8"}}>lock</span>
+                            <input value={inputPin} onChange={e=>setInputPin(e.target.value.replace(/\D/g,'').slice(0,6))} onKeyDown={e=>e.key==="Enter"&&handleConnect()}
+                                placeholder="접속 코드 (6자리)" maxLength={6}
+                                style={{ width:"100%",padding:"12px 16px 12px 38px",borderRadius:12,border:"1px solid #e2e8f0",fontSize:16,outline:"none",fontFamily:"'JetBrains Mono',monospace",letterSpacing:4,boxSizing:"border-box" }}/>
+                        </div>
                         <motion.button whileHover={{scale:1.03}} whileTap={{scale:0.97}} onClick={handleConnect} disabled={loading}
                             style={{ padding:"12px 24px", borderRadius:12, border:"none", cursor:"pointer", background:"linear-gradient(135deg,#6366f1,#8b5cf6)", color:"#fff", fontWeight:700, fontSize:14, whiteSpace:"nowrap" }}>
                             {loading?"연결 중...":"연결"}
                         </motion.button>
                     </div>
                     {error && <p style={{fontSize:12,color:"#ef4444",fontWeight:600}}>{error}</p>}
-                    <Link href="/" style={{display:"inline-block",marginTop:20,fontSize:13,color:"#94a3b8",textDecoration:"none"}}>← 홈으로</Link>
+                    <p style={{fontSize:11,color:"#94a3b8",marginTop:8,lineHeight:1.5}}>
+                        <span className="material-symbols-outlined" style={{fontSize:13,verticalAlign:"middle",marginRight:4}}>info</span>
+                        접속 코드는 자녀의 <strong>프로필 페이지</strong>에서 확인할 수 있습니다.
+                    </p>
+                    <Link href="/" style={{display:"inline-block",marginTop:16,fontSize:13,color:"#94a3b8",textDecoration:"none"}}>← 홈으로</Link>
                 </motion.div>
             </div>
         );

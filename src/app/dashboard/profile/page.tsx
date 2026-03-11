@@ -5,6 +5,7 @@ import { createClient } from '@/lib/supabase/client'
 import { getProfileStats, getActivityHeatmap, getRecentActivity } from '@/lib/actions/profile'
 import { getStudentXP } from '@/lib/actions/xp'
 import { User, BarChart3, FileText, BookOpen, Zap, Award, Target, TrendingUp } from 'lucide-react'
+import { useParentPin } from '@/hooks/useParentPin'
 
 interface ProfileData {
   profile: {
@@ -32,12 +33,15 @@ export default function ProfilePage() {
     submissions: unknown[]; materialViews: unknown[]; notes: unknown[]
   }>({ submissions: [], materialViews: [], notes: [] })
   const [loading, setLoading] = useState(true)
+  const [userId, setUserId] = useState<string | undefined>(undefined)
+  const { pin, regeneratePin } = useParentPin(userId)
 
   useEffect(() => {
     async function load() {
       const supabase = createClient()
       const { data: { user } } = await supabase.auth.getUser()
       if (!user) return
+      setUserId(user.id)
 
       const [profileResult, xpResult, heatmapResult, activityResult] = await Promise.all([
         getProfileStats(user.id),
@@ -154,6 +158,34 @@ export default function ProfilePage() {
           </div>
         </div>
       </div>
+
+      {/* Parent Access PIN */}
+      {pin && (
+        <div className="glass-premium rounded-xl p-5" style={{ border: '1px solid var(--color-border)' }}>
+          <div className="flex items-center justify-between">
+            <div>
+              <h2 className="font-semibold text-sm mb-1 flex items-center gap-2">
+                <span style={{ fontSize: 16 }}>🔐</span>
+                학부모 접속 코드
+              </h2>
+              <p className="text-xs" style={{ color: 'var(--color-text-secondary)' }}>
+                학부모님께 이 코드를 알려드리면 학습 현황을 확인할 수 있습니다.
+              </p>
+            </div>
+            <div className="flex items-center gap-3">
+              <code className="text-2xl font-bold tracking-[0.3em] px-4 py-2 rounded-xl" 
+                style={{ background: 'rgba(99,102,241,0.1)', color: '#6366f1', fontFamily: "'JetBrains Mono', monospace" }}>
+                {pin}
+              </code>
+              <button onClick={regeneratePin} className="text-xs px-3 py-2 rounded-lg"
+                style={{ background: 'rgba(255,255,255,0.05)', color: 'var(--color-text-secondary)', border: '1px solid var(--color-border)', cursor: 'pointer' }}
+                title="새 코드 생성">
+                🔄 재발급
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Stats Grid */}
       <div className="grid grid-cols-2 md:grid-cols-5 gap-3">

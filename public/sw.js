@@ -2,7 +2,7 @@
    코딩쏙 Service Worker — 오프라인 지원
    ═══════════════════════════════════ */
 
-const CACHE_NAME = "codingssok-v1";
+const CACHE_NAME = "codingssok-v2";
 const OFFLINE_URL = "/offline";
 
 const PRECACHE_URLS = [
@@ -27,8 +27,16 @@ self.addEventListener("activate", (event) => {
     self.clients.claim();
 });
 
-// Fetch: network-first, fallback to cache
+// Fetch: only handle same-origin requests
 self.addEventListener("fetch", (event) => {
+    const url = new URL(event.request.url);
+
+    // Skip external requests (fonts, CDN, etc.) — let browser handle directly
+    if (url.origin !== self.location.origin) return;
+
+    // Skip API requests
+    if (url.pathname.startsWith("/api/")) return;
+
     if (event.request.mode === "navigate") {
         event.respondWith(
             fetch(event.request).catch(() =>
@@ -38,12 +46,8 @@ self.addEventListener("fetch", (event) => {
         return;
     }
 
-    // For other requests: cache-first for static, network-first for API
-    if (event.request.url.includes("/api/")) {
-        event.respondWith(fetch(event.request));
-    } else {
-        event.respondWith(
-            caches.match(event.request).then((r) => r || fetch(event.request))
-        );
-    }
+    // Same-origin static: cache-first
+    event.respondWith(
+        caches.match(event.request).then((r) => r || fetch(event.request))
+    );
 });

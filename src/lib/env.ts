@@ -5,13 +5,10 @@
 function requireEnv(name: string): string {
     const value = process.env[name]
     if (!value) {
-        // 빌드 시 정적 렌더링 중에는 환경변수가 없을 수 있음 (client component)
-        if (typeof window === 'undefined' && process.env.NODE_ENV === 'production') {
-            return ''
+        if (typeof window !== 'undefined') {
+            console.warn(`[env] ${name} is not set`)
         }
-        throw new Error(
-            `환경변수 ${name}이(가) 설정되지 않았습니다. .env.local 파일을 확인해주세요.`
-        )
+        return ''
     }
     return value
 }

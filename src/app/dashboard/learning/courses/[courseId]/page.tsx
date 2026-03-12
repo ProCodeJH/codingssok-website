@@ -71,9 +71,11 @@ export default function CourseDetailPage() {
     const [leftOpen, setLeftOpen] = useState(true);
     const [rightOpen, setRightOpen] = useState(true);
 
-    // Resizable panels
-    const [leftWidth, setLeftWidth] = useState(280);
-    const [rightWidth, setRightWidth] = useState(480);
+    // Resizable panels — DOM 직접 조작으로 즉각 반응
+    const leftPanelRef = useRef<HTMLDivElement>(null);
+    const rightPanelRef = useRef<HTMLDivElement>(null);
+    const leftWidthRef = useRef(280);
+    const rightWidthRef = useRef(480);
     const draggingRef = useRef<"left" | "right" | null>(null);
     const startXRef = useRef(0);
     const startWidthRef = useRef(0);
@@ -84,23 +86,34 @@ export default function CourseDetailPage() {
             e.preventDefault();
             const delta = e.clientX - startXRef.current;
             if (draggingRef.current === "left") {
-                setLeftWidth(Math.max(200, Math.min(450, startWidthRef.current + delta)));
+                const w = Math.max(200, Math.min(450, startWidthRef.current + delta));
+                leftWidthRef.current = w;
+                if (leftPanelRef.current) leftPanelRef.current.style.width = `${w}px`;
             } else {
-                setRightWidth(Math.max(280, Math.min(700, startWidthRef.current - delta)));
+                const w = Math.max(280, Math.min(700, startWidthRef.current - delta));
+                rightWidthRef.current = w;
+                if (rightPanelRef.current) rightPanelRef.current.style.width = `${w}px`;
             }
         };
-        const onMouseUp = () => { draggingRef.current = null; document.body.style.cursor = ""; document.body.style.userSelect = ""; };
+        const onMouseUp = () => {
+            draggingRef.current = null;
+            document.body.style.cursor = "";
+            document.body.style.userSelect = "";
+        };
         window.addEventListener("mousemove", onMouseMove);
         window.addEventListener("mouseup", onMouseUp);
         return () => { window.removeEventListener("mousemove", onMouseMove); window.removeEventListener("mouseup", onMouseUp); };
     }, []);
 
     const startDrag = (side: "left" | "right", e: React.MouseEvent) => {
+        e.preventDefault();
         draggingRef.current = side;
         startXRef.current = e.clientX;
-        startWidthRef.current = side === "left" ? leftWidth : rightWidth;
+        startWidthRef.current = side === "left" ? leftWidthRef.current : rightWidthRef.current;
         document.body.style.cursor = "col-resize";
         document.body.style.userSelect = "none";
+        if (leftPanelRef.current) leftPanelRef.current.style.transition = "none";
+        if (rightPanelRef.current) rightPanelRef.current.style.transition = "none";
     };
 
     // Quiz state
@@ -478,10 +491,8 @@ export default function CourseDetailPage() {
             {/* ══════════════════════════════════════════════
                 LEFT PANEL — 커리큘럼 트리
                ══════════════════════════════════════════════ */}
-            <motion.aside
-                animate={{ width: leftOpen ? leftWidth : 0, opacity: leftOpen ? 1 : 0 }}
-                transition={{ type: "spring", stiffness: 300, damping: 30 }}
-                style={{ flexShrink: 0, overflow: "hidden", borderRight: "1px solid #e2e8f0", background: "#fff", display: "flex", flexDirection: "column" }}>
+            <aside ref={leftPanelRef}
+                style={{ width: leftOpen ? 280 : 0, opacity: leftOpen ? 1 : 0, flexShrink: 0, overflow: "hidden", borderRight: leftOpen ? "1px solid #e2e8f0" : "none", background: "#fff", display: "flex", flexDirection: "column", transition: "width .25s ease, opacity .2s ease" }}>
 
                 {/* Header */}
                 <div style={{ padding: "20px 16px 12px", borderBottom: "1px solid #f1f5f9" }}>
@@ -565,7 +576,7 @@ export default function CourseDetailPage() {
                         );
                     })}
                 </div>
-            </motion.aside>
+            </aside>
 
             {/* Left drag handle + toggle */}
             {leftOpen && <div className="panel-drag" onMouseDown={(e) => startDrag("left", e)} onDoubleClick={() => setLeftOpen(false)} title="드래그: 크기 조절 / 더블클릭: 접기" />}
@@ -725,10 +736,8 @@ export default function CourseDetailPage() {
             {/* ══════════════════════════════════════════════
                 RIGHT PANEL — 도구 패널
                ══════════════════════════════════════════════ */}
-            <motion.aside
-                animate={{ width: rightOpen ? rightWidth : 0, opacity: rightOpen ? 1 : 0 }}
-                transition={{ type: "spring", stiffness: 300, damping: 30 }}
-                style={{ flexShrink: 0, overflow: "hidden", borderLeft: "1px solid #e2e8f0", background: "#fff", display: "flex", flexDirection: "column" }}>
+            <aside ref={rightPanelRef}
+                style={{ width: rightOpen ? 480 : 0, opacity: rightOpen ? 1 : 0, flexShrink: 0, overflow: "hidden", borderLeft: rightOpen ? "1px solid #e2e8f0" : "none", background: "#fff", display: "flex", flexDirection: "column", transition: "width .25s ease, opacity .2s ease" }}>
 
                 {/* ── Tab Bar ── */}
                 <div style={{ display: "flex", borderBottom: "1px solid #f1f5f9", background: "#fafafa" }}>
@@ -895,7 +904,7 @@ export default function CourseDetailPage() {
                         </div>
                     )}
                 </div>
-            </motion.aside>
+            </aside>
         </div>
     );
 }

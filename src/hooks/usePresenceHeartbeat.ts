@@ -41,7 +41,7 @@ export function usePresenceHeartbeat(options: PresenceOptions) {
                     page_url: typeof window !== "undefined" ? window.location.pathname : null,
                     is_online: online,
                     last_heartbeat: new Date().toISOString(),
-                }, { onConflict: "user_id" });
+                }, { onConflict: "user_id", ignoreDuplicates: false });
             } catch (e) {
                 if (process.env.NODE_ENV === "development") console.error("[Presence] upsert:", e);
             }

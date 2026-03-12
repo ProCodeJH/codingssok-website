@@ -89,7 +89,7 @@ export function useUserProgress() {
                         .from("user_progress")
                         .select("*")
                         .eq("user_id", session.user.id)
-                        .single();
+                        .maybeSingle();
 
                     // Fetch badges
                     const { data: badges } = await sb

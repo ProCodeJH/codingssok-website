@@ -33,9 +33,10 @@ const nextConfig: NextConfig = {
             key: 'Content-Security-Policy',
             value: [
               "default-src 'self'",
-              "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://fonts.googleapis.com https://cdn.jsdelivr.net",
+              "script-src 'self' 'unsafe-inline' 'unsafe-eval' blob: https://fonts.googleapis.com https://cdn.jsdelivr.net",
               "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.jsdelivr.net",
-              "font-src 'self' https://fonts.gstatic.com https://cdn.jsdelivr.net",
+              "font-src 'self' data: https://fonts.gstatic.com https://cdn.jsdelivr.net",
+              "worker-src 'self' blob:",
               "img-src 'self' data: blob: https:",
               "connect-src 'self' https://*.supabase.co https://godbolt.org wss://*.supabase.co https://fonts.googleapis.com https://fonts.gstatic.com https://cdn.jsdelivr.net",
               "frame-src 'self'",

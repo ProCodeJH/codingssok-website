@@ -73,6 +73,7 @@ export default function MiniCodeEditor({ contextLabel, onCodeRun }: Props) {
     const [expanded, setExpanded] = useState(false);
     const [fontSize, setFontSize] = useState(14);
     const [rightPanel, setRightPanel] = useState<"none" | "snippets" | "shortcuts">("none");
+    const [terminalH, setTerminalH] = useState(expanded ? 180 : 140);
     const [compileCount, setCompileCount] = useState(0);
     const [successCount, setSuccessCount] = useState(0);
     const editorRef = useRef<unknown>(null);
@@ -487,14 +488,34 @@ export default function MiniCodeEditor({ contextLabel, onCodeRun }: Props) {
                 </AnimatePresence>
             </div>
 
+            {/* ═══ 터미널 리사이즈 핸들 ═══ */}
+            <div
+                style={{ height: 6, cursor: "row-resize", background: "#1e293b", position: "relative", flexShrink: 0 }}
+                onMouseDown={(e) => {
+                    e.preventDefault();
+                    const startY = e.clientY;
+                    const startH = terminalH;
+                    const onMove = (ev: MouseEvent) => {
+                        ev.preventDefault();
+                        setTerminalH(Math.max(60, Math.min(500, startH - (ev.clientY - startY))));
+                    };
+                    const onUp = () => { window.removeEventListener("mousemove", onMove); window.removeEventListener("mouseup", onUp); document.body.style.cursor = ""; document.body.style.userSelect = ""; };
+                    document.body.style.cursor = "row-resize";
+                    document.body.style.userSelect = "none";
+                    window.addEventListener("mousemove", onMove);
+                    window.addEventListener("mouseup", onUp);
+                }}
+            >
+                <div style={{ position: "absolute", left: "50%", top: "50%", transform: "translate(-50%,-50%)", width: 24, height: 2, borderRadius: 1, background: "#475569" }} />
+            </div>
+
             {/* ═══ 출력 터미널 ═══ */}
             <div style={{
-                borderTop: "1px solid #1e293b",
                 background: "#06060a",
-                minHeight: expanded ? 180 : 100,
-                maxHeight: expanded ? 300 : 200,
+                height: terminalH,
                 overflowY: "auto",
                 display: "flex", flexDirection: "column",
+                flexShrink: 0,
             }} className="hide-sb">
                 {/* 터미널 헤더 */}
                 <div style={{

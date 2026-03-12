@@ -43,50 +43,42 @@ export default function CosProSubCoursePage() {
     const [rightTab, setRightTab] = useState<"notes" | "code" | "timer" | "qa" | "bookmarks">("notes");
     const [activeHL, setActiveHL] = useState<string | null>(null);
 
-    // Resizable panels — DOM 직접 조작으로 즉각 반응
-    const leftRef = useRef<HTMLDivElement>(null);
-    const rightRef = useRef<HTMLDivElement>(null);
-    const leftWidthRef = useRef(280);
-    const rightWidthRef = useRef(480);
-    const draggingRef = useRef<"left" | "right" | null>(null);
-    const startXRef = useRef(0);
-    const startWidthRef = useRef(0);
+    // Resizable panels
+    const [leftW, setLeftW] = useState(280);
+    const [rightW, setRightW] = useState(480);
+    const [isDragging, setIsDragging] = useState(false);
+    const dragRef = useRef<{ side: "left" | "right"; startX: number; startW: number } | null>(null);
 
     useEffect(() => {
-        const onMouseMove = (e: MouseEvent) => {
-            if (!draggingRef.current) return;
+        const onMove = (e: MouseEvent) => {
+            const d = dragRef.current;
+            if (!d) return;
             e.preventDefault();
-            const delta = e.clientX - startXRef.current;
-            if (draggingRef.current === "left") {
-                const w = Math.max(200, Math.min(450, startWidthRef.current + delta));
-                leftWidthRef.current = w;
-                if (leftRef.current) leftRef.current.style.width = `${w}px`;
+            const delta = e.clientX - d.startX;
+            if (d.side === "left") {
+                setLeftW(Math.max(200, Math.min(450, d.startW + delta)));
             } else {
-                const w = Math.max(280, Math.min(700, startWidthRef.current - delta));
-                rightWidthRef.current = w;
-                if (rightRef.current) rightRef.current.style.width = `${w}px`;
+                setRightW(Math.max(280, Math.min(700, d.startW - delta)));
             }
         };
-        const onMouseUp = () => {
-            draggingRef.current = null;
+        const onUp = () => {
+            if (!dragRef.current) return;
+            dragRef.current = null;
+            setIsDragging(false);
             document.body.style.cursor = "";
             document.body.style.userSelect = "";
         };
-        window.addEventListener("mousemove", onMouseMove);
-        window.addEventListener("mouseup", onMouseUp);
-        return () => { window.removeEventListener("mousemove", onMouseMove); window.removeEventListener("mouseup", onMouseUp); };
+        window.addEventListener("mousemove", onMove);
+        window.addEventListener("mouseup", onUp);
+        return () => { window.removeEventListener("mousemove", onMove); window.removeEventListener("mouseup", onUp); };
     }, []);
 
     const startDrag = (side: "left" | "right", e: React.MouseEvent) => {
         e.preventDefault();
-        draggingRef.current = side;
-        startXRef.current = e.clientX;
-        startWidthRef.current = side === "left" ? leftWidthRef.current : rightWidthRef.current;
+        dragRef.current = { side, startX: e.clientX, startW: side === "left" ? leftW : rightW };
+        setIsDragging(true);
         document.body.style.cursor = "col-resize";
         document.body.style.userSelect = "none";
-        // 드래그 시작 시 transition 비활성화
-        if (leftRef.current) leftRef.current.style.transition = "none";
-        if (rightRef.current) rightRef.current.style.transition = "none";
     };
 
     // Timer
@@ -218,8 +210,8 @@ export default function CosProSubCoursePage() {
             {/* ══════════════════════════════════════════════
                 LEFT PANEL — 커리큘럼 트리
                ══════════════════════════════════════════════ */}
-            <aside ref={leftRef}
-                style={{ width: leftOpen ? 280 : 0, opacity: leftOpen ? 1 : 0, flexShrink: 0, overflow: "hidden", borderRight: leftOpen ? "1px solid #e2e8f0" : "none", background: "#fff", display: "flex", flexDirection: "column", transition: "width .25s ease, opacity .2s ease" }}>
+            <aside
+                style={{ width: leftOpen ? leftW : 0, opacity: leftOpen ? 1 : 0, flexShrink: 0, overflow: "hidden", borderRight: leftOpen ? "1px solid #e2e8f0" : "none", background: "#fff", display: "flex", flexDirection: "column", transition: isDragging ? "none" : "width .25s ease, opacity .2s ease" }}>
 
                 {/* Header */}
                 <div style={{ padding: "20px 16px 12px", borderBottom: "1px solid #f1f5f9" }}>
@@ -402,8 +394,8 @@ export default function CosProSubCoursePage() {
             {/* ══════════════════════════════════════════════
                 RIGHT PANEL — 도구 패널
                ══════════════════════════════════════════════ */}
-            <aside ref={rightRef}
-                style={{ width: rightOpen ? 480 : 0, opacity: rightOpen ? 1 : 0, flexShrink: 0, overflow: "hidden", borderLeft: rightOpen ? "1px solid #e2e8f0" : "none", background: "#fff", display: "flex", flexDirection: "column", transition: "width .25s ease, opacity .2s ease" }}>
+            <aside
+                style={{ width: rightOpen ? rightW : 0, opacity: rightOpen ? 1 : 0, flexShrink: 0, overflow: "hidden", borderLeft: rightOpen ? "1px solid #e2e8f0" : "none", background: "#fff", display: "flex", flexDirection: "column", transition: isDragging ? "none" : "width .25s ease, opacity .2s ease" }}>
 
                 {/* Tab Bar */}
                 <div style={{ display: "flex", borderBottom: "1px solid #f1f5f9", background: "#fafafa" }}>

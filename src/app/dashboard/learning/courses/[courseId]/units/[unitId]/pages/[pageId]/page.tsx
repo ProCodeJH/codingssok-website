@@ -4,14 +4,20 @@ import Link from "next/link";
 import { useState, useMemo, useCallback, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "@/contexts/AuthContext";
-import { awardXP, deductXP, XP_REWARDS, XP_PENALTIES } from "@/lib/xp-engine";
+import { XP_REWARDS, XP_PENALTIES } from "@/lib/xp-engine";
+import { awardXP, deductXP } from "@/lib/xp-client";
+import { trackMission } from "@/lib/mission-tracker";
 import { getCourseById, getAllUnits } from "@/data/courses";
 import { getHtmlContentPath } from "@/data/courses/html-content-map";
 import type { Unit, Page, Quiz, CodeProblem } from "@/data/courses";
+
+declare global { interface Window { __runCCode?: (btn: HTMLButtonElement) => Promise<void>; } }
 import LevelUpModal from "@/components/ui/LevelUpModal";
 import { QuizPanel, CodeProblemCard, MI, glassPanel } from "../../../../components";
 import confetti from "canvas-confetti";
 import { useWrongAnswers } from "@/hooks/useWrongAnswers";
+import { sanitizeHTML } from "@/lib/sanitize";
+import { usePresenceHeartbeat } from "@/hooks/usePresenceHeartbeat";
 
 /* ──────────────────────────────────────────────
    Learning Content Page
@@ -49,6 +55,13 @@ export default function LearningContentPage() {
     const currentPage = useMemo(() => pages.find(p => p.id === activePageId), [pages, activePageId]);
     const currentPageIndex = useMemo(() => pages.findIndex(p => p.id === activePageId), [pages, activePageId]);
 
+    // Presence heartbeat
+    usePresenceHeartbeat({
+        courseId, courseTitle: courseData?.title,
+        unitId: unitIdParam, unitTitle: unit?.title,
+        pageId: activePageId, pageTitle: currentPage?.title,
+    });
+
     // Quiz state
     const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null);
     const [quizResult, setQuizResult] = useState<"correct" | "wrong" | null>(null);
@@ -77,7 +90,7 @@ export default function LearningContentPage() {
             const data = await res.json();
             setRunResult(prev => ({ ...prev, [probId]: { stdout: data.program_output || "", stderr: data.program_error || data.compiler_error || "", exitCode: data.status === "0" ? 0 : 1 } }));
         } catch (err) {
-            console.error('[Compile] executeCode failed:', err);
+            if (process.env.NODE_ENV === 'development') console.error('[Compile] executeCode failed:', err);
             setRunResult(prev => ({ ...prev, [probId]: { stdout: "", stderr: "네트워크 오류가 발생했습니다.", exitCode: 1 } }));
         } finally {
             setRunLoading(prev => ({ ...prev, [probId]: false }));
@@ -91,6 +104,7 @@ export default function LearningContentPage() {
             setQuizResult("correct");
             //  Confetti celebration!
             confetti({ particleCount: 200, spread: 80, origin: { y: 0.75 }, colors: ['#2563eb', '#F59E0B', '#34D399', '#818CF8'] });
+            trackMission("quiz_solve");
             if (user?.id) {
                 awardXP(user.id, XP_REWARDS.lesson_complete, "퀴즈 정답", "check_circle").then(r => {
                     if (r?.levelUp) setLevelUpInfo({ level: r.level });
@@ -141,7 +155,7 @@ export default function LearningContentPage() {
 
     // ── Inject __runCCode for in-content run buttons ──
     useEffect(() => {
-        (window as any).__runCCode = async (btn: HTMLButtonElement) => {
+        window.__runCCode = async (btn: HTMLButtonElement) => {
             const code = btn.getAttribute("data-code")?.replace(/\\n/g, "\n").replace(/\\"/g, '"') ?? "";
             btn.disabled = true;
             btn.textContent = "⏳ 실행 중...";
@@ -153,10 +167,10 @@ export default function LearningContentPage() {
                 const isError = !!(data.compiler_error || data.program_error);
                 let outEl = wrapper?.querySelector(".lms-run-output") as HTMLDivElement;
                 if (!outEl) { outEl = document.createElement("div"); outEl.className = "lms-run-output"; wrapper?.appendChild(outEl); }
-                outEl.innerHTML = `<div class="status ${isError ? "error" : "success"}">${isError ? "✗ 에러" : "✓ 실행 완료"}</div><pre>${output}</pre>`;
-            } catch (e) { console.error('[Compile] __runCCode failed:', e); } finally { btn.disabled = false; btn.textContent = "▶ 실행"; }
+                outEl.innerHTML = sanitizeHTML(`<div class="status ${isError ? "error" : "success"}">${isError ? "✗ 에러" : "✓ 실행 완료"}</div><pre>${output}</pre>`);
+            } catch (e) { if (process.env.NODE_ENV === 'development') console.error('[Compile] __runCCode failed:', e); } finally { btn.disabled = false; btn.textContent = "▶ 실행"; }
         };
-        return () => { delete (window as any).__runCCode; };
+        return () => { delete window.__runCCode; };
     }, []);
 
     // ── Inject copy buttons into code blocks ──
@@ -363,10 +377,10 @@ export default function LearningContentPage() {
                 <div style={{ padding: "28px 36px 36px" }}>
                     {/* HTML content */}
                     {currentPage.content && currentPage.content.includes('<iframe') ? (
-                        <div dangerouslySetInnerHTML={{ __html: currentPage.content }}
+                        <div dangerouslySetInnerHTML={{ __html: sanitizeHTML(currentPage.content) }}
                             style={{ width: '100%', minHeight: '85vh' }} />
                     ) : currentPage.content ? (
-                        <div dangerouslySetInnerHTML={{ __html: currentPage.content }}
+                        <div dangerouslySetInnerHTML={{ __html: sanitizeHTML(currentPage.content) }}
                             style={{ fontSize: 14, lineHeight: 1.9, color: "#334155", marginBottom: currentPage.quiz || currentPage.problems ? 32 : 0 }} />
                     ) : null}
 

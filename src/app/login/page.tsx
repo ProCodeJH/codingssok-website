@@ -172,6 +172,7 @@ export default function LoginPage() {
       joinedAt: new Date().toISOString(),
     };
     localStorage.setItem("codingssok_user", JSON.stringify(profile));
+    document.cookie = `codingssok_session=${student.id}; path=/; max-age=${60 * 60 * 24 * 30}; SameSite=Lax`;
     window.location.href = "/dashboard/learning";
   };
 

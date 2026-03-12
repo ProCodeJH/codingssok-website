@@ -230,12 +230,6 @@ export default function LoginPage() {
               이름
             </label>
             <div style={{ position: "relative" }}>
-              <div style={{
-                position: "absolute", top: 0, left: 0, bottom: 0,
-                display: "flex", alignItems: "center", paddingLeft: 14, pointerEvents: "none", color: "#9ca3af",
-              }}>
-                <span className="material-symbols-outlined" style={{ fontSize: 20 }}>person</span>
-              </div>
               <input
                 ref={inputRef}
                 id="student-name"
@@ -246,7 +240,7 @@ export default function LoginPage() {
                 autoComplete="off"
                 placeholder="홍길동"
                 style={{
-                  display: "block", width: "100%", paddingLeft: 44, paddingRight: 16,
+                  display: "block", width: "100%", paddingLeft: 16, paddingRight: 16,
                   paddingTop: 14, paddingBottom: 14, border: "2px solid #e5e7eb",
                   borderRadius: 16, background: "rgba(255,255,255,0.8)", fontSize: 16,
                   color: "#1f2937", outline: "none", transition: "all 0.2s",
@@ -323,7 +317,7 @@ export default function LoginPage() {
             ) : (
               <>
                 <span className="material-symbols-outlined" style={{ fontSize: 18 }}>login</span>
-                시작하기
+                로그인
               </>
             )}
           </button>

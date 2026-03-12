@@ -1,6 +1,7 @@
 "use client";
 import { motion, AnimatePresence } from "framer-motion";
 import { useBadges, BADGE_CATALOG, RARITY_COLORS } from "@/hooks/useBadges";
+import BadgeIcon from "@/components/icons/BadgeIcon";
 import Link from "next/link";
 
 /* ═══════════════════════════════════════
@@ -73,8 +74,8 @@ export default function BadgesPage() {
                                         {rarityLabels[b.rarity]}
                                     </div>
                                 )}
-                                <div style={{ fontSize: 36, marginBottom: 8, filter: unlocked ? "none" : "grayscale(1)" }}>
-                                    {b.emoji}
+                                <div style={{ marginBottom: 8, display: "flex", justifyContent: "center" }}>
+                                    <BadgeIcon badgeId={b.id} rarity={b.rarity} size={52} unlocked={unlocked} />
                                 </div>
                                 <div style={{ fontSize: 14, fontWeight: 700, color: "#172554", marginBottom: 4 }}>
                                     {b.name}
@@ -83,7 +84,7 @@ export default function BadgesPage() {
                                     {unlocked ? b.description : b.condition}
                                 </div>
                                 {!unlocked && (
-                                    <div style={{ fontSize: 10, color: "#cbd5e1", marginTop: 8 }}> 미획득</div>
+                                    <div style={{ fontSize: 10, color: "#cbd5e1", marginTop: 8 }}>미획득</div>
                                 )}
                             </motion.div>
                         );
@@ -93,7 +94,7 @@ export default function BadgesPage() {
 
             {/* Special Badges */}
             <section>
-                <h2 style={{ fontSize: 16, fontWeight: 700, color: "#172554", marginBottom: 16 }}> 특별 배지</h2>
+                <h2 style={{ fontSize: 16, fontWeight: 700, color: "#172554", marginBottom: 16 }}>특별 배지</h2>
                 <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(160px, 1fr))", gap: 12 }}>
                     {specialBadges.map((b, i) => {
                         const unlocked = unlockedIds.includes(b.id);
@@ -121,8 +122,8 @@ export default function BadgesPage() {
                                         {rarityLabels[b.rarity]}
                                     </div>
                                 )}
-                                <div style={{ fontSize: 36, marginBottom: 8, filter: unlocked ? "none" : "grayscale(1)" }}>
-                                    {b.emoji}
+                                <div style={{ marginBottom: 8, display: "flex", justifyContent: "center" }}>
+                                    <BadgeIcon badgeId={b.id} rarity={b.rarity} size={52} unlocked={unlocked} />
                                 </div>
                                 <div style={{ fontSize: 14, fontWeight: 700, color: "#172554", marginBottom: 4 }}>
                                     {b.name}

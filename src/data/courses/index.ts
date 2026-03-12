@@ -1,35 +1,10 @@
 /**
  * 코딩쏙 아카데미 — 전체 커리큘럼 인덱스
- * 7개 코스 / C언어만 실 콘텐츠, 나머지 껍데기
+ * 학습 자료는 추후 추가 예정
  */
 
 import type { Course, Chapter } from './types';
-import { C_LANG_PART1 } from './c-lang-part1';
-import { C_LANG_PART2 } from './c-lang-part2';
-import { C_LANG_PART3 } from './c-lang-part3';
-import { C_LANG_PART4 } from './c-lang-part4';
-import { C_LANG_PART5 } from './c-lang-part5';
-import { C_LANG_PART6 } from './c-lang-part6';
-import { C_LANG_PART7 } from './c-lang-part7';
-import { C_LANG_PART8 } from './c-lang-part8';
-import { C_LANG_PART9 } from './c-lang-part9';
-import { C_LANG_PART10 } from './c-lang-part10';
-import { COMPUTER_BASICS } from './computer-basics';
 import { PYTHON_BASICS } from './python-basics';
-
-// ── C언어 전체 챕터 (10개 파트 → 13 챕터, 85 유닛) ──
-const C_LANG_ALL_CHAPTERS = [
-    ...C_LANG_PART1,
-    ...C_LANG_PART2,
-    ...C_LANG_PART3,
-    ...C_LANG_PART4,
-    ...C_LANG_PART5,
-    ...C_LANG_PART6,
-    ...C_LANG_PART7,
-    ...C_LANG_PART8,
-    ...C_LANG_PART9,
-    ...C_LANG_PART10,
-];
 
 // ── 빈 챕터 (준비 중 코스용) ──
 const EMPTY_CHAPTERS: Chapter[] = [
@@ -50,7 +25,63 @@ const EMPTY_CHAPTERS: Chapter[] = [
     },
 ];
 
-// ── 코스 정의 (7개) ──
+// ── CosPro 서브 코스 정의 ──
+export interface CosProSubCourse {
+    id: string;
+    title: string;
+    subtitle: string;
+    language: 'Python' | 'C';
+    level: 1 | 2;
+    gradient: string;
+    cardImage?: string;
+    description: string;
+    icon: string;
+}
+
+export const COSPRO_SUB_COURSES: CosProSubCourse[] = [
+    {
+        id: 'cospro-python-2',
+        title: 'CosPro 파이썬 2급',
+        subtitle: 'Python Level 2',
+        language: 'Python',
+        level: 2,
+        gradient: 'linear-gradient(135deg, #3b82f6, #8b5cf6)',
+        description: '파이썬 기초 문법, 자료형, 제어문, 함수 등 2급 시험 범위를 체계적으로 학습합니다.',
+        icon: '🐍',
+    },
+    {
+        id: 'cospro-python-1',
+        title: 'CosPro 파이썬 1급',
+        subtitle: 'Python Level 1',
+        language: 'Python',
+        level: 1,
+        gradient: 'linear-gradient(135deg, #8b5cf6, #ec4899)',
+        description: '파이썬 고급 문법, 클래스, 알고리즘, 자료구조 등 1급 시험 범위를 마스터합니다.',
+        icon: '🐍',
+    },
+    {
+        id: 'cospro-c-2',
+        title: 'CosPro C언어 2급',
+        subtitle: 'C Language Level 2',
+        language: 'C',
+        level: 2,
+        gradient: 'linear-gradient(135deg, #f59e0b, #ef4444)',
+        description: 'C언어 기초 문법, 포인터, 배열, 구조체 등 2급 시험 범위를 체계적으로 학습합니다.',
+        icon: '⚡',
+    },
+    {
+        id: 'cospro-c-1',
+        title: 'CosPro C언어 1급',
+        subtitle: 'C Language Level 1',
+        language: 'C',
+        level: 1,
+        gradient: 'linear-gradient(135deg, #ef4444, #f97316)',
+        description: 'C언어 고급 문법, 동적 메모리, 파일I/O, 알고리즘 등 1급 시험 범위를 마스터합니다.',
+        icon: '⚡',
+    },
+];
+
+// ── 코스 정의 ──
 
 export const COURSES: Course[] = [
     {
@@ -60,10 +91,10 @@ export const COURSES: Course[] = [
         gradient: 'linear-gradient(135deg, #ec4899, #60a5fa)',
         cardImage: '/images/courses/computer-basics.jpg',
         description: '컴퓨터의 기본 구성 요소, 운영체제, 파일 관리, 인터넷 활용 등 컴퓨터 기초 지식을 배웁니다.',
-        totalUnits: 5,
+        totalUnits: 0,
         totalProblems: 0,
-        estimatedHours: 5,
-        chapters: COMPUTER_BASICS,
+        estimatedHours: 0,
+        chapters: EMPTY_CHAPTERS,
     },
     {
         id: '1',
@@ -107,12 +138,11 @@ export const COURSES: Course[] = [
         icon: '',
         gradient: 'linear-gradient(135deg, #f59e0b, #ef4444)',
         cardImage: '/images/courses/c-lang.jpg',
-        description: 'C언어의 기초부터 구조체, 함수, 파일I/O, 실전 프로젝트까지 13개 챕터, 85개 유닛으로 완벽 마스터합니다.',
-        totalUnits: 85,
-        totalProblems: 950,
-        estimatedHours: 80,
-        chapters: C_LANG_ALL_CHAPTERS,
-        htmlPath: '/learn/C언어/index.html',
+        description: 'C언어의 기초부터 구조체, 함수, 파일I/O, 실전 프로젝트까지 체계적으로 학습합니다.',
+        totalUnits: 0,
+        totalProblems: 0,
+        estimatedHours: 0,
+        chapters: EMPTY_CHAPTERS,
     },
     {
         id: '5',
@@ -120,10 +150,10 @@ export const COURSES: Course[] = [
         icon: '',
         gradient: 'linear-gradient(135deg, #ec4899, #f43f5e)',
         cardImage: '/images/courses/cospro.jpg',
-        description: '백준·KOI Study·프로그래머스·코드업에서 엄선한 188개 문제로 알고리즘 실력을 키웁니다.',
-        totalUnits: 12,
-        totalProblems: 188,
-        estimatedHours: 120,
+        description: 'CosPro 파이썬/C언어 1급·2급 자격증 시험을 체계적으로 준비합니다.',
+        totalUnits: 0,
+        totalProblems: 0,
+        estimatedHours: 0,
         chapters: EMPTY_CHAPTERS,
         requiredTier: 'Silver',
     },

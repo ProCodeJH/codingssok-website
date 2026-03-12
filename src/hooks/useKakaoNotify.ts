@@ -23,23 +23,23 @@ export interface KakaoNotification {
 export const KAKAO_TEMPLATES = {
     homework: {
         code: "HOMEWORK_REMIND",
-        title: "📚 숙제 알림",
-        template: "안녕하세요, {{studentName}} 학부모님!\n{{studentName}} 학생의 숙제 안내드립니다.\n\n📝 과목: {{subject}}\n📅 마감: {{deadline}}\n\n코딩쏙 아카데미 드림",
+        title: "숙제 알림",
+        template: "안녕하세요, {{studentName}} 학부모님!\n{{studentName}} 학생의 숙제 안내드립니다.\n\n과목: {{subject}}\n마감: {{deadline}}\n\n코딩쏙 아카데미 드림",
     },
     attendance: {
         code: "ATTENDANCE_NOTIFY",
-        title: "✅ 출석 확인",
-        template: "안녕하세요, {{studentName}} 학부모님!\n{{studentName}} 학생이 오늘 수업에 출석했습니다. ✅\n\n📊 이번 달 출석률: {{rate}}%\n🔥 연속 출석: {{streak}}일\n\n코딩쏙 아카데미",
+        title: "출석 확인",
+        template: "안녕하세요, {{studentName}} 학부모님!\n{{studentName}} 학생이 오늘 수업에 출석했습니다.\n\n이번 달 출석률: {{rate}}%\n연속 출석: {{streak}}일\n\n코딩쏙 아카데미",
     },
     achievement: {
         code: "ACHIEVEMENT_NOTIFY",
-        title: "🏆 성취 알림",
-        template: "🎉 축하합니다!\n{{studentName}} 학생이 새로운 성취를 달성했습니다!\n\n🏅 {{badge}}\n⭐ 현재 XP: {{xp}}\n📈 레벨: {{level}}\n\n코딩쏙 아카데미",
+        title: "성취 알림",
+        template: "축하합니다!\n{{studentName}} 학생이 새로운 성취를 달성했습니다!\n\n{{badge}}\n현재 XP: {{xp}}\n레벨: {{level}}\n\n코딩쏙 아카데미",
     },
     schedule: {
         code: "SCHEDULE_CHANGE",
-        title: "📅 일정 변경",
-        template: "안녕하세요, {{studentName}} 학부모님.\n수업 일정 변경을 안내드립니다.\n\n📅 변경 전: {{oldDate}}\n📅 변경 후: {{newDate}}\n\n문의: 010-XXXX-XXXX\n코딩쏙 아카데미",
+        title: "일정 변경",
+        template: "안녕하세요, {{studentName}} 학부모님.\n수업 일정 변경을 안내드립니다.\n\n변경 전: {{oldDate}}\n변경 후: {{newDate}}\n\n문의: 010-XXXX-XXXX\n코딩쏙 아카데미",
     },
 } as const;
 

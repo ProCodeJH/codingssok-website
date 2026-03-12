@@ -1,4 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { rateLimit } from '@/lib/rate-limit';
+import { compileRequestSchema } from '@/lib/validation';
 
 // Godbolt compiler IDs per language
 const COMPILER_MAP: Record<string, { id: string; lang: string }> = {
@@ -11,17 +13,26 @@ const COMPILER_MAP: Record<string, { id: string; lang: string }> = {
 
 export async function POST(req: NextRequest) {
     try {
-        const body = await req.json();
-        let code = body.code as string;
-        const language = (body.language || 'c') as string;
-        const stdin = (body.stdin || '') as string;
+        // Rate Limiting: IP 기반 분당 20회 제한
+        const ip = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || 'unknown';
+        const { success: rateLimitOk } = rateLimit(`compile:${ip}`, { maxRequests: 20, windowMs: 60_000 });
+        if (!rateLimitOk) {
+            return NextResponse.json(
+                { success: false, error: '요청이 너무 많습니다. 잠시 후 다시 시도해주세요.' },
+                { status: 429, headers: { 'Retry-After': '60' } }
+            );
+        }
 
-        if (!code || typeof code !== 'string') {
-            return NextResponse.json({ success: false, error: '코드가 비어 있습니다.' }, { status: 400 });
+        const body = await req.json();
+        const parsed = compileRequestSchema.safeParse(body);
+        if (!parsed.success) {
+            const msg = parsed.error.issues?.[0]?.message || '잘못된 요청입니다.';
+            return NextResponse.json({ success: false, error: msg }, { status: 400 });
         }
-        if (code.length > 50000) {
-            return NextResponse.json({ success: false, error: '코드가 너무 깁니다. (최대 50,000자)' }, { status: 400 });
-        }
+
+        let code = parsed.data.code;
+        const language = parsed.data.language;
+        const stdin = parsed.data.stdin;
 
         const compiler = COMPILER_MAP[language] || COMPILER_MAP.c;
 
@@ -65,7 +76,7 @@ export async function POST(req: NextRequest) {
             stdout,
             stderr: buildResult || stderr,
         });
-    } catch (err: any) {
-        return NextResponse.json({ success: false, error: err?.message || '알 수 없는 오류' }, { status: 500 });
+    } catch {
+        return NextResponse.json({ success: false, error: '서버 오류가 발생했습니다.' }, { status: 500 });
     }
 }

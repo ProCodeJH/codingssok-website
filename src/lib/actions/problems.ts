@@ -25,21 +25,29 @@ export async function getProblemSets() {
 
     const solvedProblemIds = new Set(submissions?.map(s => s.problem_id) || [])
 
-    const setsWithStats = await Promise.all((sets || []).map(async (set) => {
-      const { data: problems } = await supabase
-        .from('problems')
-        .select('id')
-        .eq('set_id', set.id)
+    // N+1 방지: 모든 문제를 한번에 조회
+    const setIds = (sets || []).map(s => s.id)
+    const { data: allProblems } = await supabase
+      .from('problems')
+      .select('id, set_id')
+      .in('set_id', setIds)
 
-      const problemIds = problems?.map(p => p.id) || []
+    const problemsBySet = new Map<string, string[]>()
+    allProblems?.forEach(p => {
+      const list = problemsBySet.get(p.set_id) || []
+      list.push(p.id)
+      problemsBySet.set(p.set_id, list)
+    })
+
+    const setsWithStats = (sets || []).map(set => {
+      const problemIds = problemsBySet.get(set.id) || []
       const solvedCount = problemIds.filter(id => solvedProblemIds.has(id)).length
-
       return {
         ...set,
         total_problems: problemIds.length,
         solved_count: solvedCount,
       }
-    }))
+    })
 
     return { data: setsWithStats, error: null }
   }
@@ -53,7 +61,7 @@ export async function getProblemsInSet(setId: string) {
 
   const { data: problems, error } = await supabase
     .from('problems')
-    .select('*')
+    .select('id, set_id, title, description, input_description, output_description, sample_input, sample_output, answer, difficulty, problem_type, xp_reward, sort_order')
     .eq('set_id', setId)
     .order('sort_order')
 
@@ -157,7 +165,7 @@ export async function getSubmissionHistory(problemId: string) {
 
   const { data, error } = await supabase
     .from('problem_submissions')
-    .select('*')
+    .select('id, problem_id, answer, is_correct, attempt_number, submitted_at')
     .eq('problem_id', problemId)
     .eq('student_id', user.id)
     .order('submitted_at', { ascending: false })

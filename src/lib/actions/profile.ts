@@ -8,7 +8,7 @@ export async function getProfileStats(userId: string) {
   // Profile info
   const { data: profile } = await supabase
     .from('profiles')
-    .select('*')
+    .select('id, name, email, display_name, avatar_url, role, bio, total_xp, level, rank, created_at')
     .eq('id', userId)
     .single()
 

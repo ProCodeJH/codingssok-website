@@ -22,6 +22,7 @@ import { useStudyNotes } from "@/hooks/useStudyNotes";
 import { useStudyProgress } from "@/hooks/useStudyProgress";
 import StudyNotesEditor from "./StudyNotesEditor";
 import { usePresenceHeartbeat } from "@/hooks/usePresenceHeartbeat";
+import CosProSelector from "./CosProSelector";
 
 /* ── Highlighter Colors ── */
 const HL_COLORS = [
@@ -59,11 +60,6 @@ export default function CourseDetailPage() {
     // 티어 접근 제한 체크
     const requiredTier = courseData?.requiredTier;
     const tierLocked = !!requiredTier && !canAccessContent(userProgress.tier, requiredTier);
-
-    // CosPro (id:'5') → redirect to problem browser
-    useEffect(() => {
-        if (courseId === '5') router.replace('/dashboard/learning/problems');
-    }, [courseId, router]);
 
     // ── State ──
     const { completedUnits, toggleUnit } = useStudyProgress(user?.id, courseId);
@@ -403,6 +399,9 @@ export default function CourseDetailPage() {
             </div>
         );
     }
+
+    // CosPro (id:'5') → show sub-course selector
+    if (courseId === '5') return <CosProSelector />;
 
     const progressPct = allUnits.length > 0 ? Math.round((completedUnits.size / allUnits.length) * 100) : 0;
 

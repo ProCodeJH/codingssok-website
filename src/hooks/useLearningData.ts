@@ -33,7 +33,7 @@ export function useCourses() {
                     .eq("is_published", true)
                     .order("sort_order");
                 if (!cancelled && data) setCourses(data);
-            } catch { /* Supabase unavailable */ }
+            } catch (e) { if (process.env.NODE_ENV === 'development') console.error('[useCourses] fetch failed:', e); }
             if (!cancelled) setLoading(false);
         }
         fetch();
@@ -90,7 +90,7 @@ export function useChallenges() {
                     if (todayData) setTodayChallenge(todayData);
                     if (allData) setChallenges(allData);
                 }
-            } catch { /* silent */ }
+            } catch (e) { if (process.env.NODE_ENV === 'development') console.error('[useChallenges] fetch failed:', e); }
             if (!cancelled) setLoading(false);
         }
         fetch();
@@ -128,7 +128,7 @@ export function useUserBadges() {
                         .order("earned_at", { ascending: false });
                     if (!cancelled && data) setBadges(data);
                 }
-            } catch { /* silent */ }
+            } catch (e) { if (process.env.NODE_ENV === 'development') console.error('[useUserBadges] fetch failed:', e); }
             if (!cancelled) setLoading(false);
         }
         fetch();
@@ -183,7 +183,7 @@ export function useUserGoals() {
                         if (completed) setCompletedGoals(completed);
                     }
                 }
-            } catch { /* silent */ }
+            } catch (e) { if (process.env.NODE_ENV === 'development') console.error('[useUserGoals] fetch failed:', e); }
             if (!cancelled) setLoading(false);
         }
         fetch();
@@ -229,7 +229,7 @@ export function useLeaderboard() {
                         if (mine) setMyRank(mine);
                     }
                 }
-            } catch { /* silent */ }
+            } catch (e) { if (process.env.NODE_ENV === 'development') console.error('[useLeaderboard] fetch failed:', e); }
             if (!cancelled) setLoading(false);
         }
         fetch();
@@ -269,7 +269,7 @@ export function useActivityLog(limit: number = 10) {
                         .limit(limit);
                     if (!cancelled && data) setActivities(data);
                 }
-            } catch { /* silent */ }
+            } catch (e) { if (process.env.NODE_ENV === 'development') console.error('[useActivityLog] fetch failed:', e); }
             if (!cancelled) setLoading(false);
         }
         fetch();

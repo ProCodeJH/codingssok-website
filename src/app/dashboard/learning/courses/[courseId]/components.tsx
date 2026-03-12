@@ -1,6 +1,7 @@
 "use client";
 import { motion, AnimatePresence } from "framer-motion";
 import type { Unit, Quiz, Page, CodeProblem } from "@/data/courses";
+import { sanitizeHTML } from "@/lib/sanitize";
 
 /* ── MI helper ── */
 export function MI({ icon, style, className }: { icon: string; style?: React.CSSProperties; className?: string }) {
@@ -152,7 +153,7 @@ export function CodeProblemCard({ prob, editorCode, setEditorCode, runResult, ru
                 }}>{prob.difficulty === 1 ? "Easy" : prob.difficulty === 2 ? "Medium" : "Hard"}</span>
             </div>
 
-            <div dangerouslySetInnerHTML={{ __html: prob.question }} style={{ padding: "20px 24px", fontSize: 14, lineHeight: 1.9, color: "#334155" }} />
+            <div dangerouslySetInnerHTML={{ __html: sanitizeHTML(prob.question) }} style={{ padding: "20px 24px", fontSize: 14, lineHeight: 1.9, color: "#334155" }} />
 
             {prob.codeTemplate && (
                 <div style={{ margin: "0 16px 16px", borderRadius: 16, overflow: "hidden", border: "1px solid #334155" }}>
@@ -212,7 +213,7 @@ export function CodeProblemCard({ prob, editorCode, setEditorCode, runResult, ru
             <AnimatePresence>
                 {showProblemAnswer[prob.id] && (
                     <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} exit={{ opacity: 0, height: 0 }} style={{ overflow: "hidden" }}>
-                        <div dangerouslySetInnerHTML={{ __html: prob.answer }} style={{
+                        <div dangerouslySetInnerHTML={{ __html: sanitizeHTML(prob.answer) }} style={{
                             margin: "0 16px 16px", padding: "20px 24px", borderRadius: 16,
                             background: "linear-gradient(135deg, rgba(240,253,244,0.8), rgba(220,252,231,0.6))",
                             border: "1px solid rgba(134,239,172,0.4)", fontSize: 13.5, lineHeight: 1.8, color: "#166534",

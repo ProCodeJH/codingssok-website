@@ -410,7 +410,7 @@ export default function Navbar() {
                                     marginBottom: 12,
                                 }}
                             >
-                                📞 010-7566-7229
+                                010-7566-7229
                             </a>
                             <PillButton href="#contact" onClick={(e) => handleNavClick(e, "#contact")}>
                                 상담 예약

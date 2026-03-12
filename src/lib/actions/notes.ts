@@ -53,10 +53,24 @@ export async function getStudentNotes(studentId: string) {
 export async function getAllNotesForMaterial(materialId: string) {
   const supabase = await createClient()
 
+  // 교사/관리자만 모든 학생 노트 열람 가능
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return { data: null, error: '인증이 필요합니다.' }
+
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('role')
+    .eq('id', user.id)
+    .single()
+
+  if (!profile || !['teacher', 'admin'].includes(profile.role)) {
+    return { data: null, error: '권한이 없습니다.' }
+  }
+
   const { data, error } = await supabase
     .from('study_notes')
     .select(`
-      *,
+      id, content, updated_at, student_id,
       profiles (id, name)
     `)
     .eq('material_id', materialId)

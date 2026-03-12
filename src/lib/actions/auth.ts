@@ -38,7 +38,7 @@ export async function simpleAuth(name: string, birthDate: string, role: 'student
     })
 
     if (signUpError) {
-      console.error('[simpleAuth] signUp error:', signUpError.message, signUpError.status)
+      if (process.env.NODE_ENV === 'development') console.error('[simpleAuth] signUp error:', signUpError.message, signUpError.status)
       if (signUpError.message.includes('already registered')) {
         // 이미 등록된 유저인데 비밀번호가 다를 수 있음
         return { error: '이미 등록된 정보입니다. 이름과 생년월일을 확인해주세요.' }

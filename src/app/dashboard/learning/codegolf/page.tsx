@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 
@@ -67,11 +67,15 @@ export default function CodeGolfPage() {
     const [selectedProblem, setSelectedProblem] = useState<GolfProblem | null>(null);
     const [code, setCode] = useState("");
     const [submitted, setSubmitted] = useState(false);
+    const submitTimerRef = useRef<NodeJS.Timeout>(undefined);
+
+    useEffect(() => () => { if (submitTimerRef.current) clearTimeout(submitTimerRef.current); }, []);
 
     const handleSubmit = () => {
         if (!code.trim()) return;
         setSubmitted(true);
-        setTimeout(() => setSubmitted(false), 3000);
+        if (submitTimerRef.current) clearTimeout(submitTimerRef.current);
+        submitTimerRef.current = setTimeout(() => setSubmitted(false), 3000);
     };
 
     return (
@@ -221,7 +225,7 @@ export default function CodeGolfPage() {
                                     {player.solved}문제 · 평균 {player.avgChars}자
                                 </div>
                             </div>
-                            <span style={{ fontSize: 12, fontWeight: 700, color: "#F59E0B" }}>⭐ {player.xp}</span>
+                            <span style={{ fontSize: 12, fontWeight: 700, color: "#F59E0B" }}>{player.xp} XP</span>
                         </div>
                     ))}
 

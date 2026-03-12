@@ -1,7 +1,50 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { createClient } from "@/lib/supabase";
+
+/* ── 클라이언트 사이드 Rate Limiting ── */
+const LOGIN_ATTEMPTS_KEY = "codingssok_login_attempts";
+const MAX_ATTEMPTS = 5;
+const LOCKOUT_MS = 60_000; // 1분
+
+function checkLoginRateLimit(): { allowed: boolean; remainingMs: number } {
+    try {
+        const raw = localStorage.getItem(LOGIN_ATTEMPTS_KEY);
+        if (!raw) return { allowed: true, remainingMs: 0 };
+        const { count, firstAttempt } = JSON.parse(raw);
+        const elapsed = Date.now() - firstAttempt;
+        if (elapsed > LOCKOUT_MS) {
+            localStorage.removeItem(LOGIN_ATTEMPTS_KEY);
+            return { allowed: true, remainingMs: 0 };
+        }
+        if (count >= MAX_ATTEMPTS) {
+            return { allowed: false, remainingMs: LOCKOUT_MS - elapsed };
+        }
+        return { allowed: true, remainingMs: 0 };
+    } catch { return { allowed: true, remainingMs: 0 }; }
+}
+
+function recordLoginAttempt() {
+    try {
+        const raw = localStorage.getItem(LOGIN_ATTEMPTS_KEY);
+        if (!raw) {
+            localStorage.setItem(LOGIN_ATTEMPTS_KEY, JSON.stringify({ count: 1, firstAttempt: Date.now() }));
+            return;
+        }
+        const data = JSON.parse(raw);
+        if (Date.now() - data.firstAttempt > LOCKOUT_MS) {
+            localStorage.setItem(LOGIN_ATTEMPTS_KEY, JSON.stringify({ count: 1, firstAttempt: Date.now() }));
+        } else {
+            data.count++;
+            localStorage.setItem(LOGIN_ATTEMPTS_KEY, JSON.stringify(data));
+        }
+    } catch { /* ignore */ }
+}
+
+function clearLoginAttempts() {
+    localStorage.removeItem(LOGIN_ATTEMPTS_KEY);
+}
 
 /* ── 코딩쏙 아카데미 — 이름 + 4자리 비밀번호 로그인 ── */
 
@@ -62,6 +105,15 @@ export default function LoginPage() {
 
     setLoading(true); setMsg(null);
 
+    // Rate Limiting 체크
+    const { allowed, remainingMs } = checkLoginRateLimit();
+    if (!allowed) {
+      setMsg({ ok: false, text: `로그인 시도가 너무 많습니다. ${Math.ceil(remainingMs / 1000)}초 후 다시 시도해주세요.` });
+      setLoading(false);
+      return;
+    }
+    recordLoginAttempt();
+
     try {
       const sb = createClient();
 
@@ -83,6 +135,7 @@ export default function LoginPage() {
 
         if (insertErr) throw insertErr;
 
+        clearLoginAttempts();
         setMsg({ ok: true, text: `"${trimmed}" 님 가입 완료! 로그인 중...` });
         setTimeout(() => loginAs(newStudent as StudentRow), 800);
       } else {
@@ -90,6 +143,7 @@ export default function LoginPage() {
         const matched = data.find((s: StudentRow) => s.pin === pin);
 
         if (matched) {
+          clearLoginAttempts();
           loginAs(matched as StudentRow);
         } else {
           setMsg({ ok: false, text: "비밀번호가 틀렸습니다" });
@@ -100,7 +154,7 @@ export default function LoginPage() {
       }
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : String(err);
-      console.error("[Login] error:", err);
+      if (process.env.NODE_ENV === 'development') console.error("[Login] error:", err);
       setMsg({ ok: false, text: `오류: ${message}` });
     } finally { setLoading(false); }
   };
@@ -220,6 +274,7 @@ export default function LoginPage() {
                   type="password"
                   inputMode="numeric"
                   maxLength={1}
+                  aria-label={`비밀번호 ${idx + 1}번째 자리`}
                   value={pin[idx] || ""}
                   onChange={(e) => handlePinDigit(idx, e.target.value)}
                   onKeyDown={(e) => handlePinKeyDown(idx, e)}

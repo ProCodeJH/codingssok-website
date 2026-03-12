@@ -35,6 +35,10 @@ export default function ChatPage() {
     const [input, setInput] = useState("");
     const [loading, setLoading] = useState(true);
     const scrollRef = useRef<HTMLDivElement>(null);
+    const scrollTimerRef = useRef<NodeJS.Timeout>(undefined);
+
+    // cleanup all scroll timers on unmount
+    useEffect(() => () => { if (scrollTimerRef.current) clearTimeout(scrollTimerRef.current); }, []);
 
     // 메시지 로드
     useEffect(() => {
@@ -43,7 +47,8 @@ export default function ChatPage() {
             .then(({ data }) => {
                 if (data) setMessages(data);
                 setLoading(false);
-                setTimeout(() => scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight }), 100);
+                if (scrollTimerRef.current) clearTimeout(scrollTimerRef.current);
+                scrollTimerRef.current = setTimeout(() => scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight }), 100);
             });
 
         // Realtime 구독
@@ -68,7 +73,8 @@ export default function ChatPage() {
                         }
                         return [...prev, newMsg];
                     });
-                    setTimeout(() => scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" }), 100);
+                    if (scrollTimerRef.current) clearTimeout(scrollTimerRef.current);
+                    scrollTimerRef.current = setTimeout(() => scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" }), 100);
                 })
             .subscribe();
 
@@ -92,7 +98,8 @@ export default function ChatPage() {
             created_at: new Date().toISOString(),
         };
         setMessages((prev) => [...prev, optimisticMsg]);
-        setTimeout(() => scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" }), 50);
+        if (scrollTimerRef.current) clearTimeout(scrollTimerRef.current);
+        scrollTimerRef.current = setTimeout(() => scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" }), 50);
 
         // DB에 저장 (Realtime이 활성화되어 있으면 subscription이 실제 메시지로 교체)
         const { error } = await supabase.from("chat_messages").insert({

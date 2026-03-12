@@ -7,7 +7,7 @@ export async function getMaterials() {
   const supabase = await createClient()
   const { data, error } = await supabase
     .from('learning_materials')
-    .select('*')
+    .select('id, title, description, category, track_id, file_url, file_type, file_size, file_name, sort_order, created_at')
     .eq('is_published', true)
     .order('sort_order', { ascending: true })
     .order('created_at', { ascending: false })
@@ -20,7 +20,7 @@ export async function getMaterialById(id: string) {
   const supabase = await createClient()
   const { data, error } = await supabase
     .from('learning_materials')
-    .select('*')
+    .select('id, title, description, category, track_id, file_url, file_type, file_size, file_name, sort_order, is_published, created_at, created_by')
     .eq('id', id)
     .single()
 
@@ -36,8 +36,14 @@ export async function createMaterial(formData: FormData) {
   const file = formData.get('file') as File
   if (!file) return { error: '파일을 선택해주세요.' }
 
-  // Upload file to storage
-  const fileExt = file.name.split('.').pop()
+  // 파일 검증
+  const MAX_FILE_SIZE = 50 * 1024 * 1024 // 50MB
+  const ALLOWED_TYPES = ['application/pdf', 'image/png', 'image/jpeg', 'image/gif', 'image/webp', 'text/plain', 'application/zip', 'video/mp4', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'application/vnd.openxmlformats-officedocument.presentationml.presentation']
+  if (file.size > MAX_FILE_SIZE) return { error: '파일 크기는 50MB 이하여야 합니다.' }
+  if (!ALLOWED_TYPES.includes(file.type)) return { error: `허용되지 않는 파일 형식입니다: ${file.type}` }
+
+  // Upload file to storage (안전한 파일명 생성)
+  const fileExt = file.name.split('.').pop()?.replace(/[^a-zA-Z0-9]/g, '') || 'bin'
   const fileName = `${Date.now()}_${Math.random().toString(36).substring(7)}.${fileExt}`
   const filePath = `materials/${fileName}`
 

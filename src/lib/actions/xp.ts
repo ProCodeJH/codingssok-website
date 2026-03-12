@@ -2,31 +2,17 @@
 
 import { createClient } from '@/lib/supabase/server'
 import { revalidatePath } from 'next/cache'
+import { calcLevel, xpForLevel, xpForNextLevel, TIERS, getNextTier, RANK_EXAM_MIN_LEVEL } from '@/lib/xp-engine'
 
-// XP 레벨 공식: xp_for_level(n) = floor(50 * n^1.5)
-function xpForLevel(level: number): number {
-  return Math.floor(50 * Math.pow(level, 1.5))
-}
-
-function calculateLevel(totalXp: number): { level: number; currentLevelXp: number; nextLevelXp: number; progress: number } {
-  let level = 1
-  let remaining = totalXp
-
-  while (level < 100) {
-    const required = xpForLevel(level)
-    if (remaining < required) {
-      return {
-        level,
-        currentLevelXp: remaining,
-        nextLevelXp: required,
-        progress: Math.round((remaining / required) * 100),
-      }
-    }
-    remaining -= required
-    level++
+function calculateLevel(totalXp: number) {
+  const level = calcLevel(totalXp)
+  const info = xpForNextLevel(totalXp)
+  return {
+    level,
+    currentLevelXp: info.current,
+    nextLevelXp: info.needed,
+    progress: Math.round(info.progress),
   }
-
-  return { level: 100, currentLevelXp: remaining, nextLevelXp: 0, progress: 100 }
 }
 
 export async function getStudentXP(studentId: string) {
@@ -46,8 +32,8 @@ export async function getStudentXP(studentId: string) {
     data: {
       totalXp: profile.total_xp || 0,
       ...levelInfo,
-      rank: profile.rank || 'beginner',
-      canTakeRankExam: levelInfo.level >= 30,
+      rank: profile.rank || 'Iron',
+      canTakeRankExam: levelInfo.level >= RANK_EXAM_MIN_LEVEL,
     },
     error: null,
   }
@@ -129,8 +115,8 @@ export async function canTakeRankExam(studentId: string) {
 
   if (!profile) return { canTake: false, reason: '프로필을 찾을 수 없습니다.' }
 
-  if ((profile.level || 1) < 30) {
-    return { canTake: false, reason: `레벨 30 이상이어야 합니다. (현재: ${profile.level})` }
+  if ((profile.level || 1) < RANK_EXAM_MIN_LEVEL) {
+    return { canTake: false, reason: `레벨 ${RANK_EXAM_MIN_LEVEL} 이상이어야 합니다. (현재: ${profile.level})` }
   }
 
   // Check if already has a pending exam
@@ -198,9 +184,8 @@ export async function completeRankExam(examId: string, passed: boolean, score: n
       .eq('id', exam.student_id)
       .single()
 
-    const rankOrder = ['beginner', 'intermediate', 'advanced', 'expert', 'master']
-    const currentIndex = rankOrder.indexOf(profile?.rank || 'beginner')
-    const nextRank = rankOrder[Math.min(currentIndex + 1, rankOrder.length - 1)]
+    const currentRank = profile?.rank || 'Iron'
+    const nextRank = getNextTier(currentRank) || currentRank
 
     await supabase
       .from('profiles')

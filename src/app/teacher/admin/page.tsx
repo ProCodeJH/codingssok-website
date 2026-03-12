@@ -30,7 +30,7 @@ const STATUS_COLORS: Record<string, { bg: string; text: string; label: string }>
 };
 
 export default function TeacherAdmin() {
-    const [activeTab, setActiveTab] = useState<"students" | "add" | "content" | "notify" | "feedback">("students");
+    const [activeTab, setActiveTab] = useState<"students" | "add" | "homework" | "content" | "notify" | "feedback" | "monitor">("students");
     const [students, setStudents] = useState<Student[]>([]);
     const [loading, setLoading] = useState(true);
     const [notifyMsg, setNotifyMsg] = useState("");
@@ -59,6 +59,26 @@ export default function TeacherAdmin() {
     const [fbHistory, setFbHistory] = useState<{id:string;parent_name:string;content:string;course_id:string;created_at:string;student_id:string}[]>([]);
     const [fbMsg, setFbMsg] = useState<{ok:boolean;text:string}|null>(null);
     const [profiles, setProfiles] = useState<{id:string;name:string}[]>([]);
+
+    // 숙제
+    const [hwTitle, setHwTitle] = useState("");
+    const [hwDesc, setHwDesc] = useState("");
+    const [hwDueDate, setHwDueDate] = useState("");
+    const [hwCourse, setHwCourse] = useState("");
+    const [hwSelectedStudents, setHwSelectedStudents] = useState<string[]>([]);
+    const [hwSelectAll, setHwSelectAll] = useState(true);
+    const [hwSending, setHwSending] = useState(false);
+    const [hwMsg, setHwMsg] = useState<{ ok: boolean; text: string } | null>(null);
+    const [hwList, setHwList] = useState<{ id: string; title: string; description: string; due_date: string; course_id: string; assigned_to: string | null; is_active: boolean; created_at: string }[]>([]);
+    const [hwSubs, setHwSubs] = useState<{ id: string; homework_id: string; user_id: string; content: string; score: number | null; feedback: string | null; submitted_at: string }[]>([]);
+    const [gradingId, setGradingId] = useState<string | null>(null);
+    const [gradeScore, setGradeScore] = useState("");
+    const [gradeFeedback, setGradeFeedback] = useState("");
+    const [gradingSaving, setGradingSaving] = useState(false);
+
+    // 실시간 모니터
+    interface PresenceRow { user_id: string; student_name: string; course_id: string | null; course_title: string | null; unit_id: string | null; unit_title: string | null; page_id: string | null; page_title: string | null; page_url: string | null; is_online: boolean; last_heartbeat: string; started_at: string; }
+    const [presenceList, setPresenceList] = useState<PresenceRow[]>([]);
 
     const [authed, setAuthed] = useState(false);
 
@@ -91,7 +111,7 @@ export default function TeacherAdmin() {
             if (error) throw error;
             setStudents((data || []) as Student[]);
         } catch (err) {
-            console.error("학생 목록 로드 실패:", err);
+            if (process.env.NODE_ENV === 'development') console.error("학생 목록 로드 실패:", err);
         } finally { setLoading(false); }
     }, []);
 
@@ -130,12 +150,117 @@ export default function TeacherAdmin() {
                 course_id: fbCourse || null,
             });
             if (error) throw error;
-            setFbMsg({ ok: true, text: "✅ 피드백이 전송되었습니다!" });
+            setFbMsg({ ok: true, text: "피드백이 전송되었습니다!" });
             setFbText("");
             fetchFeedbacks(fbStudentId);
         } catch (err: unknown) {
             setFbMsg({ ok: false, text: `오류: ${err instanceof Error ? err.message : String(err)}` });
         } finally { setFbSending(false); }
+    };
+
+    /* ── 숙제 목록 + 제출물 불러오기 ── */
+    const fetchHomework = useCallback(async () => {
+        const sb = createClient();
+        const [rHw, rSubs] = await Promise.all([
+            sb.from("homework").select("id,title,description,due_date,course_id,assigned_to,is_active,created_at")
+                .eq("is_active", true).order("created_at", { ascending: false }).limit(50),
+            sb.from("homework_submissions").select("id,homework_id,user_id,content,score,feedback,submitted_at")
+                .order("submitted_at", { ascending: false }).limit(200),
+        ]);
+        setHwList(rHw.data || []);
+        setHwSubs(rSubs.data || []);
+    }, []);
+
+    useEffect(() => { if (activeTab === "homework") fetchHomework(); }, [activeTab, fetchHomework]);
+
+    // ── 실시간 모니터 ──
+    useEffect(() => {
+        if (activeTab !== "monitor") return;
+        const sb = createClient();
+        sb.from("student_presence").select("*").order("last_heartbeat", { ascending: false })
+            .then(({ data }) => { if (data) setPresenceList(data as PresenceRow[]); });
+
+        const ch = sb.channel("teacher-presence")
+            .on("postgres_changes", { event: "*", schema: "public", table: "student_presence" }, (payload) => {
+                const row = payload.new as PresenceRow;
+                if (!row?.user_id) return;
+                setPresenceList(prev => {
+                    const idx = prev.findIndex(p => p.user_id === row.user_id);
+                    if (idx >= 0) { const next = [...prev]; next[idx] = row; return next; }
+                    return [row, ...prev];
+                });
+            })
+            .subscribe();
+
+        return () => { sb.removeChannel(ch); };
+    }, [activeTab]);
+
+    /* ── 숙제 출제 ── */
+    const createHomework = async () => {
+        if (!hwTitle.trim()) { setHwMsg({ ok: false, text: "숙제 제목을 입력해주세요" }); return; }
+        if (!hwSelectAll && hwSelectedStudents.length === 0) { setHwMsg({ ok: false, text: "학생을 선택해주세요" }); return; }
+
+        setHwSending(true); setHwMsg(null);
+        try {
+            const sb = createClient();
+            if (hwSelectAll) {
+                // 전체 학생 대상
+                const { error } = await sb.from("homework").insert({
+                    title: hwTitle.trim(),
+                    description: hwDesc.trim(),
+                    due_date: hwDueDate || null,
+                    course_id: hwCourse || null,
+                    assigned_to: null,
+                });
+                if (error) throw error;
+            } else {
+                // 선택한 학생별로 각각 생성
+                const rows = hwSelectedStudents.map(sid => ({
+                    title: hwTitle.trim(),
+                    description: hwDesc.trim(),
+                    due_date: hwDueDate || null,
+                    course_id: hwCourse || null,
+                    assigned_to: sid,
+                }));
+                const { error } = await sb.from("homework").insert(rows);
+                if (error) throw error;
+            }
+
+            const count = hwSelectAll ? "전체 학생" : `${hwSelectedStudents.length}명`;
+            setHwMsg({ ok: true, text: `"${hwTitle.trim()}" 숙제가 ${count}에게 출제되었습니다!` });
+            setHwTitle(""); setHwDesc(""); setHwDueDate(""); setHwCourse("");
+            setHwSelectedStudents([]); setHwSelectAll(true);
+            fetchHomework();
+        } catch (err: unknown) {
+            setHwMsg({ ok: false, text: `오류: ${err instanceof Error ? err.message : String(err)}` });
+        } finally { setHwSending(false); }
+    };
+
+    /* ── 숙제 삭제 (비활성화) ── */
+    const deactivateHomework = async (id: string) => {
+        const sb = createClient();
+        await sb.from("homework").update({ is_active: false }).eq("id", id);
+        fetchHomework();
+    };
+
+    /* ── 채점하기 ── */
+    const gradeSubmission = async (subId: string) => {
+        if (!gradeScore.trim()) return;
+        setGradingSaving(true);
+        try {
+            const sb = createClient();
+            const { error } = await sb.from("homework_submissions").update({
+                score: parseInt(gradeScore, 10),
+                feedback: gradeFeedback.trim() || null,
+            }).eq("id", subId);
+            if (error) throw error;
+            setGradingId(null);
+            setGradeScore("");
+            setGradeFeedback("");
+            fetchHomework();
+        } catch (err) {
+            if (process.env.NODE_ENV === 'development') console.error("채점 실패:", err);
+        } finally { setGradingSaving(false); }
     };
 
     /* ── 학생 추가 ── */
@@ -159,7 +284,7 @@ export default function TeacherAdmin() {
             });
             if (error) throw error;
 
-            setAddMsg({ ok: true, text: `✅ "${trimmedName}" 학생이 추가되었습니다!` });
+            setAddMsg({ ok: true, text: `"${trimmedName}" 학생이 추가되었습니다!` });
             setNewName(""); setNewYear(""); setNewMonth(""); setNewDay("");
             setNewGrade(""); setNewClass(""); setNewAvatar("🧒");
             fetchStudents();
@@ -178,7 +303,7 @@ export default function TeacherAdmin() {
             setDeleteId(null);
             fetchStudents();
         } catch (err) {
-            console.error("삭제 실패:", err);
+            if (process.env.NODE_ENV === 'development') console.error("삭제 실패:", err);
         }
     };
 
@@ -221,7 +346,7 @@ export default function TeacherAdmin() {
             }}>
                 <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
                     <Link href="/" style={{ fontSize: 13, color: "#94a3b8", textDecoration: "none" }}>← 홈</Link>
-                    <h1 style={{ fontSize: 18, fontWeight: 800, color: "#172554" }}>👨‍🏫 선생님 관리 패널</h1>
+                    <h1 style={{ fontSize: 18, fontWeight: 800, color: "#172554" }}>선생님 관리 패널</h1>
                 </div>
                 <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                     <span style={{ fontSize: 12, color: "#64748b" }}>학생 {students.length}명</span>
@@ -233,11 +358,13 @@ export default function TeacherAdmin() {
                 {/* Tab navigation */}
                 <div style={{ display: "flex", gap: 4, marginBottom: 24, background: "#fff", borderRadius: 12, padding: 4, border: "1px solid #e2e8f0" }}>
                     {([
-                        { id: "students" as const, icon: "👥", label: "학생 목록" },
-                        { id: "add" as const, icon: "➕", label: "학생 추가" },
-                        { id: "feedback" as const, icon: "💬", label: "피드백" },
-                        { id: "content" as const, icon: "📝", label: "콘텐츠" },
-                        { id: "notify" as const, icon: "📢", label: "알림" },
+                        { id: "students" as const, label: "학생 목록" },
+                        { id: "add" as const, label: "학생 추가" },
+                        { id: "homework" as const, label: "숙제 출제" },
+                        { id: "feedback" as const, label: "피드백" },
+                        { id: "monitor" as const, label: "실시간 모니터" },
+                        { id: "content" as const, label: "콘텐츠" },
+                        { id: "notify" as const, label: "알림" },
                     ]).map(tab => (
                         <button key={tab.id} onClick={() => setActiveTab(tab.id)} style={{
                             flex: 1, padding: "10px 16px", borderRadius: 10, border: "none", cursor: "pointer",
@@ -245,7 +372,7 @@ export default function TeacherAdmin() {
                             color: activeTab === tab.id ? "#fff" : "#64748b",
                             fontWeight: 700, fontSize: 13, transition: "all 0.2s",
                         }}>
-                            {tab.icon} {tab.label}
+                            {tab.label}
                         </button>
                     ))}
                 </div>
@@ -256,14 +383,14 @@ export default function TeacherAdmin() {
                         {/* Summary cards */}
                         <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 12, marginBottom: 24 }}>
                             {[
-                                { label: "전체 학생", value: students.length, icon: "👥", color: "#2563eb" },
-                                { label: "이번 달 추가", value: students.filter(s => new Date(s.created_at).getMonth() === new Date().getMonth()).length, icon: "🆕", color: "#059669" },
-                                { label: "학년 분포", value: [...new Set(students.map(s => s.grade).filter(Boolean))].length + "개", icon: "📊", color: "#F59E0B" },
+                                { label: "전체 학생", value: students.length, color: "#2563eb" },
+                                { label: "이번 달 추가", value: students.filter(s => new Date(s.created_at).getMonth() === new Date().getMonth()).length, color: "#059669" },
+                                { label: "학년 분포", value: [...new Set(students.map(s => s.grade).filter(Boolean))].length + "개", color: "#F59E0B" },
                             ].map(s => (
                                 <div key={s.label} style={{
                                     background: "#fff", borderRadius: 14, padding: "16px", border: "1px solid #e2e8f0",
                                 }}>
-                                    <div style={{ fontSize: 11, color: "#94a3b8", fontWeight: 600, marginBottom: 4 }}>{s.icon} {s.label}</div>
+                                    <div style={{ fontSize: 11, color: "#94a3b8", fontWeight: 600, marginBottom: 4 }}>{s.label}</div>
                                     <div style={{ fontSize: 24, fontWeight: 800, color: s.color }}>{s.value}</div>
                                 </div>
                             ))}
@@ -339,7 +466,7 @@ export default function TeacherAdmin() {
                             border: "1px solid #e2e8f0", maxWidth: 520, margin: "0 auto",
                         }}>
                             <h3 style={{ fontSize: 20, fontWeight: 800, color: "#172554", marginBottom: 8, textAlign: "center" }}>
-                                ➕ 새 학생 추가
+                                새 학생 추가
                             </h3>
                             <p style={{ fontSize: 13, color: "#94a3b8", textAlign: "center", marginBottom: 28 }}>
                                 학생 정보를 입력하면 로그인 계정이 자동 생성됩니다
@@ -349,7 +476,7 @@ export default function TeacherAdmin() {
                                 {/* 이름 */}
                                 <div>
                                     <label style={{ display: "block", fontSize: 13, fontWeight: 600, color: "#374151", marginBottom: 8 }}>
-                                        👤 이름 <span style={{ color: "#EF4444" }}>*</span>
+                                        이름 <span style={{ color: "#EF4444" }}>*</span>
                                     </label>
                                     <input
                                         type="text" value={newName} onChange={e => setNewName(e.target.value)}
@@ -367,7 +494,7 @@ export default function TeacherAdmin() {
                                 {/* 생년월일 */}
                                 <div>
                                     <label style={{ display: "block", fontSize: 13, fontWeight: 600, color: "#374151", marginBottom: 8 }}>
-                                        🎂 생년월일 <span style={{ color: "#EF4444" }}>*</span>
+                                        생년월일 <span style={{ color: "#EF4444" }}>*</span>
                                     </label>
                                     <div style={{ display: "flex", gap: 8 }}>
                                         {[
@@ -391,7 +518,7 @@ export default function TeacherAdmin() {
                                 <div style={{ display: "flex", gap: 12 }}>
                                     <div style={{ flex: 1 }}>
                                         <label style={{ display: "block", fontSize: 13, fontWeight: 600, color: "#374151", marginBottom: 8 }}>
-                                            📚 학년
+                                            학년
                                         </label>
                                         <select value={newGrade} onChange={e => setNewGrade(e.target.value)} style={{
                                             display: "block", width: "100%", padding: "13px 10px",
@@ -406,7 +533,7 @@ export default function TeacherAdmin() {
                                     </div>
                                     <div style={{ flex: 1 }}>
                                         <label style={{ display: "block", fontSize: 13, fontWeight: 600, color: "#374151", marginBottom: 8 }}>
-                                            🏫 반
+                                            반
                                         </label>
                                         <select value={newClass} onChange={e => setNewClass(e.target.value)} style={{
                                             display: "block", width: "100%", padding: "13px 10px",
@@ -424,7 +551,7 @@ export default function TeacherAdmin() {
                                 {/* 아바타 선택 */}
                                 <div>
                                     <label style={{ display: "block", fontSize: 13, fontWeight: 600, color: "#374151", marginBottom: 8 }}>
-                                        😊 아바타
+                                        아바타
                                     </label>
                                     <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
                                         {["🧒", "👦", "👧", "🧑", "👶", "🐱", "🐶", "🦊", "🐰", "🐻", "🐼", "🦁"].map(emoji => (
@@ -467,9 +594,248 @@ export default function TeacherAdmin() {
                                         opacity: addLoading ? 0.7 : 1, width: "100%",
                                     }}
                                 >
-                                    {addLoading ? "추가 중..." : "✅ 학생 추가하기"}
+                                    {addLoading ? "추가 중..." : "학생 추가하기"}
                                 </button>
                             </form>
+                        </div>
+                    </motion.div>
+                )}
+
+                {/* ═══ Homework Tab ═══ */}
+                {activeTab === "homework" && (
+                    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+                        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
+                            {/* 숙제 출제 폼 */}
+                            <div style={{ background: "#fff", borderRadius: 16, padding: 24, border: "1px solid #e2e8f0" }}>
+                                <h3 style={{ fontSize: 16, fontWeight: 700, color: "#172554", marginBottom: 16 }}>숙제 출제</h3>
+
+                                <input
+                                    value={hwTitle} onChange={e => setHwTitle(e.target.value)}
+                                    placeholder="숙제 제목 *"
+                                    style={{ width: "100%", padding: "12px 14px", borderRadius: 10, border: "1px solid #e2e8f0", fontSize: 14, outline: "none", marginBottom: 10, boxSizing: "border-box" }}
+                                />
+                                <textarea
+                                    value={hwDesc} onChange={e => setHwDesc(e.target.value)}
+                                    placeholder="숙제 설명 (선택사항)"
+                                    style={{ width: "100%", minHeight: 80, padding: "12px 14px", borderRadius: 10, border: "1px solid #e2e8f0", fontSize: 13, outline: "none", resize: "vertical", marginBottom: 10, boxSizing: "border-box" }}
+                                />
+                                <div style={{ display: "flex", gap: 8, marginBottom: 10 }}>
+                                    <div style={{ flex: 1 }}>
+                                        <label style={{ fontSize: 11, fontWeight: 600, color: "#64748b", display: "block", marginBottom: 4 }}>마감일</label>
+                                        <input
+                                            type="date" value={hwDueDate} onChange={e => setHwDueDate(e.target.value)}
+                                            style={{ width: "100%", padding: "10px 12px", borderRadius: 10, border: "1px solid #e2e8f0", fontSize: 13, outline: "none", boxSizing: "border-box" }}
+                                        />
+                                    </div>
+                                    <div style={{ flex: 1 }}>
+                                        <label style={{ fontSize: 11, fontWeight: 600, color: "#64748b", display: "block", marginBottom: 4 }}>과목</label>
+                                        <select value={hwCourse} onChange={e => setHwCourse(e.target.value)} style={{
+                                            width: "100%", padding: "10px 12px", borderRadius: 10, border: "1px solid #e2e8f0", fontSize: 13, outline: "none",
+                                        }}>
+                                            <option value="">전체 / 일반</option>
+                                            {COURSES.map(c => <option key={c.id} value={c.id}>{c.title}</option>)}
+                                        </select>
+                                    </div>
+                                </div>
+
+                                {/* 학생 선택 */}
+                                <div style={{ padding: 14, borderRadius: 12, background: "#f8fafc", marginBottom: 12 }}>
+                                    <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 10 }}>
+                                        <span style={{ fontSize: 13, fontWeight: 700, color: "#172554" }}>대상 학생</span>
+                                        <label style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 12, color: "#2563eb", fontWeight: 600, cursor: "pointer" }}>
+                                            <input type="checkbox" checked={hwSelectAll} onChange={e => {
+                                                setHwSelectAll(e.target.checked);
+                                                if (e.target.checked) setHwSelectedStudents([]);
+                                            }} />
+                                            전체 학생
+                                        </label>
+                                    </div>
+                                    {!hwSelectAll && (
+                                        <div style={{ display: "flex", flexDirection: "column", gap: 4, maxHeight: 200, overflowY: "auto" }}>
+                                            {profiles.length === 0 ? (
+                                                <p style={{ fontSize: 12, color: "#94a3b8", textAlign: "center", padding: 12 }}>등록된 학생이 없습니다</p>
+                                            ) : profiles.map(p => (
+                                                <label key={p.id} style={{
+                                                    display: "flex", alignItems: "center", gap: 8,
+                                                    padding: "8px 10px", borderRadius: 8, cursor: "pointer",
+                                                    background: hwSelectedStudents.includes(p.id) ? "rgba(37,99,235,0.06)" : "transparent",
+                                                    border: hwSelectedStudents.includes(p.id) ? "1px solid rgba(37,99,235,0.2)" : "1px solid transparent",
+                                                }}>
+                                                    <input
+                                                        type="checkbox"
+                                                        checked={hwSelectedStudents.includes(p.id)}
+                                                        onChange={e => {
+                                                            if (e.target.checked) setHwSelectedStudents(prev => [...prev, p.id]);
+                                                            else setHwSelectedStudents(prev => prev.filter(id => id !== p.id));
+                                                        }}
+                                                    />
+                                                    <span style={{ fontSize: 13, fontWeight: 600, color: "#334155" }}>{p.name}</span>
+                                                </label>
+                                            ))}
+                                            {!hwSelectAll && hwSelectedStudents.length > 0 && (
+                                                <div style={{ fontSize: 11, color: "#2563eb", fontWeight: 600, padding: "4px 10px" }}>
+                                                    {hwSelectedStudents.length}명 선택됨
+                                                </div>
+                                            )}
+                                        </div>
+                                    )}
+                                </div>
+
+                                {hwMsg && (
+                                    <div style={{
+                                        padding: "10px 14px", borderRadius: 10, fontSize: 13, marginBottom: 10,
+                                        background: hwMsg.ok ? "rgba(16,185,129,0.08)" : "rgba(239,68,68,0.06)",
+                                        color: hwMsg.ok ? "#059669" : "#dc2626",
+                                    }}>{hwMsg.text}</div>
+                                )}
+
+                                <button onClick={createHomework} disabled={hwSending || !hwTitle.trim()} style={{
+                                    width: "100%", padding: "12px", borderRadius: 12, border: "none",
+                                    background: hwTitle.trim() ? "#2563eb" : "#e2e8f0",
+                                    color: hwTitle.trim() ? "#fff" : "#94a3b8",
+                                    fontWeight: 700, fontSize: 14, cursor: hwTitle.trim() ? "pointer" : "default",
+                                }}>
+                                    {hwSending ? "출제 중..." : "숙제 출제하기"}
+                                </button>
+                            </div>
+
+                            <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+                                {/* 숙제 목록 */}
+                                <div style={{ background: "#fff", borderRadius: 16, padding: 24, border: "1px solid #e2e8f0" }}>
+                                    <h3 style={{ fontSize: 16, fontWeight: 700, color: "#172554", marginBottom: 16 }}>출제된 숙제 ({hwList.length}개)</h3>
+                                    <div style={{ display: "flex", flexDirection: "column", gap: 8, maxHeight: 280, overflowY: "auto" }}>
+                                        {hwList.length === 0 ? (
+                                            <p style={{ fontSize: 13, color: "#94a3b8", textAlign: "center", padding: 24 }}>출제된 숙제가 없습니다</p>
+                                        ) : hwList.map(hw => {
+                                            const studentName = hw.assigned_to
+                                                ? profiles.find(p => p.id === hw.assigned_to)?.name || "알 수 없음"
+                                                : "전체 학생";
+                                            const isOverdue = hw.due_date && new Date(hw.due_date) < new Date();
+                                            const subCount = hwSubs.filter(s => s.homework_id === hw.id).length;
+                                            const ungradedCount = hwSubs.filter(s => s.homework_id === hw.id && s.score === null).length;
+                                            return (
+                                                <div key={hw.id} style={{
+                                                    padding: "12px 14px", borderRadius: 12, background: "#f8fafc",
+                                                    borderLeft: `3px solid ${isOverdue ? "#f59e0b" : "#2563eb"}`,
+                                                }}>
+                                                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
+                                                        <div style={{ flex: 1 }}>
+                                                            <div style={{ fontSize: 14, fontWeight: 700, color: "#172554", marginBottom: 4 }}>{hw.title}</div>
+                                                            <div style={{ display: "flex", gap: 10, fontSize: 11, color: "#94a3b8", flexWrap: "wrap" }}>
+                                                                <span>{studentName}</span>
+                                                                {hw.due_date && <span>{hw.due_date}</span>}
+                                                                <span>제출 {subCount}건</span>
+                                                                {ungradedCount > 0 && <span style={{ color: "#f59e0b", fontWeight: 700 }}>미채점 {ungradedCount}건</span>}
+                                                            </div>
+                                                        </div>
+                                                        <button onClick={() => deactivateHomework(hw.id)} style={{
+                                                            padding: "4px 10px", borderRadius: 6, border: "1px solid #fee2e2",
+                                                            background: "#fff", fontSize: 10, fontWeight: 600,
+                                                            color: "#EF4444", cursor: "pointer", flexShrink: 0,
+                                                        }}>삭제</button>
+                                                    </div>
+                                                </div>
+                                            );
+                                        })}
+                                    </div>
+                                </div>
+
+                                {/* 채점 패널 */}
+                                <div style={{ background: "#fff", borderRadius: 16, padding: 24, border: "1px solid #e2e8f0" }}>
+                                    <h3 style={{ fontSize: 16, fontWeight: 700, color: "#172554", marginBottom: 16 }}>
+                                        제출물 채점
+                                        {hwSubs.filter(s => s.score === null).length > 0 && (
+                                            <span style={{ fontSize: 12, fontWeight: 700, color: "#f59e0b", marginLeft: 8 }}>
+                                                (미채점 {hwSubs.filter(s => s.score === null).length}건)
+                                            </span>
+                                        )}
+                                    </h3>
+                                    <div style={{ display: "flex", flexDirection: "column", gap: 8, maxHeight: 400, overflowY: "auto" }}>
+                                        {hwSubs.length === 0 ? (
+                                            <p style={{ fontSize: 13, color: "#94a3b8", textAlign: "center", padding: 24 }}>제출된 숙제가 없습니다</p>
+                                        ) : hwSubs.map(sub => {
+                                            const hw = hwList.find(h => h.id === sub.homework_id);
+                                            const studentName = profiles.find(p => p.id === sub.user_id)?.name || "알 수 없음";
+                                            const isGrading = gradingId === sub.id;
+                                            const isGraded = sub.score !== null;
+                                            return (
+                                                <div key={sub.id} style={{
+                                                    padding: "12px 14px", borderRadius: 12,
+                                                    background: isGraded ? "#f0fdf4" : "#fffbeb",
+                                                    borderLeft: `3px solid ${isGraded ? "#22c55e" : "#f59e0b"}`,
+                                                }}>
+                                                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 6 }}>
+                                                        <div>
+                                                            <span style={{ fontSize: 13, fontWeight: 700, color: "#172554" }}>{studentName}</span>
+                                                            <span style={{ fontSize: 11, color: "#94a3b8", marginLeft: 8 }}>{hw?.title || "숙제"}</span>
+                                                        </div>
+                                                        <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                                                            {isGraded ? (
+                                                                <span style={{ fontSize: 12, fontWeight: 700, color: "#22c55e" }}>{sub.score}점</span>
+                                                            ) : (
+                                                                <button onClick={() => { setGradingId(isGrading ? null : sub.id); setGradeScore(""); setGradeFeedback(""); }} style={{
+                                                                    padding: "4px 12px", borderRadius: 8, border: "1px solid #e2e8f0",
+                                                                    background: isGrading ? "#2563eb" : "#fff",
+                                                                    color: isGrading ? "#fff" : "#2563eb",
+                                                                    fontSize: 11, fontWeight: 700, cursor: "pointer",
+                                                                }}>
+                                                                    {isGrading ? "접기" : "채점"}
+                                                                </button>
+                                                            )}
+                                                        </div>
+                                                    </div>
+                                                    {/* 답안 미리보기 */}
+                                                    <div style={{
+                                                        padding: "8px 12px", borderRadius: 8, background: "rgba(255,255,255,0.7)",
+                                                        fontSize: 12, color: "#475569", lineHeight: 1.5,
+                                                        whiteSpace: "pre-wrap", maxHeight: isGrading ? 200 : 60, overflow: "hidden",
+                                                    }}>
+                                                        {sub.content}
+                                                    </div>
+                                                    <div style={{ fontSize: 10, color: "#94a3b8", marginTop: 4 }}>
+                                                        제출: {new Date(sub.submitted_at).toLocaleDateString("ko-KR")} {new Date(sub.submitted_at).toLocaleTimeString("ko-KR", { hour: "2-digit", minute: "2-digit" })}
+                                                    </div>
+                                                    {/* 채점 폼 */}
+                                                    {isGrading && (
+                                                        <div style={{ marginTop: 10, padding: "12px", borderRadius: 10, background: "rgba(255,255,255,0.8)", border: "1px solid #e2e8f0" }}>
+                                                            <div style={{ display: "flex", gap: 8, marginBottom: 8 }}>
+                                                                <div style={{ flex: "0 0 100px" }}>
+                                                                    <label style={{ fontSize: 11, fontWeight: 600, color: "#334155", display: "block", marginBottom: 4 }}>점수</label>
+                                                                    <input
+                                                                        type="number" value={gradeScore} onChange={e => setGradeScore(e.target.value)}
+                                                                        placeholder="100" min="0" max="100"
+                                                                        style={{ width: "100%", padding: "8px 10px", borderRadius: 8, border: "1px solid #e2e8f0", fontSize: 14, outline: "none", boxSizing: "border-box" }}
+                                                                    />
+                                                                </div>
+                                                                <div style={{ flex: 1 }}>
+                                                                    <label style={{ fontSize: 11, fontWeight: 600, color: "#334155", display: "block", marginBottom: 4 }}>피드백 (선택)</label>
+                                                                    <input
+                                                                        type="text" value={gradeFeedback} onChange={e => setGradeFeedback(e.target.value)}
+                                                                        placeholder="잘했어요!"
+                                                                        style={{ width: "100%", padding: "8px 10px", borderRadius: 8, border: "1px solid #e2e8f0", fontSize: 13, outline: "none", boxSizing: "border-box" }}
+                                                                    />
+                                                                </div>
+                                                            </div>
+                                                            <button onClick={() => gradeSubmission(sub.id)} disabled={gradingSaving || !gradeScore.trim()} style={{
+                                                                width: "100%", padding: "8px", borderRadius: 8, border: "none",
+                                                                background: gradeScore.trim() ? "#2563eb" : "#e2e8f0",
+                                                                color: gradeScore.trim() ? "#fff" : "#94a3b8",
+                                                                fontWeight: 700, fontSize: 12, cursor: gradeScore.trim() ? "pointer" : "default",
+                                                            }}>
+                                                                {gradingSaving ? "저장 중..." : "채점 완료"}
+                                                            </button>
+                                                        </div>
+                                                    )}
+                                                    {/* 기존 피드백 표시 */}
+                                                    {isGraded && sub.feedback && (
+                                                        <div style={{ fontSize: 11, color: "#64748b", marginTop: 4 }}>{sub.feedback}</div>
+                                                    )}
+                                                </div>
+                                            );
+                                        })}
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </motion.div>
                 )}
@@ -525,7 +891,7 @@ export default function TeacherAdmin() {
                                                             }}>{idx + 1}</span>
                                                             <span style={{ flex: 1, fontSize: 13, fontWeight: 500, color: "#334155" }}>{unit.title}</span>
                                                             <span style={{ fontSize: 11, color: "#94a3b8" }}>
-                                                                {unit.type === "이론" ? "📖 강의" : "✏️ 실습"} · {(unit.problems?.length || 0)}문제
+                                                                {unit.type === "이론" ? "강의" : "실습"} · {(unit.problems?.length || 0)}문제
                                                             </span>
                                                         </div>
                                                     ))}
@@ -548,14 +914,14 @@ export default function TeacherAdmin() {
                 {activeTab === "notify" && (
                     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
                         <div style={{ background: "#fff", borderRadius: 16, padding: "24px", border: "1px solid #e2e8f0" }}>
-                            <h3 style={{ fontSize: 16, fontWeight: 700, color: "#172554", marginBottom: 16 }}>📢 전체 공지</h3>
+                            <h3 style={{ fontSize: 16, fontWeight: 700, color: "#172554", marginBottom: 16 }}>전체 공지</h3>
 
                             <div style={{ display: "flex", gap: 6, marginBottom: 16, flexWrap: "wrap" }}>
                                 {[
-                                    "📚 오늘 숙제 잊지 마세요!",
-                                    "🎉 이번 주 수업 잘했어요!",
-                                    "⏰ 내일 수업이 있습니다",
-                                    "🏆 코딩 대회 참가 안내",
+                                    "오늘 숙제 잊지 마세요!",
+                                    "이번 주 수업 잘했어요!",
+                                    "내일 수업이 있습니다",
+                                    "코딩 대회 참가 안내",
                                 ].map(tmpl => (
                                     <button key={tmpl} onClick={() => setNotifyMsg(tmpl)} style={{
                                         padding: "6px 12px", borderRadius: 8, border: "1px solid #e2e8f0",
@@ -601,7 +967,7 @@ export default function TeacherAdmin() {
                                     width: "100%",
                                 }}
                             >
-                                {notifySent ? "✅ 발송 완료!" : "📤 전체 학생에게 발송"}
+                                {notifySent ? "발송 완료!" : "전체 학생에게 발송"}
                             </button>
                         </div>
                     </motion.div>
@@ -613,7 +979,7 @@ export default function TeacherAdmin() {
                         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
                             {/* Write */}
                             <div style={{ background: "#fff", borderRadius: 16, padding: 24, border: "1px solid #e2e8f0" }}>
-                                <h3 style={{ fontSize: 16, fontWeight: 700, color: "#172554", marginBottom: 16 }}>💬 피드백 작성</h3>
+                                <h3 style={{ fontSize: 16, fontWeight: 700, color: "#172554", marginBottom: 16 }}>피드백 작성</h3>
                                 <select value={fbStudentId} onChange={e => setFbStudentId(e.target.value)} style={{
                                     width: "100%", padding: "12px", borderRadius: 10, border: "1px solid #e2e8f0",
                                     fontSize: 14, marginBottom: 10, outline: "none",
@@ -636,12 +1002,12 @@ export default function TeacherAdmin() {
                                     background: fbStudentId && fbText.trim() ? "#2563eb" : "#e2e8f0",
                                     color: fbStudentId && fbText.trim() ? "#fff" : "#94a3b8",
                                     fontWeight: 700, fontSize: 14, cursor: fbStudentId && fbText.trim() ? "pointer" : "default",
-                                }}>{fbSending ? "보내는 중..." : "📤 피드백 보내기"}</button>
+                                }}>{fbSending ? "보내는 중..." : "피드백 보내기"}</button>
                             </div>
 
                             {/* History */}
                             <div style={{ background: "#fff", borderRadius: 16, padding: 24, border: "1px solid #e2e8f0" }}>
-                                <h3 style={{ fontSize: 16, fontWeight: 700, color: "#172554", marginBottom: 16 }}>📋 피드백 이력 ({fbHistory.length}개)</h3>
+                                <h3 style={{ fontSize: 16, fontWeight: 700, color: "#172554", marginBottom: 16 }}>피드백 이력 ({fbHistory.length}개)</h3>
                                 <div style={{ display: "flex", flexDirection: "column", gap: 8, maxHeight: 400, overflowY: "auto" }}>
                                     {fbHistory.length === 0 ? (
                                         <p style={{ fontSize: 13, color: "#94a3b8", textAlign: "center", padding: 24 }}>피드백이 없습니다</p>
@@ -649,7 +1015,7 @@ export default function TeacherAdmin() {
                                         <div key={f.id} style={{ padding: "10px 14px", borderRadius: 10, background: "#f8fafc", borderLeft: `3px solid ${f.parent_name === "선생님" ? "#2563eb" : "#10b981"}` }}>
                                             <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 4 }}>
                                                 <span style={{ fontSize: 11, fontWeight: 700, color: f.parent_name === "선생님" ? "#2563eb" : "#10b981" }}>
-                                                    {f.parent_name === "선생님" ? "👨‍🏫 선생님" : `👨‍👩‍👧 ${f.parent_name}`}
+                                                    {f.parent_name === "선생님" ? "선생님" : f.parent_name}
                                                 </span>
                                                 <span style={{ fontSize: 10, color: "#94a3b8" }}>
                                                     {profiles.find(p => p.id === f.student_id)?.name || ""} · {new Date(f.created_at).toLocaleDateString("ko-KR")}
@@ -663,12 +1029,108 @@ export default function TeacherAdmin() {
                         </div>
                     </motion.div>
                 )}
+
+                {/* ═══ Monitor Tab ═══ */}
+                {activeTab === "monitor" && (
+                    <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}>
+                        <div style={{ background: "#fff", borderRadius: 16, border: "1px solid #e2e8f0", padding: 24 }}>
+                            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 20 }}>
+                                <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                                    <h2 style={{ fontSize: 18, fontWeight: 800, color: "#172554" }}>실시간 학생 모니터</h2>
+                                    <span style={{ display: "inline-flex", alignItems: "center", gap: 6, padding: "4px 12px", borderRadius: 20, background: "#ECFDF5", fontSize: 12, fontWeight: 700, color: "#059669" }}>
+                                        <span style={{ width: 8, height: 8, borderRadius: "50%", background: "#059669", animation: "pulse 2s infinite" }} />
+                                        {presenceList.filter(p => p.is_online && new Date(p.last_heartbeat).getTime() > Date.now() - 120000).length}명 접속 중
+                                    </span>
+                                </div>
+                                <button onClick={() => {
+                                    const sb = createClient();
+                                    sb.from("student_presence").select("*").order("last_heartbeat", { ascending: false })
+                                        .then(({ data }) => { if (data) setPresenceList(data as PresenceRow[]); });
+                                }} style={{ padding: "6px 14px", borderRadius: 8, border: "1px solid #e2e8f0", background: "#f8fafc", cursor: "pointer", fontSize: 12, fontWeight: 600, color: "#64748b" }}>
+                                    새로고침
+                                </button>
+                            </div>
+
+                            {presenceList.length === 0 ? (
+                                <p style={{ textAlign: "center", color: "#94a3b8", padding: 40, fontSize: 14 }}>접속 기록이 없습니다</p>
+                            ) : (
+                                <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))", gap: 12 }}>
+                                    {[...presenceList]
+                                        .sort((a, b) => {
+                                            const aOnline = a.is_online && new Date(a.last_heartbeat).getTime() > Date.now() - 120000;
+                                            const bOnline = b.is_online && new Date(b.last_heartbeat).getTime() > Date.now() - 120000;
+                                            if (aOnline !== bOnline) return bOnline ? 1 : -1;
+                                            return new Date(b.last_heartbeat).getTime() - new Date(a.last_heartbeat).getTime();
+                                        })
+                                        .map(p => {
+                                            const isOnline = p.is_online && new Date(p.last_heartbeat).getTime() > Date.now() - 120000;
+                                            const minutesAgo = Math.floor((Date.now() - new Date(p.last_heartbeat).getTime()) / 60000);
+                                            const studyMin = isOnline ? Math.floor((Date.now() - new Date(p.started_at).getTime()) / 60000) : 0;
+                                            return (
+                                                <div key={p.user_id} style={{
+                                                    padding: "16px", borderRadius: 14,
+                                                    background: isOnline ? "#F0FDF4" : "#F8FAFC",
+                                                    border: `1px solid ${isOnline ? "#BBF7D0" : "#E2E8F0"}`,
+                                                    transition: "all 0.3s",
+                                                }}>
+                                                    <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 10 }}>
+                                                        <div style={{
+                                                            width: 36, height: 36, borderRadius: "50%",
+                                                            background: isOnline ? "linear-gradient(135deg, #059669, #10b981)" : "#cbd5e1",
+                                                            display: "flex", alignItems: "center", justifyContent: "center",
+                                                            color: "#fff", fontWeight: 800, fontSize: 14,
+                                                        }}>
+                                                            {p.student_name?.charAt(0) || "?"}
+                                                        </div>
+                                                        <div style={{ flex: 1 }}>
+                                                            <div style={{ fontSize: 14, fontWeight: 700, color: "#172554" }}>{p.student_name}</div>
+                                                            <div style={{ display: "flex", alignItems: "center", gap: 4, fontSize: 11 }}>
+                                                                <span style={{
+                                                                    width: 6, height: 6, borderRadius: "50%",
+                                                                    background: isOnline ? "#059669" : "#94a3b8",
+                                                                    ...(isOnline ? { animation: "pulse 2s infinite" } : {}),
+                                                                }} />
+                                                                <span style={{ color: isOnline ? "#059669" : "#94a3b8", fontWeight: 600 }}>
+                                                                    {isOnline ? "접속 중" : minutesAgo < 60 ? `${minutesAgo}분 전` : `${Math.floor(minutesAgo / 60)}시간 전`}
+                                                                </span>
+                                                            </div>
+                                                        </div>
+                                                        {isOnline && studyMin > 0 && (
+                                                            <span style={{ fontSize: 10, fontWeight: 700, padding: "3px 8px", borderRadius: 8, background: "#DBEAFE", color: "#2563EB" }}>
+                                                                {studyMin}분째
+                                                            </span>
+                                                        )}
+                                                    </div>
+                                                    {isOnline && p.course_title && (
+                                                        <div style={{ padding: "8px 10px", borderRadius: 8, background: "#fff", border: "1px solid #E2E8F0", fontSize: 11, color: "#334155", lineHeight: 1.6 }}>
+                                                            <div style={{ fontWeight: 700, color: "#2563EB", marginBottom: 2 }}>{p.course_title}</div>
+                                                            {p.unit_title && <div>{p.unit_title}</div>}
+                                                            {p.page_title && <div style={{ color: "#64748b" }}>{p.page_title}</div>}
+                                                        </div>
+                                                    )}
+                                                    {!isOnline && p.course_title && (
+                                                        <div style={{ fontSize: 10, color: "#94a3b8", marginTop: 4 }}>
+                                                            마지막: {p.course_title}{p.unit_title ? ` > ${p.unit_title}` : ""}
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            );
+                                        })}
+                                </div>
+                            )}
+                        </div>
+                    </motion.div>
+                )}
             </div>
 
             <style>{`
                 @keyframes spin {
                     from { transform: rotate(0deg); }
                     to { transform: rotate(360deg); }
+                }
+                @keyframes pulse {
+                    0%, 100% { opacity: 1; }
+                    50% { opacity: 0.4; }
                 }
             `}</style>
         </div>

@@ -244,7 +244,7 @@ export default function HologramHUD({
                         {/* Stats row */}
                         <div style={{ display: "flex", gap: 14 }}>
                             <div className="hud-stat">
-                                <span className="hud-stat-icon">📚</span>
+                                <span className="hud-stat-icon material-symbols-outlined" style={{ fontSize: 14 }}>menu_book</span>
                                 <div>
                                     <div className="hud-stat-value" style={{ color: textColor }}>
                                         {completedCourses}/{totalCourses}
@@ -253,9 +253,10 @@ export default function HologramHUD({
                                 </div>
                             </div>
                             <div className="hud-stat">
-                                <span className="hud-stat-icon" style={{
+                                <span className="hud-stat-icon material-symbols-outlined" style={{
+                                    fontSize: 14,
                                     animation: streak >= 3 ? "streak-bounce 1s ease infinite" : "none",
-                                }}>🔥</span>
+                                }}>local_fire_department</span>
                                 <div>
                                     <div className="hud-stat-value" style={{ color: textColor }}>
                                         {streak}일
@@ -279,7 +280,7 @@ export default function HologramHUD({
                             fontSize: 16,
                         }}
                         onClick={() => setOpen(true)}
-                    >📊</button>
+                    ><span className="material-symbols-outlined" style={{ fontSize: 16 }}>bar_chart</span></button>
                 )}
             </div>
         </>

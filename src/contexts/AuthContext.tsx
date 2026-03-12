@@ -41,7 +41,7 @@ function loadUser(): UserProfile | null {
     try {
         const raw = localStorage.getItem(AUTH_KEY);
         return raw ? JSON.parse(raw) : null;
-    } catch (e) { console.error('[Auth] loadUser failed:', e); return null; }
+    } catch (e) { if (process.env.NODE_ENV === 'development') console.error('[Auth] loadUser failed:', e); return null; }
 }
 
 function saveUser(u: UserProfile | null) {
@@ -80,7 +80,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                             saveUser(stored);
                         }
                     } catch (e) {
-                        console.error('[Auth] XP sync failed:', e);
+                        if (process.env.NODE_ENV === 'development') console.error('[Auth] XP sync failed:', e);
                     }
                     setUser(stored);
                 }

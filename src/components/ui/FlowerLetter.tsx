@@ -39,7 +39,7 @@ export default function FlowerLetter({
         fetch(lottieFile)
             .then(res => res.json())
             .then(data => setLottieData(data))
-            .catch(err => console.error("Lottie load error:", err));
+            .catch(err => { if (process.env.NODE_ENV === 'development') console.error("Lottie load error:", err); });
     }, [lottieFile]);
 
     // Mouse parallax for flower sway

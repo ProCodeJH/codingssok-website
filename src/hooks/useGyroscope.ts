@@ -2,6 +2,15 @@
 
 import { useState, useEffect, useCallback, useRef } from "react";
 
+interface DeviceOrientationEventiOS extends DeviceOrientationEvent {
+    requestPermission?: () => Promise<"granted" | "denied">;
+}
+declare const DeviceOrientationEvent: {
+    new (type: string, eventInitDict?: DeviceOrientationEventInit): DeviceOrientationEvent;
+    prototype: DeviceOrientationEvent;
+    requestPermission?: () => Promise<"granted" | "denied">;
+};
+
 /**
  * useGyroscope — 모바일 자이로스코프 + 햅틱 피드백
  * 
@@ -83,9 +92,9 @@ export default function useGyroscope(options: UseGyroscopeOptions = {}): Gyrosco
 
         // iOS 13+ requires permission
         const requestPermission = async () => {
-            if (typeof (DeviceOrientationEvent as any).requestPermission === "function") {
+            if (typeof DeviceOrientationEvent.requestPermission === "function") {
                 try {
-                    const perm = await (DeviceOrientationEvent as any).requestPermission();
+                    const perm = await DeviceOrientationEvent.requestPermission();
                     if (perm === "granted") {
                         window.addEventListener("deviceorientation", handleOrientation);
                     }

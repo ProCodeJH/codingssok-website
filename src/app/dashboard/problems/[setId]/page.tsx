@@ -12,7 +12,7 @@ interface Problem {
   difficulty: number
   sort_order: number
   xp_reward: number
-  status: { attempted: boolean; solved: boolean; attempts: number }
+  status?: { attempted: boolean; solved: boolean; attempts: number }
 }
 
 export default function ProblemSetPage() {
@@ -84,9 +84,9 @@ export default function ProblemSetPage() {
             {problems.map((problem, idx) => (
               <tr key={problem.id} className="hover:bg-white/3 transition-colors" style={{ borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
                 <td className="px-5 py-3">
-                  {problem.status.solved ? (
+                  {problem.status?.solved ? (
                     <CheckCircle2 size={18} className="text-green-400" />
-                  ) : problem.status.attempted ? (
+                  ) : problem.status?.attempted ? (
                     <XCircle size={18} className="text-orange-400" />
                   ) : (
                     <Circle size={18} style={{ color: 'var(--color-text-secondary)' }} />
@@ -106,7 +106,7 @@ export default function ProblemSetPage() {
                   +{problem.xp_reward}
                 </td>
                 <td className="px-5 py-3 text-sm" style={{ color: 'var(--color-text-secondary)' }}>
-                  {problem.status.attempts > 0 ? `${problem.status.attempts}회` : '-'}
+                  {(problem.status?.attempts ?? 0) > 0 ? `${problem.status?.attempts}회` : '-'}
                 </td>
               </tr>
             ))}

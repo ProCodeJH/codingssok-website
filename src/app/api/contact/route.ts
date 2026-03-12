@@ -1,11 +1,23 @@
 import { NextRequest, NextResponse } from "next/server";
+import { rateLimit } from "@/lib/rate-limit";
+import { createClient } from "@/lib/supabase/server";
 
 export async function POST(request: NextRequest) {
     try {
+        // Rate Limiting: IP 기반 시간당 5회 제한
+        const ip = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || 'unknown';
+        const { success: rateLimitOk } = rateLimit(`contact:${ip}`, { maxRequests: 5, windowMs: 3600_000 });
+        if (!rateLimitOk) {
+            return NextResponse.json(
+                { success: false, error: "요청이 너무 많습니다. 잠시 후 다시 시도해주세요." },
+                { status: 429, headers: { "Retry-After": "3600" } }
+            );
+        }
+
         const body = await request.json();
         const { studentName, grade, phone, course, message } = body;
 
-        if (!studentName || studentName.length < 2) {
+        if (!studentName || typeof studentName !== 'string' || studentName.trim().length < 2) {
             return NextResponse.json(
                 { success: false, error: "학생 이름은 2자 이상이어야 합니다." },
                 { status: 400 }
@@ -19,21 +31,32 @@ export async function POST(request: NextRequest) {
             );
         }
 
-        if (!course) {
+        if (!course || typeof course !== 'string') {
             return NextResponse.json(
                 { success: false, error: "관심 과정을 선택해주세요." },
                 { status: 400 }
             );
         }
 
-        console.log("=== 새 상담 신청 ===");
-        console.log(`학생 이름: ${studentName}`);
-        console.log(`학년: ${grade}`);
-        console.log(`연락처: ${phone}`);
-        console.log(`관심 과정: ${course}`);
-        console.log(`문의 사항: ${message || "(없음)"}`);
-        console.log(`접수 시간: ${new Date().toLocaleString("ko-KR", { timeZone: "Asia/Seoul" })}`);
-        console.log("==================");
+        // Supabase에 상담 신청 저장
+        try {
+            const supabase = await createClient();
+            const { error } = await supabase.from("contact_submissions").insert({
+                name: studentName.trim(),
+                grade: grade?.trim() || null,
+                phone: phone.replace(/\s/g, ""),
+                course: course.trim(),
+                message: message?.trim() || null,
+            });
+
+            if (error) {
+                console.error(`[Contact] Supabase 저장 실패:`, error.message);
+            }
+        } catch (dbError) {
+            // 테이블이 없거나 DB 연결 실패 시 콘솔 폴백
+            console.error(`[Contact] DB 저장 실패, 콘솔 폴백:`, dbError);
+            console.error(`[Contact] 새 상담 신청 접수 - 과정: ${course}, 시간: ${new Date().toISOString()}`);
+        }
 
         return NextResponse.json({
             success: true,

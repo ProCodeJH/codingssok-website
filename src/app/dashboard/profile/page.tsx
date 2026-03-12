@@ -4,13 +4,18 @@ import { useState, useEffect } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { getProfileStats, getActivityHeatmap, getRecentActivity } from '@/lib/actions/profile'
 import { getStudentXP } from '@/lib/actions/xp'
+import { getTierInfo, getTierFrame, getLevelTitle, getDisplayTier } from '@/lib/xp-engine'
+import TierIcon from '@/components/icons/TierIcon'
+import ProfileEffect from '@/components/ui/ProfileEffect'
 import { User, BarChart3, FileText, BookOpen, Zap, Award, Target, TrendingUp } from 'lucide-react'
 import { useParentPin } from '@/hooks/useParentPin'
+import { useProfileEffect } from '@/hooks/useProfileEffect'
 
 interface ProfileData {
   profile: {
     id: string; name: string; email: string; role: string;
-    level: number; total_xp: number; rank: string; birth_date: string;
+    display_name: string; avatar_url: string; bio: string;
+    level: number; total_xp: number; rank: string; created_at: string;
   }
   stats: {
     totalSubmissions: number; solvedProblems: number; accuracy: number;
@@ -35,6 +40,7 @@ export default function ProfilePage() {
   const [loading, setLoading] = useState(true)
   const [userId, setUserId] = useState<string | undefined>(undefined)
   const { pin, regeneratePin } = useParentPin(userId)
+  const activeEffect = useProfileEffect()
 
   useEffect(() => {
     async function load() {
@@ -50,7 +56,7 @@ export default function ProfilePage() {
         getRecentActivity(user.id),
       ])
 
-      if (profileResult.data) setData(profileResult.data as unknown as ProfileData)
+      if (profileResult.data) setData(profileResult.data as ProfileData)
       if (xpResult.data) setXpData(xpResult.data)
       if (heatmapResult.data) setHeatmap(heatmapResult.data)
       if (activityResult.data) setRecentActivity(activityResult.data as typeof recentActivity)
@@ -58,22 +64,6 @@ export default function ProfilePage() {
     }
     load()
   }, [])
-
-  const rankLabels: Record<string, string> = {
-    beginner: '초급',
-    intermediate: '중급',
-    advanced: '고급',
-    expert: '전문가',
-    master: '마스터',
-  }
-
-  const rankColors: Record<string, string> = {
-    beginner: '#10B981',
-    intermediate: '#3B82F6',
-    advanced: '#F59E0B',
-    expert: '#EF4444',
-    master: '#2563eb',
-  }
 
   // Generate heatmap grid (last 365 days)
   const renderHeatmap = () => {
@@ -116,26 +106,31 @@ export default function ProfilePage() {
   if (!data) return <div className="text-center py-12">프로필을 불러올 수 없습니다.</div>
 
   const { profile, stats } = data
+  const userLevel = xpData?.level || profile.level || 1
+  const tierInfo = getDisplayTier(profile.rank || 'Iron', userLevel)
+  const tierFrame = getTierFrame(tierInfo.name)
+  const levelTitle = getLevelTitle(userLevel)
 
   return (
     <div className="space-y-6 max-w-5xl mx-auto">
       {/* Profile Header */}
       <div className="glass-premium rounded-2xl p-6" style={{ border: '1px solid var(--color-border)' }}>
         <div className="flex items-start gap-5">
-          <div className="w-16 h-16 rounded-2xl flex items-center justify-center text-2xl font-bold shrink-0"
-            style={{ background: 'var(--gradient-primary)', color: '#fff' }}>
-            {profile.name?.charAt(0)}
+          <div className="shrink-0" style={{ position: 'relative' }}>
+            <ProfileEffect effect={activeEffect} size={64}>
+              <TierIcon tier={tierInfo.name} size={64} animated />
+            </ProfileEffect>
           </div>
           <div className="flex-1">
             <div className="flex items-center gap-3 mb-1">
               <h1 className="text-2xl font-bold">{profile.name}</h1>
-              <span className="text-xs px-2.5 py-1 rounded-full font-medium"
-                style={{ background: `${rankColors[profile.rank || 'beginner']}20`, color: rankColors[profile.rank || 'beginner'] }}>
-                {rankLabels[profile.rank || 'beginner']}
+              <span className="text-xs px-2.5 py-1 rounded-full font-medium inline-flex items-center gap-1"
+                style={{ background: `${tierInfo.color}20`, color: tierInfo.color }}>
+                <TierIcon tier={tierInfo.name} size={14} /> {tierInfo.nameKo}
               </span>
             </div>
             <p className="text-sm" style={{ color: 'var(--color-text-secondary)' }}>
-              Lv.{xpData?.level || profile.level || 1}
+              Lv.{userLevel} · {levelTitle.icon} {levelTitle.title}
             </p>
 
             {/* XP Progress Bar */}

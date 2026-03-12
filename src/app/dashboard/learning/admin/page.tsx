@@ -39,32 +39,12 @@ export default function AdminPage() {
     const [editName, setEditName] = useState("");
     const [editGrade, setEditGrade] = useState("");
     const [msg, setMsg] = useState<{ ok: boolean; text: string } | null>(null);
+    const [cronStatus, setCronStatus] = useState<"idle" | "running" | "done" | "error">("idle");
+    const [cronResult, setCronResult] = useState<string>("");
 
     const supabase = useMemo(() => createClient(), []);
 
-    /* ── 권한 체크 ── */
-    if (user?.role !== "teacher") {
-        return (
-            <div style={{
-                display: "flex", alignItems: "center", justifyContent: "center",
-                minHeight: 400, fontFamily: "'Space Grotesk', sans-serif",
-            }}>
-                <div style={{
-                    background: "rgba(255,255,255,0.85)", backdropFilter: "blur(20px)",
-                    borderRadius: 20, padding: "40px 32px", textAlign: "center",
-                    border: "1px solid rgba(255,255,255,0.9)",
-                    boxShadow: "0 20px 40px rgba(0,0,0,0.08)",
-                }}>
-                    <MI icon="lock" style={{ fontSize: 48, color: "#94a3b8", marginBottom: 16, display: "block" }} />
-                    <h2 style={{ fontSize: 20, fontWeight: 700, color: "#1e293b", margin: "0 0 8px" }}>접근 권한 없음</h2>
-                    <p style={{ fontSize: 13, color: "#64748b" }}>관리자 계정으로 로그인해주세요.</p>
-                </div>
-            </div>
-        );
-    }
-
     /* ── 학생 목록 로드 ── */
-    // eslint-disable-next-line react-hooks/rules-of-hooks
     useEffect(() => {
         async function loadStudents() {
             try {
@@ -75,7 +55,7 @@ export default function AdminPage() {
                 if (error) throw error;
                 setStudents(data || []);
             } catch (e) {
-                console.error("Failed to load students:", e);
+                if (process.env.NODE_ENV === 'development') console.error("Failed to load students:", e);
             } finally {
                 setLoading(false);
             }
@@ -84,7 +64,6 @@ export default function AdminPage() {
     }, [supabase]);
 
     /* ── 학생 선택 시 XP 로그 로드 ── */
-    // eslint-disable-next-line react-hooks/rules-of-hooks
     const selectStudent = useCallback(async (s: Student) => {
         setSelectedStudent(s);
         setEditName(s.name);
@@ -102,7 +81,6 @@ export default function AdminPage() {
     }, [supabase]);
 
     /* ── XP 부여 ── */
-    // eslint-disable-next-line react-hooks/rules-of-hooks
     const grantXP = useCallback(async () => {
         if (!selectedStudent || xpAmount <= 0) return;
         try {
@@ -134,7 +112,6 @@ export default function AdminPage() {
     }, [selectedStudent, xpAmount, xpReason, supabase, selectStudent]);
 
     /* ── 프로필 수정 ── */
-    // eslint-disable-next-line react-hooks/rules-of-hooks
     const updateProfile = useCallback(async () => {
         if (!selectedStudent) return;
         try {
@@ -151,6 +128,56 @@ export default function AdminPage() {
             setMsg({ ok: false, text: `오류: ${e instanceof Error ? e.message : String(e)}` });
         }
     }, [selectedStudent, editName, editGrade, supabase]);
+
+    /* ── 주간 보상 수동 실행 ── */
+    const triggerLeaderboardRewards = useCallback(async () => {
+        setCronStatus("running");
+        setCronResult("");
+        try {
+            const { data: { session } } = await supabase.auth.getSession();
+            const res = await fetch("/api/cron/leaderboard-rewards", {
+                method: "POST",
+                headers: {
+                    "Authorization": `Bearer ${session?.access_token || ""}`,
+                },
+            });
+            const data = await res.json();
+            if (!res.ok) {
+                setCronStatus("error");
+                setCronResult(data.error || "오류 발생");
+            } else {
+                setCronStatus("done");
+                const awarded = data.awarded?.length
+                    ? data.awarded.map((a: { rank: number; xpBonus: number }) => `${a.rank}위: +${a.xpBonus} XP`).join(", ")
+                    : "";
+                setCronResult(data.message + (awarded ? ` (${awarded})` : ""));
+            }
+        } catch {
+            setCronStatus("error");
+            setCronResult("서버 연결 실패");
+        }
+    }, [supabase]);
+
+    /* ── 권한 체크 ── */
+    if (user?.role !== "teacher") {
+        return (
+            <div style={{
+                display: "flex", alignItems: "center", justifyContent: "center",
+                minHeight: 400, fontFamily: "'Space Grotesk', sans-serif",
+            }}>
+                <div style={{
+                    background: "rgba(255,255,255,0.85)", backdropFilter: "blur(20px)",
+                    borderRadius: 20, padding: "40px 32px", textAlign: "center",
+                    border: "1px solid rgba(255,255,255,0.9)",
+                    boxShadow: "0 20px 40px rgba(0,0,0,0.08)",
+                }}>
+                    <MI icon="lock" style={{ fontSize: 48, color: "#94a3b8", marginBottom: 16, display: "block" }} />
+                    <h2 style={{ fontSize: 20, fontWeight: 700, color: "#1e293b", margin: "0 0 8px" }}>접근 권한 없음</h2>
+                    <p style={{ fontSize: 13, color: "#64748b" }}>관리자 계정으로 로그인해주세요.</p>
+                </div>
+            </div>
+        );
+    }
 
     /* ── 필터링 ── */
     const filtered = students.filter(s =>
@@ -184,6 +211,59 @@ export default function AdminPage() {
                 <p style={{ fontSize: 13, color: "#64748b", margin: 0 }}>
                     학생 프로필 편집, XP 부여, 활동 내역 확인
                 </p>
+            </motion.div>
+
+            {/* 주간 리더보드 보상 */}
+            <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.05 }}
+                style={{ ...cardStyle, padding: 20, marginBottom: 24, display: "flex", alignItems: "center", gap: 16, flexWrap: "wrap" }}
+            >
+                <div style={{ display: "flex", alignItems: "center", gap: 10, flex: 1, minWidth: 200 }}>
+                    <div style={{
+                        width: 40, height: 40, borderRadius: 12,
+                        background: "linear-gradient(135deg, #f59e0b, #d97706)",
+                        display: "flex", alignItems: "center", justifyContent: "center",
+                        boxShadow: "0 4px 12px rgba(245,158,11,0.3)",
+                    }}>
+                        <MI icon="emoji_events" style={{ fontSize: 20, color: "#fff" }} />
+                    </div>
+                    <div>
+                        <div style={{ fontSize: 14, fontWeight: 700, color: "#1e293b" }}>주간 리더보드 보상</div>
+                        <div style={{ fontSize: 11, color: "#64748b" }}>매주 월요일 자동 실행 · 상위 3명에게 XP 보너스</div>
+                    </div>
+                </div>
+                <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                    {cronResult && (
+                        <span style={{
+                            fontSize: 11, fontWeight: 600, padding: "4px 10px", borderRadius: 8,
+                            background: cronStatus === "error" ? "#fef2f2" : cronStatus === "done" ? "#dcfce7" : "#f1f5f9",
+                            color: cronStatus === "error" ? "#dc2626" : cronStatus === "done" ? "#059669" : "#64748b",
+                        }}>
+                            {cronResult}
+                        </span>
+                    )}
+                    <button
+                        onClick={triggerLeaderboardRewards}
+                        disabled={cronStatus === "running"}
+                        style={{
+                            padding: "8px 20px", borderRadius: 10, border: "none",
+                            background: cronStatus === "running"
+                                ? "#94a3b8"
+                                : "linear-gradient(135deg, #f59e0b, #d97706)",
+                            color: "#fff", fontSize: 12, fontWeight: 700, cursor: cronStatus === "running" ? "default" : "pointer",
+                            display: "flex", alignItems: "center", gap: 6,
+                            boxShadow: cronStatus === "running" ? "none" : "0 4px 12px rgba(245,158,11,0.3)",
+                        }}
+                    >
+                        <MI icon={cronStatus === "running" ? "progress_activity" : "play_arrow"} style={{
+                            fontSize: 16,
+                            ...(cronStatus === "running" ? { animation: "spin 1s linear infinite" } : {}),
+                        }} />
+                        {cronStatus === "running" ? "실행 중..." : "수동 실행"}
+                    </button>
+                </div>
             </motion.div>
 
             <div style={{ display: "grid", gridTemplateColumns: selectedStudent ? "1fr 1fr" : "1fr", gap: 24 }}>

@@ -72,4 +72,6 @@ export interface Course {
     chapters: Chapter[];
     /** 정적 HTML 콘텐츠 경로 (learning-platform 연동용) */
     htmlPath?: string;
+    /** 접근에 필요한 최소 티어 (없으면 누구나 접근 가능) */
+    requiredTier?: string;
 }

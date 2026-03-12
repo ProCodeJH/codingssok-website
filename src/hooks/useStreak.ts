@@ -119,12 +119,25 @@ export function useStreak() {
         });
     }, []);
 
-    // Purchase ice with XP (integrate with XP engine)
-    const purchaseIce = useCallback(() => {
+    // Purchase ice with XP (Supabase 연동)
+    const purchaseIce = useCallback(async (userId?: string) => {
         setStreak(prev => ({
             ...prev,
             iceItems: prev.iceItems + 1,
         }));
+        // Supabase에 아이스 구매 기록
+        if (userId) {
+            try {
+                const { createClient } = await import("@/lib/supabase");
+                const sb = createClient();
+                await sb.from("store_purchases").insert({
+                    user_id: userId,
+                    item_id: "streak_ice",
+                    item_name: "스트릭 아이스",
+                    xp_cost: ICE_PRICE_XP,
+                });
+            } catch { /* silent */ }
+        }
     }, []);
 
     // Check if streak is at risk (last active was yesterday, not today yet)
@@ -132,9 +145,9 @@ export function useStreak() {
     const isBroken = streak.lastActiveDate !== getToday() && streak.lastActiveDate !== getYesterday() && streak.currentStreak > 0;
 
     // Get streak badge
-    const badge = streak.currentStreak >= 100 ? { emoji: "🏆", label: "골드", color: "#F59E0B" }
-        : streak.currentStreak >= 30 ? { emoji: "🥈", label: "실버", color: "#94a3b8" }
-            : streak.currentStreak >= 7 ? { emoji: "🥉", label: "브론즈", color: "#CD7F32" }
+    const badge = streak.currentStreak >= 100 ? { level: "gold" as const, label: "골드", color: "#F59E0B" }
+        : streak.currentStreak >= 30 ? { level: "silver" as const, label: "실버", color: "#94a3b8" }
+            : streak.currentStreak >= 7 ? { level: "bronze" as const, label: "브론즈", color: "#CD7F32" }
                 : null;
 
     return {

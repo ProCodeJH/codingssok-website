@@ -5,15 +5,30 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { AuthProvider, useAuth } from "@/contexts/AuthContext";
-import { getTierInfo } from "@/lib/xp-engine";
+import { getLevelTitle, xpForNextLevel, getTierFrame, getTierInfo } from "@/lib/xp-engine";
+import { useUserProgress } from "@/hooks/useUserProgress";
+import { GamificationBar } from "./components/GamificationBar";
+import StreakWidget from "@/components/ui/StreakWidget";
+import DailyMissions from "@/components/ui/DailyMissions";
+import Leaderboard from "@/components/ui/Leaderboard";
+import FriendChallenges from "@/components/ui/FriendChallenges";
+import BadgeNotification from "@/components/ui/BadgeNotification";
+import PromotionNotification from "@/components/ui/PromotionNotification";
+import { useStudyTimer } from "@/hooks/useStudyTimer";
+import { useGamificationSync } from "@/lib/gamification-sync";
+import { recordMissionClaim } from "@/lib/reward-engine";
 import { PageTransition } from "@/components/motion/page-transition";
 import { GlowPulse } from "@/components/motion/motion";
 import { Spotlight, MorphingGradient } from "@/components/motion/premium";
+import ProfileEffect from "@/components/ui/ProfileEffect";
+import { useProfileEffect } from "@/hooks/useProfileEffect";
 
 /* ── Nav Items (한글화 + 새 메뉴) ── */
 const NAV_ITEMS = [
     { icon: "dashboard", label: "대시보드", href: "/dashboard/learning" },
+    { icon: "assignment", label: "숙제", href: "/dashboard/learning/homework" },
     { icon: "quiz", label: "문제 은행", href: "/dashboard/learning/problems" },
+    { icon: "military_tech", label: "승급전", href: "/dashboard/learning/promotion" },
 ];
 
 const ADMIN_NAV_ITEMS = [
@@ -53,7 +68,7 @@ function AuthGate({ children }: { children: ReactNode }) {
 }
 
 /* ── Left Sidebar ── */
-function LeftSidebar() {
+function LeftSidebar({ progress, addXP }: { progress: import("@/hooks/useUserProgress").UserProgress; addXP: (n: number) => void }) {
     const pathname = usePathname();
     const { user } = useAuth();
     const isActive = (href: string) => href === "/dashboard/learning" ? pathname === href : pathname.startsWith(href);
@@ -121,6 +136,18 @@ function LeftSidebar() {
                     </nav>
                 </Spotlight>
 
+                {/* 게이미피케이션 */}
+                <div style={{ marginTop: 24, padding: "0 8px", display: "flex", flexDirection: "column", gap: 12 }}>
+                    <GamificationBar progress={progress} compact />
+                    <DailyMissions onClaimXP={(amt, missionId) => {
+                        addXP(amt);
+                        if (user?.id) recordMissionClaim(user.id, missionId, amt);
+                    }} />
+                    <StreakWidget />
+                    <Leaderboard />
+                    <FriendChallenges />
+                </div>
+
                 {/* 오늘의 챌린지 카드 */}
                 <div style={{ marginTop: 32, padding: "0 8px" }}>
                     <div style={{
@@ -157,9 +184,33 @@ function LeftSidebar() {
 }
 
 /* ── Top Navbar (scroll-aware) ── */
-function Navbar({ onMenuOpen }: { onMenuOpen: () => void }) {
+function XpChip({ xp, level }: { xp: number; level: number }) {
+    const info = getLevelTitle(level);
+    const { progress } = xpForNextLevel(xp);
+    return (
+        <div className="hidden md:flex" style={{
+            alignItems: "center", gap: 8, padding: "6px 14px",
+            borderRadius: 12, background: `${info.color}10`,
+            border: `1px solid ${info.color}25`,
+        }}>
+            <span style={{ fontSize: 16 }}>{info.icon}</span>
+            <div>
+                <div style={{ fontSize: 10, fontWeight: 700, color: info.color, lineHeight: 1 }}>
+                    Lv.{level} {info.title}
+                </div>
+                <div style={{ width: 60, height: 3, background: "#e2e8f0", borderRadius: 2, marginTop: 3 }}>
+                    <div style={{ height: "100%", width: `${progress}%`, background: info.color, borderRadius: 2, transition: "width 0.5s" }} />
+                </div>
+            </div>
+            <span style={{ fontSize: 10, fontWeight: 800, color: "#f59e0b" }}>{xp.toLocaleString()}</span>
+        </div>
+    );
+}
+
+function Navbar({ onMenuOpen, xp, level, tier }: { onMenuOpen: () => void; xp: number; level: number; tier: string }) {
     const { user, signOut } = useAuth();
     const [scrolled, setScrolled] = useState(false);
+    const activeEffect = useProfileEffect();
 
     useEffect(() => {
         const handleScroll = () => setScrolled(window.scrollY > 20);
@@ -223,6 +274,9 @@ function Navbar({ onMenuOpen }: { onMenuOpen: () => void }) {
                             }} placeholder="코스, 문제 검색..." type="text" />
                         </div>
 
+                        {/* XP Chip */}
+                        <XpChip xp={xp} level={level} />
+
                         {/* C-Studio Button */}
                         <motion.a
                             href="/dashboard/compiler"
@@ -254,31 +308,35 @@ function Navbar({ onMenuOpen }: { onMenuOpen: () => void }) {
                                     <span style={{ fontSize: 10, color: "#64748b", fontWeight: 600 }}>접속 중</span>
                                 </div>
                             </div>
-                            <motion.button
-                                onClick={signOut} title="로그아웃"
-                                whileHover={{ scale: 1.08, boxShadow: "0 8px 24px rgba(14,165,233,0.2)" }}
-                                whileTap={{ scale: 0.95 }}
-                                transition={{ type: "spring", stiffness: 400, damping: 20 }}
-                                style={{
-                                    width: 42, height: 42, borderRadius: "50%", padding: 2,
-                                    background: "linear-gradient(135deg, #7dd3fc, #a5b4fc)",
-                                    boxShadow: "0 4px 12px rgba(0,0,0,0.08)", cursor: "pointer", border: "none",
-                                    display: "flex", alignItems: "center", justifyContent: "center"
-                                }}
-                            >
-                                <div style={{
-                                    width: "100%", height: "100%", borderRadius: "50%",
-                                    background: "#e0f2fe", display: "flex", alignItems: "center", justifyContent: "center",
-                                    color: "#0369a1", fontWeight: 700, fontSize: 14, border: "2px solid #fff"
-                                }}>
-                                    {(user?.name?.charAt(0) || "?").toUpperCase()}
-                                </div>
-                            </motion.button>
+                            <ProfileEffect effect={activeEffect} size={42}>
+                                <motion.button
+                                    onClick={signOut} title="로그아웃" aria-label="로그아웃"
+                                    whileHover={{ scale: 1.08, boxShadow: "0 8px 24px rgba(14,165,233,0.2)" }}
+                                    whileTap={{ scale: 0.95 }}
+                                    transition={{ type: "spring", stiffness: 400, damping: 20 }}
+                                    style={{
+                                        width: 42, height: 42, borderRadius: "50%", padding: 2,
+                                        background: getTierInfo(tier).gradient,
+                                        boxShadow: getTierFrame(tier).shadow, cursor: "pointer", border: "none",
+                                        display: "flex", alignItems: "center", justifyContent: "center"
+                                    }}
+                                >
+                                    <div style={{
+                                        width: "100%", height: "100%", borderRadius: "50%",
+                                        background: "#e0f2fe", display: "flex", alignItems: "center", justifyContent: "center",
+                                        color: getTierInfo(tier).color, fontWeight: 700, fontSize: 14,
+                                        border: getTierFrame(tier).border,
+                                    }}>
+                                        {(user?.name?.charAt(0) || "?").toUpperCase()}
+                                    </div>
+                                </motion.button>
+                            </ProfileEffect>
                         </div>
 
                         {/* Mobile menu */}
                         <motion.button
                             onClick={onMenuOpen} className="lg:hidden"
+                            aria-label="메뉴 열기"
                             whileHover={{ scale: 1.1 }}
                             whileTap={{ scale: 0.9 }}
                             style={{
@@ -336,6 +394,7 @@ function MobileDrawer({ isOpen, onClose }: { isOpen: boolean; onClose: () => voi
                             </div>
                             <motion.button
                                 onClick={onClose}
+                                aria-label="메뉴 닫기"
                                 whileHover={{ scale: 1.1, rotate: 90 }}
                                 whileTap={{ scale: 0.9 }}
                                 style={{ width: 32, height: 32, borderRadius: 10, border: "none", background: "#f1f5f9", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}
@@ -370,9 +429,13 @@ function MobileDrawer({ isOpen, onClose }: { isOpen: boolean; onClose: () => voi
 }
 
 /* ── Layout ── */
-export default function LearningLayout({ children }: { children: ReactNode }) {
+function LearningLayoutInner({ children }: { children: ReactNode }) {
     const [sidebarOpen, setSidebarOpen] = useState(false);
     const pathname = usePathname();
+    const { progress, addXP } = useUserProgress();
+    const { user } = useAuth();
+    useStudyTimer();
+    useGamificationSync(user?.id ?? null);
 
     // 3D 대시보드 + 코스 상세 페이지에서는 레이아웃 크롬 없이 전체화면
     const isMainDashboard = pathname === "/dashboard/learning";
@@ -386,6 +449,9 @@ export default function LearningLayout({ children }: { children: ReactNode }) {
                 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" />
                 {/* eslint-disable-next-line @next/next/no-page-custom-font */}
                 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" />
+
+                <BadgeNotification />
+                <PromotionNotification />
 
                 {isFullscreen ? (
                     /* 전체화면 모드 — 레이아웃 크롬 없음 */
@@ -411,7 +477,7 @@ export default function LearningLayout({ children }: { children: ReactNode }) {
                         }}>
 
 
-                            <Navbar onMenuOpen={() => setSidebarOpen(true)} />
+                            <Navbar onMenuOpen={() => setSidebarOpen(true)} xp={progress.xp} level={progress.level} tier={progress.tier} />
                             <MobileDrawer isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
 
                             {/* Main Grid */}
@@ -428,7 +494,7 @@ export default function LearningLayout({ children }: { children: ReactNode }) {
                                         .lg\\:col-span-10 { grid-column: span 10 / span 10; }
                                     }
                                 `}</style>
-                                <LeftSidebar />
+                                <LeftSidebar progress={progress} addXP={addXP} />
                                 <div className="lg:col-span-10">
                                     <PageTransition>
                                         {children}
@@ -443,3 +509,6 @@ export default function LearningLayout({ children }: { children: ReactNode }) {
     );
 }
 
+export default function LearningLayout({ children }: { children: ReactNode }) {
+    return <LearningLayoutInner>{children}</LearningLayoutInner>;
+}

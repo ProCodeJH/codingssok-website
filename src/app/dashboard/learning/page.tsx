@@ -5,6 +5,8 @@ import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { COURSES } from "@/data/courses";
+import { canAccessContent, getTierInfo } from "@/lib/xp-engine";
+import { useUserProgress } from "@/hooks/useUserProgress";
 
 function toggleFullscreen() {
     if (typeof document === "undefined") return;
@@ -22,12 +24,14 @@ const R = 6;             // corner radius
 const PO = 2;            // pages inset from cover edges
 
 function BookCard({
-    course, progress, index, onClick,
+    course, progress, index, onClick, locked, requiredTierName,
 }: {
     course: typeof COURSES[0];
     progress: number;
     index: number;
     onClick: () => void;
+    locked?: boolean;
+    requiredTierName?: string;
 }) {
     const [flipped, setFlipped] = useState(false);
     const containerRef = useRef<HTMLDivElement>(null);
@@ -59,6 +63,7 @@ function BookCard({
     }, [flipped]);
 
     const handleClick = useCallback(() => {
+        if (locked) return;
         if (!flipped) {
             setFlipped(true);
             if (bookRef.current) {
@@ -67,7 +72,7 @@ function BookCard({
         } else {
             onClick();
         }
-    }, [flipped, onClick]);
+    }, [flipped, onClick, locked]);
 
     return (
         <div
@@ -95,6 +100,18 @@ function BookCard({
                     {progress > 0 && (
                         <div className="bk-cover-progress">
                             <div className="bk-cover-progress-fill" style={{ width: `${progress}%` }} />
+                        </div>
+                    )}
+                    {locked && requiredTierName && (
+                        <div style={{
+                            position: "absolute", inset: 0, background: "rgba(0,0,0,0.6)",
+                            display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
+                            gap: 6, borderRadius: "inherit", zIndex: 20,
+                        }}>
+                            <span className="material-symbols-outlined" style={{ fontSize: 32, color: getTierInfo(requiredTierName).color }}>lock</span>
+                            <span style={{ fontSize: 10, fontWeight: 800, color: "#fff", letterSpacing: 1 }}>
+                                {getTierInfo(requiredTierName).icon} {getTierInfo(requiredTierName).nameKo} 이상
+                            </span>
                         </div>
                     )}
                 </div>
@@ -125,8 +142,9 @@ function BookCard({
                         {progress > 0 && (
                             <div className="bk-back-pbar"><div className="bk-back-pbar-fill" style={{ width: `${progress}%` }} /></div>
                         )}
-                        <button className="bk-back-btn" onClick={(e) => { e.stopPropagation(); onClick(); }}>
-                            코스 입장 →
+                        <button className="bk-back-btn" onClick={(e) => { e.stopPropagation(); if (!locked) onClick(); }}
+                            style={locked ? { opacity: 0.5, cursor: "not-allowed" } : undefined}>
+                            {locked ? `${getTierInfo(requiredTierName || '').nameKo} 이상 필요` : "코스 입장 →"}
                         </button>
                     </div>
                 </div>
@@ -141,6 +159,7 @@ function BookCard({
 export default function LearningDashboard() {
     const { user } = useAuth();
     const router = useRouter();
+    const { progress: userProgress } = useUserProgress();
     const [courseProgress, setCourseProgress] = useState<Record<string, number>>({});
     const [isLoading, setIsLoading] = useState(true);
     const [ready, setReady] = useState(false);
@@ -154,7 +173,7 @@ export default function LearningDashboard() {
                     .from("user_course_progress").select("*").eq("user_id", user.id);
                 if (data) {
                     const m: Record<string, number> = {};
-                    data.forEach((p: any) => {
+                    data.forEach((p: { course_id: string; completed_lessons?: number | string[]; is_completed?: boolean }) => {
                         const completed = typeof p.completed_lessons === "number"
                             ? p.completed_lessons
                             : (Array.isArray(p.completed_lessons) ? p.completed_lessons.length : 0);
@@ -163,7 +182,7 @@ export default function LearningDashboard() {
                     });
                     setCourseProgress(m);
                 }
-            } catch (e) { console.error(e); }
+            } catch (e) { if (process.env.NODE_ENV === 'development') console.error(e); }
             setIsLoading(false);
             requestAnimationFrame(() => setReady(true));
         }
@@ -521,12 +540,12 @@ export default function LearningDashboard() {
             <div className="pg-grid">
                 <div className="pg-r4">
                     {COURSES.slice(0,4).map((c,i) => (
-                        <BookCard key={c.id} course={c} progress={courseProgress[c.id]||0} index={i} onClick={() => go(c.id)} />
+                        <BookCard key={c.id} course={c} progress={courseProgress[c.id]||0} index={i} onClick={() => go(c.id)} locked={!!c.requiredTier && !canAccessContent(userProgress.tier, c.requiredTier)} requiredTierName={c.requiredTier} />
                     ))}
                 </div>
                 <div className="pg-r4">
                     {COURSES.slice(4,8).map((c,i) => (
-                        <BookCard key={c.id} course={c} progress={courseProgress[c.id]||0} index={i+4} onClick={() => go(c.id)} />
+                        <BookCard key={c.id} course={c} progress={courseProgress[c.id]||0} index={i+4} onClick={() => go(c.id)} locked={!!c.requiredTier && !canAccessContent(userProgress.tier, c.requiredTier)} requiredTierName={c.requiredTier} />
                     ))}
                 </div>
 

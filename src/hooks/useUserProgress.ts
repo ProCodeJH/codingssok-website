@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { createClient } from "@/lib/supabase";
+import { calcLevel } from "@/lib/xp-engine";
 
 /* ── Types ── */
 export interface UserProgress {
@@ -63,11 +64,6 @@ function loadProgressLocal(): UserProgress {
 function saveProgressLocal(p: UserProgress) {
     if (typeof window === "undefined") return;
     localStorage.setItem(PROGRESS_KEY, JSON.stringify(p));
-}
-
-/* XP → Level 계산 */
-function xpToLevel(xp: number): number {
-    return Math.floor(xp / 100) + 1;
 }
 
 /* ── Hook ── */
@@ -185,7 +181,7 @@ export function useUserProgress() {
         // Sync relevant fields to Supabase
         if (isSupabase) {
             const dbPatch: Record<string, unknown> = {};
-            if (patch.xp !== undefined) { dbPatch.xp = patch.xp; dbPatch.level = xpToLevel(patch.xp); }
+            if (patch.xp !== undefined) { dbPatch.xp = patch.xp; dbPatch.level = calcLevel(patch.xp); }
             if (patch.streak !== undefined) dbPatch.streak = patch.streak;
             if (patch.totalProblems !== undefined) dbPatch.total_problems = patch.totalProblems;
             if (patch.rank !== undefined) dbPatch.rank = patch.rank;
@@ -197,9 +193,9 @@ export function useUserProgress() {
     const addXP = useCallback((amount: number) => {
         setProgress(prev => {
             const newXP = prev.xp + amount;
-            const next = { ...prev, xp: newXP, level: xpToLevel(newXP) };
+            const next = { ...prev, xp: newXP, level: calcLevel(newXP) };
             saveProgressLocal(next);
-            if (isSupabase) syncToSupabase({ xp: newXP, level: xpToLevel(newXP) });
+            if (isSupabase) syncToSupabase({ xp: newXP, level: calcLevel(newXP) });
             return next;
         });
     }, [isSupabase, syncToSupabase]);

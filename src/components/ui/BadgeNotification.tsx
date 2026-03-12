@@ -1,6 +1,7 @@
 "use client";
 import { motion, AnimatePresence } from "framer-motion";
 import { useBadges, RARITY_COLORS } from "@/hooks/useBadges";
+import BadgeIcon from "@/components/icons/BadgeIcon";
 
 /* ═══════════════════════════════════════
    배지 획득 알림 토스트
@@ -31,13 +32,12 @@ export default function BadgeNotification() {
                     <motion.div
                         animate={{ rotate: [0, -15, 15, -10, 10, 0], scale: [1, 1.3, 1] }}
                         transition={{ duration: 0.8 }}
-                        style={{ fontSize: 36 }}
                     >
-                        {newBadge.emoji}
+                        <BadgeIcon badgeId={newBadge.id} rarity={newBadge.rarity} size={44} />
                     </motion.div>
                     <div>
                         <div style={{ fontSize: 10, fontWeight: 700, color: RARITY_COLORS[newBadge.rarity], textTransform: "uppercase", letterSpacing: "0.1em" }}>
-                            🎉 배지 획득!
+                            배지 획득!
                         </div>
                         <div style={{ fontSize: 16, fontWeight: 800, color: "#172554" }}>
                             {newBadge.name}

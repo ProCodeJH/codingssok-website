@@ -3,7 +3,9 @@
 import { useState, useEffect, useMemo } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useUserProgress } from "@/hooks/useUserProgress";
+import { calcLevel } from "@/lib/xp-engine";
 import { createClient } from "@/lib/supabase";
+import { useStreak } from "@/hooks/useStreak";
 import { motion, AnimatePresence } from "framer-motion";
 import { FadeIn, StaggerList, StaggerItem, ScaleOnHover, HoverGlow } from "@/components/motion/motion";
 
@@ -13,6 +15,7 @@ const glassCard: React.CSSProperties = {
 };
 
 const STORE_ITEMS = [
+    { id: "streak_ice", icon: "🧊", name: "스트릭 아이스", desc: "하루 놓쳐도 연속 스트릭이 유지돼요! (1회)", xp: 500, category: "부스터", rarity: "rare" },
     { id: "theme_dark", icon: "", name: "다크 테마", desc: "에디터와 대시보드를 다크모드로 변환하세요", xp: 500, category: "테마", rarity: "common" },
     { id: "theme_neon", icon: "", name: "네온 테마", desc: "화려한 네온 컬러 에디터 테마", xp: 800, category: "테마", rarity: "rare" },
     { id: "badge_star", icon: "⭐", name: "스타 뱃지", desc: "프로필에 빛나는 스타 뱃지를 달아보세요", xp: 300, category: "뱃지", rarity: "common" },
@@ -38,7 +41,8 @@ const CATEGORIES = ["전체", "테마", "뱃지", "부스터", "프리미엄", "
 
 export default function StorePage() {
     const { user } = useAuth();
-    const { progress } = useUserProgress();
+    const { progress, update } = useUserProgress();
+    const { purchaseIce, streak } = useStreak();
     const supabase = useMemo(() => createClient(), []);
     const [category, setCategory] = useState("전체");
     const [purchased, setPurchased] = useState<string[]>([]);
@@ -50,27 +54,44 @@ export default function StorePage() {
         if (!user) return;
         supabase.from("store_purchases").select("item_id").eq("user_id", user.id)
             .then(({ data }) => {
-                if (data) setPurchased(data.map((d: any) => d.item_id));
+                if (data) setPurchased(data.map((d: { item_id: string }) => d.item_id));
             });
     }, [user, supabase]);
 
     const filtered = category === "전체" ? STORE_ITEMS : STORE_ITEMS.filter((i) => i.category === category);
 
+    const isRepeatableItem = (id: string) => id === "streak_ice";
+
     const buyItem = async (item: typeof STORE_ITEMS[0]) => {
-        if (!user || progress.xp < item.xp || purchased.includes(item.id)) return;
+        const repeatable = isRepeatableItem(item.id);
+        if (!user || progress.xp < item.xp || (!repeatable && purchased.includes(item.id))) return;
         setBuying(item.id);
 
-        // XP 차감
+        // XP 차감 + 레벨 재계산
         const newXp = progress.xp - item.xp;
-        await supabase.from("user_progress").update({ xp: newXp }).eq("user_id", user.id);
+        const newLevel = calcLevel(newXp);
+        await supabase.from("user_progress").update({
+            xp: newXp, level: newLevel, updated_at: new Date().toISOString(),
+        }).eq("user_id", user.id);
 
         // 구매 기록
         await supabase.from("store_purchases").insert({
             user_id: user.id, item_id: item.id, item_name: item.name, xp_cost: item.xp,
         });
 
-        setPurchased((prev) => [...prev, item.id]);
-        setToast(`✓ ${item.name}을(를) 구매했습니다! (-${item.xp} XP)`);
+        // 로컬 state 동기화
+        update({ xp: newXp, level: newLevel });
+
+        // 스트릭 아이스 특수 처리
+        if (item.id === "streak_ice") {
+            await purchaseIce(user.id);
+        } else {
+            setPurchased((prev) => [...prev, item.id]);
+        }
+
+        const levelDrop = newLevel < progress.level ? ` (Lv.${progress.level} → Lv.${newLevel})` : "";
+        const extra = item.id === "streak_ice" ? ` (보유: ${streak.iceItems + 1}개)` : "";
+        setToast(`${item.name} 구매 완료! -${item.xp} XP${levelDrop}${extra}`);
         setBuying(null);
         setTimeout(() => setToast(""), 4000);
     };
@@ -105,7 +126,7 @@ export default function StorePage() {
                     borderRadius: 16, background: "linear-gradient(135deg, #f59e0b, #fbbf24)",
                     color: "#fff", fontWeight: 800, fontSize: 16, boxShadow: "0 4px 14px rgba(245,158,11,0.3)",
                 }}>
-                    ⭐ {progress.xp.toLocaleString()} XP
+                    {progress.xp.toLocaleString()} XP
                 </div>
             </div>
 
@@ -129,7 +150,8 @@ export default function StorePage() {
             <StaggerList style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))", gap: 16 }}>
                 {filtered.map((item) => {
                     const rarity = RARITY_STYLES[item.rarity];
-                    const owned = purchased.includes(item.id);
+                    const repeatable = isRepeatableItem(item.id);
+                    const owned = !repeatable && purchased.includes(item.id);
                     const canBuy = progress.xp >= item.xp && !owned;
                     return (
                         <StaggerItem key={item.id}>
@@ -167,7 +189,7 @@ export default function StorePage() {
                                     <p style={{ fontSize: 13, color: "#64748b", flex: 1, marginBottom: 16 }}>{item.desc}</p>
 
                                     <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-                                        <span style={{ fontSize: 15, fontWeight: 900, color: "#f59e0b" }}>⭐ {item.xp} XP</span>
+                                        <span style={{ fontSize: 15, fontWeight: 900, color: "#f59e0b" }}>{item.xp} XP</span>
                                         <motion.button
                                             onClick={() => buyItem(item)}
                                             disabled={!canBuy || buying === item.id}
@@ -181,7 +203,7 @@ export default function StorePage() {
                                                 boxShadow: canBuy ? "0 4px 14px rgba(14,165,233,0.3)" : "none",
                                             }}
                                         >
-                                            {owned ? "✓ 보유 중" : buying === item.id ? "구매 중..." : canBuy ? "구매" : "XP 부족"}
+                                            {owned ? "✓ 보유 중" : buying === item.id ? "구매 중..." : canBuy ? (repeatable ? `구매 (${streak.iceItems}개 보유)` : "구매") : "XP 부족"}
                                         </motion.button>
                                     </div>
                                 </div>

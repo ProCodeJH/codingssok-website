@@ -2,22 +2,47 @@
 import { useState, useEffect, useCallback, useMemo, useRef } from "react";
 import { createClient } from "@/lib/supabase";
 import { useAuth } from "@/contexts/AuthContext";
-import { awardXP, XP_REWARDS } from "@/lib/xp-engine";
+import { XP_REWARDS } from "@/lib/xp-engine";
+import { awardXP } from "@/lib/xp-client";
+import { trackMission } from "@/lib/mission-tracker";
+import { checkAchievementBadges } from "@/lib/reward-engine";
 import { motion, AnimatePresence } from "framer-motion";
 import dynamic from "next/dynamic";
+import type { editor } from "monaco-editor";
 import "./compiler.css";
 const Editor = dynamic(() => import("@monaco-editor/react"), { ssr: false });
+
+interface CodeSubmission {
+  id: string;
+  user_id: string;
+  language: string;
+  code: string;
+  output: string;
+  status: string;
+  created_at: string;
+}
+
+function safeGetItem(key: string, fallback: string = ""): string {
+  if (typeof window === "undefined") return fallback;
+  try { return localStorage.getItem(key) || fallback; } catch { return fallback; }
+}
+function safeSetItem(key: string, value: string): void {
+  if (typeof window === "undefined") return;
+  try { localStorage.setItem(key, value); } catch {}
+}
 
 /* ── Constants ── */
 const C_DEFAULT = `#include <stdio.h>\n\nint main() {\n    printf("Hello, 코딩쏙!\\n");\n    int a = 10, b = 20;\n    printf("%d + %d = %d\\n", a, b, a + b);\n    return 0;\n}`;
 const PY_DEFAULT = `# 파이썬 코딩쏙\nname = "코딩쏙"\nprint(f"Hello, {name}!")\nprint(f"합계: {sum([1,2,3,4,5])}")`;
 const JS_DEFAULT = `// JavaScript 코딩쏙\nconst name = "코딩쏙";\nconsole.log(\`Hello, \${name}!\`);\nconsole.log(\`합계: \${[1,2,3,4,5].reduce((a,b)=>a+b)}\`);`;
+const CPP_DEFAULT = `#include <iostream>\nusing namespace std;\n\nint main() {\n    cout << "Hello, 코딩쏙!" << endl;\n    int a = 10, b = 20;\n    cout << a << " + " << b << " = " << a + b << endl;\n    return 0;\n}`;
 const JAVA_DEFAULT = `public class Main {\n    public static void main(String[] args) {\n        System.out.println("Hello, 코딩쏙!");\n        int sum = 0;\n        for (int i = 1; i <= 5; i++) sum += i;\n        System.out.println("합계: " + sum);\n    }\n}`;
 
 interface FileTab { id: string; name: string; content: string; lang: string; modified: boolean; }
 
 const LANG_CFG: Record<string, { label: string; monaco: string; ext: string; defaultCode: string }> = {
   c:          { label:"C",          monaco:"c",          ext:".c",    defaultCode: C_DEFAULT },
+  cpp:        { label:"C++",        monaco:"cpp",        ext:".cpp",  defaultCode: CPP_DEFAULT },
   python:     { label:"Python",     monaco:"python",     ext:".py",   defaultCode: PY_DEFAULT },
   javascript: { label:"JavaScript", monaco:"javascript", ext:".js",   defaultCode: JS_DEFAULT },
   java:       { label:"Java",       monaco:"java",       ext:".java", defaultCode: JAVA_DEFAULT },
@@ -34,6 +59,8 @@ const SNIPPETS = [
   { title:"클래스", lang:"python", code:`class Animal:\n    def __init__(self,name,sound):\n        self.name=name;self.sound=sound\n    def speak(self): print(f"{self.name}: {self.sound}!")\nAnimal("고양이","야옹").speak()` },
   { title:"배열 메서드", lang:"javascript", code:`const nums = [1,2,3,4,5];\nconsole.log("합계:", nums.reduce((a,b)=>a+b));\nconsole.log("짝수:", nums.filter(n=>n%2===0));\nconsole.log("2배:", nums.map(n=>n*2));` },
   { title:"Promise", lang:"javascript", code:`async function fetchData() {\n  return new Promise(resolve => {\n    setTimeout(() => resolve("데이터 로드 완료!"), 100);\n  });\n}\nfetchData().then(console.log);` },
+  { title:"Hello C++", lang:"cpp", code:`#include <iostream>\nusing namespace std;\nint main() {\n    cout << "Hello!" << endl;\n    return 0;\n}` },
+  { title:"벡터", lang:"cpp", code:`#include <iostream>\n#include <vector>\nusing namespace std;\nint main() {\n    vector<int> v = {10,20,30,40,50};\n    for(int x : v) cout << x << " ";\n    cout << endl;\n    return 0;\n}` },
   { title:"Hello Java", lang:"java", code:`public class Main {\n    public static void main(String[] args) {\n        for(int i=1;i<=5;i++)\n            System.out.println(i + ". Hello!");\n    }\n}` },
 ];
 
@@ -42,6 +69,10 @@ const CHEATSHEET: Record<string,{title:string;items:{k:string;v:string}[]}[]> = 
     { title:"자료형", items:[{k:"int",v:"정수 (4B)"},{k:"float",v:"실수 (4B)"},{k:"double",v:"실수 (8B)"},{k:"char",v:"문자 (1B)"},{k:"void",v:"없음"}]},
     { title:"제어문", items:[{k:"if/else",v:"조건 분기"},{k:"for",v:"반복"},{k:"while",v:"조건 반복"},{k:"switch",v:"다중 분기"},{k:"break",v:"루프 탈출"}]},
     { title:"포인터", items:[{k:"&x",v:"x의 주소"},{k:"*p",v:"p가 가리키는 값"},{k:"malloc()",v:"동적 할당"},{k:"free()",v:"메모리 해제"}]},
+  ],
+  cpp: [
+    { title:"자료형", items:[{k:"int",v:"정수 (4B)"},{k:"double",v:"실수 (8B)"},{k:"string",v:"문자열"},{k:"vector",v:"동적 배열"},{k:"bool",v:"참/거짓"}]},
+    { title:"키워드", items:[{k:"cout/cin",v:"입출력"},{k:"class",v:"클래스"},{k:"new/delete",v:"동적 할당"},{k:"template",v:"제네릭"},{k:"namespace",v:"네임스페이스"}]},
   ],
   python: [
     { title:"자료형", items:[{k:"int",v:"정수"},{k:"float",v:"실수"},{k:"str",v:"문자열"},{k:"list",v:"리스트"},{k:"dict",v:"딕셔너리"}]},
@@ -112,27 +143,26 @@ export default function CompilerPage() {
   const [showRight,setShowRight]=useState(true);
   const [rightTab,setRightTab]=useState<RTab>("snippets");
   const [showTerminal,setShowTerminal]=useState(true);
-  const [termH]=useState(180);
+  const termH=180;
   const [showPalette,setShowPalette]=useState(false);
   const [xpMsg,setXpMsg]=useState("");
   const [particles,setParticles]=useState<{id:number;x:number;y:number;color:string}[]>([]);
-  const [compileCount,setCompileCount]=useState(()=>parseInt(localStorage.getItem("cs-cc")||"0"));
+  const [compileCount,setCompileCount]=useState(()=>parseInt(safeGetItem("cs-cc","0")));
   const [minimap,setMinimap]=useState(true);
   const [cursorPos,setCursorPos]=useState({ln:1,col:1});
-  const editorRef=useRef<any>(null);
+  const editorRef=useRef<editor.IStandaloneCodeEditor|null>(null);
   const [zenMode,setZenMode]=useState(false);
-  const [showWelcome,setShowWelcome]=useState(()=>!localStorage.getItem("cs-welcomed"));
   const [typingSound,setTypingSound]=useState(false);
   const [bookmarks,setBookmarks]=useState<{ln:number;text:string}[]>([]);
   const [notifications,setNotifications]=useState<{id:number;type:string;msg:string;time:string}[]>([]);
   const addNotif=(type:string,msg:string)=>setNotifications(p=>[{id:Date.now(),type,msg,time:new Date().toLocaleTimeString("ko-KR",{hour:"2-digit",minute:"2-digit"})},...p].slice(0,20));
 
-  const [history,setHistory]=useState<any[]>([]);
-  useEffect(()=>{localStorage.setItem("cs-cc",String(compileCount))},[compileCount]);
+  const [history,setHistory]=useState<CodeSubmission[]>([]);
+  useEffect(()=>{safeSetItem("cs-cc",String(compileCount))},[compileCount]);
 
   const fetchHist=useCallback(async()=>{
     if(!userId)return;
-    try{const{data}=await supabase.from("code_submissions").select("*").eq("user_id",userId).order("created_at",{ascending:false}).limit(20);setHistory(data||[]);}catch{}
+    try{const{data}=await supabase.from("code_submissions").select("*").eq("user_id",userId).order("created_at",{ascending:false}).limit(20);setHistory((data as CodeSubmission[])||[]);}catch(e){if(process.env.NODE_ENV==="development")console.error("[Compiler] fetchHist:",e);}
   },[userId,supabase]);
   useEffect(()=>{if(userId)fetchHist()},[userId,fetchHist]);
 
@@ -153,11 +183,11 @@ export default function CompilerPage() {
     setExecTime(Math.round(performance.now()-t0));setOutStatus(stat==="success"?"success":"error");setOutput(res);setRunning(false);setCompileCount(p=>p+1);
     addNotif(stat==="success"?"success":"error",stat==="success"?`실행 완료 (${Math.round(performance.now()-t0)}ms)`:`오류 발생`);
     if(stat==="success"){const ps=Array.from({length:10},(_,i)=>({id:Date.now()+i,x:50+Math.random()*60,y:50+Math.random()*40,color:["#4ade80","#6d9fff","#22d3ee","#fbbf24"][i%4]}));setParticles(ps);setTimeout(()=>setParticles([]),900);}
-    if(userId){try{await supabase.from("code_submissions").insert({user_id:userId,language:activeTab.lang,code:activeTab.content,output:res,status:stat});fetchHist();if(stat==="success"){await awardXP(userId,XP_REWARDS.code_submit,"코드 실행","terminal");setXpMsg(`+${XP_REWARDS.code_submit} XP`);setTimeout(()=>setXpMsg(""),3000);}}catch{}}
+    if(userId){try{await supabase.from("code_submissions").insert({user_id:userId,language:activeTab.lang,code:activeTab.content,output:res,status:stat});fetchHist();if(stat==="success"){await awardXP(userId,XP_REWARDS.code_submit,"코드 실행","terminal");setXpMsg(`+${XP_REWARDS.code_submit} XP`);setTimeout(()=>setXpMsg(""),3000);trackMission("code_run");checkAchievementBadges({completedUnits:0,codeRuns:compileCount+1,quizStreak:0});}}catch(e){if(process.env.NODE_ENV==="development")console.error("[Compiler] save:",e);}}
   },[activeTab,stdin,userId,supabase,fetchHist]);
 
-  const handleMount=(editor:any,monaco:any)=>{
-    editorRef.current=editor;
+  const handleMount=(editorInstance:editor.IStandaloneCodeEditor,monaco:typeof import("monaco-editor"))=>{
+    editorRef.current=editorInstance;
     // Pure black theme
     monaco.editor.defineTheme("cs-black",{base:"vs-dark",inherit:true,rules:[
       {token:"",background:"000000",foreground:"e0e0e0"},
@@ -185,11 +215,11 @@ export default function CompilerPage() {
       {token:"metatag",foreground:"f472b6"},
     ],colors:{"editor.background":"#000000","editor.foreground":"#e0e0e0","editorLineNumber.foreground":"#444444","editorLineNumber.activeForeground":"#888888","editor.selectionBackground":"#1a3a6a","editor.lineHighlightBackground":"#0a0a0a","editorCursor.foreground":"#7daaff","editorWhitespace.foreground":"#1a1a1a","editorIndentGuide.background":"#151515","editorIndentGuide.activeBackground":"#2a2a2a","editorWidget.background":"#0a0a0a","editorWidget.border":"#222","editorSuggestWidget.background":"#0a0a0a","editorSuggestWidget.border":"#222","editorSuggestWidget.selectedBackground":"#1a1a1a","minimap.background":"#000000","scrollbar.shadow":"#000000","scrollbarSlider.background":"#1a1a1a80","scrollbarSlider.hoverBackground":"#22222280","scrollbarSlider.activeBackground":"#33333380"}});
     monaco.editor.setTheme("cs-black");
-    editor.addAction({id:"run",label:"Run",keybindings:[2048|3],run:()=>runCode()});
-    editor.addAction({id:"bookmark",label:"Toggle Bookmark",keybindings:[2048|66],run:(ed:any)=>{const ln=ed.getPosition()?.lineNumber;if(ln){const mdl=ed.getModel();const text=mdl?.getLineContent(ln)||"";
+    editorInstance.addAction({id:"run",label:"Run",keybindings:[2048|3],run:()=>runCode()});
+    editorInstance.addAction({id:"bookmark",label:"Toggle Bookmark",keybindings:[2048|66],run:(ed)=>{const ln=ed.getPosition()?.lineNumber;if(ln){const mdl=ed.getModel();const text=mdl?.getLineContent(ln)||"";
       setBookmarks(p=>{const exists=p.find(b=>b.ln===ln);return exists?p.filter(b=>b.ln!==ln):[...p,{ln,text:text.trim()}];});}}})
-    editor.onDidChangeCursorPosition((e:any)=>setCursorPos({ln:e.position.lineNumber,col:e.position.column}));
-    if(typingSound){editor.onDidType(()=>{const a=new Audio();a.src="data:audio/wav;base64,UklGRl9vT19teleGZtdC";a.volume=0.02;a.play().catch(()=>{});});}
+    editorInstance.onDidChangeCursorPosition((e)=>setCursorPos({ln:e.position.lineNumber,col:e.position.column}));
+    if(typingSound){(editorInstance as editor.IStandaloneCodeEditor & {onDidType:(cb:()=>void)=>void}).onDidType(()=>{const a=new Audio();a.src="data:audio/wav;base64,UklGRiYAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQIAAAAAAA==";a.volume=0.02;a.play().catch(()=>{});});}
   };
 
   useEffect(()=>{
@@ -218,14 +248,14 @@ export default function CompilerPage() {
 
   // Coding heatmap (last 12 weeks from localStorage)
   const heatmapData=useMemo(()=>{
-    const d:number[]=[];const saved=JSON.parse(localStorage.getItem("cs-heatmap")||"[]");
+    const d:number[]=[];const saved=JSON.parse(safeGetItem("cs-heatmap","[]"));
     for(let i=0;i<84;i++)d.push(saved[i]||0);return d;
   },[]);
   useEffect(()=>{
     const today=new Date().getDay()+new Date().getDate();
-    const saved=JSON.parse(localStorage.getItem("cs-heatmap")||"[]");
+    const saved=JSON.parse(safeGetItem("cs-heatmap","[]"));
     saved[today%84]=(saved[today%84]||0)+1;
-    localStorage.setItem("cs-heatmap",JSON.stringify(saved));
+    safeSetItem("cs-heatmap",JSON.stringify(saved));
   },[compileCount]);
 
   // Achievements
@@ -257,7 +287,7 @@ export default function CompilerPage() {
           <span className="cs-titlebar-file">{activeTab?.name}</span>
         </div>
         <div className="cs-titlebar-actions">
-          {(["c","python"] as const).map(l=>(
+          {(["c","cpp","python","javascript","java"] as const).map(l=>(
             <button key={l} className={`cs-titlebar-btn ${lang===l?"active-btn":""}`} onClick={()=>switchLang(l)}>{LANG_CFG[l].label}</button>
           ))}
           <span style={{width:1,height:12,background:"#222",margin:"0 4px"}}/>
@@ -455,7 +485,7 @@ export default function CompilerPage() {
           <div className="cs-status-item">{cfg.label}</div>
           <div className="cs-status-item">UTF-8</div>
           <div className="cs-status-item clickable" onClick={()=>setMinimap(p=>!p)}>{minimap?"⊞":"⊟"}</div>
-          <div className="cs-status-item">Wandbox</div>
+          <div className="cs-status-item">Godbolt</div>
           <div className="cs-status-item" style={{fontWeight:700}}>C-Studio</div>
         </div>
       </div>

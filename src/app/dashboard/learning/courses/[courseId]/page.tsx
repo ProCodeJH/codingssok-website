@@ -3,16 +3,25 @@ import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { useState, useMemo, useEffect, useCallback, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { sanitizeHTML } from "@/lib/sanitize";
 import { useAuth } from "@/contexts/AuthContext";
 import { createClient } from "@/lib/supabase";
-import { awardXP, deductXP, XP_REWARDS, XP_PENALTIES } from "@/lib/xp-engine";
+import { XP_REWARDS, XP_PENALTIES, canAccessContent, getTierInfo } from "@/lib/xp-engine";
+import { useUserProgress } from "@/hooks/useUserProgress";
+import { awardXP, deductXP } from "@/lib/xp-client";
+import { trackMission } from "@/lib/mission-tracker";
+import { checkAchievementBadges } from "@/lib/reward-engine";
 import { getCourseById, getAllUnits } from "@/data/courses";
+
+declare global { interface Window { __runCCode?: (btn: HTMLButtonElement) => Promise<void>; } }
 import type { Unit, Quiz, Chapter as ChapterType, Page, CodeProblem } from "@/data/courses";
 import LevelUpModal from "@/components/ui/LevelUpModal";
+import MiniCodeEditor from "@/components/ui/MiniCodeEditor";
 import { MI, glassPanel, QuizPanel, CodeProblemCard, TYPE_STYLES, DIFF_LABELS } from "./components";
 import { useStudyNotes } from "@/hooks/useStudyNotes";
 import { useStudyProgress } from "@/hooks/useStudyProgress";
 import StudyNotesEditor from "./StudyNotesEditor";
+import { usePresenceHeartbeat } from "@/hooks/usePresenceHeartbeat";
 
 /* ── Highlighter Colors ── */
 const HL_COLORS = [
@@ -43,6 +52,13 @@ export default function CourseDetailPage() {
 
     const courseData = useMemo(() => getCourseById(courseId), [courseId]);
     const allUnits = useMemo(() => getAllUnits(courseId), [courseId]);
+    const { progress: userProgress } = useUserProgress();
+
+    usePresenceHeartbeat({ courseId, courseTitle: courseData?.title });
+
+    // 티어 접근 제한 체크
+    const requiredTier = courseData?.requiredTier;
+    const tierLocked = !!requiredTier && !canAccessContent(userProgress.tier, requiredTier);
 
     // CosPro (id:'5') → redirect to problem browser
     useEffect(() => {
@@ -84,7 +100,7 @@ export default function CourseDetailPage() {
     const [activeHL, setActiveHL] = useState<string | null>(null);
 
     // Right panel tab
-    const [rightTab, setRightTab] = useState<"notes" | "timer" | "qa" | "bookmarks">("notes");
+    const [rightTab, setRightTab] = useState<"notes" | "timer" | "qa" | "bookmarks" | "code">("notes");
 
     // Timer
     const [timerMode, setTimerMode] = useState<"focus" | "short" | "long">("focus");
@@ -199,7 +215,7 @@ export default function CourseDetailPage() {
         if (!contentRef.current || !activePage) return;
         const saved = localStorage.getItem(hlStorageKey);
         if (saved) {
-            contentRef.current.innerHTML = saved;
+            contentRef.current.innerHTML = sanitizeHTML(saved);
             attachMarkListeners();
         } else if (user?.id) {
             // Try loading from Supabase
@@ -211,7 +227,7 @@ export default function CourseDetailPage() {
                 .maybeSingle()
                 .then(({ data }) => {
                     if (data?.html_content && contentRef.current) {
-                        contentRef.current.innerHTML = data.html_content;
+                        contentRef.current.innerHTML = sanitizeHTML(data.html_content);
                         localStorage.setItem(hlStorageKey, data.html_content);
                         attachMarkListeners();
                     }
@@ -260,7 +276,7 @@ export default function CourseDetailPage() {
 
     // ── Inject __runCCode ──
     useEffect(() => {
-        (window as any).__runCCode = async (btn: HTMLButtonElement) => {
+        window.__runCCode = async (btn: HTMLButtonElement) => {
             const code = btn.getAttribute("data-code")?.replace(/\\n/g, "\n").replace(/\\"/g, '"') ?? "";
             btn.disabled = true; btn.textContent = "⏳ 실행 중...";
             const wrapper = btn.closest(".lms-code-wrap");
@@ -271,10 +287,10 @@ export default function CourseDetailPage() {
                 const isError = !!(data.compiler_error || data.program_error);
                 let outEl = wrapper?.querySelector(".lms-run-output") as HTMLDivElement;
                 if (!outEl) { outEl = document.createElement("div"); outEl.className = "lms-run-output"; wrapper?.appendChild(outEl); }
-                outEl.innerHTML = `<div class="status ${isError ? "error" : "success"}">${isError ? "✗ 에러" : "✓ 실행 완료"}</div><pre>${output}</pre>`;
+                outEl.innerHTML = sanitizeHTML(`<div class="status ${isError ? "error" : "success"}">${isError ? "✗ 에러" : "✓ 실행 완료"}</div><pre>${output}</pre>`);
             } catch {} finally { btn.disabled = false; btn.textContent = "▶ 실행"; }
         };
-        return () => { delete (window as any).__runCCode; };
+        return () => { delete window.__runCCode; };
     }, []);
 
     // ── Copy btns ──
@@ -327,6 +343,7 @@ export default function CourseDetailPage() {
         if (selectedAnswer === null) return;
         if (selectedAnswer === quiz.answer) {
             setQuizResult("correct");
+            trackMission("quiz_solve");
             setTimeout(() => completeUnit(unit), 1500);
         } else {
             setQuizResult("wrong"); setShaking(true);
@@ -346,6 +363,8 @@ export default function CourseDetailPage() {
             const result = await awardXP(user.id, XP_REWARDS.lesson_complete, `학습 완료: ${unit.title}`, "book");
             setXpMsg(`+${XP_REWARDS.lesson_complete} XP!`); setTimeout(() => setXpMsg(""), 3000);
             if (result?.levelUp) setLevelUpInfo({ level: result.level });
+            trackMission("lesson_complete");
+            checkAchievementBadges({ completedUnits: nc.size, codeRuns: 0, quizStreak: 0 });
             const prog = Math.round((nc.size / allUnits.length) * 100);
             await supabase.from("user_course_progress").upsert({ user_id: user.id, course_id: courseId, progress: prog, completed_lessons: Array.from(nc) }, { onConflict: "user_id,course_id" });
         }
@@ -359,6 +378,31 @@ export default function CourseDetailPage() {
     const navigatePage = (pg: Page) => { setActivePage(pg); resetQuiz(); if (contentRef.current) contentRef.current.scrollTop = 0; };
 
     if (!courseData) return <div style={{ textAlign: "center", padding: 60, color: "#94a3b8" }}>코스를 찾을 수 없습니다.</div>;
+
+    if (tierLocked && requiredTier) {
+        const reqTier = getTierInfo(requiredTier);
+        return (
+            <div style={{ textAlign: "center", padding: 80, color: "#64748b" }}>
+                <div style={{ fontSize: 48, marginBottom: 16 }}>🔒</div>
+                <h2 style={{ fontSize: 20, fontWeight: 800, color: "#0f172a", marginBottom: 8 }}>
+                    {reqTier.icon} {reqTier.nameKo} 이상 전용 코스
+                </h2>
+                <p style={{ fontSize: 14, marginBottom: 24 }}>
+                    이 코스는 <span style={{ color: reqTier.color, fontWeight: 700 }}>{reqTier.nameKo}</span> 등급 이상부터 이용할 수 있습니다.
+                </p>
+                <button
+                    onClick={() => router.push("/dashboard/learning")}
+                    style={{
+                        padding: "10px 24px", borderRadius: 12, border: "none", cursor: "pointer",
+                        background: "linear-gradient(135deg, #0ea5e9, #3b82f6)", color: "#fff",
+                        fontSize: 14, fontWeight: 700,
+                    }}
+                >
+                    대시보드로 돌아가기
+                </button>
+            </div>
+        );
+    }
 
     const progressPct = allUnits.length > 0 ? Math.round((completedUnits.size / allUnits.length) * 100) : 0;
 
@@ -519,7 +563,7 @@ export default function CourseDetailPage() {
 
                             {/* HTML content */}
                             {activePage.content && (
-                                <div dangerouslySetInnerHTML={{ __html: activePage.content }} style={{ maxWidth: 800, margin: "0 auto", fontSize: 14, lineHeight: 1.9, color: "#334155", marginBottom: activePage.quiz || (activePage.problems && activePage.problems.length > 0) ? 32 : 0 }} />
+                                <div dangerouslySetInnerHTML={{ __html: sanitizeHTML(activePage.content) }} style={{ maxWidth: 800, margin: "0 auto", fontSize: 14, lineHeight: 1.9, color: "#334155", marginBottom: activePage.quiz || (activePage.problems && activePage.problems.length > 0) ? 32 : 0 }} />
                             )}
 
                             {/* Quiz */}
@@ -629,9 +673,9 @@ export default function CourseDetailPage() {
 
                 {/* ── Tab Bar ── */}
                 <div style={{ display: "flex", borderBottom: "1px solid #f1f5f9", background: "#fafafa" }}>
-                    {(["notes", "timer", "qa", "bookmarks"] as const).map(tab => {
-                        const icons = { notes: "edit_note", timer: "timer", qa: "help_outline", bookmarks: "bookmark" };
-                        const labels = { notes: "노트", timer: "타이머", qa: "Q&A", bookmarks: "북마크" };
+                    {(["notes", "code", "timer", "qa", "bookmarks"] as const).map(tab => {
+                        const icons = { notes: "edit_note", code: "terminal", timer: "timer", qa: "help_outline", bookmarks: "bookmark" };
+                        const labels = { notes: "노트", code: "코드", timer: "타이머", qa: "Q&A", bookmarks: "북마크" };
                         const isActive = rightTab === tab;
                         return (
                             <button key={tab} onClick={() => setRightTab(tab)} style={{
@@ -665,6 +709,20 @@ export default function CourseDetailPage() {
                                 <p style={{ fontSize: 12, margin: 0, textAlign: "center" }}>유닛을 선택하면<br />노트를 작성할 수 있습니다</p>
                             </div>
                         )
+                    )}
+
+                    {/* ━━ CODE TAB ━━ */}
+                    {rightTab === "code" && (
+                        <MiniCodeEditor
+                            contextLabel={selectedUnit ? `${selectedUnit.title}${activePage ? ` > ${activePage.title}` : ""}` : undefined}
+                            onCodeRun={() => {
+                                trackMission("code_run");
+                                if (user?.id) {
+                                    awardXP(user.id, XP_REWARDS.code_submit, "학습 중 코드 실행", "terminal");
+                                    checkAchievementBadges({ completedUnits: completedUnits.size, codeRuns: 1, quizStreak: 0 });
+                                }
+                            }}
+                        />
                     )}
 
                     {/* ━━ TIMER TAB ━━ */}

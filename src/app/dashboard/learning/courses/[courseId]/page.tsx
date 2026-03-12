@@ -50,6 +50,8 @@ export default function CourseDetailPage() {
     const { user } = useAuth();
     const supabase = useMemo(() => createClient(), []);
     const contentRef = useRef<HTMLDivElement>(null);
+    const htmlContentRef = useRef<HTMLDivElement>(null);
+    const lastPageIdRef = useRef<string>("");
 
     const courseData = useMemo(() => getCourseById(courseId), [courseId]);
     const allUnits = useMemo(() => getAllUnits(courseId), [courseId]);
@@ -68,6 +70,38 @@ export default function CourseDetailPage() {
     const [activePage, setActivePage] = useState<Page | null>(null);
     const [leftOpen, setLeftOpen] = useState(true);
     const [rightOpen, setRightOpen] = useState(true);
+
+    // Resizable panels
+    const [leftWidth, setLeftWidth] = useState(280);
+    const [rightWidth, setRightWidth] = useState(480);
+    const draggingRef = useRef<"left" | "right" | null>(null);
+    const startXRef = useRef(0);
+    const startWidthRef = useRef(0);
+
+    useEffect(() => {
+        const onMouseMove = (e: MouseEvent) => {
+            if (!draggingRef.current) return;
+            e.preventDefault();
+            const delta = e.clientX - startXRef.current;
+            if (draggingRef.current === "left") {
+                setLeftWidth(Math.max(200, Math.min(450, startWidthRef.current + delta)));
+            } else {
+                setRightWidth(Math.max(280, Math.min(700, startWidthRef.current - delta)));
+            }
+        };
+        const onMouseUp = () => { draggingRef.current = null; document.body.style.cursor = ""; document.body.style.userSelect = ""; };
+        window.addEventListener("mousemove", onMouseMove);
+        window.addEventListener("mouseup", onMouseUp);
+        return () => { window.removeEventListener("mousemove", onMouseMove); window.removeEventListener("mouseup", onMouseUp); };
+    }, []);
+
+    const startDrag = (side: "left" | "right", e: React.MouseEvent) => {
+        draggingRef.current = side;
+        startXRef.current = e.clientX;
+        startWidthRef.current = side === "left" ? leftWidth : rightWidth;
+        document.body.style.cursor = "col-resize";
+        document.body.style.userSelect = "none";
+    };
 
     // Quiz state
     const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null);
@@ -173,8 +207,8 @@ export default function CourseDetailPage() {
     // Save highlights to localStorage + Supabase
     const hlDebounceRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
     const saveHighlights = useCallback(() => {
-        if (!contentRef.current) return;
-        const html = contentRef.current.innerHTML;
+        if (!htmlContentRef.current) return;
+        const html = htmlContentRef.current.innerHTML;
         try { localStorage.setItem(hlStorageKey, html); } catch {}
         // Sync to Supabase (debounced)
         if (user?.id) {
@@ -193,8 +227,8 @@ export default function CourseDetailPage() {
 
     // Attach click-to-remove + persist on <mark> elements
     const attachMarkListeners = useCallback(() => {
-        if (!contentRef.current) return;
-        contentRef.current.querySelectorAll("mark").forEach(mark => {
+        if (!htmlContentRef.current) return;
+        htmlContentRef.current.querySelectorAll("mark").forEach(mark => {
             if (mark.dataset.hlBound) return;
             mark.dataset.hlBound = "1";
             mark.style.cursor = "pointer";
@@ -206,37 +240,46 @@ export default function CourseDetailPage() {
         });
     }, [saveHighlights]);
 
-    // Restore highlights from localStorage or Supabase after content renders
+    // Set HTML content only once per page change (ref-based to preserve highlights)
     useEffect(() => {
-        if (!contentRef.current || !activePage) return;
+        if (!htmlContentRef.current || !activePage?.content) return;
+        const pageId = `${selectedUnit?.id || ''}_${activePage.id}`;
+        if (lastPageIdRef.current === pageId) return; // already set
+        lastPageIdRef.current = pageId;
+
+        // Check for saved highlights first
         const saved = localStorage.getItem(hlStorageKey);
         if (saved) {
-            contentRef.current.innerHTML = sanitizeHTML(saved);
+            htmlContentRef.current.innerHTML = sanitizeHTML(saved);
             attachMarkListeners();
-        } else if (user?.id) {
+        } else {
+            htmlContentRef.current.innerHTML = sanitizeHTML(activePage.content);
             // Try loading from Supabase
-            const pageKey = `${courseId}_${selectedUnit?.id || ''}_${activePage?.id || ''}`;
-            supabase.from('study_highlights')
-                .select('html_content')
-                .eq('user_id', user.id)
-                .eq('page_key', pageKey)
-                .maybeSingle()
-                .then(({ data }) => {
-                    if (data?.html_content && contentRef.current) {
-                        contentRef.current.innerHTML = sanitizeHTML(data.html_content);
-                        localStorage.setItem(hlStorageKey, data.html_content);
-                        attachMarkListeners();
-                    }
-                });
+            if (user?.id) {
+                const pageKey = `${courseId}_${selectedUnit?.id || ''}_${activePage?.id || ''}`;
+                supabase.from('study_highlights')
+                    .select('html_content')
+                    .eq('user_id', user.id)
+                    .eq('page_key', pageKey)
+                    .maybeSingle()
+                    .then(({ data }) => {
+                        if (data?.html_content && htmlContentRef.current) {
+                            htmlContentRef.current.innerHTML = sanitizeHTML(data.html_content);
+                            localStorage.setItem(hlStorageKey, data.html_content);
+                            attachMarkListeners();
+                        }
+                    });
+            }
         }
-    }, [hlStorageKey, activePage, attachMarkListeners, user, courseId, selectedUnit, supabase]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [activePage, selectedUnit, hlStorageKey]);
 
     // Highlight selected text in content
     const highlightSelection = useCallback((colorId: string) => {
         const sel = window.getSelection();
-        if (!sel || sel.isCollapsed || !contentRef.current) return;
+        if (!sel || sel.isCollapsed || !htmlContentRef.current) return;
         const range = sel.getRangeAt(0);
-        if (!contentRef.current.contains(range.commonAncestorContainer)) return;
+        if (!htmlContentRef.current.contains(range.commonAncestorContainer)) return;
         const hlColor = HL_COLORS.find(c => c.id === colorId);
         if (!hlColor) return;
         const mark = document.createElement("mark");
@@ -245,9 +288,16 @@ export default function CourseDetailPage() {
         mark.style.padding = "1px 2px";
         mark.style.borderRadius = "3px";
         mark.style.cursor = "pointer";
-        mark.title = "클릭하여 형광편 제거";
+        mark.title = "클릭하여 형광펜 제거";
         mark.addEventListener("click", () => { mark.replaceWith(...Array.from(mark.childNodes)); saveHighlights(); });
-        try { range.surroundContents(mark); } catch {}
+        try {
+            range.surroundContents(mark);
+        } catch {
+            // Cross-element selection: extract and wrap
+            const fragment = range.extractContents();
+            mark.appendChild(fragment);
+            range.insertNode(mark);
+        }
         sel.removeAllRanges();
         saveHighlights();
     }, [saveHighlights]);
@@ -411,6 +461,10 @@ export default function CourseDetailPage() {
                 .hide-sb::-webkit-scrollbar{display:none} .hide-sb{-ms-overflow-style:none;scrollbar-width:none}
                 @keyframes confetti-pop{0%{transform:scale(0)}50%{transform:scale(1.2)}100%{transform:scale(1)}}
                 @keyframes pulse-green{0%,100%{box-shadow:0 0 0 0 rgba(16,185,129,0.4)}50%{box-shadow:0 0 0 12px rgba(16,185,129,0)}}
+                .panel-drag{width:6px;cursor:col-resize;background:transparent;flex-shrink:0;position:relative;z-index:20;transition:background .15s}
+                .panel-drag:hover,.panel-drag:active{background:rgba(59,130,246,0.15)}
+                .panel-drag::after{content:'';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:2px;height:32px;border-radius:2px;background:#cbd5e1;transition:background .15s}
+                .panel-drag:hover::after,.panel-drag:active::after{background:#3b82f6}
             `}</style>
 
             {levelUpInfo && <LevelUpModal level={levelUpInfo.level} onClose={() => setLevelUpInfo(null)} />}
@@ -425,7 +479,7 @@ export default function CourseDetailPage() {
                 LEFT PANEL — 커리큘럼 트리
                ══════════════════════════════════════════════ */}
             <motion.aside
-                animate={{ width: leftOpen ? 280 : 0, opacity: leftOpen ? 1 : 0 }}
+                animate={{ width: leftOpen ? leftWidth : 0, opacity: leftOpen ? 1 : 0 }}
                 transition={{ type: "spring", stiffness: 300, damping: 30 }}
                 style={{ flexShrink: 0, overflow: "hidden", borderRight: "1px solid #e2e8f0", background: "#fff", display: "flex", flexDirection: "column" }}>
 
@@ -513,10 +567,13 @@ export default function CourseDetailPage() {
                 </div>
             </motion.aside>
 
-            {/* Left toggle */}
-            <button onClick={() => setLeftOpen(!leftOpen)} style={{ position: "absolute", left: leftOpen ? 268 : 0, top: "50%", transform: "translateY(-50%)", zIndex: 50, width: 24, height: 48, borderRadius: "0 8px 8px 0", border: "1px solid #e2e8f0", borderLeft: "none", background: "#fff", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "2px 0 8px rgba(0,0,0,0.04)", transition: "left 0.3s" }}>
-                <span style={{ fontSize: 12, color: "#94a3b8" }}>{leftOpen ? "◂" : "▸"}</span>
-            </button>
+            {/* Left drag handle + toggle */}
+            {leftOpen && <div className="panel-drag" onMouseDown={(e) => startDrag("left", e)} onDoubleClick={() => setLeftOpen(false)} title="드래그: 크기 조절 / 더블클릭: 접기" />}
+            {!leftOpen && (
+                <button onClick={() => setLeftOpen(true)} style={{ width: 24, height: 48, position: "absolute", left: 0, top: "50%", transform: "translateY(-50%)", zIndex: 50, borderRadius: "0 8px 8px 0", border: "1px solid #e2e8f0", borderLeft: "none", background: "#fff", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "2px 0 8px rgba(0,0,0,0.04)" }}>
+                    <span style={{ fontSize: 12, color: "#94a3b8" }}>▸</span>
+                </button>
+            )}
 
             {/* ══════════════════════════════════════════════
                 CENTER PANEL — 학습 콘텐츠
@@ -560,9 +617,9 @@ export default function CourseDetailPage() {
                                 <h1 style={{ fontSize: 24, fontWeight: 900, color: "#0f172a", margin: 0, lineHeight: 1.3, letterSpacing: -0.5 }}>{activePage.title}</h1>
                             </div>
 
-                            {/* HTML content */}
+                            {/* HTML content — ref 기반 렌더링으로 형광펜 보존 */}
                             {activePage.content && (
-                                <div dangerouslySetInnerHTML={{ __html: sanitizeHTML(activePage.content) }} style={{ maxWidth: 800, margin: "0 auto", fontSize: 14, lineHeight: 1.9, color: "#334155", marginBottom: activePage.quiz || (activePage.problems && activePage.problems.length > 0) ? 32 : 0 }} />
+                                <div ref={htmlContentRef} style={{ maxWidth: 800, margin: "0 auto", fontSize: 14, lineHeight: 1.9, color: "#334155", marginBottom: activePage.quiz || (activePage.problems && activePage.problems.length > 0) ? 32 : 0 }} />
                             )}
 
                             {/* Quiz */}
@@ -657,16 +714,19 @@ export default function CourseDetailPage() {
                 )}
             </main>
 
-            {/* Right toggle */}
-            <button onClick={() => setRightOpen(!rightOpen)} style={{ position: "absolute", right: rightOpen ? 468 : 0, top: "50%", transform: "translateY(-50%)", zIndex: 50, width: 24, height: 48, borderRadius: "8px 0 0 8px", border: "1px solid #e2e8f0", borderRight: "none", background: "#fff", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "-2px 0 8px rgba(0,0,0,0.04)", transition: "right 0.3s" }}>
-                <span style={{ fontSize: 12, color: "#94a3b8" }}>{rightOpen ? "▸" : "◂"}</span>
-            </button>
+            {/* Right drag handle + toggle */}
+            {rightOpen && <div className="panel-drag" onMouseDown={(e) => startDrag("right", e)} onDoubleClick={() => setRightOpen(false)} title="드래그: 크기 조절 / 더블클릭: 접기" />}
+            {!rightOpen && (
+                <button onClick={() => setRightOpen(true)} style={{ width: 24, height: 48, position: "absolute", right: 0, top: "50%", transform: "translateY(-50%)", zIndex: 50, borderRadius: "8px 0 0 8px", border: "1px solid #e2e8f0", borderRight: "none", background: "#fff", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "-2px 0 8px rgba(0,0,0,0.04)" }}>
+                    <span style={{ fontSize: 12, color: "#94a3b8" }}>◂</span>
+                </button>
+            )}
 
             {/* ══════════════════════════════════════════════
                 RIGHT PANEL — 도구 패널
                ══════════════════════════════════════════════ */}
             <motion.aside
-                animate={{ width: rightOpen ? 480 : 0, opacity: rightOpen ? 1 : 0 }}
+                animate={{ width: rightOpen ? rightWidth : 0, opacity: rightOpen ? 1 : 0 }}
                 transition={{ type: "spring", stiffness: 300, damping: 30 }}
                 style={{ flexShrink: 0, overflow: "hidden", borderLeft: "1px solid #e2e8f0", background: "#fff", display: "flex", flexDirection: "column" }}>
 

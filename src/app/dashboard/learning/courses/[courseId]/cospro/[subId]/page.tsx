@@ -43,6 +43,38 @@ export default function CosProSubCoursePage() {
     const [rightTab, setRightTab] = useState<"notes" | "code" | "timer" | "qa" | "bookmarks">("notes");
     const [activeHL, setActiveHL] = useState<string | null>(null);
 
+    // Resizable panels
+    const [leftWidth, setLeftWidth] = useState(280);
+    const [rightWidth, setRightWidth] = useState(480);
+    const draggingRef = useRef<"left" | "right" | null>(null);
+    const startXRef = useRef(0);
+    const startWidthRef = useRef(0);
+
+    useEffect(() => {
+        const onMouseMove = (e: MouseEvent) => {
+            if (!draggingRef.current) return;
+            e.preventDefault();
+            const delta = e.clientX - startXRef.current;
+            if (draggingRef.current === "left") {
+                setLeftWidth(Math.max(200, Math.min(450, startWidthRef.current + delta)));
+            } else {
+                setRightWidth(Math.max(280, Math.min(700, startWidthRef.current - delta)));
+            }
+        };
+        const onMouseUp = () => { draggingRef.current = null; document.body.style.cursor = ""; document.body.style.userSelect = ""; };
+        window.addEventListener("mousemove", onMouseMove);
+        window.addEventListener("mouseup", onMouseUp);
+        return () => { window.removeEventListener("mousemove", onMouseMove); window.removeEventListener("mouseup", onMouseUp); };
+    }, []);
+
+    const startDrag = (side: "left" | "right", e: React.MouseEvent) => {
+        draggingRef.current = side;
+        startXRef.current = e.clientX;
+        startWidthRef.current = side === "left" ? leftWidth : rightWidth;
+        document.body.style.cursor = "col-resize";
+        document.body.style.userSelect = "none";
+    };
+
     // Timer
     const [timerMode, setTimerMode] = useState<"focus" | "short" | "long">("focus");
     const [timerSec, setTimerSec] = useState(25 * 60);
@@ -163,13 +195,17 @@ export default function CosProSubCoursePage() {
         <div style={{ display: "flex", height: "100vh", overflow: "hidden", fontFamily: "'Plus Jakarta Sans', system-ui, sans-serif", background: "#f8fafc" }}>
             <style>{`
                 .hide-sb::-webkit-scrollbar{display:none} .hide-sb{-ms-overflow-style:none;scrollbar-width:none}
+                .panel-drag{width:6px;cursor:col-resize;background:transparent;flex-shrink:0;position:relative;z-index:20;transition:background .15s}
+                .panel-drag:hover,.panel-drag:active{background:rgba(59,130,246,0.15)}
+                .panel-drag::after{content:'';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:2px;height:32px;border-radius:2px;background:#cbd5e1;transition:background .15s}
+                .panel-drag:hover::after,.panel-drag:active::after{background:#3b82f6}
             `}</style>
 
             {/* ══════════════════════════════════════════════
                 LEFT PANEL — 커리큘럼 트리
                ══════════════════════════════════════════════ */}
             <motion.aside
-                animate={{ width: leftOpen ? 280 : 0, opacity: leftOpen ? 1 : 0 }}
+                animate={{ width: leftOpen ? leftWidth : 0, opacity: leftOpen ? 1 : 0 }}
                 transition={{ type: "spring", stiffness: 300, damping: 30 }}
                 style={{ flexShrink: 0, overflow: "hidden", borderRight: "1px solid #e2e8f0", background: "#fff", display: "flex", flexDirection: "column" }}>
 
@@ -245,10 +281,13 @@ export default function CosProSubCoursePage() {
                 </div>
             </motion.aside>
 
-            {/* Left toggle */}
-            <button onClick={() => setLeftOpen(!leftOpen)} style={{ position: "absolute", left: leftOpen ? 268 : 0, top: "50%", transform: "translateY(-50%)", zIndex: 50, width: 24, height: 48, borderRadius: "0 8px 8px 0", border: "1px solid #e2e8f0", borderLeft: "none", background: "#fff", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "2px 0 8px rgba(0,0,0,0.04)", transition: "left 0.3s" }}>
-                <span style={{ fontSize: 12, color: "#94a3b8" }}>{leftOpen ? "◂" : "▸"}</span>
-            </button>
+            {/* Left drag handle + toggle */}
+            {leftOpen && <div className="panel-drag" onMouseDown={(e) => startDrag("left", e)} onDoubleClick={() => setLeftOpen(false)} title="드래그: 크기 조절 / 더블클릭: 접기" />}
+            {!leftOpen && (
+                <button onClick={() => setLeftOpen(true)} style={{ width: 24, height: 48, position: "absolute", left: 0, top: "50%", transform: "translateY(-50%)", zIndex: 50, borderRadius: "0 8px 8px 0", border: "1px solid #e2e8f0", borderLeft: "none", background: "#fff", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "2px 0 8px rgba(0,0,0,0.04)" }}>
+                    <span style={{ fontSize: 12, color: "#94a3b8" }}>▸</span>
+                </button>
+            )}
 
             {/* ══════════════════════════════════════════════
                 CENTER PANEL — 학습 콘텐츠
@@ -340,16 +379,19 @@ export default function CosProSubCoursePage() {
                 )}
             </main>
 
-            {/* Right toggle */}
-            <button onClick={() => setRightOpen(!rightOpen)} style={{ position: "absolute", right: rightOpen ? 468 : 0, top: "50%", transform: "translateY(-50%)", zIndex: 50, width: 24, height: 48, borderRadius: "8px 0 0 8px", border: "1px solid #e2e8f0", borderRight: "none", background: "#fff", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "-2px 0 8px rgba(0,0,0,0.04)", transition: "right 0.3s" }}>
-                <span style={{ fontSize: 12, color: "#94a3b8" }}>{rightOpen ? "▸" : "◂"}</span>
-            </button>
+            {/* Right drag handle + toggle */}
+            {rightOpen && <div className="panel-drag" onMouseDown={(e) => startDrag("right", e)} onDoubleClick={() => setRightOpen(false)} title="드래그: 크기 조절 / 더블클릭: 접기" />}
+            {!rightOpen && (
+                <button onClick={() => setRightOpen(true)} style={{ width: 24, height: 48, position: "absolute", right: 0, top: "50%", transform: "translateY(-50%)", zIndex: 50, borderRadius: "8px 0 0 8px", border: "1px solid #e2e8f0", borderRight: "none", background: "#fff", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "-2px 0 8px rgba(0,0,0,0.04)" }}>
+                    <span style={{ fontSize: 12, color: "#94a3b8" }}>◂</span>
+                </button>
+            )}
 
             {/* ══════════════════════════════════════════════
                 RIGHT PANEL — 도구 패널
                ══════════════════════════════════════════════ */}
             <motion.aside
-                animate={{ width: rightOpen ? 480 : 0, opacity: rightOpen ? 1 : 0 }}
+                animate={{ width: rightOpen ? rightWidth : 0, opacity: rightOpen ? 1 : 0 }}
                 transition={{ type: "spring", stiffness: 300, damping: 30 }}
                 style={{ flexShrink: 0, overflow: "hidden", borderLeft: "1px solid #e2e8f0", background: "#fff", display: "flex", flexDirection: "column" }}>
 

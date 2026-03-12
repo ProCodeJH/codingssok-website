@@ -68,42 +68,65 @@ export default function StudyNotesEditor({ initialContent, initialColor, unitTit
     const saveTimerRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
     const headingBtnRef = useRef<HTMLButtonElement>(null);
     const highlightBtnRef = useRef<HTMLButtonElement>(null);
+    const initializedRef = useRef(false);
+    const onSaveRef = useRef(onSave);
+    onSaveRef.current = onSave;
 
-    /* ── 초기 콘텐츠 설정 ── */
+    /* ── 초기 콘텐츠 설정 (마운트 시 1회만) ── */
     useEffect(() => {
-        if (editorRef.current && initialContent) {
-            editorRef.current.innerHTML = initialContent;
-            setCharCount(editorRef.current.innerText.length);
+        if (editorRef.current && !initializedRef.current) {
+            initializedRef.current = true;
+            if (initialContent) {
+                editorRef.current.innerHTML = initialContent;
+                setCharCount(editorRef.current.innerText.length);
+            }
         }
     }, [initialContent]);
 
-    /* ── 자동 저장 (디바운스) ── */
+    /* ── 자동 저장 (디바운스) — onSave를 ref로 사용하여 불필요한 재렌더 방지 ── */
+    const bgColorRef = useRef(bgColor);
+    bgColorRef.current = bgColor;
     const triggerSave = useCallback(() => {
         if (!editorRef.current) return;
         setIsSaved(false);
         if (saveTimerRef.current) clearTimeout(saveTimerRef.current);
         saveTimerRef.current = setTimeout(() => {
             if (editorRef.current) {
-                onSave(editorRef.current.innerHTML, bgColor);
+                onSaveRef.current(editorRef.current.innerHTML, bgColorRef.current);
                 setIsSaved(true);
             }
         }, 500);
-    }, [bgColor, onSave]);
+    }, []);
 
     /* ── 배경색 변경 ── */
     const changeBg = useCallback((colorId: string) => {
         setBgColor(colorId);
         if (editorRef.current) {
-            onSave(editorRef.current.innerHTML, colorId);
+            onSaveRef.current(editorRef.current.innerHTML, colorId);
         }
-    }, [onSave]);
+    }, []);
 
-    /* ── execCommand 래퍼 ── */
+    /* ── execCommand 래퍼 — 커서 위치 보존 ── */
+    const savedSelectionRef = useRef<{ range: Range } | null>(null);
+    const saveSelection = useCallback(() => {
+        const sel = window.getSelection();
+        if (sel && sel.rangeCount > 0) {
+            savedSelectionRef.current = { range: sel.getRangeAt(0).cloneRange() };
+        }
+    }, []);
+    const restoreSelection = useCallback(() => {
+        if (savedSelectionRef.current) {
+            const sel = window.getSelection();
+            if (sel) { sel.removeAllRanges(); sel.addRange(savedSelectionRef.current.range); }
+        }
+    }, []);
+
     const exec = useCallback((cmd: string, arg?: string) => {
+        restoreSelection();
         editorRef.current?.focus();
         document.execCommand(cmd, false, arg);
         triggerSave();
-    }, [triggerSave]);
+    }, [triggerSave, restoreSelection]);
 
     /* ── 커스텀 명령: 체크리스트 ── */
     const insertChecklist = useCallback(() => {
@@ -340,6 +363,7 @@ export default function StudyNotesEditor({ initialContent, initialColor, unitTit
                     suppressContentEditableWarning
                     onInput={handleInput}
                     onKeyDown={handleKeyDown}
+                    onBlur={saveSelection}
                     onClick={() => { setShowHeadingMenu(false); setShowHighlightMenu(false); }}
                     data-placeholder="학습하면서 메모를 남겨보세요..."
                     style={{

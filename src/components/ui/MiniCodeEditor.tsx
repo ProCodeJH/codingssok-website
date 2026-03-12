@@ -1,46 +1,61 @@
 "use client";
-import { useState, useCallback, useRef, useEffect } from "react";
+import { useState, useCallback, useRef, useEffect, useMemo } from "react";
 import dynamic from "next/dynamic";
+import { motion, AnimatePresence } from "framer-motion";
 
 const Editor = dynamic(() => import("@monaco-editor/react"), { ssr: false });
 
+/* ═══════════════════════════════════════
+   코딩쏙 학습 에디터 — 컴파일러급 기능
+   ═══════════════════════════════════════ */
+
 const LANG_OPTIONS = [
-    { value: "c", label: "C", ext: ".c", default: '#include <stdio.h>\n\nint main() {\n    printf("Hello!\\n");\n    return 0;\n}' },
-    { value: "python", label: "Python", ext: ".py", default: '# Python\nprint("Hello!")' },
-    { value: "cpp", label: "C++", ext: ".cpp", default: '#include <iostream>\nusing namespace std;\n\nint main() {\n    cout << "Hello!" << endl;\n    return 0;\n}' },
-    { value: "javascript", label: "JS", ext: ".js", default: 'console.log("Hello!");' },
+    { value: "c", label: "C", ext: ".c", monaco: "c", default: '#include <stdio.h>\n\nint main() {\n    printf("Hello!\\n");\n    return 0;\n}' },
+    { value: "python", label: "Python", ext: ".py", monaco: "python", default: '# Python\nprint("Hello!")' },
+    { value: "cpp", label: "C++", ext: ".cpp", monaco: "cpp", default: '#include <iostream>\nusing namespace std;\n\nint main() {\n    cout << "Hello!" << endl;\n    return 0;\n}' },
+    { value: "javascript", label: "JS", ext: ".js", monaco: "javascript", default: 'console.log("Hello!");' },
+    { value: "java", label: "Java", ext: ".java", monaco: "java", default: 'public class Main {\n    public static void main(String[] args) {\n        System.out.println("Hello!");\n    }\n}' },
 ];
 
-type ThemeMode = "dark" | "light";
-
-const THEME_STYLES: Record<ThemeMode, {
-    editorTheme: string;
-    headerBg: string; headerBorder: string;
-    langActiveBg: string; langActiveColor: string; langColor: string;
-    stdinBg: string; stdinBorder: string; stdinLabel: string;
-    termBg: string; termBorder: string; termText: string; termError: string; termMuted: string;
-    contextBg: string; contextColor: string;
-    inputBg: string; inputBorder: string; inputBtn: string; inputBtnActive: string;
-}> = {
-    dark: {
-        editorTheme: "vs-dark",
-        headerBg: "#1e1e2e", headerBorder: "#2a2a3e",
-        langActiveBg: "#fff", langActiveColor: "#0f172a", langColor: "#64748b",
-        stdinBg: "#1a1a2e", stdinBorder: "#fde68a40", stdinLabel: "#fbbf24",
-        termBg: "#0f172a", termBorder: "#1e293b", termText: "#e2e8f0", termError: "#fca5a5", termMuted: "#475569",
-        contextBg: "#161625", contextColor: "#64748b",
-        inputBg: "#1e1e2e", inputBorder: "#334155", inputBtn: "#334155", inputBtnActive: "#3b82f6",
-    },
-    light: {
-        editorTheme: "light",
-        headerBg: "#fafafa", headerBorder: "#e2e8f0",
-        langActiveBg: "#0f172a", langActiveColor: "#fff", langColor: "#94a3b8",
-        stdinBg: "#fffbeb", stdinBorder: "#fde68a", stdinLabel: "#b45309",
-        termBg: "#f8fafc", termBorder: "#e2e8f0", termText: "#1e293b", termError: "#dc2626", termMuted: "#94a3b8",
-        contextBg: "#f1f5f9", contextColor: "#94a3b8",
-        inputBg: "#fff", inputBorder: "#e2e8f0", inputBtn: "#e2e8f0", inputBtnActive: "#dbeafe",
-    },
+const SNIPPETS: Record<string, { label: string; code: string }[]> = {
+    c: [
+        { label: "Hello World", code: '#include <stdio.h>\n\nint main() {\n    printf("Hello, World!\\n");\n    return 0;\n}' },
+        { label: "scanf 입력", code: '#include <stdio.h>\n\nint main() {\n    int n;\n    printf("숫자 입력: ");\n    scanf("%d", &n);\n    printf("입력값: %d\\n", n);\n    return 0;\n}' },
+        { label: "배열 반복", code: '#include <stdio.h>\n\nint main() {\n    int arr[] = {1, 2, 3, 4, 5};\n    int len = sizeof(arr) / sizeof(arr[0]);\n    for (int i = 0; i < len; i++) {\n        printf("%d ", arr[i]);\n    }\n    printf("\\n");\n    return 0;\n}' },
+        { label: "함수 정의", code: '#include <stdio.h>\n\nint add(int a, int b) {\n    return a + b;\n}\n\nint main() {\n    printf("3 + 5 = %d\\n", add(3, 5));\n    return 0;\n}' },
+        { label: "포인터", code: '#include <stdio.h>\n\nint main() {\n    int x = 10;\n    int *p = &x;\n    printf("값: %d, 주소: %p\\n", *p, (void*)p);\n    return 0;\n}' },
+        { label: "구조체", code: '#include <stdio.h>\n\ntypedef struct {\n    char name[20];\n    int age;\n} Person;\n\nint main() {\n    Person p = {"홍길동", 15};\n    printf("%s (%d세)\\n", p.name, p.age);\n    return 0;\n}' },
+    ],
+    python: [
+        { label: "Hello World", code: 'print("Hello, World!")' },
+        { label: "입력 받기", code: 'name = input("이름: ")\nprint(f"안녕, {name}!")' },
+        { label: "리스트", code: 'nums = [1, 2, 3, 4, 5]\nfor n in nums:\n    print(n, end=" ")\nprint()' },
+        { label: "함수", code: 'def add(a, b):\n    return a + b\n\nprint(f"3 + 5 = {add(3, 5)}")' },
+        { label: "클래스", code: 'class Person:\n    def __init__(self, name, age):\n        self.name = name\n        self.age = age\n    def greet(self):\n        print(f"안녕! 나는 {self.name}")\n\np = Person("홍길동", 15)\np.greet()' },
+    ],
+    cpp: [
+        { label: "Hello World", code: '#include <iostream>\nusing namespace std;\n\nint main() {\n    cout << "Hello, World!" << endl;\n    return 0;\n}' },
+        { label: "벡터", code: '#include <iostream>\n#include <vector>\nusing namespace std;\n\nint main() {\n    vector<int> v = {1, 2, 3, 4, 5};\n    for (int x : v) cout << x << " ";\n    cout << endl;\n    return 0;\n}' },
+    ],
+    javascript: [
+        { label: "Hello World", code: 'console.log("Hello, World!");' },
+        { label: "배열 메서드", code: 'const nums = [1, 2, 3, 4, 5];\nconst doubled = nums.map(n => n * 2);\nconsole.log(doubled);' },
+    ],
+    java: [
+        { label: "Hello World", code: 'public class Main {\n    public static void main(String[] args) {\n        System.out.println("Hello, World!");\n    }\n}' },
+    ],
 };
+
+const SHORTCUTS = [
+    { key: "F5", desc: "코드 실행" },
+    { key: "Ctrl+S", desc: "코드 저장" },
+    { key: "Ctrl+/", desc: "주석 토글" },
+    { key: "Ctrl+Z", desc: "실행 취소" },
+    { key: "Ctrl+Shift+Z", desc: "다시 실행" },
+    { key: "Ctrl+D", desc: "단어 선택" },
+    { key: "Ctrl+L", desc: "줄 선택" },
+    { key: "Alt+↑↓", desc: "줄 이동" },
+];
 
 interface Props {
     contextLabel?: string;
@@ -55,18 +70,13 @@ export default function MiniCodeEditor({ contextLabel, onCodeRun }: Props) {
     const [status, setStatus] = useState<"idle" | "running" | "success" | "error">("idle");
     const [execTime, setExecTime] = useState<number | null>(null);
     const [showStdin, setShowStdin] = useState(false);
-    const [theme, setTheme] = useState<ThemeMode>(() => {
-        if (typeof window === "undefined") return "dark";
-        return (localStorage.getItem("codingssok_mini_theme") as ThemeMode) || "dark";
-    });
+    const [expanded, setExpanded] = useState(false);
+    const [fontSize, setFontSize] = useState(14);
+    const [rightPanel, setRightPanel] = useState<"none" | "snippets" | "shortcuts">("none");
+    const [compileCount, setCompileCount] = useState(0);
+    const [successCount, setSuccessCount] = useState(0);
     const editorRef = useRef<unknown>(null);
-
-    const t = THEME_STYLES[theme];
-
-    // 테마 저장
-    useEffect(() => {
-        if (typeof window !== "undefined") localStorage.setItem("codingssok_mini_theme", theme);
-    }, [theme]);
+    const containerRef = useRef<HTMLDivElement>(null);
 
     // 코드 저장/복원
     const storageKey = `codingssok_mini_editor_${lang}`;
@@ -74,13 +84,26 @@ export default function MiniCodeEditor({ contextLabel, onCodeRun }: Props) {
         if (typeof window === "undefined") return;
         const saved = localStorage.getItem(storageKey);
         if (saved) setCode(saved);
+        const cc = parseInt(localStorage.getItem("cs-cc") || "0");
+        const sc = parseInt(localStorage.getItem("cs-sc") || "0");
+        setCompileCount(cc);
+        setSuccessCount(sc);
     }, [storageKey]);
 
     useEffect(() => {
         if (typeof window === "undefined") return;
-        const timer = setTimeout(() => { localStorage.setItem(storageKey, code); }, 500);
+        const timer = setTimeout(() => localStorage.setItem(storageKey, code), 500);
         return () => clearTimeout(timer);
     }, [code, storageKey]);
+
+    // 키보드 단축키
+    useEffect(() => {
+        const handler = (e: KeyboardEvent) => {
+            if (e.key === "F5") { e.preventDefault(); runCode(); }
+        };
+        window.addEventListener("keydown", handler);
+        return () => window.removeEventListener("keydown", handler);
+    });
 
     const switchLang = (newLang: string) => {
         localStorage.setItem(storageKey, code);
@@ -88,14 +111,11 @@ export default function MiniCodeEditor({ contextLabel, onCodeRun }: Props) {
         const opt = LANG_OPTIONS.find(l => l.value === newLang);
         const saved = localStorage.getItem(`codingssok_mini_editor_${newLang}`);
         setCode(saved || opt?.default || "");
-        setOutput("");
-        setStatus("idle");
+        setOutput(""); setStatus("idle");
     };
 
     const runCode = useCallback(async () => {
-        setStatus("running");
-        setOutput("");
-        setExecTime(null);
+        setStatus("running"); setOutput(""); setExecTime(null);
         const t0 = performance.now();
         try {
             const res = await fetch("/api/compile", {
@@ -106,12 +126,18 @@ export default function MiniCodeEditor({ contextLabel, onCodeRun }: Props) {
             const data = await res.json();
             const ms = Math.round(performance.now() - t0);
             setExecTime(ms);
+            const cc = compileCount + 1;
+            setCompileCount(cc);
+            localStorage.setItem("cs-cc", String(cc));
             if (!data.success) {
                 setOutput(data.stderr || data.error || "오류 발생");
                 setStatus("error");
             } else {
                 setOutput(data.stdout || "(출력 없음)");
                 setStatus("success");
+                const sc = successCount + 1;
+                setSuccessCount(sc);
+                localStorage.setItem("cs-sc", String(sc));
                 onCodeRun?.();
             }
         } catch {
@@ -119,162 +145,456 @@ export default function MiniCodeEditor({ contextLabel, onCodeRun }: Props) {
             setStatus("error");
             setExecTime(Math.round(performance.now() - t0));
         }
-    }, [code, lang, stdin, onCodeRun]);
+    }, [code, lang, stdin, onCodeRun, compileCount, successCount]);
 
-    const statusColor = status === "success" ? "#22c55e" : status === "error" ? "#ef4444" : "#94a3b8";
+    const insertSnippet = (snippetCode: string) => {
+        setCode(snippetCode);
+        setRightPanel("none");
+    };
+
+    const resetCode = () => {
+        const opt = LANG_OPTIONS.find(l => l.value === lang);
+        setCode(opt?.default || "");
+        setOutput(""); setStatus("idle");
+    };
+
+    const copyCode = () => {
+        navigator.clipboard.writeText(code);
+    };
+
+    const langSnippets = useMemo(() => SNIPPETS[lang] || [], [lang]);
+    const statusDot = status === "success" ? "#5efc8e" : status === "error" ? "#ff6b6b" : status === "running" ? "#fbbf24" : "#475569";
+
+    // Monaco 커스텀 테마 등록
+    const handleEditorMount = useCallback((editor: unknown, monaco: { editor: { defineTheme: (name: string, theme: unknown) => void } }) => {
+        editorRef.current = editor;
+        monaco.editor.defineTheme("cs-dark", {
+            base: "vs-dark",
+            inherit: true,
+            rules: [
+                { token: "keyword", foreground: "c084fc", fontStyle: "bold" },
+                { token: "type", foreground: "5eead4" },
+                { token: "string", foreground: "86efac" },
+                { token: "string.escape", foreground: "fcd34d" },
+                { token: "comment", foreground: "6b7280", fontStyle: "italic" },
+                { token: "number", foreground: "7dd3fc" },
+                { token: "function", foreground: "fdba74" },
+                { token: "variable", foreground: "e0e0e0" },
+                { token: "operator", foreground: "7daaff" },
+                { token: "delimiter", foreground: "94a3b8" },
+                { token: "predefined", foreground: "67e8f9" },
+            ],
+            colors: {
+                "editor.background": "#0a0a0f",
+                "editor.foreground": "#e0e0e0",
+                "editor.lineHighlightBackground": "#ffffff08",
+                "editor.selectionBackground": "#3b82f640",
+                "editorCursor.foreground": "#7daaff",
+                "editorLineNumber.foreground": "#334155",
+                "editorLineNumber.activeForeground": "#7daaff",
+                "editor.inactiveSelectionBackground": "#3b82f620",
+                "editorIndentGuide.background": "#1e293b",
+                "editorIndentGuide.activeBackground": "#334155",
+                "editorBracketMatch.background": "#7daaff30",
+                "editorBracketMatch.border": "#7daaff60",
+            },
+        });
+    }, []);
 
     return (
-        <div style={{ display: "flex", flexDirection: "column", height: "100%" }}>
-            {/* 헤더 */}
+        <div
+            ref={containerRef}
+            style={{
+                display: "flex", flexDirection: "column",
+                height: expanded ? "85vh" : "100%",
+                maxHeight: expanded ? "85vh" : undefined,
+                background: "#0a0a0f",
+                borderRadius: 12, overflow: "hidden",
+                border: "1px solid #1e293b",
+                fontFamily: "'Plus Jakarta Sans', system-ui, sans-serif",
+                transition: "height 0.3s ease",
+                position: expanded ? "fixed" : "relative",
+                top: expanded ? "4vh" : undefined,
+                left: expanded ? "2vw" : undefined,
+                right: expanded ? "2vw" : undefined,
+                zIndex: expanded ? 1000 : undefined,
+                boxShadow: expanded ? "0 25px 60px rgba(0,0,0,0.6)" : undefined,
+            }}
+        >
+            {/* ═══ 타이틀바 ═══ */}
             <div style={{
                 display: "flex", alignItems: "center", justifyContent: "space-between",
-                padding: "8px 12px", borderBottom: `1px solid ${t.headerBorder}`, background: t.headerBg,
+                padding: "0 12px", height: 36, minHeight: 36,
+                background: "#0d0d14", borderBottom: "1px solid #1a1a2e",
             }}>
                 {/* 언어 선택 */}
-                <div style={{ display: "flex", gap: 3 }}>
+                <div style={{ display: "flex", gap: 2, alignItems: "center" }}>
                     {LANG_OPTIONS.map(opt => (
                         <button key={opt.value} onClick={() => switchLang(opt.value)} style={{
                             padding: "3px 8px", borderRadius: 6, border: "none", cursor: "pointer",
                             fontSize: 10, fontWeight: lang === opt.value ? 800 : 500,
-                            background: lang === opt.value ? t.langActiveBg : "transparent",
-                            color: lang === opt.value ? t.langActiveColor : t.langColor,
+                            background: lang === opt.value ? "#7daaff20" : "transparent",
+                            color: lang === opt.value ? "#7daaff" : "#64748b",
+                            transition: "all 0.15s",
                         }}>
                             {opt.label}
                         </button>
                     ))}
                 </div>
 
-                {/* 테마 + 실행 */}
-                <div style={{ display: "flex", gap: 4, alignItems: "center" }}>
-                    {/* 테마 토글 */}
-                    <button
-                        onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-                        title={theme === "dark" ? "라이트 모드" : "다크 모드"}
-                        style={{
-                            padding: "3px 6px", borderRadius: 5, border: `1px solid ${t.inputBorder}`,
-                            background: t.inputBg, cursor: "pointer", fontSize: 12, lineHeight: 1,
-                            color: t.langColor, display: "flex", alignItems: "center",
-                        }}
-                    >
-                        {theme === "dark" ? "☀️" : "🌙"}
+                {/* 우측 컨트롤 */}
+                <div style={{ display: "flex", gap: 3, alignItems: "center" }}>
+                    {/* 폰트 크기 */}
+                    <button onClick={() => setFontSize(s => Math.max(10, s - 1))} style={iconBtnStyle} title="글자 줄이기">
+                        <span style={{ fontSize: 11, color: "#64748b" }}>A-</span>
                     </button>
-                    <button
-                        onClick={() => setShowStdin(!showStdin)}
-                        title="입력(stdin)"
-                        style={{
-                            padding: "3px 6px", borderRadius: 5, border: `1px solid ${t.inputBorder}`,
-                            background: showStdin ? t.inputBtnActive : t.inputBg, cursor: "pointer",
-                            fontSize: 10, color: showStdin ? "#2563eb" : t.langColor,
-                        }}
+                    <span style={{ fontSize: 9, color: "#475569", minWidth: 18, textAlign: "center" }}>{fontSize}</span>
+                    <button onClick={() => setFontSize(s => Math.min(22, s + 1))} style={iconBtnStyle} title="글자 키우기">
+                        <span style={{ fontSize: 11, color: "#64748b" }}>A+</span>
+                    </button>
+
+                    <div style={{ width: 1, height: 14, background: "#1e293b", margin: "0 4px" }} />
+
+                    {/* 스니펫 */}
+                    <button onClick={() => setRightPanel(rightPanel === "snippets" ? "none" : "snippets")}
+                        style={{ ...iconBtnStyle, background: rightPanel === "snippets" ? "#7daaff20" : undefined, color: rightPanel === "snippets" ? "#7daaff" : "#64748b" }}
+                        title="스니펫"
                     >
+                        <span className="material-symbols-outlined" style={{ fontSize: 14 }}>code_blocks</span>
+                    </button>
+
+                    {/* 단축키 */}
+                    <button onClick={() => setRightPanel(rightPanel === "shortcuts" ? "none" : "shortcuts")}
+                        style={{ ...iconBtnStyle, background: rightPanel === "shortcuts" ? "#7daaff20" : undefined, color: rightPanel === "shortcuts" ? "#7daaff" : "#64748b" }}
+                        title="단축키"
+                    >
+                        <span className="material-symbols-outlined" style={{ fontSize: 14 }}>keyboard</span>
+                    </button>
+
+                    <div style={{ width: 1, height: 14, background: "#1e293b", margin: "0 4px" }} />
+
+                    {/* 확장/축소 */}
+                    <button onClick={() => setExpanded(!expanded)}
+                        style={{ ...iconBtnStyle, color: expanded ? "#7daaff" : "#64748b" }}
+                        title={expanded ? "축소" : "확대"}
+                    >
+                        <span className="material-symbols-outlined" style={{ fontSize: 14 }}>
+                            {expanded ? "close_fullscreen" : "open_in_full"}
+                        </span>
+                    </button>
+                </div>
+            </div>
+
+            {/* ═══ 툴바 ═══ */}
+            <div style={{
+                display: "flex", alignItems: "center", justifyContent: "space-between",
+                padding: "0 10px", height: 32, minHeight: 32,
+                background: "#08080d", borderBottom: "1px solid #1a1a2e",
+            }}>
+                <div style={{ display: "flex", gap: 4, alignItems: "center" }}>
+                    {/* 실행 */}
+                    <button onClick={runCode} disabled={status === "running"} style={{
+                        padding: "4px 14px", borderRadius: 6, border: "none", cursor: "pointer",
+                        background: status === "running" ? "#475569" : "linear-gradient(135deg, #16a34a, #22c55e)",
+                        color: "#fff", fontSize: 11, fontWeight: 700,
+                        display: "flex", alignItems: "center", gap: 4, transition: "all 0.15s",
+                    }}>
+                        {status === "running" ? (
+                            <><span style={{ animation: "spin 1s linear infinite", display: "inline-block" }}>⟳</span> 빌드 중</>
+                        ) : (
+                            <>▶ 실행 <span style={{ fontSize: 9, opacity: 0.7 }}>(F5)</span></>
+                        )}
+                    </button>
+
+                    {/* 입력 토글 */}
+                    <button onClick={() => setShowStdin(!showStdin)} style={{
+                        ...iconBtnStyle, padding: "4px 8px", fontSize: 10, fontWeight: 600,
+                        background: showStdin ? "#fbbf2420" : undefined,
+                        color: showStdin ? "#fbbf24" : "#64748b",
+                    }}>
+                        <span className="material-symbols-outlined" style={{ fontSize: 13 }}>keyboard</span>
                         입력
                     </button>
-                    <button
-                        onClick={runCode}
-                        disabled={status === "running"}
-                        style={{
-                            padding: "4px 12px", borderRadius: 6, border: "none", cursor: "pointer",
-                            background: status === "running" ? "#94a3b8" : "linear-gradient(135deg, #22c55e, #16a34a)",
-                            color: "#fff", fontSize: 10, fontWeight: 700,
-                            display: "flex", alignItems: "center", gap: 4,
-                        }}
-                    >
-                        {status === "running" ? "실행 중..." : "▶ 실행"}
+                </div>
+
+                <div style={{ display: "flex", gap: 4, alignItems: "center" }}>
+                    {/* 실행 시간 */}
+                    {execTime !== null && (
+                        <span style={{ fontSize: 10, color: "#475569", fontFamily: "'JetBrains Mono', monospace" }}>
+                            {execTime}ms
+                        </span>
+                    )}
+
+                    {/* 통계 */}
+                    <span style={{ fontSize: 9, color: "#334155" }}>
+                        {compileCount}회 · {compileCount > 0 ? Math.round((successCount / compileCount) * 100) : 0}%
+                    </span>
+
+                    <div style={{ width: 1, height: 14, background: "#1e293b", margin: "0 2px" }} />
+
+                    {/* 복사 */}
+                    <button onClick={copyCode} style={iconBtnStyle} title="코드 복사">
+                        <span className="material-symbols-outlined" style={{ fontSize: 13 }}>content_copy</span>
+                    </button>
+                    {/* 초기화 */}
+                    <button onClick={resetCode} style={iconBtnStyle} title="초기화">
+                        <span className="material-symbols-outlined" style={{ fontSize: 13 }}>restart_alt</span>
                     </button>
                 </div>
             </div>
 
-            {/* 컨텍스트 라벨 */}
+            {/* ═══ 컨텍스트 라벨 ═══ */}
             {contextLabel && (
                 <div style={{
-                    padding: "4px 12px", fontSize: 9, color: t.contextColor, fontWeight: 600,
-                    background: t.contextBg, borderBottom: `1px solid ${t.headerBorder}`,
+                    padding: "3px 12px", fontSize: 9, color: "#475569", fontWeight: 600,
+                    background: "#06060a", borderBottom: "1px solid #1a1a2e",
+                    display: "flex", alignItems: "center", gap: 4,
                 }}>
-                    학습 중: {contextLabel}
+                    <span className="material-symbols-outlined" style={{ fontSize: 10, color: "#7daaff" }}>book</span>
+                    {contextLabel}
                 </div>
             )}
 
-            {/* stdin */}
-            {showStdin && (
-                <div style={{ padding: "6px 12px", borderBottom: `1px solid ${t.headerBorder}`, background: t.stdinBg }}>
-                    <div style={{ fontSize: 9, color: t.stdinLabel, fontWeight: 700, marginBottom: 4 }}>입력 (stdin)</div>
-                    <textarea
-                        value={stdin}
-                        onChange={e => setStdin(e.target.value)}
-                        placeholder="프로그램 입력값..."
-                        rows={2}
-                        style={{
-                            width: "100%", resize: "vertical", padding: "6px 8px",
-                            borderRadius: 6, border: `1px solid ${t.stdinBorder}`, fontSize: 11,
-                            fontFamily: "'JetBrains Mono', monospace", background: t.inputBg,
-                            color: t.termText, outline: "none",
+            {/* ═══ stdin ═══ */}
+            <AnimatePresence>
+                {showStdin && (
+                    <motion.div
+                        initial={{ height: 0, opacity: 0 }}
+                        animate={{ height: "auto", opacity: 1 }}
+                        exit={{ height: 0, opacity: 0 }}
+                        transition={{ duration: 0.2 }}
+                        style={{ overflow: "hidden", borderBottom: "1px solid #1a1a2e" }}
+                    >
+                        <div style={{ padding: "8px 12px", background: "#0d0a00" }}>
+                            <div style={{ fontSize: 9, color: "#fbbf24", fontWeight: 700, marginBottom: 4 }}>STDIN</div>
+                            <textarea
+                                value={stdin} onChange={e => setStdin(e.target.value)}
+                                placeholder="프로그램 입력값..."
+                                rows={2}
+                                style={{
+                                    width: "100%", resize: "vertical", padding: "6px 8px",
+                                    borderRadius: 6, border: "1px solid #fde68a30", fontSize: 12,
+                                    fontFamily: "'JetBrains Mono', monospace",
+                                    background: "#0a0800", color: "#e2e8f0", outline: "none",
+                                    boxSizing: "border-box",
+                                }}
+                            />
+                        </div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
+
+            {/* ═══ 메인 영역 (에디터 + 사이드패널) ═══ */}
+            <div style={{ flex: 1, display: "flex", minHeight: 0 }}>
+                {/* 에디터 */}
+                <div style={{ flex: 1, minHeight: expanded ? 300 : 200, position: "relative" }}>
+                    <Editor
+                        height="100%"
+                        language={LANG_OPTIONS.find(l => l.value === lang)?.monaco || lang}
+                        value={code}
+                        onChange={v => setCode(v || "")}
+                        theme="cs-dark"
+                        options={{
+                            fontSize,
+                            lineHeight: Math.round(fontSize * 1.5),
+                            minimap: { enabled: expanded },
+                            scrollBeyondLastLine: false,
+                            padding: { top: 10, bottom: 10 },
+                            lineNumbers: "on",
+                            lineNumbersMinChars: 3,
+                            folding: expanded,
+                            wordWrap: "on",
+                            automaticLayout: true,
+                            tabSize: 4,
+                            renderWhitespace: "none",
+                            overviewRulerBorder: false,
+                            hideCursorInOverviewRuler: true,
+                            scrollbar: { verticalScrollbarSize: 6, horizontalScrollbarSize: 6 },
+                            fontFamily: "'JetBrains Mono','Fira Code','Consolas',monospace",
+                            fontLigatures: true,
+                            bracketPairColorization: { enabled: true },
+                            guides: { indentation: true, bracketPairs: true },
+                            suggest: { showMethods: true, showFunctions: true, showConstructors: true },
                         }}
+                        onMount={handleEditorMount}
                     />
                 </div>
-            )}
 
-            {/* 코드 에디터 */}
-            <div style={{ flex: 1, minHeight: 180 }}>
-                <Editor
-                    height="100%"
-                    language={lang === "c" ? "c" : lang === "cpp" ? "cpp" : lang}
-                    value={code}
-                    onChange={v => setCode(v || "")}
-                    theme={t.editorTheme}
-                    options={{
-                        fontSize: 12,
-                        lineHeight: 18,
-                        minimap: { enabled: false },
-                        scrollBeyondLastLine: false,
-                        padding: { top: 8, bottom: 8 },
-                        lineNumbers: "on",
-                        lineNumbersMinChars: 3,
-                        folding: false,
-                        wordWrap: "on",
-                        automaticLayout: true,
-                        tabSize: 4,
-                        renderWhitespace: "none",
-                        overviewRulerBorder: false,
-                        hideCursorInOverviewRuler: true,
-                        scrollbar: { verticalScrollbarSize: 6, horizontalScrollbarSize: 6 },
-                    }}
-                    onMount={(editor) => { editorRef.current = editor; }}
-                />
+                {/* 사이드 패널 */}
+                <AnimatePresence>
+                    {rightPanel !== "none" && (
+                        <motion.div
+                            initial={{ width: 0, opacity: 0 }}
+                            animate={{ width: 240, opacity: 1 }}
+                            exit={{ width: 0, opacity: 0 }}
+                            transition={{ duration: 0.2 }}
+                            style={{
+                                borderLeft: "1px solid #1a1a2e", background: "#08080d",
+                                overflow: "hidden", display: "flex", flexDirection: "column",
+                            }}
+                        >
+                            <div style={{
+                                padding: "8px 12px", borderBottom: "1px solid #1a1a2e",
+                                display: "flex", alignItems: "center", justifyContent: "space-between",
+                            }}>
+                                <span style={{ fontSize: 11, fontWeight: 700, color: "#e2e8f0" }}>
+                                    {rightPanel === "snippets" ? "스니펫" : "단축키"}
+                                </span>
+                                <button onClick={() => setRightPanel("none")} style={{ ...iconBtnStyle, padding: 2 }}>
+                                    <span className="material-symbols-outlined" style={{ fontSize: 14, color: "#64748b" }}>close</span>
+                                </button>
+                            </div>
+                            <div style={{ flex: 1, overflowY: "auto", padding: 8 }} className="hide-sb">
+                                {rightPanel === "snippets" ? (
+                                    <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+                                        {langSnippets.map((s, i) => (
+                                            <button key={i} onClick={() => insertSnippet(s.code)} style={{
+                                                textAlign: "left", padding: "8px 10px", borderRadius: 8,
+                                                border: "1px solid #1e293b", background: "#0d0d14",
+                                                cursor: "pointer", transition: "all 0.15s",
+                                                color: "#cbd5e1", fontSize: 11, fontWeight: 600,
+                                            }}
+                                                onMouseEnter={e => { e.currentTarget.style.borderColor = "#7daaff40"; e.currentTarget.style.background = "#7daaff10"; }}
+                                                onMouseLeave={e => { e.currentTarget.style.borderColor = "#1e293b"; e.currentTarget.style.background = "#0d0d14"; }}
+                                            >
+                                                <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                                                    <span className="material-symbols-outlined" style={{ fontSize: 12, color: "#7daaff" }}>data_object</span>
+                                                    {s.label}
+                                                </div>
+                                            </button>
+                                        ))}
+                                    </div>
+                                ) : (
+                                    <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+                                        {SHORTCUTS.map((s, i) => (
+                                            <div key={i} style={{
+                                                display: "flex", alignItems: "center", justifyContent: "space-between",
+                                                padding: "6px 8px", borderRadius: 6,
+                                            }}>
+                                                <span style={{ fontSize: 10, color: "#94a3b8" }}>{s.desc}</span>
+                                                <kbd style={{
+                                                    padding: "2px 6px", borderRadius: 4,
+                                                    background: "#1e293b", border: "1px solid #334155",
+                                                    fontSize: 9, color: "#7daaff", fontFamily: "monospace",
+                                                }}>{s.key}</kbd>
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
+                        </motion.div>
+                    )}
+                </AnimatePresence>
             </div>
 
-            {/* 출력 (터미널) */}
+            {/* ═══ 출력 터미널 ═══ */}
             <div style={{
-                borderTop: `1px solid ${t.termBorder}`,
-                background: t.termBg,
-                minHeight: 60,
-                maxHeight: 140,
+                borderTop: "1px solid #1e293b",
+                background: "#06060a",
+                minHeight: expanded ? 180 : 100,
+                maxHeight: expanded ? 300 : 200,
                 overflowY: "auto",
-            }}>
-                {/* 출력 헤더 */}
+                display: "flex", flexDirection: "column",
+            }} className="hide-sb">
+                {/* 터미널 헤더 */}
                 <div style={{
                     display: "flex", alignItems: "center", justifyContent: "space-between",
-                    padding: "4px 10px", borderBottom: `1px solid ${t.termBorder}`,
+                    padding: "5px 12px", borderBottom: "1px solid #1a1a2e", minHeight: 28,
+                    position: "sticky", top: 0, background: "#06060a", zIndex: 1,
                 }}>
-                    <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                        <div style={{ width: 6, height: 6, borderRadius: "50%", background: statusColor }} />
-                        <span style={{ fontSize: 9, color: t.termMuted, fontWeight: 600 }}>출력</span>
+                    <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                        <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                            <div style={{
+                                width: 7, height: 7, borderRadius: "50%", background: statusDot,
+                                boxShadow: status === "running" ? `0 0 8px ${statusDot}` : undefined,
+                                animation: status === "running" ? "pulse 1s infinite" : undefined,
+                            }} />
+                            <span style={{ fontSize: 10, color: "#94a3b8", fontWeight: 700, letterSpacing: 0.5 }}>터미널</span>
+                        </div>
+                        {status !== "idle" && (
+                            <span style={{
+                                fontSize: 9, fontWeight: 700, padding: "1px 6px", borderRadius: 4,
+                                background: status === "success" ? "#5efc8e15" : status === "error" ? "#ff6b6b15" : "#fbbf2415",
+                                color: status === "success" ? "#5efc8e" : status === "error" ? "#ff6b6b" : "#fbbf24",
+                            }}>
+                                {status === "success" ? "SUCCESS" : status === "error" ? "ERROR" : "RUNNING"}
+                            </span>
+                        )}
                     </div>
-                    {execTime !== null && (
-                        <span style={{ fontSize: 9, color: t.termMuted }}>{execTime}ms</span>
-                    )}
+                    <div style={{ display: "flex", gap: 4, alignItems: "center" }}>
+                        {execTime !== null && (
+                            <span style={{ fontSize: 9, color: "#475569", fontFamily: "'JetBrains Mono', monospace" }}>{execTime}ms</span>
+                        )}
+                        <button onClick={() => { setOutput(""); setStatus("idle"); }} style={iconBtnStyle} title="출력 지우기">
+                            <span className="material-symbols-outlined" style={{ fontSize: 12, color: "#475569" }}>delete</span>
+                        </button>
+                    </div>
                 </div>
 
-                {/* 출력 내용 */}
+                {/* 출력 본문 */}
                 <pre style={{
-                    margin: 0, padding: "8px 10px",
-                    fontSize: 11, lineHeight: 1.5,
-                    fontFamily: "'JetBrains Mono', monospace",
-                    color: status === "error" ? t.termError : t.termText,
+                    margin: 0, padding: "10px 12px", flex: 1,
+                    fontSize: 12, lineHeight: 1.6,
+                    fontFamily: "'JetBrains Mono','Fira Code','Consolas',monospace",
+                    color: status === "error" ? "#ff8888" : "#e2e8f0",
                     whiteSpace: "pre-wrap", wordBreak: "break-all",
                 }}>
-                    {status === "running" ? "실행 중..." : output || (status === "idle" ? "▶ 실행 버튼을 눌러보세요" : "")}
+                    {status === "running" ? (
+                        <span style={{ color: "#fbbf24" }}>⟳ 컴파일 중...</span>
+                    ) : output ? (
+                        <>{status !== "error" && <span style={{ color: "#5efc8e" }}>$ </span>}{output}</>
+                    ) : (
+                        <span style={{ color: "#334155" }}>코드를 실행하세요 (F5)</span>
+                    )}
                 </pre>
             </div>
+
+            {/* ═══ 상태바 ═══ */}
+            <div style={{
+                display: "flex", alignItems: "center", justifyContent: "space-between",
+                padding: "0 12px", height: 22, minHeight: 22,
+                background: "#0d0d14", borderTop: "1px solid #1a1a2e",
+                fontSize: 9, color: "#475569",
+            }}>
+                <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
+                    <span style={{ display: "flex", alignItems: "center", gap: 3 }}>
+                        <div style={{
+                            width: 5, height: 5, borderRadius: "50%",
+                            background: status === "running" ? "#fbbf24" : status === "error" ? "#ff6b6b" : "#5efc8e",
+                        }} />
+                        {status === "running" ? "빌드 중" : "준비"}
+                    </span>
+                </div>
+                <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
+                    <span>{LANG_OPTIONS.find(l => l.value === lang)?.label}</span>
+                    <span>UTF-8</span>
+                    <span>cs-dark</span>
+                </div>
+            </div>
+
+            {/* ═══ 확장 모드 배경 오버레이 ═══ */}
+            {expanded && (
+                <div
+                    onClick={() => setExpanded(false)}
+                    style={{
+                        position: "fixed", inset: 0, background: "rgba(0,0,0,0.6)",
+                        zIndex: 999, cursor: "pointer",
+                    }}
+                />
+            )}
+
+            <style>{`
+                @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+                @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.4; } }
+                .hide-sb::-webkit-scrollbar { display: none; } .hide-sb { -ms-overflow-style: none; scrollbar-width: none; }
+            `}</style>
         </div>
     );
 }
+
+const iconBtnStyle: React.CSSProperties = {
+    padding: "3px 5px", borderRadius: 5, border: "none",
+    background: "transparent", cursor: "pointer",
+    display: "flex", alignItems: "center", gap: 3,
+    transition: "all 0.15s", color: "#64748b",
+};

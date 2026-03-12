@@ -1,23 +1,12 @@
 /**
- * 환경변수 검증 — 빌드/런타임 시 필수 환경변수 존재 확인
+ * 환경변수 — NEXT_PUBLIC_* 는 리터럴로 접근해야 Next.js가 빌드 시 인라인함
  */
-
-function requireEnv(name: string): string {
-    const value = process.env[name]
-    if (!value) {
-        if (typeof window !== 'undefined') {
-            console.warn(`[env] ${name} is not set`)
-        }
-        return ''
-    }
-    return value
-}
 
 export const env = {
     get SUPABASE_URL() {
-        return requireEnv('NEXT_PUBLIC_SUPABASE_URL')
+        return process.env.NEXT_PUBLIC_SUPABASE_URL || ''
     },
     get SUPABASE_ANON_KEY() {
-        return requireEnv('NEXT_PUBLIC_SUPABASE_ANON_KEY')
+        return process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ''
     },
 }

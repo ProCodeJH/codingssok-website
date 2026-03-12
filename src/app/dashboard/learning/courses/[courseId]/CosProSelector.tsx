@@ -11,6 +11,43 @@ import { COSPRO_SUB_COURSES, type CosProSubCourse } from "@/data/courses";
 const T = 44;
 const R = 6;
 
+/* Custom SVG icons */
+function PythonIcon({ size = 48 }: { size?: number }) {
+    return (
+        <svg width={size} height={size} viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+                <linearGradient id="py1" x1="0" y1="0" x2="1" y2="1">
+                    <stop offset="0%" stopColor="#5A9FD4" />
+                    <stop offset="100%" stopColor="#306998" />
+                </linearGradient>
+                <linearGradient id="py2" x1="0" y1="0" x2="1" y2="1">
+                    <stop offset="0%" stopColor="#FFD43B" />
+                    <stop offset="100%" stopColor="#FFE873" />
+                </linearGradient>
+            </defs>
+            <path d="M31.5 6C20.2 6 21 10.8 21 10.8V16h11v2H17.5S10 17.2 10 28.7 16.4 40 16.4 40H21v-5.6s-.3-6.4 6.3-6.4h10.8s6-.1 6-5.8V12.6S44.8 6 31.5 6zm-6 3.8a2 2 0 110 4 2 2 0 010-4z" fill="url(#py1)" />
+            <path d="M32.5 58c11.3 0 10.5-4.8 10.5-4.8V48H32v-2h14.5S54 46.8 54 35.3 47.6 24 47.6 24H43v5.6s.3 6.4-6.3 6.4H25.9s-6 .1-6 5.8v9.6S19.2 58 32.5 58zm6-3.8a2 2 0 110-4 2 2 0 010 4z" fill="url(#py2)" />
+        </svg>
+    );
+}
+
+function CLangIcon({ size = 48 }: { size?: number }) {
+    return (
+        <svg width={size} height={size} viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+                <linearGradient id="c1" x1="0" y1="0" x2="1" y2="1">
+                    <stop offset="0%" stopColor="#6295CB" />
+                    <stop offset="100%" stopColor="#3E6FB0" />
+                </linearGradient>
+            </defs>
+            <circle cx="32" cy="32" r="26" fill="url(#c1)" />
+            <circle cx="32" cy="32" r="20" fill="none" stroke="rgba(255,255,255,0.15)" strokeWidth="2" />
+            <path d="M42 20a18 18 0 10.001 24.001" stroke="#fff" strokeWidth="4.5" strokeLinecap="round" fill="none" />
+            <text x="30" y="40" fontFamily="system-ui,sans-serif" fontSize="22" fontWeight="900" fill="#fff" textAnchor="middle">C</text>
+        </svg>
+    );
+}
+
 function CosProBook({
     sub, index, onClick,
 }: {
@@ -73,7 +110,9 @@ function CosProBook({
                     <div className="cp-cover-dim" />
                     <div className="cp-cover-shine" />
                     <div className="cp-cover-content">
-                        <div className="cp-cover-icon">{sub.icon}</div>
+                        <div className="cp-cover-icon">
+                            {sub.language === 'Python' ? <PythonIcon size={48} /> : <CLangIcon size={48} />}
+                        </div>
                         <div className="cp-cover-lang">{sub.language}</div>
                         <div className="cp-cover-title">{sub.level === 2 ? '2급' : '1급'}</div>
                         <div className="cp-cover-badge">CosPro</div>
@@ -126,8 +165,8 @@ export default function CosProSelector() {
                     background:linear-gradient(145deg,#fdf2f8,#fce7f3 30%,#faf5ff 60%,#f0f4ff);
                     display:flex;flex-direction:column;align-items:center;
                     font-family:'Plus Jakarta Sans',system-ui,sans-serif;
-                    position:relative;overflow:hidden;
-                    padding:40px 24px;
+                    position:relative;overflow-x:hidden;overflow-y:auto;
+                    padding:40px 24px 80px;
                 }
                 .cp-pg::before{content:'';position:absolute;width:600px;height:600px;top:-20%;right:-10%;background:radial-gradient(circle,rgba(236,72,153,0.08),transparent 70%);border-radius:50%;pointer-events:none}
                 .cp-pg::after{content:'';position:absolute;width:500px;height:500px;bottom:-15%;left:-8%;background:radial-gradient(circle,rgba(139,92,246,0.06),transparent 70%);border-radius:50%;pointer-events:none}

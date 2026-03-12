@@ -528,6 +528,9 @@ export default function LearningDashboard() {
                 <div className="pg-logo"><img src="/images/promo/logo-codingssok.png" alt="코딩쏙" /></div>
                 <div className="pg-acts">
                     <div className="pg-user"><div className="pg-dot" />{user?.name || "학생"}</div>
+                    <button className="pg-btn" onClick={() => router.push("/dashboard/compiler")} title="C-Studio 컴파일러">
+                        <span className="material-symbols-outlined" style={{fontSize:15}}>terminal</span>
+                    </button>
                     <button className="pg-btn" onClick={toggleFullscreen}>
                         <span className="material-symbols-outlined" style={{fontSize:16}}>fullscreen</span>
                     </button>

@@ -155,7 +155,6 @@ export const COURSES: Course[] = [
         totalProblems: 0,
         estimatedHours: 0,
         chapters: EMPTY_CHAPTERS,
-        requiredTier: 'Silver',
     },
     {
         id: '6',
@@ -168,7 +167,6 @@ export const COURSES: Course[] = [
         totalProblems: 0,
         estimatedHours: 0,
         chapters: EMPTY_CHAPTERS,
-        requiredTier: 'Gold',
     },
     {
         id: '7',

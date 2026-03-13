@@ -1,0 +1,1290 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>코딩쏙 교재 — 경우의 수 — 모든 가능성을 세어 보자!</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+
+  :root {
+    --navy: #1a2e4a;
+    --navy-mid: #2c4a6e;
+    --navy-light: #3d6590;
+    --orange: #e07830;
+    --orange-light: #f5e6d8;
+    --white: #ffffff;
+    --bg: #f7f8fa;
+    --bg-warm: #faf9f7;
+    --gray-50: #f9fafb;
+    --gray-100: #f3f4f6;
+    --gray-200: #e5e7eb;
+    --gray-300: #d1d5db;
+    --gray-400: #9ca3af;
+    --gray-500: #6b7280;
+    --gray-600: #4b5563;
+    --gray-700: #374151;
+    --gray-800: #1f2937;
+    --text: #2d3748;
+    --green: #16a34a;
+    --green-bg: #dcfce7;
+    --red: #dc2626;
+    --red-bg: #fee2e2;
+    --blue: #2563eb;
+    --blue-bg: #dbeafe;
+    --yellow-bg: #fef9c3;
+    --font: 'Noto Sans KR', sans-serif;
+    --mono: 'JetBrains Mono', 'Consolas', monospace;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: var(--font); background: #e8eaed; font-size: 15px; }
+
+  /* ========== PAGE ========== */
+  .page {
+    width: 210mm;
+    min-height: 295mm;
+    margin: 24px auto;
+    background: var(--white);
+    box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* ========== PAGE 1: CHAPTER START ========== */
+  .chapter-page {
+    display: flex;
+    min-height: 295mm;
+  }
+
+  .chapter-sidebar {
+    width: 10px;
+    background: var(--navy);
+    flex-shrink: 0;
+  }
+
+  .chapter-accent-bar {
+    width: 7px;
+    background: var(--orange);
+    flex-shrink: 0;
+  }
+
+  .chapter-body {
+    flex: 1;
+    padding: 70px 65px 50px 55px;
+    position: relative;
+  }
+
+  .chapter-watermark {
+    position: absolute;
+    top: -10px;
+    right: -15px;
+    font-size: 280px;
+    font-weight: 900;
+    color: rgba(180,195,212,0.35);
+    line-height: 1;
+    pointer-events: none;
+    letter-spacing: -10px;
+  }
+
+  .chapter-label {
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--navy-mid);
+    letter-spacing: 2px;
+    margin-bottom: 4px;
+  }
+
+  .chapter-title {
+    font-size: 44px;
+    font-weight: 900;
+    color: var(--navy);
+    line-height: 1.15;
+    margin-bottom: 12px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .chapter-sub {
+    font-size: 16px;
+    color: var(--gray-500);
+    font-weight: 400;
+    margin-bottom: 20px;
+    padding-bottom: 28px;
+    border-bottom: 1px solid var(--gray-200);
+  }
+
+  /* Learning objectives */
+  .obj-title {
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--navy);
+    margin-bottom: 16px;
+    margin-top: 32px;
+  }
+
+  .obj-list {
+    list-style: none;
+    margin-bottom: 40px;
+  }
+
+  .obj-list li {
+    padding: 5px 0 5px 24px;
+    position: relative;
+    font-size: 15px;
+    color: var(--gray-700);
+    line-height: 1.6;
+  }
+
+  .obj-list li::before {
+    content: '•';
+    position: absolute;
+    left: 8px;
+    color: var(--navy-mid);
+    font-weight: 700;
+  }
+
+  /* Prerequisites flow */
+  .prereq-title {
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--navy);
+    margin-bottom: 18px;
+  }
+
+  .prereq-flow {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    margin-bottom: 44px;
+  }
+
+  .prereq-item {
+    padding: 9px 22px;
+    border: 1.5px solid var(--gray-300);
+    border-radius: 50px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--gray-600);
+    background: var(--white);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+  }
+
+  .prereq-item.current {
+    border-color: var(--navy);
+    color: var(--navy);
+    font-weight: 700;
+    background: #edf2f7;
+    box-shadow: 0 2px 6px rgba(26,46,74,0.12);
+  }
+
+  .prereq-arrow {
+    width: 36px;
+    text-align: center;
+    color: var(--gray-300);
+    font-size: 18px;
+    font-weight: 300;
+  }
+
+  /* Predict box */
+  .predict-box {
+    background: var(--gray-50);
+    border: 1.5px solid var(--gray-200);
+    border-radius: 12px;
+    padding: 24px 28px;
+  }
+
+  .predict-label {
+    display: inline-block;
+    background: var(--orange);
+    color: var(--white);
+    font-size: 12px;
+    font-weight: 600;
+    padding: 3px 12px;
+    border-radius: 4px;
+    margin-bottom: 14px;
+    letter-spacing: 0.5px;
+  }
+
+  .predict-q {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--navy);
+    margin-bottom: 16px;
+  }
+
+  .predict-code {
+    background: var(--white);
+    border: 1px solid var(--gray-200);
+    border-radius: 8px;
+    padding: 14px 18px;
+    font-family: var(--mono);
+    font-size: 13px;
+    line-height: 1.65;
+    color: var(--gray-700);
+  }
+
+  /* ========== PAGE 2: CORE CONTENT ========== */
+  .content-page {
+    padding: 55px 65px;
+  }
+
+  .unit-header-bar {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    margin-bottom: 8px;
+  }
+
+  .unit-tag {
+    font-size: 12px;
+    color: var(--orange);
+    font-weight: 600;
+    letter-spacing: 1px;
+  }
+
+  .unit-title-sm {
+    font-size: 14px;
+    color: var(--gray-400);
+    font-weight: 400;
+  }
+
+  .section-title {
+    font-size: 24px;
+    font-weight: 800;
+    color: var(--navy);
+    margin-bottom: 24px;
+    margin-top: 8px;
+    padding-left: 16px;
+    border-left: 5px solid var(--orange);
+  }
+
+  p {
+    font-size: 15.5px;
+    line-height: 1.9;
+    color: var(--text);
+    margin-bottom: 18px;
+  }
+
+  p code {
+    font-family: var(--mono);
+    font-size: 13.5px;
+    background: #f1f3f5;
+    padding: 2px 7px;
+    border-radius: 4px;
+    color: var(--navy);
+    font-weight: 500;
+  }
+
+  /* Code block */
+  .code-wrap {
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    border: 1px solid var(--gray-200);
+    margin: 22px 0;
+  }
+
+  .code-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 9px 18px;
+    background: var(--navy);
+    font-size: 12px;
+  }
+
+  .code-bar-lang {
+    font-family: var(--mono);
+    font-weight: 600;
+    color: var(--white);
+  }
+
+  .code-bar-file {
+    color: rgba(255,255,255,0.6);
+    font-weight: 400;
+  }
+
+  .code-body {
+    background: #f8f9fb;
+    padding: 20px 0;
+    font-family: var(--mono);
+    font-size: 13.5px;
+    line-height: 1.75;
+    border: 1px solid var(--gray-200);
+    border-top: none;
+    border-radius: 0 0 12px 12px;
+  }
+
+  .code-line {
+    display: flex;
+    padding: 0 20px;
+  }
+
+  .code-line:hover {
+    background: #f0f4f8;
+  }
+
+  .code-line.highlighted {
+    background: #fff8e1;
+  }
+
+  .ln {
+    width: 30px;
+    text-align: right;
+    color: #b8bfc8;
+    font-size: 12px;
+    margin-right: 18px;
+    user-select: none;
+    flex-shrink: 0;
+    padding-top: 1px;
+  }
+
+  .lc { flex: 1; }
+
+  /* syntax */
+  .s-pp { color: #8b5cf6; font-weight: 600; }
+  .s-str { color: #d97706; }
+  .s-type { color: #2563eb; font-weight: 500; }
+  .s-kw { color: #7c3aed; font-weight: 500; }
+  .s-fn { color: #059669; font-weight: 500; }
+  .s-num { color: #dc2626; }
+  .s-cm { color: #9ca3af; font-style: italic; }
+
+  /* Output block */
+  .output-wrap {
+    border-radius: 10px;
+    overflow: hidden;
+    margin: 10px 0 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    border: 1px solid #d1d5db;
+  }
+
+  .output-bar {
+    padding: 9px 18px;
+    background: #374151;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--white);
+    letter-spacing: 0.5px;
+  }
+
+  .output-body {
+    padding: 16px 20px;
+    font-family: var(--mono);
+    font-size: 13.5px;
+    line-height: 1.7;
+    color: var(--gray-800);
+    background: #f1f5f9;
+    border: 1px solid var(--gray-200);
+    border-top: none;
+    border-radius: 0 0 10px 10px;
+  }
+
+  /* Callout */
+  .tip {
+    margin: 28px 0;
+    padding: 18px 24px;
+    background: #dbeafe;
+    border-left: 5px solid #2563eb;
+    border-radius: 0 12px 12px 0;
+    font-size: 14.5px;
+    line-height: 1.8;
+    color: var(--text);
+  }
+
+  .tip-label {
+    font-weight: 700;
+    color: #2563eb;
+    font-size: 13px;
+    display: block;
+    margin-bottom: 4px;
+  }
+
+  .warn {
+    margin: 28px 0;
+    padding: 18px 24px;
+    background: #fef3c7;
+    border-left: 5px solid #d97706;
+    border-radius: 0 12px 12px 0;
+    font-size: 14.5px;
+    line-height: 1.8;
+  }
+
+  .warn-label {
+    font-weight: 700;
+    color: #d97706;
+    font-size: 13px;
+    display: block;
+    margin-bottom: 4px;
+  }
+
+  .note-box {
+    margin: 28px 0;
+    padding: 18px 24px;
+    background: #e2e8f0;
+    border-left: 5px solid #64748b;
+    border-radius: 0 12px 12px 0;
+    font-size: 14.5px;
+    line-height: 1.8;
+  }
+
+  .note-label {
+    font-weight: 700;
+    color: var(--gray-600);
+    font-size: 13px;
+    display: block;
+    margin-bottom: 4px;
+  }
+
+  /* Trace table */
+  table.trace {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    margin: 28px 0;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+    font-size: 14px;
+  }
+
+  table.trace th {
+    background: var(--navy);
+    color: var(--white);
+    padding: 10px 16px;
+    text-align: left;
+    font-weight: 500;
+    font-size: 13px;
+  }
+
+  table.trace td {
+    padding: 10px 16px;
+    border-bottom: 1px solid var(--gray-200);
+    color: var(--gray-700);
+  }
+
+  table.trace tr:nth-child(even) td { background: var(--gray-50); }
+  table.trace tr:last-child td { border-bottom: none; }
+
+  table.trace td code {
+    font-family: var(--mono);
+    font-size: 12.5px;
+    background: #eef1f5;
+    padding: 2px 6px;
+    border-radius: 4px;
+    color: var(--navy);
+  }
+
+  /* ========== PAGE 3: PROBLEMS ========== */
+  .problems-header {
+    margin-bottom: 8px;
+  }
+
+  .problems-chapter-ref {
+    font-size: 13px;
+    color: var(--gray-500);
+    margin-bottom: 4px;
+  }
+
+  .problems-title {
+    font-size: 28px;
+    font-weight: 800;
+    color: var(--navy);
+    margin-bottom: 24px;
+  }
+
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 16px;
+  }
+
+  .prob-card {
+    background: var(--white);
+    border: 1px solid var(--gray-200);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 3px 15px rgba(0,0,0,0.06);
+  }
+
+  .prob-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 16px;
+    background: var(--navy);
+  }
+
+  .prob-num {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--white);
+  }
+
+  .diff {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    font-size: 12px;
+    font-weight: 800;
+  }
+
+  .diff-basic { background: #22c55e; color: white; }
+  .diff-mid { background: #f59e0b; color: white; }
+  .diff-hard { background: #ef4444; color: white; }
+
+  .prob-desc {
+    font-size: 13.5px;
+    line-height: 1.65;
+    color: var(--gray-600);
+    margin-bottom: 10px;
+    padding: 14px 16px 0;
+  }
+
+  .prob-code {
+    background: var(--gray-50);
+    border: 1px solid var(--gray-200);
+    border-radius: 6px;
+    padding: 10px 14px;
+    margin: 0 16px 16px;
+    font-family: var(--mono);
+    font-size: 12.5px;
+    line-height: 1.55;
+    color: var(--gray-600);
+  }
+
+  /* Competition section */
+  .comp-section {
+    margin-top: 32px;
+    padding-top: 24px;
+    border-top: 2px solid var(--navy);
+  }
+
+  .comp-title {
+    font-size: 22px;
+    font-weight: 800;
+    color: var(--navy);
+    margin-bottom: 20px;
+  }
+
+  .comp-card {
+    background: var(--white);
+    border: 1.5px solid var(--gray-200);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 18px rgba(0,0,0,0.06);
+  }
+
+  .comp-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 16px;
+    background: #0f766e;
+  }
+
+  .comp-header .comp-name {
+    color: var(--white);
+    font-size: 15px;
+    font-weight: 700;
+    margin: 0;
+  }
+
+  .comp-inner {
+    padding: 14px 18px 18px;
+  }
+
+  .comp-badge {
+    display: inline-block;
+    padding: 3px 12px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 700;
+  }
+
+  .badge-bj { background: #93c5fd; color: #1e3a5f; }
+  .badge-cu { background: #c4b5fd; color: #3b1f7e; }
+  .badge-pg { background: #7dd3fc; color: #0c4a6e; }
+
+  .comp-name {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--navy);
+    margin-bottom: 6px;
+  }
+
+  .comp-desc {
+    font-size: 14px;
+    color: var(--gray-600);
+    line-height: 1.7;
+    margin-bottom: 14px;
+  }
+
+  .io-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+
+  .io-card {
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid var(--gray-200);
+  }
+
+  .io-h {
+    padding: 6px 14px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--gray-600);
+    background: #e2e8f0;
+  }
+
+  .io-c {
+    padding: 10px 14px;
+    font-family: var(--mono);
+    font-size: 13px;
+    line-height: 1.5;
+    background: var(--white);
+  }
+
+  /* ========== DEBUG LAB ========== */
+  .debug-section {
+    margin: 24px 0;
+    border: 2px solid var(--red);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+
+  .debug-bar {
+    background: var(--red);
+    color: var(--white);
+    padding: 10px 20px;
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 1px;
+  }
+
+  .debug-body {
+    padding: 20px;
+    background: #fef2f2;
+  }
+
+  /* 10축 connection */
+  .connect-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 16px;
+    margin: 28px 0;
+  }
+
+  .connect-card {
+    border-radius: 12px;
+    padding: 20px;
+    text-align: center;
+    border: 1px solid var(--gray-200);
+    box-shadow: 0 3px 14px rgba(0,0,0,0.05);
+  }
+
+  .connect-card h5 {
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 8px;
+  }
+
+  .connect-card p {
+    font-size: 13px;
+    margin: 0;
+    color: var(--gray-600);
+    line-height: 1.6;
+  }
+
+  .cc1 { border-top: 3px solid #8b5cf6; }
+  .cc1 h5 { color: #8b5cf6; }
+  .cc2 { border-top: 3px solid var(--green); }
+  .cc2 h5 { color: var(--green); }
+  .cc3 { border-top: 3px solid var(--navy); }
+  .cc3 h5 { color: var(--navy); }
+
+  /* PAGE NUMBER */
+  .page-num {
+    position: absolute;
+    bottom: 20px;
+    right: 30px;
+    font-size: 12px;
+    color: var(--gray-400);
+  }
+
+  /* WARMUP */
+  .warmup-box {
+    background: #e0e7f1;
+    border-radius: 12px;
+    padding: 24px 28px;
+    margin: 28px 0;
+    border: 2px solid #c7d2e0;
+  }
+
+  .warmup-title {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--navy);
+    margin-bottom: 14px;
+  }
+
+  .wq {
+    padding: 9px 16px;
+    background: var(--white);
+    border-radius: 8px;
+    margin-bottom: 8px;
+    font-size: 14px;
+    border: 1px solid var(--gray-200);
+    color: var(--gray-700);
+  }
+
+  .wq b { color: var(--navy); margin-right: 6px; }
+  .wq .hint { color: var(--gray-400); font-size: 13px; }
+
+  /* ===== CONTEST PROBLEMS PAGE ===== */
+  .contest-page-wrap .chapter-page {
+    min-height: auto;
+  }
+
+  .contest-page-wrap .chapter-page > div:last-child {
+    min-width: 0;
+    overflow-wrap: break-word;
+    word-break: break-word;
+  }
+
+  .contest-card {
+    background: white;
+    border: 1.5px solid var(--gray-200);
+    border-radius: 12px;
+    margin-bottom: 28px;
+    overflow: hidden;
+    break-inside: avoid;
+  }
+
+  .contest-header {
+    background: var(--navy);
+    color: white;
+    padding: 14px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .contest-num-source {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .contest-num {
+    font-weight: 700;
+    font-size: 16px;
+  }
+
+  .contest-source {
+    background: rgba(255,255,255,0.15);
+    padding: 3px 10px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 500;
+  }
+
+  .contest-body {
+    padding: 20px 24px 24px;
+  }
+
+  .contest-question {
+    font-size: 15px;
+    line-height: 1.7;
+    color: var(--text);
+    margin: 0 0 16px;
+    word-break: break-word;
+    overflow-wrap: break-word;
+  }
+
+  .contest-expected {
+    background: #1e293b;
+    border-radius: 8px;
+    overflow: hidden;
+    margin-bottom: 20px;
+  }
+
+  .contest-expected-label {
+    background: #334155;
+    color: #94a3b8;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 6px 14px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .contest-expected-body {
+    color: #e2e8f0;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    line-height: 1.6;
+    padding: 12px 16px;
+    margin: 0;
+    white-space: pre;
+  }
+
+  .contest-write-area {
+    border: 2px dashed var(--gray-300);
+    border-radius: 10px;
+    overflow: hidden;
+    transition: border-color 0.2s;
+  }
+
+  .contest-write-area:focus-within {
+    border-color: var(--orange);
+    border-style: solid;
+  }
+
+  .contest-write-label {
+    background: var(--bg);
+    color: var(--gray-500);
+    font-size: 12px;
+    font-weight: 600;
+    padding: 8px 14px;
+    border-bottom: 1px solid var(--gray-200);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .contest-textarea {
+    width: 100%;
+    min-height: 200px;
+    padding: 16px 18px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    line-height: 1.7;
+    color: var(--text);
+    background: #fafbfc;
+    border: none;
+    outline: none;
+    resize: vertical;
+    tab-size: 4;
+    box-sizing: border-box;
+  }
+
+  .contest-textarea::placeholder {
+    color: var(--gray-300);
+  }
+
+  @media print {
+    body { background: white; }
+    .page { box-shadow: none; margin: 0; page-break-after: always; }
+    .contest-textarea { border: 1px solid var(--gray-300); min-height: 180px; }
+  }
+
+</style>
+</head>
+<body>
+
+<div class="page">
+  <div class="chapter-page">
+    <div class="chapter-sidebar"></div>
+    <div class="chapter-accent-bar"></div>
+    <div class="chapter-body">
+      <div class="chapter-watermark">20</div>
+      <div class="chapter-label">Chapter 20</div>
+      <h1 class="chapter-title">경우의 수</h1>
+      <p class="chapter-sub">경우의 수가 뭔지, 곱의 법칙과 합의 법칙을 배우고, 순서가 중요한 경우와 아닌 경우를 구별해요.</p>
+
+      <h3 class="obj-title">이 유닛에서 배우는 것</h3>
+      <ul class="obj-list">
+        <li>경우의 수가 무엇인지 설명할 수 있어요.</li>
+        <li>곱의 법칙과 합의 법칙을 사용할 수 있어요.</li>
+        <li>순열과 조합의 차이를 이해해요.</li>
+        <li>경우의 수를 세는 것이 프로그래밍과 어떻게 연결되는지 알아요.</li>
+        <li>[심화] 팩토리얼과 nPr, nCr을 계산할 수 있어요.</li>
+        <li>[심화] 중복순열, 중복조합을 이해해요.</li>
+        <li>[심화 내용] 포함-배제 원리를 적용할 수 있어요.</li>
+        <li>[심화 내용] 비둘기집 원리를 이해하고 활용해요.</li>
+        <li>[심화 내용] 카탈란 수의 의미를 알아요.</li>
+        <li>[심화 내용] 알고리즘 복잡도와 경우의 수의 관계를 이해해요.</li>
+      </ul>
+
+      <h3 class="prereq-title">선수 학습</h3>
+      <div class="prereq-flow">
+        <div class="prereq-item">곱셈과 덧셈 (U16~U17)</div><div class="prereq-arrow">→</div>
+        <div class="prereq-item">참·거짓과 조건 판단 (U09~U14)</div><div class="prereq-arrow">→</div>
+        <div class="prereq-item current">반복의 개념 이해</div>
+      </div>
+
+      
+
+      <span class="page-num">1</span>
+    </div>
+  </div>
+</div>
+<div class="page">
+  <div class="content-page">
+    <div class="unit-header-bar">
+      <span class="unit-tag">UNIT 20</span>
+      <span class="unit-title-sm">경우의 수</span>
+    </div>
+<h2 class="section-title">경우의 수란?</h2>
+
+<p>어떤 일이 일어날 수 있는 <b>모든 가능한 경우</b>를 세는 것을 <b>경우의 수</b>라고 해요. 예를 들어 동전을 던지면? 앞면 또는 뒷면, <b>2가지</b>예요. 주사위를 던지면? 1, 2, 3, 4, 5, 6 — <b>6가지</b>예요.</p>
+<div class="note-box"><span class="note-label">[핵심] 경우의 수</span>
+<b>경우의 수</b> = 어떤 일이 일어날 수 있는 모든 가능한 결과의 가짓수<br>동전 던지기: 2가지 | 주사위 던지기: 6가지 | 가위바위보: 3가지</div>
+<table class="trace"><thead><tr><th>상황</th><th>가능한 결과</th><th>경우의 수</th></tr></thead><tbody><tr><td>동전 던지기</td><td>앞면, 뒷면</td><td>2</td></tr><tr><td>주사위 던지기</td><td>1, 2, 3, 4, 5, 6</td><td>6</td></tr><tr><td>가위바위보</td><td>가위, 바위, 보</td><td>3</td></tr><tr><td>동전 2개 던지기</td><td>(앞,앞)(앞,뒤)(뒤,앞)(뒤,뒤)</td><td>4</td></tr><tr><td>신호등 색</td><td>빨강, 노랑, 초록</td><td>3</td></tr></tbody></table>
+<!-- fact-bite -->
+<h2 class="section-title">곱의 법칙 — 이것도 저것도 고르기</h2>
+<p>두 가지 일을 <b>동시에</b> 해야 할 때, 경우의 수는 <b>곱하기</b>로 구해요. 셔츠를 고르고(3가지), 바지도 골라야 하니까(4가지), 전체 조합은 3 × 4 = <b>12가지</b>예요.</p>
+<div class="note-box"><span class="note-label">[핵심] 곱의 법칙</span>
+두 사건이 <b>동시에(AND)</b> 일어날 때:<br><b>전체 경우의 수 = (첫 번째 경우의 수) × (두 번째 경우의 수)</b><br><br>예: 셔츠 3벌 × 바지 4벌 = 12가지<br>예: 주사위 2개 던지기 = 6 × 6 = 36가지</div>
+<table class="trace"><thead><tr><th>셔츠</th><th>바지</th><th>조합</th></tr></thead><tbody><tr><td>셔츠1</td><td>바지1, 바지2, 바지3, 바지4</td><td>4가지</td></tr><tr><td>셔츠2</td><td>바지1, 바지2, 바지3, 바지4</td><td>4가지</td></tr><tr><td>셔츠3</td><td>바지1, 바지2, 바지3, 바지4</td><td>4가지</td></tr><tr><td>합계</td><td>3 × 4</td><td>12가지</td></tr></tbody></table>
+<div style="margin:22px 0"></div>
+<!-- image -->
+<div class="note-box"><span class="note-label">[예시] 곱의 법칙 활용</span>
+<b>아이스크림 주문하기</b><br>맛: 바닐라, 초콜릿, 딸기 (3가지)<br>콘: 와플콘, 컵 (2가지)<br>토핑: 초코칩, 스프링클, 없음 (3가지)<br><br>전체 경우의 수 = 3 × 2 × 3 = <b>18가지</b></div>
+<h2 class="section-title">합의 법칙 — 이것 또는 저것 고르기</h2>
+<p>두 가지 중 <b>하나만</b> 골라야 할 때, 경우의 수는 <b>더하기</b>로 구해요. 학교에 가는 방법이 버스 3개 또는 지하철 2개라면, 총 3 + 2 = <b>5가지</b>예요.</p>
+<div class="note-box"><span class="note-label">[핵심] 합의 법칙</span>
+두 사건 중 <b>하나만(OR)</b> 일어날 때:<br><b>전체 경우의 수 = (첫 번째 경우의 수) + (두 번째 경우의 수)</b><br><br>예: 버스 3개 + 지하철 2개 = 5가지<br>예: 빨간 공 4개 + 파란 공 3개 중 1개 고르기 = 7가지</div>
+<table class="trace"><thead><tr><th>교통수단 종류</th><th>선택지</th><th>경우의 수</th></tr></thead><tbody><tr><td>버스</td><td>101번, 202번, 303번</td><td>3</td></tr><tr><td>지하철</td><td>2호선, 5호선</td><td>2</td></tr><tr><td>합계 (OR)</td><td>하나만 선택</td><td>3 + 2 = 5가지</td></tr></tbody></table>
+<div style="margin:22px 0"></div>
+<!-- image -->
+
+<div class="tip"><span class="tip-label">[활동] 곱의 법칙 vs 합의 법칙 구별하기</span>
+다음 문제가 곱의 법칙인지 합의 법칙인지 맞혀 보세요:<br>① 주사위 2개를 던지는 경우의 수 → (곱의 법칙: 6 × 6 = 36)<br>② 빨간 연필 5개, 파란 연필 3개 중 1개를 고르는 경우 → (합의 법칙: 5 + 3 = 8)<br>③ 상의 4벌, 하의 3벌을 입는 경우 → (곱의 법칙: 4 × 3 = 12)</div>
+<div class="debug-section"><div class="debug-bar">DEBUG LAB — 에러를 찾으시오</div><div class="debug-body">
+
+<p style="margin:14px 0 0; font-size:14px;"><b>에러:</b> </p>
+<p style="font-size:14px;"><b>수정:</b> </p>
+</div></div>
+<h2 class="section-title">순서가 중요한 경우 v 아닌 경우</h2>
+<p>3명(A, B, C) 중에서 2명을 뽑는 상황을 생각해 봐요. 만약 <b>반장과 부반장</b>을 뽑는 거라면 A→B와 B→A는 <b>다른 경우</b>예요. 하지만 <b>팀을 만드는</b> 거라면 {A,B}와 {B,A}는 <b>같은 경우</b>예요.</p>
+<div class="note-box"><span class="note-label">[핵심] 순열과 조합</span>
+<b>순열(Permutation)</b>: 순서가 중요! — 뽑아서 줄 세우기<br>3명 중 2명 순열 = 3 × 2 = 6가지<br><br><b>조합(Combination)</b>: 순서 안 중요! — 뽑기만 하기<br>3명 중 2명 조합 = 6 ÷ 2 = 3가지<br><br>순열 ÷ (순서 바꾸는 경우) = 조합</div>
+<table class="trace"><thead><tr><th>번호</th><th>순열 (순서 O)</th><th>조합 (순서 X)</th></tr></thead><tbody><tr><td>1</td><td>A → B</td><td>{A, B}</td></tr><tr><td>2</td><td>B → A</td><td>(위와 같음)</td></tr><tr><td>3</td><td>A → C</td><td>{A, C}</td></tr><tr><td>4</td><td>C → A</td><td>(위와 같음)</td></tr><tr><td>5</td><td>B → C</td><td>{B, C}</td></tr><tr><td>6</td><td>C → B</td><td>(위와 같음)</td></tr><tr><td>합계</td><td>6가지</td><td>3가지</td></tr></tbody></table>
+<div class="debug-section"><div class="debug-bar">DEBUG LAB — 에러를 찾으시오</div><div class="debug-body">
+
+<p style="margin:14px 0 0; font-size:14px;"><b>에러:</b> </p>
+<p style="font-size:14px;"><b>수정:</b> </p>
+</div></div>
+<div style="margin:22px 0"></div>
+<!-- image -->
+<h2 class="section-title">C 언어와 연결 — 중첩 반복문이 곱의 법칙이다!</h2>
+<p>나중에 C 언어를 배우면, <b>중첩 for문</b>(반복문 안의 반복문)으로 모든 경우를 만들 수 있어요. 셔츠 3벌과 바지 4벌의 조합을 C 코드로 쓰면 이런 모습이에요:</p>
+<div class="note-box"><span class="note-label">[C 미리보기] 곱의 법칙 = 중첩 for문</span>
+for (shirt = 1; shirt <= 3; shirt++) {<br>&nbsp;&nbsp;for (pants = 1; pants <= 4; pants++) {<br>&nbsp;&nbsp;&nbsp;&nbsp;printf("셔츠%d + 바지%d\n", shirt, pants);<br>&nbsp;&nbsp;}<br>}<br><br>바깥 반복 3번 × 안쪽 반복 4번 = 총 12번 출력!<br>이것이 바로 <b>완전탐색(Brute Force)</b>이에요.</div>
+<table class="trace"><thead><tr><th>반복 횟수</th><th>shirt 값</th><th>pants 값</th><th>출력</th></tr></thead><tbody><tr><td>1</td><td>1</td><td>1</td><td>셔츠1 + 바지1</td></tr><tr><td>2</td><td>1</td><td>2</td><td>셔츠1 + 바지2</td></tr><tr><td>3</td><td>1</td><td>3</td><td>셔츠1 + 바지3</td></tr><tr><td>4</td><td>1</td><td>4</td><td>셔츠1 + 바지4</td></tr><tr><td>5</td><td>2</td><td>1</td><td>셔츠2 + 바지1</td></tr><tr><td>...</td><td>...</td><td>...</td><td>...</td></tr><tr><td>12</td><td>3</td><td>4</td><td>셔츠3 + 바지4</td></tr></tbody></table>
+
+<h2 class="section-title">KOI 연결 — 완전탐색의 핵심</h2>
+<div class="tip"><span class="tip-label">[KOI] 완전탐색 문제의 핵심</span>
+KOI(한국정보올림피아드)에서 가장 기본적인 문제 유형이 <b>완전탐색</b>이에요.<br><br>핵심 전략:<br>1. 경우의 수가 몇 개인지 먼저 세어 보기<br>2. 컴퓨터가 감당할 수 있는 크기인지 확인 (보통 1억 이하면 OK)<br>3. 모든 경우를 다 만들어서 조건에 맞는 것만 세기<br><br>경우의 수를 세는 능력 = KOI 기초 체력!</div>
+<h2 class="section-title">연습문제</h2>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 1</span><p style="margin:0;font-size:14px">동전 1개를 3번 던지면, 가능한 모든 경우의 수는 몇 가지인가요?</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 2</span><p style="margin:0;font-size:14px">다음 중 '곱의 법칙'을 써야 하는 문제는?<br>(1) 빨간 공 3개, 파란 공 5개 중 1개 고르기<br>(2) 상의 4벌, 하의 3벌을 골라 입기<br>(3) A학교 학생 20명, B학교 학생 15명 중 대표 1명 뽑기</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 3</span><p style="margin:0;font-size:14px">피자 메뉴: 크러스트 2종, 토핑 5종, 사이즈 3종이 있어요. 총 몇 가지 조합이 가능한가요?</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 4</span><p style="margin:0;font-size:14px">O/X: '합의 법칙'은 두 사건이 동시에 일어날 때 쓴다.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 5</span><p style="margin:0;font-size:14px">A 도시에서 B 도시로 가는 길이 3개, B에서 C로 가는 길이 4개일 때, A→B→C의 경우의 수는?</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 6</span><p style="margin:0;font-size:14px">4명 중에서 반장과 부반장을 뽑는 경우의 수는? (순서가 중요합니다)</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 7</span><p style="margin:0;font-size:14px">4명 중에서 2명으로 팀을 만드는 경우의 수는? (순서 상관없음)</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 8</span><p style="margin:0;font-size:14px">주사위 2개를 던져서 합이 7이 되는 경우의 수는? (전체 36가지 중에서)</p></div>
+<table class="trace"><thead><tr><th>합</th><th>가능한 조합</th><th>경우의 수</th></tr></thead><tbody><tr><td>2</td><td>(1,1)</td><td>1</td></tr><tr><td>3</td><td>(1,2)(2,1)</td><td>2</td></tr><tr><td>4</td><td>(1,3)(2,2)(3,1)</td><td>3</td></tr><tr><td>5</td><td>(1,4)(2,3)(3,2)(4,1)</td><td>4</td></tr><tr><td>6</td><td>(1,5)(2,4)(3,3)(4,2)(5,1)</td><td>5</td></tr><tr><td>7</td><td>(1,6)(2,5)(3,4)(4,3)(5,2)(6,1)</td><td>6</td></tr><tr><td>8</td><td>(2,6)(3,5)(4,4)(5,3)(6,2)</td><td>5</td></tr><tr><td>9</td><td>(3,6)(4,5)(5,4)(6,3)</td><td>4</td></tr><tr><td>10</td><td>(4,6)(5,5)(6,4)</td><td>3</td></tr><tr><td>11</td><td>(5,6)(6,5)</td><td>2</td></tr><tr><td>12</td><td>(6,6)</td><td>1</td></tr><tr><td>합계</td><td>전체</td><td>36</td></tr></tbody></table>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 9</span><p style="margin:0;font-size:14px">0~9 숫자로 만들 수 있는 3자리 비밀번호 (000~999)는 몇 가지인가요?</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 10</span><p style="margin:0;font-size:14px">알파벳 대문자(26개)와 숫자(10개)로 만드는 2자리 코드(첫 글자는 알파벳, 둘째 글자는 숫자)의 경우의 수는?</p></div>
+<div style="margin:22px 0"></div>
+<h2 class="section-title">용어 정리</h2>
+<h2 class="section-title">[심화] 팩토리얼과 순열/조합 공식</h2>
+<div class="note-box"><span class="note-label">[심화] 순열과 조합 공식</span>
+<b>팩토리얼:</b> n! = n * (n-1) * ... * 2 * 1<br>5! = 120, 10! = 3,628,800<br>0! = 1 (약속)<br><br><b>순열 (Permutation):</b> 순서 O<br>nPr = n! / (n-r)!<br>5명 중 3명을 줄 세우기: 5P3 = 60<br><br><b>조합 (Combination):</b> 순서 X<br>nCr = n! / (r! * (n-r)!)<br>5명 중 3명 뽑기: 5C3 = 10<br><br><b>관계:</b> nPr = nCr * r!<br>조합으로 뽑고, r!로 줄 세우면 순열!</div>
+<table class="trace"><thead><tr><th>n</th><th>계산 과정</th><th>n! 결과</th></tr></thead><tbody><tr><td>0</td><td>약속</td><td>1</td></tr><tr><td>1</td><td>1</td><td>1</td></tr><tr><td>2</td><td>2 × 1</td><td>2</td></tr><tr><td>3</td><td>3 × 2 × 1</td><td>6</td></tr><tr><td>4</td><td>4 × 3 × 2 × 1</td><td>24</td></tr><tr><td>5</td><td>5 × 4 × 3 × 2 × 1</td><td>120</td></tr><tr><td>6</td><td>6 × 5!</td><td>720</td></tr><tr><td>10</td><td>10 × 9 × ... × 1</td><td>3,628,800</td></tr></tbody></table>
+<table class="trace"><thead><tr><th>문제</th><th>순열 계산</th><th>조합 계산</th></tr></thead><tbody><tr><td>4명 중 2명</td><td>4P2 = 4!/2! = 12</td><td>4C2 = 4!/(2!×2!) = 6</td></tr><tr><td>5명 중 2명</td><td>5P2 = 5!/3! = 20</td><td>5C2 = 5!/(2!×3!) = 10</td></tr><tr><td>5명 중 3명</td><td>5P3 = 5!/2! = 60</td><td>5C3 = 5!/(3!×2!) = 10</td></tr><tr><td>6명 중 2명</td><td>6P2 = 6!/4! = 30</td><td>6C2 = 6!/(2!×4!) = 15</td></tr><tr><td>6명 중 4명</td><td>6P4 = 6!/2! = 360</td><td>6C4 = 6!/(4!×2!) = 15</td></tr></tbody></table>
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span><span class="code-bar-file">[C 코드] 팩토리얼, 순열, 조합</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;stdio.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc"><span class="s-type">long</span> <span class="s-type">long</span> <span class="s-fn">factorial</span>(<span class="s-type">int</span> n) {</span></div>
+<div class="code-line"><span class="ln">4</span><span class="lc">    <span class="s-type">long</span> <span class="s-type">long</span> r = <span class="s-num">1</span>;</span></div>
+<div class="code-line"><span class="ln">5</span><span class="lc">    <span class="s-kw">for</span> (<span class="s-type">int</span> i = <span class="s-num">2</span>; i &lt;= n; i++) r *= i;</span></div>
+<div class="code-line"><span class="ln">6</span><span class="lc">    <span class="s-kw">return</span> r;</span></div>
+<div class="code-line"><span class="ln">7</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">8</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">9</span><span class="lc"><span class="s-type">long</span> <span class="s-type">long</span> <span class="s-fn">perm</span>(<span class="s-type">int</span> n, <span class="s-type">int</span> r) {</span></div>
+<div class="code-line"><span class="ln">10</span><span class="lc">    <span class="s-kw">return</span> <span class="s-fn">factorial</span>(n) / <span class="s-fn">factorial</span>(n - r);</span></div>
+<div class="code-line"><span class="ln">11</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">12</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">13</span><span class="lc"><span class="s-type">long</span> <span class="s-type">long</span> <span class="s-fn">comb</span>(<span class="s-type">int</span> n, <span class="s-type">int</span> r) {</span></div>
+<div class="code-line"><span class="ln">14</span><span class="lc">    <span class="s-kw">return</span> <span class="s-fn">factorial</span>(n) / (<span class="s-fn">factorial</span>(r) * <span class="s-fn">factorial</span>(n - r));</span></div>
+<div class="code-line"><span class="ln">15</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">16</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">17</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">main</span>() {</span></div>
+<div class="code-line"><span class="ln">18</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"5! = %lld\n"</span>, <span class="s-fn">factorial</span>(<span class="s-num">5</span>));</span></div>
+<div class="code-line"><span class="ln">19</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"5P3 = %lld\n"</span>, <span class="s-fn">perm</span>(<span class="s-num">5</span>, <span class="s-num">3</span>));</span></div>
+<div class="code-line"><span class="ln">20</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"5C3 = %lld\n"</span>, <span class="s-fn">comb</span>(<span class="s-num">5</span>, <span class="s-num">3</span>));</span></div>
+<div class="code-line"><span class="ln">21</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"10C5 = %lld\n"</span>, <span class="s-fn">comb</span>(<span class="s-num">10</span>, <span class="s-num">5</span>));</span></div>
+<div class="code-line"><span class="ln">22</span><span class="lc">    </span></div>
+<div class="code-line"><span class="ln">23</span><span class="lc">    <span class="s-cm">// 파스칼의 삼각형</span></span></div>
+<div class="code-line"><span class="ln">24</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"\nPascal Triangle:\n"</span>);</span></div>
+<div class="code-line"><span class="ln">25</span><span class="lc">    <span class="s-kw">for</span> (<span class="s-type">int</span> n = <span class="s-num">0</span>; n &lt;= <span class="s-num">6</span>; n++) {</span></div>
+<div class="code-line"><span class="ln">26</span><span class="lc">        <span class="s-kw">for</span> (<span class="s-type">int</span> r = <span class="s-num">0</span>; r &lt;= n; r++)</span></div>
+<div class="code-line"><span class="ln">27</span><span class="lc">            <span class="s-fn">printf</span>(<span class="s-str">"%3lld"</span>, <span class="s-fn">comb</span>(n, r));</span></div>
+<div class="code-line"><span class="ln">28</span><span class="lc">        <span class="s-fn">printf</span>(<span class="s-str">"\n"</span>);</span></div>
+<div class="code-line"><span class="ln">29</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">30</span><span class="lc">    <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">31</span><span class="lc">}</span></div>
+</div>
+</div>
+<div class="output-wrap"><div class="output-bar">실행 결과</div><div class="output-body">5! = 120
+5P3 = 60
+5C3 = 10
+10C5 = 252
+
+Pascal Triangle:
+  1
+  1  1
+  1  2  1
+  1  3  3  1
+  1  4  6  4  1
+  1  5 10 10  5  1
+  1  6 15 20 15  6  1</div></div>
+<h2 class="section-title">[심화 내용] 포함-배제 원리</h2>
+<div class="note-box"><span class="note-label">[심화 내용] 포함-배제 원리</span>
+두 집합 A, B의 합집합 크기:<br>|A U B| = |A| + |B| - |A ∩ B|<br><br>세 집합:<br>|A U B U C| = |A|+|B|+|C| - |A∩B|-|A∩C|-|B∩C| + |A∩B∩C|<br><br><b>예:</b> 1~100에서 2의 배수 또는 3의 배수의 개수<br>2의 배수: 50개<br>3의 배수: 33개<br>6의 배수(둘 다): 16개<br>답: 50 + 33 - 16 = <b>67개</b><br><br>포함-배제 없이 세면 중복 계산!</div>
+<h2 class="section-title">[심화 내용] 비둘기집 원리</h2>
+<div class="note-box"><span class="note-label">[심화 내용] 비둘기집 원리 (Pigeonhole Principle)</span>
+n+1개의 물건을 n개의 상자에 넣으면,<br>적어도 하나의 상자에 2개 이상!<br><br><b>예1:</b> 13명이 있으면 같은 달에 태어난 사람이 반드시 존재<br>(12개월, 13명 -> 적어도 한 달에 2명)<br><br><b>예2:</b> 서울에 같은 머리카락 수를 가진 두 사람이 존재<br>(머리카락 최대 ~15만 개, 서울 인구 ~1000만 -> 확실!)<br><br><b>프로그래밍 연결:</b><br>- 해시 충돌은 피할 수 없다 (키 > 슬롯이면)<br>- 무손실 압축은 모든 파일을 줄일 수 없다<br>- 정렬에서 비교 하한: log2(n!) (경우의 수 > 비교 횟수)</div>
+<h2 class="section-title">[심화 내용] 카탈란 수</h2>
+<div class="note-box"><span class="note-label">[심화 내용] 카탈란 수 (Catalan Numbers)</span>
+C(0)=1, C(1)=1, C(2)=2, C(3)=5, C(4)=14, ...<br><br>공식: C(n) = (2n)! / ((n+1)! * n!)<br><br><b>카탈란 수가 세는 것들:</b><br>1. n쌍 괄호의 올바른 배치 수<br>   n=3: ((())), (()()), (())(), ()(()), ()()() = 5가지<br><br>2. n+1개 리프를 가진 이진 트리의 구조 수<br><br>3. n*n 격자에서 대각선 위만 통과하는 경로 수<br><br>4. n+2각형의 삼각 분할 수<br><br>전부 같은 수! 이것이 수학의 아름다움 ✨<br><br>KOI/대회에서 "올바른 괄호 쌍" 문제 = 카탈란 수!</div>
+<h2 class="section-title">[심화 내용] 알고리즘 복잡도와 경우의 수</h2>
+<div class="note-box"><span class="note-label">[심화 내용] 왜 경우의 수가 중요한가</span>
+알고리즘의 시간 복잡도 = 탐색해야 하는 경우의 수!<br><br><b>n개 원소 정렬:</b> n! 가지 순열 -> O(n log n) 비교 필요<br><b>비밀번호 4자리:</b> 10^4 = 10,000 경우 -> 브루트포스 O(10^4)<br><b>체스:</b> ~10^120 가지 게임 -> 완전 탐색 불가능!<br><b>외판원(TSP):</b> n! 경로 -> NP-hard<br><br>경우의 수가 폭발적으로 늘면:<br>1. 브루트포스 불가 -> 가지치기(pruning)<br>2. 동적 프로그래밍(DP)으로 중복 제거<br>3. 그리디(탐욕법)로 근사해<br>4. 아예 NP-hard면 근사 알고리즘<br><br>"경우의 수를 줄이는 것 = 알고리즘 설계"</div>
+<!-- fact-bite -->
+<!-- fact-bite -->
+<h2 class="section-title">[심화] 중복순열과 중복조합</h2>
+<div class="note-box"><span class="note-label">[심화] 중복 허용 경우의 수</span>
+<b>중복순열:</b> n개에서 r개를 뽑되 중복 허용, 순서 O<br>n^r<br>예: 숫자 0~9로 4자리 비밀번호 = 10^4 = 10,000가지<br><br><b>중복조합:</b> n개에서 r개를 뽑되 중복 허용, 순서 X<br>H(n,r) = C(n+r-1, r)<br>예: 3종류 과일에서 5개 담기 = C(7,5) = 21가지</div>
+<table class="trace"><thead><tr><th>자릿수</th><th>계산</th><th>경우의 수</th><th>해킹 시간 (초당 1000개)</th></tr></thead><tbody><tr><td>1자리</td><td>10^1</td><td>10</td><td>0.01초</td></tr><tr><td>2자리</td><td>10^2</td><td>100</td><td>0.1초</td></tr><tr><td>3자리</td><td>10^3</td><td>1,000</td><td>1초</td></tr><tr><td>4자리</td><td>10^4</td><td>10,000</td><td>10초</td></tr><tr><td>6자리</td><td>10^6</td><td>1,000,000</td><td>약 17분</td></tr><tr><td>8자리</td><td>10^8</td><td>100,000,000</td><td>약 28시간</td></tr></tbody></table>
+<div class="debug-section"><div class="debug-bar">DEBUG LAB — 에러를 찾으시오</div><div class="debug-body">
+
+<p style="margin:14px 0 0; font-size:14px;"><b>에러:</b> </p>
+<p style="font-size:14px;"><b>수정:</b> </p>
+</div></div>
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span><span class="code-bar-file">[C 코드] 경우의 수 세기</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;stdio.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc"><span class="s-type">long</span> <span class="s-type">long</span> <span class="s-fn">factorial</span>(<span class="s-type">int</span> n) {</span></div>
+<div class="code-line"><span class="ln">4</span><span class="lc">    <span class="s-type">long</span> <span class="s-type">long</span> r = <span class="s-num">1</span>;</span></div>
+<div class="code-line"><span class="ln">5</span><span class="lc">    <span class="s-kw">for</span> (<span class="s-type">int</span> i = <span class="s-num">2</span>; i &lt;= n; i++) r *= i;</span></div>
+<div class="code-line"><span class="ln">6</span><span class="lc">    <span class="s-kw">return</span> r;</span></div>
+<div class="code-line"><span class="ln">7</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">8</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">9</span><span class="lc"><span class="s-type">long</span> <span class="s-type">long</span> <span class="s-fn">comb</span>(<span class="s-type">int</span> n, <span class="s-type">int</span> r) {</span></div>
+<div class="code-line"><span class="ln">10</span><span class="lc">    <span class="s-kw">if</span> (r &gt; n) <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">11</span><span class="lc">    <span class="s-kw">if</span> (r &gt; n-r) r = n-r;</span></div>
+<div class="code-line"><span class="ln">12</span><span class="lc">    <span class="s-type">long</span> <span class="s-type">long</span> result = <span class="s-num">1</span>;</span></div>
+<div class="code-line"><span class="ln">13</span><span class="lc">    <span class="s-kw">for</span> (<span class="s-type">int</span> i = <span class="s-num">0</span>; i &lt; r; i++) {</span></div>
+<div class="code-line"><span class="ln">14</span><span class="lc">        result *= (n - i);</span></div>
+<div class="code-line"><span class="ln">15</span><span class="lc">        result /= (i + <span class="s-num">1</span>);</span></div>
+<div class="code-line"><span class="ln">16</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">17</span><span class="lc">    <span class="s-kw">return</span> result;</span></div>
+<div class="code-line"><span class="ln">18</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">19</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">20</span><span class="lc"><span class="s-type">long</span> <span class="s-type">long</span> <span class="s-fn">power</span>(<span class="s-type">int</span> base, <span class="s-type">int</span> exp) {</span></div>
+<div class="code-line"><span class="ln">21</span><span class="lc">    <span class="s-type">long</span> <span class="s-type">long</span> r = <span class="s-num">1</span>;</span></div>
+<div class="code-line"><span class="ln">22</span><span class="lc">    <span class="s-kw">for</span> (<span class="s-type">int</span> i = <span class="s-num">0</span>; i &lt; exp; i++) r *= base;</span></div>
+<div class="code-line"><span class="ln">23</span><span class="lc">    <span class="s-kw">return</span> r;</span></div>
+<div class="code-line"><span class="ln">24</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">25</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">26</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">main</span>() {</span></div>
+<div class="code-line"><span class="ln">27</span><span class="lc">    <span class="s-cm">// 순열: 5명 중 3명 줄 세우기</span></span></div>
+<div class="code-line"><span class="ln">28</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"5P3 = %lld\n"</span>, <span class="s-fn">factorial</span>(<span class="s-num">5</span>)/<span class="s-fn">factorial</span>(<span class="s-num">2</span>));</span></div>
+<div class="code-line"><span class="ln">29</span><span class="lc">    </span></div>
+<div class="code-line"><span class="ln">30</span><span class="lc">    <span class="s-cm">// 조합: 5명 중 3명 뽑기</span></span></div>
+<div class="code-line"><span class="ln">31</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"5C3 = %lld\n"</span>, <span class="s-fn">comb</span>(<span class="s-num">5</span>, <span class="s-num">3</span>));</span></div>
+<div class="code-line"><span class="ln">32</span><span class="lc">    </span></div>
+<div class="code-line"><span class="ln">33</span><span class="lc">    <span class="s-cm">// 중복순열: 4자리 비밀번호 (0~9)</span></span></div>
+<div class="code-line"><span class="ln">34</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"10^4 = %lld\n"</span>, <span class="s-fn">power</span>(<span class="s-num">10</span>, <span class="s-num">4</span>));</span></div>
+<div class="code-line"><span class="ln">35</span><span class="lc">    </span></div>
+<div class="code-line"><span class="ln">36</span><span class="lc">    <span class="s-cm">// 중복조합: 3종류 과일 5개</span></span></div>
+<div class="code-line"><span class="ln">37</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"H(3,5) = C(7,5) = %lld\n"</span>, <span class="s-fn">comb</span>(<span class="s-num">7</span>, <span class="s-num">5</span>));</span></div>
+<div class="code-line"><span class="ln">38</span><span class="lc">    </span></div>
+<div class="code-line"><span class="ln">39</span><span class="lc">    <span class="s-cm">// 파스칼의 삼각형 (nCr)</span></span></div>
+<div class="code-line"><span class="ln">40</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"\n파스칼 삼각형:\n"</span>);</span></div>
+<div class="code-line"><span class="ln">41</span><span class="lc">    <span class="s-kw">for</span> (<span class="s-type">int</span> n = <span class="s-num">0</span>; n &lt;= <span class="s-num">8</span>; n++) {</span></div>
+<div class="code-line"><span class="ln">42</span><span class="lc">        <span class="s-kw">for</span> (<span class="s-type">int</span> s = <span class="s-num">0</span>; s &lt; <span class="s-num">8</span>-n; s++) <span class="s-fn">printf</span>(<span class="s-str">" "</span>);</span></div>
+<div class="code-line"><span class="ln">43</span><span class="lc">        <span class="s-kw">for</span> (<span class="s-type">int</span> r = <span class="s-num">0</span>; r &lt;= n; r++)</span></div>
+<div class="code-line"><span class="ln">44</span><span class="lc">            <span class="s-fn">printf</span>(<span class="s-str">"%2lld "</span>, <span class="s-fn">comb</span>(n, r));</span></div>
+<div class="code-line"><span class="ln">45</span><span class="lc">        <span class="s-fn">printf</span>(<span class="s-str">"\n"</span>);</span></div>
+<div class="code-line"><span class="ln">46</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">47</span><span class="lc">    <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">48</span><span class="lc">}</span></div>
+</div>
+</div>
+<div class="output-wrap"><div class="output-bar">실행 결과</div><div class="output-body">5P3 = 60
+5C3 = 10
+10^4 = 10000
+H(3,5) = C(7,5) = 21
+
+파스칼 삼각형:
+         1 
+        1  1 
+       1  2  1 
+      1  3  3  1 
+     1  4  6  4  1 
+    1  5 10 10  5  1 
+   1  6 15 20 15  6  1 
+  1  7 21 35 35 21  7  1 
+ 1  8 28 56 70 56 28  8  1</div></div>
+<h2 class="section-title">[심화 내용] 이항 정리와 파스칼의 삼각형</h2>
+<div class="note-box"><span class="note-label">[심화 내용] 이항 정리</span>
+<b>(a + b)^n</b>을 전개하면:<br><br>(a+b)^n = C(n,0)*a^n + C(n,1)*a^(n-1)*b + ... + C(n,n)*b^n<br><br>계수가 파스칼의 삼각형!<br><br>(a+b)^0 = 1<br>(a+b)^1 = a + b<br>(a+b)^2 = a^2 + 2ab + b^2<br>(a+b)^3 = a^3 + 3a^2b + 3ab^2 + b^3<br>(a+b)^4 = a^4 + 4a^3b + 6a^2b^2 + 4ab^3 + b^4<br><br><b>파스칼의 삼각형 성질:</b><br>C(n,r) = C(n-1,r-1) + C(n-1,r)<br>위 두 수의 합 = 아래 수!<br><br>각 행의 합 = 2^n (a=b=1 대입)<br>교대 합 = 0 (a=1, b=-1 대입)</div>
+<h2 class="section-title">[심화 내용] 스털링 수</h2>
+<div class="note-box"><span class="note-label">[심화 내용] 스털링 수 맛보기</span>
+<b>제2종 스털링 수 S(n,k):</b><br>n개의 원소를 k개의 비어있지 않은 집합으로 분할하는 방법 수<br><br>S(4,2) = 7<br>{1,2,3},{4} / {1,2,4},{3} / {1,3,4},{2} / {2,3,4},{1}<br>{1,2},{3,4} / {1,3},{2,4} / {1,4},{2,3}<br><br><b>벨 수 B(n):</b><br>n개 원소의 모든 분할 수 = S(n,1)+S(n,2)+...+S(n,n)<br>B(1)=1, B(2)=2, B(3)=5, B(4)=15, B(5)=52<br><br>조합론의 세계는 무한히 깊어요!</div>
+<h2 class="section-title">[심화] 브루트포스와 경우의 수</h2>
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span><span class="code-bar-file">[C 코드] 모든 순열 생성 (백트래킹)</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;stdio.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc"><span class="s-type">int</span> arr[] = {<span class="s-num">1</span>, <span class="s-num">2</span>, <span class="s-num">3</span>};</span></div>
+<div class="code-line"><span class="ln">4</span><span class="lc"><span class="s-type">int</span> n = <span class="s-num">3</span>, count = <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">5</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">6</span><span class="lc"><span class="s-type">void</span> <span class="s-fn">swap</span>(<span class="s-type">int</span> *a, <span class="s-type">int</span> *b) { <span class="s-type">int</span> t=*a; *a=*b; *b=t; }</span></div>
+<div class="code-line"><span class="ln">7</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">8</span><span class="lc"><span class="s-type">void</span> <span class="s-fn">permute</span>(<span class="s-type">int</span> start) {</span></div>
+<div class="code-line"><span class="ln">9</span><span class="lc">    <span class="s-kw">if</span> (start == n) {</span></div>
+<div class="code-line"><span class="ln">10</span><span class="lc">        count++;</span></div>
+<div class="code-line"><span class="ln">11</span><span class="lc">        <span class="s-fn">printf</span>(<span class="s-str">"[%d] "</span>, count);</span></div>
+<div class="code-line"><span class="ln">12</span><span class="lc">        <span class="s-kw">for</span> (<span class="s-type">int</span> i = <span class="s-num">0</span>; i &lt; n; i++) <span class="s-fn">printf</span>(<span class="s-str">"%d "</span>, arr[i]);</span></div>
+<div class="code-line"><span class="ln">13</span><span class="lc">        <span class="s-fn">printf</span>(<span class="s-str">"\n"</span>);</span></div>
+<div class="code-line"><span class="ln">14</span><span class="lc">        <span class="s-kw">return</span>;</span></div>
+<div class="code-line"><span class="ln">15</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">16</span><span class="lc">    <span class="s-kw">for</span> (<span class="s-type">int</span> i = start; i &lt; n; i++) {</span></div>
+<div class="code-line"><span class="ln">17</span><span class="lc">        <span class="s-fn">swap</span>(&amp;arr[start], &amp;arr[i]);</span></div>
+<div class="code-line"><span class="ln">18</span><span class="lc">        <span class="s-fn">permute</span>(start + <span class="s-num">1</span>);</span></div>
+<div class="code-line"><span class="ln">19</span><span class="lc">        <span class="s-fn">swap</span>(&amp;arr[start], &amp;arr[i]);  <span class="s-cm">// 복원!</span></span></div>
+<div class="code-line"><span class="ln">20</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">21</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">22</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">23</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">main</span>() {</span></div>
+<div class="code-line"><span class="ln">24</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"{1,2,3}의 모든 순열:\n"</span>);</span></div>
+<div class="code-line"><span class="ln">25</span><span class="lc">    <span class="s-fn">permute</span>(<span class="s-num">0</span>);</span></div>
+<div class="code-line"><span class="ln">26</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"총 %d개 (= 3! = 6)\n"</span>, count);</span></div>
+<div class="code-line"><span class="ln">27</span><span class="lc">    <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">28</span><span class="lc">}</span></div>
+</div>
+</div>
+<div class="output-wrap"><div class="output-bar">실행 결과</div><div class="output-body">{1,2,3}의 모든 순열:
+[1] 1 2 3 
+[2] 1 3 2 
+[3] 2 1 3 
+[4] 2 3 1 
+[5] 3 2 1 
+[6] 3 1 2 
+총 6개 (= 3! = 6)</div></div>
+<h2 class="section-title">[심화 내용] 면접/시험 문제</h2>
+<div class="note-box"><span class="note-label">[심화 내용] 경우의 수 기출/면접</span>
+<b>Q1.</b> 52장 카드에서 5장을 뽑는 경우의 수?<br>A: C(52,5) = 2,598,960<br><br><b>Q2.</b> 1~100에서 3의 배수이거나 5의 배수인 수의 개수?<br>A: 포함-배제! 33 + 20 - 6 = 47개<br>(3의 배수 33, 5의 배수 20, 15의 배수 6)<br><br><b>Q3.</b> n명이 원형으로 앉는 경우의 수?<br>A: (n-1)! (한 명 고정, 나머지 배치)<br><br><b>Q4.</b> MISSISSIPPI의 글자 배열 수?<br>A: 11! / (4!*4!*2!) = 34,650<br>(중복 순열: 같은 글자가 여러 개)<br><br><b>Q5.</b> n비트로 표현할 수 있는 서로 다른 수의 개수?<br>A: 2^n (각 비트가 0 또는 1)</div>
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span><span class="code-bar-file">[C 코드] 중복 순열 - 부분집합 생성</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;stdio.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc"><span class="s-cm">// n비트 부분집합 = 2^n개</span></span></div>
+<div class="code-line"><span class="ln">4</span><span class="lc"><span class="s-type">void</span> <span class="s-fn">print_subsets</span>(<span class="s-type">int</span> arr[], <span class="s-type">int</span> n) {</span></div>
+<div class="code-line"><span class="ln">5</span><span class="lc">    <span class="s-type">int</span> total = <span class="s-num">1</span> &lt;&lt; n;  <span class="s-cm">// 2^n</span></span></div>
+<div class="code-line"><span class="ln">6</span><span class="lc">    <span class="s-kw">for</span> (<span class="s-type">int</span> mask = <span class="s-num">0</span>; mask &lt; total; mask++) {</span></div>
+<div class="code-line"><span class="ln">7</span><span class="lc">        <span class="s-fn">printf</span>(<span class="s-str">"{"</span>);</span></div>
+<div class="code-line"><span class="ln">8</span><span class="lc">        <span class="s-type">int</span> first = <span class="s-num">1</span>;</span></div>
+<div class="code-line"><span class="ln">9</span><span class="lc">        <span class="s-kw">for</span> (<span class="s-type">int</span> i = <span class="s-num">0</span>; i &lt; n; i++) {</span></div>
+<div class="code-line"><span class="ln">10</span><span class="lc">            <span class="s-kw">if</span> (mask &amp; (<span class="s-num">1</span> &lt;&lt; i)) {</span></div>
+<div class="code-line"><span class="ln">11</span><span class="lc">                <span class="s-kw">if</span> (!first) <span class="s-fn">printf</span>(<span class="s-str">","</span>);</span></div>
+<div class="code-line"><span class="ln">12</span><span class="lc">                <span class="s-fn">printf</span>(<span class="s-str">"%d"</span>, arr[i]);</span></div>
+<div class="code-line"><span class="ln">13</span><span class="lc">                first = <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">14</span><span class="lc">            }</span></div>
+<div class="code-line"><span class="ln">15</span><span class="lc">        }</span></div>
+<div class="code-line"><span class="ln">16</span><span class="lc">        <span class="s-fn">printf</span>(<span class="s-str">"} "</span>);</span></div>
+<div class="code-line"><span class="ln">17</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">18</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"\n총 %d개 부분집합\n"</span>, total);</span></div>
+<div class="code-line"><span class="ln">19</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">20</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">21</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">main</span>() {</span></div>
+<div class="code-line"><span class="ln">22</span><span class="lc">    <span class="s-type">int</span> arr[] = {<span class="s-num">1</span>, <span class="s-num">2</span>, <span class="s-num">3</span>};</span></div>
+<div class="code-line"><span class="ln">23</span><span class="lc">    <span class="s-fn">print_subsets</span>(arr, <span class="s-num">3</span>);</span></div>
+<div class="code-line"><span class="ln">24</span><span class="lc">    <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">25</span><span class="lc">}</span></div>
+</div>
+</div>
+<div class="output-wrap"><div class="output-bar">실행 결과</div><div class="output-body">{} {1} {2} {1,2} {3} {1,3} {2,3} {1,2,3} 
+총 8개 부분집합</div></div>
+<h2 class="section-title">[심화 내용] 확률과 경우의 수</h2>
+<div class="note-box"><span class="note-label">[심화 내용] 확률 = 유리한 경우 / 전체 경우</span>
+<b>확률의 기본 공식:</b><br>P(A) = |A| / |S|<br>A = 원하는 사건의 경우의 수<br>S = 전체 경우의 수<br><br><b>예: 주사위 2개 합이 7일 확률</b><br>전체: 6*6 = 36가지<br>합이 7: (1,6)(2,5)(3,4)(4,3)(5,2)(6,1) = 6가지<br>P = 6/36 = 1/6<br><br><b>예: 로또(45개 중 6개)</b><br>전체: C(45,6) = 8,145,060<br>당첨: 1가지<br>P = 1/8,145,060 ≈ 0.0000123%<br><br>경우의 수를 셀 줄 알아야 확률을 구할 수 있어요!</div>
+<div class="note-box"><span class="note-label">[심화 내용] 생일 문제 (Birthday Paradox)</span>
+<b>문제:</b> 23명이 모이면 같은 생일인 쌍이 있을 확률은?<br><br><b>반대로 계산 (전부 다른 생일):</b><br>P(전부 다름) = 365/365 * 364/365 * 363/365 * ... * 343/365<br>= 365! / (365^23 * 342!)<br>≈ 0.493<br><br>P(같은 생일 존재) = 1 - 0.493 = <b>0.507 (50.7%!)</b><br><br>23명만으로 50% 넘음! 직관과 크게 다르죠?<br><br><b>프로그래밍 연결:</b><br>해시 충돌도 생일 문제!<br>2^128 해시에서 2^64번 해싱하면 충돌 확률 ~50%</div>
+<!-- fact-bite -->
+
+<table class="trace"><thead><tr><th>용어</th><th>설명</th></tr></thead><tbody><tr><td><code>경우의 수</code></td><td>어떤 일이 일어날 수 있는 모든 가능한 결과의 가짓수.</td></tr><tr><td><code>곱의 법칙</code></td><td>두 사건이 동시에(AND) 일어날 때, 전체 경우의 수는 각각의 경우의 수를 곱한 것.</td></tr><tr><td><code>합의 법칙</code></td><td>두 사건 중 하나만(OR) 일어날 때, 전체 경우의 수는 각각의 경우의 수를 더한 것.</td></tr><tr><td><code>순열(Permutation)</code></td><td>순서가 중요한 경우의 수. n개에서 r개를 뽑아 줄 세우기.</td></tr><tr><td><code>조합(Combination)</code></td><td>순서가 중요하지 않은 경우의 수. n개에서 r개를 뽑기만 하기.</td></tr><tr><td><code>완전탐색(Brute Force)</code></td><td>가능한 모든 경우를 하나하나 다 확인하는 방법. 컴퓨터가 잘하는 것!</td></tr><tr><td><code>트리 다이어그램</code></td><td>경우의 수를 나뭇가지처럼 펼쳐서 그린 그림. 모든 경우를 빠짐없이 볼 수 있어요.</td></tr><tr><td><code>팩토리얼</code></td><td>n! = n*(n-1)*...*1. 순열/조합 계산의 기본.</td></tr><tr><td><code>포함-배제 원리</code></td><td>합집합 크기를 구할 때 교집합을 빼고 더하는 원리.</td></tr><tr><td><code>비둘기집 원리</code></td><td>n+1개를 n개 상자에 넣으면 한 상자에 2개 이상. 존재성 증명의 핵심.</td></tr><tr><td><code>카탈란 수</code></td><td>올바른 괄호 배치 수, 이진 트리 구조 수 등을 세는 수열. C(n) = (2n)!/((n+1)!*n!)</td></tr><tr><td><code>조합 폭발</code></td><td>경우의 수가 입력 크기에 따라 기하급수적으로 증가하는 현상.</td></tr><tr><td><code>파스칼의 삼각형</code></td><td>nCr을 삼각형 모양으로 배열한 것. 위 두 수의 합 = 아래 수.</td></tr></tbody></table>
+<div class="warmup-box"><div class="warmup-title">이번 유닛 핵심 정리</div><div class="wq"><b>1.</b> 경우의 수 = 가능한 모든 결과의 개수</div><div class="wq"><b>2.</b> 곱의 법칙: 연속 선택 = 곱하기</div><div class="wq"><b>3.</b> 합의 법칙: 택일 = 더하기</div><div class="wq"><b>4.</b> 순열(줄 세우기) vs 조합(뽑기)</div><div class="wq"><b>5.</b> [심화] nPr = n!/(n-r)!, nCr = n!/(r!(n-r)!)</div><div class="wq"><b>6.</b> [심화 내용] 포함-배제: |AUB| = |A|+|B|-|A∩B|</div><div class="wq"><b>7.</b> [심화 내용] 비둘기집: n+1개 -> n상자 = 겹침 보장</div><div class="wq"><b>8.</b> [심화 내용] 카탈란 수: 괄호/트리/경로 = 같은 수</div><div class="wq"><b>9.</b> [심화 내용] 경우의 수 줄이기 = 알고리즘 설계의 본질</div></div>
+<div class="tip"><span class="tip-label">이 유닛에서 연결된 축</span>
+<b>[C언어]</b> 중첩 반복문(이중 for문)이 곱의 법칙과 같은 원리<br><b>[컴퓨팅 사고력]</b> 문제를 체계적으로 분석하고 모든 경우를 빠짐없이 나열하기<br><b>[KOI]</b> 완전탐색(Brute Force) — 가장 기본적인 알고리즘 유형<br><b>[수학기초]</b> 곱의 법칙, 합의 법칙, 순열, 조합의 개념</div>
+<h2 class="section-title">실전 활용 연습</h2>
+<p>지금까지 배운 개념을 활용한 다양한 실전 예제와 연습문제입니다.</p>
+
+<h2 class="section-title">실생활 연결</h2>
+<div class="tip"><span class="tip-label">[실생활] 이 개념은 어디에 쓰일까?</span>
+게임 개발, 앱 만들기, 웹사이트, 로봇 제어, AI 학습 등 모든 분야에서 사용돼요!</div>
+
+<h2 class="section-title">추가 연습문제</h2>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 20</span><p style="margin:0;font-size:14px">이번 유닛에서 배운 핵심 개념 3가지를 자신의 말로 설명해 보세요.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 21</span><p style="margin:0;font-size:14px">이번 유닛의 개념을 활용한 자신만의 문제를 1개 만들어 보세요.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 22</span><p style="margin:0;font-size:14px">이번 유닛의 개념이 C언어에서 어떻게 사용되는지 조사해 보세요.</p></div>
+<h2 class="section-title">[심화] 더 알아보기</h2>
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+
+<p>이번 유닛의 모든 개념을 완전히 이해했습니다. 다음 유닛에서 더 발전된 개념을 배워보세요!</p>
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<div class="note-box"><span class="note-label">[다음 유닛 미리보기]</span>
+경우의 수를 세다 보면 '어떤 수가 특별한 성질을 가지는지'가 궁금해져요. 다음 유닛에서는 아주 특별한 수 — <b>소수(Prime Number)</b>를 만나 볼 거예요!</div>
+
+
+    <span class="page-num">2</span>
+  </div>
+</div>
+</body>
+</html>

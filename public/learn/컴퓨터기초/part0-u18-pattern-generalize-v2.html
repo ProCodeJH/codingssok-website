@@ -1,0 +1,1266 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>코딩쏙 교재 — 규칙 찾기와 일반화</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+
+  :root {
+    --navy: #1a2e4a;
+    --navy-mid: #2c4a6e;
+    --navy-light: #3d6590;
+    --orange: #e07830;
+    --orange-light: #f5e6d8;
+    --white: #ffffff;
+    --bg: #f7f8fa;
+    --bg-warm: #faf9f7;
+    --gray-50: #f9fafb;
+    --gray-100: #f3f4f6;
+    --gray-200: #e5e7eb;
+    --gray-300: #d1d5db;
+    --gray-400: #9ca3af;
+    --gray-500: #6b7280;
+    --gray-600: #4b5563;
+    --gray-700: #374151;
+    --gray-800: #1f2937;
+    --text: #2d3748;
+    --green: #16a34a;
+    --green-bg: #dcfce7;
+    --red: #dc2626;
+    --red-bg: #fee2e2;
+    --blue: #2563eb;
+    --blue-bg: #dbeafe;
+    --yellow-bg: #fef9c3;
+    --font: 'Noto Sans KR', sans-serif;
+    --mono: 'JetBrains Mono', 'Consolas', monospace;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: var(--font); background: #e8eaed; font-size: 15px; }
+
+  /* ========== PAGE ========== */
+  .page {
+    width: 210mm;
+    min-height: 295mm;
+    margin: 24px auto;
+    background: var(--white);
+    box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* ========== PAGE 1: CHAPTER START ========== */
+  .chapter-page {
+    display: flex;
+    min-height: 295mm;
+  }
+
+  .chapter-sidebar {
+    width: 10px;
+    background: var(--navy);
+    flex-shrink: 0;
+  }
+
+  .chapter-accent-bar {
+    width: 7px;
+    background: var(--orange);
+    flex-shrink: 0;
+  }
+
+  .chapter-body {
+    flex: 1;
+    padding: 70px 65px 50px 55px;
+    position: relative;
+  }
+
+  .chapter-watermark {
+    position: absolute;
+    top: -10px;
+    right: -15px;
+    font-size: 280px;
+    font-weight: 900;
+    color: rgba(180,195,212,0.35);
+    line-height: 1;
+    pointer-events: none;
+    letter-spacing: -10px;
+  }
+
+  .chapter-label {
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--navy-mid);
+    letter-spacing: 2px;
+    margin-bottom: 4px;
+  }
+
+  .chapter-title {
+    font-size: 44px;
+    font-weight: 900;
+    color: var(--navy);
+    line-height: 1.15;
+    margin-bottom: 12px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .chapter-sub {
+    font-size: 16px;
+    color: var(--gray-500);
+    font-weight: 400;
+    margin-bottom: 20px;
+    padding-bottom: 28px;
+    border-bottom: 1px solid var(--gray-200);
+  }
+
+  /* Learning objectives */
+  .obj-title {
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--navy);
+    margin-bottom: 16px;
+    margin-top: 32px;
+  }
+
+  .obj-list {
+    list-style: none;
+    margin-bottom: 40px;
+  }
+
+  .obj-list li {
+    padding: 5px 0 5px 24px;
+    position: relative;
+    font-size: 15px;
+    color: var(--gray-700);
+    line-height: 1.6;
+  }
+
+  .obj-list li::before {
+    content: '•';
+    position: absolute;
+    left: 8px;
+    color: var(--navy-mid);
+    font-weight: 700;
+  }
+
+  /* Prerequisites flow */
+  .prereq-title {
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--navy);
+    margin-bottom: 18px;
+  }
+
+  .prereq-flow {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    margin-bottom: 44px;
+  }
+
+  .prereq-item {
+    padding: 9px 22px;
+    border: 1.5px solid var(--gray-300);
+    border-radius: 50px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--gray-600);
+    background: var(--white);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+  }
+
+  .prereq-item.current {
+    border-color: var(--navy);
+    color: var(--navy);
+    font-weight: 700;
+    background: #edf2f7;
+    box-shadow: 0 2px 6px rgba(26,46,74,0.12);
+  }
+
+  .prereq-arrow {
+    width: 36px;
+    text-align: center;
+    color: var(--gray-300);
+    font-size: 18px;
+    font-weight: 300;
+  }
+
+  /* Predict box */
+  .predict-box {
+    background: var(--gray-50);
+    border: 1.5px solid var(--gray-200);
+    border-radius: 12px;
+    padding: 24px 28px;
+  }
+
+  .predict-label {
+    display: inline-block;
+    background: var(--orange);
+    color: var(--white);
+    font-size: 12px;
+    font-weight: 600;
+    padding: 3px 12px;
+    border-radius: 4px;
+    margin-bottom: 14px;
+    letter-spacing: 0.5px;
+  }
+
+  .predict-q {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--navy);
+    margin-bottom: 16px;
+  }
+
+  .predict-code {
+    background: var(--white);
+    border: 1px solid var(--gray-200);
+    border-radius: 8px;
+    padding: 14px 18px;
+    font-family: var(--mono);
+    font-size: 13px;
+    line-height: 1.65;
+    color: var(--gray-700);
+  }
+
+  /* ========== PAGE 2: CORE CONTENT ========== */
+  .content-page {
+    padding: 55px 65px;
+  }
+
+  .unit-header-bar {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    margin-bottom: 8px;
+  }
+
+  .unit-tag {
+    font-size: 12px;
+    color: var(--orange);
+    font-weight: 600;
+    letter-spacing: 1px;
+  }
+
+  .unit-title-sm {
+    font-size: 14px;
+    color: var(--gray-400);
+    font-weight: 400;
+  }
+
+  .section-title {
+    font-size: 24px;
+    font-weight: 800;
+    color: var(--navy);
+    margin-bottom: 24px;
+    margin-top: 8px;
+    padding-left: 16px;
+    border-left: 5px solid var(--orange);
+  }
+
+  p {
+    font-size: 15.5px;
+    line-height: 1.9;
+    color: var(--text);
+    margin-bottom: 18px;
+  }
+
+  p code {
+    font-family: var(--mono);
+    font-size: 13.5px;
+    background: #f1f3f5;
+    padding: 2px 7px;
+    border-radius: 4px;
+    color: var(--navy);
+    font-weight: 500;
+  }
+
+  /* Code block */
+  .code-wrap {
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    border: 1px solid var(--gray-200);
+    margin: 22px 0;
+  }
+
+  .code-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 9px 18px;
+    background: var(--navy);
+    font-size: 12px;
+  }
+
+  .code-bar-lang {
+    font-family: var(--mono);
+    font-weight: 600;
+    color: var(--white);
+  }
+
+  .code-bar-file {
+    color: rgba(255,255,255,0.6);
+    font-weight: 400;
+  }
+
+  .code-body {
+    background: #f8f9fb;
+    padding: 20px 0;
+    font-family: var(--mono);
+    font-size: 13.5px;
+    line-height: 1.75;
+    border: 1px solid var(--gray-200);
+    border-top: none;
+    border-radius: 0 0 12px 12px;
+  }
+
+  .code-line {
+    display: flex;
+    padding: 0 20px;
+  }
+
+  .code-line:hover {
+    background: #f0f4f8;
+  }
+
+  .code-line.highlighted {
+    background: #fff8e1;
+  }
+
+  .ln {
+    width: 30px;
+    text-align: right;
+    color: #b8bfc8;
+    font-size: 12px;
+    margin-right: 18px;
+    user-select: none;
+    flex-shrink: 0;
+    padding-top: 1px;
+  }
+
+  .lc { flex: 1; }
+
+  /* syntax */
+  .s-pp { color: #8b5cf6; font-weight: 600; }
+  .s-str { color: #d97706; }
+  .s-type { color: #2563eb; font-weight: 500; }
+  .s-kw { color: #7c3aed; font-weight: 500; }
+  .s-fn { color: #059669; font-weight: 500; }
+  .s-num { color: #dc2626; }
+  .s-cm { color: #9ca3af; font-style: italic; }
+
+  /* Output block */
+  .output-wrap {
+    border-radius: 10px;
+    overflow: hidden;
+    margin: 10px 0 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    border: 1px solid #d1d5db;
+  }
+
+  .output-bar {
+    padding: 9px 18px;
+    background: #374151;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--white);
+    letter-spacing: 0.5px;
+  }
+
+  .output-body {
+    padding: 16px 20px;
+    font-family: var(--mono);
+    font-size: 13.5px;
+    line-height: 1.7;
+    color: var(--gray-800);
+    background: #f1f5f9;
+    border: 1px solid var(--gray-200);
+    border-top: none;
+    border-radius: 0 0 10px 10px;
+  }
+
+  /* Callout */
+  .tip {
+    margin: 28px 0;
+    padding: 18px 24px;
+    background: #dbeafe;
+    border-left: 5px solid #2563eb;
+    border-radius: 0 12px 12px 0;
+    font-size: 14.5px;
+    line-height: 1.8;
+    color: var(--text);
+  }
+
+  .tip-label {
+    font-weight: 700;
+    color: #2563eb;
+    font-size: 13px;
+    display: block;
+    margin-bottom: 4px;
+  }
+
+  .warn {
+    margin: 28px 0;
+    padding: 18px 24px;
+    background: #fef3c7;
+    border-left: 5px solid #d97706;
+    border-radius: 0 12px 12px 0;
+    font-size: 14.5px;
+    line-height: 1.8;
+  }
+
+  .warn-label {
+    font-weight: 700;
+    color: #d97706;
+    font-size: 13px;
+    display: block;
+    margin-bottom: 4px;
+  }
+
+  .note-box {
+    margin: 28px 0;
+    padding: 18px 24px;
+    background: #e2e8f0;
+    border-left: 5px solid #64748b;
+    border-radius: 0 12px 12px 0;
+    font-size: 14.5px;
+    line-height: 1.8;
+  }
+
+  .note-label {
+    font-weight: 700;
+    color: var(--gray-600);
+    font-size: 13px;
+    display: block;
+    margin-bottom: 4px;
+  }
+
+  /* Trace table */
+  table.trace {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    margin: 28px 0;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+    font-size: 14px;
+  }
+
+  table.trace th {
+    background: var(--navy);
+    color: var(--white);
+    padding: 10px 16px;
+    text-align: left;
+    font-weight: 500;
+    font-size: 13px;
+  }
+
+  table.trace td {
+    padding: 10px 16px;
+    border-bottom: 1px solid var(--gray-200);
+    color: var(--gray-700);
+  }
+
+  table.trace tr:nth-child(even) td { background: var(--gray-50); }
+  table.trace tr:last-child td { border-bottom: none; }
+
+  table.trace td code {
+    font-family: var(--mono);
+    font-size: 12.5px;
+    background: #eef1f5;
+    padding: 2px 6px;
+    border-radius: 4px;
+    color: var(--navy);
+  }
+
+  /* ========== PAGE 3: PROBLEMS ========== */
+  .problems-header {
+    margin-bottom: 8px;
+  }
+
+  .problems-chapter-ref {
+    font-size: 13px;
+    color: var(--gray-500);
+    margin-bottom: 4px;
+  }
+
+  .problems-title {
+    font-size: 28px;
+    font-weight: 800;
+    color: var(--navy);
+    margin-bottom: 24px;
+  }
+
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 16px;
+  }
+
+  .prob-card {
+    background: var(--white);
+    border: 1px solid var(--gray-200);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 3px 15px rgba(0,0,0,0.06);
+  }
+
+  .prob-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 16px;
+    background: var(--navy);
+  }
+
+  .prob-num {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--white);
+  }
+
+  .diff {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    font-size: 12px;
+    font-weight: 800;
+  }
+
+  .diff-basic { background: #22c55e; color: white; }
+  .diff-mid { background: #f59e0b; color: white; }
+  .diff-hard { background: #ef4444; color: white; }
+
+  .prob-desc {
+    font-size: 13.5px;
+    line-height: 1.65;
+    color: var(--gray-600);
+    margin-bottom: 10px;
+    padding: 14px 16px 0;
+  }
+
+  .prob-code {
+    background: var(--gray-50);
+    border: 1px solid var(--gray-200);
+    border-radius: 6px;
+    padding: 10px 14px;
+    margin: 0 16px 16px;
+    font-family: var(--mono);
+    font-size: 12.5px;
+    line-height: 1.55;
+    color: var(--gray-600);
+  }
+
+  /* Competition section */
+  .comp-section {
+    margin-top: 32px;
+    padding-top: 24px;
+    border-top: 2px solid var(--navy);
+  }
+
+  .comp-title {
+    font-size: 22px;
+    font-weight: 800;
+    color: var(--navy);
+    margin-bottom: 20px;
+  }
+
+  .comp-card {
+    background: var(--white);
+    border: 1.5px solid var(--gray-200);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 18px rgba(0,0,0,0.06);
+  }
+
+  .comp-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 16px;
+    background: #0f766e;
+  }
+
+  .comp-header .comp-name {
+    color: var(--white);
+    font-size: 15px;
+    font-weight: 700;
+    margin: 0;
+  }
+
+  .comp-inner {
+    padding: 14px 18px 18px;
+  }
+
+  .comp-badge {
+    display: inline-block;
+    padding: 3px 12px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 700;
+  }
+
+  .badge-bj { background: #93c5fd; color: #1e3a5f; }
+  .badge-cu { background: #c4b5fd; color: #3b1f7e; }
+  .badge-pg { background: #7dd3fc; color: #0c4a6e; }
+
+  .comp-name {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--navy);
+    margin-bottom: 6px;
+  }
+
+  .comp-desc {
+    font-size: 14px;
+    color: var(--gray-600);
+    line-height: 1.7;
+    margin-bottom: 14px;
+  }
+
+  .io-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+
+  .io-card {
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid var(--gray-200);
+  }
+
+  .io-h {
+    padding: 6px 14px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--gray-600);
+    background: #e2e8f0;
+  }
+
+  .io-c {
+    padding: 10px 14px;
+    font-family: var(--mono);
+    font-size: 13px;
+    line-height: 1.5;
+    background: var(--white);
+  }
+
+  /* ========== DEBUG LAB ========== */
+  .debug-section {
+    margin: 24px 0;
+    border: 2px solid var(--red);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+
+  .debug-bar {
+    background: var(--red);
+    color: var(--white);
+    padding: 10px 20px;
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 1px;
+  }
+
+  .debug-body {
+    padding: 20px;
+    background: #fef2f2;
+  }
+
+  /* 10축 connection */
+  .connect-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 16px;
+    margin: 28px 0;
+  }
+
+  .connect-card {
+    border-radius: 12px;
+    padding: 20px;
+    text-align: center;
+    border: 1px solid var(--gray-200);
+    box-shadow: 0 3px 14px rgba(0,0,0,0.05);
+  }
+
+  .connect-card h5 {
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 8px;
+  }
+
+  .connect-card p {
+    font-size: 13px;
+    margin: 0;
+    color: var(--gray-600);
+    line-height: 1.6;
+  }
+
+  .cc1 { border-top: 3px solid #8b5cf6; }
+  .cc1 h5 { color: #8b5cf6; }
+  .cc2 { border-top: 3px solid var(--green); }
+  .cc2 h5 { color: var(--green); }
+  .cc3 { border-top: 3px solid var(--navy); }
+  .cc3 h5 { color: var(--navy); }
+
+  /* PAGE NUMBER */
+  .page-num {
+    position: absolute;
+    bottom: 20px;
+    right: 30px;
+    font-size: 12px;
+    color: var(--gray-400);
+  }
+
+  /* WARMUP */
+  .warmup-box {
+    background: #e0e7f1;
+    border-radius: 12px;
+    padding: 24px 28px;
+    margin: 28px 0;
+    border: 2px solid #c7d2e0;
+  }
+
+  .warmup-title {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--navy);
+    margin-bottom: 14px;
+  }
+
+  .wq {
+    padding: 9px 16px;
+    background: var(--white);
+    border-radius: 8px;
+    margin-bottom: 8px;
+    font-size: 14px;
+    border: 1px solid var(--gray-200);
+    color: var(--gray-700);
+  }
+
+  .wq b { color: var(--navy); margin-right: 6px; }
+  .wq .hint { color: var(--gray-400); font-size: 13px; }
+
+  /* ===== CONTEST PROBLEMS PAGE ===== */
+  .contest-page-wrap .chapter-page {
+    min-height: auto;
+  }
+
+  .contest-page-wrap .chapter-page > div:last-child {
+    min-width: 0;
+    overflow-wrap: break-word;
+    word-break: break-word;
+  }
+
+  .contest-card {
+    background: white;
+    border: 1.5px solid var(--gray-200);
+    border-radius: 12px;
+    margin-bottom: 28px;
+    overflow: hidden;
+    break-inside: avoid;
+  }
+
+  .contest-header {
+    background: var(--navy);
+    color: white;
+    padding: 14px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .contest-num-source {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .contest-num {
+    font-weight: 700;
+    font-size: 16px;
+  }
+
+  .contest-source {
+    background: rgba(255,255,255,0.15);
+    padding: 3px 10px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 500;
+  }
+
+  .contest-body {
+    padding: 20px 24px 24px;
+  }
+
+  .contest-question {
+    font-size: 15px;
+    line-height: 1.7;
+    color: var(--text);
+    margin: 0 0 16px;
+    word-break: break-word;
+    overflow-wrap: break-word;
+  }
+
+  .contest-expected {
+    background: #1e293b;
+    border-radius: 8px;
+    overflow: hidden;
+    margin-bottom: 20px;
+  }
+
+  .contest-expected-label {
+    background: #334155;
+    color: #94a3b8;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 6px 14px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .contest-expected-body {
+    color: #e2e8f0;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    line-height: 1.6;
+    padding: 12px 16px;
+    margin: 0;
+    white-space: pre;
+  }
+
+  .contest-write-area {
+    border: 2px dashed var(--gray-300);
+    border-radius: 10px;
+    overflow: hidden;
+    transition: border-color 0.2s;
+  }
+
+  .contest-write-area:focus-within {
+    border-color: var(--orange);
+    border-style: solid;
+  }
+
+  .contest-write-label {
+    background: var(--bg);
+    color: var(--gray-500);
+    font-size: 12px;
+    font-weight: 600;
+    padding: 8px 14px;
+    border-bottom: 1px solid var(--gray-200);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .contest-textarea {
+    width: 100%;
+    min-height: 200px;
+    padding: 16px 18px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    line-height: 1.7;
+    color: var(--text);
+    background: #fafbfc;
+    border: none;
+    outline: none;
+    resize: vertical;
+    tab-size: 4;
+    box-sizing: border-box;
+  }
+
+  .contest-textarea::placeholder {
+    color: var(--gray-300);
+  }
+
+  @media print {
+    body { background: white; }
+    .page { box-shadow: none; margin: 0; page-break-after: always; }
+    .contest-textarea { border: 1px solid var(--gray-300); min-height: 180px; }
+  }
+
+</style>
+</head>
+<body>
+
+<div class="page">
+  <div class="chapter-page">
+    <div class="chapter-sidebar"></div>
+    <div class="chapter-accent-bar"></div>
+    <div class="chapter-body">
+      <div class="chapter-watermark">18</div>
+      <div class="chapter-label">Chapter 18</div>
+      <h1 class="chapter-title">규칙 찾기와 일반화</h1>
+      <p class="chapter-sub">수열에서 패턴을 찾고, 수식(일반항)으로 표현하고, 코드로 바꾸는 과정을 배워요.</p>
+
+      <h3 class="obj-title">이 유닛에서 배우는 것</h3>
+      <ul class="obj-list">
+        <li>숫자/도형 패턴에서 규칙을 찾을 수 있어요.</li>
+        <li>규칙을 수식으로 일반화할 수 있어요.</li>
+        <li>일반화한 규칙으로 n번째 값을 예측할 수 있어요.</li>
+        <li>[심화] 등차/등비수열의 일반항을 구할 수 있어요.</li>
+        <li>[심화] 패턴을 C 코드의 반복문으로 구현할 수 있어요.</li>
+        <li>[심화 내용] 점화식과 폐쇄형(closed-form)의 관계를 이해해요.</li>
+        <li>[심화 내용] 피보나치 수열의 다양한 계산 방법을 비교할 수 있어요.</li>
+        <li>[심화 내용] 마스터 정리(Master Theorem)로 재귀의 복잡도를 분석할 수 있어요.</li>
+        <li>[심화 내용] 생성 함수(Generating Function)의 개념을 알아요.</li>
+      </ul>
+
+      <h3 class="prereq-title">선수 학습</h3>
+      <div class="prereq-flow">
+        <div class="prereq-item">덧셈, 뺄셈, 곱셈 기본</div><div class="prereq-arrow">→</div>
+        <div class="prereq-item">변수 개념 (U16)</div><div class="prereq-arrow">→</div>
+        <div class="prereq-item current">나머지 연산 (U17)</div>
+      </div>
+
+      
+
+      <span class="page-num">1</span>
+    </div>
+  </div>
+</div>
+<div class="page">
+  <div class="content-page">
+    <div class="unit-header-bar">
+      <span class="unit-tag">UNIT 18</span>
+      <span class="unit-title-sm">규칙 찾기와 일반화</span>
+    </div>
+<h2 class="section-title">숫자 속에 숨은 규칙</h2>
+
+<p>숫자가 나열되어 있을 때, 규칙을 찾아보는 것을 <b>패턴 인식</b>이라고 해요. 이것은 수학에서도, 코딩에서도, 일상에서도 아주 중요한 능력이에요.</p>
+<!-- image -->
+<h2 class="section-title">패턴 찾기 연습</h2>
+<div class="note-box"><span class="note-label">[예제] 다양한 수열의 규칙</span>
+<b>수열 1:</b> 1, 3, 5, 7, 9, ...<br>→ 차이: 2, 2, 2, 2 (일정!)<br>→ 규칙: 2씩 증가 → <b>등차수열</b><br>→ n번째 수: <b>2n - 1</b><br><br><b>수열 2:</b> 1, 4, 9, 16, 25, ...<br>→ 차이: 3, 5, 7, 9 (차이가 2씩 증가!)<br>→ 규칙: 제곱수<br>→ n번째 수: <b>n²</b><br><br><b>수열 3:</b> 2, 4, 8, 16, 32, ...<br>→ 비율: ×2, ×2, ×2 (일정!)<br>→ 규칙: 2배씩 증가 → <b>등비수열</b><br>→ n번째 수: <b>2ⁿ</b></div>
+<div class="tip"><span class="tip-label">[팁] 패턴 찾는 3단계</span>
+<b>1단계:</b> 이웃한 수의 <b>차이</b>를 구해 봐요 (등차?)<br><b>2단계:</b> 차이가 일정하지 않으면 <b>비율</b>을 구해 봐요 (등비?)<br><b>3단계:</b> 그래도 안 보이면 <b>제곱, 세제곱, 합, 피보나치</b>를 의심해 봐요</div>
+<table class="trace"><thead><tr><th>수열</th><th>차이/비율</th><th>종류</th><th>일반항</th></tr></thead><tbody><tr><td>2, 5, 8, 11, 14</td><td>3, 3, 3, 3</td><td>등차 (공차 3)</td><td>3n - 1</td></tr><tr><td>1, 2, 4, 8, 16</td><td>×2, ×2, ×2, ×2</td><td>등비 (공비 2)</td><td>2^(n-1)</td></tr><tr><td>1, 3, 6, 10, 15</td><td>2, 3, 4, 5</td><td>삼각수</td><td>n(n+1)/2</td></tr><tr><td>1, 1, 2, 3, 5, 8</td><td>—</td><td>피보나치</td><td>점화식</td></tr></tbody></table>
+<h2 class="section-title">규칙을 수식으로! (일반항)</h2>
+<p>규칙을 찾았으면, 그걸 <b>수식</b>으로 쓸 수 있어요. 'n번째 수를 구하는 공식'을 <b>일반항</b>이라고 해요.</p>
+<div class="note-box"><span class="note-label">[핵심] 등차수열 일반항</span>
+첫째항 a, 공차(차이) d인 등차수열:<br><br><b>일반항: aₙ = a + (n-1) × d</b><br><br>예: 첫째항 3, 공차 5인 수열: 3, 8, 13, 18, ...<br>aₙ = 3 + (n-1)×5 = 5n - 2<br>10번째 항: 5×10 - 2 = 48</div>
+
+<h2 class="section-title">수식을 코드로! (반복문)</h2>
+<p>수식을 알면, 코드로 바꿀 수 있어요. C언어의 <b>for문</b>이 바로 규칙을 코드로 만드는 도구예요.</p>
+<!-- image -->
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span><span class="code-bar-file">sequences.c</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;stdio.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">main</span>(<span class="s-type">void</span>) {</span></div>
+<div class="code-line"><span class="ln">4</span><span class="lc">    <span class="s-cm">// 홀수: 2n-1</span></span></div>
+<div class="code-line"><span class="ln">5</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"홀수: "</span>);</span></div>
+<div class="code-line"><span class="ln">6</span><span class="lc">    <span class="s-kw">for</span> (<span class="s-type">int</span> n = <span class="s-num">1</span>; n &lt;= <span class="s-num">10</span>; n++)</span></div>
+<div class="code-line"><span class="ln">7</span><span class="lc">        <span class="s-fn">printf</span>(<span class="s-str">"%d "</span>, <span class="s-num">2</span>*n - <span class="s-num">1</span>);</span></div>
+<div class="code-line"><span class="ln">8</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"\n"</span>);</span></div>
+<div class="code-line"><span class="ln">9</span><span class="lc">    </span></div>
+<div class="code-line"><span class="ln">10</span><span class="lc">    <span class="s-cm">// 제곱수: n²</span></span></div>
+<div class="code-line"><span class="ln">11</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"제곱: "</span>);</span></div>
+<div class="code-line"><span class="ln">12</span><span class="lc">    <span class="s-kw">for</span> (<span class="s-type">int</span> n = <span class="s-num">1</span>; n &lt;= <span class="s-num">10</span>; n++)</span></div>
+<div class="code-line"><span class="ln">13</span><span class="lc">        <span class="s-fn">printf</span>(<span class="s-str">"%d "</span>, n * n);</span></div>
+<div class="code-line"><span class="ln">14</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"\n"</span>);</span></div>
+<div class="code-line"><span class="ln">15</span><span class="lc">    </span></div>
+<div class="code-line"><span class="ln">16</span><span class="lc">    <span class="s-cm">// 2의 거듭제곱: 2^n</span></span></div>
+<div class="code-line"><span class="ln">17</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"2의거듭제곱: "</span>);</span></div>
+<div class="code-line"><span class="ln">18</span><span class="lc">    <span class="s-type">int</span> power = <span class="s-num">1</span>;</span></div>
+<div class="code-line"><span class="ln">19</span><span class="lc">    <span class="s-kw">for</span> (<span class="s-type">int</span> n = <span class="s-num">0</span>; n &lt; <span class="s-num">10</span>; n++) {</span></div>
+<div class="code-line"><span class="ln">20</span><span class="lc">        <span class="s-fn">printf</span>(<span class="s-str">"%d "</span>, power);</span></div>
+<div class="code-line"><span class="ln">21</span><span class="lc">        power *= <span class="s-num">2</span>;</span></div>
+<div class="code-line"><span class="ln">22</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">23</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"\n"</span>);</span></div>
+<div class="code-line"><span class="ln">24</span><span class="lc">    </span></div>
+<div class="code-line"><span class="ln">25</span><span class="lc">    <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">26</span><span class="lc">}</span></div>
+</div>
+</div>
+<div class="output-wrap"><div class="output-bar">실행 결과</div><div class="output-body">홀수: 1 3 5 7 9 11 13 15 17 19
+제곱: 1 4 9 16 25 36 49 64 81 100
+2의거듭제곱: 1 2 4 8 16 32 64 128 256 512</div></div>
+<div class="note-box"><span class="note-label">[핵심] for문 = 규칙의 반복</span>
+<code>for (int n = 시작; n <= 끝; n++)</code><br><br>• <b>시작</b>: 몇 번째부터?<br>• <b>끝</b>: 몇 번째까지?<br>• <b>n++</b>: 하나씩 다음으로<br>• <b>{ ... }</b>: 매번 할 일 (규칙 적용)<br><br>for문은 '규칙을 n번 반복 적용하라'는 명령이에요!</div>
+<h2 class="section-title">수열의 합 — 가우스의 마법</h2>
+<p>1부터 100까지의 합을 구해야 한다면? 일일이 더할 수도 있지만, <b>공식</b>이 있어요!</p>
+<div class="note-box"><span class="note-label">[핵심] 등차수열의 합 공식</span>
+1 + 2 + 3 + ... + n = <b>n(n+1)/2</b><br><br>예: 1+2+...+100 = 100×101/2 = <b>5050</b><br><br>가우스가 10살 때 발견! 머리끝(1)과 꼬리끝(100)을 짝지으면:<br>1+100=101, 2+99=101, ... 50쌍 × 101 = 5050</div>
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span><span class="code-bar-file">sum_formula.c</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;stdio.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">main</span>(<span class="s-type">void</span>) {</span></div>
+<div class="code-line"><span class="ln">4</span><span class="lc">    <span class="s-type">int</span> n = <span class="s-num">100</span>;</span></div>
+<div class="code-line"><span class="ln">5</span><span class="lc">    </span></div>
+<div class="code-line"><span class="ln">6</span><span class="lc">    <span class="s-cm">// 방법 1: 반복문 (O(n))</span></span></div>
+<div class="code-line"><span class="ln">7</span><span class="lc">    <span class="s-type">int</span> sum1 = <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">8</span><span class="lc">    <span class="s-kw">for</span> (<span class="s-type">int</span> i = <span class="s-num">1</span>; i &lt;= n; i++)</span></div>
+<div class="code-line"><span class="ln">9</span><span class="lc">        sum1 += i;</span></div>
+<div class="code-line"><span class="ln">10</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"반복: %d\n"</span>, sum1);   <span class="s-cm">// 5050</span></span></div>
+<div class="code-line"><span class="ln">11</span><span class="lc">    </span></div>
+<div class="code-line"><span class="ln">12</span><span class="lc">    <span class="s-cm">// 방법 2: 공식 (O(1))</span></span></div>
+<div class="code-line"><span class="ln">13</span><span class="lc">    <span class="s-type">int</span> sum2 = n * (n + <span class="s-num">1</span>) / <span class="s-num">2</span>;</span></div>
+<div class="code-line"><span class="ln">14</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"공식: %d\n"</span>, sum2);   <span class="s-cm">// 5050</span></span></div>
+<div class="code-line"><span class="ln">15</span><span class="lc">    </span></div>
+<div class="code-line"><span class="ln">16</span><span class="lc">    <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">17</span><span class="lc">}</span></div>
+</div>
+</div>
+<div class="output-wrap"><div class="output-bar">실행 결과</div><div class="output-body">반복: 5050
+공식: 5050</div></div>
+
+<h2 class="section-title">별 찍기 — 패턴의 실전</h2>
+<p>코딩 시험에서 가장 많이 나오는 패턴 문제: 별 찍기!</p>
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span><span class="code-bar-file">stars.c</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;stdio.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">main</span>(<span class="s-type">void</span>) {</span></div>
+<div class="code-line"><span class="ln">4</span><span class="lc">    <span class="s-type">int</span> n = <span class="s-num">5</span>;</span></div>
+<div class="code-line"><span class="ln">5</span><span class="lc">    </span></div>
+<div class="code-line"><span class="ln">6</span><span class="lc">    <span class="s-cm">// 직각삼각형 (왼쪽 정렬)</span></span></div>
+<div class="code-line"><span class="ln">7</span><span class="lc">    <span class="s-kw">for</span> (<span class="s-type">int</span> i = <span class="s-num">1</span>; i &lt;= n; i++) {</span></div>
+<div class="code-line"><span class="ln">8</span><span class="lc">        <span class="s-kw">for</span> (<span class="s-type">int</span> j = <span class="s-num">1</span>; j &lt;= i; j++)</span></div>
+<div class="code-line"><span class="ln">9</span><span class="lc">            <span class="s-fn">printf</span>(<span class="s-str">"*"</span>);</span></div>
+<div class="code-line"><span class="ln">10</span><span class="lc">        <span class="s-fn">printf</span>(<span class="s-str">"\n"</span>);</span></div>
+<div class="code-line"><span class="ln">11</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">12</span><span class="lc">    </span></div>
+<div class="code-line"><span class="ln">13</span><span class="lc">    <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">14</span><span class="lc">}</span></div>
+</div>
+</div>
+<div class="output-wrap"><div class="output-bar">실행 결과</div><div class="output-body">*
+**
+***
+****
+*****</div></div>
+<table class="trace"><thead><tr><th>행 (i)</th><th>별 개수 (j: 1~i)</th><th>출력</th></tr></thead><tbody><tr><td>1</td><td>1개</td><td>*</td></tr><tr><td>2</td><td>2개</td><td>**</td></tr><tr><td>3</td><td>3개</td><td>***</td></tr><tr><td>4</td><td>4개</td><td>****</td></tr><tr><td>5</td><td>5개</td><td>*****</td></tr></tbody></table>
+<div class="tip"><span class="tip-label">[팁] 별 찍기 패턴 모음</span>
+<b>직각삼각형</b>: j <= i (i행에 i개)<br><b>역삼각형</b>: j <= n-i+1 (i행에 n-i+1개)<br><b>피라미드</b>: 공백(n-i개) + 별(2i-1개)<br><b>다이아몬드</b>: 피라미드 + 역피라미드<br><br>핵심: 각 행에 '몇 개'인지 규칙(일반항)을 찾으면 됨!</div>
+<h2 class="section-title">[심화] 피보나치 수열 — 자연 속의 패턴</h2>
+<p>피보나치 수열은 <b>앞 두 수의 합</b>이 다음 수가 되는 수열이에요.</p>
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span><span class="code-bar-file">fibonacci.c</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;stdio.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">main</span>(<span class="s-type">void</span>) {</span></div>
+<div class="code-line"><span class="ln">4</span><span class="lc">    <span class="s-type">int</span> a = <span class="s-num">0</span>, b = <span class="s-num">1</span>;</span></div>
+<div class="code-line"><span class="ln">5</span><span class="lc">    </span></div>
+<div class="code-line"><span class="ln">6</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"피보나치: "</span>);</span></div>
+<div class="code-line"><span class="ln">7</span><span class="lc">    <span class="s-kw">for</span> (<span class="s-type">int</span> i = <span class="s-num">0</span>; i &lt; <span class="s-num">15</span>; i++) {</span></div>
+<div class="code-line"><span class="ln">8</span><span class="lc">        <span class="s-fn">printf</span>(<span class="s-str">"%d "</span>, a);</span></div>
+<div class="code-line"><span class="ln">9</span><span class="lc">        <span class="s-type">int</span> next = a + b;  <span class="s-cm">// 다음 수 = 앞 두 수의 합</span></span></div>
+<div class="code-line"><span class="ln">10</span><span class="lc">        a = b;</span></div>
+<div class="code-line"><span class="ln">11</span><span class="lc">        b = next;</span></div>
+<div class="code-line"><span class="ln">12</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">13</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"\n"</span>);</span></div>
+<div class="code-line"><span class="ln">14</span><span class="lc">    </span></div>
+<div class="code-line"><span class="ln">15</span><span class="lc">    <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">16</span><span class="lc">}</span></div>
+</div>
+</div>
+<div class="output-wrap"><div class="output-bar">실행 결과</div><div class="output-body">피보나치: 0 1 1 2 3 5 8 13 21 34 55 89 144 233 377</div></div>
+<div class="note-box"><span class="note-label">[심화] 피보나치의 비밀</span>
+피보나치 수열은 자연에 숨어 있어요:<br>• 꽃잎 수: 3, 5, 8, 13개 (대부분 피보나치 수!)<br>• 해바라기 씨앗 나선: 21, 34줄<br>• 소라 껍질의 나선<br>• 주식 차트 분석 (피보나치 되돌림)<br><br>연속 두 항의 비율은 <b>황금비 (≈ 1.618)</b>에 수렴!</div>
+<h2 class="section-title">[심화] 점화식 — 다른 방식의 규칙 표현</h2>
+<p>일반항은 n번째 수를 바로 구하는 공식이고, <b>점화식</b>은 이전 항으로부터 다음 항을 구하는 규칙이에요.</p>
+<div class="debug-section"><div class="debug-bar">DEBUG LAB — 에러를 찾으시오</div><div class="debug-body">
+
+<p style="margin:14px 0 0; font-size:14px;"><b>에러:</b> </p>
+<p style="font-size:14px;"><b>수정:</b> </p>
+</div></div>
+<h2 class="section-title">[심화] 재귀 — 자기 자신을 부르는 함수</h2>
+<p>점화식을 코드로 옮기는 방법 중 하나가 <b>재귀(recursion)</b>예요.</p>
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span><span class="code-bar-file">recursion.c</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;stdio.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc"><span class="s-cm">// 재귀로 팩토리얼 구하기</span></span></div>
+<div class="code-line"><span class="ln">4</span><span class="lc"><span class="s-cm">// n! = n × (n-1)!</span></span></div>
+<div class="code-line"><span class="ln">5</span><span class="lc"><span class="s-cm">// 5! = 5 × 4! = 5 × 4 × 3! = ... = 120</span></span></div>
+<div class="code-line"><span class="ln">6</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">factorial</span>(<span class="s-type">int</span> n) {</span></div>
+<div class="code-line"><span class="ln">7</span><span class="lc">    <span class="s-kw">if</span> (n &lt;= <span class="s-num">1</span>) <span class="s-kw">return</span> <span class="s-num">1</span>;     <span class="s-cm">// 기저 조건 (멈추는 조건!)</span></span></div>
+<div class="code-line"><span class="ln">8</span><span class="lc">    <span class="s-kw">return</span> n * <span class="s-fn">factorial</span>(n - <span class="s-num">1</span>);  <span class="s-cm">// 자기 자신을 호출!</span></span></div>
+<div class="code-line"><span class="ln">9</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">10</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">11</span><span class="lc"><span class="s-cm">// 재귀로 피보나치 (느림! O(2^n))</span></span></div>
+<div class="code-line"><span class="ln">12</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">fib</span>(<span class="s-type">int</span> n) {</span></div>
+<div class="code-line"><span class="ln">13</span><span class="lc">    <span class="s-kw">if</span> (n &lt;= <span class="s-num">1</span>) <span class="s-kw">return</span> n;</span></div>
+<div class="code-line"><span class="ln">14</span><span class="lc">    <span class="s-kw">return</span> <span class="s-fn">fib</span>(n - <span class="s-num">1</span>) + <span class="s-fn">fib</span>(n - <span class="s-num">2</span>);</span></div>
+<div class="code-line"><span class="ln">15</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">16</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">17</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">main</span>(<span class="s-type">void</span>) {</span></div>
+<div class="code-line"><span class="ln">18</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"5! = %d\n"</span>, <span class="s-fn">factorial</span>(<span class="s-num">5</span>));   <span class="s-cm">// 120</span></span></div>
+<div class="code-line"><span class="ln">19</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"fib(10) = %d\n"</span>, <span class="s-fn">fib</span>(<span class="s-num">10</span>));   <span class="s-cm">// 55</span></span></div>
+<div class="code-line"><span class="ln">20</span><span class="lc">    <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">21</span><span class="lc">}</span></div>
+</div>
+</div>
+<div class="output-wrap"><div class="output-bar">실행 결과</div><div class="output-body">5! = 120
+fib(10) = 55</div></div>
+<div class="warn"><span class="warn-label">[주의] 재귀의 함정</span>
+재귀 피보나치는 <b>매우 느려요</b>!<br>fib(50)을 계산하면 수십 초 걸림.<br><br>이유: 같은 값을 반복 계산 (fib(3)을 수백만 번!)<br>해결: <b>메모이제이션</b> 또는 <b>반복문</b> 사용<br><br>⚠️ 기저 조건이 없으면 무한 재귀 → 스택 오버플로우!</div>
+<h2 class="section-title">[심화] 등비수열과 지수 폭발</h2>
+<div class="note-box"><span class="note-label">[심화] 등비수열</span>
+첫째항 a, 공비(배율) r인 등비수열:<br><b>일반항: aₙ = a × r^(n-1)</b><br><b>합: Sₙ = a × (rⁿ - 1) / (r - 1)</b><br><br>예: 1, 2, 4, 8, 16, ... (a=1, r=2)<br>합: 1+2+4+...+2⁹ = 2¹⁰ - 1 = 1023</div>
+<div class="tip"><span class="tip-label">[팁] 지수 폭발이 무서운 이유</span>
+종이를 42번 접으면 두께가 지구에서 달까지 닿아요!<br><br>0.1mm × 2⁴² = 0.1mm × 4,398,046,511,104<br>= 약 440,000 km (지구~달 384,400 km)<br><br>2의 거듭제곱 성장(지수 성장)은 <b>시간 복잡도</b>에서도 등장:<br>O(2ⁿ) 알고리즘은 n=30이면 10억 → 사실상 불가능</div>
+<h2 class="section-title">[심화 내용] 시간 복잡도 맛보기</h2>
+<p>알고리즘이 '얼마나 빠른지' 표현하는 방법이 <b>시간 복잡도</b>예요. Big-O 표기법을 사용해요.</p>
+<table class="trace"><thead><tr><th>표기</th><th>이름</th><th>n=10</th><th>n=100</th><th>n=1000</th></tr></thead><tbody><tr><td>O(1)</td><td>상수</td><td>1</td><td>1</td><td>1</td></tr><tr><td>O(log n)</td><td>로그</td><td>3</td><td>7</td><td>10</td></tr><tr><td>O(n)</td><td>선형</td><td>10</td><td>100</td><td>1000</td></tr><tr><td>O(n log n)</td><td>선형로그</td><td>33</td><td>664</td><td>9966</td></tr><tr><td>O(n²)</td><td>이차</td><td>100</td><td>10,000</td><td>1,000,000</td></tr><tr><td>O(2ⁿ)</td><td>지수</td><td>1,024</td><td>10³⁰</td><td>10³⁰¹</td></tr></tbody></table>
+<div class="note-box"><span class="note-label">[심화 내용] 합 공식이 중요한 이유</span>
+1+2+...+n의 반복문 = O(n)<br>공식 n(n+1)/2 = O(1)<br><br>n이 10억이면?<br>반복문: 10억 번 계산 (수 초)<br>공식: 1번 계산 (0.000001초)<br><br>수학 공식을 아는 것이 <b>알고리즘 최적화</b>의 시작!</div>
+<h2 class="section-title">[심화 내용] 수열과 급수의 중요 공식들</h2>
+<div class="note-box"><span class="note-label">[심화 내용] 핵심 합 공식 모음</span>
+<b>1+2+...+n</b> = n(n+1)/2<br><b>1²+2²+...+n²</b> = n(n+1)(2n+1)/6<br><b>1³+2³+...+n³</b> = [n(n+1)/2]²<br><b>등차수열 합</b> = n(첫항+끝항)/2<br><b>등비수열 합</b> = a(rⁿ-1)/(r-1)<br><br>이 공식들은 알고리즘 분석, 그래픽스, 물리 시뮬레이션에서 사용!</div>
+<h2 class="section-title">KOI 연결: 패턴 찾기 문제</h2>
+<div class="tip"><span class="tip-label">[KOI] 자주 나오는 패턴 유형</span>
+1. <b>등차수열</b>: 차이가 일정 (일반항 구하기)<br>2. <b>피보나치</b>: 앞 두 수의 합 (점화식)<br>3. <b>삼각수</b>: 1, 3, 6, 10, 15... → n(n+1)/2<br>4. <b>별 찍기</b>: 행마다 별 개수 규칙 찾기<br>5. <b>합 구하기</b>: 1+2+...+n, 1+3+5+... 등<br>6. <b>수 뒤집기</b>: %10과 /10 반복 (U17)</div>
+<!-- fact-bite -->
+<table class="trace"><thead><tr><th>수열</th><th>첫째항 (a)</th><th>공차 (d)</th><th>일반항 a(n)</th><th>10번째 항</th></tr></thead><tbody><tr><td>1, 3, 5, 7, ...</td><td>1</td><td>2</td><td>2n - 1</td><td>19</td></tr><tr><td>2, 5, 8, 11, ...</td><td>2</td><td>3</td><td>3n - 1</td><td>29</td></tr><tr><td>10, 7, 4, 1, ...</td><td>10</td><td>-3</td><td>-3n + 13</td><td>-17</td></tr><tr><td>3, 3, 3, 3, ...</td><td>3</td><td>0</td><td>3</td><td>3</td></tr><tr><td>100, 95, 90, 85, ...</td><td>100</td><td>-5</td><td>-5n + 105</td><td>55</td></tr></tbody></table>
+<p>등차수열의 일반항은 a(n) = a + (n-1) x d로 구해요. 공차가 음수이면 수열이 줄어들어요.</p>
+<table class="trace"><thead><tr><th>수열</th><th>첫째항 (a)</th><th>공비 (r)</th><th>일반항 a(n)</th><th>5번째 항</th></tr></thead><tbody><tr><td>1, 2, 4, 8, ...</td><td>1</td><td>2</td><td>2^(n-1)</td><td>16</td></tr><tr><td>3, 9, 27, 81, ...</td><td>3</td><td>3</td><td>3^n</td><td>243</td></tr><tr><td>1000, 100, 10, 1, ...</td><td>1000</td><td>1/10</td><td>1000/(10^(n-1))</td><td>0.1</td></tr><tr><td>5, -10, 20, -40, ...</td><td>5</td><td>-2</td><td>5 x (-2)^(n-1)</td><td>80</td></tr></tbody></table>
+<p>등비수열에서 공비가 음수이면 부호가 번갈아 바뀌어요. 공비의 절대값이 1보다 작으면 수열이 0에 수렴해요.</p>
+<table class="trace"><thead><tr><th>단계</th><th>a (현재)</th><th>b (다음)</th><th>next = a + b</th><th>출력</th></tr></thead><tbody><tr><td>1</td><td>0</td><td>1</td><td>0 + 1 = 1</td><td>0</td></tr><tr><td>2</td><td>1</td><td>1</td><td>1 + 1 = 2</td><td>1</td></tr><tr><td>3</td><td>1</td><td>2</td><td>1 + 2 = 3</td><td>1</td></tr><tr><td>4</td><td>2</td><td>3</td><td>2 + 3 = 5</td><td>2</td></tr><tr><td>5</td><td>3</td><td>5</td><td>3 + 5 = 8</td><td>3</td></tr><tr><td>6</td><td>5</td><td>8</td><td>5 + 8 = 13</td><td>5</td></tr><tr><td>7</td><td>8</td><td>13</td><td>8 + 13 = 21</td><td>8</td></tr></tbody></table>
+<p>피보나치 수열은 두 변수 a, b를 번갈아 업데이트하는 패턴이에요. next를 계산한 뒤 a=b, b=next로 한 칸씩 밀어요.</p>
+<table class="trace"><thead><tr><th>행 (i)</th><th>직각삼각형 (별 i개)</th><th>역삼각형 (별 n-i+1개)</th><th>피라미드 (공백 n-i, 별 2i-1)</th></tr></thead><tbody><tr><td>1</td><td>*</td><td>*****</td><td>    *</td></tr><tr><td>2</td><td>**</td><td>****</td><td>   ***</td></tr><tr><td>3</td><td>***</td><td>***</td><td>  *****</td></tr><tr><td>4</td><td>****</td><td>**</td><td> *******</td></tr><tr><td>5</td><td>*****</td><td>*</td><td>*********</td></tr></tbody></table>
+<p>별 찍기의 핵심은 각 행에서 '별이 몇 개인지'와 '공백이 몇 개인지'를 n과 i로 표현하는 것이에요.</p>
+<table class="trace"><thead><tr><th>n</th><th>반복문 합 (1+2+...+n)</th><th>공식 n(n+1)/2</th><th>일치?</th></tr></thead><tbody><tr><td>1</td><td>1</td><td>1 x 2 / 2 = 1</td><td>O</td></tr><tr><td>5</td><td>15</td><td>5 x 6 / 2 = 15</td><td>O</td></tr><tr><td>10</td><td>55</td><td>10 x 11 / 2 = 55</td><td>O</td></tr><tr><td>50</td><td>1275</td><td>50 x 51 / 2 = 1275</td><td>O</td></tr><tr><td>100</td><td>5050</td><td>100 x 101 / 2 = 5050</td><td>O</td></tr></tbody></table>
+<p>가우스 합 공식 n(n+1)/2는 n이 아무리 커져도 한 번의 계산으로 답을 구해요. 반복문은 n번 더해야 해요.</p>
+<div style="margin:22px 0"></div>
+<div style="margin:22px 0"></div>
+<div style="margin:22px 0"></div>
+<div style="margin:22px 0"></div>
+<div class="debug-section"><div class="debug-bar">DEBUG LAB — 에러를 찾으시오</div><div class="debug-body">
+
+<p style="margin:14px 0 0; font-size:14px;"><b>에러:</b> </p>
+<p style="font-size:14px;"><b>수정:</b> </p>
+</div></div>
+<div class="debug-section"><div class="debug-bar">DEBUG LAB — 에러를 찾으시오</div><div class="debug-body">
+
+<p style="margin:14px 0 0; font-size:14px;"><b>에러:</b> </p>
+<p style="font-size:14px;"><b>수정:</b> </p>
+</div></div>
+<h2 class="section-title">OX 퀴즈</h2>
+<!-- ox -->
+<h2 class="section-title">연습문제</h2>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 1</span><p style="margin:0;font-size:14px">3, 6, 9, 12, 15, ...의 규칙을 설명하고 n번째 수를 수식으로 쓰세요.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 2</span><p style="margin:0;font-size:14px">2, 4, 6, 8, ...의 10번째 수는?</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 3</span><p style="margin:0;font-size:14px">1+2+3+...+10의 합을 공식으로 구하세요.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 4</span><p style="margin:0;font-size:14px">for문으로 1부터 5까지의 홀수(1,3,5,7,9)를 출력하는 코드를 쓰세요.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 5</span><p style="margin:0;font-size:14px">별 찍기에서 3행에 별이 3개 찍히는 규칙은 무엇인가요?</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 6</span><p style="margin:0;font-size:14px">1, 4, 9, 16, 25, ...의 7번째 수를 구하고 일반항을 쓰세요.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 7</span><p style="margin:0;font-size:14px">1, 1, 2, 3, 5, 8, 13, ...의 다음 두 수는?</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 8</span><p style="margin:0;font-size:14px">1+3+5+7+...+99의 합을 구하세요. (홀수의 합 = n²)</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 9</span><p style="margin:0;font-size:14px">역삼각형(5,4,3,2,1개)으로 별을 찍으려면 별 개수 규칙이 어떻게 되나요?</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 10</span><p style="margin:0;font-size:14px">등차수열 5, 8, 11, 14, ...의 일반항을 구하고, 20번째 항을 계산하세요.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 11</span><p style="margin:0;font-size:14px">[심화] 재귀로 factorial(5)를 계산할 때 호출 순서를 단계별로 적으세요.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 12</span><p style="margin:0;font-size:14px">[심화] 재귀 피보나치 fib(5)를 계산할 때 fib(2)가 몇 번 호출되나요?</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 13</span><p style="margin:0;font-size:14px">[심화] 1²+2²+3²+...+10²의 합을 공식으로 구하세요.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 14</span><p style="margin:0;font-size:14px">[심화 내용] O(n)과 O(1)의 차이를 1부터 n까지의 합 구하기로 설명하세요.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 15</span><p style="margin:0;font-size:14px">[심화 내용] 종이를 n번 접으면 두께가 0.1mm × 2ⁿ이에요. 50번 접으면 몇 km인가요?</p></div>
+<h2 class="section-title">용어 정리</h2>
+<h2 class="section-title">[심화 내용] 점화식에서 폐쇄형으로</h2>
+<p>점화식(Recurrence Relation)은 이전 항으로 다음 항을 정의해요. 폐쇄형(Closed-form)은 n만으로 바로 계산할 수 있는 공식이에요.</p>
+<div class="note-box"><span class="note-label">[심화 내용] 점화식 -> 폐쇄형 변환</span>
+<b>등차수열:</b><br>점화식: a(n) = a(n-1) + d, a(1) = a<br>폐쇄형: a(n) = a + (n-1)*d<br><br><b>등비수열:</b><br>점화식: a(n) = r * a(n-1), a(1) = a<br>폐쇄형: a(n) = a * r^(n-1)<br><br><b>피보나치:</b><br>점화식: F(n) = F(n-1) + F(n-2), F(0)=0, F(1)=1<br>폐쇄형: F(n) = (phi^n - psi^n) / sqrt(5)<br>  phi = (1+sqrt(5))/2 (황금비 ≈ 1.618)<br>  psi = (1-sqrt(5))/2 ≈ -0.618<br><br>피보나치의 폐쇄형 = <b>비네 공식(Binet's Formula)</b></div>
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span><span class="code-bar-file">[C 코드] 피보나치 4가지 방법 비교</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;stdio.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;math.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">4</span><span class="lc"><span class="s-cm">// 방법 1: 재귀 O(2^n) — 가장 느림!</span></span></div>
+<div class="code-line"><span class="ln">5</span><span class="lc"><span class="s-type">long</span> <span class="s-type">long</span> <span class="s-fn">fib_recursive</span>(<span class="s-type">int</span> n) {</span></div>
+<div class="code-line"><span class="ln">6</span><span class="lc">    <span class="s-kw">if</span> (n &lt;= <span class="s-num">1</span>) <span class="s-kw">return</span> n;</span></div>
+<div class="code-line"><span class="ln">7</span><span class="lc">    <span class="s-kw">return</span> <span class="s-fn">fib_recursive</span>(n-<span class="s-num">1</span>) + <span class="s-fn">fib_recursive</span>(n-<span class="s-num">2</span>);</span></div>
+<div class="code-line"><span class="ln">8</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">9</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">10</span><span class="lc"><span class="s-cm">// 방법 2: 반복 O(n) — 실용적</span></span></div>
+<div class="code-line"><span class="ln">11</span><span class="lc"><span class="s-type">long</span> <span class="s-type">long</span> <span class="s-fn">fib_iterative</span>(<span class="s-type">int</span> n) {</span></div>
+<div class="code-line"><span class="ln">12</span><span class="lc">    <span class="s-kw">if</span> (n &lt;= <span class="s-num">1</span>) <span class="s-kw">return</span> n;</span></div>
+<div class="code-line"><span class="ln">13</span><span class="lc">    <span class="s-type">long</span> <span class="s-type">long</span> a = <span class="s-num">0</span>, b = <span class="s-num">1</span>;</span></div>
+<div class="code-line"><span class="ln">14</span><span class="lc">    <span class="s-kw">for</span> (<span class="s-type">int</span> i = <span class="s-num">2</span>; i &lt;= n; i++) {</span></div>
+<div class="code-line"><span class="ln">15</span><span class="lc">        <span class="s-type">long</span> <span class="s-type">long</span> c = a + b;</span></div>
+<div class="code-line"><span class="ln">16</span><span class="lc">        a = b; b = c;</span></div>
+<div class="code-line"><span class="ln">17</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">18</span><span class="lc">    <span class="s-kw">return</span> b;</span></div>
+<div class="code-line"><span class="ln">19</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">20</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">21</span><span class="lc"><span class="s-cm">// 방법 3: 비네 공식 O(1) — 큰 수에서 오차!</span></span></div>
+<div class="code-line"><span class="ln">22</span><span class="lc"><span class="s-type">long</span> <span class="s-type">long</span> <span class="s-fn">fib_binet</span>(<span class="s-type">int</span> n) {</span></div>
+<div class="code-line"><span class="ln">23</span><span class="lc">    <span class="s-type">double</span> phi = (<span class="s-num">1</span> + <span class="s-fn">sqrt</span>(<span class="s-num">5</span>)) / <span class="s-num">2</span>;</span></div>
+<div class="code-line"><span class="ln">24</span><span class="lc">    <span class="s-kw">return</span> (<span class="s-type">long</span> <span class="s-type">long</span>)<span class="s-fn">round</span>(<span class="s-fn">pow</span>(phi, n) / <span class="s-fn">sqrt</span>(<span class="s-num">5</span>));</span></div>
+<div class="code-line"><span class="ln">25</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">26</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">27</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">main</span>() {</span></div>
+<div class="code-line"><span class="ln">28</span><span class="lc">    <span class="s-kw">for</span> (<span class="s-type">int</span> n = <span class="s-num">0</span>; n &lt;= <span class="s-num">15</span>; n++) {</span></div>
+<div class="code-line"><span class="ln">29</span><span class="lc">        <span class="s-fn">printf</span>(<span class="s-str">"F(%2d) = %4lld (iter=%4lld, binet=%4lld)\n"</span>,</span></div>
+<div class="code-line"><span class="ln">30</span><span class="lc">               n, <span class="s-fn">fib_recursive</span>(n), <span class="s-fn">fib_iterative</span>(n), <span class="s-fn">fib_binet</span>(n));</span></div>
+<div class="code-line"><span class="ln">31</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">32</span><span class="lc">    <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">33</span><span class="lc">}</span></div>
+</div>
+</div>
+<div class="output-wrap"><div class="output-bar">실행 결과</div><div class="output-body">F( 0) =    0 (iter=   0, binet=   0)
+F( 1) =    1 (iter=   1, binet=   1)
+F( 2) =    1 (iter=   1, binet=   1)
+...
+F(10) =   55 (iter=  55, binet=  55)
+F(15) =  610 (iter= 610, binet= 610)</div></div>
+<h2 class="section-title">[심화 내용] 마스터 정리</h2>
+<div class="note-box"><span class="note-label">[심화 내용] 마스터 정리 (Master Theorem)</span>
+재귀 알고리즘의 시간 복잡도를 구하는 공식:<br><br>T(n) = a * T(n/b) + O(n^d)<br><br>a = 재귀 호출 횟수, b = 문제 분할 비율, d = 합치는 비용<br><br><b>3가지 경우:</b><br>1. d < log_b(a): T(n) = O(n^(log_b(a)))<br>2. d = log_b(a): T(n) = O(n^d * log n)<br>3. d > log_b(a): T(n) = O(n^d)<br><br><b>예시:</b><br>Merge Sort: T(n) = 2T(n/2) + O(n)<br>  a=2, b=2, d=1, log_2(2)=1=d -> O(n log n)<br><br>Binary Search: T(n) = T(n/2) + O(1)<br>  a=1, b=2, d=0, log_2(1)=0=d -> O(log n)<br><br>naive 피보나치: T(n) = T(n-1) + T(n-2) + O(1)<br>  마스터 정리 적용 불가! (n/b 형태가 아님) -> O(2^n)</div>
+<h2 class="section-title">[심화 내용] 생성 함수 맛보기</h2>
+<div class="note-box"><span class="note-label">[심화 내용] 생성 함수란?</span>
+수열을 다항식의 계수로 인코딩하는 기법:<br><br>수열 {a0, a1, a2, ...}의 생성 함수:<br>A(x) = a0 + a1*x + a2*x^2 + a3*x^3 + ...<br><br><b>예: 등비수열 {1, r, r^2, r^3, ...}</b><br>A(x) = 1 + rx + r^2*x^2 + ... = 1/(1-rx)<br><br><b>예: 피보나치</b><br>F(x) = x / (1 - x - x^2)<br>이것을 부분분수 분해하면 비네 공식이 나와요!<br><br>생성 함수의 힘:<br>- 점화식을 대수적으로 풀 수 있음<br>- 조합론의 강력한 도구<br>- Knuth, Graham의 "구체 수학"에서 핵심 주제</div>
+<!-- fact-bite -->
+<!-- fact-bite -->
+<table class="trace"><thead><tr><th>용어</th><th>설명</th></tr></thead><tbody><tr><td><code>수열</code></td><td>규칙에 따라 나열된 숫자들의 줄. 예: 1, 3, 5, 7, ...</td></tr><tr><td><code>패턴(Pattern)</code></td><td>반복되는 규칙. 숫자, 도형, 색깔 등에서 찾을 수 있어요.</td></tr><tr><td><code>일반항</code></td><td>수열의 n번째 수를 구하는 공식. 예: 홀수의 일반항은 2n-1.</td></tr><tr><td><code>등차수열</code></td><td>이웃한 수의 차이(공차)가 일정한 수열. 예: 2, 5, 8, 11 (공차 3).</td></tr><tr><td><code>등비수열</code></td><td>이웃한 수의 비율(공비)이 일정한 수열. 예: 2, 6, 18, 54 (공비 3).</td></tr><tr><td><code>피보나치 수열</code></td><td>앞 두 수를 더해서 다음 수를 만드는 수열. 0, 1, 1, 2, 3, 5, 8, ...</td></tr><tr><td><code>점화식</code></td><td>이전 항으로부터 다음 항을 구하는 규칙. 예: aₙ = aₙ₋₁ + 2.</td></tr><tr><td><code>재귀(Recursion)</code></td><td>함수가 자기 자신을 호출하는 것. 기저 조건이 필수!</td></tr><tr><td><code>for문</code></td><td>C에서 규칙적인 반복을 수행하는 명령. 수열, 합계, 별 찍기에 사용.</td></tr><tr><td><code>시간 복잡도</code></td><td>알고리즘의 속도를 표현하는 방법. O(n), O(n²), O(2ⁿ) 등.</td></tr><tr><td><code>삼각수</code></td><td>1, 3, 6, 10, 15, ... n번째 삼각수 = n(n+1)/2.</td></tr><tr><td><code>황금비</code></td><td>피보나치 수열에서 나타나는 비율. 약 1.618. 자연과 예술에서 발견.</td></tr><tr><td><code>점화식(Recurrence)</code></td><td>이전 항으로 다음 항을 정의하는 식. F(n) = F(n-1) + F(n-2)처럼.</td></tr><tr><td><code>폐쇄형(Closed-form)</code></td><td>n만으로 바로 값을 계산하는 공식. 반복 없이 답을 구할 수 있어요.</td></tr><tr><td><code>비네 공식</code></td><td>피보나치 수열의 폐쇄형. 황금비를 사용한 공식.</td></tr><tr><td><code>황금비(phi)</code></td><td>(1+sqrt(5))/2 ≈ 1.618. 피보나치 수열, 자연, 예술에 등장하는 비율.</td></tr><tr><td><code>마스터 정리</code></td><td>T(n) = aT(n/b) + O(n^d) 형태의 재귀 복잡도를 구하는 정리.</td></tr><tr><td><code>생성 함수</code></td><td>수열을 다항식 계수로 인코딩하는 기법. 점화식을 대수적으로 풀 수 있음.</td></tr></tbody></table>
+<div class="warmup-box"><div class="warmup-title">이번 유닛 핵심 정리</div><div class="wq"><b>1.</b> 패턴 찾기: 숫자/도형에서 규칙을 발견하는 것</div><div class="wq"><b>2.</b> 일반화: 규칙을 수식이나 공식으로 표현하는 것</div><div class="wq"><b>3.</b> 등차수열: a(n) = a + (n-1)*d</div><div class="wq"><b>4.</b> 등비수열: a(n) = a * r^(n-1)</div><div class="wq"><b>5.</b> [심화] C에서 패턴 = for문 + 수식</div><div class="wq"><b>6.</b> [심화 내용] 점화식 -> 폐쇄형: 비네 공식이 대표적</div><div class="wq"><b>7.</b> [심화 내용] 피보나치: 재귀 O(2^n) vs 반복 O(n) vs 공식 O(1)</div><div class="wq"><b>8.</b> [심화 내용] 마스터 정리: 재귀 복잡도의 만능 공식</div><div class="wq"><b>9.</b> [심화 내용] 생성 함수: 수열을 다항식으로 인코딩하는 마법</div></div>
+<div class="tip"><span class="tip-label">이 유닛에서 연결된 축</span>
+<b>[C언어]</b> for문으로 수열 생성, printf로 출력, 재귀 함수<br><b>[컴퓨팅 사고력]</b> 패턴 인식, 추상화(일반항), 자동화(반복문)<br><b>[디버깅]</b> 일반항 오류, 재귀 기저 조건 누락<br><b>[KOI]</b> 수열/패턴 찾기, 별 찍기, 합 구하기<br><b>[코딩기초]</b> 반복문과 재귀의 원리<br><b>[수학연결]</b> 수열, 일반항, 급수, 가우스 합</div>
+<h2 class="section-title">실전 활용 연습</h2>
+<p>지금까지 배운 개념을 활용한 다양한 실전 예제와 연습문제입니다.</p>
+
+<h2 class="section-title">실생활 연결</h2>
+<div class="tip"><span class="tip-label">[실생활] 이 개념은 어디에 쓰일까?</span>
+게임 개발, 앱 만들기, 웹사이트, 로봇 제어, AI 학습 등 모든 분야에서 사용돼요!</div>
+
+<h2 class="section-title">추가 연습문제</h2>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 20</span><p style="margin:0;font-size:14px">이번 유닛에서 배운 핵심 개념 3가지를 자신의 말로 설명해 보세요.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 21</span><p style="margin:0;font-size:14px">이번 유닛의 개념을 활용한 자신만의 문제를 1개 만들어 보세요.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 22</span><p style="margin:0;font-size:14px">이번 유닛의 개념이 C언어에서 어떻게 사용되는지 조사해 보세요.</p></div>
+<h2 class="section-title">[심화] 더 알아보기</h2>
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+
+<p>이번 유닛의 모든 개념을 완전히 이해했습니다. 다음 유닛에서 더 발전된 개념을 배워보세요!</p>
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<div class="note-box"><span class="note-label">[다음 유닛 미리보기]</span>
+숫자의 규칙을 배웠으니, 이제 숫자의 <b>위치</b>를 배울 차례! 좌표(x, y)는 게임에서도, 지도에서도, 배열에서도 쓰여요. 그런데 수학 좌표와 컴퓨터 좌표가 다르다고?!</div>
+
+
+    <span class="page-num">2</span>
+  </div>
+</div>
+</body>
+</html>

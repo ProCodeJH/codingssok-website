@@ -1,0 +1,1373 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>코딩쏙 교재 — 순열과 조합 — 뽑는 방법이 몇 가지?</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+
+  :root {
+    --navy: #1a2e4a;
+    --navy-mid: #2c4a6e;
+    --navy-light: #3d6590;
+    --orange: #e07830;
+    --orange-light: #f5e6d8;
+    --white: #ffffff;
+    --bg: #f7f8fa;
+    --bg-warm: #faf9f7;
+    --gray-50: #f9fafb;
+    --gray-100: #f3f4f6;
+    --gray-200: #e5e7eb;
+    --gray-300: #d1d5db;
+    --gray-400: #9ca3af;
+    --gray-500: #6b7280;
+    --gray-600: #4b5563;
+    --gray-700: #374151;
+    --gray-800: #1f2937;
+    --text: #2d3748;
+    --green: #16a34a;
+    --green-bg: #dcfce7;
+    --red: #dc2626;
+    --red-bg: #fee2e2;
+    --blue: #2563eb;
+    --blue-bg: #dbeafe;
+    --yellow-bg: #fef9c3;
+    --font: 'Noto Sans KR', sans-serif;
+    --mono: 'JetBrains Mono', 'Consolas', monospace;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: var(--font); background: #e8eaed; font-size: 15px; }
+
+  /* ========== PAGE ========== */
+  .page {
+    width: 210mm;
+    min-height: 295mm;
+    margin: 24px auto;
+    background: var(--white);
+    box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* ========== PAGE 1: CHAPTER START ========== */
+  .chapter-page {
+    display: flex;
+    min-height: 295mm;
+  }
+
+  .chapter-sidebar {
+    width: 10px;
+    background: var(--navy);
+    flex-shrink: 0;
+  }
+
+  .chapter-accent-bar {
+    width: 7px;
+    background: var(--orange);
+    flex-shrink: 0;
+  }
+
+  .chapter-body {
+    flex: 1;
+    padding: 70px 65px 50px 55px;
+    position: relative;
+  }
+
+  .chapter-watermark {
+    position: absolute;
+    top: -10px;
+    right: -15px;
+    font-size: 280px;
+    font-weight: 900;
+    color: rgba(180,195,212,0.35);
+    line-height: 1;
+    pointer-events: none;
+    letter-spacing: -10px;
+  }
+
+  .chapter-label {
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--navy-mid);
+    letter-spacing: 2px;
+    margin-bottom: 4px;
+  }
+
+  .chapter-title {
+    font-size: 44px;
+    font-weight: 900;
+    color: var(--navy);
+    line-height: 1.15;
+    margin-bottom: 12px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .chapter-sub {
+    font-size: 16px;
+    color: var(--gray-500);
+    font-weight: 400;
+    margin-bottom: 20px;
+    padding-bottom: 28px;
+    border-bottom: 1px solid var(--gray-200);
+  }
+
+  /* Learning objectives */
+  .obj-title {
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--navy);
+    margin-bottom: 16px;
+    margin-top: 32px;
+  }
+
+  .obj-list {
+    list-style: none;
+    margin-bottom: 40px;
+  }
+
+  .obj-list li {
+    padding: 5px 0 5px 24px;
+    position: relative;
+    font-size: 15px;
+    color: var(--gray-700);
+    line-height: 1.6;
+  }
+
+  .obj-list li::before {
+    content: '•';
+    position: absolute;
+    left: 8px;
+    color: var(--navy-mid);
+    font-weight: 700;
+  }
+
+  /* Prerequisites flow */
+  .prereq-title {
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--navy);
+    margin-bottom: 18px;
+  }
+
+  .prereq-flow {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    margin-bottom: 44px;
+  }
+
+  .prereq-item {
+    padding: 9px 22px;
+    border: 1.5px solid var(--gray-300);
+    border-radius: 50px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--gray-600);
+    background: var(--white);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+  }
+
+  .prereq-item.current {
+    border-color: var(--navy);
+    color: var(--navy);
+    font-weight: 700;
+    background: #edf2f7;
+    box-shadow: 0 2px 6px rgba(26,46,74,0.12);
+  }
+
+  .prereq-arrow {
+    width: 36px;
+    text-align: center;
+    color: var(--gray-300);
+    font-size: 18px;
+    font-weight: 300;
+  }
+
+  /* Predict box */
+  .predict-box {
+    background: var(--gray-50);
+    border: 1.5px solid var(--gray-200);
+    border-radius: 12px;
+    padding: 24px 28px;
+  }
+
+  .predict-label {
+    display: inline-block;
+    background: var(--orange);
+    color: var(--white);
+    font-size: 12px;
+    font-weight: 600;
+    padding: 3px 12px;
+    border-radius: 4px;
+    margin-bottom: 14px;
+    letter-spacing: 0.5px;
+  }
+
+  .predict-q {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--navy);
+    margin-bottom: 16px;
+  }
+
+  .predict-code {
+    background: var(--white);
+    border: 1px solid var(--gray-200);
+    border-radius: 8px;
+    padding: 14px 18px;
+    font-family: var(--mono);
+    font-size: 13px;
+    line-height: 1.65;
+    color: var(--gray-700);
+  }
+
+  /* ========== PAGE 2: CORE CONTENT ========== */
+  .content-page {
+    padding: 55px 65px;
+  }
+
+  .unit-header-bar {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    margin-bottom: 8px;
+  }
+
+  .unit-tag {
+    font-size: 12px;
+    color: var(--orange);
+    font-weight: 600;
+    letter-spacing: 1px;
+  }
+
+  .unit-title-sm {
+    font-size: 14px;
+    color: var(--gray-400);
+    font-weight: 400;
+  }
+
+  .section-title {
+    font-size: 24px;
+    font-weight: 800;
+    color: var(--navy);
+    margin-bottom: 24px;
+    margin-top: 8px;
+    padding-left: 16px;
+    border-left: 5px solid var(--orange);
+  }
+
+  p {
+    font-size: 15.5px;
+    line-height: 1.9;
+    color: var(--text);
+    margin-bottom: 18px;
+  }
+
+  p code {
+    font-family: var(--mono);
+    font-size: 13.5px;
+    background: #f1f3f5;
+    padding: 2px 7px;
+    border-radius: 4px;
+    color: var(--navy);
+    font-weight: 500;
+  }
+
+  /* Code block */
+  .code-wrap {
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    border: 1px solid var(--gray-200);
+    margin: 22px 0;
+  }
+
+  .code-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 9px 18px;
+    background: var(--navy);
+    font-size: 12px;
+  }
+
+  .code-bar-lang {
+    font-family: var(--mono);
+    font-weight: 600;
+    color: var(--white);
+  }
+
+  .code-bar-file {
+    color: rgba(255,255,255,0.6);
+    font-weight: 400;
+  }
+
+  .code-body {
+    background: #f8f9fb;
+    padding: 20px 0;
+    font-family: var(--mono);
+    font-size: 13.5px;
+    line-height: 1.75;
+    border: 1px solid var(--gray-200);
+    border-top: none;
+    border-radius: 0 0 12px 12px;
+  }
+
+  .code-line {
+    display: flex;
+    padding: 0 20px;
+  }
+
+  .code-line:hover {
+    background: #f0f4f8;
+  }
+
+  .code-line.highlighted {
+    background: #fff8e1;
+  }
+
+  .ln {
+    width: 30px;
+    text-align: right;
+    color: #b8bfc8;
+    font-size: 12px;
+    margin-right: 18px;
+    user-select: none;
+    flex-shrink: 0;
+    padding-top: 1px;
+  }
+
+  .lc { flex: 1; }
+
+  /* syntax */
+  .s-pp { color: #8b5cf6; font-weight: 600; }
+  .s-str { color: #d97706; }
+  .s-type { color: #2563eb; font-weight: 500; }
+  .s-kw { color: #7c3aed; font-weight: 500; }
+  .s-fn { color: #059669; font-weight: 500; }
+  .s-num { color: #dc2626; }
+  .s-cm { color: #9ca3af; font-style: italic; }
+
+  /* Output block */
+  .output-wrap {
+    border-radius: 10px;
+    overflow: hidden;
+    margin: 10px 0 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    border: 1px solid #d1d5db;
+  }
+
+  .output-bar {
+    padding: 9px 18px;
+    background: #374151;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--white);
+    letter-spacing: 0.5px;
+  }
+
+  .output-body {
+    padding: 16px 20px;
+    font-family: var(--mono);
+    font-size: 13.5px;
+    line-height: 1.7;
+    color: var(--gray-800);
+    background: #f1f5f9;
+    border: 1px solid var(--gray-200);
+    border-top: none;
+    border-radius: 0 0 10px 10px;
+  }
+
+  /* Callout */
+  .tip {
+    margin: 28px 0;
+    padding: 18px 24px;
+    background: #dbeafe;
+    border-left: 5px solid #2563eb;
+    border-radius: 0 12px 12px 0;
+    font-size: 14.5px;
+    line-height: 1.8;
+    color: var(--text);
+  }
+
+  .tip-label {
+    font-weight: 700;
+    color: #2563eb;
+    font-size: 13px;
+    display: block;
+    margin-bottom: 4px;
+  }
+
+  .warn {
+    margin: 28px 0;
+    padding: 18px 24px;
+    background: #fef3c7;
+    border-left: 5px solid #d97706;
+    border-radius: 0 12px 12px 0;
+    font-size: 14.5px;
+    line-height: 1.8;
+  }
+
+  .warn-label {
+    font-weight: 700;
+    color: #d97706;
+    font-size: 13px;
+    display: block;
+    margin-bottom: 4px;
+  }
+
+  .note-box {
+    margin: 28px 0;
+    padding: 18px 24px;
+    background: #e2e8f0;
+    border-left: 5px solid #64748b;
+    border-radius: 0 12px 12px 0;
+    font-size: 14.5px;
+    line-height: 1.8;
+  }
+
+  .note-label {
+    font-weight: 700;
+    color: var(--gray-600);
+    font-size: 13px;
+    display: block;
+    margin-bottom: 4px;
+  }
+
+  /* Trace table */
+  table.trace {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    margin: 28px 0;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+    font-size: 14px;
+  }
+
+  table.trace th {
+    background: var(--navy);
+    color: var(--white);
+    padding: 10px 16px;
+    text-align: left;
+    font-weight: 500;
+    font-size: 13px;
+  }
+
+  table.trace td {
+    padding: 10px 16px;
+    border-bottom: 1px solid var(--gray-200);
+    color: var(--gray-700);
+  }
+
+  table.trace tr:nth-child(even) td { background: var(--gray-50); }
+  table.trace tr:last-child td { border-bottom: none; }
+
+  table.trace td code {
+    font-family: var(--mono);
+    font-size: 12.5px;
+    background: #eef1f5;
+    padding: 2px 6px;
+    border-radius: 4px;
+    color: var(--navy);
+  }
+
+  /* ========== PAGE 3: PROBLEMS ========== */
+  .problems-header {
+    margin-bottom: 8px;
+  }
+
+  .problems-chapter-ref {
+    font-size: 13px;
+    color: var(--gray-500);
+    margin-bottom: 4px;
+  }
+
+  .problems-title {
+    font-size: 28px;
+    font-weight: 800;
+    color: var(--navy);
+    margin-bottom: 24px;
+  }
+
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 16px;
+  }
+
+  .prob-card {
+    background: var(--white);
+    border: 1px solid var(--gray-200);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 3px 15px rgba(0,0,0,0.06);
+  }
+
+  .prob-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 16px;
+    background: var(--navy);
+  }
+
+  .prob-num {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--white);
+  }
+
+  .diff {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    font-size: 12px;
+    font-weight: 800;
+  }
+
+  .diff-basic { background: #22c55e; color: white; }
+  .diff-mid { background: #f59e0b; color: white; }
+  .diff-hard { background: #ef4444; color: white; }
+
+  .prob-desc {
+    font-size: 13.5px;
+    line-height: 1.65;
+    color: var(--gray-600);
+    margin-bottom: 10px;
+    padding: 14px 16px 0;
+  }
+
+  .prob-code {
+    background: var(--gray-50);
+    border: 1px solid var(--gray-200);
+    border-radius: 6px;
+    padding: 10px 14px;
+    margin: 0 16px 16px;
+    font-family: var(--mono);
+    font-size: 12.5px;
+    line-height: 1.55;
+    color: var(--gray-600);
+  }
+
+  /* Competition section */
+  .comp-section {
+    margin-top: 32px;
+    padding-top: 24px;
+    border-top: 2px solid var(--navy);
+  }
+
+  .comp-title {
+    font-size: 22px;
+    font-weight: 800;
+    color: var(--navy);
+    margin-bottom: 20px;
+  }
+
+  .comp-card {
+    background: var(--white);
+    border: 1.5px solid var(--gray-200);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 18px rgba(0,0,0,0.06);
+  }
+
+  .comp-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 16px;
+    background: #0f766e;
+  }
+
+  .comp-header .comp-name {
+    color: var(--white);
+    font-size: 15px;
+    font-weight: 700;
+    margin: 0;
+  }
+
+  .comp-inner {
+    padding: 14px 18px 18px;
+  }
+
+  .comp-badge {
+    display: inline-block;
+    padding: 3px 12px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 700;
+  }
+
+  .badge-bj { background: #93c5fd; color: #1e3a5f; }
+  .badge-cu { background: #c4b5fd; color: #3b1f7e; }
+  .badge-pg { background: #7dd3fc; color: #0c4a6e; }
+
+  .comp-name {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--navy);
+    margin-bottom: 6px;
+  }
+
+  .comp-desc {
+    font-size: 14px;
+    color: var(--gray-600);
+    line-height: 1.7;
+    margin-bottom: 14px;
+  }
+
+  .io-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+
+  .io-card {
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid var(--gray-200);
+  }
+
+  .io-h {
+    padding: 6px 14px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--gray-600);
+    background: #e2e8f0;
+  }
+
+  .io-c {
+    padding: 10px 14px;
+    font-family: var(--mono);
+    font-size: 13px;
+    line-height: 1.5;
+    background: var(--white);
+  }
+
+  /* ========== DEBUG LAB ========== */
+  .debug-section {
+    margin: 24px 0;
+    border: 2px solid var(--red);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+
+  .debug-bar {
+    background: var(--red);
+    color: var(--white);
+    padding: 10px 20px;
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 1px;
+  }
+
+  .debug-body {
+    padding: 20px;
+    background: #fef2f2;
+  }
+
+  /* 10축 connection */
+  .connect-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 16px;
+    margin: 28px 0;
+  }
+
+  .connect-card {
+    border-radius: 12px;
+    padding: 20px;
+    text-align: center;
+    border: 1px solid var(--gray-200);
+    box-shadow: 0 3px 14px rgba(0,0,0,0.05);
+  }
+
+  .connect-card h5 {
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 8px;
+  }
+
+  .connect-card p {
+    font-size: 13px;
+    margin: 0;
+    color: var(--gray-600);
+    line-height: 1.6;
+  }
+
+  .cc1 { border-top: 3px solid #8b5cf6; }
+  .cc1 h5 { color: #8b5cf6; }
+  .cc2 { border-top: 3px solid var(--green); }
+  .cc2 h5 { color: var(--green); }
+  .cc3 { border-top: 3px solid var(--navy); }
+  .cc3 h5 { color: var(--navy); }
+
+  /* PAGE NUMBER */
+  .page-num {
+    position: absolute;
+    bottom: 20px;
+    right: 30px;
+    font-size: 12px;
+    color: var(--gray-400);
+  }
+
+  /* WARMUP */
+  .warmup-box {
+    background: #e0e7f1;
+    border-radius: 12px;
+    padding: 24px 28px;
+    margin: 28px 0;
+    border: 2px solid #c7d2e0;
+  }
+
+  .warmup-title {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--navy);
+    margin-bottom: 14px;
+  }
+
+  .wq {
+    padding: 9px 16px;
+    background: var(--white);
+    border-radius: 8px;
+    margin-bottom: 8px;
+    font-size: 14px;
+    border: 1px solid var(--gray-200);
+    color: var(--gray-700);
+  }
+
+  .wq b { color: var(--navy); margin-right: 6px; }
+  .wq .hint { color: var(--gray-400); font-size: 13px; }
+
+  /* ===== CONTEST PROBLEMS PAGE ===== */
+  .contest-page-wrap .chapter-page {
+    min-height: auto;
+  }
+
+  .contest-page-wrap .chapter-page > div:last-child {
+    min-width: 0;
+    overflow-wrap: break-word;
+    word-break: break-word;
+  }
+
+  .contest-card {
+    background: white;
+    border: 1.5px solid var(--gray-200);
+    border-radius: 12px;
+    margin-bottom: 28px;
+    overflow: hidden;
+    break-inside: avoid;
+  }
+
+  .contest-header {
+    background: var(--navy);
+    color: white;
+    padding: 14px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .contest-num-source {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .contest-num {
+    font-weight: 700;
+    font-size: 16px;
+  }
+
+  .contest-source {
+    background: rgba(255,255,255,0.15);
+    padding: 3px 10px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 500;
+  }
+
+  .contest-body {
+    padding: 20px 24px 24px;
+  }
+
+  .contest-question {
+    font-size: 15px;
+    line-height: 1.7;
+    color: var(--text);
+    margin: 0 0 16px;
+    word-break: break-word;
+    overflow-wrap: break-word;
+  }
+
+  .contest-expected {
+    background: #1e293b;
+    border-radius: 8px;
+    overflow: hidden;
+    margin-bottom: 20px;
+  }
+
+  .contest-expected-label {
+    background: #334155;
+    color: #94a3b8;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 6px 14px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .contest-expected-body {
+    color: #e2e8f0;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    line-height: 1.6;
+    padding: 12px 16px;
+    margin: 0;
+    white-space: pre;
+  }
+
+  .contest-write-area {
+    border: 2px dashed var(--gray-300);
+    border-radius: 10px;
+    overflow: hidden;
+    transition: border-color 0.2s;
+  }
+
+  .contest-write-area:focus-within {
+    border-color: var(--orange);
+    border-style: solid;
+  }
+
+  .contest-write-label {
+    background: var(--bg);
+    color: var(--gray-500);
+    font-size: 12px;
+    font-weight: 600;
+    padding: 8px 14px;
+    border-bottom: 1px solid var(--gray-200);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .contest-textarea {
+    width: 100%;
+    min-height: 200px;
+    padding: 16px 18px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    line-height: 1.7;
+    color: var(--text);
+    background: #fafbfc;
+    border: none;
+    outline: none;
+    resize: vertical;
+    tab-size: 4;
+    box-sizing: border-box;
+  }
+
+  .contest-textarea::placeholder {
+    color: var(--gray-300);
+  }
+
+  @media print {
+    body { background: white; }
+    .page { box-shadow: none; margin: 0; page-break-after: always; }
+    .contest-textarea { border: 1px solid var(--gray-300); min-height: 180px; }
+  }
+
+</style>
+</head>
+<body>
+
+<div class="page">
+  <div class="chapter-page">
+    <div class="chapter-sidebar"></div>
+    <div class="chapter-accent-bar"></div>
+    <div class="chapter-body">
+      <div class="chapter-watermark">33</div>
+      <div class="chapter-label">Chapter 33</div>
+      <h1 class="chapter-title">순열과 조합</h1>
+      <p class="chapter-sub">순서가 있는 순열과 순서가 없는 조합의 차이를 이해하고 경우의 수를 구해요.</p>
+
+      <h3 class="obj-title">이 유닛에서 배우는 것</h3>
+      <ul class="obj-list">
+        <li>순열과 조합의 차이를 설명할 수 있어요.</li>
+        <li>nPr, nCr 공식을 사용할 수 있어요.</li>
+        <li>팩토리얼(!)의 뜻을 알아요.</li>
+        <li>[심화] 재귀로 순열/조합을 생성할 수 있어요.</li>
+        <li>[심화] 중복 순열과 중복 조합을 이해해요.</li>
+        <li>[심화 내용] 이항 정리와 파스칼 삼각형을 알아요.</li>
+        <li>[심화 내용] 카탈란 수를 이해해요.</li>
+      </ul>
+
+      <h3 class="prereq-title">선수 학습</h3>
+      <div class="prereq-flow">
+        <div class="prereq-item">곱의 법칙 (경우의 수)</div><div class="prereq-arrow">→</div>
+        <div class="prereq-item current">집합 기본 (U32)</div>
+      </div>
+
+      
+
+      <span class="page-num">1</span>
+    </div>
+  </div>
+</div>
+<div class="page">
+  <div class="content-page">
+    <div class="unit-header-bar">
+      <span class="unit-tag">UNIT 33</span>
+      <span class="unit-title-sm">순열과 조합</span>
+    </div>
+<h2 class="section-title">뽑는 방법이 몇 가지?</h2>
+
+<h2 class="section-title">순열 (Permutation)</h2>
+<div class="note-box"><span class="note-label">[핵심] 순열 = 순서 O</span>
+<b>순열(Permutation)</b> = n개에서 r개를 <b>순서 있게</b> 뽑기<br><br>nPr = n! / (n-r)!<br><br>예: {A, B, C}에서 2개를 순서 있게 뽑기<br>3P2 = 3! / 1! = 6가지<br>AB, AC, BA, BC, CA, CB<br><br>반장-부반장처럼 <b>자리(역할)가 다를 때</b> 사용!</div>
+<div class="note-box"><span class="note-label">[핵심] 팩토리얼</span>
+<b>n!</b> = n × (n-1) × (n-2) × ... × 2 × 1<br><br>0! = 1 (약속!)<br>1! = 1<br>3! = 3 × 2 × 1 = 6<br>5! = 5 × 4 × 3 × 2 × 1 = 120<br>10! = 3,628,800</div>
+<table class="trace"><thead><tr><th>n</th><th>i</th><th>result (곱하기 전)</th><th>result *= i</th><th>설명</th></tr></thead><tbody><tr><td>5</td><td>2</td><td>1</td><td>2</td><td>1×2=2</td></tr><tr><td>5</td><td>3</td><td>2</td><td>6</td><td>2×3=6</td></tr><tr><td>5</td><td>4</td><td>6</td><td>24</td><td>6×4=24</td></tr><tr><td>5</td><td>5</td><td>24</td><td>120</td><td>24×5=120</td></tr></tbody></table>
+<h2 class="section-title">조합 (Combination)</h2>
+<div class="note-box"><span class="note-label">[핵심] 조합 = 순서 X</span>
+<b>조합(Combination)</b> = n개에서 r개를 <b>순서 없이</b> 뽑기<br><br>nCr = n! / (r! × (n-r)!)<br><br>예: {A, B, C}에서 2개를 순서 없이 뽑기<br>3C2 = 3! / (2! × 1!) = 3가지<br>{A,B}, {A,C}, {B,C}<br><br>대표 2명처럼 <b>역할 구분 없이</b> 뽑을 때 사용!</div>
+<h2 class="section-title">순열 vs 조합 구분법</h2>
+<div class="debug-section"><div class="debug-bar">DEBUG LAB — 에러를 찾으시오</div><div class="debug-body">
+
+<p style="margin:14px 0 0; font-size:14px;"><b>에러:</b> </p>
+<p style="font-size:14px;"><b>수정:</b> </p>
+</div></div>
+
+<h2 class="section-title">계산 연습</h2>
+<table class="trace"><thead><tr><th>문제</th><th>공식</th><th>계산</th><th>답</th></tr></thead><tbody><tr><td>5P2</td><td>5!/(5-2)!</td><td>5×4</td><td>20</td></tr><tr><td>5P3</td><td>5!/(5-3)!</td><td>5×4×3</td><td>60</td></tr><tr><td>5C2</td><td>5!/(2!×3!)</td><td>(5×4)/(2×1)</td><td>10</td></tr><tr><td>5C3</td><td>5!/(3!×2!)</td><td>(5×4×3)/(3×2×1)</td><td>10</td></tr><tr><td>10C3</td><td>10!/(3!×7!)</td><td>(10×9×8)/(3×2×1)</td><td>120</td></tr></tbody></table>
+<table class="trace"><thead><tr><th>문제</th><th>n!</th><th>(n-r)!</th><th>n!/(n-r)!</th><th>답</th></tr></thead><tbody><tr><td>4P2</td><td>4!=24</td><td>2!=2</td><td>24/2</td><td>12</td></tr><tr><td>4P3</td><td>4!=24</td><td>1!=1</td><td>24/1</td><td>24</td></tr><tr><td>4P4</td><td>4!=24</td><td>0!=1</td><td>24/1</td><td>24</td></tr><tr><td>6P2</td><td>6!=720</td><td>4!=24</td><td>720/24</td><td>30</td></tr><tr><td>6P3</td><td>6!=720</td><td>3!=6</td><td>720/6</td><td>120</td></tr></tbody></table>
+<table class="trace"><thead><tr><th>문제</th><th>n!</th><th>r!</th><th>(n-r)!</th><th>n!/(r!×(n-r)!)</th><th>답</th></tr></thead><tbody><tr><td>4C2</td><td>24</td><td>2</td><td>2</td><td>24/(2×2)</td><td>6</td></tr><tr><td>6C2</td><td>720</td><td>2</td><td>24</td><td>720/(2×24)</td><td>15</td></tr><tr><td>6C3</td><td>720</td><td>6</td><td>6</td><td>720/(6×6)</td><td>20</td></tr><tr><td>7C3</td><td>5040</td><td>6</td><td>24</td><td>5040/(6×24)</td><td>35</td></tr><tr><td>8C4</td><td>40320</td><td>24</td><td>24</td><td>40320/(24×24)</td><td>70</td></tr></tbody></table>
+<table class="trace"><thead><tr><th>n</th><th>r</th><th>nPr</th><th>nCr</th><th>nPr/nCr</th><th>관계</th></tr></thead><tbody><tr><td>4</td><td>2</td><td>12</td><td>6</td><td>2</td><td>nPr = nCr × r! (2!=2)</td></tr><tr><td>5</td><td>2</td><td>20</td><td>10</td><td>2</td><td>nPr = nCr × r! (2!=2)</td></tr><tr><td>5</td><td>3</td><td>60</td><td>10</td><td>6</td><td>nPr = nCr × r! (3!=6)</td></tr><tr><td>6</td><td>3</td><td>120</td><td>20</td><td>6</td><td>nPr = nCr × r! (3!=6)</td></tr><tr><td>6</td><td>4</td><td>360</td><td>15</td><td>24</td><td>nPr = nCr × r! (4!=24)</td></tr></tbody></table>
+<div style="margin:22px 0"></div>
+<div style="margin:22px 0"></div>
+<div class="tip"><span class="tip-label">[팁] 조합 계산 꿀팁</span>
+nCr = nC(n-r)!<br>5C3 = 5C2 = 10 (같다!)<br><br>작은 쪽으로 계산하면 편해요.<br>100C98 = 100C2 = (100×99)/2 = 4950</div>
+<h2 class="section-title">C로 순열·조합 구현</h2>
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span><span class="code-bar-file">perm_comb.c</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;stdio.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc"><span class="s-type">long</span> <span class="s-type">long</span> <span class="s-fn">factorial</span>(<span class="s-type">int</span> n) {</span></div>
+<div class="code-line"><span class="ln">4</span><span class="lc">    <span class="s-type">long</span> <span class="s-type">long</span> result = <span class="s-num">1</span>;</span></div>
+<div class="code-line"><span class="ln">5</span><span class="lc">    <span class="s-kw">for</span> (<span class="s-type">int</span> i = <span class="s-num">2</span>; i &lt;= n; i++)</span></div>
+<div class="code-line"><span class="ln">6</span><span class="lc">        result *= i;</span></div>
+<div class="code-line"><span class="ln">7</span><span class="lc">    <span class="s-kw">return</span> result;</span></div>
+<div class="code-line"><span class="ln">8</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">9</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">10</span><span class="lc"><span class="s-type">long</span> <span class="s-type">long</span> <span class="s-fn">nPr</span>(<span class="s-type">int</span> n, <span class="s-type">int</span> r) {</span></div>
+<div class="code-line"><span class="ln">11</span><span class="lc">    <span class="s-kw">return</span> <span class="s-fn">factorial</span>(n) / <span class="s-fn">factorial</span>(n - r);</span></div>
+<div class="code-line"><span class="ln">12</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">13</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">14</span><span class="lc"><span class="s-type">long</span> <span class="s-type">long</span> <span class="s-fn">nCr</span>(<span class="s-type">int</span> n, <span class="s-type">int</span> r) {</span></div>
+<div class="code-line"><span class="ln">15</span><span class="lc">    <span class="s-kw">return</span> <span class="s-fn">factorial</span>(n) / (<span class="s-fn">factorial</span>(r) * <span class="s-fn">factorial</span>(n - r));</span></div>
+<div class="code-line"><span class="ln">16</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">17</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">18</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">main</span>(<span class="s-type">void</span>) {</span></div>
+<div class="code-line"><span class="ln">19</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"5P2 = %lld\n"</span>, <span class="s-fn">nPr</span>(<span class="s-num">5</span>, <span class="s-num">2</span>));  <span class="s-cm">// 20</span></span></div>
+<div class="code-line"><span class="ln">20</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"5C2 = %lld\n"</span>, <span class="s-fn">nCr</span>(<span class="s-num">5</span>, <span class="s-num">2</span>));  <span class="s-cm">// 10</span></span></div>
+<div class="code-line"><span class="ln">21</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"10C3 = %lld\n"</span>, <span class="s-fn">nCr</span>(<span class="s-num">10</span>, <span class="s-num">3</span>)); <span class="s-cm">// 120</span></span></div>
+<div class="code-line"><span class="ln">22</span><span class="lc">    <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">23</span><span class="lc">}</span></div>
+</div>
+</div>
+<div class="output-wrap"><div class="output-bar">실행 결과</div><div class="output-body">5P2 = 20
+5C2 = 10
+10C3 = 120</div></div>
+<h2 class="section-title">[심화] 재귀로 순열 생성</h2>
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span><span class="code-bar-file">perm_recursive.c</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;stdio.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc"><span class="s-type">int</span> arr[] = {<span class="s-num">1</span>, <span class="s-num">2</span>, <span class="s-num">3</span>};</span></div>
+<div class="code-line"><span class="ln">4</span><span class="lc"><span class="s-type">int</span> n = <span class="s-num">3</span>;</span></div>
+<div class="code-line"><span class="ln">5</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">6</span><span class="lc"><span class="s-type">void</span> <span class="s-fn">swap</span>(<span class="s-type">int</span> *a, <span class="s-type">int</span> *b) { <span class="s-type">int</span> t=*a; *a=*b; *b=t; }</span></div>
+<div class="code-line"><span class="ln">7</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">8</span><span class="lc"><span class="s-type">void</span> <span class="s-fn">permute</span>(<span class="s-type">int</span> start) {</span></div>
+<div class="code-line"><span class="ln">9</span><span class="lc">    <span class="s-kw">if</span> (start == n) {</span></div>
+<div class="code-line"><span class="ln">10</span><span class="lc">        <span class="s-kw">for</span> (<span class="s-type">int</span> i = <span class="s-num">0</span>; i &lt; n; i++) <span class="s-fn">printf</span>(<span class="s-str">"%d "</span>, arr[i]);</span></div>
+<div class="code-line"><span class="ln">11</span><span class="lc">        <span class="s-fn">printf</span>(<span class="s-str">"\n"</span>);</span></div>
+<div class="code-line"><span class="ln">12</span><span class="lc">        <span class="s-kw">return</span>;</span></div>
+<div class="code-line"><span class="ln">13</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">14</span><span class="lc">    <span class="s-kw">for</span> (<span class="s-type">int</span> i = start; i &lt; n; i++) {</span></div>
+<div class="code-line"><span class="ln">15</span><span class="lc">        <span class="s-fn">swap</span>(&amp;arr[start], &amp;arr[i]);</span></div>
+<div class="code-line"><span class="ln">16</span><span class="lc">        <span class="s-fn">permute</span>(start + <span class="s-num">1</span>);</span></div>
+<div class="code-line"><span class="ln">17</span><span class="lc">        <span class="s-fn">swap</span>(&amp;arr[start], &amp;arr[i]);  <span class="s-cm">// 원복!</span></span></div>
+<div class="code-line"><span class="ln">18</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">19</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">20</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">21</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">main</span>(<span class="s-type">void</span>) {</span></div>
+<div class="code-line"><span class="ln">22</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"3개의 모든 순열 (3!=6가지):\n"</span>);</span></div>
+<div class="code-line"><span class="ln">23</span><span class="lc">    <span class="s-fn">permute</span>(<span class="s-num">0</span>);</span></div>
+<div class="code-line"><span class="ln">24</span><span class="lc">    <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">25</span><span class="lc">}</span></div>
+</div>
+</div>
+<div class="output-wrap"><div class="output-bar">실행 결과</div><div class="output-body">3개의 모든 순열 (3!=6가지):
+1 2 3
+1 3 2
+2 1 3
+2 3 1
+3 2 1
+3 1 2</div></div>
+<div class="note-box"><span class="note-label">[심화] 순열 생성의 핵심 패턴</span>
+1. 첫 번째 자리에 올 수 있는 원소를 하나씩 고정<br>2. 나머지 원소로 재귀 호출<br>3. 재귀가 끝나면 <b>원복(swap back)</b>!<br><br>원복을 잊으면 배열이 망가져요!</div>
+<table class="trace"><thead><tr><th>호출 깊이</th><th>start</th><th>i</th><th>swap 후 배열</th><th>동작</th></tr></thead><tbody><tr><td>0</td><td>0</td><td>0</td><td>{1,2,3}</td><td>swap(0,0) → 재귀(1)</td></tr><tr><td>1</td><td>1</td><td>1</td><td>{1,2,3}</td><td>swap(1,1) → 재귀(2)</td></tr><tr><td>2</td><td>2</td><td>-</td><td>{1,2,3}</td><td>출력: 1 2 3</td></tr><tr><td>1</td><td>1</td><td>2</td><td>{1,3,2}</td><td>swap(1,2) → 재귀(2)</td></tr><tr><td>2</td><td>2</td><td>-</td><td>{1,3,2}</td><td>출력: 1 3 2</td></tr><tr><td>1</td><td>1</td><td>2</td><td>{1,2,3}</td><td>원복 swap(1,2)</td></tr><tr><td>0</td><td>0</td><td>1</td><td>{2,1,3}</td><td>swap(0,1) → 재귀(1)</td></tr></tbody></table>
+<div style="margin:22px 0"></div>
+<h2 class="section-title">[심화] 재귀로 조합 생성</h2>
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span><span class="code-bar-file">comb_recursive.c</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;stdio.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc"><span class="s-type">int</span> selected[<span class="s-num">10</span>];</span></div>
+<div class="code-line"><span class="ln">4</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">5</span><span class="lc"><span class="s-type">void</span> <span class="s-fn">combination</span>(<span class="s-type">int</span> n, <span class="s-type">int</span> r, <span class="s-type">int</span> start, <span class="s-type">int</span> depth) {</span></div>
+<div class="code-line"><span class="ln">6</span><span class="lc">    <span class="s-kw">if</span> (depth == r) {</span></div>
+<div class="code-line"><span class="ln">7</span><span class="lc">        <span class="s-fn">printf</span>(<span class="s-str">"{"</span>);</span></div>
+<div class="code-line"><span class="ln">8</span><span class="lc">        <span class="s-kw">for</span> (<span class="s-type">int</span> i = <span class="s-num">0</span>; i &lt; r; i++)</span></div>
+<div class="code-line"><span class="ln">9</span><span class="lc">            <span class="s-fn">printf</span>(<span class="s-str">"%d%s"</span>, selected[i], i&lt;r-<span class="s-num">1</span>?<span class="s-str">","</span>:<span class="s-str">""</span>);</span></div>
+<div class="code-line"><span class="ln">10</span><span class="lc">        <span class="s-fn">printf</span>(<span class="s-str">"}\n"</span>);</span></div>
+<div class="code-line"><span class="ln">11</span><span class="lc">        <span class="s-kw">return</span>;</span></div>
+<div class="code-line"><span class="ln">12</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">13</span><span class="lc">    <span class="s-kw">for</span> (<span class="s-type">int</span> i = start; i &lt;= n; i++) {</span></div>
+<div class="code-line"><span class="ln">14</span><span class="lc">        selected[depth] = i;</span></div>
+<div class="code-line"><span class="ln">15</span><span class="lc">        <span class="s-fn">combination</span>(n, r, i + <span class="s-num">1</span>, depth + <span class="s-num">1</span>);</span></div>
+<div class="code-line"><span class="ln">16</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">17</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">18</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">19</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">main</span>(<span class="s-type">void</span>) {</span></div>
+<div class="code-line"><span class="ln">20</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"5C3 = 5개에서 3개 뽑기:\n"</span>);</span></div>
+<div class="code-line"><span class="ln">21</span><span class="lc">    <span class="s-fn">combination</span>(<span class="s-num">5</span>, <span class="s-num">3</span>, <span class="s-num">1</span>, <span class="s-num">0</span>);</span></div>
+<div class="code-line"><span class="ln">22</span><span class="lc">    <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">23</span><span class="lc">}</span></div>
+</div>
+</div>
+<div class="output-wrap"><div class="output-bar">실행 결과</div><div class="output-body">5C3 = 5개에서 3개 뽑기:
+{1,2,3}
+{1,2,4}
+{1,2,5}
+{1,3,4}
+{1,3,5}
+{1,4,5}
+{2,3,4}
+{2,3,5}
+{2,4,5}
+{3,4,5}</div></div>
+<table class="trace"><thead><tr><th>호출</th><th>start</th><th>depth</th><th>selected[]</th><th>동작</th></tr></thead><tbody><tr><td>1</td><td>1</td><td>0</td><td>[1,_]</td><td>selected[0]=1, 재귀(2,1)</td></tr><tr><td>2</td><td>2</td><td>1</td><td>[1,2]</td><td>selected[1]=2, depth==r → 출력 {1,2}</td></tr><tr><td>3</td><td>3</td><td>1</td><td>[1,3]</td><td>selected[1]=3, depth==r → 출력 {1,3}</td></tr><tr><td>4</td><td>4</td><td>1</td><td>[1,4]</td><td>selected[1]=4, depth==r → 출력 {1,4}</td></tr><tr><td>5</td><td>2</td><td>0</td><td>[2,_]</td><td>selected[0]=2, 재귀(3,1)</td></tr><tr><td>6</td><td>3</td><td>1</td><td>[2,3]</td><td>selected[1]=3, depth==r → 출력 {2,3}</td></tr><tr><td>7</td><td>4</td><td>1</td><td>[2,4]</td><td>selected[1]=4, depth==r → 출력 {2,4}</td></tr><tr><td>8</td><td>3</td><td>0</td><td>[3,_]</td><td>selected[0]=3, 재귀(4,1)</td></tr><tr><td>9</td><td>4</td><td>1</td><td>[3,4]</td><td>selected[1]=4, depth==r → 출력 {3,4}</td></tr></tbody></table>
+<div class="debug-section"><div class="debug-bar">DEBUG LAB — 에러를 찾으시오</div><div class="debug-body">
+
+<p style="margin:14px 0 0; font-size:14px;"><b>에러:</b> </p>
+<p style="font-size:14px;"><b>수정:</b> </p>
+</div></div>
+<h2 class="section-title">[심화] 중복 순열과 중복 조합</h2>
+<div class="debug-section"><div class="debug-bar">DEBUG LAB — 에러를 찾으시오</div><div class="debug-body">
+
+<p style="margin:14px 0 0; font-size:14px;"><b>에러:</b> </p>
+<p style="font-size:14px;"><b>수정:</b> </p>
+</div></div>
+<div class="note-box"><span class="note-label">[심화] 중복 순열 예시</span>
+숫자 {1,2,3}으로 2자리 비밀번호 만들기 (중복 허용)<br>→ 3² = 9가지: 11,12,13,21,22,23,31,32,33</div>
+<h2 class="section-title">[심화 내용] 파스칼 삼각형</h2>
+<table class="trace"><thead><tr><th>행(i)</th><th>j=0</th><th>j=1</th><th>j=2</th><th>j=3</th><th>j=4</th><th>규칙</th></tr></thead><tbody><tr><td>0</td><td>1</td><td></td><td></td><td></td><td></td><td>C[0][0]=1</td></tr><tr><td>1</td><td>1</td><td>1</td><td></td><td></td><td></td><td>C[1][1]=C[0][0]+C[0][1]=1</td></tr><tr><td>2</td><td>1</td><td>2</td><td>1</td><td></td><td></td><td>C[2][1]=C[1][0]+C[1][1]=2</td></tr><tr><td>3</td><td>1</td><td>3</td><td>3</td><td>1</td><td></td><td>C[3][2]=C[2][1]+C[2][2]=3</td></tr><tr><td>4</td><td>1</td><td>4</td><td>6</td><td>4</td><td>1</td><td>C[4][2]=C[3][1]+C[3][2]=6</td></tr></tbody></table>
+<div class="note-box"><span class="note-label">[심화 내용] 파스칼 삼각형과 이항 계수</span>
+nCr = n-1Cr-1 + n-1Cr (파스칼 항등식)<br><br>         1<br>        1 1<br>       1 2 1<br>      1 3 3 1<br>     1 4 6 4 1<br>    1 5 10 10 5 1<br><br>n행의 r번째 = nCr!<br><br><b>이항 정리</b>: (a+b)ⁿ = Σ nCk × aⁿ⁻ᵏ × bᵏ<br>(a+b)³ = a³ + 3a²b + 3ab² + b³</div>
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span><span class="code-bar-file">pascal.c</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;stdio.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">main</span>(<span class="s-type">void</span>) {</span></div>
+<div class="code-line"><span class="ln">4</span><span class="lc">    <span class="s-type">int</span> n = <span class="s-num">8</span>;</span></div>
+<div class="code-line"><span class="ln">5</span><span class="lc">    <span class="s-type">int</span> C[<span class="s-num">20</span>][<span class="s-num">20</span>] = {<span class="s-num">0</span>};</span></div>
+<div class="code-line"><span class="ln">6</span><span class="lc">    </span></div>
+<div class="code-line"><span class="ln">7</span><span class="lc">    <span class="s-kw">for</span> (<span class="s-type">int</span> i = <span class="s-num">0</span>; i &lt;= n; i++) {</span></div>
+<div class="code-line"><span class="ln">8</span><span class="lc">        C[i][<span class="s-num">0</span>] = <span class="s-num">1</span>;</span></div>
+<div class="code-line"><span class="ln">9</span><span class="lc">        <span class="s-kw">for</span> (<span class="s-type">int</span> j = <span class="s-num">1</span>; j &lt;= i; j++)</span></div>
+<div class="code-line"><span class="ln">10</span><span class="lc">            C[i][j] = C[i-<span class="s-num">1</span>][j-<span class="s-num">1</span>] + C[i-<span class="s-num">1</span>][j];  <span class="s-cm">// 파스칼 항등식</span></span></div>
+<div class="code-line"><span class="ln">11</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">12</span><span class="lc">    </span></div>
+<div class="code-line"><span class="ln">13</span><span class="lc">    <span class="s-kw">for</span> (<span class="s-type">int</span> i = <span class="s-num">0</span>; i &lt;= n; i++) {</span></div>
+<div class="code-line"><span class="ln">14</span><span class="lc">        <span class="s-kw">for</span> (<span class="s-type">int</span> s = <span class="s-num">0</span>; s &lt; n-i; s++) <span class="s-fn">printf</span>(<span class="s-str">"  "</span>);</span></div>
+<div class="code-line"><span class="ln">15</span><span class="lc">        <span class="s-kw">for</span> (<span class="s-type">int</span> j = <span class="s-num">0</span>; j &lt;= i; j++)</span></div>
+<div class="code-line"><span class="ln">16</span><span class="lc">            <span class="s-fn">printf</span>(<span class="s-str">"%4d"</span>, C[i][j]);</span></div>
+<div class="code-line"><span class="ln">17</span><span class="lc">        <span class="s-fn">printf</span>(<span class="s-str">"\n"</span>);</span></div>
+<div class="code-line"><span class="ln">18</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">19</span><span class="lc">    <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">20</span><span class="lc">}</span></div>
+</div>
+</div>
+<h2 class="section-title">[심화 내용] 카탈란 수</h2>
+<div class="note-box"><span class="note-label">[심화 내용] 카탈란 수 (Catalan Number)</span>
+Cₙ = (2n)! / ((n+1)! × n!)<br><br>C₀=1, C₁=1, C₂=2, C₃=5, C₄=14, C₅=42<br><br>등장하는 곳:<br>• n쌍 괄호의 올바른 배열 수<br>• n+1개 잎의 이진 트리 구조 수<br>• 계단 격자 경로 수 (대각선 아래 안 가는)</div>
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span><span class="code-bar-file">catalan.c</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;stdio.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc"><span class="s-type">long</span> <span class="s-type">long</span> <span class="s-fn">catalan</span>(<span class="s-type">int</span> n) {</span></div>
+<div class="code-line"><span class="ln">4</span><span class="lc">    <span class="s-type">long</span> <span class="s-type">long</span> C[<span class="s-num">20</span>] = {<span class="s-num">0</span>};</span></div>
+<div class="code-line"><span class="ln">5</span><span class="lc">    C[<span class="s-num">0</span>] = <span class="s-num">1</span>;</span></div>
+<div class="code-line"><span class="ln">6</span><span class="lc">    C[<span class="s-num">1</span>] = <span class="s-num">1</span>;</span></div>
+<div class="code-line"><span class="ln">7</span><span class="lc">    <span class="s-kw">for</span> (<span class="s-type">int</span> i = <span class="s-num">2</span>; i &lt;= n; i++) {</span></div>
+<div class="code-line"><span class="ln">8</span><span class="lc">        C[i] = <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">9</span><span class="lc">        <span class="s-kw">for</span> (<span class="s-type">int</span> j = <span class="s-num">0</span>; j &lt; i; j++)</span></div>
+<div class="code-line"><span class="ln">10</span><span class="lc">            C[i] += C[j] * C[i - <span class="s-num">1</span> - j];</span></div>
+<div class="code-line"><span class="ln">11</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">12</span><span class="lc">    <span class="s-kw">return</span> C[n];</span></div>
+<div class="code-line"><span class="ln">13</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">14</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">15</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">main</span>(<span class="s-type">void</span>) {</span></div>
+<div class="code-line"><span class="ln">16</span><span class="lc">    <span class="s-kw">for</span> (<span class="s-type">int</span> i = <span class="s-num">0</span>; i &lt;= <span class="s-num">10</span>; i++)</span></div>
+<div class="code-line"><span class="ln">17</span><span class="lc">        <span class="s-fn">printf</span>(<span class="s-str">"C_%d = %lld\n"</span>, i, <span class="s-fn">catalan</span>(i));</span></div>
+<div class="code-line"><span class="ln">18</span><span class="lc">    <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">19</span><span class="lc">}</span></div>
+</div>
+</div>
+<div class="output-wrap"><div class="output-bar">실행 결과</div><div class="output-body">C_0 = 1
+C_1 = 1
+C_2 = 2
+C_3 = 5
+C_4 = 14
+C_5 = 42
+C_6 = 132
+C_7 = 429
+C_8 = 1430
+C_9 = 4862
+C_10 = 16796</div></div>
+<h2 class="section-title">KOI 연결: 순열·조합 문제</h2>
+<div class="tip"><span class="tip-label">[KOI] 경우의 수 문제 키워드</span>
+• '몇 가지 방법' → 순열 또는 조합<br>• '순서가 다르면 다른 경우' → <b>순열</b><br>• '순서 상관없이' → <b>조합</b><br>• '중복 가능' → 중복 순열/조합<br>• N ≤ 20이면 → 완전 탐색으로도 가능<br>• N ≤ 10이면 → 순열 완전 탐색 가능 (N!)</div>
+<div class="tip"><span class="tip-label">[KOI 실전] nCr 계산 시 오버플로 방지</span>
+큰 수의 nCr 계산 시 팩토리얼이 오버플로!<br><br><b>방법 1: 파스칼 삼각형 (DP)</b><br>C[i][j] = C[i-1][j-1] + C[i-1][j]<br>→ 곱셈 없이 덧셈만! 오버플로 적음<br><br><b>방법 2: 교대 곱·나눗셈</b><br>result = 1<br>for i=0 to r-1: result = result*(n-i)/(i+1)<br>→ 매 단계 나눠서 수가 안 커짐<br><br><b>방법 3: 모듈러 역원 (MOD 문제)</b><br>페르마 소정리로 나눗셈을 곱셈으로 변환</div>
+<!-- fact-bite -->
+<h2 class="section-title">OX 퀴즈</h2>
+<!-- ox -->
+<h2 class="section-title">연습문제</h2>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 1</span><p style="margin:0;font-size:14px">순열과 조합의 차이를 한 문장으로 설명하세요.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 2</span><p style="margin:0;font-size:14px">5! = ?</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 3</span><p style="margin:0;font-size:14px">4P2 = ?</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 4</span><p style="margin:0;font-size:14px">4C2 = ?</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 5</span><p style="margin:0;font-size:14px">'반장-부반장 뽑기'는 순열? 조합?</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 6</span><p style="margin:0;font-size:14px">10명에서 대표 3명을 뽑는 경우의 수는? (10C3)</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 7</span><p style="margin:0;font-size:14px">숫자 {1,2,3,4}로 3자리 비밀번호(중복 허용)를 만드는 경우의 수는?</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 8</span><p style="margin:0;font-size:14px">nCr = nC(n-r)인 이유를 설명하세요.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 9</span><p style="margin:0;font-size:14px">파스칼 삼각형의 4번째 줄(n=3)을 쓰세요.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 10</span><p style="margin:0;font-size:14px">(a+b)³을 이항 정리로 전개하세요.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 11</span><p style="margin:0;font-size:14px">[심화] 재귀로 조합을 생성할 때, start 매개변수의 역할은?</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 12</span><p style="margin:0;font-size:14px">[심화] 5C2를 파스칼 항등식으로 계산하세요.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 13</span><p style="margin:0;font-size:14px">[심화] 중복 조합 H(3,2)의 공식과 값을 구하세요.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 14</span><p style="margin:0;font-size:14px">[심화 내용] 카탈란 수 C₃ = 5가 나타내는 것 하나를 설명하세요.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 15</span><p style="margin:0;font-size:14px">[심화 내용] nCr을 큰 수에서도 오버플로 없이 계산하는 방법을 쓰세요.</p></div>
+<h2 class="section-title">용어 정리</h2>
+<h2 class="section-title">[심화] C로 순열/조합 생성</h2>
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span><span class="code-bar-file">[C 코드] 조합 생성 (백트래킹)</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;stdio.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc"><span class="s-type">int</span> result[<span class="s-num">20</span>], n_val, r_val;</span></div>
+<div class="code-line"><span class="ln">4</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">5</span><span class="lc"><span class="s-cm">// nCr의 모든 조합 출력</span></span></div>
+<div class="code-line"><span class="ln">6</span><span class="lc"><span class="s-type">void</span> <span class="s-fn">combination</span>(<span class="s-type">int</span> start, <span class="s-type">int</span> depth) {</span></div>
+<div class="code-line"><span class="ln">7</span><span class="lc">    <span class="s-kw">if</span> (depth == r_val) {</span></div>
+<div class="code-line"><span class="ln">8</span><span class="lc">        <span class="s-fn">printf</span>(<span class="s-str">"{"</span>);</span></div>
+<div class="code-line"><span class="ln">9</span><span class="lc">        <span class="s-kw">for</span> (<span class="s-type">int</span> i = <span class="s-num">0</span>; i &lt; r_val; i++) {</span></div>
+<div class="code-line"><span class="ln">10</span><span class="lc">            <span class="s-kw">if</span> (i) <span class="s-fn">printf</span>(<span class="s-str">","</span>);</span></div>
+<div class="code-line"><span class="ln">11</span><span class="lc">            <span class="s-fn">printf</span>(<span class="s-str">"%d"</span>, result[i]);</span></div>
+<div class="code-line"><span class="ln">12</span><span class="lc">        }</span></div>
+<div class="code-line"><span class="ln">13</span><span class="lc">        <span class="s-fn">printf</span>(<span class="s-str">"} "</span>);</span></div>
+<div class="code-line"><span class="ln">14</span><span class="lc">        <span class="s-kw">return</span>;</span></div>
+<div class="code-line"><span class="ln">15</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">16</span><span class="lc">    <span class="s-kw">for</span> (<span class="s-type">int</span> i = start; i &lt;= n_val; i++) {</span></div>
+<div class="code-line"><span class="ln">17</span><span class="lc">        result[depth] = i;</span></div>
+<div class="code-line"><span class="ln">18</span><span class="lc">        <span class="s-fn">combination</span>(i + <span class="s-num">1</span>, depth + <span class="s-num">1</span>);</span></div>
+<div class="code-line"><span class="ln">19</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">20</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">21</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">22</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">main</span>() {</span></div>
+<div class="code-line"><span class="ln">23</span><span class="lc">    n_val = <span class="s-num">5</span>; r_val = <span class="s-num">3</span>;</span></div>
+<div class="code-line"><span class="ln">24</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"5C3 = "</span>);</span></div>
+<div class="code-line"><span class="ln">25</span><span class="lc">    <span class="s-fn">combination</span>(<span class="s-num">1</span>, <span class="s-num">0</span>);</span></div>
+<div class="code-line"><span class="ln">26</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"\n\n"</span>);</span></div>
+<div class="code-line"><span class="ln">27</span><span class="lc">    </span></div>
+<div class="code-line"><span class="ln">28</span><span class="lc">    n_val = <span class="s-num">4</span>; r_val = <span class="s-num">2</span>;</span></div>
+<div class="code-line"><span class="ln">29</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"4C2 = "</span>);</span></div>
+<div class="code-line"><span class="ln">30</span><span class="lc">    <span class="s-fn">combination</span>(<span class="s-num">1</span>, <span class="s-num">0</span>);</span></div>
+<div class="code-line"><span class="ln">31</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"\n"</span>);</span></div>
+<div class="code-line"><span class="ln">32</span><span class="lc">    <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">33</span><span class="lc">}</span></div>
+</div>
+</div>
+<div class="output-wrap"><div class="output-bar">실행 결과</div><div class="output-body">5C3 = {1,2,3} {1,2,4} {1,2,5} {1,3,4} {1,3,5} {1,4,5} {2,3,4} {2,3,5} {2,4,5} {3,4,5}
+
+4C2 = {1,2} {1,3} {1,4} {2,3} {2,4} {3,4}</div></div>
+<h2 class="section-title">[심화 내용] next_permutation 알고리즘</h2>
+<div style="margin:22px 0"></div>
+<div class="note-box"><span class="note-label">[심화 내용] 사전순 다음 순열 알고리즘</span>
+<b>C++ STL의 next_permutation 내부 알고리즘:</b><br><br>1. 뒤에서부터 arr[i] < arr[i+1]인 i를 찾음<br>2. 뒤에서부터 arr[i] < arr[j]인 j를 찾음<br>3. arr[i]와 arr[j]를 swap<br>4. i+1부터 끝까지 reverse<br><br><b>예:</b> {1,3,5,4,2}<br>1. i=1 (3 < 5)<br>2. j=3 (3 < 4)<br>3. swap: {1,4,5,3,2}<br>4. reverse i+1~end: {1,4,2,3,5}<br><br>시간: O(n), 공간: O(1)<br>모든 n! 순열을 사전순으로 생성 가능!</div>
+<h2 class="section-title">[심화 내용] 조합론의 항등식</h2>
+<div class="note-box"><span class="note-label">[심화 내용] 유용한 조합 항등식</span>
+<b>파스칼 규칙:</b> C(n,r) = C(n-1,r-1) + C(n-1,r)<br><b>반더몬드:</b> C(m+n,r) = sum C(m,k)*C(n,r-k)<br><b>하키 스틱:</b> C(r,r)+C(r+1,r)+...+C(n,r) = C(n+1,r+1)<br><b>이항 정리:</b> (1+x)^n = sum C(n,k)*x^k<br><b>대칭:</b> C(n,r) = C(n,n-r)<br><b>합:</b> C(n,0)+C(n,1)+...+C(n,n) = 2^n<br><br>대회에서 조합 문제를 풀 때 이 항등식들이 핵심!</div>
+<!-- fact-bite -->
+<!-- fact-bite -->
+<h2 class="section-title">[심화 내용] 순열/조합과 확률</h2>
+<div class="note-box"><span class="note-label">[심화 내용] 순열/조합 응용 문제</span>
+<b>Q1. 로또 1등 확률</b><br>45개 중 6개 선택: C(45,6) = 8,145,060<br>확률 = 1/8,145,060 ≈ 0.0000123%<br><br><b>Q2. 포커 패 확률</b><br>52장에서 5장: C(52,5) = 2,598,960<br>로열 플러시: 4가지/2,598,960 ≈ 0.000154%<br>풀 하우스: 3,744/2,598,960 ≈ 0.144%<br><br><b>Q3. 주사위 야쯔 확률</b><br>5개 주사위 모두 같은 눈: 6/6^5 = 6/7776 ≈ 0.077%<br><br><b>Q4. 같은 반 확률</b><br>30명 중 3명이 같은 반(10명씩 3반):<br>모두 같은 반: 3*C(27,7)*C(10,3) / C(30,10,10,10)</div>
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span><span class="code-bar-file">[C 코드] 중복 순열 — 비밀번호 생성</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;stdio.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc"><span class="s-cm">// n자리 비밀번호의 모든 경우 (숫자 0~k-1)</span></span></div>
+<div class="code-line"><span class="ln">4</span><span class="lc"><span class="s-type">void</span> <span class="s-fn">gen_password</span>(<span class="s-type">int</span> digits[], <span class="s-type">int</span> n, <span class="s-type">int</span> k, <span class="s-type">int</span> pos) {</span></div>
+<div class="code-line"><span class="ln">5</span><span class="lc">    <span class="s-kw">static</span> <span class="s-type">int</span> count = <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">6</span><span class="lc">    <span class="s-kw">if</span> (pos == n) {</span></div>
+<div class="code-line"><span class="ln">7</span><span class="lc">        count++;</span></div>
+<div class="code-line"><span class="ln">8</span><span class="lc">        <span class="s-kw">if</span> (count &lt;= <span class="s-num">5</span> || count == (<span class="s-type">int</span>)<span class="s-num">1</span>) {  <span class="s-cm">// 처음 5개만 출력</span></span></div>
+<div class="code-line"><span class="ln">9</span><span class="lc">            <span class="s-kw">for</span> (<span class="s-type">int</span> i = <span class="s-num">0</span>; i &lt; n; i++) <span class="s-fn">printf</span>(<span class="s-str">"%d"</span>, digits[i]);</span></div>
+<div class="code-line"><span class="ln">10</span><span class="lc">            <span class="s-fn">printf</span>(<span class="s-str">" "</span>);</span></div>
+<div class="code-line"><span class="ln">11</span><span class="lc">        }</span></div>
+<div class="code-line"><span class="ln">12</span><span class="lc">        <span class="s-kw">return</span>;</span></div>
+<div class="code-line"><span class="ln">13</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">14</span><span class="lc">    <span class="s-kw">for</span> (<span class="s-type">int</span> d = <span class="s-num">0</span>; d &lt; k; d++) {</span></div>
+<div class="code-line"><span class="ln">15</span><span class="lc">        digits[pos] = d;</span></div>
+<div class="code-line"><span class="ln">16</span><span class="lc">        <span class="s-fn">gen_password</span>(digits, n, k, pos + <span class="s-num">1</span>);</span></div>
+<div class="code-line"><span class="ln">17</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">18</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">19</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">20</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">main</span>() {</span></div>
+<div class="code-line"><span class="ln">21</span><span class="lc">    <span class="s-type">int</span> digits[<span class="s-num">10</span>];</span></div>
+<div class="code-line"><span class="ln">22</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"3자리 이진수 (0~1): "</span>);</span></div>
+<div class="code-line"><span class="ln">23</span><span class="lc">    <span class="s-fn">gen_password</span>(digits, <span class="s-num">3</span>, <span class="s-num">2</span>, <span class="s-num">0</span>);</span></div>
+<div class="code-line"><span class="ln">24</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"...\n"</span>);</span></div>
+<div class="code-line"><span class="ln">25</span><span class="lc">    </span></div>
+<div class="code-line"><span class="ln">26</span><span class="lc">    <span class="s-cm">// 총 개수만 계산</span></span></div>
+<div class="code-line"><span class="ln">27</span><span class="lc">    <span class="s-type">long</span> <span class="s-type">long</span> total = <span class="s-num">1</span>;</span></div>
+<div class="code-line"><span class="ln">28</span><span class="lc">    <span class="s-kw">for</span> (<span class="s-type">int</span> i = <span class="s-num">0</span>; i &lt; <span class="s-num">4</span>; i++) total *= <span class="s-num">10</span>;</span></div>
+<div class="code-line"><span class="ln">29</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"4자리 숫자 비밀번호: %lld가지\n"</span>, total);</span></div>
+<div class="code-line"><span class="ln">30</span><span class="lc">    </span></div>
+<div class="code-line"><span class="ln">31</span><span class="lc">    total = <span class="s-num">1</span>;</span></div>
+<div class="code-line"><span class="ln">32</span><span class="lc">    <span class="s-kw">for</span> (<span class="s-type">int</span> i = <span class="s-num">0</span>; i &lt; <span class="s-num">8</span>; i++) total *= <span class="s-num">62</span>;  <span class="s-cm">// a-z(26)+A-Z(26)+0-9(10)</span></span></div>
+<div class="code-line"><span class="ln">33</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"8자리 영숫자 비밀번호: %lld가지\n"</span>, total);</span></div>
+<div class="code-line"><span class="ln">34</span><span class="lc">    <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">35</span><span class="lc">}</span></div>
+</div>
+</div>
+<div class="output-wrap"><div class="output-bar">실행 결과</div><div class="output-body">3자리 이진수 (0~1): 000 001 010 011 100 ...
+4자리 숫자 비밀번호: 10000가지
+8자리 영숫자 비밀번호: 218340105584896가지</div></div>
+
+<h2 class="section-title">[심화] 중복 조합과 별 찍기 문제</h2>
+<div class="note-box"><span class="note-label">[심화] 중복 조합 = 별과 막대</span>
+<b>중복 조합 H(n,r) = C(n+r-1, r)</b><br><br>예: 3종류 과일에서 5개 고르기<br>H(3,5) = C(7,5) = 21가지<br><br><b>별과 막대 (Stars and Bars):</b><br>★★|★★★| → 사과2, 바나나3, 포도0<br>★|★|★★★ → 사과1, 바나나1, 포도3<br><br>5개의 별(★)과 2개의 막대(|)를 배열<br>= 7자리 중 2자리에 막대 배치<br>= C(7,2) = 21<br><br><b>응용:</b><br>x1+x2+x3=5의 음이 아닌 정수 해 = H(3,5) = 21<br>동전 나누기, 칸 배분 등 다양한 문제에 활용!</div>
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span><span class="code-bar-file">[C 코드] 파스칼 삼각형</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;stdio.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">main</span>() {</span></div>
+<div class="code-line"><span class="ln">4</span><span class="lc">    <span class="s-type">int</span> n = <span class="s-num">10</span>;</span></div>
+<div class="code-line"><span class="ln">5</span><span class="lc">    <span class="s-type">int</span> C[<span class="s-num">11</span>][<span class="s-num">11</span>] = {<span class="s-num">0</span>};</span></div>
+<div class="code-line"><span class="ln">6</span><span class="lc">    </span></div>
+<div class="code-line"><span class="ln">7</span><span class="lc">    <span class="s-kw">for</span> (<span class="s-type">int</span> i = <span class="s-num">0</span>; i &lt;= n; i++) {</span></div>
+<div class="code-line"><span class="ln">8</span><span class="lc">        C[i][<span class="s-num">0</span>] = <span class="s-num">1</span>;</span></div>
+<div class="code-line"><span class="ln">9</span><span class="lc">        <span class="s-kw">for</span> (<span class="s-type">int</span> j = <span class="s-num">1</span>; j &lt;= i; j++)</span></div>
+<div class="code-line"><span class="ln">10</span><span class="lc">            C[i][j] = C[i-<span class="s-num">1</span>][j-<span class="s-num">1</span>] + C[i-<span class="s-num">1</span>][j];</span></div>
+<div class="code-line"><span class="ln">11</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">12</span><span class="lc">    </span></div>
+<div class="code-line"><span class="ln">13</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"파스칼 삼각형 (0~10행):\n"</span>);</span></div>
+<div class="code-line"><span class="ln">14</span><span class="lc">    <span class="s-kw">for</span> (<span class="s-type">int</span> i = <span class="s-num">0</span>; i &lt;= n; i++) {</span></div>
+<div class="code-line"><span class="ln">15</span><span class="lc">        <span class="s-kw">for</span> (<span class="s-type">int</span> s = <span class="s-num">0</span>; s &lt; n-i; s++) <span class="s-fn">printf</span>(<span class="s-str">"  "</span>);</span></div>
+<div class="code-line"><span class="ln">16</span><span class="lc">        <span class="s-kw">for</span> (<span class="s-type">int</span> j = <span class="s-num">0</span>; j &lt;= i; j++)</span></div>
+<div class="code-line"><span class="ln">17</span><span class="lc">            <span class="s-fn">printf</span>(<span class="s-str">"%4d"</span>, C[i][j]);</span></div>
+<div class="code-line"><span class="ln">18</span><span class="lc">        <span class="s-fn">printf</span>(<span class="s-str">"\n"</span>);</span></div>
+<div class="code-line"><span class="ln">19</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">20</span><span class="lc">    </span></div>
+<div class="code-line"><span class="ln">21</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"\nC(10,3) = %d\n"</span>, C[<span class="s-num">10</span>][<span class="s-num">3</span>]);</span></div>
+<div class="code-line"><span class="ln">22</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"C(10,5) = %d\n"</span>, C[<span class="s-num">10</span>][<span class="s-num">5</span>]);</span></div>
+<div class="code-line"><span class="ln">23</span><span class="lc">    <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">24</span><span class="lc">}</span></div>
+</div>
+</div>
+<div class="output-wrap"><div class="output-bar">실행 결과</div><div class="output-body">파스칼 삼각형 (0~10행):
+                       1
+                     1   1
+                   1   2   1
+                 1   3   3   1
+               1   4   6   4   1
+             1   5  10  10   5   1
+           1   6  15  20  15   6   1
+         1   7  21  35  35  21   7   1
+       1   8  28  56  70  56  28   8   1
+     1   9  36  84 126 126  84  36   9   1
+   1  10  45 120 210 252 210 120  45  10   1
+
+C(10,3) = 120
+C(10,5) = 252</div></div>
+<!-- fact-bite -->
+<div class="tip"><span class="tip-label">[활동] 순열/조합 판별 연습</span>
+다음 문제가 순열(P)인지 조합(C)인지 판별하세요:<br><br>1. 5명 중 반장+부반장 선출 → P (순서 있음)<br>2. 10명 중 3명 대표 선발 → C (순서 없음)<br>3. 숫자 1~9로 3자리 수 만들기 → P<br>4. 52장에서 포커 5장 → C<br>5. 4명이 릴레이 주자 순서 → P<br>6. 반에서 청소 당번 4명 → C<br>7. 비밀번호 4자리 → P (중복 순열)<br>8. 뷔페에서 3가지 반찬 고르기 → C<br><br><b>핵심:</b> "순서가 중요하면 순열, 아니면 조합"</div>
+
+<div class="note-box"><span class="note-label">[심화 내용] 카탈란 수</span>
+<b>카탈란 수(Catalan Number):</b><br>C_n = C(2n,n) / (n+1)<br><br>C_0=1, C_1=1, C_2=2, C_3=5, C_4=14, C_5=42<br><br><b>카탈란 수가 나타나는 곳:</b><br>1. n쌍 괄호의 올바른 배열 수<br>2. n+1개 잎을 가진 이진 트리 수<br>3. n*n 격자에서 대각선 위로 안 가는 경로 수<br>4. 볼록 n+2각형의 삼각분할 수<br>5. 스택 순열의 수<br><br>조합론에서 가장 자주 등장하는 수열 중 하나!</div>
+<!-- fact-bite -->
+
+<!-- fact-bite -->
+<table class="trace"><thead><tr><th>용어</th><th>설명</th></tr></thead><tbody><tr><td><code>순열 (Permutation)</code></td><td>n개에서 r개를 순서 있게 뽑는 것. nPr = n!/(n-r)!.</td></tr><tr><td><code>조합 (Combination)</code></td><td>n개에서 r개를 순서 없이 뽑는 것. nCr = n!/(r!(n-r)!).</td></tr><tr><td><code>팩토리얼 (!)</code></td><td>n! = n×(n-1)×...×1. 0!=1.</td></tr><tr><td><code>중복 순열</code></td><td>같은 원소를 여러 번 쓸 수 있는 순열. nʳ.</td></tr><tr><td><code>중복 조합</code></td><td>같은 원소를 여러 번 뽑을 수 있는 조합. H(n,r)=n+r-1Cr.</td></tr><tr><td><code>파스칼 삼각형</code></td><td>이항 계수를 삼각형으로 배열. nCr = n-1Cr-1 + n-1Cr.</td></tr><tr><td><code>이항 정리</code></td><td>(a+b)ⁿ = Σ nCk × aⁿ⁻ᵏ × bᵏ.</td></tr><tr><td><code>카탈란 수</code></td><td>괄호 배열, 이진 트리 등에 등장하는 수열. Cₙ=(2n)!/((n+1)!n!).</td></tr><tr><td><code>next_permutation</code></td><td>사전순으로 다음 순열을 구하는 알고리즘. O(n) 시간, O(1) 공간.</td></tr><tr><td><code>파스칼 규칙</code></td><td>C(n,r) = C(n-1,r-1) + C(n-1,r). 파스칼 삼각형의 재귀적 성질.</td></tr><tr><td><code>반더몬드 항등식</code></td><td>두 집합에서 각각 뽑아 합치는 조합 수. C(m+n,r) = sum C(m,k)*C(n,r-k).</td></tr><tr><td><code>하키 스틱 항등식</code></td><td>파스칼 삼각형의 대각선 합. C(r,r)+...+C(n,r) = C(n+1,r+1).</td></tr></tbody></table>
+<div class="warmup-box"><div class="warmup-title">이번 유닛 핵심 정리</div><div class="wq"><b>1.</b> 순열=순서O(nPr), 조합=순서X(nCr)</div><div class="wq"><b>2.</b> n! = n×(n-1)×...×1, 0!=1</div><div class="wq"><b>3.</b> nCr = nC(n-r) (대칭!)</div><div class="wq"><b>4.</b> [심화] 중복 순열=nʳ, 중복 조합=H(n,r)</div><div class="wq"><b>5.</b> [심화] 재귀로 순열/조합 생성</div><div class="wq"><b>6.</b> [심화 내용] 파스칼 삼각형, 이항 정리</div><div class="wq"><b>7.</b> [심화 내용] 카탈란 수</div></div>
+<div class="tip"><span class="tip-label">이 유닛에서 연결된 축</span>
+<b>[수학연결]</b> 순열·조합 = 경우의 수의 핵심<br><b>[C언어]</b> 팩토리얼 함수, 재귀 조합 생성<br><b>[KOI]</b> 경우의 수 + 완전 탐색 연결<br><b>[컴퓨팅 사고력]</b> 문제 분류 (순서 O/X)<br><b>[코딩기초]</b> 재귀, DP(파스칼 삼각형)<br><b>[디버깅]</b> 순열/조합 혼동 = 흔한 실수</div>
+<h2 class="section-title">실전 활용 연습</h2>
+<p>지금까지 배운 개념을 활용한 다양한 실전 예제와 연습문제입니다.</p>
+
+<h2 class="section-title">실생활 연결</h2>
+<div class="tip"><span class="tip-label">[실생활] 이 개념은 어디에 쓰일까?</span>
+게임 개발, 앱 만들기, 웹사이트, 로봇 제어, AI 학습 등 모든 분야에서 사용돼요!</div>
+
+<h2 class="section-title">추가 연습문제</h2>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 20</span><p style="margin:0;font-size:14px">이번 유닛에서 배운 핵심 개념 3가지를 자신의 말로 설명해 보세요.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 21</span><p style="margin:0;font-size:14px">이번 유닛의 개념을 활용한 자신만의 문제를 1개 만들어 보세요.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 22</span><p style="margin:0;font-size:14px">이번 유닛의 개념이 C언어에서 어떻게 사용되는지 조사해 보세요.</p></div>
+<h2 class="section-title">[심화] 더 알아보기</h2>
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+
+<p>이번 유닛의 모든 개념을 완전히 이해했습니다. 다음 유닛에서 더 발전된 개념을 배워보세요!</p>
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<div class="note-box"><span class="note-label">[다음 유닛 미리보기]</span>
+순열과 조합을 배웠으니, 이제 <b>재귀(Recursion)</b>를 배울 차례! 함수가 자기 자신을 호출하는 마법!</div>
+
+
+    <span class="page-num">2</span>
+  </div>
+</div>
+</body>
+</html>

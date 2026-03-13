@@ -1,0 +1,192 @@
+/**
+ * 컴퓨터 기초 커리큘럼
+ * Part 0: 44 기본 유닛 (u01~u44) + 23 심화 유닛 (s01~s23)
+ * 총 67유닛, 7챕터
+ */
+
+import type { Chapter } from './types';
+
+const BASE = '/learn/컴퓨터기초';
+
+function page(id: string, title: string, file: string) {
+    return { id, title, type: '페이지' as const, content: `<iframe src="${BASE}/${file}" style="width:100%;height:100%;border:none;min-height:80vh" />` };
+}
+
+export const COMPUTER_BASICS: Chapter[] = [
+    // ── CH1: 컴퓨터와 하드웨어 ──
+    {
+        id: 'cb-ch1', chapterNumber: 1, title: '컴퓨터와 하드웨어', icon: '', description: '컴퓨터의 구성 요소, 하드웨어 원리를 학습합니다.',
+        units: [
+            { id: 'cb-u01', unitNumber: 1, title: '컴퓨터란 무엇인가', type: '이론', difficulty: 1, duration: '30분',
+              pages: [page('cb-1.1', '컴퓨터 소개', 'part0-u01-computer-intro-v2.html')] },
+            { id: 'cb-u02', unitNumber: 2, title: '하드웨어의 이해', type: '이론', difficulty: 1, duration: '35분',
+              pages: [page('cb-2.1', '하드웨어', 'part0-u02-hardware-v2.html')] },
+            { id: 'cb-s10', unitNumber: 3, title: 'CPU의 구조와 동작', type: '이론', difficulty: 2, duration: '45분',
+              pages: [page('cb-s10.1', 'CPU 심화', 'part0-s10-cpu-v2.html')] },
+            { id: 'cb-s11', unitNumber: 4, title: '메모리 계층 구조', type: '이론', difficulty: 2, duration: '45분',
+              pages: [page('cb-s11.1', '메모리 계층', 'part0-s11-memory-hierarchy-v2.html')] },
+            { id: 'cb-s12', unitNumber: 5, title: '입출력과 버스', type: '이론', difficulty: 2, duration: '40분',
+              pages: [page('cb-s12.1', 'I/O와 버스', 'part0-s12-io-bus-v2.html')] },
+        ],
+    },
+    // ── CH2: 수와 데이터 표현 ──
+    {
+        id: 'cb-ch2', chapterNumber: 2, title: '수와 데이터 표현', icon: '', description: '비트, 진법, 문자 코드 등 데이터 표현 방식을 배웁니다.',
+        units: [
+            { id: 'cb-u03', unitNumber: 6, title: '비트와 바이트', type: '이론', difficulty: 1, duration: '30분',
+              pages: [page('cb-3.1', '비트와 바이트', 'part0-u03-bits-v2.html')] },
+            { id: 'cb-u04', unitNumber: 7, title: '2진법과 10진법', type: '이론', difficulty: 1, duration: '35분',
+              pages: [page('cb-4.1', '2진법·10진법', 'part0-u04-binary-decimal-v2.html')] },
+            { id: 'cb-u05', unitNumber: 8, title: '8진법과 16진법', type: '이론', difficulty: 1, duration: '35분',
+              pages: [page('cb-5.1', '8진법·16진법', 'part0-u05-octal-hex-v2.html')] },
+            { id: 'cb-u06', unitNumber: 9, title: 'ASCII 코드', type: '이론', difficulty: 1, duration: '30분',
+              pages: [page('cb-6.1', 'ASCII', 'part0-u06-ascii-v2.html')] },
+            { id: 'cb-s13', unitNumber: 10, title: '2의 보수와 음수 표현', type: '이론', difficulty: 2, duration: '45분',
+              pages: [page('cb-s13.1', '2의 보수', 'part0-s13-twos-complement-v2.html')] },
+            { id: 'cb-s14', unitNumber: 11, title: '부동소수점', type: '이론', difficulty: 3, duration: '50분',
+              pages: [page('cb-s14.1', '부동소수점', 'part0-s14-floating-point-v2.html')] },
+            { id: 'cb-s15', unitNumber: 12, title: '멀티미디어 디지털 표현', type: '이론', difficulty: 2, duration: '40분',
+              pages: [page('cb-s15.1', '멀티미디어', 'part0-s15-multimedia-digital-v2.html')] },
+        ],
+    },
+    // ── CH3: 파일·OS·네트워크 ──
+    {
+        id: 'cb-ch3', chapterNumber: 3, title: '파일 · OS · 네트워크', icon: '', description: '파일 관리, 운영체제, 네트워크 기본을 학습합니다.',
+        units: [
+            { id: 'cb-u07', unitNumber: 13, title: '파일과 폴더', type: '이론', difficulty: 1, duration: '25분',
+              pages: [page('cb-7.1', '파일과 폴더', 'part0-u07-files-folders-v2.html')] },
+            { id: 'cb-u08', unitNumber: 14, title: '터미널 기초', type: '실습', difficulty: 1, duration: '35분',
+              pages: [page('cb-8.1', '터미널', 'part0-u08-terminal-v2.html')] },
+            { id: 'cb-s16', unitNumber: 15, title: '운영체제', type: '이론', difficulty: 2, duration: '45분',
+              pages: [page('cb-s16.1', '운영체제', 'part0-s16-operating-system-v2.html')] },
+            { id: 'cb-s17', unitNumber: 16, title: '네트워크 기초', type: '이론', difficulty: 2, duration: '45분',
+              pages: [page('cb-s17.1', '네트워크', 'part0-s17-network-v2.html')] },
+            { id: 'cb-s19', unitNumber: 17, title: '암호학 기초', type: '이론', difficulty: 3, duration: '50분',
+              pages: [page('cb-s19.1', '암호학', 'part0-s19-cryptography-v2.html')] },
+            { id: 'cb-s23', unitNumber: 18, title: '보안 기초', type: '이론', difficulty: 2, duration: '40분',
+              pages: [page('cb-s23.1', '보안', 'part0-s23-security-v2.html')] },
+        ],
+    },
+    // ── CH4: 논리와 불 대수 ──
+    {
+        id: 'cb-ch4', chapterNumber: 4, title: '논리와 불 대수', icon: '', description: '참/거짓, 논리 연산, 논리 게이트를 학습합니다.',
+        units: [
+            { id: 'cb-u09', unitNumber: 19, title: '참과 거짓', type: '이론', difficulty: 1, duration: '25분',
+              pages: [page('cb-9.1', '참과 거짓', 'part0-u09-true-false-v2.html')] },
+            { id: 'cb-u10', unitNumber: 20, title: 'AND 연산', type: '이론', difficulty: 1, duration: '25분',
+              pages: [page('cb-10.1', 'AND', 'part0-u10-and-v2.html')] },
+            { id: 'cb-u11', unitNumber: 21, title: 'OR 연산', type: '이론', difficulty: 1, duration: '25분',
+              pages: [page('cb-11.1', 'OR', 'part0-u11-or-v2.html')] },
+            { id: 'cb-u12', unitNumber: 22, title: 'NOT 연산', type: '이론', difficulty: 1, duration: '30분',
+              pages: [page('cb-12.1', 'NOT', 'part0-u12-not-v2.html')] },
+            { id: 'cb-u13', unitNumber: 23, title: '논리 조합', type: '이론', difficulty: 1, duration: '30분',
+              pages: [page('cb-13.1', '논리 조합', 'part0-u13-logic-combo-v2.html')] },
+            { id: 'cb-u14', unitNumber: 24, title: '비교 연산', type: '이론', difficulty: 1, duration: '30분',
+              pages: [page('cb-14.1', '비교 연산', 'part0-u14-comparison-v2.html')] },
+            { id: 'cb-u15', unitNumber: 25, title: '논리 퍼즐', type: '실습', difficulty: 2, duration: '35분',
+              pages: [page('cb-15.1', '논리 퍼즐', 'part0-u15-logic-puzzle-v2.html')] },
+            { id: 'cb-s01', unitNumber: 26, title: '논리 게이트', type: '이론', difficulty: 2, duration: '45분',
+              pages: [page('cb-s01.1', '논리 게이트', 'part0-s01-logic-gates-v2.html')] },
+            { id: 'cb-s02', unitNumber: 27, title: '불 대수', type: '이론', difficulty: 3, duration: '50분',
+              pages: [page('cb-s02.1', '불 대수', 'part0-s02-boolean-algebra-v2.html')] },
+        ],
+    },
+    // ── CH5: 수학적 사고 ──
+    {
+        id: 'cb-ch5', chapterNumber: 5, title: '수학적 사고', icon: '', description: '변수, 나눗셈, 좌표, 경우의 수, 소수, 최대공약수 등을 배웁니다.',
+        units: [
+            { id: 'cb-u16', unitNumber: 28, title: '변수 개념', type: '이론', difficulty: 1, duration: '30분',
+              pages: [page('cb-16.1', '변수', 'part0-u16-variable-v2.html')] },
+            { id: 'cb-u17', unitNumber: 29, title: '나눗셈과 나머지', type: '이론', difficulty: 1, duration: '35분',
+              pages: [page('cb-17.1', '나눗셈·나머지', 'part0-u17-division-remainder-v2.html')] },
+            { id: 'cb-u18', unitNumber: 30, title: '패턴과 일반화', type: '이론', difficulty: 1, duration: '30분',
+              pages: [page('cb-18.1', '패턴·일반화', 'part0-u18-pattern-generalize-v2.html')] },
+            { id: 'cb-u19', unitNumber: 31, title: '좌표', type: '이론', difficulty: 1, duration: '30분',
+              pages: [page('cb-19.1', '좌표', 'part0-u19-coordinates-v2.html')] },
+            { id: 'cb-u20', unitNumber: 32, title: '경우의 수', type: '이론', difficulty: 1, duration: '35분',
+              pages: [page('cb-20.1', '경우의 수', 'part0-u20-counting-cases-v2.html')] },
+            { id: 'cb-u21', unitNumber: 33, title: '소수', type: '이론', difficulty: 1, duration: '30분',
+              pages: [page('cb-21.1', '소수', 'part0-u21-prime-v2.html')] },
+            { id: 'cb-u22', unitNumber: 34, title: '최대공약수·최소공배수', type: '이론', difficulty: 1, duration: '35분',
+              pages: [page('cb-22.1', 'GCD·LCM', 'part0-u22-gcd-lcm-v2.html')] },
+            { id: 'cb-u32', unitNumber: 35, title: '집합', type: '이론', difficulty: 2, duration: '35분',
+              pages: [page('cb-32.1', '집합', 'part0-u32-sets-v2.html')] },
+            { id: 'cb-u33', unitNumber: 36, title: '순열과 조합', type: '이론', difficulty: 2, duration: '40분',
+              pages: [page('cb-33.1', '순열·조합', 'part0-u33-permutation-combination-v2.html')] },
+            { id: 'cb-s03', unitNumber: 37, title: '정보 이론', type: '이론', difficulty: 3, duration: '50분',
+              pages: [page('cb-s03.1', '정보 이론', 'part0-s03-information-theory-v2.html')] },
+            { id: 'cb-s04', unitNumber: 38, title: '오류 검출', type: '이론', difficulty: 3, duration: '45분',
+              pages: [page('cb-s04.1', '오류 검출', 'part0-s04-error-detection-v2.html')] },
+            { id: 'cb-s05', unitNumber: 39, title: '확률과 패러독스', type: '이론', difficulty: 3, duration: '50분',
+              pages: [page('cb-s05.1', '확률·패러독스', 'part0-s05-probability-paradox-v2.html')] },
+            { id: 'cb-s06', unitNumber: 40, title: '비둘기집 원리', type: '이론', difficulty: 2, duration: '40분',
+              pages: [page('cb-s06.1', '비둘기집 원리', 'part0-s06-pigeonhole-v2.html')] },
+            { id: 'cb-s07', unitNumber: 41, title: '게임 이론', type: '이론', difficulty: 3, duration: '50분',
+              pages: [page('cb-s07.1', '게임 이론', 'part0-s07-game-theory-v2.html')] },
+            { id: 'cb-s09', unitNumber: 42, title: '증명 기법', type: '이론', difficulty: 3, duration: '50분',
+              pages: [page('cb-s09.1', '증명 기법', 'part0-s09-proof-techniques-v2.html')] },
+        ],
+    },
+    // ── CH6: 컴퓨팅 사고력 ──
+    {
+        id: 'cb-ch6', chapterNumber: 6, title: '컴퓨팅 사고력', icon: '', description: '분해, 추상화, 알고리즘 설계, 자료구조 기초를 학습합니다.',
+        units: [
+            { id: 'cb-u23', unitNumber: 43, title: '문제 분해', type: '이론', difficulty: 1, duration: '30분',
+              pages: [page('cb-23.1', '분해', 'part0-u23-decomposition-v2.html')] },
+            { id: 'cb-u24', unitNumber: 44, title: '패턴 인식', type: '이론', difficulty: 1, duration: '30분',
+              pages: [page('cb-24.1', '패턴 인식', 'part0-u24-pattern-recognition-v2.html')] },
+            { id: 'cb-u25', unitNumber: 45, title: '추상화', type: '이론', difficulty: 1, duration: '30분',
+              pages: [page('cb-25.1', '추상화', 'part0-u25-abstraction-v2.html')] },
+            { id: 'cb-u26', unitNumber: 46, title: '알고리즘 설계', type: '이론', difficulty: 1, duration: '35분',
+              pages: [page('cb-26.1', '알고리즘 설계', 'part0-u26-algorithm-design-v2.html')] },
+            { id: 'cb-u27', unitNumber: 47, title: '순서도', type: '이론', difficulty: 1, duration: '30분',
+              pages: [page('cb-27.1', '순서도', 'part0-u27-flowchart-v2.html')] },
+            { id: 'cb-u28', unitNumber: 48, title: '의사 코드', type: '이론', difficulty: 1, duration: '30분',
+              pages: [page('cb-28.1', '의사 코드', 'part0-u28-pseudocode-v2.html')] },
+            { id: 'cb-u29', unitNumber: 49, title: '완전 탐색', type: '이론', difficulty: 2, duration: '40분',
+              pages: [page('cb-29.1', '완전 탐색', 'part0-u29-brute-force-v2.html')] },
+            { id: 'cb-u30', unitNumber: 50, title: '그리디 알고리즘', type: '이론', difficulty: 2, duration: '35분',
+              pages: [page('cb-30.1', '그리디', 'part0-u30-greedy-v2.html')] },
+            { id: 'cb-u31', unitNumber: 51, title: '시뮬레이션', type: '이론', difficulty: 2, duration: '35분',
+              pages: [page('cb-31.1', '시뮬레이션', 'part0-u31-simulation-v2.html')] },
+            { id: 'cb-u34', unitNumber: 52, title: '재귀', type: '이론', difficulty: 2, duration: '40분',
+              pages: [page('cb-34.1', '재귀', 'part0-u34-recursion-v2.html')] },
+            { id: 'cb-u35', unitNumber: 53, title: '그래프', type: '이론', difficulty: 2, duration: '40분',
+              pages: [page('cb-35.1', '그래프', 'part0-u35-graph-v2.html')] },
+            { id: 'cb-u36', unitNumber: 54, title: '스택과 큐', type: '이론', difficulty: 2, duration: '40분',
+              pages: [page('cb-36.1', '스택·큐', 'part0-u36-stack-queue-v2.html')] },
+            { id: 'cb-s08', unitNumber: 55, title: '튜링 머신', type: '이론', difficulty: 3, duration: '50분',
+              pages: [page('cb-s08.1', '튜링 머신', 'part0-s08-turing-machine-v2.html')] },
+        ],
+    },
+    // ── CH7: 프로그래밍 입문 & 소프트웨어 ──
+    {
+        id: 'cb-ch7', chapterNumber: 7, title: '프로그래밍 입문 & 소프트웨어', icon: '', description: '프로그래밍 언어, C언어 입문, 소프트웨어 개발, AI, 데이터베이스를 배웁니다.',
+        units: [
+            { id: 'cb-u37', unitNumber: 56, title: '프로그래밍 언어란', type: '이론', difficulty: 1, duration: '30분',
+              pages: [page('cb-37.1', '프로그래밍 언어', 'part0-u37-programming-language-v2.html')] },
+            { id: 'cb-u38', unitNumber: 57, title: '왜 C언어인가', type: '이론', difficulty: 1, duration: '25분',
+              pages: [page('cb-38.1', 'Why C', 'part0-u38-why-c-v2.html')] },
+            { id: 'cb-u39', unitNumber: 58, title: '개발 환경 설정', type: '실습', difficulty: 1, duration: '35분',
+              pages: [page('cb-39.1', '환경 설정', 'part0-u39-setup-v2.html')] },
+            { id: 'cb-u40', unitNumber: 59, title: 'C언어 기본 구조', type: '이론', difficulty: 1, duration: '35분',
+              pages: [page('cb-40.1', 'C 기본 구조', 'part0-u40-c-skeleton-v2.html')] },
+            { id: 'cb-u41', unitNumber: 60, title: '컴파일과 실행', type: '실습', difficulty: 1, duration: '30분',
+              pages: [page('cb-41.1', '컴파일', 'part0-u41-compile-v2.html')] },
+            { id: 'cb-u42', unitNumber: 61, title: '주석과 들여쓰기', type: '이론', difficulty: 1, duration: '25분',
+              pages: [page('cb-42.1', '주석·들여쓰기', 'part0-u42-comments-indent-v2.html')] },
+            { id: 'cb-u43', unitNumber: 62, title: '순서도 프로젝트', type: '종합', difficulty: 2, duration: '40분',
+              pages: [page('cb-43.1', '순서도 프로젝트', 'part0-u43-flowchart-project-v2.html')] },
+            { id: 'cb-u44', unitNumber: 63, title: '종합 퀴즈', type: '퀴즈', difficulty: 2, duration: '45분',
+              pages: [page('cb-44.1', '종합 퀴즈', 'part0-u44-comprehensive-quiz-v2.html')] },
+            { id: 'cb-s18', unitNumber: 64, title: '소프트웨어 개발', type: '이론', difficulty: 2, duration: '45분',
+              pages: [page('cb-s18.1', '소프트웨어 개발', 'part0-s18-software-dev-v2.html')] },
+            { id: 'cb-s20', unitNumber: 65, title: '컴파일러와 인터프리터', type: '이론', difficulty: 2, duration: '45분',
+              pages: [page('cb-s20.1', '컴파일러', 'part0-s20-compiler-v2.html')] },
+            { id: 'cb-s21', unitNumber: 66, title: 'AI 기초', type: '이론', difficulty: 2, duration: '45분',
+              pages: [page('cb-s21.1', 'AI 기초', 'part0-s21-ai-basics-v2.html')] },
+            { id: 'cb-s22', unitNumber: 67, title: '데이터베이스', type: '이론', difficulty: 2, duration: '45분',
+              pages: [page('cb-s22.1', '데이터베이스', 'part0-s22-database-v2.html')] },
+        ],
+    },
+];

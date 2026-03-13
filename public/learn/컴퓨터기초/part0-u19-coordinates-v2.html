@@ -1,0 +1,1299 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>코딩쏙 교재 — 좌표와 위치</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+
+  :root {
+    --navy: #1a2e4a;
+    --navy-mid: #2c4a6e;
+    --navy-light: #3d6590;
+    --orange: #e07830;
+    --orange-light: #f5e6d8;
+    --white: #ffffff;
+    --bg: #f7f8fa;
+    --bg-warm: #faf9f7;
+    --gray-50: #f9fafb;
+    --gray-100: #f3f4f6;
+    --gray-200: #e5e7eb;
+    --gray-300: #d1d5db;
+    --gray-400: #9ca3af;
+    --gray-500: #6b7280;
+    --gray-600: #4b5563;
+    --gray-700: #374151;
+    --gray-800: #1f2937;
+    --text: #2d3748;
+    --green: #16a34a;
+    --green-bg: #dcfce7;
+    --red: #dc2626;
+    --red-bg: #fee2e2;
+    --blue: #2563eb;
+    --blue-bg: #dbeafe;
+    --yellow-bg: #fef9c3;
+    --font: 'Noto Sans KR', sans-serif;
+    --mono: 'JetBrains Mono', 'Consolas', monospace;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: var(--font); background: #e8eaed; font-size: 15px; }
+
+  /* ========== PAGE ========== */
+  .page {
+    width: 210mm;
+    min-height: 295mm;
+    margin: 24px auto;
+    background: var(--white);
+    box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* ========== PAGE 1: CHAPTER START ========== */
+  .chapter-page {
+    display: flex;
+    min-height: 295mm;
+  }
+
+  .chapter-sidebar {
+    width: 10px;
+    background: var(--navy);
+    flex-shrink: 0;
+  }
+
+  .chapter-accent-bar {
+    width: 7px;
+    background: var(--orange);
+    flex-shrink: 0;
+  }
+
+  .chapter-body {
+    flex: 1;
+    padding: 70px 65px 50px 55px;
+    position: relative;
+  }
+
+  .chapter-watermark {
+    position: absolute;
+    top: -10px;
+    right: -15px;
+    font-size: 280px;
+    font-weight: 900;
+    color: rgba(180,195,212,0.35);
+    line-height: 1;
+    pointer-events: none;
+    letter-spacing: -10px;
+  }
+
+  .chapter-label {
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--navy-mid);
+    letter-spacing: 2px;
+    margin-bottom: 4px;
+  }
+
+  .chapter-title {
+    font-size: 44px;
+    font-weight: 900;
+    color: var(--navy);
+    line-height: 1.15;
+    margin-bottom: 12px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .chapter-sub {
+    font-size: 16px;
+    color: var(--gray-500);
+    font-weight: 400;
+    margin-bottom: 20px;
+    padding-bottom: 28px;
+    border-bottom: 1px solid var(--gray-200);
+  }
+
+  /* Learning objectives */
+  .obj-title {
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--navy);
+    margin-bottom: 16px;
+    margin-top: 32px;
+  }
+
+  .obj-list {
+    list-style: none;
+    margin-bottom: 40px;
+  }
+
+  .obj-list li {
+    padding: 5px 0 5px 24px;
+    position: relative;
+    font-size: 15px;
+    color: var(--gray-700);
+    line-height: 1.6;
+  }
+
+  .obj-list li::before {
+    content: '•';
+    position: absolute;
+    left: 8px;
+    color: var(--navy-mid);
+    font-weight: 700;
+  }
+
+  /* Prerequisites flow */
+  .prereq-title {
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--navy);
+    margin-bottom: 18px;
+  }
+
+  .prereq-flow {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    margin-bottom: 44px;
+  }
+
+  .prereq-item {
+    padding: 9px 22px;
+    border: 1.5px solid var(--gray-300);
+    border-radius: 50px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--gray-600);
+    background: var(--white);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+  }
+
+  .prereq-item.current {
+    border-color: var(--navy);
+    color: var(--navy);
+    font-weight: 700;
+    background: #edf2f7;
+    box-shadow: 0 2px 6px rgba(26,46,74,0.12);
+  }
+
+  .prereq-arrow {
+    width: 36px;
+    text-align: center;
+    color: var(--gray-300);
+    font-size: 18px;
+    font-weight: 300;
+  }
+
+  /* Predict box */
+  .predict-box {
+    background: var(--gray-50);
+    border: 1.5px solid var(--gray-200);
+    border-radius: 12px;
+    padding: 24px 28px;
+  }
+
+  .predict-label {
+    display: inline-block;
+    background: var(--orange);
+    color: var(--white);
+    font-size: 12px;
+    font-weight: 600;
+    padding: 3px 12px;
+    border-radius: 4px;
+    margin-bottom: 14px;
+    letter-spacing: 0.5px;
+  }
+
+  .predict-q {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--navy);
+    margin-bottom: 16px;
+  }
+
+  .predict-code {
+    background: var(--white);
+    border: 1px solid var(--gray-200);
+    border-radius: 8px;
+    padding: 14px 18px;
+    font-family: var(--mono);
+    font-size: 13px;
+    line-height: 1.65;
+    color: var(--gray-700);
+  }
+
+  /* ========== PAGE 2: CORE CONTENT ========== */
+  .content-page {
+    padding: 55px 65px;
+  }
+
+  .unit-header-bar {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    margin-bottom: 8px;
+  }
+
+  .unit-tag {
+    font-size: 12px;
+    color: var(--orange);
+    font-weight: 600;
+    letter-spacing: 1px;
+  }
+
+  .unit-title-sm {
+    font-size: 14px;
+    color: var(--gray-400);
+    font-weight: 400;
+  }
+
+  .section-title {
+    font-size: 24px;
+    font-weight: 800;
+    color: var(--navy);
+    margin-bottom: 24px;
+    margin-top: 8px;
+    padding-left: 16px;
+    border-left: 5px solid var(--orange);
+  }
+
+  p {
+    font-size: 15.5px;
+    line-height: 1.9;
+    color: var(--text);
+    margin-bottom: 18px;
+  }
+
+  p code {
+    font-family: var(--mono);
+    font-size: 13.5px;
+    background: #f1f3f5;
+    padding: 2px 7px;
+    border-radius: 4px;
+    color: var(--navy);
+    font-weight: 500;
+  }
+
+  /* Code block */
+  .code-wrap {
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    border: 1px solid var(--gray-200);
+    margin: 22px 0;
+  }
+
+  .code-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 9px 18px;
+    background: var(--navy);
+    font-size: 12px;
+  }
+
+  .code-bar-lang {
+    font-family: var(--mono);
+    font-weight: 600;
+    color: var(--white);
+  }
+
+  .code-bar-file {
+    color: rgba(255,255,255,0.6);
+    font-weight: 400;
+  }
+
+  .code-body {
+    background: #f8f9fb;
+    padding: 20px 0;
+    font-family: var(--mono);
+    font-size: 13.5px;
+    line-height: 1.75;
+    border: 1px solid var(--gray-200);
+    border-top: none;
+    border-radius: 0 0 12px 12px;
+  }
+
+  .code-line {
+    display: flex;
+    padding: 0 20px;
+  }
+
+  .code-line:hover {
+    background: #f0f4f8;
+  }
+
+  .code-line.highlighted {
+    background: #fff8e1;
+  }
+
+  .ln {
+    width: 30px;
+    text-align: right;
+    color: #b8bfc8;
+    font-size: 12px;
+    margin-right: 18px;
+    user-select: none;
+    flex-shrink: 0;
+    padding-top: 1px;
+  }
+
+  .lc { flex: 1; }
+
+  /* syntax */
+  .s-pp { color: #8b5cf6; font-weight: 600; }
+  .s-str { color: #d97706; }
+  .s-type { color: #2563eb; font-weight: 500; }
+  .s-kw { color: #7c3aed; font-weight: 500; }
+  .s-fn { color: #059669; font-weight: 500; }
+  .s-num { color: #dc2626; }
+  .s-cm { color: #9ca3af; font-style: italic; }
+
+  /* Output block */
+  .output-wrap {
+    border-radius: 10px;
+    overflow: hidden;
+    margin: 10px 0 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    border: 1px solid #d1d5db;
+  }
+
+  .output-bar {
+    padding: 9px 18px;
+    background: #374151;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--white);
+    letter-spacing: 0.5px;
+  }
+
+  .output-body {
+    padding: 16px 20px;
+    font-family: var(--mono);
+    font-size: 13.5px;
+    line-height: 1.7;
+    color: var(--gray-800);
+    background: #f1f5f9;
+    border: 1px solid var(--gray-200);
+    border-top: none;
+    border-radius: 0 0 10px 10px;
+  }
+
+  /* Callout */
+  .tip {
+    margin: 28px 0;
+    padding: 18px 24px;
+    background: #dbeafe;
+    border-left: 5px solid #2563eb;
+    border-radius: 0 12px 12px 0;
+    font-size: 14.5px;
+    line-height: 1.8;
+    color: var(--text);
+  }
+
+  .tip-label {
+    font-weight: 700;
+    color: #2563eb;
+    font-size: 13px;
+    display: block;
+    margin-bottom: 4px;
+  }
+
+  .warn {
+    margin: 28px 0;
+    padding: 18px 24px;
+    background: #fef3c7;
+    border-left: 5px solid #d97706;
+    border-radius: 0 12px 12px 0;
+    font-size: 14.5px;
+    line-height: 1.8;
+  }
+
+  .warn-label {
+    font-weight: 700;
+    color: #d97706;
+    font-size: 13px;
+    display: block;
+    margin-bottom: 4px;
+  }
+
+  .note-box {
+    margin: 28px 0;
+    padding: 18px 24px;
+    background: #e2e8f0;
+    border-left: 5px solid #64748b;
+    border-radius: 0 12px 12px 0;
+    font-size: 14.5px;
+    line-height: 1.8;
+  }
+
+  .note-label {
+    font-weight: 700;
+    color: var(--gray-600);
+    font-size: 13px;
+    display: block;
+    margin-bottom: 4px;
+  }
+
+  /* Trace table */
+  table.trace {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    margin: 28px 0;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+    font-size: 14px;
+  }
+
+  table.trace th {
+    background: var(--navy);
+    color: var(--white);
+    padding: 10px 16px;
+    text-align: left;
+    font-weight: 500;
+    font-size: 13px;
+  }
+
+  table.trace td {
+    padding: 10px 16px;
+    border-bottom: 1px solid var(--gray-200);
+    color: var(--gray-700);
+  }
+
+  table.trace tr:nth-child(even) td { background: var(--gray-50); }
+  table.trace tr:last-child td { border-bottom: none; }
+
+  table.trace td code {
+    font-family: var(--mono);
+    font-size: 12.5px;
+    background: #eef1f5;
+    padding: 2px 6px;
+    border-radius: 4px;
+    color: var(--navy);
+  }
+
+  /* ========== PAGE 3: PROBLEMS ========== */
+  .problems-header {
+    margin-bottom: 8px;
+  }
+
+  .problems-chapter-ref {
+    font-size: 13px;
+    color: var(--gray-500);
+    margin-bottom: 4px;
+  }
+
+  .problems-title {
+    font-size: 28px;
+    font-weight: 800;
+    color: var(--navy);
+    margin-bottom: 24px;
+  }
+
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 16px;
+  }
+
+  .prob-card {
+    background: var(--white);
+    border: 1px solid var(--gray-200);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 3px 15px rgba(0,0,0,0.06);
+  }
+
+  .prob-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 16px;
+    background: var(--navy);
+  }
+
+  .prob-num {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--white);
+  }
+
+  .diff {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    font-size: 12px;
+    font-weight: 800;
+  }
+
+  .diff-basic { background: #22c55e; color: white; }
+  .diff-mid { background: #f59e0b; color: white; }
+  .diff-hard { background: #ef4444; color: white; }
+
+  .prob-desc {
+    font-size: 13.5px;
+    line-height: 1.65;
+    color: var(--gray-600);
+    margin-bottom: 10px;
+    padding: 14px 16px 0;
+  }
+
+  .prob-code {
+    background: var(--gray-50);
+    border: 1px solid var(--gray-200);
+    border-radius: 6px;
+    padding: 10px 14px;
+    margin: 0 16px 16px;
+    font-family: var(--mono);
+    font-size: 12.5px;
+    line-height: 1.55;
+    color: var(--gray-600);
+  }
+
+  /* Competition section */
+  .comp-section {
+    margin-top: 32px;
+    padding-top: 24px;
+    border-top: 2px solid var(--navy);
+  }
+
+  .comp-title {
+    font-size: 22px;
+    font-weight: 800;
+    color: var(--navy);
+    margin-bottom: 20px;
+  }
+
+  .comp-card {
+    background: var(--white);
+    border: 1.5px solid var(--gray-200);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 18px rgba(0,0,0,0.06);
+  }
+
+  .comp-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 16px;
+    background: #0f766e;
+  }
+
+  .comp-header .comp-name {
+    color: var(--white);
+    font-size: 15px;
+    font-weight: 700;
+    margin: 0;
+  }
+
+  .comp-inner {
+    padding: 14px 18px 18px;
+  }
+
+  .comp-badge {
+    display: inline-block;
+    padding: 3px 12px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 700;
+  }
+
+  .badge-bj { background: #93c5fd; color: #1e3a5f; }
+  .badge-cu { background: #c4b5fd; color: #3b1f7e; }
+  .badge-pg { background: #7dd3fc; color: #0c4a6e; }
+
+  .comp-name {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--navy);
+    margin-bottom: 6px;
+  }
+
+  .comp-desc {
+    font-size: 14px;
+    color: var(--gray-600);
+    line-height: 1.7;
+    margin-bottom: 14px;
+  }
+
+  .io-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+
+  .io-card {
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid var(--gray-200);
+  }
+
+  .io-h {
+    padding: 6px 14px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--gray-600);
+    background: #e2e8f0;
+  }
+
+  .io-c {
+    padding: 10px 14px;
+    font-family: var(--mono);
+    font-size: 13px;
+    line-height: 1.5;
+    background: var(--white);
+  }
+
+  /* ========== DEBUG LAB ========== */
+  .debug-section {
+    margin: 24px 0;
+    border: 2px solid var(--red);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+
+  .debug-bar {
+    background: var(--red);
+    color: var(--white);
+    padding: 10px 20px;
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 1px;
+  }
+
+  .debug-body {
+    padding: 20px;
+    background: #fef2f2;
+  }
+
+  /* 10축 connection */
+  .connect-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 16px;
+    margin: 28px 0;
+  }
+
+  .connect-card {
+    border-radius: 12px;
+    padding: 20px;
+    text-align: center;
+    border: 1px solid var(--gray-200);
+    box-shadow: 0 3px 14px rgba(0,0,0,0.05);
+  }
+
+  .connect-card h5 {
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 8px;
+  }
+
+  .connect-card p {
+    font-size: 13px;
+    margin: 0;
+    color: var(--gray-600);
+    line-height: 1.6;
+  }
+
+  .cc1 { border-top: 3px solid #8b5cf6; }
+  .cc1 h5 { color: #8b5cf6; }
+  .cc2 { border-top: 3px solid var(--green); }
+  .cc2 h5 { color: var(--green); }
+  .cc3 { border-top: 3px solid var(--navy); }
+  .cc3 h5 { color: var(--navy); }
+
+  /* PAGE NUMBER */
+  .page-num {
+    position: absolute;
+    bottom: 20px;
+    right: 30px;
+    font-size: 12px;
+    color: var(--gray-400);
+  }
+
+  /* WARMUP */
+  .warmup-box {
+    background: #e0e7f1;
+    border-radius: 12px;
+    padding: 24px 28px;
+    margin: 28px 0;
+    border: 2px solid #c7d2e0;
+  }
+
+  .warmup-title {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--navy);
+    margin-bottom: 14px;
+  }
+
+  .wq {
+    padding: 9px 16px;
+    background: var(--white);
+    border-radius: 8px;
+    margin-bottom: 8px;
+    font-size: 14px;
+    border: 1px solid var(--gray-200);
+    color: var(--gray-700);
+  }
+
+  .wq b { color: var(--navy); margin-right: 6px; }
+  .wq .hint { color: var(--gray-400); font-size: 13px; }
+
+  /* ===== CONTEST PROBLEMS PAGE ===== */
+  .contest-page-wrap .chapter-page {
+    min-height: auto;
+  }
+
+  .contest-page-wrap .chapter-page > div:last-child {
+    min-width: 0;
+    overflow-wrap: break-word;
+    word-break: break-word;
+  }
+
+  .contest-card {
+    background: white;
+    border: 1.5px solid var(--gray-200);
+    border-radius: 12px;
+    margin-bottom: 28px;
+    overflow: hidden;
+    break-inside: avoid;
+  }
+
+  .contest-header {
+    background: var(--navy);
+    color: white;
+    padding: 14px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .contest-num-source {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .contest-num {
+    font-weight: 700;
+    font-size: 16px;
+  }
+
+  .contest-source {
+    background: rgba(255,255,255,0.15);
+    padding: 3px 10px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 500;
+  }
+
+  .contest-body {
+    padding: 20px 24px 24px;
+  }
+
+  .contest-question {
+    font-size: 15px;
+    line-height: 1.7;
+    color: var(--text);
+    margin: 0 0 16px;
+    word-break: break-word;
+    overflow-wrap: break-word;
+  }
+
+  .contest-expected {
+    background: #1e293b;
+    border-radius: 8px;
+    overflow: hidden;
+    margin-bottom: 20px;
+  }
+
+  .contest-expected-label {
+    background: #334155;
+    color: #94a3b8;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 6px 14px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .contest-expected-body {
+    color: #e2e8f0;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    line-height: 1.6;
+    padding: 12px 16px;
+    margin: 0;
+    white-space: pre;
+  }
+
+  .contest-write-area {
+    border: 2px dashed var(--gray-300);
+    border-radius: 10px;
+    overflow: hidden;
+    transition: border-color 0.2s;
+  }
+
+  .contest-write-area:focus-within {
+    border-color: var(--orange);
+    border-style: solid;
+  }
+
+  .contest-write-label {
+    background: var(--bg);
+    color: var(--gray-500);
+    font-size: 12px;
+    font-weight: 600;
+    padding: 8px 14px;
+    border-bottom: 1px solid var(--gray-200);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .contest-textarea {
+    width: 100%;
+    min-height: 200px;
+    padding: 16px 18px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    line-height: 1.7;
+    color: var(--text);
+    background: #fafbfc;
+    border: none;
+    outline: none;
+    resize: vertical;
+    tab-size: 4;
+    box-sizing: border-box;
+  }
+
+  .contest-textarea::placeholder {
+    color: var(--gray-300);
+  }
+
+  @media print {
+    body { background: white; }
+    .page { box-shadow: none; margin: 0; page-break-after: always; }
+    .contest-textarea { border: 1px solid var(--gray-300); min-height: 180px; }
+  }
+
+</style>
+</head>
+<body>
+
+<div class="page">
+  <div class="chapter-page">
+    <div class="chapter-sidebar"></div>
+    <div class="chapter-accent-bar"></div>
+    <div class="chapter-body">
+      <div class="chapter-watermark">19</div>
+      <div class="chapter-label">Chapter 19</div>
+      <h1 class="chapter-title">좌표와 위치</h1>
+      <p class="chapter-sub">1차원 수직선, 2차원 좌표, 수학 vs 컴퓨터 좌표의 차이, 거리 구하기를 배워요.</p>
+
+      <h3 class="obj-title">이 유닛에서 배우는 것</h3>
+      <ul class="obj-list">
+        <li>2차원 좌표계에서 점의 위치를 (x, y)로 나타낼 수 있어요.</li>
+        <li>1사분면~4사분면을 구분할 수 있어요.</li>
+        <li>두 점 사이의 거리를 계산할 수 있어요.</li>
+        <li>좌표 이동(+, -)을 이해해요.</li>
+        <li>[심화] C에서 구조체로 좌표를 표현할 수 있어요.</li>
+        <li>[심화] 배열 인덱스와 좌표의 관계를 이해해요.</li>
+        <li>[심화 내용] 극좌표, 3D 좌표, 동차 좌표를 이해해요.</li>
+        <li>[심화 내용] 행렬 변환(이동/회전/스케일)을 이해해요.</li>
+        <li>[심화 내용] 게임/그래픽에서의 좌표계 차이를 알아요.</li>
+        <li>[심화 내용] 맨해튼 거리와 유클리드 거리를 비교할 수 있어요.</li>
+      </ul>
+
+      <h3 class="prereq-title">선수 학습</h3>
+      <div class="prereq-flow">
+        <div class="prereq-item">수직선과 좌표 기본 (초등 3학년 이상)</div><div class="prereq-arrow">→</div>
+        <div class="prereq-item">변수, 나머지 연산 (U16~U17)</div><div class="prereq-arrow">→</div>
+        <div class="prereq-item current">패턴 찾기 (U18)</div>
+      </div>
+
+      
+
+      <span class="page-num">1</span>
+    </div>
+  </div>
+</div>
+<div class="page">
+  <div class="content-page">
+    <div class="unit-header-bar">
+      <span class="unit-tag">UNIT 19</span>
+      <span class="unit-title-sm">좌표와 위치</span>
+    </div>
+<h2 class="section-title">1차원: 수직선과 배열</h2>
+
+<p>수직선은 숫자를 한 줄로 나열한 것이에요. 코딩에서도 값을 한 줄로 나열하는 <b>배열</b>이 있어요. 배열에서 각 칸의 번호를 <b>인덱스(index)</b>라고 해요.</p>
+<div class="note-box"><span class="note-label">[핵심] 수직선 = 배열</span>
+수직선: ... -2, -1, <b>0</b>, 1, 2, 3, 4, ...<br>배열:   arr[<b>0</b>], arr[1], arr[2], arr[3], arr[4], ...<br><br>둘 다 '위치(번호)로 값을 찾는' 구조예요!</div>
+<div class="warn"><span class="warn-label">[주의] 인덱스는 0부터!</span>
+수학에서는 1번째, 2번째, 3번째... 라고 세지만,<br>C언어 배열은 <b>0번째</b>, 1번째, 2번째... 로 세요!<br><br>첫 번째 칸 = arr[<b>0</b>] (0번 인덱스!)<br>이걸 헷갈리면 <b>off-by-one 오류</b>라는 유명한 버그가 나요.</div>
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span><span class="code-bar-file">array_demo.c</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;stdio.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">main</span>(<span class="s-type">void</span>) {</span></div>
+<div class="code-line"><span class="ln">4</span><span class="lc">    <span class="s-type">int</span> arr[<span class="s-num">5</span>] = {<span class="s-num">10</span>, <span class="s-num">20</span>, <span class="s-num">30</span>, <span class="s-num">40</span>, <span class="s-num">50</span>};</span></div>
+<div class="code-line"><span class="ln">5</span><span class="lc">    </span></div>
+<div class="code-line"><span class="ln">6</span><span class="lc">    <span class="s-cm">// 인덱스: 0  1  2  3  4</span></span></div>
+<div class="code-line"><span class="ln">7</span><span class="lc">    <span class="s-cm">//   값: 10 20 30 40 50</span></span></div>
+<div class="code-line"><span class="ln">8</span><span class="lc">    </span></div>
+<div class="code-line"><span class="ln">9</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"첫 번째 원소: arr[0] = %d\n"</span>, arr[<span class="s-num">0</span>]);  <span class="s-cm">// 10</span></span></div>
+<div class="code-line"><span class="ln">10</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"세 번째 원소: arr[2] = %d\n"</span>, arr[<span class="s-num">2</span>]);  <span class="s-cm">// 30</span></span></div>
+<div class="code-line"><span class="ln">11</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"마지막 원소: arr[4] = %d\n"</span>, arr[<span class="s-num">4</span>]);   <span class="s-cm">// 50</span></span></div>
+<div class="code-line"><span class="ln">12</span><span class="lc">    <span class="s-cm">// arr[5]는 범위 초과! 접근하면 안 됨!</span></span></div>
+<div class="code-line"><span class="ln">13</span><span class="lc">    </span></div>
+<div class="code-line"><span class="ln">14</span><span class="lc">    <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">15</span><span class="lc">}</span></div>
+</div>
+</div>
+<div class="output-wrap"><div class="output-bar">실행 결과</div><div class="output-body">첫 번째 원소: arr[0] = 10
+세 번째 원소: arr[2] = 30
+마지막 원소: arr[4] = 50</div></div>
+<table class="trace"><thead><tr><th>인덱스</th><th>배열 표현</th><th>저장된 값</th><th>설명</th></tr></thead><tbody><tr><td>0</td><td>arr[0]</td><td>10</td><td>첫 번째 칸 (0부터 시작!)</td></tr><tr><td>1</td><td>arr[1]</td><td>20</td><td>두 번째 칸</td></tr><tr><td>2</td><td>arr[2]</td><td>30</td><td>세 번째 칸</td></tr><tr><td>3</td><td>arr[3]</td><td>40</td><td>네 번째 칸</td></tr><tr><td>4</td><td>arr[4]</td><td>50</td><td>다섯 번째 칸 (마지막)</td></tr><tr><td>5</td><td>arr[5]</td><td>???</td><td>범위 초과! 접근 금지!</td></tr></tbody></table>
+<div style="margin:22px 0"></div>
+<h2 class="section-title">2차원: (x, y) 좌표</h2>
+<p>수직선은 1차원이에요. 왼쪽-오른쪽만 있죠. 하지만 현실 세계는 2차원이에요. 왼쪽-오른쪽 + 위-아래! 이걸 표현하려면 숫자 2개가 필요해요: <b>(x, y)</b> 좌표.</p>
+<div class="note-box"><span class="note-label">[예제] 좌표로 위치 표현하기</span>
+교실의 좌석을 좌표로 나타내면:<br>• 창가 앞자리: (1, 1)<br>• 창가 뒷자리: (1, 5)<br>• 복도 앞자리: (6, 1)<br><br>체스판에서도 좌표를 써요: a1, b2, c3...<br>이것을 숫자로 바꾸면 (1,1), (2,2), (3,3)!</div>
+<h2 class="section-title">수학 좌표 vs 컴퓨터 좌표</h2>
+
+<!-- image -->
+<div class="debug-section"><div class="debug-bar">DEBUG LAB — 에러를 찾으시오</div><div class="debug-body">
+
+<p style="margin:14px 0 0; font-size:14px;"><b>에러:</b> </p>
+<p style="font-size:14px;"><b>수정:</b> </p>
+</div></div>
+<h2 class="section-title">2차원 배열 = 격자</h2>
+<p>2차원 좌표를 코딩에서는 <b>2차원 배열</b>로 표현해요. 바둑판이나 체스판처럼 행(row)과 열(column)로 이루어진 격자예요.</p>
+<!-- image -->
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span><span class="code-bar-file">grid_demo.c</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;stdio.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">main</span>(<span class="s-type">void</span>) {</span></div>
+<div class="code-line"><span class="ln">4</span><span class="lc">    <span class="s-cm">// 3행 4열의 격자</span></span></div>
+<div class="code-line"><span class="ln">5</span><span class="lc">    <span class="s-type">int</span> map[<span class="s-num">3</span>][<span class="s-num">4</span>] = {</span></div>
+<div class="code-line"><span class="ln">6</span><span class="lc">        {<span class="s-num">1</span>, <span class="s-num">2</span>, <span class="s-num">3</span>, <span class="s-num">4</span>},    <span class="s-cm">// 0행</span></span></div>
+<div class="code-line"><span class="ln">7</span><span class="lc">        {<span class="s-num">5</span>, <span class="s-num">6</span>, <span class="s-num">7</span>, <span class="s-num">8</span>},    <span class="s-cm">// 1행</span></span></div>
+<div class="code-line"><span class="ln">8</span><span class="lc">        {<span class="s-num">9</span>, <span class="s-num">10</span>, <span class="s-num">11</span>, <span class="s-num">12</span>}  <span class="s-cm">// 2행</span></span></div>
+<div class="code-line"><span class="ln">9</span><span class="lc">    };</span></div>
+<div class="code-line"><span class="ln">10</span><span class="lc">    </span></div>
+<div class="code-line"><span class="ln">11</span><span class="lc">    <span class="s-cm">// arr[행(y)][열(x)] 순서!</span></span></div>
+<div class="code-line"><span class="ln">12</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"(x=2, y=1) = map[1][2] = %d\n"</span>, map[<span class="s-num">1</span>][<span class="s-num">2</span>]);  <span class="s-cm">// 7</span></span></div>
+<div class="code-line"><span class="ln">13</span><span class="lc">    </span></div>
+<div class="code-line"><span class="ln">14</span><span class="lc">    <span class="s-cm">// 전체 출력</span></span></div>
+<div class="code-line"><span class="ln">15</span><span class="lc">    <span class="s-kw">for</span> (<span class="s-type">int</span> y = <span class="s-num">0</span>; y &lt; <span class="s-num">3</span>; y++) {</span></div>
+<div class="code-line"><span class="ln">16</span><span class="lc">        <span class="s-kw">for</span> (<span class="s-type">int</span> x = <span class="s-num">0</span>; x &lt; <span class="s-num">4</span>; x++)</span></div>
+<div class="code-line"><span class="ln">17</span><span class="lc">            <span class="s-fn">printf</span>(<span class="s-str">"%2d "</span>, map[y][x]);</span></div>
+<div class="code-line"><span class="ln">18</span><span class="lc">        <span class="s-fn">printf</span>(<span class="s-str">"\n"</span>);</span></div>
+<div class="code-line"><span class="ln">19</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">20</span><span class="lc">    </span></div>
+<div class="code-line"><span class="ln">21</span><span class="lc">    <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">22</span><span class="lc">}</span></div>
+</div>
+</div>
+<div class="output-wrap"><div class="output-bar">실행 결과</div><div class="output-body">(x=2, y=1) = map[1][2] = 7
+ 1  2  3  4
+ 5  6  7  8
+ 9 10 11 12</div></div>
+<div class="warn"><span class="warn-label">[주의] [y][x] 순서!</span>
+수학에서는 (x, y)라고 쓰지만,<br>C언어 2차원 배열에서는 arr[<b>y</b>][<b>x</b>]로 써요!<br><br>(x=3, y=2) 위치 → arr[<b>2</b>][<b>3</b>]<br><br>x와 y 순서를 바꾸면 엉뚱한 위치를 가리키게 돼요!</div>
+<table class="trace"><thead><tr><th>좌표 (x, y)</th><th>배열 표현</th><th>값</th><th>행(row)</th><th>열(col)</th></tr></thead><tbody><tr><td>(0, 0)</td><td>map[0][0]</td><td>1</td><td>0행</td><td>0열</td></tr><tr><td>(2, 0)</td><td>map[0][2]</td><td>3</td><td>0행</td><td>2열</td></tr><tr><td>(2, 1)</td><td>map[1][2]</td><td>7</td><td>1행</td><td>2열</td></tr><tr><td>(3, 2)</td><td>map[2][3]</td><td>12</td><td>2행</td><td>3열</td></tr><tr><td>(1, 2)</td><td>map[2][1]</td><td>10</td><td>2행</td><td>1열</td></tr></tbody></table>
+<div class="debug-section"><div class="debug-bar">DEBUG LAB — 에러를 찾으시오</div><div class="debug-body">
+
+<p style="margin:14px 0 0; font-size:14px;"><b>에러:</b> </p>
+<p style="font-size:14px;"><b>수정:</b> </p>
+</div></div>
+<h2 class="section-title">거리 구하기</h2>
+
+<!-- image -->
+<div class="note-box"><span class="note-label">[핵심] 두 가지 거리</span>
+점 A(x₁, y₁)와 점 B(x₂, y₂) 사이:<br><br><b>맨해튼 거리</b> = |x₁-x₂| + |y₁-y₂|<br>→ 격자를 따라 가는 거리 (도시 블록)<br>→ (1,2)↔(4,6): |1-4|+|2-6| = 3+4 = 7<br><br><b>유클리드 거리</b> = √((x₁-x₂)²+(y₁-y₂)²)<br>→ 직선 거리 (새가 날아가듯)<br>→ (1,2)↔(4,6): √(9+16) = √25 = 5</div>
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span><span class="code-bar-file">distance.c</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;stdio.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;math.h&gt;</span>   <span class="s-cm">// sqrt(), abs()</span></span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;stdlib.h&gt;</span> <span class="s-cm">// abs()</span></span></div>
+<div class="code-line"><span class="ln">4</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">5</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">main</span>(<span class="s-type">void</span>) {</span></div>
+<div class="code-line"><span class="ln">6</span><span class="lc">    <span class="s-type">int</span> x1=<span class="s-num">1</span>, y1=<span class="s-num">2</span>, x2=<span class="s-num">4</span>, y2=<span class="s-num">6</span>;</span></div>
+<div class="code-line"><span class="ln">7</span><span class="lc">    </span></div>
+<div class="code-line"><span class="ln">8</span><span class="lc">    <span class="s-cm">// 맨해튼 거리</span></span></div>
+<div class="code-line"><span class="ln">9</span><span class="lc">    <span class="s-type">int</span> manhattan = <span class="s-fn">abs</span>(x1-x2) + <span class="s-fn">abs</span>(y1-y2);</span></div>
+<div class="code-line"><span class="ln">10</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"맨해튼: %d\n"</span>, manhattan);  <span class="s-cm">// 7</span></span></div>
+<div class="code-line"><span class="ln">11</span><span class="lc">    </span></div>
+<div class="code-line"><span class="ln">12</span><span class="lc">    <span class="s-cm">// 유클리드 거리</span></span></div>
+<div class="code-line"><span class="ln">13</span><span class="lc">    <span class="s-type">double</span> euclidean = <span class="s-fn">sqrt</span>(<span class="s-fn">pow</span>(x1-x2, <span class="s-num">2</span>) + <span class="s-fn">pow</span>(y1-y2, <span class="s-num">2</span>));</span></div>
+<div class="code-line"><span class="ln">14</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"유클리드: %.2f\n"</span>, euclidean);  <span class="s-cm">// 5.00</span></span></div>
+<div class="code-line"><span class="ln">15</span><span class="lc">    </span></div>
+<div class="code-line"><span class="ln">16</span><span class="lc">    <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">17</span><span class="lc">}</span></div>
+</div>
+</div>
+<div class="output-wrap"><div class="output-bar">실행 결과</div><div class="output-body">맨해튼: 7
+유클리드: 5.00</div></div>
+<table class="trace"><thead><tr><th>단계</th><th>맨해튼 거리</th><th>유클리드 거리</th></tr></thead><tbody><tr><td>x 차이</td><td>|1-4| = 3</td><td>(1-4)² = 9</td></tr><tr><td>y 차이</td><td>|2-6| = 4</td><td>(2-6)² = 16</td></tr><tr><td>합산</td><td>3 + 4 = 7</td><td>9 + 16 = 25</td></tr><tr><td>최종 결과</td><td>7</td><td>√25 = 5</td></tr></tbody></table>
+<div style="margin:22px 0"></div>
+<div class="debug-section"><div class="debug-bar">DEBUG LAB — 에러를 찾으시오</div><div class="debug-body">
+
+<p style="margin:14px 0 0; font-size:14px;"><b>에러:</b> </p>
+<p style="font-size:14px;"><b>수정:</b> </p>
+</div></div>
+<h2 class="section-title">[심화] 4방향 / 8방향 이동</h2>
+<p>격자에서 이동할 때 방향 배열을 사용하면 깔끔하게 코드를 짤 수 있어요.</p>
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span><span class="code-bar-file">directions.c</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;stdio.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">main</span>(<span class="s-type">void</span>) {</span></div>
+<div class="code-line"><span class="ln">4</span><span class="lc">    <span class="s-cm">// 4방향: 상, 하, 좌, 우</span></span></div>
+<div class="code-line"><span class="ln">5</span><span class="lc">    <span class="s-type">int</span> dx4[] = {<span class="s-num">0</span>, <span class="s-num">0</span>, -<span class="s-num">1</span>, <span class="s-num">1</span>};</span></div>
+<div class="code-line"><span class="ln">6</span><span class="lc">    <span class="s-type">int</span> dy4[] = {-<span class="s-num">1</span>, <span class="s-num">1</span>, <span class="s-num">0</span>, <span class="s-num">0</span>};</span></div>
+<div class="code-line"><span class="ln">7</span><span class="lc">    </span></div>
+<div class="code-line"><span class="ln">8</span><span class="lc">    <span class="s-cm">// 8방향: 4방향 + 대각선</span></span></div>
+<div class="code-line"><span class="ln">9</span><span class="lc">    <span class="s-type">int</span> dx8[] = {<span class="s-num">0</span>, <span class="s-num">0</span>, -<span class="s-num">1</span>, <span class="s-num">1</span>, -<span class="s-num">1</span>, -<span class="s-num">1</span>, <span class="s-num">1</span>, <span class="s-num">1</span>};</span></div>
+<div class="code-line"><span class="ln">10</span><span class="lc">    <span class="s-type">int</span> dy8[] = {-<span class="s-num">1</span>, <span class="s-num">1</span>, <span class="s-num">0</span>, <span class="s-num">0</span>, -<span class="s-num">1</span>, <span class="s-num">1</span>, -<span class="s-num">1</span>, <span class="s-num">1</span>};</span></div>
+<div class="code-line"><span class="ln">11</span><span class="lc">    </span></div>
+<div class="code-line"><span class="ln">12</span><span class="lc">    <span class="s-type">int</span> x = <span class="s-num">3</span>, y = <span class="s-num">3</span>;</span></div>
+<div class="code-line"><span class="ln">13</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"현재 위치: (%d, %d)\n"</span>, x, y);</span></div>
+<div class="code-line"><span class="ln">14</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"4방향 이동:\n"</span>);</span></div>
+<div class="code-line"><span class="ln">15</span><span class="lc">    <span class="s-kw">for</span> (<span class="s-type">int</span> i = <span class="s-num">0</span>; i &lt; <span class="s-num">4</span>; i++) {</span></div>
+<div class="code-line"><span class="ln">16</span><span class="lc">        <span class="s-type">int</span> nx = x + dx4[i];</span></div>
+<div class="code-line"><span class="ln">17</span><span class="lc">        <span class="s-type">int</span> ny = y + dy4[i];</span></div>
+<div class="code-line"><span class="ln">18</span><span class="lc">        <span class="s-fn">printf</span>(<span class="s-str">"  → (%d, %d)\n"</span>, nx, ny);</span></div>
+<div class="code-line"><span class="ln">19</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">20</span><span class="lc">    </span></div>
+<div class="code-line"><span class="ln">21</span><span class="lc">    <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">22</span><span class="lc">}</span></div>
+</div>
+</div>
+<div class="tip"><span class="tip-label">[팁] 방향 배열 패턴 (KOI 필수!)</span>
+4방향 이동은 KOI에서 <b>거의 매 시험</b> 나와요!<br><br><code>int dx[] = {0, 0, -1, 1};</code><br><code>int dy[] = {-1, 1, 0, 0};</code><br><br>경계 체크: <code>if (nx >= 0 && nx < W && ny >= 0 && ny < H)</code><br><br>이 패턴을 외워두면 격자 탐색 문제의 절반은 풀린 거예요!</div>
+<table class="trace"><thead><tr><th>방향</th><th>dx[i]</th><th>dy[i]</th><th>nx = 3+dx</th><th>ny = 3+dy</th><th>이동 결과</th></tr></thead><tbody><tr><td>위 (상)</td><td>0</td><td>-1</td><td>3</td><td>2</td><td>(3, 2) 이동 가능</td></tr><tr><td>아래 (하)</td><td>0</td><td>1</td><td>3</td><td>4</td><td>(3, 4) 이동 가능</td></tr><tr><td>왼쪽 (좌)</td><td>-1</td><td>0</td><td>2</td><td>3</td><td>(2, 3) 이동 가능</td></tr><tr><td>오른쪽 (우)</td><td>1</td><td>0</td><td>4</td><td>3</td><td>(4, 3) 이동 가능</td></tr></tbody></table>
+<h2 class="section-title">[심화] 체스 나이트의 이동</h2>
+<p>체스 나이트는 'L자'로 움직여요. 8방향 이동의 변형!</p>
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span><span class="code-bar-file">knight.c</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;stdio.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">main</span>(<span class="s-type">void</span>) {</span></div>
+<div class="code-line"><span class="ln">4</span><span class="lc">    <span class="s-cm">// 나이트 8가지 이동</span></span></div>
+<div class="code-line"><span class="ln">5</span><span class="lc">    <span class="s-type">int</span> dx[] = {-<span class="s-num">2</span>, -<span class="s-num">2</span>, -<span class="s-num">1</span>, -<span class="s-num">1</span>, <span class="s-num">1</span>, <span class="s-num">1</span>, <span class="s-num">2</span>, <span class="s-num">2</span>};</span></div>
+<div class="code-line"><span class="ln">6</span><span class="lc">    <span class="s-type">int</span> dy[] = {-<span class="s-num">1</span>, <span class="s-num">1</span>, -<span class="s-num">2</span>, <span class="s-num">2</span>, -<span class="s-num">2</span>, <span class="s-num">2</span>, -<span class="s-num">1</span>, <span class="s-num">1</span>};</span></div>
+<div class="code-line"><span class="ln">7</span><span class="lc">    </span></div>
+<div class="code-line"><span class="ln">8</span><span class="lc">    <span class="s-type">int</span> x = <span class="s-num">4</span>, y = <span class="s-num">4</span>;  <span class="s-cm">// 현재 위치</span></span></div>
+<div class="code-line"><span class="ln">9</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"나이트 (%d,%d)의 가능한 이동:\n"</span>, x, y);</span></div>
+<div class="code-line"><span class="ln">10</span><span class="lc">    </span></div>
+<div class="code-line"><span class="ln">11</span><span class="lc">    <span class="s-kw">for</span> (<span class="s-type">int</span> i = <span class="s-num">0</span>; i &lt; <span class="s-num">8</span>; i++) {</span></div>
+<div class="code-line"><span class="ln">12</span><span class="lc">        <span class="s-type">int</span> nx = x + dx[i];</span></div>
+<div class="code-line"><span class="ln">13</span><span class="lc">        <span class="s-type">int</span> ny = y + dy[i];</span></div>
+<div class="code-line"><span class="ln">14</span><span class="lc">        <span class="s-kw">if</span> (nx &gt;= <span class="s-num">0</span> &amp;&amp; nx &lt; <span class="s-num">8</span> &amp;&amp; ny &gt;= <span class="s-num">0</span> &amp;&amp; ny &lt; <span class="s-num">8</span>)</span></div>
+<div class="code-line"><span class="ln">15</span><span class="lc">            <span class="s-fn">printf</span>(<span class="s-str">"  → (%d, %d)\n"</span>, nx, ny);</span></div>
+<div class="code-line"><span class="ln">16</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">17</span><span class="lc">    </span></div>
+<div class="code-line"><span class="ln">18</span><span class="lc">    <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">19</span><span class="lc">}</span></div>
+</div>
+</div>
+<div class="note-box"><span class="note-label">[KOI] 나이트 이동 = BFS 문제</span>
+"나이트가 (a,b)에서 (c,d)까지 최소 몇 번에 갈 수 있나?"<br>→ BFS(너비 우선 탐색)로 풀어요!<br><br>1. 시작점을 큐에 넣고 이동 횟수 0<br>2. 큐에서 꺼내고 8방향으로 이동<br>3. 방문 안 한 곳이면 큐에 넣고 횟수+1<br>4. 도착하면 그때의 횟수가 최소!</div>
+<table class="trace"><thead><tr><th>이동 번호</th><th>dx</th><th>dy</th><th>nx = 4+dx</th><th>ny = 4+dy</th><th>보드 안?</th></tr></thead><tbody><tr><td>1</td><td>-2</td><td>-1</td><td>2</td><td>3</td><td>O (이동 가능)</td></tr><tr><td>2</td><td>-2</td><td>1</td><td>2</td><td>5</td><td>O (이동 가능)</td></tr><tr><td>3</td><td>-1</td><td>-2</td><td>3</td><td>2</td><td>O (이동 가능)</td></tr><tr><td>4</td><td>-1</td><td>2</td><td>3</td><td>6</td><td>O (이동 가능)</td></tr><tr><td>5</td><td>1</td><td>-2</td><td>5</td><td>2</td><td>O (이동 가능)</td></tr><tr><td>6</td><td>1</td><td>2</td><td>5</td><td>6</td><td>O (이동 가능)</td></tr><tr><td>7</td><td>2</td><td>-1</td><td>6</td><td>3</td><td>O (이동 가능)</td></tr><tr><td>8</td><td>2</td><td>1</td><td>6</td><td>5</td><td>O (이동 가능)</td></tr></tbody></table>
+<div style="margin:22px 0"></div>
+<h2 class="section-title">[심화] 미로 탈출 — BFS 맛보기</h2>
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span><span class="code-bar-file">maze_bfs.c</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;stdio.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;string.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">4</span><span class="lc"><span class="s-pp">#define</span> N <span class="s-num">5</span></span></div>
+<div class="code-line"><span class="ln">5</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">6</span><span class="lc"><span class="s-type">int</span> maze[N][N] = {</span></div>
+<div class="code-line"><span class="ln">7</span><span class="lc">    {<span class="s-num">0</span>, <span class="s-num">1</span>, <span class="s-num">0</span>, <span class="s-num">0</span>, <span class="s-num">0</span>},</span></div>
+<div class="code-line"><span class="ln">8</span><span class="lc">    {<span class="s-num">0</span>, <span class="s-num">1</span>, <span class="s-num">0</span>, <span class="s-num">1</span>, <span class="s-num">0</span>},</span></div>
+<div class="code-line"><span class="ln">9</span><span class="lc">    {<span class="s-num">0</span>, <span class="s-num">0</span>, <span class="s-num">0</span>, <span class="s-num">1</span>, <span class="s-num">0</span>},</span></div>
+<div class="code-line"><span class="ln">10</span><span class="lc">    {<span class="s-num">0</span>, <span class="s-num">1</span>, <span class="s-num">0</span>, <span class="s-num">0</span>, <span class="s-num">0</span>},</span></div>
+<div class="code-line"><span class="ln">11</span><span class="lc">    {<span class="s-num">0</span>, <span class="s-num">0</span>, <span class="s-num">0</span>, <span class="s-num">1</span>, <span class="s-num">0</span>}</span></div>
+<div class="code-line"><span class="ln">12</span><span class="lc">};  <span class="s-cm">// 0=길, 1=벽</span></span></div>
+<div class="code-line"><span class="ln">13</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">14</span><span class="lc"><span class="s-type">int</span> dist[N][N];  <span class="s-cm">// 거리 저장</span></span></div>
+<div class="code-line"><span class="ln">15</span><span class="lc"><span class="s-type">int</span> dx[] = {<span class="s-num">0</span>, <span class="s-num">0</span>, -<span class="s-num">1</span>, <span class="s-num">1</span>};</span></div>
+<div class="code-line"><span class="ln">16</span><span class="lc"><span class="s-type">int</span> dy[] = {-<span class="s-num">1</span>, <span class="s-num">1</span>, <span class="s-num">0</span>, <span class="s-num">0</span>};</span></div>
+<div class="code-line"><span class="ln">17</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">18</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">main</span>(<span class="s-type">void</span>) {</span></div>
+<div class="code-line"><span class="ln">19</span><span class="lc">    <span class="s-cm">// BFS 큐 (간단한 배열 큐)</span></span></div>
+<div class="code-line"><span class="ln">20</span><span class="lc">    <span class="s-type">int</span> qx[N*N], qy[N*N];</span></div>
+<div class="code-line"><span class="ln">21</span><span class="lc">    <span class="s-type">int</span> front = <span class="s-num">0</span>, rear = <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">22</span><span class="lc">    </span></div>
+<div class="code-line"><span class="ln">23</span><span class="lc">    <span class="s-fn">memset</span>(dist, -<span class="s-num">1</span>, <span class="s-kw">sizeof</span>(dist));</span></div>
+<div class="code-line"><span class="ln">24</span><span class="lc">    dist[<span class="s-num">0</span>][<span class="s-num">0</span>] = <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">25</span><span class="lc">    qx[rear] = <span class="s-num">0</span>; qy[rear] = <span class="s-num">0</span>; rear++;</span></div>
+<div class="code-line"><span class="ln">26</span><span class="lc">    </span></div>
+<div class="code-line"><span class="ln">27</span><span class="lc">    <span class="s-kw">while</span> (front &lt; rear) {</span></div>
+<div class="code-line"><span class="ln">28</span><span class="lc">        <span class="s-type">int</span> x = qx[front], y = qy[front]; front++;</span></div>
+<div class="code-line"><span class="ln">29</span><span class="lc">        <span class="s-kw">for</span> (<span class="s-type">int</span> i = <span class="s-num">0</span>; i &lt; <span class="s-num">4</span>; i++) {</span></div>
+<div class="code-line"><span class="ln">30</span><span class="lc">            <span class="s-type">int</span> nx = x + dx[i], ny = y + dy[i];</span></div>
+<div class="code-line"><span class="ln">31</span><span class="lc">            <span class="s-kw">if</span> (nx &gt;= <span class="s-num">0</span> &amp;&amp; nx &lt; N &amp;&amp; ny &gt;= <span class="s-num">0</span> &amp;&amp; ny &lt; N</span></div>
+<div class="code-line"><span class="ln">32</span><span class="lc">                &amp;&amp; maze[ny][nx] == <span class="s-num">0</span> &amp;&amp; dist[ny][nx] == -<span class="s-num">1</span>) {</span></div>
+<div class="code-line"><span class="ln">33</span><span class="lc">                dist[ny][nx] = dist[y][x] + <span class="s-num">1</span>;</span></div>
+<div class="code-line"><span class="ln">34</span><span class="lc">                qx[rear] = nx; qy[rear] = ny; rear++;</span></div>
+<div class="code-line"><span class="ln">35</span><span class="lc">            }</span></div>
+<div class="code-line"><span class="ln">36</span><span class="lc">        }</span></div>
+<div class="code-line"><span class="ln">37</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">38</span><span class="lc">    </span></div>
+<div class="code-line"><span class="ln">39</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"(0,0)→(4,4) 최소 거리: %d\n"</span>, dist[<span class="s-num">4</span>][<span class="s-num">4</span>]);</span></div>
+<div class="code-line"><span class="ln">40</span><span class="lc">    <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">41</span><span class="lc">}</span></div>
+</div>
+</div>
+<div class="output-wrap"><div class="output-bar">실행 결과</div><div class="output-body">(0,0)→(4,4) 최소 거리: 8</div></div>
+<table class="trace"><thead><tr><th>단계</th><th>큐에서 꺼낸 점</th><th>거리</th><th>탐색한 이웃</th><th>큐에 추가</th></tr></thead><tbody><tr><td>1</td><td>(0, 0)</td><td>0</td><td>상: 벽 / 하: (0,1) / 좌: 밖 / 우: 벽</td><td>(0, 1)</td></tr><tr><td>2</td><td>(0, 1)</td><td>1</td><td>상: 방문 / 하: (0,2) / 좌: 밖 / 우: 벽</td><td>(0, 2)</td></tr><tr><td>3</td><td>(0, 2)</td><td>2</td><td>상: 방문 / 하: (0,3) / 좌: 밖 / 우: (1,2)</td><td>(0,3), (1,2)</td></tr><tr><td>4</td><td>(0, 3)</td><td>3</td><td>상: 방문 / 하: (0,4) / 좌: 밖 / 우: 벽</td><td>(0, 4)</td></tr><tr><td>5</td><td>(1, 2)</td><td>3</td><td>상: 벽 / 하: 벽 / 좌: 방문 / 우: (2,2)</td><td>(2, 2)</td></tr></tbody></table>
+<div style="margin:22px 0"></div>
+<h2 class="section-title">[심화] 3차원 좌표</h2>
+<p>현실 세계는 3차원! (x, y, z)로 위치를 표현해요.</p>
+<div class="note-box"><span class="note-label">[심화] 3차원 좌표</span>
+2차원: (x, y) — 평면<br>3차원: (x, y, z) — 공간<br><br>맨해튼 거리: |x₁-x₂| + |y₁-y₂| + |z₁-z₂|<br>유클리드 거리: √((x₁-x₂)² + (y₁-y₂)² + (z₁-z₂)²)<br><br>활용: 3D 게임, VR, 로보틱스, 지도(위도/경도/고도)</div>
+<table class="trace"><thead><tr><th>축</th><th>좌표1</th><th>좌표2</th><th>차이</th><th>|차이|</th><th>차이²</th></tr></thead><tbody><tr><td>x</td><td>1</td><td>4</td><td>-3</td><td>3</td><td>9</td></tr><tr><td>y</td><td>2</td><td>6</td><td>-4</td><td>4</td><td>16</td></tr><tr><td>z</td><td>3</td><td>3</td><td>0</td><td>0</td><td>0</td></tr><tr><td>합계</td><td></td><td></td><td></td><td>맨해튼: 7</td><td>유클리드: √25 = 5</td></tr></tbody></table>
+<h2 class="section-title">[심화 내용] 극좌표와 좌표 변환</h2>
+<p>(x, y) 대신 <b>각도(θ)</b>와 <b>거리(r)</b>로 위치를 표현할 수 있어요. 이것이 <b>극좌표(polar coordinates)</b>예요.</p>
+<div class="note-box"><span class="note-label">[심화 내용] 직교 ↔ 극좌표 변환</span>
+직교 → 극좌표:<br>r = √(x² + y²)<br>θ = atan2(y, x)<br><br>극좌표 → 직교:<br>x = r × cos(θ)<br>y = r × sin(θ)<br><br>활용: 레이더, 나선 그리기, 회전 애니메이션, 물리 시뮬레이션</div>
+<table class="trace"><thead><tr><th>r (거리)</th><th>θ (각도)</th><th>x = r×cos(θ)</th><th>y = r×sin(θ)</th><th>직교좌표</th></tr></thead><tbody><tr><td>5</td><td>0°</td><td>5×1.0 = 5</td><td>5×0.0 = 0</td><td>(5, 0)</td></tr><tr><td>5</td><td>90°</td><td>5×0.0 = 0</td><td>5×1.0 = 5</td><td>(0, 5)</td></tr><tr><td>5</td><td>180°</td><td>5×(-1.0) = -5</td><td>5×0.0 = 0</td><td>(-5, 0)</td></tr><tr><td>5</td><td>53.13°</td><td>5×0.6 = 3</td><td>5×0.8 = 4</td><td>(3, 4)</td></tr><tr><td>10</td><td>30°</td><td>10×0.87 = 8.7</td><td>10×0.5 = 5</td><td>(8.7, 5)</td></tr></tbody></table>
+<h2 class="section-title">[심화 내용] 동차 좌표와 변환 행렬</h2>
+<div class="note-box"><span class="note-label">[심화 내용] 동차 좌표 (Homogeneous Coordinates)</span>
+2D 점 (x, y)를 3개 숫자 (x, y, 1)로 표현하면<br><b>이동, 회전, 확대</b>를 모두 행렬 곱으로 처리 가능!<br><br>이동(tx, ty): [1 0 tx] [x]   [x+tx]<br>              [0 1 ty] [y] = [y+ty]<br>              [0 0  1] [1]   [ 1  ]<br><br>3D 그래픽(OpenGL, DirectX)의 핵심!<br>모든 변환을 하나의 4×4 행렬로 합칠 수 있어요.</div>
+<h2 class="section-title">활동: 좌표로 보물찾기</h2>
+<div class="tip"><span class="tip-label">[활동] 격자 보물찾기 게임</span>
+5×5 격자를 그리세요. (종이에 가로5칸, 세로5칸)<br><br>1. 보물을 비밀 좌표에 숨기세요 (예: (3,2))<br>2. 친구가 좌표를 말하면 '맨해튼 거리'를 알려주세요<br>3. 친구는 거리 힌트를 이용해 보물 위치를 추리!</div>
+<!-- fact-bite -->
+<h2 class="section-title">KOI 연결: 좌표 문제 유형</h2>
+<div class="tip"><span class="tip-label">[KOI] 좌표 문제 TOP 5</span>
+1. <b>미로 탈출</b>: BFS + 4방향 이동<br>2. <b>체스 나이트</b>: BFS + 나이트 8방향<br>3. <b>영역 채우기 (flood fill)</b>: DFS/BFS + 방문 체크<br>4. <b>가장 가까운 점</b>: 거리 계산 + 정렬<br>5. <b>격자 시뮬레이션</b>: 2차원 배열 조작</div>
+<h2 class="section-title">OX 퀴즈</h2>
+<!-- ox -->
+<h2 class="section-title">연습문제</h2>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 1</span><p style="margin:0;font-size:14px">int arr[5]에서 마지막 원소의 인덱스는?</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 2</span><p style="margin:0;font-size:14px">컴퓨터 좌표에서 y값이 커지면 어느 방향으로 가나요?</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 3</span><p style="margin:0;font-size:14px">(2,3)과 (5,7) 사이의 맨해튼 거리를 구하세요.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 4</span><p style="margin:0;font-size:14px">C에서 좌표 (x=3, y=2)의 값을 읽으려면 arr[?][?]로 써야 하나요?</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 5</span><p style="margin:0;font-size:14px">(0,0)과 (3,4) 사이의 유클리드 거리를 구하세요.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 6</span><p style="margin:0;font-size:14px">4방향 이동을 위한 dx, dy 배열을 쓰세요.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 7</span><p style="margin:0;font-size:14px">5×5 격자에서 (0,0)→(4,4)까지 맨해튼 거리가 가장 짧은 경로로 몇 칸 이동?</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 8</span><p style="margin:0;font-size:14px">체스 나이트가 (0,0)에서 한 번 이동으로 갈 수 있는 좌표를 모두 쓰세요 (8×8 보드).</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 9</span><p style="margin:0;font-size:14px">수학 좌표 (3, 4)를 컴퓨터 좌표로 변환하세요 (화면 높이 = 10).</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 10</span><p style="margin:0;font-size:14px">맨해튼 거리가 항상 유클리드 거리 이상인 이유를 설명하세요.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 11</span><p style="margin:0;font-size:14px">[심화] BFS로 미로를 탐색할 때, 이미 방문한 곳을 다시 방문하면 안 되는 이유를 설명하세요.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 12</span><p style="margin:0;font-size:14px">[심화] 3차원 좌표 (1,2,3)과 (4,6,3) 사이의 맨해튼 거리와 유클리드 거리를 각각 구하세요.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 13</span><p style="margin:0;font-size:14px">[심화] 극좌표 (r=5, θ=53.13°)를 직교좌표로 변환하세요 (cos53.13°≈0.6, sin53.13°≈0.8).</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 14</span><p style="margin:0;font-size:14px">[심화 내용] off-by-one 오류란 무엇이고, 왜 C에서 자주 발생하나요?</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 15</span><p style="margin:0;font-size:14px">[심화 내용] 동차 좌표에서 점 (3, 4)를 (2, 1)만큼 이동하면 결과는?</p></div>
+<h2 class="section-title">용어 정리</h2>
+<h2 class="section-title">[심화 내용] 다양한 좌표계</h2>
+<div class="note-box"><span class="note-label">[심화 내용] 좌표계의 종류</span>
+<b>1. 데카르트 좌표 (Cartesian)</b><br>(x, y) — 가장 기본. 직교 좌표계<br><br><b>2. 극좌표 (Polar)</b><br>(r, theta) — 원점에서의 거리 r, 각도 theta<br>변환: x = r*cos(theta), y = r*sin(theta)<br>원, 나선 표현에 유리!<br><br><b>3. 3D 좌표</b><br>(x, y, z) — 깊이 추가<br>게임, 3D 모델링에서 필수<br><br><b>4. 동차 좌표 (Homogeneous)</b><br>(x, y, w) — 2D 점을 3D로 확장<br>이동(Translation)을 행렬 곱으로 표현 가능!<br>3D 그래픽: (x, y, z, w) — 4x4 행렬로 모든 변환 통합</div>
+<h2 class="section-title">[심화 내용] 행렬 변환</h2>
+<p>좌표의 이동, 회전, 확대/축소를 행렬 곱셈으로 표현할 수 있어요. 게임 엔진의 핵심이죠!</p>
+<div class="note-box"><span class="note-label">[심화 내용] 2D 변환 행렬</span>
+<b>이동 (Translation):</b><br>[1 0 tx] [x]   [x+tx]<br>[0 1 ty] [y] = [y+ty]<br>[0 0  1] [1]   [ 1  ]<br><br><b>회전 (Rotation, theta):</b><br>[cos -sin 0] [x]   [x*cos - y*sin]<br>[sin  cos 0] [y] = [x*sin + y*cos]<br>[ 0    0  1] [1]   [      1      ]<br><br><b>스케일 (Scale):</b><br>[sx  0 0] [x]   [x*sx]<br>[ 0 sy 0] [y] = [y*sy]<br>[ 0  0 1] [1]   [ 1  ]<br><br>여러 변환 = 행렬 곱의 연쇄!<br>GPU가 초당 수십억 번의 행렬 곱을 수행!</div>
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span><span class="code-bar-file">[C 코드] 2D 회전 구현</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;stdio.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;math.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">4</span><span class="lc"><span class="s-kw">typedef</span> <span class="s-kw">struct</span> { <span class="s-type">double</span> x, y; } Point;</span></div>
+<div class="code-line"><span class="ln">5</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">6</span><span class="lc"><span class="s-cm">// 원점 기준 회전</span></span></div>
+<div class="code-line"><span class="ln">7</span><span class="lc">Point <span class="s-fn">rotate</span>(Point p, <span class="s-type">double</span> degrees) {</span></div>
+<div class="code-line"><span class="ln">8</span><span class="lc">    <span class="s-type">double</span> rad = degrees * <span class="s-num">3.14159265</span> / <span class="s-num">180.0</span>;</span></div>
+<div class="code-line"><span class="ln">9</span><span class="lc">    Point r;</span></div>
+<div class="code-line"><span class="ln">10</span><span class="lc">    r.x = p.x * <span class="s-fn">cos</span>(rad) - p.y * <span class="s-fn">sin</span>(rad);</span></div>
+<div class="code-line"><span class="ln">11</span><span class="lc">    r.y = p.x * <span class="s-fn">sin</span>(rad) + p.y * <span class="s-fn">cos</span>(rad);</span></div>
+<div class="code-line"><span class="ln">12</span><span class="lc">    <span class="s-kw">return</span> r;</span></div>
+<div class="code-line"><span class="ln">13</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">14</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">15</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">main</span>() {</span></div>
+<div class="code-line"><span class="ln">16</span><span class="lc">    Point p = {<span class="s-num">1.0</span>, <span class="s-num">0.0</span>};</span></div>
+<div class="code-line"><span class="ln">17</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"원점: (%.2f, %.2f)\n"</span>, p.x, p.y);</span></div>
+<div class="code-line"><span class="ln">18</span><span class="lc">    </span></div>
+<div class="code-line"><span class="ln">19</span><span class="lc">    <span class="s-kw">for</span> (<span class="s-type">int</span> deg = <span class="s-num">0</span>; deg &lt;= <span class="s-num">360</span>; deg += <span class="s-num">90</span>) {</span></div>
+<div class="code-line"><span class="ln">20</span><span class="lc">        Point r = <span class="s-fn">rotate</span>(p, deg);</span></div>
+<div class="code-line"><span class="ln">21</span><span class="lc">        <span class="s-fn">printf</span>(<span class="s-str">"%3d도 회전: (%.2f, %.2f)\n"</span>, deg, r.x, r.y);</span></div>
+<div class="code-line"><span class="ln">22</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">23</span><span class="lc">    <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">24</span><span class="lc">}</span></div>
+</div>
+</div>
+<div class="output-wrap"><div class="output-bar">실행 결과</div><div class="output-body">원점: (1.00, 0.00)
+  0도 회전: (1.00, 0.00)
+ 90도 회전: (0.00, 1.00)
+180도 회전: (-1.00, 0.00)
+270도 회전: (0.00, -1.00)
+360도 회전: (1.00, 0.00)</div></div>
+<h2 class="section-title">[심화 내용] 거리 함수의 종류</h2>
+<div class="note-box"><span class="note-label">[심화 내용] 다양한 거리 함수</span>
+<b>1. 유클리드 거리 (L2)</b><br>d = sqrt((x2-x1)^2 + (y2-y1)^2)<br>직선 거리. 가장 일반적<br><br><b>2. 맨해튼 거리 (L1)</b><br>d = |x2-x1| + |y2-y1|<br>격자 위의 이동 거리. 도시 블록<br>BFS/그래프에서 자주 사용<br><br><b>3. 체비셰프 거리 (L-infinity)</b><br>d = max(|x2-x1|, |y2-y1|)<br>체스 킹의 이동 거리. 대각선 1칸<br><br><b>4. 민코프스키 거리 (Lp)</b><br>d = (|x2-x1|^p + |y2-y1|^p)^(1/p)<br>p=1이면 맨해튼, p=2이면 유클리드, p=inf이면 체비셰프<br><br>KOI/대회에서 "두 점의 거리"라 하면 보통 맨해튼이에요!</div>
+<div class="note-box"><span class="note-label">[심화 내용] 게임에서의 좌표계</span>
+<b>수학 좌표계:</b><br>y축 위로 증가 (일반적)<br><br><b>화면 좌표계:</b><br>y축 아래로 증가! (왼쪽 상단 = (0,0))<br>HTML Canvas, SDL, DirectX, 대부분의 2D 게임<br><br><b>OpenGL:</b><br>y축 위로 증가 (수학과 같음)<br>NDC(Normalized Device Coordinates): -1 ~ +1<br><br><b>Unity 3D:</b><br>왼손 좌표계 (z가 화면 안쪽)<br><br><b>Unreal Engine:</b><br>왼손 좌표계, z가 위<br><br>좌표계 혼동은 게임 개발 버그의 주요 원인!</div>
+<!-- fact-bite -->
+<!-- fact-bite -->
+<table class="trace"><thead><tr><th>용어</th><th>설명</th></tr></thead><tbody><tr><td><code>좌표(Coordinate)</code></td><td>위치를 숫자로 나타낸 것. 1차원은 1개, 2차원은 (x,y) 2개.</td></tr><tr><td><code>인덱스(Index)</code></td><td>배열에서 각 칸의 번호. C에서는 0부터 시작.</td></tr><tr><td><code>2차원 배열</code></td><td>행과 열로 이루어진 격자 데이터 구조. arr[행][열] = arr[y][x].</td></tr><tr><td><code>맨해튼 거리</code></td><td>격자를 따라 이동하는 거리. |x₁-x₂|+|y₁-y₂|.</td></tr><tr><td><code>유클리드 거리</code></td><td>두 점 사이의 직선 거리. √((x₁-x₂)²+(y₁-y₂)²).</td></tr><tr><td><code>행(Row)</code></td><td>격자의 가로 줄. 2차원 배열의 첫 번째 인덱스(y).</td></tr><tr><td><code>열(Column)</code></td><td>격자의 세로 줄. 2차원 배열의 두 번째 인덱스(x).</td></tr><tr><td><code>off-by-one</code></td><td>인덱스가 1 차이 나는 버그. 0 기반 인덱싱에서 자주 발생.</td></tr><tr><td><code>BFS</code></td><td>너비 우선 탐색. 큐를 사용해 가까운 곳부터 탐색. 최단 거리 보장.</td></tr><tr><td><code>극좌표</code></td><td>거리(r)와 각도(θ)로 위치를 표현하는 좌표계.</td></tr><tr><td><code>동차 좌표</code></td><td>(x,y)를 (x,y,1)로 확장. 이동/회전/확대를 행렬 곱으로 처리.</td></tr><tr><td><code>극좌표</code></td><td>(r, theta) 형태. 원점에서의 거리와 각도로 위치 표현. 원형 패턴에 유리.</td></tr><tr><td><code>동차 좌표</code></td><td>차원을 하나 추가하여 이동 변환을 행렬 곱으로 표현하는 좌표계.</td></tr><tr><td><code>변환 행렬</code></td><td>이동/회전/스케일을 행렬 곱셈으로 표현한 것. GPU의 핵심 연산.</td></tr><tr><td><code>맨해튼 거리</code></td><td>|x2-x1| + |y2-y1|. 격자 위의 이동 거리. 도시 블록 거리.</td></tr><tr><td><code>체비셰프 거리</code></td><td>max(|x2-x1|, |y2-y1|). 체스 킹의 이동 거리.</td></tr><tr><td><code>NDC</code></td><td>Normalized Device Coordinates. -1~+1 범위의 정규화된 좌표.</td></tr></tbody></table>
+<div class="warmup-box"><div class="warmup-title">이번 유닛 핵심 정리</div><div class="wq"><b>1.</b> 좌표 = (x, y)로 위치를 나타내는 방법</div><div class="wq"><b>2.</b> 1~4사분면: x, y의 부호로 구분</div><div class="wq"><b>3.</b> 거리 공식: sqrt((x2-x1)^2 + (y2-y1)^2)</div><div class="wq"><b>4.</b> [심화] C 구조체로 좌표 표현: struct Point {int x, y;}</div><div class="wq"><b>5.</b> [심화] 배열 인덱스 = 좌표 (arr[y][x])</div><div class="wq"><b>6.</b> [심화 내용] 극좌표/동차좌표: 문제에 맞는 좌표계 선택</div><div class="wq"><b>7.</b> [심화 내용] 행렬 변환: 이동/회전/스케일 = 4x4 행렬 곱</div><div class="wq"><b>8.</b> [심화 내용] 거리 함수: 유클리드/맨해튼/체비셰프</div><div class="wq"><b>9.</b> [심화 내용] 화면 좌표 y축 = 아래로 증가 (수학과 반대!)</div></div>
+<div class="tip"><span class="tip-label">이 유닛에서 연결된 축</span>
+<b>[C언어]</b> 배열 인덱스(0부터), 2차원 배열 arr[y][x]<br><b>[컴퓨팅 사고력]</b> 추상화 — 위치를 숫자로 표현<br><b>[디버깅]</b> off-by-one, x/y 순서 뒤바뀜<br><b>[KOI]</b> 미로, 나이트, BFS, 좌표 탐색<br><b>[코딩기초]</b> 배열과 2차원 배열<br><b>[수학연결]</b> 좌표계, 거리 공식, 극좌표</div>
+<h2 class="section-title">실전 활용 연습</h2>
+<p>지금까지 배운 개념을 활용한 다양한 실전 예제와 연습문제입니다.</p>
+
+<h2 class="section-title">실생활 연결</h2>
+<div class="tip"><span class="tip-label">[실생활] 이 개념은 어디에 쓰일까?</span>
+게임 개발, 앱 만들기, 웹사이트, 로봇 제어, AI 학습 등 모든 분야에서 사용돼요!</div>
+
+<h2 class="section-title">추가 연습문제</h2>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 20</span><p style="margin:0;font-size:14px">이번 유닛에서 배운 핵심 개념 3가지를 자신의 말로 설명해 보세요.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 21</span><p style="margin:0;font-size:14px">이번 유닛의 개념을 활용한 자신만의 문제를 1개 만들어 보세요.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 22</span><p style="margin:0;font-size:14px">이번 유닛의 개념이 C언어에서 어떻게 사용되는지 조사해 보세요.</p></div>
+<h2 class="section-title">[심화] 더 알아보기</h2>
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+
+<p>이번 유닛의 모든 개념을 완전히 이해했습니다. 다음 유닛에서 더 발전된 개념을 배워보세요!</p>
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<div class="note-box"><span class="note-label">[다음 유닛 미리보기]</span>
+이제 숫자의 위치를 배웠으니, 다음은 <b>경우의 수</b>를 세어볼 거예요! 동전 2개를 던지면 몇 가지 결과가 나올까요?</div>
+
+
+    <span class="page-num">2</span>
+  </div>
+</div>
+</body>
+</html>

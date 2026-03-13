@@ -1,0 +1,1188 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>코딩쏙 교재 — 8진수와 16진수</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+
+  :root {
+    --navy: #1a2e4a;
+    --navy-mid: #2c4a6e;
+    --navy-light: #3d6590;
+    --orange: #e07830;
+    --orange-light: #f5e6d8;
+    --white: #ffffff;
+    --bg: #f7f8fa;
+    --bg-warm: #faf9f7;
+    --gray-50: #f9fafb;
+    --gray-100: #f3f4f6;
+    --gray-200: #e5e7eb;
+    --gray-300: #d1d5db;
+    --gray-400: #9ca3af;
+    --gray-500: #6b7280;
+    --gray-600: #4b5563;
+    --gray-700: #374151;
+    --gray-800: #1f2937;
+    --text: #2d3748;
+    --green: #16a34a;
+    --green-bg: #dcfce7;
+    --red: #dc2626;
+    --red-bg: #fee2e2;
+    --blue: #2563eb;
+    --blue-bg: #dbeafe;
+    --yellow-bg: #fef9c3;
+    --font: 'Noto Sans KR', sans-serif;
+    --mono: 'JetBrains Mono', 'Consolas', monospace;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: var(--font); background: #e8eaed; font-size: 15px; }
+
+  /* ========== PAGE ========== */
+  .page {
+    width: 210mm;
+    min-height: 295mm;
+    margin: 24px auto;
+    background: var(--white);
+    box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* ========== PAGE 1: CHAPTER START ========== */
+  .chapter-page {
+    display: flex;
+    min-height: 295mm;
+  }
+
+  .chapter-sidebar {
+    width: 10px;
+    background: var(--navy);
+    flex-shrink: 0;
+  }
+
+  .chapter-accent-bar {
+    width: 7px;
+    background: var(--orange);
+    flex-shrink: 0;
+  }
+
+  .chapter-body {
+    flex: 1;
+    padding: 70px 65px 50px 55px;
+    position: relative;
+  }
+
+  .chapter-watermark {
+    position: absolute;
+    top: -10px;
+    right: -15px;
+    font-size: 280px;
+    font-weight: 900;
+    color: rgba(180,195,212,0.35);
+    line-height: 1;
+    pointer-events: none;
+    letter-spacing: -10px;
+  }
+
+  .chapter-label {
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--navy-mid);
+    letter-spacing: 2px;
+    margin-bottom: 4px;
+  }
+
+  .chapter-title {
+    font-size: 44px;
+    font-weight: 900;
+    color: var(--navy);
+    line-height: 1.15;
+    margin-bottom: 12px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .chapter-sub {
+    font-size: 16px;
+    color: var(--gray-500);
+    font-weight: 400;
+    margin-bottom: 20px;
+    padding-bottom: 28px;
+    border-bottom: 1px solid var(--gray-200);
+  }
+
+  /* Learning objectives */
+  .obj-title {
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--navy);
+    margin-bottom: 16px;
+    margin-top: 32px;
+  }
+
+  .obj-list {
+    list-style: none;
+    margin-bottom: 40px;
+  }
+
+  .obj-list li {
+    padding: 5px 0 5px 24px;
+    position: relative;
+    font-size: 15px;
+    color: var(--gray-700);
+    line-height: 1.6;
+  }
+
+  .obj-list li::before {
+    content: '•';
+    position: absolute;
+    left: 8px;
+    color: var(--navy-mid);
+    font-weight: 700;
+  }
+
+  /* Prerequisites flow */
+  .prereq-title {
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--navy);
+    margin-bottom: 18px;
+  }
+
+  .prereq-flow {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    margin-bottom: 44px;
+  }
+
+  .prereq-item {
+    padding: 9px 22px;
+    border: 1.5px solid var(--gray-300);
+    border-radius: 50px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--gray-600);
+    background: var(--white);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+  }
+
+  .prereq-item.current {
+    border-color: var(--navy);
+    color: var(--navy);
+    font-weight: 700;
+    background: #edf2f7;
+    box-shadow: 0 2px 6px rgba(26,46,74,0.12);
+  }
+
+  .prereq-arrow {
+    width: 36px;
+    text-align: center;
+    color: var(--gray-300);
+    font-size: 18px;
+    font-weight: 300;
+  }
+
+  /* Predict box */
+  .predict-box {
+    background: var(--gray-50);
+    border: 1.5px solid var(--gray-200);
+    border-radius: 12px;
+    padding: 24px 28px;
+  }
+
+  .predict-label {
+    display: inline-block;
+    background: var(--orange);
+    color: var(--white);
+    font-size: 12px;
+    font-weight: 600;
+    padding: 3px 12px;
+    border-radius: 4px;
+    margin-bottom: 14px;
+    letter-spacing: 0.5px;
+  }
+
+  .predict-q {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--navy);
+    margin-bottom: 16px;
+  }
+
+  .predict-code {
+    background: var(--white);
+    border: 1px solid var(--gray-200);
+    border-radius: 8px;
+    padding: 14px 18px;
+    font-family: var(--mono);
+    font-size: 13px;
+    line-height: 1.65;
+    color: var(--gray-700);
+  }
+
+  /* ========== PAGE 2: CORE CONTENT ========== */
+  .content-page {
+    padding: 55px 65px;
+  }
+
+  .unit-header-bar {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    margin-bottom: 8px;
+  }
+
+  .unit-tag {
+    font-size: 12px;
+    color: var(--orange);
+    font-weight: 600;
+    letter-spacing: 1px;
+  }
+
+  .unit-title-sm {
+    font-size: 14px;
+    color: var(--gray-400);
+    font-weight: 400;
+  }
+
+  .section-title {
+    font-size: 24px;
+    font-weight: 800;
+    color: var(--navy);
+    margin-bottom: 24px;
+    margin-top: 8px;
+    padding-left: 16px;
+    border-left: 5px solid var(--orange);
+  }
+
+  p {
+    font-size: 15.5px;
+    line-height: 1.9;
+    color: var(--text);
+    margin-bottom: 18px;
+  }
+
+  p code {
+    font-family: var(--mono);
+    font-size: 13.5px;
+    background: #f1f3f5;
+    padding: 2px 7px;
+    border-radius: 4px;
+    color: var(--navy);
+    font-weight: 500;
+  }
+
+  /* Code block */
+  .code-wrap {
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    border: 1px solid var(--gray-200);
+    margin: 22px 0;
+  }
+
+  .code-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 9px 18px;
+    background: var(--navy);
+    font-size: 12px;
+  }
+
+  .code-bar-lang {
+    font-family: var(--mono);
+    font-weight: 600;
+    color: var(--white);
+  }
+
+  .code-bar-file {
+    color: rgba(255,255,255,0.6);
+    font-weight: 400;
+  }
+
+  .code-body {
+    background: #f8f9fb;
+    padding: 20px 0;
+    font-family: var(--mono);
+    font-size: 13.5px;
+    line-height: 1.75;
+    border: 1px solid var(--gray-200);
+    border-top: none;
+    border-radius: 0 0 12px 12px;
+  }
+
+  .code-line {
+    display: flex;
+    padding: 0 20px;
+  }
+
+  .code-line:hover {
+    background: #f0f4f8;
+  }
+
+  .code-line.highlighted {
+    background: #fff8e1;
+  }
+
+  .ln {
+    width: 30px;
+    text-align: right;
+    color: #b8bfc8;
+    font-size: 12px;
+    margin-right: 18px;
+    user-select: none;
+    flex-shrink: 0;
+    padding-top: 1px;
+  }
+
+  .lc { flex: 1; }
+
+  /* syntax */
+  .s-pp { color: #8b5cf6; font-weight: 600; }
+  .s-str { color: #d97706; }
+  .s-type { color: #2563eb; font-weight: 500; }
+  .s-kw { color: #7c3aed; font-weight: 500; }
+  .s-fn { color: #059669; font-weight: 500; }
+  .s-num { color: #dc2626; }
+  .s-cm { color: #9ca3af; font-style: italic; }
+
+  /* Output block */
+  .output-wrap {
+    border-radius: 10px;
+    overflow: hidden;
+    margin: 10px 0 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    border: 1px solid #d1d5db;
+  }
+
+  .output-bar {
+    padding: 9px 18px;
+    background: #374151;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--white);
+    letter-spacing: 0.5px;
+  }
+
+  .output-body {
+    padding: 16px 20px;
+    font-family: var(--mono);
+    font-size: 13.5px;
+    line-height: 1.7;
+    color: var(--gray-800);
+    background: #f1f5f9;
+    border: 1px solid var(--gray-200);
+    border-top: none;
+    border-radius: 0 0 10px 10px;
+  }
+
+  /* Callout */
+  .tip {
+    margin: 28px 0;
+    padding: 18px 24px;
+    background: #dbeafe;
+    border-left: 5px solid #2563eb;
+    border-radius: 0 12px 12px 0;
+    font-size: 14.5px;
+    line-height: 1.8;
+    color: var(--text);
+  }
+
+  .tip-label {
+    font-weight: 700;
+    color: #2563eb;
+    font-size: 13px;
+    display: block;
+    margin-bottom: 4px;
+  }
+
+  .warn {
+    margin: 28px 0;
+    padding: 18px 24px;
+    background: #fef3c7;
+    border-left: 5px solid #d97706;
+    border-radius: 0 12px 12px 0;
+    font-size: 14.5px;
+    line-height: 1.8;
+  }
+
+  .warn-label {
+    font-weight: 700;
+    color: #d97706;
+    font-size: 13px;
+    display: block;
+    margin-bottom: 4px;
+  }
+
+  .note-box {
+    margin: 28px 0;
+    padding: 18px 24px;
+    background: #e2e8f0;
+    border-left: 5px solid #64748b;
+    border-radius: 0 12px 12px 0;
+    font-size: 14.5px;
+    line-height: 1.8;
+  }
+
+  .note-label {
+    font-weight: 700;
+    color: var(--gray-600);
+    font-size: 13px;
+    display: block;
+    margin-bottom: 4px;
+  }
+
+  /* Trace table */
+  table.trace {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    margin: 28px 0;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+    font-size: 14px;
+  }
+
+  table.trace th {
+    background: var(--navy);
+    color: var(--white);
+    padding: 10px 16px;
+    text-align: left;
+    font-weight: 500;
+    font-size: 13px;
+  }
+
+  table.trace td {
+    padding: 10px 16px;
+    border-bottom: 1px solid var(--gray-200);
+    color: var(--gray-700);
+  }
+
+  table.trace tr:nth-child(even) td { background: var(--gray-50); }
+  table.trace tr:last-child td { border-bottom: none; }
+
+  table.trace td code {
+    font-family: var(--mono);
+    font-size: 12.5px;
+    background: #eef1f5;
+    padding: 2px 6px;
+    border-radius: 4px;
+    color: var(--navy);
+  }
+
+  /* ========== PAGE 3: PROBLEMS ========== */
+  .problems-header {
+    margin-bottom: 8px;
+  }
+
+  .problems-chapter-ref {
+    font-size: 13px;
+    color: var(--gray-500);
+    margin-bottom: 4px;
+  }
+
+  .problems-title {
+    font-size: 28px;
+    font-weight: 800;
+    color: var(--navy);
+    margin-bottom: 24px;
+  }
+
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 16px;
+  }
+
+  .prob-card {
+    background: var(--white);
+    border: 1px solid var(--gray-200);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 3px 15px rgba(0,0,0,0.06);
+  }
+
+  .prob-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 16px;
+    background: var(--navy);
+  }
+
+  .prob-num {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--white);
+  }
+
+  .diff {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    font-size: 12px;
+    font-weight: 800;
+  }
+
+  .diff-basic { background: #22c55e; color: white; }
+  .diff-mid { background: #f59e0b; color: white; }
+  .diff-hard { background: #ef4444; color: white; }
+
+  .prob-desc {
+    font-size: 13.5px;
+    line-height: 1.65;
+    color: var(--gray-600);
+    margin-bottom: 10px;
+    padding: 14px 16px 0;
+  }
+
+  .prob-code {
+    background: var(--gray-50);
+    border: 1px solid var(--gray-200);
+    border-radius: 6px;
+    padding: 10px 14px;
+    margin: 0 16px 16px;
+    font-family: var(--mono);
+    font-size: 12.5px;
+    line-height: 1.55;
+    color: var(--gray-600);
+  }
+
+  /* Competition section */
+  .comp-section {
+    margin-top: 32px;
+    padding-top: 24px;
+    border-top: 2px solid var(--navy);
+  }
+
+  .comp-title {
+    font-size: 22px;
+    font-weight: 800;
+    color: var(--navy);
+    margin-bottom: 20px;
+  }
+
+  .comp-card {
+    background: var(--white);
+    border: 1.5px solid var(--gray-200);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 18px rgba(0,0,0,0.06);
+  }
+
+  .comp-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 16px;
+    background: #0f766e;
+  }
+
+  .comp-header .comp-name {
+    color: var(--white);
+    font-size: 15px;
+    font-weight: 700;
+    margin: 0;
+  }
+
+  .comp-inner {
+    padding: 14px 18px 18px;
+  }
+
+  .comp-badge {
+    display: inline-block;
+    padding: 3px 12px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 700;
+  }
+
+  .badge-bj { background: #93c5fd; color: #1e3a5f; }
+  .badge-cu { background: #c4b5fd; color: #3b1f7e; }
+  .badge-pg { background: #7dd3fc; color: #0c4a6e; }
+
+  .comp-name {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--navy);
+    margin-bottom: 6px;
+  }
+
+  .comp-desc {
+    font-size: 14px;
+    color: var(--gray-600);
+    line-height: 1.7;
+    margin-bottom: 14px;
+  }
+
+  .io-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+
+  .io-card {
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid var(--gray-200);
+  }
+
+  .io-h {
+    padding: 6px 14px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--gray-600);
+    background: #e2e8f0;
+  }
+
+  .io-c {
+    padding: 10px 14px;
+    font-family: var(--mono);
+    font-size: 13px;
+    line-height: 1.5;
+    background: var(--white);
+  }
+
+  /* ========== DEBUG LAB ========== */
+  .debug-section {
+    margin: 24px 0;
+    border: 2px solid var(--red);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+
+  .debug-bar {
+    background: var(--red);
+    color: var(--white);
+    padding: 10px 20px;
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 1px;
+  }
+
+  .debug-body {
+    padding: 20px;
+    background: #fef2f2;
+  }
+
+  /* 10축 connection */
+  .connect-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 16px;
+    margin: 28px 0;
+  }
+
+  .connect-card {
+    border-radius: 12px;
+    padding: 20px;
+    text-align: center;
+    border: 1px solid var(--gray-200);
+    box-shadow: 0 3px 14px rgba(0,0,0,0.05);
+  }
+
+  .connect-card h5 {
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 8px;
+  }
+
+  .connect-card p {
+    font-size: 13px;
+    margin: 0;
+    color: var(--gray-600);
+    line-height: 1.6;
+  }
+
+  .cc1 { border-top: 3px solid #8b5cf6; }
+  .cc1 h5 { color: #8b5cf6; }
+  .cc2 { border-top: 3px solid var(--green); }
+  .cc2 h5 { color: var(--green); }
+  .cc3 { border-top: 3px solid var(--navy); }
+  .cc3 h5 { color: var(--navy); }
+
+  /* PAGE NUMBER */
+  .page-num {
+    position: absolute;
+    bottom: 20px;
+    right: 30px;
+    font-size: 12px;
+    color: var(--gray-400);
+  }
+
+  /* WARMUP */
+  .warmup-box {
+    background: #e0e7f1;
+    border-radius: 12px;
+    padding: 24px 28px;
+    margin: 28px 0;
+    border: 2px solid #c7d2e0;
+  }
+
+  .warmup-title {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--navy);
+    margin-bottom: 14px;
+  }
+
+  .wq {
+    padding: 9px 16px;
+    background: var(--white);
+    border-radius: 8px;
+    margin-bottom: 8px;
+    font-size: 14px;
+    border: 1px solid var(--gray-200);
+    color: var(--gray-700);
+  }
+
+  .wq b { color: var(--navy); margin-right: 6px; }
+  .wq .hint { color: var(--gray-400); font-size: 13px; }
+
+  /* ===== CONTEST PROBLEMS PAGE ===== */
+  .contest-page-wrap .chapter-page {
+    min-height: auto;
+  }
+
+  .contest-page-wrap .chapter-page > div:last-child {
+    min-width: 0;
+    overflow-wrap: break-word;
+    word-break: break-word;
+  }
+
+  .contest-card {
+    background: white;
+    border: 1.5px solid var(--gray-200);
+    border-radius: 12px;
+    margin-bottom: 28px;
+    overflow: hidden;
+    break-inside: avoid;
+  }
+
+  .contest-header {
+    background: var(--navy);
+    color: white;
+    padding: 14px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .contest-num-source {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .contest-num {
+    font-weight: 700;
+    font-size: 16px;
+  }
+
+  .contest-source {
+    background: rgba(255,255,255,0.15);
+    padding: 3px 10px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 500;
+  }
+
+  .contest-body {
+    padding: 20px 24px 24px;
+  }
+
+  .contest-question {
+    font-size: 15px;
+    line-height: 1.7;
+    color: var(--text);
+    margin: 0 0 16px;
+    word-break: break-word;
+    overflow-wrap: break-word;
+  }
+
+  .contest-expected {
+    background: #1e293b;
+    border-radius: 8px;
+    overflow: hidden;
+    margin-bottom: 20px;
+  }
+
+  .contest-expected-label {
+    background: #334155;
+    color: #94a3b8;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 6px 14px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .contest-expected-body {
+    color: #e2e8f0;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    line-height: 1.6;
+    padding: 12px 16px;
+    margin: 0;
+    white-space: pre;
+  }
+
+  .contest-write-area {
+    border: 2px dashed var(--gray-300);
+    border-radius: 10px;
+    overflow: hidden;
+    transition: border-color 0.2s;
+  }
+
+  .contest-write-area:focus-within {
+    border-color: var(--orange);
+    border-style: solid;
+  }
+
+  .contest-write-label {
+    background: var(--bg);
+    color: var(--gray-500);
+    font-size: 12px;
+    font-weight: 600;
+    padding: 8px 14px;
+    border-bottom: 1px solid var(--gray-200);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .contest-textarea {
+    width: 100%;
+    min-height: 200px;
+    padding: 16px 18px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    line-height: 1.7;
+    color: var(--text);
+    background: #fafbfc;
+    border: none;
+    outline: none;
+    resize: vertical;
+    tab-size: 4;
+    box-sizing: border-box;
+  }
+
+  .contest-textarea::placeholder {
+    color: var(--gray-300);
+  }
+
+  @media print {
+    body { background: white; }
+    .page { box-shadow: none; margin: 0; page-break-after: always; }
+    .contest-textarea { border: 1px solid var(--gray-300); min-height: 180px; }
+  }
+
+</style>
+</head>
+<body>
+
+<div class="page">
+  <div class="chapter-page">
+    <div class="chapter-sidebar"></div>
+    <div class="chapter-accent-bar"></div>
+    <div class="chapter-body">
+      <div class="chapter-watermark">05</div>
+      <div class="chapter-label">Chapter 05</div>
+      <h1 class="chapter-title">8진수와 16진수</h1>
+      <p class="chapter-sub">2진수가 너무 길 때, 짧게 줄여서 쓰는 방법을 배워요. 색상 코드, 유니코드, 메모리 덤프까지!</p>
+
+      <h3 class="obj-title">이 유닛에서 배우는 것</h3>
+      <ul class="obj-list">
+        <li>8진수와 16진수가 왜 필요한지 알 수 있어요.</li>
+        <li>2진수를 8진수, 16진수로 바꿀 수 있어요.</li>
+        <li>16진수에서 A~F가 무슨 뜻인지 알아요.</li>
+        <li>16진수 색상 코드(RGB/RGBA)를 이해하고 읽을 수 있어요.</li>
+        <li>유니코드, 파일 시그니처, MAC 주소 등 실무 활용을 알아요.</li>
+        <li>임의의 진법 간 변환 알고리즘을 이해해요.</li>
+      </ul>
+
+      <h3 class="prereq-title">선수 학습</h3>
+      <div class="prereq-flow">
+        <div class="prereq-item">2진수와 10진수 변환을 할 수 있다 (U0-04)</div><div class="prereq-arrow">→</div>
+        <div class="prereq-item current">비트가 무엇인지 안다 (U0-03)</div>
+      </div>
+
+      
+
+      <span class="page-num">1</span>
+    </div>
+  </div>
+</div>
+<div class="page">
+  <div class="content-page">
+    <div class="unit-header-bar">
+      <span class="unit-tag">UNIT 05</span>
+      <span class="unit-title-sm">8진수와 16진수</span>
+    </div>
+<h2 class="section-title">2진수, 너무 길어!</h2>
+
+<p>지난 시간에 2진수를 배웠어요. 그런데 숫자가 조금만 커져도 2진수는 엄청 길어져요.</p>
+<p>10진수 <b>255</b>를 2진수로 쓰면 <b>11111111</b> — 무려 8자리예요. 10진수 <b>1000</b>은? 2진수로 <b>1111101000</b> — 10자리나 돼요. 이렇게 길면 읽다가 실수하기 딱 좋아요.</p>
+<p>그래서 프로그래머들이 생각해낸 방법이 있어요. 2진수를 <b>묶어서</b> 짧게 쓰는 거예요. 3비트씩 묶으면 <b>8진수</b>, 4비트씩 묶으면 <b>16진수</b>가 돼요.</p>
+<!-- fact-bite -->
+<h2 class="section-title">8진수: 3비트씩 묶기</h2>
+
+<p>8진수는 <b>3비트씩 묶어서</b> 하나의 숫자로 바꾸는 거예요. 3비트로 만들 수 있는 숫자는 000(0)부터 111(7)까지, 총 8개예요. 그래서 8진수라고 해요.</p>
+<!-- image -->
+<p>방법은 간단해요. 2진수를 <b>오른쪽부터</b> 3비트씩 끊고, 각 묶음을 10진수로 바꾸면 돼요. 왼쪽 묶음에 비트가 모자라면 앞에 0을 붙여요.</p>
+<div style="margin:22px 0"></div>
+<table class="trace"><thead><tr><th>2진수 (3비트)</th><th>8진수</th><th>10진수</th></tr></thead><tbody><tr><td>000</td><td>0</td><td>0</td></tr><tr><td>001</td><td>1</td><td>1</td></tr><tr><td>010</td><td>2</td><td>2</td></tr><tr><td>011</td><td>3</td><td>3</td></tr><tr><td>100</td><td>4</td><td>4</td></tr><tr><td>101</td><td>5</td><td>5</td></tr><tr><td>110</td><td>6</td><td>6</td></tr><tr><td>111</td><td>7</td><td>7</td></tr></tbody></table>
+<table class="trace"><thead><tr><th>2진수</th><th>3비트 묶기</th><th>각 묶음 → 8진수</th><th>결과</th></tr></thead><tbody><tr><td>101</td><td>101</td><td>5</td><td>5(8)</td></tr><tr><td>110100</td><td>110 100</td><td>6, 4</td><td>64(8)</td></tr><tr><td>1111111</td><td>001 111 111</td><td>1, 7, 7</td><td>177(8)</td></tr><tr><td>10110111</td><td>010 110 111</td><td>2, 6, 7</td><td>267(8)</td></tr><tr><td>11001000</td><td>011 001 000</td><td>3, 1, 0</td><td>310(8)</td></tr><tr><td>11111111</td><td>011 111 111</td><td>3, 7, 7</td><td>377(8)</td></tr></tbody></table>
+<h2 class="section-title">16진수: 4비트씩 묶기</h2>
+<p>16진수는 <b>4비트씩 묶어서</b> 하나의 숫자로 바꾸는 거예요. 4비트로 만들 수 있는 숫자는 0000(0)부터 1111(15)까지, 총 16개예요.</p>
+<p>그런데 문제가 하나 있어요. 10, 11, 12, 13, 14, 15는 숫자가 두 자리잖아요? 한 자리로 써야 하니까 <b>알파벳</b>을 빌려 써요.</p>
+<div class="note-box"><span class="note-label">[핵심] 16진수 숫자</span>
+0, 1, 2, 3, 4, 5, 6, 7, 8, 9, <b>A(10)</b>, <b>B(11)</b>, <b>C(12)</b>, <b>D(13)</b>, <b>E(14)</b>, <b>F(15)</b><br>대문자 소문자 상관없어요. A든 a든 같은 뜻이에요.</div>
+<!-- image -->
+<div class="debug-section"><div class="debug-bar">DEBUG LAB — 에러를 찾으시오</div><div class="debug-body">
+
+<p style="margin:14px 0 0; font-size:14px;"><b>에러:</b> </p>
+<p style="font-size:14px;"><b>수정:</b> </p>
+</div></div>
+<table class="trace"><thead><tr><th>2진수</th><th>4비트 묶기</th><th>각 묶음 → 16진수</th><th>결과</th></tr></thead><tbody><tr><td>1010</td><td>1010</td><td>A</td><td>A(16)</td></tr><tr><td>11001000</td><td>1100 1000</td><td>C, 8</td><td>C8(16)</td></tr><tr><td>11111111</td><td>1111 1111</td><td>F, F</td><td>FF(16)</td></tr><tr><td>10110111</td><td>1011 0111</td><td>B, 7</td><td>B7(16)</td></tr><tr><td>1101101011110</td><td>0001 1011 0101 1110</td><td>1, B, 5, E</td><td>1B5E(16)</td></tr><tr><td>10000000000000</td><td>0010 0000 0000 0000</td><td>2, 0, 0, 0</td><td>2000(16)</td></tr></tbody></table>
+<h2 class="section-title">16진수가 특히 편한 이유</h2>
+<p>컴퓨터 세계에서는 8진수보다 16진수를 훨씬 많이 써요. 이유가 있어요.</p>
+<p>1바이트 = 8비트잖아요? 8비트를 4비트씩 나누면 딱 <b>2묶음</b>이에요. 그래서 1바이트를 16진수 2자리로 깔끔하게 쓸 수 있어요. 예를 들어 11111111(2) = FF(16). 8자리가 2자리로 줄었어요!</p>
+<!-- image -->
+<table class="trace"><thead><tr><th>10진수</th><th>2진수</th><th>8진수</th><th>16진수</th></tr></thead><tbody><tr><td>0</td><td>00000000</td><td>000</td><td>00</td></tr><tr><td>10</td><td>00001010</td><td>012</td><td>0A</td></tr><tr><td>15</td><td>00001111</td><td>017</td><td>0F</td></tr><tr><td>16</td><td>00010000</td><td>020</td><td>10</td></tr><tr><td>42</td><td>00101010</td><td>052</td><td>2A</td></tr><tr><td>100</td><td>01100100</td><td>144</td><td>64</td></tr><tr><td>127</td><td>01111111</td><td>177</td><td>7F</td></tr><tr><td>128</td><td>10000000</td><td>200</td><td>80</td></tr><tr><td>200</td><td>11001000</td><td>310</td><td>C8</td></tr><tr><td>255</td><td>11111111</td><td>377</td><td>FF</td></tr></tbody></table>
+<h2 class="section-title">C언어에서 진법 표기</h2>
+
+<div class="tip"><span class="tip-label">[C 연결 미리보기] 코드에서 진법 쓰기</span>
+C언어에서는 숫자 앞에 표시를 붙여서 진법을 알려줘요.<br><b>0x1A</b> → 16진수 (앞에 0x)<br><b>017</b> → 8진수 (앞에 0)<br><b>26</b> → 10진수 (그냥 숫자)<br>printf에서 <b>%x</b>로 16진수, <b>%o</b>로 8진수를 출력할 수 있어요.</div>
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;stdio.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">main</span>() {</span></div>
+<div class="code-line"><span class="ln">4</span><span class="lc">    <span class="s-type">int</span> a = <span class="s-num">0x1A</span>;   <span class="s-cm">// 16진수 1A = 26</span></span></div>
+<div class="code-line"><span class="ln">5</span><span class="lc">    <span class="s-type">int</span> b = <span class="s-num">017</span>;    <span class="s-cm">// 8진수 17 = 15</span></span></div>
+<div class="code-line"><span class="ln">6</span><span class="lc">    <span class="s-type">int</span> c = <span class="s-num">26</span>;     <span class="s-cm">// 10진수 26</span></span></div>
+<div class="code-line"><span class="ln">7</span><span class="lc">    </span></div>
+<div class="code-line"><span class="ln">8</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"16진수 0x1A = %d (10진수)\n"</span>, a);</span></div>
+<div class="code-line"><span class="ln">9</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"8진수 017 = %d (10진수)\n"</span>, b);</span></div>
+<div class="code-line"><span class="ln">10</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"26을 16진수로: %x\n"</span>, c);</span></div>
+<div class="code-line"><span class="ln">11</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"26을 8진수로: %o\n"</span>, c);</span></div>
+<div class="code-line"><span class="ln">12</span><span class="lc">    <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">13</span><span class="lc">}</span></div>
+</div>
+</div>
+<div class="output-wrap"><div class="output-bar">실행 결과</div><div class="output-body">16진수 0x1A = 26 (10진수)
+8진수 017 = 15 (10진수)
+26을 16진수로: 1a
+26을 8진수로: 32</div></div>
+<h2 class="section-title">직접 변환해 보기</h2>
+<p>진법 변환은 손으로 여러 번 해봐야 익숙해져요. 아래 순서를 따라해 보세요.</p>
+<div class="tip"><span class="tip-label">[활동] 변환 연습</span>
+<b>2진수 → 16진수</b><br>1단계: 오른쪽부터 4비트씩 묶기<br>2단계: 각 묶음을 0~F로 바꾸기<br><br><b>16진수 → 2진수</b><br>1단계: 각 자리를 4비트 2진수로 바꾸기<br>2단계: 이어 붙이기<br><br>예: 0x3F → 0011 1111 → 00111111(2)</div>
+<div style="margin:22px 0"></div>
+<table class="trace"><thead><tr><th>색상 코드</th><th>R (빨강)</th><th>G (초록)</th><th>B (파랑)</th><th>색상</th></tr></thead><tbody><tr><td>#FF0000</td><td>FF (255)</td><td>00 (0)</td><td>00 (0)</td><td>빨강</td></tr><tr><td>#00FF00</td><td>00 (0)</td><td>FF (255)</td><td>00 (0)</td><td>초록</td></tr><tr><td>#0000FF</td><td>00 (0)</td><td>00 (0)</td><td>FF (255)</td><td>파랑</td></tr><tr><td>#FFFF00</td><td>FF (255)</td><td>FF (255)</td><td>00 (0)</td><td>노랑</td></tr><tr><td>#FF00FF</td><td>FF (255)</td><td>00 (0)</td><td>FF (255)</td><td>보라</td></tr><tr><td>#00FFFF</td><td>00 (0)</td><td>FF (255)</td><td>FF (255)</td><td>하늘</td></tr><tr><td>#FFFFFF</td><td>FF (255)</td><td>FF (255)</td><td>FF (255)</td><td>흰색</td></tr><tr><td>#000000</td><td>00 (0)</td><td>00 (0)</td><td>00 (0)</td><td>검정</td></tr><tr><td>#808080</td><td>80 (128)</td><td>80 (128)</td><td>80 (128)</td><td>회색</td></tr><tr><td>#FF6B6B</td><td>FF (255)</td><td>6B (107)</td><td>6B (107)</td><td>산호색</td></tr></tbody></table>
+<h2 class="section-title">🎨 16진수 색상 코드 (RGB)</h2>
+
+<p>웹에서 색상을 표현할 때 <b>#RRGGBB</b> 형식의 16진수를 사용해요. R(빨강), G(초록), B(파랑) 각각 00~FF (0~255) 값을 가져요.</p>
+<div class="note-box"><span class="note-label">[핵심] RGB 색상 코드 읽기</span>
+<b>#FF6B6B</b> 분석:<br>• FF = 255 (빨강 최대!)<br>• 6B = 107 (초록 중간)<br>• 6B = 107 (파랑 중간)<br>→ 밝은 빨간색 (산호색)<br><br><b>자주 쓰는 색상:</b><br>• #000000 = 검정 (R=0, G=0, B=0)<br>• #FFFFFF = 흰색 (R=255, G=255, B=255)<br>• #FF0000 = 빨강<br>• #00FF00 = 초록<br>• #0000FF = 파랑<br>• #FFFF00 = 노랑 (빨강 + 초록)</div>
+<p>16진수 한 자리는 4비트, 두 자리는 8비트 = 1바이트예요. 그래서 RGB 색상 코드의 각 색상은 정확히 1바이트로 표현되고, 전체 색상은 3바이트(24비트)예요. 이래서 '24비트 트루컬러'라고 부르는 거예요.</p>
+<h2 class="section-title">[심화] RGBA와 투명도</h2>
+<p>RGB에 <b>A(Alpha, 투명도)</b>를 추가하면 RGBA가 돼요. A도 00~FF(0~255) 값으로 표현해요.</p>
+<div class="note-box"><span class="note-label">[심화] RGBA 색상</span>
+<b>#FF6B6B80</b> → 마지막 2자리 80이 투명도<br>• 80(16) = 128(10) → 약 50% 투명<br>• 00 = 완전 투명<br>• FF = 완전 불투명<br><br>CSS에서는 <code>rgba(255, 107, 107, 0.5)</code> 형태로도 쓸 수 있어요.<br>0.5 = 50% 투명도 = 16진수로 약 80</div>
+<div class="tip"><span class="tip-label">[팁] HSL 색상 체계</span>
+RGB 말고 <b>HSL</b>이라는 색상 체계도 있어요.<br>• <b>H (Hue, 색조)</b>: 0°~360° (0°=빨강, 120°=초록, 240°=파랑)<br>• <b>S (Saturation, 채도)</b>: 0%~100% (0%=회색, 100%=선명)<br>• <b>L (Lightness, 명도)</b>: 0%~100% (0%=검정, 100%=흰색)<br><br>RGB ↔ HSL 변환은 프로그래밍에서 자주 하는 작업이에요.<br>CSS: <code>hsl(0, 100%, 70%)</code> = 밝은 빨간색</div>
+<table class="trace"><thead><tr><th>파일 종류</th><th>시그니처 (16진수)</th><th>ASCII 변환</th><th>바이트 수</th></tr></thead><tbody><tr><td>PDF</td><td>25 50 44 46</td><td>%PDF</td><td>4</td></tr><tr><td>PNG</td><td>89 50 4E 47</td><td>.PNG</td><td>4</td></tr><tr><td>JPEG</td><td>FF D8 FF</td><td>(비ASCII)</td><td>3</td></tr><tr><td>ZIP</td><td>50 4B 03 04</td><td>PK..</td><td>4</td></tr><tr><td>EXE/DLL</td><td>4D 5A</td><td>MZ</td><td>2</td></tr><tr><td>GIF</td><td>47 49 46 38</td><td>GIF8</td><td>4</td></tr><tr><td>MP3</td><td>49 44 33</td><td>ID3</td><td>3</td></tr><tr><td>WAV</td><td>52 49 46 46</td><td>RIFF</td><td>4</td></tr></tbody></table>
+<table class="trace"><thead><tr><th>문자</th><th>10진수</th><th>16진수</th><th>2진수</th></tr></thead><tbody><tr><td>0 (숫자)</td><td>48</td><td>30</td><td>00110000</td></tr><tr><td>9 (숫자)</td><td>57</td><td>39</td><td>00111001</td></tr><tr><td>A (대문자)</td><td>65</td><td>41</td><td>01000001</td></tr><tr><td>Z (대문자)</td><td>90</td><td>5A</td><td>01011010</td></tr><tr><td>a (소문자)</td><td>97</td><td>61</td><td>01100001</td></tr><tr><td>z (소문자)</td><td>122</td><td>7A</td><td>01111010</td></tr><tr><td>공백</td><td>32</td><td>20</td><td>00100000</td></tr><tr><td>줄바꿈 (LF)</td><td>10</td><td>0A</td><td>00001010</td></tr></tbody></table>
+<h2 class="section-title">🔤 유니코드와 16진수</h2>
+
+<p><b>유니코드(Unicode)</b>는 전 세계 모든 문자에 고유한 번호(코드 포인트)를 부여한 표준이에요. 이 번호를 <b>16진수</b>로 표현해요.</p>
+<div class="note-box"><span class="note-label">[핵심] 유니코드 코드 포인트</span>
+형식: <b>U+XXXX</b> (X는 16진수)<br><br>• U+0041 = 'A' (영문 대문자)<br>• U+0061 = 'a' (영문 소문자)<br>• U+AC00 = '가' (한글 첫 글자!)<br>• U+D55C = '한'<br>• U+1F600 = 😀 (이모지도 유니코드!)<br><br>유니코드는 현재 14만 개 이상의 문자를 포함하고 있어요.</div>
+<div class="tip"><span class="tip-label">[심화] UTF-8 인코딩 원리</span>
+유니코드 번호를 실제로 저장할 때는 <b>UTF-8</b> 인코딩을 많이 써요.<br><br>• 영문(U+0000~U+007F): <b>1바이트</b> (ASCII와 호환!)<br>  'A' = U+0041 → 41 (1바이트)<br><br>• 한글(U+AC00~U+D7AF): <b>3바이트</b><br>  '가' = U+AC00 → EA B0 80 (3바이트)<br><br>• 이모지(U+1F000~): <b>4바이트</b><br>  😀 = U+1F600 → F0 9F 98 80 (4바이트)<br><br>UTF-8은 영문은 적은 바이트, 다른 문자는 더 많은 바이트를 쓰는 <b>가변 길이</b> 인코딩이에요.</div>
+<div class="tip"><span class="tip-label">[심화] UTF-16 인코딩</span>
+Windows와 Java는 내부적으로 <b>UTF-16</b>을 많이 써요.<br><br>• 기본 다국어 평면(U+0000~U+FFFF): <b>2바이트</b><br>  '가' = U+AC00 → AC 00 (2바이트)<br><br>• 그 외(이모지 등): <b>4바이트</b> (서로게이트 페어 사용)<br><br>UTF-8 vs UTF-16:<br>• 영문 위주 → UTF-8이 효율적 (1바이트)<br>• 한글/중국어 위주 → UTF-16이 효율적 (2바이트 vs 3바이트)</div>
+<h2 class="section-title">📁 파일 시그니처 (매직 넘버)</h2>
+<p>파일의 맨 앞 몇 바이트를 보면 어떤 종류의 파일인지 알 수 있어요. 이 특별한 바이트 패턴을 <b>파일 시그니처</b> 또는 <b>매직 넘버</b>라고 해요. 물론 16진수로 표현해요!</p>
+<div class="note-box"><span class="note-label">[핵심] 자주 보는 파일 시그니처</span>
+파일 확장자는 속일 수 있지만, 매직 넘버는 거짓말을 안 해요!<br><br>• <b>PDF</b>: 25 50 44 46 → ASCII로 '%PDF'<br>• <b>PNG</b>: 89 50 4E 47 0D 0A 1A 0A → '.PNG....'<br>• <b>JPEG</b>: FF D8 FF → 항상 이걸로 시작<br>• <b>ZIP</b>: 50 4B 03 04 → ASCII로 'PK' (만든 사람 이름 약자!)<br>• <b>EXE</b>: 4D 5A → ASCII로 'MZ' (MS-DOS 설계자 이름!)<br>• <b>GIF</b>: 47 49 46 38 → ASCII로 'GIF8'</div>
+
+<h2 class="section-title">🔧 메모리 덤프 읽기</h2>
+<p>프로그래머가 프로그램을 디버깅할 때, 메모리의 내용을 직접 볼 수 있어요. 이때 16진수가 핵심이에요.</p>
+<div class="note-box"><span class="note-label">[심화] 메모리 덤프 읽는 법</span>
+메모리 덤프는 보통 이런 형태예요:<br><br><code>주소         16진수 데이터                    ASCII</code><br><code>0x00400000: 48 65 6C 6C 6F 20 57 6F  Hello Wo</code><br><code>0x00400008: 72 6C 64 21 00 00 00 00  rld!....</code><br><br>왼쪽: 메모리 주소 (16진수)<br>가운데: 저장된 데이터 (16진수, 바이트 단위)<br>오른쪽: 같은 데이터를 ASCII 문자로 표시<br><br>48 = 'H', 65 = 'e', 6C = 'l'... 이렇게 대응해요!</div>
+<div class="tip"><span class="tip-label">[팁] 디버거에서 16진수 보기</span>
+Visual Studio, GDB 같은 디버거에서 변수 값을 16진수로 볼 수 있어요.<br><br>• <code>int x = 255;</code> → 메모리에 <b>FF 00 00 00</b>으로 저장 (리틀 엔디안)<br>• <code>int x = -1;</code> → 메모리에 <b>FF FF FF FF</b>로 저장 (2의 보수)<br><br>16진수를 읽을 줄 알면 디버깅이 훨씬 쉬워져요!</div>
+<div style="margin:22px 0"></div>
+<div style="margin:22px 0"></div>
+<h2 class="section-title">🌐 네트워크: MAC 주소</h2>
+<p>모든 네트워크 장치(컴퓨터, 스마트폰, 공유기 등)에는 고유한 <b>MAC 주소</b>가 있어요. 16진수로 표현해요.</p>
+<div class="note-box"><span class="note-label">[핵심] MAC 주소 구조</span>
+형태: <b>00:1A:2B:3C:4D:5E</b> (6바이트 = 48비트)<br><br>• 앞 3바이트 (00:1A:2B): <b>제조사 번호</b> (OUI)<br>  - 00:1A:2B → 어떤 회사가 만든 장치인지 알 수 있음<br>• 뒤 3바이트 (3C:4D:5E): <b>장치 고유 번호</b><br><br>구분자는 :(콜론) 또는 -(하이픈)을 쓰고,<br>Windows에서는 00-1A-2B-3C-4D-5E 형태로 표시해요.</div>
+<h2 class="section-title">[심화] IPv6 주소</h2>
+<p>IPv4 주소(192.168.1.1)는 32비트라서 약 43억 개밖에 못 만들어요. 그래서 128비트짜리 <b>IPv6</b>가 만들어졌어요. 128비트를 16진수로 표현해요.</p>
+<div class="note-box"><span class="note-label">[심화] IPv6 주소 형태</span>
+예: <b>2001:0db8:85a3:0000:0000:8a2e:0370:7334</b><br><br>• 16비트씩 8그룹, 콜론으로 구분<br>• 각 그룹은 16진수 4자리<br>• 총 128비트 = 16바이트<br><br><b>축약 규칙:</b><br>• 앞의 0 생략: 0db8 → db8<br>• 연속된 0000 그룹: :: 로 축약<br>  2001:db8:85a3::8a2e:370:7334<br><br>IPv6로 만들 수 있는 주소 수: 2¹²⁸ ≈ 3.4 × 10³⁸개 (지구의 모래알보다 많아요!)</div>
+<div class="debug-section"><div class="debug-bar">DEBUG LAB — 에러를 찾으시오</div><div class="debug-body">
+
+<p style="margin:14px 0 0; font-size:14px;"><b>에러:</b> </p>
+<p style="font-size:14px;"><b>수정:</b> </p>
+</div></div>
+<div class="debug-section"><div class="debug-bar">DEBUG LAB — 에러를 찾으시오</div><div class="debug-body">
+
+<p style="margin:14px 0 0; font-size:14px;"><b>에러:</b> </p>
+<p style="font-size:14px;"><b>수정:</b> </p>
+</div></div>
+<h2 class="section-title">[심화] 어셈블리어와 기계어</h2>
+
+<p>CPU가 실행하는 명령어는 결국 0과 1의 나열이에요. 이걸 <b>기계어(machine code)</b>라고 해요. 기계어를 사람이 읽기 쉽게 16진수로 표현해요.</p>
+<div class="note-box"><span class="note-label">[심화] 기계어와 어셈블리어 예시 (x86)</span>
+<code>어셈블리어          기계어(16진수)     의미</code><br><code>MOV EAX, 1        B8 01 00 00 00   EAX에 1 저장</code><br><code>ADD EAX, EBX      01 D8            EAX += EBX</code><br><code>INT 0x80          CD 80            시스템 호출</code><br><code>RET               C3               함수 복귀</code><br><br>B8, 01, CD, C3... 모두 16진수 1바이트예요.<br>이 숫자들이 CPU에게 '뭘 해라'고 알려주는 명령어예요.</div>
+<div class="tip"><span class="tip-label">[팁] 왜 기계어에 16진수를 쓸까?</span>
+• 2진수: 10111000 00000001 00000000... → 너무 길어요<br>• 10진수: 184 1 0 0 0 → 바이트 경계가 안 보여요<br>• <b>16진수: B8 01 00 00 00</b> → 바이트 단위로 딱딱 나뉘어요!<br><br>16진수 2자리 = 1바이트. 이 깔끔한 대응이 핵심이에요.</div>
+<table class="trace"><thead><tr><th>단계</th><th>현재 값</th><th>x 16</th><th>+ 다음 자리</th><th>결과</th></tr></thead><tbody><tr><td>시작</td><td>0</td><td>-</td><td>-</td><td>0</td></tr><tr><td>1단계 (2)</td><td>0</td><td>0 x 16 = 0</td><td>0 + 2</td><td>2</td></tr><tr><td>2단계 (A=10)</td><td>2</td><td>2 x 16 = 32</td><td>32 + 10</td><td>42</td></tr><tr><td>3단계 (3)</td><td>42</td><td>42 x 16 = 672</td><td>672 + 3</td><td>675</td></tr><tr><td>4단계 (F=15)</td><td>675</td><td>675 x 16 = 10800</td><td>10800 + 15</td><td>10815</td></tr></tbody></table>
+<h2 class="section-title">[심화 내용] 진법 변환 알고리즘 일반화</h2>
+<p>지금까지 2↔10, 2↔8, 2↔16 변환을 배웠어요. 그런데 <b>임의의 진법</b> 사이에서 변환하려면 어떻게 해야 할까요?</p>
+<div class="note-box"><span class="note-label">[심화 내용] 일반 진법 변환 알고리즘</span>
+<b>n진수 → 10진수</b>: 자릿값 전개<br>d_k × n^k + d_(k-1) × n^(k-1) + ... + d_1 × n¹ + d_0 × n⁰<br><br>예: 321(5) (5진수) → 10진수<br>= 3×5² + 2×5¹ + 1×5⁰<br>= 3×25 + 2×5 + 1×1<br>= 75 + 10 + 1 = <b>86</b><br><br><b>10진수 → m진수</b>: m으로 나누기 반복<br>86 ÷ 7 = 12 나머지 2<br>12 ÷ 7 = 1 나머지 5<br>1 ÷ 7 = 0 나머지 1<br>→ 역순으로: 86(10) = <b>152(7)</b></div>
+<div class="note-box"><span class="note-label">[심화 내용] 진법과 다항식의 관계</span>
+n진수는 사실 <b>다항식</b>이에요!<br><br>숫자 d_k d_(k-1) ... d_1 d_0 (n진수)은<br>다항식 f(x) = d_k·x^k + d_(k-1)·x^(k-1) + ... + d_0 에 x=n을 대입한 값<br><br>예: 1101(2) = 1·x³ + 1·x² + 0·x + 1 에 x=2 대입<br>= 8 + 4 + 0 + 1 = 13<br><br>이 관점에서 진법 변환은 '다항식의 값 구하기'와 같아요!</div>
+<h2 class="section-title">[심화 내용] Horner's Method</h2>
+<p><b>Horner's Method(호너의 방법)</b>는 다항식을 효율적으로 계산하는 알고리즘이에요. 진수 변환에 바로 적용할 수 있어요.</p>
+<div class="note-box"><span class="note-label">[심화 내용] Horner's Method로 진법 변환</span>
+d_k·n^k + d_(k-1)·n^(k-1) + ... + d_0<br>= (((...((d_k·n + d_(k-1))·n + d_(k-2))·n + ...) + d_1)·n + d_0<br><br>예: 1101(2) → 10진수 (왼쪽부터 순서대로!)<br>시작: 0<br>0 × 2 + <b>1</b> = 1<br>1 × 2 + <b>1</b> = 3<br>3 × 2 + <b>0</b> = 6<br>6 × 2 + <b>1</b> = <b>13</b> ✓<br><br>곱셈 3번, 덧셈 3번으로 끝! (일반 방법은 곱셈이 더 많아요)</div>
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc">def <span class="s-fn">horner_convert</span>(digits, base):</span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc">    <span class="s-str">""</span><span class="s-str">"Horner's method로 n진수를 10진수로 변환"</span><span class="s-str">""</span></span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc">    result = <span class="s-num">0</span></span></div>
+<div class="code-line"><span class="ln">4</span><span class="lc">    <span class="s-kw">for</span> d in digits:</span></div>
+<div class="code-line"><span class="ln">5</span><span class="lc">        result = result * base + d</span></div>
+<div class="code-line"><span class="ln">6</span><span class="lc">    <span class="s-kw">return</span> result</span></div>
+<div class="code-line"><span class="ln">7</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">8</span><span class="lc"># <span class="s-num">1101</span>(<span class="s-num">2</span>) → <span class="s-num">10</span>진수</span></div>
+<div class="code-line"><span class="ln">9</span><span class="lc"><span class="s-fn">print</span>(<span class="s-fn">horner_convert</span>([<span class="s-num">1</span>, <span class="s-num">1</span>, <span class="s-num">0</span>, <span class="s-num">1</span>], <span class="s-num">2</span>))  # <span class="s-num">13</span></span></div>
+<div class="code-line"><span class="ln">10</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">11</span><span class="lc"># <span class="s-num">321</span>(<span class="s-num">5</span>) → <span class="s-num">10</span>진수  </span></div>
+<div class="code-line"><span class="ln">12</span><span class="lc"><span class="s-fn">print</span>(<span class="s-fn">horner_convert</span>([<span class="s-num">3</span>, <span class="s-num">2</span>, <span class="s-num">1</span>], <span class="s-num">5</span>))     # <span class="s-num">86</span></span></div>
+<div class="code-line"><span class="ln">13</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">14</span><span class="lc"># <span class="s-fn">FF</span>(<span class="s-num">16</span>) → <span class="s-num">10</span>진수</span></div>
+<div class="code-line"><span class="ln">15</span><span class="lc"><span class="s-fn">print</span>(<span class="s-fn">horner_convert</span>([<span class="s-num">15</span>, <span class="s-num">15</span>], <span class="s-num">16</span>))     # <span class="s-num">255</span></span></div>
+<div class="code-line"><span class="ln">16</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">17</span><span class="lc"># 임의의 진법 간 변환 (a진법 → b진법)</span></div>
+<div class="code-line"><span class="ln">18</span><span class="lc">def <span class="s-fn">convert_base</span>(digits, from_base, to_base):</span></div>
+<div class="code-line"><span class="ln">19</span><span class="lc">    <span class="s-str">""</span><span class="s-str">"a진법 숫자를 b진법으로 변환"</span><span class="s-str">""</span></span></div>
+<div class="code-line"><span class="ln">20</span><span class="lc">    # <span class="s-num">1</span>단계: a진법 → <span class="s-num">10</span>진수 (Horner's method)</span></div>
+<div class="code-line"><span class="ln">21</span><span class="lc">    decimal = <span class="s-fn">horner_convert</span>(digits, from_base)</span></div>
+<div class="code-line"><span class="ln">22</span><span class="lc">    # <span class="s-num">2</span>단계: <span class="s-num">10</span>진수 → b진법</span></div>
+<div class="code-line"><span class="ln">23</span><span class="lc">    <span class="s-kw">if</span> decimal == <span class="s-num">0</span>:</span></div>
+<div class="code-line"><span class="ln">24</span><span class="lc">        <span class="s-kw">return</span> [<span class="s-num">0</span>]</span></div>
+<div class="code-line"><span class="ln">25</span><span class="lc">    result = []</span></div>
+<div class="code-line"><span class="ln">26</span><span class="lc">    <span class="s-kw">while</span> decimal &gt; <span class="s-num">0</span>:</span></div>
+<div class="code-line"><span class="ln">27</span><span class="lc">        result.<span class="s-fn">append</span>(decimal % to_base)</span></div>
+<div class="code-line"><span class="ln">28</span><span class="lc">        decimal <span class="s-cm">//= to_base</span></span></div>
+<div class="code-line"><span class="ln">29</span><span class="lc">    <span class="s-kw">return</span> result[::-<span class="s-num">1</span>]</span></div>
+<div class="code-line"><span class="ln">30</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">31</span><span class="lc"># <span class="s-num">1101</span>(<span class="s-num">2</span>) → <span class="s-num">8</span>진수</span></div>
+<div class="code-line"><span class="ln">32</span><span class="lc"><span class="s-fn">print</span>(<span class="s-fn">convert_base</span>([<span class="s-num">1</span>, <span class="s-num">1</span>, <span class="s-num">0</span>, <span class="s-num">1</span>], <span class="s-num">2</span>, <span class="s-num">8</span>))  # [<span class="s-num">1</span>, <span class="s-num">5</span>]</span></div>
+</div>
+</div>
+<div class="output-wrap"><div class="output-bar">실행 결과</div><div class="output-body">13
+86
+255
+[1, 5]</div></div>
+<h2 class="section-title">연습문제</h2>
+
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 1</span><p style="margin:0;font-size:14px">2진수 1100(2)을 16진수로 바꾸세요.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 2</span><p style="margin:0;font-size:14px">16진수 A(16)는 10진수로 얼마인가요?</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 3</span><p style="margin:0;font-size:14px">색상 코드 #00FF00은 무슨 색인가요? R, G, B 값을 각각 10진수로 말해보세요.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 4</span><p style="margin:0;font-size:14px">16진수 3F(16)를 2진수로 바꾸세요. (힌트: 각 자리를 4비트로)</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 5</span><p style="margin:0;font-size:14px">8진수 77(8)은 10진수로 얼마인가요?</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 6</span><p style="margin:0;font-size:14px">2진수 10110111(2)을 16진수와 8진수로 각각 바꾸세요.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 7</span><p style="margin:0;font-size:14px">16진수 FF(16)는 10진수로 얼마인가요? 2진수로도 써 보세요.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 8</span><p style="margin:0;font-size:14px">유니코드 코드 포인트 U+0048, U+0069를 ASCII 표에서 찾아 어떤 문자인지 확인하세요. (힌트: 16진수 48, 69를 10진수로 바꿔보세요)</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 9</span><p style="margin:0;font-size:14px">파일의 첫 4바이트가 89 50 4E 47이면 어떤 종류의 파일인가요? 각 바이트를 ASCII 문자로 바꿔보세요. (힌트: 50=P, 4E=N, 47=G)</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 10</span><p style="margin:0;font-size:14px">MAC 주소 AC:DE:48:00:11:22에서 앞 3바이트(AC:DE:48)는 무엇을 의미하나요? 각 바이트를 2진수로 변환해보세요.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 11</span><p style="margin:0;font-size:14px">10진수 200을 2진수, 8진수, 16진수로 각각 변환하세요. (힌트: 먼저 2진수로 바꾸고, 거기서 8진수와 16진수를 만드세요)</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 12</span><p style="margin:0;font-size:14px">[Horner's Method] 16진수 1A3F를 Horner's Method로 10진수로 변환하세요. 과정을 단계별로 쓰세요.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 13</span><p style="margin:0;font-size:14px">[유니코드] 한글 '나'의 유니코드는 U+B098이에요. UTF-8로 인코딩하면 몇 바이트인가요? (힌트: U+0800~U+FFFF 범위는 3바이트 UTF-8)</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 14</span><p style="margin:0;font-size:14px">[일반 진법] 5진수 432(5)를 7진수로 변환하세요. (힌트: 5진수 → 10진수 → 7진수 순서로)</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 15</span><p style="margin:0;font-size:14px">[코딩] Python으로 16진수 문자열(예: 'FF6B6B')을 입력받아 R, G, B 값을 10진수로 출력하는 프로그램을 작성하세요.</p></div>
+<h2 class="section-title">용어 정리</h2>
+<table class="trace"><thead><tr><th>용어</th><th>설명</th></tr></thead><tbody><tr><td><code>8진수 (octal)</code></td><td>0~7까지 8개의 숫자만 쓰는 진법. 2진수를 3비트씩 묶어서 만들어요.</td></tr><tr><td><code>16진수 (hexadecimal)</code></td><td>0~9와 A~F까지 16개의 숫자/문자를 쓰는 진법. 2진수를 4비트씩 묶어서 만들어요.</td></tr><tr><td><code>0x</code></td><td>C언어에서 16진수를 나타내는 접두사. 0x1A는 16진수 1A라는 뜻이에요.</td></tr><tr><td><code>진법 변환</code></td><td>같은 숫자를 다른 진법으로 바꾸는 것. 예: 10진수 15 = 2진수 1111 = 16진수 F</td></tr><tr><td><code>RGB</code></td><td>빨강(Red), 초록(Green), 파랑(Blue)의 세 가지 색을 섞어서 색을 만드는 방식. 각각 0~255(00~FF).</td></tr><tr><td><code>RGBA</code></td><td>RGB에 투명도(Alpha)를 추가한 색상 체계. A=00이면 완전 투명, FF이면 완전 불투명.</td></tr><tr><td><code>HSL</code></td><td>색조(Hue), 채도(Saturation), 명도(Lightness)로 색을 표현하는 방식.</td></tr><tr><td><code>유니코드 (Unicode)</code></td><td>전 세계 모든 문자에 고유한 번호(코드 포인트)를 부여한 국제 표준. U+XXXX 형태로 표현해요.</td></tr><tr><td><code>UTF-8</code></td><td>유니코드를 인코딩하는 방식. 가변 길이(1~4바이트)로 저장하며, ASCII와 호환돼요.</td></tr><tr><td><code>UTF-16</code></td><td>유니코드를 인코딩하는 방식. 기본 2바이트, 확장 4바이트. Windows/Java에서 주로 사용.</td></tr><tr><td><code>파일 시그니처 (매직 넘버)</code></td><td>파일의 맨 앞에 있는 고정된 바이트 패턴. 파일 종류를 식별하는 데 사용해요.</td></tr><tr><td><code>MAC 주소</code></td><td>네트워크 장치의 고유 주소. 6바이트(48비트)의 16진수로 표현해요.</td></tr><tr><td><code>IPv6</code></td><td>128비트 인터넷 주소. 16진수 4자리씩 8그룹으로 표현해요.</td></tr><tr><td><code>기계어 (machine code)</code></td><td>CPU가 직접 실행하는 2진수 명령어. 사람이 읽기 쉽도록 16진수로 표기해요.</td></tr><tr><td><code>Horner's Method</code></td><td>다항식을 효율적으로 계산하는 알고리즘. 진법 변환에 적용하면 곱셈 횟수를 줄일 수 있어요.</td></tr></tbody></table>
+<div class="warmup-box"><div class="warmup-title">이번 유닛 핵심 정리</div><div class="wq"><b>1.</b> 8진수는 3비트씩, 16진수는 4비트씩 묶어서 만들어요</div><div class="wq"><b>2.</b> 16진수에서 10~15는 A~F로 써요</div><div class="wq"><b>3.</b> 1바이트(8비트)는 16진수 2자리로 딱 맞아요</div><div class="wq"><b>4.</b> 색상 코드 #RRGGBB은 16진수로 색을 표현하는 방법</div><div class="wq"><b>5.</b> 유니코드는 모든 문자에 16진수 번호를 붙여놓은 표준</div><div class="wq"><b>6.</b> MAC 주소, IPv6, 기계어 등 실무에서 16진수는 필수</div></div>
+<h2 class="section-title">━━━ 10축 심화 학습 ━━━</h2>
+<h2 class="section-title">[KOI] 진법 변환 실전 기출 유형</h2>
+<div class="note-box"><span class="note-label">[KOI 실전 문제 1] 16진→2진→10진 변환</span>
+<b>문제:</b> 16진수 0x2F를 2진수와 10진수로 각각 변환하세요.<br><br><b>정답:</b> 2진수 00101111, 10진수 47<br><br><b>풀이:</b><br>• 2 → 0010, F → 1111<br>• 0x2F = <b>00101111₂</b><br>• 32+8+4+2+1 = <b>47</b><br>• 팁: 16진→10진은 각 자리에 16의 거듭제곱을 곱해도 돼요<br>• 2×16 + 15×1 = 32+15 = 47 ✔</div>
+<div class="note-box"><span class="note-label">[KOI 실전 문제 2] 색상 코드 RGB 분석</span>
+<b>문제:</b> 색상 코드 #3A7BD5의 R, G, B 값을 각각 10진수로 구하고, 어떤 색에 가까운지 예측하세요.<br><br><b>정답:</b> R=58, G=123, B=213 → 파란색 계열<br><br><b>풀이:</b><br>• 3A: 3×16+10 = <b>58</b> (빨강 낮음)<br>• 7B: 7×16+11 = <b>123</b> (초록 중간)<br>• D5: 13×16+5 = <b>213</b> (파랑 높음!)<br>• B가 가장 크므로 파란색 계열 (R < G < B)<br>• CSS: <code>rgb(58, 123, 213)</code></div>
+<div class="note-box"><span class="note-label">[KOI 실전 문제 3] 파일 시그니처 판단</span>
+<b>문제:</b> 파일의 첫 4바이트가 25 50 44 46이면, 이 파일은 어떤 종류인가요? 각 바이트를 ASCII 문자로 변환하세요.<br><br><b>정답:</b> PDF 파일<br><br><b>풀이:</b><br>• 25₁₆ = 37₁₀ = '%'<br>• 50₁₆ = 80₁₀ = 'P'<br>• 44₁₆ = 68₁₀ = 'D'<br>• 46₁₆ = 70₁₀ = 'F'<br>• 합치면 <b>%PDF</b> → PDF 파일!</div>
+<div class="note-box"><span class="note-label">[KOI 실전 문제 4] IPv6 축약</span>
+<b>문제:</b> IPv6 주소 2001:0db8:0000:0000:0000:0000:0000:0001을 축약 표기하세요.<br><br><b>정답:</b> 2001:db8::1<br><br><b>풀이:</b><br>• 각 그룹의 앞 0 생략: 2001:db8:0:0:0:0:0:1<br>• 연속된 0 그룹을 ::로 축약: <b>2001:db8::1</b><br>• 주의: ::는 주소당 1번만 사용 가능!<br>• 원래 128비트 주소가 이렇게 간단해지는 것도 16진수 덕분!</div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 16</span><p style="margin:0;font-size:14px">[KOI] 게임 캐릭터의 체력(HP)이 메모리에 0x00FF로 저장되어 있어요.<br>(1) 10진수로 얼마인가요?<br>(2) 2진수로 쓰면 몇 자리인가요?<br>(3) 치럄 코드 0xDEAD는 'Hack' 1단계에서 자주 보이는 디버깅 값이에요. 10진수로 계산하세요.</p></div>
+<h2 class="section-title">[디버깅] 색상 코드 버그 찾기</h2>
+<p>16진수 색상 코드를 잘못 쓰면 색이 완전히 다르게 나와요. 디버깅 실습을 해 보세요.</p>
+<div class="warn"><span class="warn-label">[디버깅] 색상 코드 함정</span>
+<b>버그 1: 순서 보기</b><br><code>#FF0000</code> = 빨강, <code>#0000FF</code> = 파랭<br>순서를 바꿀면 색이 바뀜요! RGB의 순서를 헷갈리지 마세요.<br><br><b>버그 2: #을 빼멸으면</b><br>CSS에서 <code>#</code>을 안 붙이면 색이 적용 안 돼요!<br>❌ <code>color: FF6B6B;</code><br>✅ <code>color: #FF6B6B;</code><br><br><b>버그 3: 0x와 # 햇갈리기</b><br>C언어: <code>0xFF</code> (0x 접두사)<br>CSS/HTML: <code>#FF</code> (# 접두사)<br>용도가 다르니 햇갈리지 마세요!</div>
+<h2 class="section-title">[C언어] 메모리 덤프 직접 보기</h2>
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span><span class="code-bar-file">[C언어] 변수의 16진수 값 확인 (Part 2 미리보기)</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;stdio.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">main</span>(<span class="s-type">void</span>) {</span></div>
+<div class="code-line"><span class="ln">4</span><span class="lc">    <span class="s-type">int</span> x = <span class="s-num">255</span>;</span></div>
+<div class="code-line"><span class="ln">5</span><span class="lc">    <span class="s-type">int</span> y = -<span class="s-num">1</span>;</span></div>
+<div class="code-line"><span class="ln">6</span><span class="lc">    <span class="s-type">char</span> ch = <span class="s-str">'A'</span>;</span></div>
+<div class="code-line"><span class="ln">7</span><span class="lc">    </span></div>
+<div class="code-line"><span class="ln">8</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"x = %d (10진) = 0x%X (16진)\n"</span>, x, x);</span></div>
+<div class="code-line"><span class="ln">9</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"y = %d (10진) = 0x%X (16진)\n"</span>, y, y);</span></div>
+<div class="code-line"><span class="ln">10</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"ch = '%c' = %d (10진) = 0x%X (16진)\n"</span>, ch, ch, ch);</span></div>
+<div class="code-line"><span class="ln">11</span><span class="lc">    </span></div>
+<div class="code-line"><span class="ln">12</span><span class="lc">    <span class="s-cm">// 8진수 함정! 017은 15임</span></span></div>
+<div class="code-line"><span class="ln">13</span><span class="lc">    <span class="s-type">int</span> trap = <span class="s-num">017</span>;  <span class="s-cm">// 8진수 17 = 10진수 15</span></span></div>
+<div class="code-line"><span class="ln">14</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"주의! 017 = %d (예상: 17 아님!)\n"</span>, trap);</span></div>
+<div class="code-line"><span class="ln">15</span><span class="lc">    <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">16</span><span class="lc">}</span></div>
+</div>
+</div>
+<!-- output-block -->
+<h2 class="section-title">[컴퓨팅사고력] 추상화 — 같은 값, 다른 표현</h2>
+<p>10진수 255 = 2진수 11111111 = 8진수 377 = 16진수 FF. 모두 <b>같은 값</b>을 <b>다른 형태</b>로 표현한 거예요. 이처럼 본질을 유지하면서 표현 방식을 바꾸는 것이 <b>추상화</b>의 핵심이에요.</p>
+<div class="tip"><span class="tip-label">[컴퓨팅사고력] 추상화 예시</span>
+프로그래밍에서의 추상화 예시:<br><br>• 색상: RGB(58,123,213) = #3A7BD5 = hsl(215,68%,53%) → 같은 색!<br>• 문자: '가' = U+AC00 = UTF-8: EA B0 80 → 같은 글자!<br>• 주소: 192.168.1.1 = 11000000.10101000.00000001.00000001 → 같은 IP!<br><br>프로그래머는 상황에 따라 가장 적합한 표현을 선택해요.<br>색상 디자인? → #RRGGBB / 네트워크? → 2진수 / 디버깅? → 16진수</div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 17</span><p style="margin:0;font-size:14px">[컴퓨팅사고력] 색상 #808080은 어떤 색일까요?<br>(1) R, G, B 값을 각각 10진수로 구하세요<br>(2) 세 값이 같을 때 어떤 색이 나오나요?<br>(3) #404040은 #808080보다 밝을까요 어두울까요?</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 18</span><p style="margin:0;font-size:14px">[C+디버깅] C언어에서 int x = 010; 이라고 쓰면 x에는 몇이 저장되나요?<br>(1) 10?  (2) 8?  (3) 16?<br>왜 그런지 이유를 적고, 이런 실수를 막으려면 어떻게 해야 하는지 설명하세요.</p></div>
+<div class="tip"><span class="tip-label">이 유닛에서 깊이 배운 10축</span>
+<b>[KOI]</b> 16진↔2진↔10진 변환. RGB 색상코드 분석. 파일 시그니처 판단(ASCII변환). IPv6 축약. 실전 문제 4개+풀이<br><b>[디버깅]</b> 색상코드 버그 3종(RGB순서/#누락/0x햇갈림). 8진수 함정(017=15)<br><b>[컴퓨팅사고력]</b> 추상화 — 같은 값을 다른 진법으로 표현. 상황별 최적 표현 선택<br><b>[C언어]</b> 0x 접두사, %x %o printf 포맷. 메모리 덤프 읽기. -1=0xFFFFFFFF<br><b>[코딩기초]</b> 진법 변환 알고리즘 일반화(Horner). 다항식 관점<br><b>[실생활]</b> 색상코드, 유니코드, MAC주소, IPv6, 파일 시그니처<br><b>[하드웨어]</b> 메모리 덤프, 리틀엔디안. 기계어 16진수 표기<br><b>[타과목]</b> 수학 — 다항식과 진법의 관계. 미술 — RGB/HSL 색채학</div>
+<!-- fact-bite -->
+<!-- fact-bite -->
+<h2 class="section-title">실전 활용 연습</h2>
+<p>지금까지 배운 개념을 활용한 다양한 실전 예제와 연습문제입니다.</p>
+
+<h2 class="section-title">실생활 연결</h2>
+<div class="tip"><span class="tip-label">[실생활] 이 개념은 어디에 쓰일까?</span>
+게임 개발, 앱 만들기, 웹사이트, 로봇 제어, AI 학습 등 모든 분야에서 사용돼요!</div>
+<div class="note-box"><span class="note-label">[다음 유닛 미리보기]</span>
+컴퓨터에 글자 'A'를 입력하면, 컴퓨터는 이걸 어떻게 저장할까요? 숫자로? 그림으로? 다음 유닛 '문자도 숫자야 (ASCII)'에서 알아봐요!</div>
+
+
+    <span class="page-num">2</span>
+  </div>
+</div>
+</body>
+</html>

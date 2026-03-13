@@ -1,0 +1,1259 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>코딩쏙 교재 — 추상화 (Abstraction)</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+
+  :root {
+    --navy: #1a2e4a;
+    --navy-mid: #2c4a6e;
+    --navy-light: #3d6590;
+    --orange: #e07830;
+    --orange-light: #f5e6d8;
+    --white: #ffffff;
+    --bg: #f7f8fa;
+    --bg-warm: #faf9f7;
+    --gray-50: #f9fafb;
+    --gray-100: #f3f4f6;
+    --gray-200: #e5e7eb;
+    --gray-300: #d1d5db;
+    --gray-400: #9ca3af;
+    --gray-500: #6b7280;
+    --gray-600: #4b5563;
+    --gray-700: #374151;
+    --gray-800: #1f2937;
+    --text: #2d3748;
+    --green: #16a34a;
+    --green-bg: #dcfce7;
+    --red: #dc2626;
+    --red-bg: #fee2e2;
+    --blue: #2563eb;
+    --blue-bg: #dbeafe;
+    --yellow-bg: #fef9c3;
+    --font: 'Noto Sans KR', sans-serif;
+    --mono: 'JetBrains Mono', 'Consolas', monospace;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: var(--font); background: #e8eaed; font-size: 15px; }
+
+  /* ========== PAGE ========== */
+  .page {
+    width: 210mm;
+    min-height: 295mm;
+    margin: 24px auto;
+    background: var(--white);
+    box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* ========== PAGE 1: CHAPTER START ========== */
+  .chapter-page {
+    display: flex;
+    min-height: 295mm;
+  }
+
+  .chapter-sidebar {
+    width: 10px;
+    background: var(--navy);
+    flex-shrink: 0;
+  }
+
+  .chapter-accent-bar {
+    width: 7px;
+    background: var(--orange);
+    flex-shrink: 0;
+  }
+
+  .chapter-body {
+    flex: 1;
+    padding: 70px 65px 50px 55px;
+    position: relative;
+  }
+
+  .chapter-watermark {
+    position: absolute;
+    top: -10px;
+    right: -15px;
+    font-size: 280px;
+    font-weight: 900;
+    color: rgba(180,195,212,0.35);
+    line-height: 1;
+    pointer-events: none;
+    letter-spacing: -10px;
+  }
+
+  .chapter-label {
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--navy-mid);
+    letter-spacing: 2px;
+    margin-bottom: 4px;
+  }
+
+  .chapter-title {
+    font-size: 44px;
+    font-weight: 900;
+    color: var(--navy);
+    line-height: 1.15;
+    margin-bottom: 12px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .chapter-sub {
+    font-size: 16px;
+    color: var(--gray-500);
+    font-weight: 400;
+    margin-bottom: 20px;
+    padding-bottom: 28px;
+    border-bottom: 1px solid var(--gray-200);
+  }
+
+  /* Learning objectives */
+  .obj-title {
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--navy);
+    margin-bottom: 16px;
+    margin-top: 32px;
+  }
+
+  .obj-list {
+    list-style: none;
+    margin-bottom: 40px;
+  }
+
+  .obj-list li {
+    padding: 5px 0 5px 24px;
+    position: relative;
+    font-size: 15px;
+    color: var(--gray-700);
+    line-height: 1.6;
+  }
+
+  .obj-list li::before {
+    content: '•';
+    position: absolute;
+    left: 8px;
+    color: var(--navy-mid);
+    font-weight: 700;
+  }
+
+  /* Prerequisites flow */
+  .prereq-title {
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--navy);
+    margin-bottom: 18px;
+  }
+
+  .prereq-flow {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    margin-bottom: 44px;
+  }
+
+  .prereq-item {
+    padding: 9px 22px;
+    border: 1.5px solid var(--gray-300);
+    border-radius: 50px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--gray-600);
+    background: var(--white);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+  }
+
+  .prereq-item.current {
+    border-color: var(--navy);
+    color: var(--navy);
+    font-weight: 700;
+    background: #edf2f7;
+    box-shadow: 0 2px 6px rgba(26,46,74,0.12);
+  }
+
+  .prereq-arrow {
+    width: 36px;
+    text-align: center;
+    color: var(--gray-300);
+    font-size: 18px;
+    font-weight: 300;
+  }
+
+  /* Predict box */
+  .predict-box {
+    background: var(--gray-50);
+    border: 1.5px solid var(--gray-200);
+    border-radius: 12px;
+    padding: 24px 28px;
+  }
+
+  .predict-label {
+    display: inline-block;
+    background: var(--orange);
+    color: var(--white);
+    font-size: 12px;
+    font-weight: 600;
+    padding: 3px 12px;
+    border-radius: 4px;
+    margin-bottom: 14px;
+    letter-spacing: 0.5px;
+  }
+
+  .predict-q {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--navy);
+    margin-bottom: 16px;
+  }
+
+  .predict-code {
+    background: var(--white);
+    border: 1px solid var(--gray-200);
+    border-radius: 8px;
+    padding: 14px 18px;
+    font-family: var(--mono);
+    font-size: 13px;
+    line-height: 1.65;
+    color: var(--gray-700);
+  }
+
+  /* ========== PAGE 2: CORE CONTENT ========== */
+  .content-page {
+    padding: 55px 65px;
+  }
+
+  .unit-header-bar {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    margin-bottom: 8px;
+  }
+
+  .unit-tag {
+    font-size: 12px;
+    color: var(--orange);
+    font-weight: 600;
+    letter-spacing: 1px;
+  }
+
+  .unit-title-sm {
+    font-size: 14px;
+    color: var(--gray-400);
+    font-weight: 400;
+  }
+
+  .section-title {
+    font-size: 24px;
+    font-weight: 800;
+    color: var(--navy);
+    margin-bottom: 24px;
+    margin-top: 8px;
+    padding-left: 16px;
+    border-left: 5px solid var(--orange);
+  }
+
+  p {
+    font-size: 15.5px;
+    line-height: 1.9;
+    color: var(--text);
+    margin-bottom: 18px;
+  }
+
+  p code {
+    font-family: var(--mono);
+    font-size: 13.5px;
+    background: #f1f3f5;
+    padding: 2px 7px;
+    border-radius: 4px;
+    color: var(--navy);
+    font-weight: 500;
+  }
+
+  /* Code block */
+  .code-wrap {
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    border: 1px solid var(--gray-200);
+    margin: 22px 0;
+  }
+
+  .code-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 9px 18px;
+    background: var(--navy);
+    font-size: 12px;
+  }
+
+  .code-bar-lang {
+    font-family: var(--mono);
+    font-weight: 600;
+    color: var(--white);
+  }
+
+  .code-bar-file {
+    color: rgba(255,255,255,0.6);
+    font-weight: 400;
+  }
+
+  .code-body {
+    background: #f8f9fb;
+    padding: 20px 0;
+    font-family: var(--mono);
+    font-size: 13.5px;
+    line-height: 1.75;
+    border: 1px solid var(--gray-200);
+    border-top: none;
+    border-radius: 0 0 12px 12px;
+  }
+
+  .code-line {
+    display: flex;
+    padding: 0 20px;
+  }
+
+  .code-line:hover {
+    background: #f0f4f8;
+  }
+
+  .code-line.highlighted {
+    background: #fff8e1;
+  }
+
+  .ln {
+    width: 30px;
+    text-align: right;
+    color: #b8bfc8;
+    font-size: 12px;
+    margin-right: 18px;
+    user-select: none;
+    flex-shrink: 0;
+    padding-top: 1px;
+  }
+
+  .lc { flex: 1; }
+
+  /* syntax */
+  .s-pp { color: #8b5cf6; font-weight: 600; }
+  .s-str { color: #d97706; }
+  .s-type { color: #2563eb; font-weight: 500; }
+  .s-kw { color: #7c3aed; font-weight: 500; }
+  .s-fn { color: #059669; font-weight: 500; }
+  .s-num { color: #dc2626; }
+  .s-cm { color: #9ca3af; font-style: italic; }
+
+  /* Output block */
+  .output-wrap {
+    border-radius: 10px;
+    overflow: hidden;
+    margin: 10px 0 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    border: 1px solid #d1d5db;
+  }
+
+  .output-bar {
+    padding: 9px 18px;
+    background: #374151;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--white);
+    letter-spacing: 0.5px;
+  }
+
+  .output-body {
+    padding: 16px 20px;
+    font-family: var(--mono);
+    font-size: 13.5px;
+    line-height: 1.7;
+    color: var(--gray-800);
+    background: #f1f5f9;
+    border: 1px solid var(--gray-200);
+    border-top: none;
+    border-radius: 0 0 10px 10px;
+  }
+
+  /* Callout */
+  .tip {
+    margin: 28px 0;
+    padding: 18px 24px;
+    background: #dbeafe;
+    border-left: 5px solid #2563eb;
+    border-radius: 0 12px 12px 0;
+    font-size: 14.5px;
+    line-height: 1.8;
+    color: var(--text);
+  }
+
+  .tip-label {
+    font-weight: 700;
+    color: #2563eb;
+    font-size: 13px;
+    display: block;
+    margin-bottom: 4px;
+  }
+
+  .warn {
+    margin: 28px 0;
+    padding: 18px 24px;
+    background: #fef3c7;
+    border-left: 5px solid #d97706;
+    border-radius: 0 12px 12px 0;
+    font-size: 14.5px;
+    line-height: 1.8;
+  }
+
+  .warn-label {
+    font-weight: 700;
+    color: #d97706;
+    font-size: 13px;
+    display: block;
+    margin-bottom: 4px;
+  }
+
+  .note-box {
+    margin: 28px 0;
+    padding: 18px 24px;
+    background: #e2e8f0;
+    border-left: 5px solid #64748b;
+    border-radius: 0 12px 12px 0;
+    font-size: 14.5px;
+    line-height: 1.8;
+  }
+
+  .note-label {
+    font-weight: 700;
+    color: var(--gray-600);
+    font-size: 13px;
+    display: block;
+    margin-bottom: 4px;
+  }
+
+  /* Trace table */
+  table.trace {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    margin: 28px 0;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+    font-size: 14px;
+  }
+
+  table.trace th {
+    background: var(--navy);
+    color: var(--white);
+    padding: 10px 16px;
+    text-align: left;
+    font-weight: 500;
+    font-size: 13px;
+  }
+
+  table.trace td {
+    padding: 10px 16px;
+    border-bottom: 1px solid var(--gray-200);
+    color: var(--gray-700);
+  }
+
+  table.trace tr:nth-child(even) td { background: var(--gray-50); }
+  table.trace tr:last-child td { border-bottom: none; }
+
+  table.trace td code {
+    font-family: var(--mono);
+    font-size: 12.5px;
+    background: #eef1f5;
+    padding: 2px 6px;
+    border-radius: 4px;
+    color: var(--navy);
+  }
+
+  /* ========== PAGE 3: PROBLEMS ========== */
+  .problems-header {
+    margin-bottom: 8px;
+  }
+
+  .problems-chapter-ref {
+    font-size: 13px;
+    color: var(--gray-500);
+    margin-bottom: 4px;
+  }
+
+  .problems-title {
+    font-size: 28px;
+    font-weight: 800;
+    color: var(--navy);
+    margin-bottom: 24px;
+  }
+
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 16px;
+  }
+
+  .prob-card {
+    background: var(--white);
+    border: 1px solid var(--gray-200);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 3px 15px rgba(0,0,0,0.06);
+  }
+
+  .prob-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 16px;
+    background: var(--navy);
+  }
+
+  .prob-num {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--white);
+  }
+
+  .diff {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    font-size: 12px;
+    font-weight: 800;
+  }
+
+  .diff-basic { background: #22c55e; color: white; }
+  .diff-mid { background: #f59e0b; color: white; }
+  .diff-hard { background: #ef4444; color: white; }
+
+  .prob-desc {
+    font-size: 13.5px;
+    line-height: 1.65;
+    color: var(--gray-600);
+    margin-bottom: 10px;
+    padding: 14px 16px 0;
+  }
+
+  .prob-code {
+    background: var(--gray-50);
+    border: 1px solid var(--gray-200);
+    border-radius: 6px;
+    padding: 10px 14px;
+    margin: 0 16px 16px;
+    font-family: var(--mono);
+    font-size: 12.5px;
+    line-height: 1.55;
+    color: var(--gray-600);
+  }
+
+  /* Competition section */
+  .comp-section {
+    margin-top: 32px;
+    padding-top: 24px;
+    border-top: 2px solid var(--navy);
+  }
+
+  .comp-title {
+    font-size: 22px;
+    font-weight: 800;
+    color: var(--navy);
+    margin-bottom: 20px;
+  }
+
+  .comp-card {
+    background: var(--white);
+    border: 1.5px solid var(--gray-200);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 18px rgba(0,0,0,0.06);
+  }
+
+  .comp-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 16px;
+    background: #0f766e;
+  }
+
+  .comp-header .comp-name {
+    color: var(--white);
+    font-size: 15px;
+    font-weight: 700;
+    margin: 0;
+  }
+
+  .comp-inner {
+    padding: 14px 18px 18px;
+  }
+
+  .comp-badge {
+    display: inline-block;
+    padding: 3px 12px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 700;
+  }
+
+  .badge-bj { background: #93c5fd; color: #1e3a5f; }
+  .badge-cu { background: #c4b5fd; color: #3b1f7e; }
+  .badge-pg { background: #7dd3fc; color: #0c4a6e; }
+
+  .comp-name {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--navy);
+    margin-bottom: 6px;
+  }
+
+  .comp-desc {
+    font-size: 14px;
+    color: var(--gray-600);
+    line-height: 1.7;
+    margin-bottom: 14px;
+  }
+
+  .io-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+
+  .io-card {
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid var(--gray-200);
+  }
+
+  .io-h {
+    padding: 6px 14px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--gray-600);
+    background: #e2e8f0;
+  }
+
+  .io-c {
+    padding: 10px 14px;
+    font-family: var(--mono);
+    font-size: 13px;
+    line-height: 1.5;
+    background: var(--white);
+  }
+
+  /* ========== DEBUG LAB ========== */
+  .debug-section {
+    margin: 24px 0;
+    border: 2px solid var(--red);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+
+  .debug-bar {
+    background: var(--red);
+    color: var(--white);
+    padding: 10px 20px;
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 1px;
+  }
+
+  .debug-body {
+    padding: 20px;
+    background: #fef2f2;
+  }
+
+  /* 10축 connection */
+  .connect-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 16px;
+    margin: 28px 0;
+  }
+
+  .connect-card {
+    border-radius: 12px;
+    padding: 20px;
+    text-align: center;
+    border: 1px solid var(--gray-200);
+    box-shadow: 0 3px 14px rgba(0,0,0,0.05);
+  }
+
+  .connect-card h5 {
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 8px;
+  }
+
+  .connect-card p {
+    font-size: 13px;
+    margin: 0;
+    color: var(--gray-600);
+    line-height: 1.6;
+  }
+
+  .cc1 { border-top: 3px solid #8b5cf6; }
+  .cc1 h5 { color: #8b5cf6; }
+  .cc2 { border-top: 3px solid var(--green); }
+  .cc2 h5 { color: var(--green); }
+  .cc3 { border-top: 3px solid var(--navy); }
+  .cc3 h5 { color: var(--navy); }
+
+  /* PAGE NUMBER */
+  .page-num {
+    position: absolute;
+    bottom: 20px;
+    right: 30px;
+    font-size: 12px;
+    color: var(--gray-400);
+  }
+
+  /* WARMUP */
+  .warmup-box {
+    background: #e0e7f1;
+    border-radius: 12px;
+    padding: 24px 28px;
+    margin: 28px 0;
+    border: 2px solid #c7d2e0;
+  }
+
+  .warmup-title {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--navy);
+    margin-bottom: 14px;
+  }
+
+  .wq {
+    padding: 9px 16px;
+    background: var(--white);
+    border-radius: 8px;
+    margin-bottom: 8px;
+    font-size: 14px;
+    border: 1px solid var(--gray-200);
+    color: var(--gray-700);
+  }
+
+  .wq b { color: var(--navy); margin-right: 6px; }
+  .wq .hint { color: var(--gray-400); font-size: 13px; }
+
+  /* ===== CONTEST PROBLEMS PAGE ===== */
+  .contest-page-wrap .chapter-page {
+    min-height: auto;
+  }
+
+  .contest-page-wrap .chapter-page > div:last-child {
+    min-width: 0;
+    overflow-wrap: break-word;
+    word-break: break-word;
+  }
+
+  .contest-card {
+    background: white;
+    border: 1.5px solid var(--gray-200);
+    border-radius: 12px;
+    margin-bottom: 28px;
+    overflow: hidden;
+    break-inside: avoid;
+  }
+
+  .contest-header {
+    background: var(--navy);
+    color: white;
+    padding: 14px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .contest-num-source {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .contest-num {
+    font-weight: 700;
+    font-size: 16px;
+  }
+
+  .contest-source {
+    background: rgba(255,255,255,0.15);
+    padding: 3px 10px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 500;
+  }
+
+  .contest-body {
+    padding: 20px 24px 24px;
+  }
+
+  .contest-question {
+    font-size: 15px;
+    line-height: 1.7;
+    color: var(--text);
+    margin: 0 0 16px;
+    word-break: break-word;
+    overflow-wrap: break-word;
+  }
+
+  .contest-expected {
+    background: #1e293b;
+    border-radius: 8px;
+    overflow: hidden;
+    margin-bottom: 20px;
+  }
+
+  .contest-expected-label {
+    background: #334155;
+    color: #94a3b8;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 6px 14px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .contest-expected-body {
+    color: #e2e8f0;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    line-height: 1.6;
+    padding: 12px 16px;
+    margin: 0;
+    white-space: pre;
+  }
+
+  .contest-write-area {
+    border: 2px dashed var(--gray-300);
+    border-radius: 10px;
+    overflow: hidden;
+    transition: border-color 0.2s;
+  }
+
+  .contest-write-area:focus-within {
+    border-color: var(--orange);
+    border-style: solid;
+  }
+
+  .contest-write-label {
+    background: var(--bg);
+    color: var(--gray-500);
+    font-size: 12px;
+    font-weight: 600;
+    padding: 8px 14px;
+    border-bottom: 1px solid var(--gray-200);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .contest-textarea {
+    width: 100%;
+    min-height: 200px;
+    padding: 16px 18px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    line-height: 1.7;
+    color: var(--text);
+    background: #fafbfc;
+    border: none;
+    outline: none;
+    resize: vertical;
+    tab-size: 4;
+    box-sizing: border-box;
+  }
+
+  .contest-textarea::placeholder {
+    color: var(--gray-300);
+  }
+
+  @media print {
+    body { background: white; }
+    .page { box-shadow: none; margin: 0; page-break-after: always; }
+    .contest-textarea { border: 1px solid var(--gray-300); min-height: 180px; }
+  }
+
+</style>
+</head>
+<body>
+
+<div class="page">
+  <div class="chapter-page">
+    <div class="chapter-sidebar"></div>
+    <div class="chapter-accent-bar"></div>
+    <div class="chapter-body">
+      <div class="chapter-watermark">25</div>
+      <div class="chapter-label">Chapter 25</div>
+      <h1 class="chapter-title">추상화 (Abstraction)</h1>
+      <p class="chapter-sub">중요한 것만 남기고 나머지는 무시! 추상화는 복잡한 현실을 단순한 모델로 바꾸는 핵심 기술이에요.</p>
+
+      <h3 class="obj-title">이 유닛에서 배우는 것</h3>
+      <ul class="obj-list">
+        <li>복잡한 것에서 핵심만 뽑아내는 추상화를 이해해요.</li>
+        <li>불필요한 세부사항을 제거하는 방법을 알아요.</li>
+        <li>추상화가 프로그래밍에서 어떻게 사용되는지 이해해요.</li>
+        <li>[심화] 함수, 변수, 자료형이 추상화의 예임을 이해해요.</li>
+        <li>[심화] 추상화 수준(abstraction level)의 개념을 알아요.</li>
+        <li>[심화 내용] 추상화 계층(Abstraction Layer)의 구조를 이해해요.</li>
+        <li>[심화 내용] 하드웨어→OS→언어→프레임워크 추상화 스택을 알아요.</li>
+        <li>[심화 내용] API와 인터페이스가 추상화 경계인 이유를 이해해요.</li>
+        <li>[심화 내용] 추상화의 비용(Leaky Abstraction)을 알아요.</li>
+      </ul>
+
+      <h3 class="prereq-title">선수 학습</h3>
+      <div class="prereq-flow">
+        <div class="prereq-item">분해(U23)와 패턴 인식(U24) 기본</div><div class="prereq-arrow">→</div>
+        <div class="prereq-item current">변수 개념 맛보기 (U16)</div>
+      </div>
+
+      
+
+      <span class="page-num">1</span>
+    </div>
+  </div>
+</div>
+<div class="page">
+  <div class="content-page">
+    <div class="unit-header-bar">
+      <span class="unit-tag">UNIT 25</span>
+      <span class="unit-title-sm">추상화 (Abstraction)</span>
+    </div>
+<h2 class="section-title">정보가 너무 많아! 뭘 골라야 하지?</h2>
+
+<p>현실 세계에는 정보가 너무 많아요. 프로그래밍할 때 이 모든 걸 다 담을 수는 없어요. 그래서 <b>목적에 맞는 중요한 정보만 골라내고</b> 나머지는 과감하게 무시하는 것이 필요해요. 이것을 <b>추상화(Abstraction)</b>라고 해요.</p>
+<div class="note-box"><span class="note-label">[핵심] 추상화란?</span>
+<b>추상화(Abstraction)</b> = 중요한 것만 남기고 나머지는 무시하는 것<br><br>핵심 원칙:<br>1. <b>목적</b>에 따라 필요한 정보가 달라요<br>2. 복잡한 것을 <b>단순하게</b> 만들어요<br>3. 핵심만 남기면 <b>이해하기 쉬워요</b><br>4. 불필요한 세부사항을 <b>숨겨요</b></div>
+<h2 class="section-title">예시: 지도 = 세계의 추상화!</h2>
+<!-- image -->
+<p>지도에는 건물의 벽돌 색, 나무의 나이, 지나가는 사람 같은 건 없어요. 오직 <b>위치</b>와 <b>이름</b>만 있어요. 왜? 길 찾기라는 <b>목적</b>에 그것만 필요하니까요!</p>
+
+<h2 class="section-title">목적에 따라 달라지는 추상화</h2>
+<table class="trace"><thead><tr><th>목적</th><th>남기는 정보</th><th>무시하는 정보</th></tr></thead><tbody><tr><td>동물병원</td><td>이름, 나이, 품종, 몸무게, 병력</td><td>털 색깔, 좋아하는 장난감</td></tr><tr><td>펫샵 광고</td><td>사진, 품종, 가격, 성별</td><td>병력, 성격</td></tr><tr><td>게임 캐릭터</td><td>HP, 공격력, 스킬, 레벨</td><td>실제 몸무게, 병력</td></tr><tr><td>고양이 카페</td><td>이름, 성격, 사진</td><td>몸무게, 병력</td></tr></tbody></table>
+<div class="debug-section"><div class="debug-bar">DEBUG LAB — 에러를 찾으시오</div><div class="debug-body">
+
+<p style="margin:14px 0 0; font-size:14px;"><b>에러:</b> </p>
+<p style="font-size:14px;"><b>수정:</b> </p>
+</div></div>
+<div class="tip"><span class="tip-label">[팁] 추상화는 '버리기'가 아니라 '고르기'</span>
+추상화는 정보를 없애는 게 아니에요!<br>목적에 맞는 것만 <b>선택</b>하는 거예요.<br><br>같은 데이터도 목적이 바뀌면 다시 다른 걸 골라요.</div>
+<h2 class="section-title">활동: '나'를 프로그래밍하려면?</h2>
+<!-- image -->
+<div class="tip"><span class="tip-label">[활동] 나를 추상화해 보기</span>
+다음 상황별로 '나'에게 필요한 데이터 3가지씩 골라 보세요!<br><br>1. <b>학교 출석부</b>: 이름, 학년, 반, 번호<br>2. <b>병원 진료 기록</b>: 이름, 나이, 키, 몸무게, 병력<br>3. <b>게임 캐릭터</b>: 닉네임, HP, 레벨, 아이템<br>4. <b>배달 앱</b>: 이름, 주소, 전화번호<br><br>상황마다 다른 정보가 필요하다는 게 핵심!</div>
+<table class="trace"><thead><tr><th>상황</th><th>변수 1</th><th>변수 2</th><th>변수 3</th><th>C 자료형</th></tr></thead><tbody><tr><td>학교 출석부</td><td>이름</td><td>학년</td><td>번호</td><td>char[], int, int</td></tr><tr><td>병원 진료</td><td>이름</td><td>나이</td><td>몸무게</td><td>char[], int, float</td></tr><tr><td>게임 캐릭터</td><td>닉네임</td><td>HP</td><td>레벨</td><td>char[], int, int</td></tr><tr><td>배달 앱</td><td>이름</td><td>주소</td><td>전화번호</td><td>char[], char[], char[]</td></tr><tr><td>도서관 회원</td><td>이름</td><td>회원번호</td><td>대출권수</td><td>char[], int, int</td></tr></tbody></table>
+<h2 class="section-title">추상화 3단계: 현실 → 모델 → 코드</h2>
+<!-- image -->
+<div class="note-box"><span class="note-label">[핵심] 추상화 3단계</span>
+<b>1단계: 현실 관찰</b><br>→ 실제 세계를 관찰하고 정보를 수집<br><br><b>2단계: 모델 설계</b><br>→ 필요한 정보만 골라서 정리<br><br><b>3단계: 코드 구현</b><br>→ 모델을 C 언어로 옮기기 (변수, 구조체, 함수)</div>
+<div style="margin:22px 0"></div>
+<h2 class="section-title">C 언어에서의 추상화</h2>
+<!-- image -->
+<div class="note-box"><span class="note-label">[C 연결] 추상화의 3가지 도구</span>
+<b>1. 변수 = 현실의 추상화</b><br>실제 나이 '15살 6개월 3일' → int age = 15;<br><br><b>2. 함수 = 행동의 추상화</b><br>복잡한 여러 단계 → boilWater(); 한 줄로<br><br><b>3. 구조체 = 객체의 추상화</b><br>학생의 여러 정보 → struct Student { ... };</div>
+<table class="trace"><thead><tr><th>추상화 도구</th><th>현실의 대상</th><th>C 코드 예시</th><th>무시되는 정보</th></tr></thead><tbody><tr><td>변수 (int)</td><td>나이: 15살 6개월 3일</td><td>int age = 15;</td><td>개월, 일 단위</td></tr><tr><td>변수 (float)</td><td>키: 163.7214cm</td><td>float height = 163.7;</td><td>소수점 이하 세밀한 값</td></tr><tr><td>변수 (char[])</td><td>이름: 김코딩 (성격, 취미 등)</td><td>char name[] = "김코딩";</td><td>성격, 취미, 외모</td></tr><tr><td>함수</td><td>라면 끓이기 (물 붓기, 불 켜기...)</td><td>cookRamen();</td><td>세부 동작 과정</td></tr><tr><td>구조체</td><td>학생 (수백 가지 속성)</td><td>struct Student { ... };</td><td>목적 외 속성 전부</td></tr></tbody></table>
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span><span class="code-bar-file">abstraction_variable.c</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;stdio.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">main</span>(<span class="s-type">void</span>) {</span></div>
+<div class="code-line"><span class="ln">4</span><span class="lc">    <span class="s-cm">// 현실: 키 163.7cm, 머리색 갈색, 좋아하는 음식 피자...</span></span></div>
+<div class="code-line"><span class="ln">5</span><span class="lc">    <span class="s-cm">// 추상화: 학교 출석부에는 이것만!</span></span></div>
+<div class="code-line"><span class="ln">6</span><span class="lc">    <span class="s-type">char</span> name[] = <span class="s-str">"김코딩"</span>;</span></div>
+<div class="code-line"><span class="ln">7</span><span class="lc">    <span class="s-type">int</span> grade = <span class="s-num">5</span>;</span></div>
+<div class="code-line"><span class="ln">8</span><span class="lc">    <span class="s-type">int</span> classNum = <span class="s-num">3</span>;</span></div>
+<div class="code-line"><span class="ln">9</span><span class="lc">    <span class="s-type">int</span> number = <span class="s-num">12</span>;</span></div>
+<div class="code-line"><span class="ln">10</span><span class="lc">    </span></div>
+<div class="code-line"><span class="ln">11</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"%s: %d학년 %d반 %d번\n"</span>, name, grade, classNum, number);</span></div>
+<div class="code-line"><span class="ln">12</span><span class="lc">    <span class="s-cm">// 키, 머리색, 좋아하는 음식 → 출석부 목적엔 불필요!</span></span></div>
+<div class="code-line"><span class="ln">13</span><span class="lc">    <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">14</span><span class="lc">}</span></div>
+</div>
+</div>
+<div class="output-wrap"><div class="output-bar">실행 결과</div><div class="output-body">김코딩: 5학년 3반 12번</div></div>
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span><span class="code-bar-file">abstraction_struct.c</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;stdio.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc"><span class="s-cm">// 구조체 = 관련 정보를 묶는 추상화</span></span></div>
+<div class="code-line"><span class="ln">4</span><span class="lc"><span class="s-kw">typedef</span> <span class="s-kw">struct</span> {</span></div>
+<div class="code-line"><span class="ln">5</span><span class="lc">    <span class="s-type">char</span> name[<span class="s-num">20</span>];</span></div>
+<div class="code-line"><span class="ln">6</span><span class="lc">    <span class="s-type">int</span> hp;</span></div>
+<div class="code-line"><span class="ln">7</span><span class="lc">    <span class="s-type">int</span> attack;</span></div>
+<div class="code-line"><span class="ln">8</span><span class="lc">    <span class="s-type">int</span> level;</span></div>
+<div class="code-line"><span class="ln">9</span><span class="lc">} GameCharacter;</span></div>
+<div class="code-line"><span class="ln">10</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">11</span><span class="lc"><span class="s-type">void</span> <span class="s-fn">printStatus</span>(GameCharacter c) {</span></div>
+<div class="code-line"><span class="ln">12</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"[%s] Lv.%d | HP:%d | ATK:%d\n"</span>,</span></div>
+<div class="code-line"><span class="ln">13</span><span class="lc">           c.name, c.level, c.hp, c.attack);</span></div>
+<div class="code-line"><span class="ln">14</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">15</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">16</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">main</span>(<span class="s-type">void</span>) {</span></div>
+<div class="code-line"><span class="ln">17</span><span class="lc">    GameCharacter hero = {<span class="s-str">"용사"</span>, <span class="s-num">100</span>, <span class="s-num">15</span>, <span class="s-num">1</span>};</span></div>
+<div class="code-line"><span class="ln">18</span><span class="lc">    <span class="s-fn">printStatus</span>(hero);</span></div>
+<div class="code-line"><span class="ln">19</span><span class="lc">    <span class="s-cm">// 현실의 사람은 키, 혈액형, 발 사이즈... 정보가 엄청 많지만</span></span></div>
+<div class="code-line"><span class="ln">20</span><span class="lc">    <span class="s-cm">// 게임에선 HP, 공격력, 레벨만 있으면 돼! → 추상화!</span></span></div>
+<div class="code-line"><span class="ln">21</span><span class="lc">    <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">22</span><span class="lc">}</span></div>
+</div>
+</div>
+<div class="output-wrap"><div class="output-bar">실행 결과</div><div class="output-body">[용사] Lv.1 | HP:100 | ATK:15</div></div>
+<h2 class="section-title">[심화] 추상화 수준 (Abstraction Level)</h2>
+<p>추상화는 한 단계가 아니에요. 여러 <b>층(레벨)</b>으로 나뉘어요. 높은 레벨일수록 간단하고, 낮은 레벨일수록 자세해요.</p>
+<table class="trace"><thead><tr><th>레벨</th><th>추상화</th><th>예시</th><th>보이는 것</th></tr></thead><tbody><tr><td>5 (최상)</td><td>사용자</td><td>앱 화면 터치</td><td>버튼, 아이콘</td></tr><tr><td>4</td><td>응용 프로그램</td><td>Python, JavaScript</td><td>변수, 함수</td></tr><tr><td>3</td><td>시스템 프로그래밍</td><td>C 언어</td><td>포인터, 메모리</td></tr><tr><td>2</td><td>운영체제</td><td>Linux 커널</td><td>프로세스, 파일</td></tr><tr><td>1</td><td>어셈블리</td><td>x86-64</td><td>레지스터, 명령어</td></tr><tr><td>0 (최하)</td><td>하드웨어</td><td>트랜지스터</td><td>0과 1, 전압</td></tr></tbody></table>
+
+<h2 class="section-title">[심화] 블랙박스 — 안은 몰라도 써!</h2>
+<div class="note-box"><span class="note-label">[심화] 블랙박스 추상화</span>
+<b>블랙박스</b> = 내부 동작은 숨기고, <b>입력과 출력만</b> 알면 쓸 수 있게 하는 것<br><br>예시:<br>• printf() → 내부에서 시스템콜, 버퍼링 등 복잡한 일을 하지만 우리는 그냥 호출<br>• TV 리모컨 → 적외선, 디코딩 등 몰라도 버튼만 누르면 됨<br>• 자동차 → 엔진 원리 몰라도 핸들, 페달로 운전 가능</div>
+<table class="trace"><thead><tr><th>블랙박스</th><th>입력 (우리가 하는 것)</th><th>출력 (결과)</th><th>숨겨진 내부 동작</th></tr></thead><tbody><tr><td>TV 리모컨</td><td>채널 버튼 누르기</td><td>채널이 바뀜</td><td>적외선 발사, 신호 디코딩, 채널 튜닝</td></tr><tr><td>전자레인지</td><td>시간 설정 + 시작 버튼</td><td>음식이 데워짐</td><td>마이크로파 발생, 분자 진동, 온도 조절</td></tr><tr><td>자동차</td><td>핸들 돌리기 + 가속 페달</td><td>차가 움직임</td><td>엔진 연소, 변속기, 바퀴 구동</td></tr><tr><td>printf()</td><td>서식 문자열 + 값</td><td>화면에 출력됨</td><td>버퍼링, format 파싱, 시스템콜</td></tr><tr><td>sqrt()</td><td>숫자 하나</td><td>제곱근 반환</td><td>뉴턴법 또는 테일러 급수 계산</td></tr></tbody></table>
+<div style="margin:22px 0"></div>
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span><span class="code-bar-file">blackbox.c</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;stdio.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;math.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">4</span><span class="lc"><span class="s-cm">// sqrt()는 블랙박스!</span></span></div>
+<div class="code-line"><span class="ln">5</span><span class="lc"><span class="s-cm">// 내부에서 뉴턴법을 쓰는지, 테일러 급수를 쓰는지 몰라도</span></span></div>
+<div class="code-line"><span class="ln">6</span><span class="lc"><span class="s-cm">// 그냥 숫자 넣으면 제곱근이 나온다!</span></span></div>
+<div class="code-line"><span class="ln">7</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">main</span>(<span class="s-type">void</span>) {</span></div>
+<div class="code-line"><span class="ln">8</span><span class="lc">    <span class="s-type">double</span> result = <span class="s-fn">sqrt</span>(<span class="s-num">25.0</span>);  <span class="s-cm">// 5.0</span></span></div>
+<div class="code-line"><span class="ln">9</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"√25 = %.1f\n"</span>, result);</span></div>
+<div class="code-line"><span class="ln">10</span><span class="lc">    </span></div>
+<div class="code-line"><span class="ln">11</span><span class="lc">    <span class="s-cm">// printf도 블랙박스!</span></span></div>
+<div class="code-line"><span class="ln">12</span><span class="lc">    <span class="s-cm">// 내부에서 format string 파싱, 버퍼링, write 시스템콜...</span></span></div>
+<div class="code-line"><span class="ln">13</span><span class="lc">    <span class="s-cm">// 우리는 그냥 호출만 하면 된다!</span></span></div>
+<div class="code-line"><span class="ln">14</span><span class="lc">    <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">15</span><span class="lc">}</span></div>
+</div>
+</div>
+<h2 class="section-title">[심화] 인터페이스 vs 구현</h2>
+<div class="debug-section"><div class="debug-bar">DEBUG LAB — 에러를 찾으시오</div><div class="debug-body">
+
+<p style="margin:14px 0 0; font-size:14px;"><b>에러:</b> </p>
+<p style="font-size:14px;"><b>수정:</b> </p>
+</div></div>
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span><span class="code-bar-file">interface_impl.c</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc"><span class="s-cm">// ===== 인터페이스 (사용자가 보는 것) =====</span></span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc"><span class="s-cm">// sort.h:</span></span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc"><span class="s-cm">// void sort(int arr[], int n);</span></span></div>
+<div class="code-line"><span class="ln">4</span><span class="lc"><span class="s-cm">// → "배열 정렬해주는 함수가 있다"는 것만 알면 됨!</span></span></div>
+<div class="code-line"><span class="ln">5</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">6</span><span class="lc"><span class="s-cm">// ===== 구현 (내부) =====</span></span></div>
+<div class="code-line"><span class="ln">7</span><span class="lc"><span class="s-cm">// sort.c — 버전1: 버블 정렬</span></span></div>
+<div class="code-line"><span class="ln">8</span><span class="lc"><span class="s-type">void</span> <span class="s-fn">sort</span>(<span class="s-type">int</span> arr[], <span class="s-type">int</span> n) {</span></div>
+<div class="code-line"><span class="ln">9</span><span class="lc">    <span class="s-kw">for</span> (<span class="s-type">int</span> i = <span class="s-num">0</span>; i &lt; n-<span class="s-num">1</span>; i++)</span></div>
+<div class="code-line"><span class="ln">10</span><span class="lc">        <span class="s-kw">for</span> (<span class="s-type">int</span> j = <span class="s-num">0</span>; j &lt; n-<span class="s-num">1</span>-i; j++)</span></div>
+<div class="code-line"><span class="ln">11</span><span class="lc">            <span class="s-kw">if</span> (arr[j] &gt; arr[j+<span class="s-num">1</span>]) {</span></div>
+<div class="code-line"><span class="ln">12</span><span class="lc">                <span class="s-type">int</span> tmp = arr[j];</span></div>
+<div class="code-line"><span class="ln">13</span><span class="lc">                arr[j] = arr[j+<span class="s-num">1</span>];</span></div>
+<div class="code-line"><span class="ln">14</span><span class="lc">                arr[j+<span class="s-num">1</span>] = tmp;</span></div>
+<div class="code-line"><span class="ln">15</span><span class="lc">            }</span></div>
+<div class="code-line"><span class="ln">16</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">17</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">18</span><span class="lc"><span class="s-cm">// sort.c — 버전2: 퀵 정렬로 바꿔도</span></span></div>
+<div class="code-line"><span class="ln">19</span><span class="lc"><span class="s-cm">// 인터페이스는 그대로! 사용자 코드 수정 불필요!</span></span></div>
+</div>
+</div>
+<h2 class="section-title">[심화 내용] ADT — 추상 자료형</h2>
+<div class="note-box"><span class="note-label">[심화 내용] ADT (Abstract Data Type)</span>
+<b>ADT</b> = 데이터 + 연산을 하나로 묶되, <b>구현을 숨기는</b> 것<br><br>예: <b>스택 ADT</b><br>• 데이터: 정수들의 모음<br>• 연산: push(넣기), pop(빼기), peek(보기), isEmpty(비었나?)<br>• 구현? 배열이든 연결 리스트든 사용자는 몰라도 됨!<br><br>ADT = 인터페이스만 정의, 구현은 자유</div>
+<table class="trace"><thead><tr><th>ADT 이름</th><th>주요 연산</th><th>실생활 비유</th><th>가능한 구현 방식</th></tr></thead><tbody><tr><td>스택 (Stack)</td><td>push, pop, peek</td><td>접시 쌓기 (위에서만 넣고 빼기)</td><td>배열 또는 연결 리스트</td></tr><tr><td>큐 (Queue)</td><td>enqueue, dequeue, front</td><td>줄 서기 (앞에서 빠지고 뒤에서 들어옴)</td><td>배열 또는 연결 리스트</td></tr><tr><td>리스트 (List)</td><td>insert, delete, get</td><td>출석부 (순서대로 이름 나열)</td><td>배열 또는 연결 리스트</td></tr><tr><td>맵 (Map)</td><td>put, get, remove</td><td>사전 (단어로 뜻 찾기)</td><td>해시 테이블 또는 트리</td></tr></tbody></table>
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span><span class="code-bar-file">stack_adt.c</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;stdio.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc"><span class="s-pp">#define</span> MAX <span class="s-num">100</span></span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">4</span><span class="lc"><span class="s-cm">// ===== 스택 ADT =====</span></span></div>
+<div class="code-line"><span class="ln">5</span><span class="lc"><span class="s-kw">typedef</span> <span class="s-kw">struct</span> {</span></div>
+<div class="code-line"><span class="ln">6</span><span class="lc">    <span class="s-type">int</span> data[MAX];  <span class="s-cm">// 구현 세부사항 (배열 사용)</span></span></div>
+<div class="code-line"><span class="ln">7</span><span class="lc">    <span class="s-type">int</span> top;         <span class="s-cm">// 구현 세부사항</span></span></div>
+<div class="code-line"><span class="ln">8</span><span class="lc">} Stack;</span></div>
+<div class="code-line"><span class="ln">9</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">10</span><span class="lc"><span class="s-cm">// --- 인터페이스 (사용자가 쓰는 함수들) ---</span></span></div>
+<div class="code-line"><span class="ln">11</span><span class="lc"><span class="s-type">void</span> <span class="s-fn">init</span>(Stack *s)        { s-&gt;top = -<span class="s-num">1</span>; }</span></div>
+<div class="code-line"><span class="ln">12</span><span class="lc"><span class="s-type">int</span>  <span class="s-fn">isEmpty</span>(Stack *s)     { <span class="s-kw">return</span> s-&gt;top == -<span class="s-num">1</span>; }</span></div>
+<div class="code-line"><span class="ln">13</span><span class="lc"><span class="s-type">void</span> <span class="s-fn">push</span>(Stack *s, <span class="s-type">int</span> v) { s-&gt;data[++(s-&gt;top)] = v; }</span></div>
+<div class="code-line"><span class="ln">14</span><span class="lc"><span class="s-type">int</span>  <span class="s-fn">pop</span>(Stack *s)         { <span class="s-kw">return</span> s-&gt;data[(s-&gt;top)--]; }</span></div>
+<div class="code-line"><span class="ln">15</span><span class="lc"><span class="s-type">int</span>  <span class="s-fn">peek</span>(Stack *s)        { <span class="s-kw">return</span> s-&gt;data[s-&gt;top]; }</span></div>
+<div class="code-line"><span class="ln">16</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">17</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">main</span>(<span class="s-type">void</span>) {</span></div>
+<div class="code-line"><span class="ln">18</span><span class="lc">    Stack s;</span></div>
+<div class="code-line"><span class="ln">19</span><span class="lc">    <span class="s-fn">init</span>(&amp;s);</span></div>
+<div class="code-line"><span class="ln">20</span><span class="lc">    <span class="s-fn">push</span>(&amp;s, <span class="s-num">10</span>);</span></div>
+<div class="code-line"><span class="ln">21</span><span class="lc">    <span class="s-fn">push</span>(&amp;s, <span class="s-num">20</span>);</span></div>
+<div class="code-line"><span class="ln">22</span><span class="lc">    <span class="s-fn">push</span>(&amp;s, <span class="s-num">30</span>);</span></div>
+<div class="code-line"><span class="ln">23</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"top: %d\n"</span>, <span class="s-fn">peek</span>(&amp;s));  <span class="s-cm">// 30</span></span></div>
+<div class="code-line"><span class="ln">24</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"pop: %d\n"</span>, <span class="s-fn">pop</span>(&amp;s));   <span class="s-cm">// 30</span></span></div>
+<div class="code-line"><span class="ln">25</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"pop: %d\n"</span>, <span class="s-fn">pop</span>(&amp;s));   <span class="s-cm">// 20</span></span></div>
+<div class="code-line"><span class="ln">26</span><span class="lc">    <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">27</span><span class="lc">}</span></div>
+</div>
+</div>
+<div class="output-wrap"><div class="output-bar">실행 결과</div><div class="output-body">top: 30
+pop: 30
+pop: 20</div></div>
+<h2 class="section-title">[심화 내용] 정보 은닉 (Information Hiding)</h2>
+<div class="note-box"><span class="note-label">[심화 내용] 정보 은닉 원칙</span>
+<b>정보 은닉</b> = 내부 구현을 외부에서 접근하지 못하게 숨기는 것<br><br>왜 숨길까?<br>1. 사용자가 내부를 직접 건드리면 <b>버그</b> 발생<br>2. 구현을 바꿀 때 사용자 코드에 <b>영향 없음</b><br>3. 모듈 간 <b>독립성</b> 보장<br><br>C에서의 정보 은닉:<br>• <b>static</b> 키워드: 파일 내부에서만 접근 가능<br>• <b>불완전 타입</b>: 구조체 선언만 노출, 정의는 숨김<br>• <b>헤더 파일</b>: 인터페이스만 공개</div>
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span><span class="code-bar-file">info_hiding.c</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc"><span class="s-cm">// ===== stack.h (공개) =====</span></span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc"><span class="s-kw">typedef</span> <span class="s-kw">struct</span> Stack Stack;  <span class="s-cm">// 불완전 타입: 내부 모름!</span></span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc">Stack* <span class="s-fn">stack_create</span>(<span class="s-type">void</span>);</span></div>
+<div class="code-line"><span class="ln">4</span><span class="lc"><span class="s-type">void</span>   <span class="s-fn">stack_push</span>(Stack *s, <span class="s-type">int</span> v);</span></div>
+<div class="code-line"><span class="ln">5</span><span class="lc"><span class="s-type">int</span>    <span class="s-fn">stack_pop</span>(Stack *s);</span></div>
+<div class="code-line"><span class="ln">6</span><span class="lc"><span class="s-type">void</span>   <span class="s-fn">stack_destroy</span>(Stack *s);</span></div>
+<div class="code-line"><span class="ln">7</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">8</span><span class="lc"><span class="s-cm">// ===== stack.c (숨김) =====</span></span></div>
+<div class="code-line"><span class="ln">9</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;stdlib.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">10</span><span class="lc"><span class="s-kw">struct</span> Stack {        <span class="s-cm">// 여기서만 정의!</span></span></div>
+<div class="code-line"><span class="ln">11</span><span class="lc">    <span class="s-type">int</span> data[<span class="s-num">100</span>];</span></div>
+<div class="code-line"><span class="ln">12</span><span class="lc">    <span class="s-type">int</span> top;</span></div>
+<div class="code-line"><span class="ln">13</span><span class="lc">};</span></div>
+<div class="code-line"><span class="ln">14</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">15</span><span class="lc">Stack* <span class="s-fn">stack_create</span>(<span class="s-type">void</span>) {</span></div>
+<div class="code-line"><span class="ln">16</span><span class="lc">    Stack *s = <span class="s-fn">malloc</span>(<span class="s-kw">sizeof</span>(Stack));</span></div>
+<div class="code-line"><span class="ln">17</span><span class="lc">    s-&gt;top = -<span class="s-num">1</span>;</span></div>
+<div class="code-line"><span class="ln">18</span><span class="lc">    <span class="s-kw">return</span> s;</span></div>
+<div class="code-line"><span class="ln">19</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">20</span><span class="lc"><span class="s-cm">// ... push, pop, destroy 구현 ...</span></span></div>
+</div>
+</div>
+<h2 class="section-title">[심화 내용] 추상화와 계층 구조</h2>
+<p>현대 소프트웨어는 추상화 층을 쌓아 만들어요. 각 층은 아래 층의 복잡함을 숨겨요.</p>
+<div class="note-box"><span class="note-label">[심화 내용] 네트워크 추상화 계층 (OSI 7 Layer)</span>
+7. 응용 (HTTP, FTP) ← 우리가 보는 것<br>6. 표현 (암호화, 압축)<br>5. 세션 (연결 관리)<br>4. 전송 (TCP, UDP)<br>3. 네트워크 (IP, 라우팅)<br>2. 데이터 링크 (이더넷, WiFi)<br>1. 물리 (전기 신호, 광섬유) ← 실제 하드웨어<br><br>각 층은 아래 층이 <b>어떻게</b> 동작하는지 몰라도 쓸 수 있어요!</div>
+<h2 class="section-title">KOI 연결: 문제에서 핵심 정보 추출</h2>
+<div class="tip"><span class="tip-label">[KOI] 추상화로 문제 분석하기</span>
+KOI 문제는 긴 지문으로 나와요. 추상화 능력이 있으면:<br><br>1. 긴 지문에서 <b>입력 데이터</b>만 쏙 뽑기<br>2. 복잡한 조건에서 <b>핵심 규칙</b>만 정리<br>3. 불필요한 배경 설명은 <b>과감히 무시</b><br><br>"마을에 N개의 집이 있고 집들은 도로로 연결..."<br>→ 추상화: 정점 N개, 간선 M개의 그래프!</div>
+<div style="margin:22px 0"></div>
+<table class="trace"><thead><tr><th>문제 지문 표현</th><th>추상화 결과</th><th>C 코드 표현</th></tr></thead><tbody><tr><td>마을 N개, 도로 M개</td><td>그래프: 정점 N, 간선 M</td><td>int adj[N][N];</td></tr><tr><td>학생 N명의 점수</td><td>정수 배열</td><td>int score[N];</td></tr><tr><td>가장 큰 값을 찾아라</td><td>최대값 탐색</td><td>max = arr[0]; for문...</td></tr><tr><td>짝수번째만 골라라</td><td>조건 필터링</td><td>if (i % 2 == 0)</td></tr><tr><td>순서대로 정렬하라</td><td>정렬 알고리즘</td><td>sort(arr, N);</td></tr></tbody></table>
+<!-- fact-bite -->
+<h2 class="section-title">OX 퀴즈</h2>
+<!-- ox -->
+<h2 class="section-title">연습문제</h2>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 1</span><p style="margin:0;font-size:14px">추상화란 무엇인지 한 문장으로 설명하세요.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 2</span><p style="margin:0;font-size:14px">지도가 추상화인 이유를 설명하세요.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 3</span><p style="margin:0;font-size:14px">C에서 현실의 데이터를 저장하는 추상화 도구는? (1)반복문 (2)변수 (3)주석 (4)세미콜론</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 4</span><p style="margin:0;font-size:14px">'배달 앱 주문'에 필요한 정보 4가지를 쓰세요.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 5</span><p style="margin:0;font-size:14px">같은 '고양이'를 동물병원과 게임에서 다르게 추상화하는 예를 드세요.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 6</span><p style="margin:0;font-size:14px">온라인 쇼핑몰에서 '상품'을 struct로 표현해 보세요.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 7</span><p style="margin:0;font-size:14px">블랙박스의 예시를 일상에서 3가지 찾아보세요.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 8</span><p style="margin:0;font-size:14px">인터페이스와 구현의 차이를 '식당' 비유로 설명하세요.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 9</span><p style="margin:0;font-size:14px">추상화 3단계(현실→모델→코드)를 '학교 시간표' 예시로 보여주세요.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 10</span><p style="margin:0;font-size:14px">C에서 static 키워드가 정보 은닉에 어떻게 도움되나요?</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 11</span><p style="margin:0;font-size:14px">[심화] 컴퓨터의 추상화 레벨 6단계를 낮은 순서대로 쓰세요.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 12</span><p style="margin:0;font-size:14px">[심화] ADT(추상 자료형)가 무엇인지 스택을 예로 설명하세요.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 13</span><p style="margin:0;font-size:14px">[심화] 불완전 타입(opaque type)으로 정보 은닉하는 방법을 설명하세요.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 14</span><p style="margin:0;font-size:14px">[심화 내용] OSI 7계층 중 4계층(전송 계층)이 하는 일을 설명하세요.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 15</span><p style="margin:0;font-size:14px">[심화 내용] 추상화가 없다면 프로그래밍이 얼마나 어려워질지 구체적으로 설명하세요.</p></div>
+<h2 class="section-title">용어 정리</h2>
+<h2 class="section-title">[심화 내용] 컴퓨터 과학의 추상화 계층</h2>
+<div class="note-box"><span class="note-label">[심화 내용] 추상화 계층 스택</span>
+<b>컴퓨터의 추상화 계층 (아래→위):</b><br><br>1. <b>물리 계층</b>: 전자, 트랜지스터, 전압<br>2. <b>논리 게이트</b>: AND, OR, NOT (전압→0/1)<br>3. <b>디지털 회로</b>: 가산기, MUX, 레지스터<br>4. <b>마이크로아키텍처</b>: 파이프라인, 캐시<br>5. <b>ISA(명령어 집합)</b>: MOV, ADD, CMP (x86, ARM)<br>6. <b>어셈블리어</b>: 사람이 읽을 수 있는 기계어<br>7. <b>운영체제</b>: 프로세스, 파일, 메모리 관리<br>8. <b>프로그래밍 언어</b>: C, Python, Java<br>9. <b>라이브러리/프레임워크</b>: React, TensorFlow<br>10. <b>애플리케이션</b>: 웹 브라우저, 게임<br><br>각 계층은 아래 계층의 복잡성을 <b>숨기고</b><br>위 계층에 <b>단순한 인터페이스</b>를 제공!</div>
+<h2 class="section-title">[심화 내용] 누수되는 추상화</h2>
+<div class="note-box"><span class="note-label">[심화 내용] Leaky Abstraction (Joel Spolsky, 2002)</span>
+<b>"모든 비자명 추상화는 어느 정도 누수된다"</b><br><br>추상화가 내부 세부사항을 완벽히 숨기지 못하는 현상<br><br><b>예시:</b><br>1. TCP는 "신뢰할 수 있는 전송"을 추상화하지만<br>   네트워크가 끊기면 타임아웃 에러!<br><br>2. SQL은 "데이터 쿼리"를 추상화하지만<br>   인덱스가 없으면 느려짐 → 내부 구조 알아야 함<br><br>3. 가비지 컬렉션은 "메모리 관리"를 추상화하지만<br>   GC 일시정지가 성능에 영향 → 메모리 패턴 알아야 함<br><br>4. ORM은 "데이터베이스 접근"을 추상화하지만<br>   N+1 쿼리 문제 → SQL 알아야 해결<br><br><b>결론:</b> 추상화를 사용하되, 한 단계 아래도 이해하라!</div>
+<h2 class="section-title">[심화 내용] API — 추상화의 경계</h2>
+<p>API(Application Programming Interface)는 추상화의 경계를 정의하는 <b>계약</b>이에요.</p>
+<div class="note-box"><span class="note-label">[심화 내용] 좋은 추상화 설계</span>
+<b>좋은 API의 원칙:</b><br><br>1. <b>최소 노출 원칙</b>: 필요한 것만 공개<br>   printf()만 알면 됨. 내부 버퍼 관리는 숨김<br><br>2. <b>일관성</b>: 비슷한 것은 비슷하게<br>   fopen/fclose, malloc/free (쌍으로)<br><br>3. <b>직교성</b>: 독립적인 기능은 독립적으로<br>   입출력과 계산은 분리<br><br>4. <b>계층적</b>: 단계별로 추상화<br>   하드웨어 → 드라이버 → 파일시스템 → fopen<br><br><b>David Parnas (1972):</b><br>"정보 은닉(Information Hiding)" 원칙 제안<br>→ 모듈은 내부 결정을 숨기고 인터페이스만 공개</div>
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span><span class="code-bar-file">[C 코드] 추상화 수준 비교</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc"><span class="s-cm">// 추상화 레벨 1: 기계어 수준</span></span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc"><span class="s-cm">// MOV EAX, [0x1000]</span></span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc"><span class="s-cm">// ADD EAX, [0x1004]</span></span></div>
+<div class="code-line"><span class="ln">4</span><span class="lc"><span class="s-cm">// MOV [0x1008], EAX</span></span></div>
+<div class="code-line"><span class="ln">5</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">6</span><span class="lc"><span class="s-cm">// 추상화 레벨 2: C 코드</span></span></div>
+<div class="code-line"><span class="ln">7</span><span class="lc"><span class="s-type">int</span> sum = a + b;</span></div>
+<div class="code-line"><span class="ln">8</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">9</span><span class="lc"><span class="s-cm">// 추상화 레벨 3: 함수</span></span></div>
+<div class="code-line"><span class="ln">10</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">add</span>(<span class="s-type">int</span> a, <span class="s-type">int</span> b) { <span class="s-kw">return</span> a + b; }</span></div>
+<div class="code-line"><span class="ln">11</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">12</span><span class="lc"><span class="s-cm">// 추상화 레벨 4: 제네릭 (C는 없지만 개념적으로)</span></span></div>
+<div class="code-line"><span class="ln">13</span><span class="lc"><span class="s-cm">// template&lt;T&gt; T add(T a, T b) { return a + b; }</span></span></div>
+<div class="code-line"><span class="ln">14</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">15</span><span class="lc"><span class="s-cm">// 추상화 레벨 5: 고수준 라이브러리</span></span></div>
+<div class="code-line"><span class="ln">16</span><span class="lc"><span class="s-cm">// result = numpy.add(array1, array2)  // 수백만 원소 병렬 덧셈</span></span></div>
+<div class="code-line"><span class="ln">17</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">18</span><span class="lc"><span class="s-cm">// 같은 "더하기"인데 추상화 수준에 따라</span></span></div>
+<div class="code-line"><span class="ln">19</span><span class="lc"><span class="s-cm">// 표현과 능력이 완전히 달라요!</span></span></div>
+</div>
+</div>
+<!-- fact-bite -->
+<!-- fact-bite -->
+<table class="trace"><thead><tr><th>용어</th><th>설명</th></tr></thead><tbody><tr><td><code>추상화 (Abstraction)</code></td><td>복잡한 현실에서 목적에 맞는 중요한 정보만 골라내고 나머지를 무시하는 것.</td></tr><tr><td><code>모델 (Model)</code></td><td>현실을 추상화해서 만든 단순화된 표현. 지도, 설계도 등.</td></tr><tr><td><code>블랙박스 (Black Box)</code></td><td>내부 구현은 숨기고 입력/출력만 보여주는 것.</td></tr><tr><td><code>인터페이스</code></td><td>외부에서 보이는 사용 방법. 함수 선언, 메뉴판.</td></tr><tr><td><code>구현</code></td><td>내부에서 실제로 동작하는 방식. 함수 정의, 주방.</td></tr><tr><td><code>ADT</code></td><td>Abstract Data Type. 데이터+연산을 정의하되 구현을 숨기는 추상화.</td></tr><tr><td><code>정보 은닉</code></td><td>내부 구현을 외부에서 접근 못하게 숨기는 원칙. static, 불완전 타입.</td></tr><tr><td><code>구조체 (Struct)</code></td><td>관련 변수를 묶어 새 타입을 만드는 C의 추상화 도구.</td></tr><tr><td><code>추상화 레벨</code></td><td>추상화의 층(단계). 높을수록 간단, 낮을수록 자세.</td></tr><tr><td><code>OSI 7 Layer</code></td><td>네트워크 통신의 7단계 추상화 모델.</td></tr><tr><td><code>추상화 계층</code></td><td>복잡한 시스템을 여러 단계로 나누어 각 단계가 아래의 복잡성을 숨기는 구조.</td></tr><tr><td><code>Leaky Abstraction</code></td><td>추상화가 내부 세부사항을 완벽히 숨기지 못하고 "누수"되는 현상.</td></tr><tr><td><code>API</code></td><td>Application Programming Interface. 추상화의 경계를 정의하는 계약.</td></tr><tr><td><code>정보 은닉</code></td><td>모듈이 내부 결정을 숨기고 인터페이스만 공개하는 원칙. Parnas, 1972.</td></tr><tr><td><code>ISA</code></td><td>Instruction Set Architecture. CPU가 이해하는 명령어 집합. 하드웨어/소프트웨어 경계.</td></tr></tbody></table>
+<div class="warmup-box"><div class="warmup-title">이번 유닛 핵심 정리</div><div class="wq"><b>1.</b> 추상화 = 복잡한 것에서 핵심만 뽑아내기</div><div class="wq"><b>2.</b> 불필요한 세부사항 제거 → 문제를 단순하게</div><div class="wq"><b>3.</b> 변수, 함수, 자료형 = 코딩의 추상화 도구</div><div class="wq"><b>4.</b> [심화] 추상화 수준: 기계어 < C < Python < 프레임워크</div><div class="wq"><b>5.</b> [심화 내용] 10단계 추상화 스택: 트랜지스터→앱</div><div class="wq"><b>6.</b> [심화 내용] 누수되는 추상화: 한 단계 아래도 알아야 한다</div><div class="wq"><b>7.</b> [심화 내용] API = 추상화 경계의 계약</div><div class="wq"><b>8.</b> [심화 내용] 정보 은닉: 내부는 숨기고 인터페이스만 공개</div></div>
+<div class="tip"><span class="tip-label">이 유닛에서 연결된 축</span>
+<b>[컴퓨팅 사고력]</b> 추상화 = 4대 핵심 중 세 번째!<br><b>[C언어]</b> 변수, 함수, 구조체, static, 헤더 파일<br><b>[KOI]</b> 문제에서 핵심 정보 추출<br><b>[실생활]</b> 지도, 약도, 시간표, 리모컨<br><b>[디버깅]</b> 추상화 잘못 = 필요한 정보 빠뜨림 = 버그<br><b>[코딩기초]</b> ADT, 정보 은닉</div>
+<h2 class="section-title">실전 활용 연습</h2>
+<p>지금까지 배운 개념을 활용한 다양한 실전 예제와 연습문제입니다.</p>
+<table class="trace"><thead><tr><th>현실의 정보</th><th>손실되는 부분</th><th>C 자료형</th><th>저장 예시</th></tr></thead><tbody><tr><td>나이: 15살 6개월 3일</td><td>개월, 일 버림</td><td>int</td><td>15</td></tr><tr><td>키: 163.7214cm</td><td>소수점 이하 정밀도 제한</td><td>float</td><td>163.72</td></tr><tr><td>이름: 김코딩</td><td>글씨체, 발음 등</td><td>char[20]</td><td>"김코딩"</td></tr><tr><td>성별: 남자</td><td>생물학적 세부사항</td><td>char</td><td>'M'</td></tr><tr><td>합격 여부: 통과!</td><td>감정, 기쁨 등</td><td>int (0 or 1)</td><td>1</td></tr><tr><td>주소: 서울시 강남구...</td><td>건물 외관, 층수 등</td><td>char[100]</td><td>"서울시 강남구..."</td></tr></tbody></table>
+<div style="margin:22px 0"></div>
+
+<h2 class="section-title">실생활 연결</h2>
+<div class="tip"><span class="tip-label">[실생활] 이 개념은 어디에 쓰일까?</span>
+게임 개발, 앱 만들기, 웹사이트, 로봇 제어, AI 학습 등 모든 분야에서 사용돼요!</div>
+<div class="debug-section"><div class="debug-bar">DEBUG LAB — 에러를 찾으시오</div><div class="debug-body">
+
+<p style="margin:14px 0 0; font-size:14px;"><b>에러:</b> </p>
+<p style="font-size:14px;"><b>수정:</b> </p>
+</div></div>
+
+<h2 class="section-title">추가 연습문제</h2>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 20</span><p style="margin:0;font-size:14px">이번 유닛에서 배운 핵심 개념 3가지를 자신의 말로 설명해 보세요.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 21</span><p style="margin:0;font-size:14px">이번 유닛의 개념을 활용한 자신만의 문제를 1개 만들어 보세요.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 22</span><p style="margin:0;font-size:14px">이번 유닛의 개념이 C언어에서 어떻게 사용되는지 조사해 보세요.</p></div>
+<h2 class="section-title">[심화] 더 알아보기</h2>
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+
+<p>이번 유닛의 모든 개념을 완전히 이해했습니다. 다음 유닛에서 더 발전된 개념을 배워보세요!</p>
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<div class="note-box"><span class="note-label">[다음 유닛 미리보기]</span>
+분해하고, 패턴 찾고, 추상화했으면 이제 뭘 할까요? 드디어 <b>알고리즘을 설계</b>할 차례! 문제를 해결하는 단계별 절차를 만들어요!</div>
+
+
+    <span class="page-num">2</span>
+  </div>
+</div>
+</body>
+</html>

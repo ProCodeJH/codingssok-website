@@ -1,0 +1,1241 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>코딩쏙 교재 — 순서도 프로젝트 — 직접 설계하기</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+
+  :root {
+    --navy: #1a2e4a;
+    --navy-mid: #2c4a6e;
+    --navy-light: #3d6590;
+    --orange: #e07830;
+    --orange-light: #f5e6d8;
+    --white: #ffffff;
+    --bg: #f7f8fa;
+    --bg-warm: #faf9f7;
+    --gray-50: #f9fafb;
+    --gray-100: #f3f4f6;
+    --gray-200: #e5e7eb;
+    --gray-300: #d1d5db;
+    --gray-400: #9ca3af;
+    --gray-500: #6b7280;
+    --gray-600: #4b5563;
+    --gray-700: #374151;
+    --gray-800: #1f2937;
+    --text: #2d3748;
+    --green: #16a34a;
+    --green-bg: #dcfce7;
+    --red: #dc2626;
+    --red-bg: #fee2e2;
+    --blue: #2563eb;
+    --blue-bg: #dbeafe;
+    --yellow-bg: #fef9c3;
+    --font: 'Noto Sans KR', sans-serif;
+    --mono: 'JetBrains Mono', 'Consolas', monospace;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: var(--font); background: #e8eaed; font-size: 15px; }
+
+  /* ========== PAGE ========== */
+  .page {
+    width: 210mm;
+    min-height: 295mm;
+    margin: 24px auto;
+    background: var(--white);
+    box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* ========== PAGE 1: CHAPTER START ========== */
+  .chapter-page {
+    display: flex;
+    min-height: 295mm;
+  }
+
+  .chapter-sidebar {
+    width: 10px;
+    background: var(--navy);
+    flex-shrink: 0;
+  }
+
+  .chapter-accent-bar {
+    width: 7px;
+    background: var(--orange);
+    flex-shrink: 0;
+  }
+
+  .chapter-body {
+    flex: 1;
+    padding: 70px 65px 50px 55px;
+    position: relative;
+  }
+
+  .chapter-watermark {
+    position: absolute;
+    top: -10px;
+    right: -15px;
+    font-size: 280px;
+    font-weight: 900;
+    color: rgba(180,195,212,0.35);
+    line-height: 1;
+    pointer-events: none;
+    letter-spacing: -10px;
+  }
+
+  .chapter-label {
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--navy-mid);
+    letter-spacing: 2px;
+    margin-bottom: 4px;
+  }
+
+  .chapter-title {
+    font-size: 44px;
+    font-weight: 900;
+    color: var(--navy);
+    line-height: 1.15;
+    margin-bottom: 12px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .chapter-sub {
+    font-size: 16px;
+    color: var(--gray-500);
+    font-weight: 400;
+    margin-bottom: 20px;
+    padding-bottom: 28px;
+    border-bottom: 1px solid var(--gray-200);
+  }
+
+  /* Learning objectives */
+  .obj-title {
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--navy);
+    margin-bottom: 16px;
+    margin-top: 32px;
+  }
+
+  .obj-list {
+    list-style: none;
+    margin-bottom: 40px;
+  }
+
+  .obj-list li {
+    padding: 5px 0 5px 24px;
+    position: relative;
+    font-size: 15px;
+    color: var(--gray-700);
+    line-height: 1.6;
+  }
+
+  .obj-list li::before {
+    content: '•';
+    position: absolute;
+    left: 8px;
+    color: var(--navy-mid);
+    font-weight: 700;
+  }
+
+  /* Prerequisites flow */
+  .prereq-title {
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--navy);
+    margin-bottom: 18px;
+  }
+
+  .prereq-flow {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    margin-bottom: 44px;
+  }
+
+  .prereq-item {
+    padding: 9px 22px;
+    border: 1.5px solid var(--gray-300);
+    border-radius: 50px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--gray-600);
+    background: var(--white);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+  }
+
+  .prereq-item.current {
+    border-color: var(--navy);
+    color: var(--navy);
+    font-weight: 700;
+    background: #edf2f7;
+    box-shadow: 0 2px 6px rgba(26,46,74,0.12);
+  }
+
+  .prereq-arrow {
+    width: 36px;
+    text-align: center;
+    color: var(--gray-300);
+    font-size: 18px;
+    font-weight: 300;
+  }
+
+  /* Predict box */
+  .predict-box {
+    background: var(--gray-50);
+    border: 1.5px solid var(--gray-200);
+    border-radius: 12px;
+    padding: 24px 28px;
+  }
+
+  .predict-label {
+    display: inline-block;
+    background: var(--orange);
+    color: var(--white);
+    font-size: 12px;
+    font-weight: 600;
+    padding: 3px 12px;
+    border-radius: 4px;
+    margin-bottom: 14px;
+    letter-spacing: 0.5px;
+  }
+
+  .predict-q {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--navy);
+    margin-bottom: 16px;
+  }
+
+  .predict-code {
+    background: var(--white);
+    border: 1px solid var(--gray-200);
+    border-radius: 8px;
+    padding: 14px 18px;
+    font-family: var(--mono);
+    font-size: 13px;
+    line-height: 1.65;
+    color: var(--gray-700);
+  }
+
+  /* ========== PAGE 2: CORE CONTENT ========== */
+  .content-page {
+    padding: 55px 65px;
+  }
+
+  .unit-header-bar {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    margin-bottom: 8px;
+  }
+
+  .unit-tag {
+    font-size: 12px;
+    color: var(--orange);
+    font-weight: 600;
+    letter-spacing: 1px;
+  }
+
+  .unit-title-sm {
+    font-size: 14px;
+    color: var(--gray-400);
+    font-weight: 400;
+  }
+
+  .section-title {
+    font-size: 24px;
+    font-weight: 800;
+    color: var(--navy);
+    margin-bottom: 24px;
+    margin-top: 8px;
+    padding-left: 16px;
+    border-left: 5px solid var(--orange);
+  }
+
+  p {
+    font-size: 15.5px;
+    line-height: 1.9;
+    color: var(--text);
+    margin-bottom: 18px;
+  }
+
+  p code {
+    font-family: var(--mono);
+    font-size: 13.5px;
+    background: #f1f3f5;
+    padding: 2px 7px;
+    border-radius: 4px;
+    color: var(--navy);
+    font-weight: 500;
+  }
+
+  /* Code block */
+  .code-wrap {
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    border: 1px solid var(--gray-200);
+    margin: 22px 0;
+  }
+
+  .code-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 9px 18px;
+    background: var(--navy);
+    font-size: 12px;
+  }
+
+  .code-bar-lang {
+    font-family: var(--mono);
+    font-weight: 600;
+    color: var(--white);
+  }
+
+  .code-bar-file {
+    color: rgba(255,255,255,0.6);
+    font-weight: 400;
+  }
+
+  .code-body {
+    background: #f8f9fb;
+    padding: 20px 0;
+    font-family: var(--mono);
+    font-size: 13.5px;
+    line-height: 1.75;
+    border: 1px solid var(--gray-200);
+    border-top: none;
+    border-radius: 0 0 12px 12px;
+  }
+
+  .code-line {
+    display: flex;
+    padding: 0 20px;
+  }
+
+  .code-line:hover {
+    background: #f0f4f8;
+  }
+
+  .code-line.highlighted {
+    background: #fff8e1;
+  }
+
+  .ln {
+    width: 30px;
+    text-align: right;
+    color: #b8bfc8;
+    font-size: 12px;
+    margin-right: 18px;
+    user-select: none;
+    flex-shrink: 0;
+    padding-top: 1px;
+  }
+
+  .lc { flex: 1; }
+
+  /* syntax */
+  .s-pp { color: #8b5cf6; font-weight: 600; }
+  .s-str { color: #d97706; }
+  .s-type { color: #2563eb; font-weight: 500; }
+  .s-kw { color: #7c3aed; font-weight: 500; }
+  .s-fn { color: #059669; font-weight: 500; }
+  .s-num { color: #dc2626; }
+  .s-cm { color: #9ca3af; font-style: italic; }
+
+  /* Output block */
+  .output-wrap {
+    border-radius: 10px;
+    overflow: hidden;
+    margin: 10px 0 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    border: 1px solid #d1d5db;
+  }
+
+  .output-bar {
+    padding: 9px 18px;
+    background: #374151;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--white);
+    letter-spacing: 0.5px;
+  }
+
+  .output-body {
+    padding: 16px 20px;
+    font-family: var(--mono);
+    font-size: 13.5px;
+    line-height: 1.7;
+    color: var(--gray-800);
+    background: #f1f5f9;
+    border: 1px solid var(--gray-200);
+    border-top: none;
+    border-radius: 0 0 10px 10px;
+  }
+
+  /* Callout */
+  .tip {
+    margin: 28px 0;
+    padding: 18px 24px;
+    background: #dbeafe;
+    border-left: 5px solid #2563eb;
+    border-radius: 0 12px 12px 0;
+    font-size: 14.5px;
+    line-height: 1.8;
+    color: var(--text);
+  }
+
+  .tip-label {
+    font-weight: 700;
+    color: #2563eb;
+    font-size: 13px;
+    display: block;
+    margin-bottom: 4px;
+  }
+
+  .warn {
+    margin: 28px 0;
+    padding: 18px 24px;
+    background: #fef3c7;
+    border-left: 5px solid #d97706;
+    border-radius: 0 12px 12px 0;
+    font-size: 14.5px;
+    line-height: 1.8;
+  }
+
+  .warn-label {
+    font-weight: 700;
+    color: #d97706;
+    font-size: 13px;
+    display: block;
+    margin-bottom: 4px;
+  }
+
+  .note-box {
+    margin: 28px 0;
+    padding: 18px 24px;
+    background: #e2e8f0;
+    border-left: 5px solid #64748b;
+    border-radius: 0 12px 12px 0;
+    font-size: 14.5px;
+    line-height: 1.8;
+  }
+
+  .note-label {
+    font-weight: 700;
+    color: var(--gray-600);
+    font-size: 13px;
+    display: block;
+    margin-bottom: 4px;
+  }
+
+  /* Trace table */
+  table.trace {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    margin: 28px 0;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+    font-size: 14px;
+  }
+
+  table.trace th {
+    background: var(--navy);
+    color: var(--white);
+    padding: 10px 16px;
+    text-align: left;
+    font-weight: 500;
+    font-size: 13px;
+  }
+
+  table.trace td {
+    padding: 10px 16px;
+    border-bottom: 1px solid var(--gray-200);
+    color: var(--gray-700);
+  }
+
+  table.trace tr:nth-child(even) td { background: var(--gray-50); }
+  table.trace tr:last-child td { border-bottom: none; }
+
+  table.trace td code {
+    font-family: var(--mono);
+    font-size: 12.5px;
+    background: #eef1f5;
+    padding: 2px 6px;
+    border-radius: 4px;
+    color: var(--navy);
+  }
+
+  /* ========== PAGE 3: PROBLEMS ========== */
+  .problems-header {
+    margin-bottom: 8px;
+  }
+
+  .problems-chapter-ref {
+    font-size: 13px;
+    color: var(--gray-500);
+    margin-bottom: 4px;
+  }
+
+  .problems-title {
+    font-size: 28px;
+    font-weight: 800;
+    color: var(--navy);
+    margin-bottom: 24px;
+  }
+
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 16px;
+  }
+
+  .prob-card {
+    background: var(--white);
+    border: 1px solid var(--gray-200);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 3px 15px rgba(0,0,0,0.06);
+  }
+
+  .prob-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 16px;
+    background: var(--navy);
+  }
+
+  .prob-num {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--white);
+  }
+
+  .diff {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    font-size: 12px;
+    font-weight: 800;
+  }
+
+  .diff-basic { background: #22c55e; color: white; }
+  .diff-mid { background: #f59e0b; color: white; }
+  .diff-hard { background: #ef4444; color: white; }
+
+  .prob-desc {
+    font-size: 13.5px;
+    line-height: 1.65;
+    color: var(--gray-600);
+    margin-bottom: 10px;
+    padding: 14px 16px 0;
+  }
+
+  .prob-code {
+    background: var(--gray-50);
+    border: 1px solid var(--gray-200);
+    border-radius: 6px;
+    padding: 10px 14px;
+    margin: 0 16px 16px;
+    font-family: var(--mono);
+    font-size: 12.5px;
+    line-height: 1.55;
+    color: var(--gray-600);
+  }
+
+  /* Competition section */
+  .comp-section {
+    margin-top: 32px;
+    padding-top: 24px;
+    border-top: 2px solid var(--navy);
+  }
+
+  .comp-title {
+    font-size: 22px;
+    font-weight: 800;
+    color: var(--navy);
+    margin-bottom: 20px;
+  }
+
+  .comp-card {
+    background: var(--white);
+    border: 1.5px solid var(--gray-200);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 18px rgba(0,0,0,0.06);
+  }
+
+  .comp-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 16px;
+    background: #0f766e;
+  }
+
+  .comp-header .comp-name {
+    color: var(--white);
+    font-size: 15px;
+    font-weight: 700;
+    margin: 0;
+  }
+
+  .comp-inner {
+    padding: 14px 18px 18px;
+  }
+
+  .comp-badge {
+    display: inline-block;
+    padding: 3px 12px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 700;
+  }
+
+  .badge-bj { background: #93c5fd; color: #1e3a5f; }
+  .badge-cu { background: #c4b5fd; color: #3b1f7e; }
+  .badge-pg { background: #7dd3fc; color: #0c4a6e; }
+
+  .comp-name {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--navy);
+    margin-bottom: 6px;
+  }
+
+  .comp-desc {
+    font-size: 14px;
+    color: var(--gray-600);
+    line-height: 1.7;
+    margin-bottom: 14px;
+  }
+
+  .io-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+
+  .io-card {
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid var(--gray-200);
+  }
+
+  .io-h {
+    padding: 6px 14px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--gray-600);
+    background: #e2e8f0;
+  }
+
+  .io-c {
+    padding: 10px 14px;
+    font-family: var(--mono);
+    font-size: 13px;
+    line-height: 1.5;
+    background: var(--white);
+  }
+
+  /* ========== DEBUG LAB ========== */
+  .debug-section {
+    margin: 24px 0;
+    border: 2px solid var(--red);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+
+  .debug-bar {
+    background: var(--red);
+    color: var(--white);
+    padding: 10px 20px;
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 1px;
+  }
+
+  .debug-body {
+    padding: 20px;
+    background: #fef2f2;
+  }
+
+  /* 10축 connection */
+  .connect-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 16px;
+    margin: 28px 0;
+  }
+
+  .connect-card {
+    border-radius: 12px;
+    padding: 20px;
+    text-align: center;
+    border: 1px solid var(--gray-200);
+    box-shadow: 0 3px 14px rgba(0,0,0,0.05);
+  }
+
+  .connect-card h5 {
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 8px;
+  }
+
+  .connect-card p {
+    font-size: 13px;
+    margin: 0;
+    color: var(--gray-600);
+    line-height: 1.6;
+  }
+
+  .cc1 { border-top: 3px solid #8b5cf6; }
+  .cc1 h5 { color: #8b5cf6; }
+  .cc2 { border-top: 3px solid var(--green); }
+  .cc2 h5 { color: var(--green); }
+  .cc3 { border-top: 3px solid var(--navy); }
+  .cc3 h5 { color: var(--navy); }
+
+  /* PAGE NUMBER */
+  .page-num {
+    position: absolute;
+    bottom: 20px;
+    right: 30px;
+    font-size: 12px;
+    color: var(--gray-400);
+  }
+
+  /* WARMUP */
+  .warmup-box {
+    background: #e0e7f1;
+    border-radius: 12px;
+    padding: 24px 28px;
+    margin: 28px 0;
+    border: 2px solid #c7d2e0;
+  }
+
+  .warmup-title {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--navy);
+    margin-bottom: 14px;
+  }
+
+  .wq {
+    padding: 9px 16px;
+    background: var(--white);
+    border-radius: 8px;
+    margin-bottom: 8px;
+    font-size: 14px;
+    border: 1px solid var(--gray-200);
+    color: var(--gray-700);
+  }
+
+  .wq b { color: var(--navy); margin-right: 6px; }
+  .wq .hint { color: var(--gray-400); font-size: 13px; }
+
+  /* ===== CONTEST PROBLEMS PAGE ===== */
+  .contest-page-wrap .chapter-page {
+    min-height: auto;
+  }
+
+  .contest-page-wrap .chapter-page > div:last-child {
+    min-width: 0;
+    overflow-wrap: break-word;
+    word-break: break-word;
+  }
+
+  .contest-card {
+    background: white;
+    border: 1.5px solid var(--gray-200);
+    border-radius: 12px;
+    margin-bottom: 28px;
+    overflow: hidden;
+    break-inside: avoid;
+  }
+
+  .contest-header {
+    background: var(--navy);
+    color: white;
+    padding: 14px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .contest-num-source {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .contest-num {
+    font-weight: 700;
+    font-size: 16px;
+  }
+
+  .contest-source {
+    background: rgba(255,255,255,0.15);
+    padding: 3px 10px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 500;
+  }
+
+  .contest-body {
+    padding: 20px 24px 24px;
+  }
+
+  .contest-question {
+    font-size: 15px;
+    line-height: 1.7;
+    color: var(--text);
+    margin: 0 0 16px;
+    word-break: break-word;
+    overflow-wrap: break-word;
+  }
+
+  .contest-expected {
+    background: #1e293b;
+    border-radius: 8px;
+    overflow: hidden;
+    margin-bottom: 20px;
+  }
+
+  .contest-expected-label {
+    background: #334155;
+    color: #94a3b8;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 6px 14px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .contest-expected-body {
+    color: #e2e8f0;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    line-height: 1.6;
+    padding: 12px 16px;
+    margin: 0;
+    white-space: pre;
+  }
+
+  .contest-write-area {
+    border: 2px dashed var(--gray-300);
+    border-radius: 10px;
+    overflow: hidden;
+    transition: border-color 0.2s;
+  }
+
+  .contest-write-area:focus-within {
+    border-color: var(--orange);
+    border-style: solid;
+  }
+
+  .contest-write-label {
+    background: var(--bg);
+    color: var(--gray-500);
+    font-size: 12px;
+    font-weight: 600;
+    padding: 8px 14px;
+    border-bottom: 1px solid var(--gray-200);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .contest-textarea {
+    width: 100%;
+    min-height: 200px;
+    padding: 16px 18px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    line-height: 1.7;
+    color: var(--text);
+    background: #fafbfc;
+    border: none;
+    outline: none;
+    resize: vertical;
+    tab-size: 4;
+    box-sizing: border-box;
+  }
+
+  .contest-textarea::placeholder {
+    color: var(--gray-300);
+  }
+
+  @media print {
+    body { background: white; }
+    .page { box-shadow: none; margin: 0; page-break-after: always; }
+    .contest-textarea { border: 1px solid var(--gray-300); min-height: 180px; }
+  }
+
+</style>
+</head>
+<body>
+
+<div class="page">
+  <div class="chapter-page">
+    <div class="chapter-sidebar"></div>
+    <div class="chapter-accent-bar"></div>
+    <div class="chapter-body">
+      <div class="chapter-watermark">43</div>
+      <div class="chapter-label">Chapter 43</div>
+      <h1 class="chapter-title">순서도 프로젝트</h1>
+      <p class="chapter-sub">자판기, 신호등, 가위바위보 중 하나를 골라서 순서도와 의사코드를 직접 만들어 봐요!</p>
+
+      <h3 class="obj-title">이 유닛에서 배우는 것</h3>
+      <ul class="obj-list">
+        <li>실생활 문제를 순서도로 직접 설계할 수 있어요.</li>
+        <li>순서도를 의사코드로 변환할 수 있어요.</li>
+        <li>문제 분석 → 분해 → 순서도 → 의사코드 → 검증 과정을 따를 수 있어요.</li>
+        <li>Part 0에서 배운 개념들을 종합적으로 활용할 수 있어요.</li>
+      </ul>
+
+      <h3 class="prereq-title">선수 학습</h3>
+      <div class="prereq-flow">
+        <div class="prereq-item">순서도의 기본 도형(시작/끝, 처리, 조건, 입력/출력)을 안다</div><div class="prereq-arrow">→</div>
+        <div class="prereq-item">의사코드가 뭔지 안다</div><div class="prereq-arrow">→</div>
+        <div class="prereq-item current">문제 분해, 패턴 인식, 추상화 개념을 안다</div>
+      </div>
+
+      
+
+      <span class="page-num">1</span>
+    </div>
+  </div>
+</div>
+<div class="page">
+  <div class="content-page">
+    <div class="unit-header-bar">
+      <span class="unit-tag">UNIT 43</span>
+      <span class="unit-title-sm">순서도 프로젝트</span>
+    </div>
+<h2 class="section-title">미니 프로젝트 1: 순서도 직접 설계하기</h2>
+
+<p>Part 0에서 우리는 많은 것을 배웠어요. 컴퓨팅사고력의 핵심 4단계를 기억하나요?</p>
+<div class="note-box"><span class="note-label">[핵심] 컴퓨팅사고력 4단계 복습</span>
+<b>1단계. 분해</b> — 큰 문제를 작은 조각으로 나누기<br><b>2단계. 패턴 인식</b> — 반복되는 규칙 찾기<br><b>3단계. 추상화</b> — 핵심만 남기고 불필요한 것 제거<br><b>4단계. 알고리즘 설계</b> — 순서도/의사코드로 풀이 과정 정리</div>
+<p>이번 프로젝트에서는 이 4단계를 직접 실천해 볼 거예요. 아래 3가지 주제 중 <b>1개를 골라서</b> 순서도와 의사코드를 완성하세요!</p>
+<h2 class="section-title">프로젝트 진행 5단계</h2>
+<div class="tip"><span class="tip-label">[가이드] 순서도 프로젝트 진행 순서</span>
+<b>① 문제 분석</b> — 뭘 만들 건지 정확히 이해하기<br><b>② 분해</b> — 문제를 작은 단계로 쪼개기<br><b>③ 순서도 그리기</b> — 도형을 사용해서 흐름 표현하기<br><b>④ 의사코드 작성</b> — 순서도를 글로 바꾸기<br><b>⑤ 검증</b> — 여러 경우를 넣어서 제대로 작동하는지 확인하기</div>
+<h2 class="section-title">주제 1: 자판기</h2>
+
+<div class="note-box"><span class="note-label">[분석] 자판기 문제 분해</span>
+<b>입력:</b> 돈, 음료 번호<br><b>처리:</b> 금액 비교, 재고 확인, 거스름돈 계산<br><b>출력:</b> 음료 배출, 거스름돈 반환, 메시지 출력<br><b>조건:</b> 돈이 충분한가? 재고가 있는가?</div>
+<p>자판기를 단계별로 분해하면 이렇게 돼요:<br><b>1.</b> 돈을 넣는다<br><b>2.</b> 넣은 금액이 음료 가격 이상인지 확인한다<br><b>3.</b> 부족하면 → '돈이 부족해요' 메시지 → 돈 더 넣기<br><b>4.</b> 충분하면 → 음료를 선택한다<br><b>5.</b> 재고가 있는지 확인한다<br><b>6.</b> 없으면 → '다른 음료를 선택하세요' → 다시 선택<br><b>7.</b> 있으면 → 음료를 배출한다<br><b>8.</b> 거스름돈 = 넣은 돈 - 가격 → 거스름돈 반환<br><b>9.</b> '감사합니다' 출력</p>
+<!-- image -->
+<div class="tip"><span class="tip-label">[의사코드] 자판기</span>
+<code>프로그램 자판기<br>&nbsp;&nbsp;반복:<br>&nbsp;&nbsp;&nbsp;&nbsp;입력: 돈<br>&nbsp;&nbsp;&nbsp;&nbsp;만약 돈 < 가격:<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;출력: '돈이 부족해요'<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;처음으로 돌아가기<br>&nbsp;&nbsp;&nbsp;&nbsp;입력: 음료번호<br>&nbsp;&nbsp;&nbsp;&nbsp;만약 재고[음료번호] == 0:<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;출력: '다른 음료를 선택하세요'<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;음료 선택으로 돌아가기<br>&nbsp;&nbsp;&nbsp;&nbsp;음료 배출하기<br>&nbsp;&nbsp;&nbsp;&nbsp;거스름돈 = 돈 - 가격<br>&nbsp;&nbsp;&nbsp;&nbsp;거스름돈 반환하기<br>&nbsp;&nbsp;&nbsp;&nbsp;출력: '감사합니다!'<br>끝</code></div>
+<table class="trace"><thead><tr><th>단계</th><th>돈</th><th>가격</th><th>돈 >= 가격?</th><th>재고</th><th>거스름돈</th><th>출력</th></tr></thead><tbody><tr><td>1. 돈 투입</td><td>1500</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td></tr><tr><td>2. 가격 비교</td><td>1500</td><td>1000</td><td>예</td><td>-</td><td>-</td><td>-</td></tr><tr><td>3. 음료 선택</td><td>1500</td><td>1000</td><td>-</td><td>3개</td><td>-</td><td>-</td></tr><tr><td>4. 재고 확인</td><td>1500</td><td>1000</td><td>-</td><td>3개→2개</td><td>-</td><td>-</td></tr><tr><td>5. 음료 배출</td><td>1500</td><td>1000</td><td>-</td><td>2개</td><td>-</td><td>커피 나왔습니다</td></tr><tr><td>6. 거스름돈</td><td>1500</td><td>1000</td><td>-</td><td>2개</td><td>500</td><td>거스름돈: 500원</td></tr></tbody></table>
+<table class="trace"><thead><tr><th>단계</th><th>돈</th><th>가격</th><th>돈 >= 가격?</th><th>동작</th><th>출력</th></tr></thead><tbody><tr><td>1. 돈 투입</td><td>500</td><td>-</td><td>-</td><td>금액 저장</td><td>-</td></tr><tr><td>2. 가격 비교</td><td>500</td><td>800</td><td>아니오</td><td>-</td><td>돈이 부족해요</td></tr><tr><td>3. 추가 투입</td><td>500+500=1000</td><td>-</td><td>-</td><td>금액 합산</td><td>-</td></tr><tr><td>4. 가격 재비교</td><td>1000</td><td>800</td><td>예</td><td>음료 선택으로</td><td>-</td></tr><tr><td>5. 음료 배출</td><td>1000</td><td>800</td><td>-</td><td>음료 나옴</td><td>주스 나왔습니다</td></tr><tr><td>6. 거스름돈</td><td>1000</td><td>800</td><td>-</td><td>200원 반환</td><td>거스름돈: 200원</td></tr></tbody></table>
+<table class="trace"><thead><tr><th>단계</th><th>돈</th><th>선택 음료</th><th>재고</th><th>재고 > 0?</th><th>동작</th><th>출력</th></tr></thead><tbody><tr><td>1. 돈 투입</td><td>2000</td><td>-</td><td>-</td><td>-</td><td>금액 저장</td><td>-</td></tr><tr><td>2. 가격 비교</td><td>2000</td><td>-</td><td>-</td><td>-</td><td>충분함</td><td>-</td></tr><tr><td>3. 1차 선택</td><td>2000</td><td>콜라</td><td>0개</td><td>아니오</td><td>재선택 요청</td><td>다른 음료를 선택하세요</td></tr><tr><td>4. 2차 선택</td><td>2000</td><td>사이다</td><td>5개</td><td>예</td><td>배출 진행</td><td>-</td></tr><tr><td>5. 음료 배출</td><td>2000</td><td>사이다(800원)</td><td>5→4개</td><td>-</td><td>음료 나옴</td><td>사이다 나왔습니다</td></tr><tr><td>6. 거스름돈</td><td>2000</td><td>-</td><td>-</td><td>-</td><td>1200원 반환</td><td>거스름돈: 1200원</td></tr></tbody></table>
+<h2 class="section-title">주제 2: 신호등</h2>
+<p>신호등은 <b>반복(루프)</b>의 완벽한 예시예요. 초록 → 노랑 → 빨강 → 초록... 끝없이 반복하죠.</p>
+<div class="note-box"><span class="note-label">[분석] 신호등 문제 분해</span>
+<b>입력:</b> 없음 (자동으로 작동)<br><b>처리:</b> 각 색 유지 시간 카운트<br><b>출력:</b> 현재 신호 색<br><b>패턴:</b> 초록(30초) → 노랑(5초) → 빨강(20초) → 초록... (무한 반복)</div>
+<!-- image -->
+<div class="tip"><span class="tip-label">[의사코드] 신호등</span>
+<code>프로그램 신호등<br>&nbsp;&nbsp;신호 = 초록<br>&nbsp;&nbsp;무한반복:<br>&nbsp;&nbsp;&nbsp;&nbsp;만약 신호 == 초록:<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;초록 불 켜기<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;30초 기다리기<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;신호 = 노랑<br>&nbsp;&nbsp;&nbsp;&nbsp;만약 신호 == 노랑:<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;노랑 불 켜기<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;5초 기다리기<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;신호 = 빨강<br>&nbsp;&nbsp;&nbsp;&nbsp;만약 신호 == 빨강:<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;빨강 불 켜기<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;20초 기다리기<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;신호 = 초록<br>끝</code></div>
+<table class="trace"><thead><tr><th>사이클</th><th>현재 신호</th><th>유지 시간</th><th>다음 신호</th><th>경과 시간(초)</th></tr></thead><tbody><tr><td>1회차</td><td>초록</td><td>30초</td><td>노랑</td><td>0~30</td></tr><tr><td>1회차</td><td>노랑</td><td>5초</td><td>빨강</td><td>30~35</td></tr><tr><td>1회차</td><td>빨강</td><td>20초</td><td>초록</td><td>35~55</td></tr><tr><td>2회차</td><td>초록</td><td>30초</td><td>노랑</td><td>55~85</td></tr><tr><td>2회차</td><td>노랑</td><td>5초</td><td>빨강</td><td>85~90</td></tr><tr><td>2회차</td><td>빨강</td><td>20초</td><td>초록</td><td>90~110</td></tr></tbody></table>
+<h2 class="section-title">️ 주제 3: 가위바위보</h2>
+
+<div class="note-box"><span class="note-label">[분석] 가위바위보 문제 분해</span>
+<b>입력:</b> 플레이어의 선택 (가위/바위/보)<br><b>처리:</b> 컴퓨터 랜덤 선택, 승부 판정<br><b>출력:</b> 승/패/무승부 결과<br><b>조건:</b> 같은 것인가? → 무승부 / 이기는 조합인가? → 승/패<br><b>반복:</b> '다시 하기' 선택 시 처음으로</div>
+<!-- image -->
+<div class="tip"><span class="tip-label">[의사코드] 가위바위보</span>
+<code>프로그램 가위바위보<br>&nbsp;&nbsp;반복:<br>&nbsp;&nbsp;&nbsp;&nbsp;입력: 플레이어 선택 (가위/바위/보)<br>&nbsp;&nbsp;&nbsp;&nbsp;컴퓨터 = 랜덤(가위, 바위, 보)<br>&nbsp;&nbsp;&nbsp;&nbsp;만약 플레이어 == 컴퓨터:<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;출력: '무승부! 다시!'<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;처음으로 돌아가기<br>&nbsp;&nbsp;&nbsp;&nbsp;만약 (플레이어==가위 AND 컴퓨터==보) OR<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(플레이어==바위 AND 컴퓨터==가위) OR<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(플레이어==보 AND 컴퓨터==바위):<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;출력: '플레이어 승!'<br>&nbsp;&nbsp;&nbsp;&nbsp;아니면:<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;출력: '컴퓨터 승!'<br>&nbsp;&nbsp;&nbsp;&nbsp;입력: 다시할래? (예/아니오)<br>&nbsp;&nbsp;&nbsp;&nbsp;만약 아니오: 중단<br>끝</code></div>
+<table class="trace"><thead><tr><th>라운드</th><th>내 선택</th><th>컴퓨터</th><th>같은가?</th><th>내가 이기는 조합?</th><th>결과</th></tr></thead><tbody><tr><td>1</td><td>가위</td><td>가위</td><td>예</td><td>-</td><td>무승부 → 다시</td></tr><tr><td>2</td><td>바위</td><td>가위</td><td>아니오</td><td>예 (바위>가위)</td><td>내가 이김!</td></tr><tr><td>3</td><td>보</td><td>바위</td><td>아니오</td><td>예 (보>바위)</td><td>내가 이김!</td></tr><tr><td>종료</td><td>-</td><td>-</td><td>-</td><td>-</td><td>다시 안 함 → 끝</td></tr></tbody></table>
+<h2 class="section-title">순서도 → 의사코드 변환 비법</h2>
+<p>순서도를 의사코드로 바꾸는 건 생각보다 간단해요. 각 도형을 키워드로 바꾸면 돼요!</p>
+<!-- image -->
+<div class="note-box"><span class="note-label">[핵심] 도형 → 키워드 변환표</span>
+<b>타원(시작/끝)</b> → <code>프로그램 이름</code> / <code>끝</code><br><b>평행사변형(입력)</b> → <code>입력: 변수이름</code><br><b>직사각형(처리)</b> → 그냥 동작 서술<br><b>마름모(조건)</b> → <code>만약 조건:</code><br><b>둥근 사각형(출력)</b> → <code>출력: "메시지"</code><br><b>화살표(반복)</b> → <code>반복:</code> 또는 <code>처음으로 돌아가기</code></div>
+<table class="trace"><thead><tr><th>순서</th><th>순서도 도형</th><th>도형 의미</th><th>변환된 의사코드</th><th>예시</th></tr></thead><tbody><tr><td>1</td><td>타원</td><td>시작</td><td>프로그램 이름</td><td>프로그램 자판기</td></tr><tr><td>2</td><td>평행사변형</td><td>입력</td><td>입력: 변수</td><td>입력: 돈</td></tr><tr><td>3</td><td>마름모</td><td>조건 판단</td><td>만약 조건:</td><td>만약 돈 < 가격:</td></tr><tr><td>4</td><td>직사각형</td><td>처리/계산</td><td>동작 서술</td><td>거스름돈 = 돈 - 가격</td></tr><tr><td>5</td><td>둥근 사각형</td><td>출력</td><td>출력: "메시지"</td><td>출력: "감사합니다"</td></tr><tr><td>6</td><td>화살표(위로)</td><td>반복</td><td>반복: / 돌아가기</td><td>처음으로 돌아가기</td></tr><tr><td>7</td><td>타원</td><td>끝</td><td>끝</td><td>끝</td></tr></tbody></table>
+<div class="debug-section"><div class="debug-bar">DEBUG LAB — 에러를 찾으시오</div><div class="debug-body">
+
+<p style="margin:14px 0 0; font-size:14px;"><b>에러:</b> </p>
+<p style="font-size:14px;"><b>수정:</b> </p>
+</div></div>
+<h2 class="section-title">검증: 내 순서도가 맞는지 확인하기</h2>
+
+<div class="tip"><span class="tip-label">[활동] 검증 체크리스트</span>
+<b>자판기 검증 예시:</b><br> 돈 1000원 넣고, 800원 음료 선택 → 음료 나오고 200원 반환?<br> 돈 500원 넣고, 800원 음료 선택 → '돈이 부족' 메시지?<br> 재고 0인 음료 선택 → '다른 음료를 선택하세요' 메시지?<br><br><b>가위바위보 검증:</b><br> 둘 다 가위 → 무승부 → 다시 하기?<br> 나: 바위, 컴퓨터: 가위 → 내가 이김?<br> '다시 안 할래' 선택 → 프로그램 종료?</div>
+<table class="trace"><thead><tr><th>테스트 번호</th><th>투입 금액</th><th>음료 가격</th><th>재고</th><th>예상 결과</th><th>실제 결과</th><th>통과?</th></tr></thead><tbody><tr><td>테스트 1</td><td>1000원</td><td>800원</td><td>있음</td><td>음료 나옴 + 200원 반환</td><td>음료 나옴 + 200원 반환</td><td>통과</td></tr><tr><td>테스트 2</td><td>500원</td><td>800원</td><td>있음</td><td>돈이 부족해요</td><td>돈이 부족해요</td><td>통과</td></tr><tr><td>테스트 3</td><td>1000원</td><td>800원</td><td>0개</td><td>다른 음료 선택하세요</td><td>다른 음료 선택하세요</td><td>통과</td></tr><tr><td>테스트 4</td><td>800원</td><td>800원</td><td>있음</td><td>음료 나옴 + 0원 반환</td><td>음료 나옴 + 0원 반환</td><td>통과</td></tr></tbody></table>
+<div class="debug-section"><div class="debug-bar">DEBUG LAB — 에러를 찾으시오</div><div class="debug-body">
+
+<p style="margin:14px 0 0; font-size:14px;"><b>에러:</b> </p>
+<p style="font-size:14px;"><b>수정:</b> </p>
+</div></div>
+<h2 class="section-title">C 언어 연결 미리보기</h2>
+<div class="note-box"><span class="note-label">[Part 1 예고] 순서도가 C 코드가 된다!</span>
+지금 그린 순서도를 Part 1에서 <b>진짜 C 코드</b>로 만들 거예요!<br><br><code>만약 돈 < 가격:</code> → <code>if (money < price)</code><br><code>반복:</code> → <code>while (1)</code><br><code>입력: 돈</code> → <code>scanf("%d", &money);</code><br><code>출력: '감사합니다'</code> → <code>printf("감사합니다");</code><br><br>지금 순서도를 잘 그려두면 C 코드 작성이 <b>훨씬 쉬워져요!</b></div>
+<div class="debug-section"><div class="debug-bar">DEBUG LAB — 에러를 찾으시오</div><div class="debug-body">
+
+<p style="margin:14px 0 0; font-size:14px;"><b>에러:</b> </p>
+<p style="font-size:14px;"><b>수정:</b> </p>
+</div></div>
+<h2 class="section-title">0 개념 총정리</h2>
+<div class="tip"><span class="tip-label">Part 0에서 배운 핵심 개념 총정리</span>
+<b>️ 컴퓨터 기초:</b> 하드웨어, 소프트웨어, 비트, 진법, 파일/폴더<br><b> 수학/논리:</b> 진법 변환, 논리 연산(AND/OR/NOT), 비교, 소수, GCD/LCM, 경우의 수, 순열/조합<br><b> 컴퓨팅사고력:</b> 분해, 패턴 인식, 추상화, 알고리즘 설계<br><b> 표현 도구:</b> 순서도, 의사코드<br><b> 알고리즘:</b> 전수조사, 탐욕법, 시뮬레이션, 재귀<br><b> 자료구조:</b> 집합, 그래프, 스택, 큐<br><b> C 언어 맛보기:</b> C 소개, 개발 환경, 기본 구조, 컴파일, 주석/들여쓰기</div>
+<div style="margin:22px 0"></div>
+<div style="margin:22px 0"></div>
+<h2 class="section-title">연습문제</h2>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 1</span><p style="margin:0;font-size:14px">순서도에서 마름모(◇)는 '조건 분기'를 나타낸다. (O/X)</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 2</span><p style="margin:0;font-size:14px">의사코드는 반드시 특정 프로그래밍 언어 문법을 따라야 한다. (O/X)</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 3</span><p style="margin:0;font-size:14px">순서도에서 '시작'과 '끝'을 나타내는 도형은?<br>(1) 직사각형<br>(2) 마름모<br>(3) 타원(둥근 모양)<br>(4) 평행사변형</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 4</span><p style="margin:0;font-size:14px">자판기에서 1500원을 넣고 1200원짜리 음료를 샀을 때, 거스름돈은 얼마인가요?</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 5</span><p style="margin:0;font-size:14px">가위바위보 게임에서 조건 분기가 필요한 이유는?<br>(1) 입력을 받아야 해서<br>(2) 승/패/무승부 3가지 결과를 나눠야 해서<br>(3) 화면에 출력해야 해서<br>(4) 프로그램을 끝내야 해서</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 6</span><p style="margin:0;font-size:14px">3가지 주제(자판기/신호등/가위바위보) 중 하나를 골라, 순서도를 직접 그리고 의사코드로 변환하세요. 검증까지 해 보세요!</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 7</span><p style="margin:0;font-size:14px">신호등 순서도에서 '보행자 버튼'을 추가하려면 어떻게 수정해야 할까요? (힌트: 조건 분기 추가)</p></div>
+<h2 class="section-title">용어 정리</h2>
+<h2 class="section-title">[심화] 순서도 프로젝트 — 실전 알고리즘 설계</h2>
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span><span class="code-bar-file">[C 코드] 자판기 시뮬레이션 (순서도→코드)</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;stdio.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc"><span class="s-cm">// 순서도: [시작]→[금액입력]→{충분?}→[음료선택]→[거스름돈]→[끝]</span></span></div>
+<div class="code-line"><span class="ln">4</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">main</span>() {</span></div>
+<div class="code-line"><span class="ln">5</span><span class="lc">    <span class="s-type">int</span> prices[] = {<span class="s-num">500</span>, <span class="s-num">700</span>, <span class="s-num">1000</span>};</span></div>
+<div class="code-line"><span class="ln">6</span><span class="lc">    <span class="s-kw">const</span> <span class="s-type">char</span> *names[] = {<span class="s-str">"물"</span>, <span class="s-str">"주스"</span>, <span class="s-str">"커피"</span>};</span></div>
+<div class="code-line"><span class="ln">7</span><span class="lc">    <span class="s-type">int</span> money, choice;</span></div>
+<div class="code-line"><span class="ln">8</span><span class="lc">    </span></div>
+<div class="code-line"><span class="ln">9</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"=== 자판기 ===\n"</span>);</span></div>
+<div class="code-line"><span class="ln">10</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"투입 금액: "</span>);</span></div>
+<div class="code-line"><span class="ln">11</span><span class="lc">    <span class="s-fn">scanf</span>(<span class="s-str">"%d"</span>, &amp;money);</span></div>
+<div class="code-line"><span class="ln">12</span><span class="lc">    </span></div>
+<div class="code-line"><span class="ln">13</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"\n메뉴:\n"</span>);</span></div>
+<div class="code-line"><span class="ln">14</span><span class="lc">    <span class="s-kw">for</span> (<span class="s-type">int</span> i = <span class="s-num">0</span>; i &lt; <span class="s-num">3</span>; i++)</span></div>
+<div class="code-line"><span class="ln">15</span><span class="lc">        <span class="s-fn">printf</span>(<span class="s-str">"  %d. %s (%d원)\n"</span>, i+<span class="s-num">1</span>, names[i], prices[i]);</span></div>
+<div class="code-line"><span class="ln">16</span><span class="lc">    </span></div>
+<div class="code-line"><span class="ln">17</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"선택 (1-3): "</span>);</span></div>
+<div class="code-line"><span class="ln">18</span><span class="lc">    <span class="s-fn">scanf</span>(<span class="s-str">"%d"</span>, &amp;choice);</span></div>
+<div class="code-line"><span class="ln">19</span><span class="lc">    </span></div>
+<div class="code-line"><span class="ln">20</span><span class="lc">    <span class="s-kw">if</span> (choice &lt; <span class="s-num">1</span> || choice &gt; <span class="s-num">3</span>) {</span></div>
+<div class="code-line"><span class="ln">21</span><span class="lc">        <span class="s-fn">printf</span>(<span class="s-str">"잘못된 선택!\n"</span>);</span></div>
+<div class="code-line"><span class="ln">22</span><span class="lc">        <span class="s-kw">return</span> <span class="s-num">1</span>;</span></div>
+<div class="code-line"><span class="ln">23</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">24</span><span class="lc">    </span></div>
+<div class="code-line"><span class="ln">25</span><span class="lc">    <span class="s-type">int</span> price = prices[choice-<span class="s-num">1</span>];</span></div>
+<div class="code-line"><span class="ln">26</span><span class="lc">    <span class="s-kw">if</span> (money &lt; price) {</span></div>
+<div class="code-line"><span class="ln">27</span><span class="lc">        <span class="s-fn">printf</span>(<span class="s-str">"금액 부족! (%d원 필요, %d원 투입)\n"</span>, price, money);</span></div>
+<div class="code-line"><span class="ln">28</span><span class="lc">    } <span class="s-kw">else</span> {</span></div>
+<div class="code-line"><span class="ln">29</span><span class="lc">        <span class="s-fn">printf</span>(<span class="s-str">"\n%s 나왔습니다!\n"</span>, names[choice-<span class="s-num">1</span>]);</span></div>
+<div class="code-line"><span class="ln">30</span><span class="lc">        <span class="s-fn">printf</span>(<span class="s-str">"거스름돈: %d원\n"</span>, money - price);</span></div>
+<div class="code-line"><span class="ln">31</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">32</span><span class="lc">    <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">33</span><span class="lc">}</span></div>
+</div>
+</div>
+<div class="output-wrap"><div class="output-bar">실행 결과</div><div class="output-body">=== 자판기 ===
+투입 금액: 1500
+
+메뉴:
+  1. 물 (500원)
+  2. 주스 (700원)
+  3. 커피 (1000원)
+선택 (1-3): 3
+
+커피 나왔습니다!
+거스름돈: 500원</div></div>
+<h2 class="section-title">[심화 내용] 상태 기계와 프로젝트 설계</h2>
+<div class="note-box"><span class="note-label">[심화 내용] 상태 기계 기반 설계</span>
+복잡한 프로그램을 상태 기계로 설계하면 깔끔!<br><br><b>자판기의 상태:</b><br>IDLE → MONEY_IN → SELECTING → DISPENSING → CHANGE → IDLE<br><br><b>코드 구조:</b><br>while (running) {<br>  switch (state) {<br>    case IDLE: 대기 처리; break;<br>    case MONEY_IN: 금액 처리; break;<br>    case SELECTING: 선택 처리; break;<br>    case DISPENSING: 배출 처리; break;<br>  }<br>}<br><br><b>장점:</b><br>1. 각 상태가 독립적 → 디버깅 쉬움<br>2. 새 상태 추가가 간편<br>3. 순서도와 1:1 대응<br><br>게임 AI, 프로토콜, UI 모두 이 패턴!</div>
+<table class="trace"><thead><tr><th>순서</th><th>현재 상태</th><th>이벤트/입력</th><th>동작</th><th>다음 상태</th></tr></thead><tbody><tr><td>1</td><td>IDLE(대기)</td><td>사용자 접근</td><td>화면 켜기</td><td>MONEY_IN</td></tr><tr><td>2</td><td>MONEY_IN(투입)</td><td>1000원 투입</td><td>잔액 표시</td><td>SELECTING</td></tr><tr><td>3</td><td>SELECTING(선택)</td><td>커피 선택</td><td>가격 비교</td><td>DISPENSING</td></tr><tr><td>4</td><td>DISPENSING(배출)</td><td>음료 내려옴</td><td>음료 배출</td><td>CHANGE</td></tr><tr><td>5</td><td>CHANGE(거스름돈)</td><td>거스름돈 계산</td><td>동전 반환</td><td>IDLE</td></tr><tr><td>6</td><td>IDLE(대기)</td><td>-</td><td>화면 끄기</td><td>IDLE</td></tr></tbody></table>
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span><span class="code-bar-file">[C 코드] 가위바위보 (순서도 프로젝트)</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;stdio.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;stdlib.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;time.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">4</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">5</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">main</span>() {</span></div>
+<div class="code-line"><span class="ln">6</span><span class="lc">    <span class="s-fn">srand</span>(<span class="s-fn">time</span>(<span class="s-kw">NULL</span>));</span></div>
+<div class="code-line"><span class="ln">7</span><span class="lc">    <span class="s-kw">const</span> <span class="s-type">char</span> *hands[] = {<span class="s-str">"가위"</span>, <span class="s-str">"바위"</span>, <span class="s-str">"보"</span>};</span></div>
+<div class="code-line"><span class="ln">8</span><span class="lc">    <span class="s-type">int</span> wins = <span class="s-num">0</span>, losses = <span class="s-num">0</span>, draws = <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">9</span><span class="lc">    </span></div>
+<div class="code-line"><span class="ln">10</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"=== 가위바위보 (5판 3선승) ===\n\n"</span>);</span></div>
+<div class="code-line"><span class="ln">11</span><span class="lc">    </span></div>
+<div class="code-line"><span class="ln">12</span><span class="lc">    <span class="s-type">int</span> round = <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">13</span><span class="lc">    <span class="s-kw">while</span> (wins &lt; <span class="s-num">3</span> &amp;&amp; losses &lt; <span class="s-num">3</span>) {</span></div>
+<div class="code-line"><span class="ln">14</span><span class="lc">        round++;</span></div>
+<div class="code-line"><span class="ln">15</span><span class="lc">        <span class="s-fn">printf</span>(<span class="s-str">"[%d라운드] 가위(0) 바위(1) 보(2): "</span>, round);</span></div>
+<div class="code-line"><span class="ln">16</span><span class="lc">        <span class="s-type">int</span> user;</span></div>
+<div class="code-line"><span class="ln">17</span><span class="lc">        <span class="s-fn">scanf</span>(<span class="s-str">"%d"</span>, &amp;user);</span></div>
+<div class="code-line"><span class="ln">18</span><span class="lc">        <span class="s-kw">if</span> (user &lt; <span class="s-num">0</span> || user &gt; <span class="s-num">2</span>) { <span class="s-fn">printf</span>(<span class="s-str">"잘못된 입력!\n"</span>); <span class="s-kw">continue</span>; }</span></div>
+<div class="code-line"><span class="ln">19</span><span class="lc">        </span></div>
+<div class="code-line"><span class="ln">20</span><span class="lc">        <span class="s-type">int</span> cpu = <span class="s-fn">rand</span>() % <span class="s-num">3</span>;</span></div>
+<div class="code-line"><span class="ln">21</span><span class="lc">        <span class="s-fn">printf</span>(<span class="s-str">"  나: %s vs 컴퓨터: %s → "</span>, hands[user], hands[cpu]);</span></div>
+<div class="code-line"><span class="ln">22</span><span class="lc">        </span></div>
+<div class="code-line"><span class="ln">23</span><span class="lc">        <span class="s-kw">if</span> (user == cpu) { <span class="s-fn">printf</span>(<span class="s-str">"무승부!\n"</span>); draws++; }</span></div>
+<div class="code-line"><span class="ln">24</span><span class="lc">        <span class="s-kw">else</span> <span class="s-kw">if</span> ((user+<span class="s-num">1</span>)%<span class="s-num">3</span> == cpu) { <span class="s-fn">printf</span>(<span class="s-str">"패배...\n"</span>); losses++; }</span></div>
+<div class="code-line"><span class="ln">25</span><span class="lc">        <span class="s-kw">else</span> { <span class="s-fn">printf</span>(<span class="s-str">"승리!\n"</span>); wins++; }</span></div>
+<div class="code-line"><span class="ln">26</span><span class="lc">        </span></div>
+<div class="code-line"><span class="ln">27</span><span class="lc">        <span class="s-fn">printf</span>(<span class="s-str">"  (현재: %d승 %d패 %d무)\n\n"</span>, wins, losses, draws);</span></div>
+<div class="code-line"><span class="ln">28</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">29</span><span class="lc">    </span></div>
+<div class="code-line"><span class="ln">30</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"=== 최종: %s! ===\n"</span>, wins&gt;=<span class="s-num">3</span> ? <span class="s-str">"승리"</span> : <span class="s-str">"패배"</span>);</span></div>
+<div class="code-line"><span class="ln">31</span><span class="lc">    <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">32</span><span class="lc">}</span></div>
+</div>
+</div>
+<div class="output-wrap"><div class="output-bar">실행 결과</div><div class="output-body">=== 가위바위보 (5판 3선승) ===
+
+[1라운드] 가위(0) 바위(1) 보(2): 1
+  나: 바위 vs 컴퓨터: 가위 → 승리!
+  (현재: 1승 0패 0무)
+
+[2라운드] 가위(0) 바위(1) 보(2): 0
+  나: 가위 vs 컴퓨터: 보 → 승리!
+  (현재: 2승 0패 0무)</div></div>
+<!-- fact-bite -->
+
+<h2 class="section-title">[심화] 프로젝트 규모별 순서도</h2>
+<div class="note-box"><span class="note-label">[심화] 미니 프로젝트 아이디어</span>
+<b>Level 1: 단순 분기</b><br>1. 윤년 판별기<br>2. BMI 계산기 + 체중 분류<br>3. 택시 요금 계산기<br><br><b>Level 2: 반복 + 분기</b><br>4. 숫자 맞추기 게임 (이진 탐색 힌트)<br>5. 성적 관리 (평균, 최고, 최저)<br>6. 간단한 ATM 시뮬레이션<br><br><b>Level 3: 상태 기계</b><br>7. 자판기 (다중 상품, 잔액 관리)<br>8. 텍스트 어드벤처 게임<br>9. 교통 신호 제어기<br><br>각 프로젝트를 먼저 순서도로 그리고<br>그 다음 C 코드로 변환하세요!</div>
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span><span class="code-bar-file">[C 코드] 숫자 맞추기 게임</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;stdio.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;stdlib.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;time.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">4</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">5</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">main</span>() {</span></div>
+<div class="code-line"><span class="ln">6</span><span class="lc">    <span class="s-fn">srand</span>(<span class="s-fn">time</span>(<span class="s-kw">NULL</span>));</span></div>
+<div class="code-line"><span class="ln">7</span><span class="lc">    <span class="s-type">int</span> secret = <span class="s-fn">rand</span>() % <span class="s-num">100</span> + <span class="s-num">1</span>;  <span class="s-cm">// 1~100</span></span></div>
+<div class="code-line"><span class="ln">8</span><span class="lc">    <span class="s-type">int</span> guess, attempts = <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">9</span><span class="lc">    </span></div>
+<div class="code-line"><span class="ln">10</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"=== 숫자 맞추기 게임 ===\n"</span>);</span></div>
+<div class="code-line"><span class="ln">11</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"1~100 사이의 숫자를 맞춰보세요!\n\n"</span>);</span></div>
+<div class="code-line"><span class="ln">12</span><span class="lc">    </span></div>
+<div class="code-line"><span class="ln">13</span><span class="lc">    <span class="s-kw">do</span> {</span></div>
+<div class="code-line"><span class="ln">14</span><span class="lc">        <span class="s-fn">printf</span>(<span class="s-str">"추측: "</span>);</span></div>
+<div class="code-line"><span class="ln">15</span><span class="lc">        <span class="s-fn">scanf</span>(<span class="s-str">"%d"</span>, &amp;guess);</span></div>
+<div class="code-line"><span class="ln">16</span><span class="lc">        attempts++;</span></div>
+<div class="code-line"><span class="ln">17</span><span class="lc">        </span></div>
+<div class="code-line"><span class="ln">18</span><span class="lc">        <span class="s-kw">if</span> (guess &lt; secret)</span></div>
+<div class="code-line"><span class="ln">19</span><span class="lc">            <span class="s-fn">printf</span>(<span class="s-str">"  ↑ 더 크게!\n"</span>);</span></div>
+<div class="code-line"><span class="ln">20</span><span class="lc">        <span class="s-kw">else</span> <span class="s-kw">if</span> (guess &gt; secret)</span></div>
+<div class="code-line"><span class="ln">21</span><span class="lc">            <span class="s-fn">printf</span>(<span class="s-str">"  ↓ 더 작게!\n"</span>);</span></div>
+<div class="code-line"><span class="ln">22</span><span class="lc">        <span class="s-kw">else</span></span></div>
+<div class="code-line"><span class="ln">23</span><span class="lc">            <span class="s-fn">printf</span>(<span class="s-str">"  🎉 정답! %d번 만에 맞췄습니다!\n"</span>, attempts);</span></div>
+<div class="code-line"><span class="ln">24</span><span class="lc">    } <span class="s-kw">while</span> (guess != secret);</span></div>
+<div class="code-line"><span class="ln">25</span><span class="lc">    </span></div>
+<div class="code-line"><span class="ln">26</span><span class="lc">    <span class="s-cm">// 이진 탐색이면 최대 7번 (log2(100) ≈ 6.6)</span></span></div>
+<div class="code-line"><span class="ln">27</span><span class="lc">    <span class="s-kw">if</span> (attempts &lt;= <span class="s-num">7</span>)</span></div>
+<div class="code-line"><span class="ln">28</span><span class="lc">        <span class="s-fn">printf</span>(<span class="s-str">"\n완벽한 이진 탐색 실력! 🏆\n"</span>);</span></div>
+<div class="code-line"><span class="ln">29</span><span class="lc">    <span class="s-kw">else</span></span></div>
+<div class="code-line"><span class="ln">30</span><span class="lc">        <span class="s-fn">printf</span>(<span class="s-str">"\n이진 탐색을 사용하면 7번 이내에 맞출 수 있어요!\n"</span>);</span></div>
+<div class="code-line"><span class="ln">31</span><span class="lc">    </span></div>
+<div class="code-line"><span class="ln">32</span><span class="lc">    <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">33</span><span class="lc">}</span></div>
+</div>
+</div>
+<div class="output-wrap"><div class="output-bar">실행 결과</div><div class="output-body">=== 숫자 맞추기 게임 ===
+1~100 사이의 숫자를 맞춰보세요!
+
+추측: 50
+  ↑ 더 크게!
+추측: 75
+  ↓ 더 작게!
+추측: 62
+  ↑ 더 크게!
+추측: 68
+  🎉 정답! 4번 만에 맞췄습니다!
+
+완벽한 이진 탐색 실력! 🏆</div></div>
+<h2 class="section-title">[심화 내용] 프로젝트 개발 프로세스</h2>
+<div class="note-box"><span class="note-label">[심화 내용] 소프트웨어 개발 단계</span>
+<b>1. 요구사항 분석</b><br>"무엇을 만들 것인가?"<br>기능 목록, 제약 조건 정리<br><br><b>2. 설계</b><br>"어떻게 만들 것인가?"<br>순서도, 상태 다이어그램, 모듈 분리<br><br><b>3. 구현</b><br>"코드 작성"<br>설계대로 한 모듈씩 구현<br><br><b>4. 테스트</b><br>"제대로 동작하는가?"<br>단위 테스트, 통합 테스트, 경계값 테스트<br><br><b>5. 유지보수</b><br>"개선하고 수정"<br>버그 수정, 기능 추가, 리팩토링<br><br>순서도 프로젝트 = 설계 단계의 핵심!<br>설계 없이 코딩하면 "스파게티 코드"가 됩니다</div>
+<div style="margin:22px 0"></div>
+
+<h2 class="section-title">[심화 내용] 테스트 주도 개발 (TDD)</h2>
+<div class="note-box"><span class="note-label">[심화 내용] TDD란?</span>
+<b>Test-Driven Development:</b><br>테스트를 먼저 작성하고, 그 다음 코드를 구현!<br><br><b>3단계 사이클:</b><br>1. 🔴 Red: 실패하는 테스트 작성<br>2. 🟢 Green: 테스트를 통과하는 최소 코드 작성<br>3. 🔵 Refactor: 코드 정리 (기능 유지)<br><br><b>C에서 TDD:</b><br>assert(add(3, 5) == 8);  // 먼저 테스트<br>// 그 다음 add() 함수 구현!<br><br><b>장점:</b><br>- 버그 예방 (테스트가 안전망)<br>- 설계 개선 (테스트하기 좋은 코드 = 좋은 설계)<br>- 자신감 (리팩토링 후 테스트 통과 = 안심)<br><br>모든 순서도 프로젝트에 테스트를 추가해 보세요!</div>
+<div style="margin:22px 0"></div>
+<!-- fact-bite -->
+<div class="tip"><span class="tip-label">[활동] 순서도 프로젝트 도전</span>
+다음 프로그램을 순서도로 먼저 그리고 C로 구현하세요:<br><br><b>1. ATM 시뮬레이션</b><br>잔액 조회, 입금, 출금, 종료<br>출금 시 잔액 부족 체크!<br><br><b>2. 간단한 퀴즈 게임</b><br>5개 객관식 문제, 정답 확인, 점수 표시<br><br><b>3. 달력 출력기</b><br>월과 연도 입력 → 해당 월 달력 출력<br>윤년, 각 달의 일수 처리<br><br><b>4. 메뉴 기반 계산기</b><br>사칙연산 + 제곱 + 제곱근<br>연속 계산 지원, 0 입력 시 종료</div>
+
+<!-- fact-bite -->
+<div class="note-box"><span class="note-label">[심화] 프로젝트 발표 요령</span>
+순서도 프로젝트를 발표할 때:<br><br>1. <b>문제 정의</b>: "이 프로그램은 ~을 합니다"<br>2. <b>순서도 보여주기</b>: 전체 흐름 설명<br>3. <b>핵심 코드</b>: 가장 중요한 함수 3개<br>4. <b>데모</b>: 실행해서 결과 보여주기<br>5. <b>개선점</b>: "다음에 추가할 기능은..."<br><br>발표 시간: 5~10분이 적당<br>질문 대비: "왜 이 알고리즘을 선택했나요?"</div>
+
+<table class="trace"><thead><tr><th>용어</th><th>설명</th></tr></thead><tbody><tr><td><code>순서도 (Flowchart)</code></td><td>알고리즘의 흐름을 도형과 화살표로 시각적으로 표현한 그림.</td></tr><tr><td><code>의사코드 (Pseudocode)</code></td><td>프로그래밍 언어 문법을 따르지 않고, 사람이 이해할 수 있는 자연어로 알고리즘을 작성한 것.</td></tr><tr><td><code>조건 분기</code></td><td>조건에 따라 서로 다른 경로로 나뉘는 것. 순서도에서는 마름모(◇)로 표현.</td></tr><tr><td><code>반복 (Loop)</code></td><td>특정 조건이 만족될 때까지 같은 과정을 되풀이하는 것. 신호등의 색 변경이 대표적.</td></tr><tr><td><code>검증 (Verification)</code></td><td>순서도나 알고리즘이 올바르게 동작하는지 여러 입력값을 넣어 확인하는 과정.</td></tr><tr><td><code>문제 분해 (Decomposition)</code></td><td>복잡한 문제를 작은 하위 문제들로 나누어 해결하는 컴퓨팅사고력의 핵심 기법.</td></tr><tr><td><code>추상화 (Abstraction)</code></td><td>불필요한 세부사항을 제거하고 핵심 요소만 남기는 것. 자판기에서 '음료 종류'는 추상화.</td></tr><tr><td><code>상태 기계 패턴</code></td><td>프로그램을 상태(state)와 전이(transition)로 설계하는 패턴. switch-case로 구현.</td></tr><tr><td><code>가드 절</code></td><td>함수 시작부에서 예외 조건을 먼저 처리하고 반환하는 패턴. 중첩 감소.</td></tr></tbody></table>
+<div class="warmup-box"><div class="warmup-title">이번 유닛 핵심 정리</div><div class="wq"><b>1.</b> 실생활 문제를 순서도로 설계하는 5단계: 분석 → 분해 → 순서도 → 의사코드 → 검증</div><div class="wq"><b>2.</b> 순서도의 각 도형은 의사코드의 키워드로 1:1 변환 가능</div><div class="wq"><b>3.</b> 지금 그린 순서도가 Part 1에서 진짜 C 코드가 된다!</div><div class="wq"><b>4.</b> Part 0에서 배운 분해, 패턴, 추상화, 알고리즘이 모두 여기서 쓰인다</div></div>
+<div class="tip"><span class="tip-label">이 유닛에서 연결된 축</span>
+<b>[컴퓨팅사고력]</b> 문제 분해 + 패턴 인식 + 추상화 + 알고리즘 설계 — 4단계 총동원!<br><b>[KOI]</b> 1차 필기에 순서도 읽기/설계 문제 출제. 이 유닛이 바로 실전 연습!<br><b>[실생활]</b> 자판기, 신호등, 가위바위보 — 모두 우리 주변에 있는 시스템<br><b>[C 연결]</b> Part 1에서 if, while, scanf, printf로 이 순서도를 직접 구현!<br><b>[창의력]</b> 3개 주제 중 선택 + 검증 시나리오를 스스로 만들기</div>
+<h2 class="section-title">실전 활용 연습</h2>
+<p>지금까지 배운 개념을 활용한 다양한 실전 예제와 연습문제입니다.</p>
+
+<h2 class="section-title">실생활 연결</h2>
+<div class="tip"><span class="tip-label">[실생활] 이 개념은 어디에 쓰일까?</span>
+게임 개발, 앱 만들기, 웹사이트, 로봇 제어, AI 학습 등 모든 분야에서 사용돼요!</div>
+
+<h2 class="section-title">추가 연습문제</h2>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 20</span><p style="margin:0;font-size:14px">이번 유닛에서 배운 핵심 개념 3가지를 자신의 말로 설명해 보세요.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 21</span><p style="margin:0;font-size:14px">이번 유닛의 개념을 활용한 자신만의 문제를 1개 만들어 보세요.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 22</span><p style="margin:0;font-size:14px">이번 유닛의 개념이 C언어에서 어떻게 사용되는지 조사해 보세요.</p></div>
+<h2 class="section-title">[심화] 더 알아보기</h2>
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+
+<p>이번 유닛의 모든 개념을 완전히 이해했습니다. 다음 유닛에서 더 발전된 개념을 배워보세요!</p>
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<div class="note-box"><span class="note-label">[다음 유닛 미리보기]</span>
+다음은 <b>Part 0 종합 퀴즈</b>예요! KOI 모의고사처럼 진법 변환, 논리 퍼즐, 경우의 수, 순서도 읽기를 15문제로 테스트해요. 12개 이상 맞추면 Part 1로 진입 가능!</div>
+
+
+    <span class="page-num">2</span>
+  </div>
+</div>
+</body>
+</html>

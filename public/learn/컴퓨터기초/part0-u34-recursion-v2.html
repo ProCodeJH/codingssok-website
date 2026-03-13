@@ -1,0 +1,1305 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>코딩쏙 교재 — 재귀 — 자기 자신을 부르는 마법</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+
+  :root {
+    --navy: #1a2e4a;
+    --navy-mid: #2c4a6e;
+    --navy-light: #3d6590;
+    --orange: #e07830;
+    --orange-light: #f5e6d8;
+    --white: #ffffff;
+    --bg: #f7f8fa;
+    --bg-warm: #faf9f7;
+    --gray-50: #f9fafb;
+    --gray-100: #f3f4f6;
+    --gray-200: #e5e7eb;
+    --gray-300: #d1d5db;
+    --gray-400: #9ca3af;
+    --gray-500: #6b7280;
+    --gray-600: #4b5563;
+    --gray-700: #374151;
+    --gray-800: #1f2937;
+    --text: #2d3748;
+    --green: #16a34a;
+    --green-bg: #dcfce7;
+    --red: #dc2626;
+    --red-bg: #fee2e2;
+    --blue: #2563eb;
+    --blue-bg: #dbeafe;
+    --yellow-bg: #fef9c3;
+    --font: 'Noto Sans KR', sans-serif;
+    --mono: 'JetBrains Mono', 'Consolas', monospace;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: var(--font); background: #e8eaed; font-size: 15px; }
+
+  /* ========== PAGE ========== */
+  .page {
+    width: 210mm;
+    min-height: 295mm;
+    margin: 24px auto;
+    background: var(--white);
+    box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* ========== PAGE 1: CHAPTER START ========== */
+  .chapter-page {
+    display: flex;
+    min-height: 295mm;
+  }
+
+  .chapter-sidebar {
+    width: 10px;
+    background: var(--navy);
+    flex-shrink: 0;
+  }
+
+  .chapter-accent-bar {
+    width: 7px;
+    background: var(--orange);
+    flex-shrink: 0;
+  }
+
+  .chapter-body {
+    flex: 1;
+    padding: 70px 65px 50px 55px;
+    position: relative;
+  }
+
+  .chapter-watermark {
+    position: absolute;
+    top: -10px;
+    right: -15px;
+    font-size: 280px;
+    font-weight: 900;
+    color: rgba(180,195,212,0.35);
+    line-height: 1;
+    pointer-events: none;
+    letter-spacing: -10px;
+  }
+
+  .chapter-label {
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--navy-mid);
+    letter-spacing: 2px;
+    margin-bottom: 4px;
+  }
+
+  .chapter-title {
+    font-size: 44px;
+    font-weight: 900;
+    color: var(--navy);
+    line-height: 1.15;
+    margin-bottom: 12px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .chapter-sub {
+    font-size: 16px;
+    color: var(--gray-500);
+    font-weight: 400;
+    margin-bottom: 20px;
+    padding-bottom: 28px;
+    border-bottom: 1px solid var(--gray-200);
+  }
+
+  /* Learning objectives */
+  .obj-title {
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--navy);
+    margin-bottom: 16px;
+    margin-top: 32px;
+  }
+
+  .obj-list {
+    list-style: none;
+    margin-bottom: 40px;
+  }
+
+  .obj-list li {
+    padding: 5px 0 5px 24px;
+    position: relative;
+    font-size: 15px;
+    color: var(--gray-700);
+    line-height: 1.6;
+  }
+
+  .obj-list li::before {
+    content: '•';
+    position: absolute;
+    left: 8px;
+    color: var(--navy-mid);
+    font-weight: 700;
+  }
+
+  /* Prerequisites flow */
+  .prereq-title {
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--navy);
+    margin-bottom: 18px;
+  }
+
+  .prereq-flow {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    margin-bottom: 44px;
+  }
+
+  .prereq-item {
+    padding: 9px 22px;
+    border: 1.5px solid var(--gray-300);
+    border-radius: 50px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--gray-600);
+    background: var(--white);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+  }
+
+  .prereq-item.current {
+    border-color: var(--navy);
+    color: var(--navy);
+    font-weight: 700;
+    background: #edf2f7;
+    box-shadow: 0 2px 6px rgba(26,46,74,0.12);
+  }
+
+  .prereq-arrow {
+    width: 36px;
+    text-align: center;
+    color: var(--gray-300);
+    font-size: 18px;
+    font-weight: 300;
+  }
+
+  /* Predict box */
+  .predict-box {
+    background: var(--gray-50);
+    border: 1.5px solid var(--gray-200);
+    border-radius: 12px;
+    padding: 24px 28px;
+  }
+
+  .predict-label {
+    display: inline-block;
+    background: var(--orange);
+    color: var(--white);
+    font-size: 12px;
+    font-weight: 600;
+    padding: 3px 12px;
+    border-radius: 4px;
+    margin-bottom: 14px;
+    letter-spacing: 0.5px;
+  }
+
+  .predict-q {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--navy);
+    margin-bottom: 16px;
+  }
+
+  .predict-code {
+    background: var(--white);
+    border: 1px solid var(--gray-200);
+    border-radius: 8px;
+    padding: 14px 18px;
+    font-family: var(--mono);
+    font-size: 13px;
+    line-height: 1.65;
+    color: var(--gray-700);
+  }
+
+  /* ========== PAGE 2: CORE CONTENT ========== */
+  .content-page {
+    padding: 55px 65px;
+  }
+
+  .unit-header-bar {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    margin-bottom: 8px;
+  }
+
+  .unit-tag {
+    font-size: 12px;
+    color: var(--orange);
+    font-weight: 600;
+    letter-spacing: 1px;
+  }
+
+  .unit-title-sm {
+    font-size: 14px;
+    color: var(--gray-400);
+    font-weight: 400;
+  }
+
+  .section-title {
+    font-size: 24px;
+    font-weight: 800;
+    color: var(--navy);
+    margin-bottom: 24px;
+    margin-top: 8px;
+    padding-left: 16px;
+    border-left: 5px solid var(--orange);
+  }
+
+  p {
+    font-size: 15.5px;
+    line-height: 1.9;
+    color: var(--text);
+    margin-bottom: 18px;
+  }
+
+  p code {
+    font-family: var(--mono);
+    font-size: 13.5px;
+    background: #f1f3f5;
+    padding: 2px 7px;
+    border-radius: 4px;
+    color: var(--navy);
+    font-weight: 500;
+  }
+
+  /* Code block */
+  .code-wrap {
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    border: 1px solid var(--gray-200);
+    margin: 22px 0;
+  }
+
+  .code-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 9px 18px;
+    background: var(--navy);
+    font-size: 12px;
+  }
+
+  .code-bar-lang {
+    font-family: var(--mono);
+    font-weight: 600;
+    color: var(--white);
+  }
+
+  .code-bar-file {
+    color: rgba(255,255,255,0.6);
+    font-weight: 400;
+  }
+
+  .code-body {
+    background: #f8f9fb;
+    padding: 20px 0;
+    font-family: var(--mono);
+    font-size: 13.5px;
+    line-height: 1.75;
+    border: 1px solid var(--gray-200);
+    border-top: none;
+    border-radius: 0 0 12px 12px;
+  }
+
+  .code-line {
+    display: flex;
+    padding: 0 20px;
+  }
+
+  .code-line:hover {
+    background: #f0f4f8;
+  }
+
+  .code-line.highlighted {
+    background: #fff8e1;
+  }
+
+  .ln {
+    width: 30px;
+    text-align: right;
+    color: #b8bfc8;
+    font-size: 12px;
+    margin-right: 18px;
+    user-select: none;
+    flex-shrink: 0;
+    padding-top: 1px;
+  }
+
+  .lc { flex: 1; }
+
+  /* syntax */
+  .s-pp { color: #8b5cf6; font-weight: 600; }
+  .s-str { color: #d97706; }
+  .s-type { color: #2563eb; font-weight: 500; }
+  .s-kw { color: #7c3aed; font-weight: 500; }
+  .s-fn { color: #059669; font-weight: 500; }
+  .s-num { color: #dc2626; }
+  .s-cm { color: #9ca3af; font-style: italic; }
+
+  /* Output block */
+  .output-wrap {
+    border-radius: 10px;
+    overflow: hidden;
+    margin: 10px 0 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    border: 1px solid #d1d5db;
+  }
+
+  .output-bar {
+    padding: 9px 18px;
+    background: #374151;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--white);
+    letter-spacing: 0.5px;
+  }
+
+  .output-body {
+    padding: 16px 20px;
+    font-family: var(--mono);
+    font-size: 13.5px;
+    line-height: 1.7;
+    color: var(--gray-800);
+    background: #f1f5f9;
+    border: 1px solid var(--gray-200);
+    border-top: none;
+    border-radius: 0 0 10px 10px;
+  }
+
+  /* Callout */
+  .tip {
+    margin: 28px 0;
+    padding: 18px 24px;
+    background: #dbeafe;
+    border-left: 5px solid #2563eb;
+    border-radius: 0 12px 12px 0;
+    font-size: 14.5px;
+    line-height: 1.8;
+    color: var(--text);
+  }
+
+  .tip-label {
+    font-weight: 700;
+    color: #2563eb;
+    font-size: 13px;
+    display: block;
+    margin-bottom: 4px;
+  }
+
+  .warn {
+    margin: 28px 0;
+    padding: 18px 24px;
+    background: #fef3c7;
+    border-left: 5px solid #d97706;
+    border-radius: 0 12px 12px 0;
+    font-size: 14.5px;
+    line-height: 1.8;
+  }
+
+  .warn-label {
+    font-weight: 700;
+    color: #d97706;
+    font-size: 13px;
+    display: block;
+    margin-bottom: 4px;
+  }
+
+  .note-box {
+    margin: 28px 0;
+    padding: 18px 24px;
+    background: #e2e8f0;
+    border-left: 5px solid #64748b;
+    border-radius: 0 12px 12px 0;
+    font-size: 14.5px;
+    line-height: 1.8;
+  }
+
+  .note-label {
+    font-weight: 700;
+    color: var(--gray-600);
+    font-size: 13px;
+    display: block;
+    margin-bottom: 4px;
+  }
+
+  /* Trace table */
+  table.trace {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    margin: 28px 0;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+    font-size: 14px;
+  }
+
+  table.trace th {
+    background: var(--navy);
+    color: var(--white);
+    padding: 10px 16px;
+    text-align: left;
+    font-weight: 500;
+    font-size: 13px;
+  }
+
+  table.trace td {
+    padding: 10px 16px;
+    border-bottom: 1px solid var(--gray-200);
+    color: var(--gray-700);
+  }
+
+  table.trace tr:nth-child(even) td { background: var(--gray-50); }
+  table.trace tr:last-child td { border-bottom: none; }
+
+  table.trace td code {
+    font-family: var(--mono);
+    font-size: 12.5px;
+    background: #eef1f5;
+    padding: 2px 6px;
+    border-radius: 4px;
+    color: var(--navy);
+  }
+
+  /* ========== PAGE 3: PROBLEMS ========== */
+  .problems-header {
+    margin-bottom: 8px;
+  }
+
+  .problems-chapter-ref {
+    font-size: 13px;
+    color: var(--gray-500);
+    margin-bottom: 4px;
+  }
+
+  .problems-title {
+    font-size: 28px;
+    font-weight: 800;
+    color: var(--navy);
+    margin-bottom: 24px;
+  }
+
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 16px;
+  }
+
+  .prob-card {
+    background: var(--white);
+    border: 1px solid var(--gray-200);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 3px 15px rgba(0,0,0,0.06);
+  }
+
+  .prob-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 16px;
+    background: var(--navy);
+  }
+
+  .prob-num {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--white);
+  }
+
+  .diff {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    font-size: 12px;
+    font-weight: 800;
+  }
+
+  .diff-basic { background: #22c55e; color: white; }
+  .diff-mid { background: #f59e0b; color: white; }
+  .diff-hard { background: #ef4444; color: white; }
+
+  .prob-desc {
+    font-size: 13.5px;
+    line-height: 1.65;
+    color: var(--gray-600);
+    margin-bottom: 10px;
+    padding: 14px 16px 0;
+  }
+
+  .prob-code {
+    background: var(--gray-50);
+    border: 1px solid var(--gray-200);
+    border-radius: 6px;
+    padding: 10px 14px;
+    margin: 0 16px 16px;
+    font-family: var(--mono);
+    font-size: 12.5px;
+    line-height: 1.55;
+    color: var(--gray-600);
+  }
+
+  /* Competition section */
+  .comp-section {
+    margin-top: 32px;
+    padding-top: 24px;
+    border-top: 2px solid var(--navy);
+  }
+
+  .comp-title {
+    font-size: 22px;
+    font-weight: 800;
+    color: var(--navy);
+    margin-bottom: 20px;
+  }
+
+  .comp-card {
+    background: var(--white);
+    border: 1.5px solid var(--gray-200);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 18px rgba(0,0,0,0.06);
+  }
+
+  .comp-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 16px;
+    background: #0f766e;
+  }
+
+  .comp-header .comp-name {
+    color: var(--white);
+    font-size: 15px;
+    font-weight: 700;
+    margin: 0;
+  }
+
+  .comp-inner {
+    padding: 14px 18px 18px;
+  }
+
+  .comp-badge {
+    display: inline-block;
+    padding: 3px 12px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 700;
+  }
+
+  .badge-bj { background: #93c5fd; color: #1e3a5f; }
+  .badge-cu { background: #c4b5fd; color: #3b1f7e; }
+  .badge-pg { background: #7dd3fc; color: #0c4a6e; }
+
+  .comp-name {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--navy);
+    margin-bottom: 6px;
+  }
+
+  .comp-desc {
+    font-size: 14px;
+    color: var(--gray-600);
+    line-height: 1.7;
+    margin-bottom: 14px;
+  }
+
+  .io-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+
+  .io-card {
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid var(--gray-200);
+  }
+
+  .io-h {
+    padding: 6px 14px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--gray-600);
+    background: #e2e8f0;
+  }
+
+  .io-c {
+    padding: 10px 14px;
+    font-family: var(--mono);
+    font-size: 13px;
+    line-height: 1.5;
+    background: var(--white);
+  }
+
+  /* ========== DEBUG LAB ========== */
+  .debug-section {
+    margin: 24px 0;
+    border: 2px solid var(--red);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+
+  .debug-bar {
+    background: var(--red);
+    color: var(--white);
+    padding: 10px 20px;
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 1px;
+  }
+
+  .debug-body {
+    padding: 20px;
+    background: #fef2f2;
+  }
+
+  /* 10축 connection */
+  .connect-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 16px;
+    margin: 28px 0;
+  }
+
+  .connect-card {
+    border-radius: 12px;
+    padding: 20px;
+    text-align: center;
+    border: 1px solid var(--gray-200);
+    box-shadow: 0 3px 14px rgba(0,0,0,0.05);
+  }
+
+  .connect-card h5 {
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 8px;
+  }
+
+  .connect-card p {
+    font-size: 13px;
+    margin: 0;
+    color: var(--gray-600);
+    line-height: 1.6;
+  }
+
+  .cc1 { border-top: 3px solid #8b5cf6; }
+  .cc1 h5 { color: #8b5cf6; }
+  .cc2 { border-top: 3px solid var(--green); }
+  .cc2 h5 { color: var(--green); }
+  .cc3 { border-top: 3px solid var(--navy); }
+  .cc3 h5 { color: var(--navy); }
+
+  /* PAGE NUMBER */
+  .page-num {
+    position: absolute;
+    bottom: 20px;
+    right: 30px;
+    font-size: 12px;
+    color: var(--gray-400);
+  }
+
+  /* WARMUP */
+  .warmup-box {
+    background: #e0e7f1;
+    border-radius: 12px;
+    padding: 24px 28px;
+    margin: 28px 0;
+    border: 2px solid #c7d2e0;
+  }
+
+  .warmup-title {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--navy);
+    margin-bottom: 14px;
+  }
+
+  .wq {
+    padding: 9px 16px;
+    background: var(--white);
+    border-radius: 8px;
+    margin-bottom: 8px;
+    font-size: 14px;
+    border: 1px solid var(--gray-200);
+    color: var(--gray-700);
+  }
+
+  .wq b { color: var(--navy); margin-right: 6px; }
+  .wq .hint { color: var(--gray-400); font-size: 13px; }
+
+  /* ===== CONTEST PROBLEMS PAGE ===== */
+  .contest-page-wrap .chapter-page {
+    min-height: auto;
+  }
+
+  .contest-page-wrap .chapter-page > div:last-child {
+    min-width: 0;
+    overflow-wrap: break-word;
+    word-break: break-word;
+  }
+
+  .contest-card {
+    background: white;
+    border: 1.5px solid var(--gray-200);
+    border-radius: 12px;
+    margin-bottom: 28px;
+    overflow: hidden;
+    break-inside: avoid;
+  }
+
+  .contest-header {
+    background: var(--navy);
+    color: white;
+    padding: 14px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .contest-num-source {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .contest-num {
+    font-weight: 700;
+    font-size: 16px;
+  }
+
+  .contest-source {
+    background: rgba(255,255,255,0.15);
+    padding: 3px 10px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 500;
+  }
+
+  .contest-body {
+    padding: 20px 24px 24px;
+  }
+
+  .contest-question {
+    font-size: 15px;
+    line-height: 1.7;
+    color: var(--text);
+    margin: 0 0 16px;
+    word-break: break-word;
+    overflow-wrap: break-word;
+  }
+
+  .contest-expected {
+    background: #1e293b;
+    border-radius: 8px;
+    overflow: hidden;
+    margin-bottom: 20px;
+  }
+
+  .contest-expected-label {
+    background: #334155;
+    color: #94a3b8;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 6px 14px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .contest-expected-body {
+    color: #e2e8f0;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    line-height: 1.6;
+    padding: 12px 16px;
+    margin: 0;
+    white-space: pre;
+  }
+
+  .contest-write-area {
+    border: 2px dashed var(--gray-300);
+    border-radius: 10px;
+    overflow: hidden;
+    transition: border-color 0.2s;
+  }
+
+  .contest-write-area:focus-within {
+    border-color: var(--orange);
+    border-style: solid;
+  }
+
+  .contest-write-label {
+    background: var(--bg);
+    color: var(--gray-500);
+    font-size: 12px;
+    font-weight: 600;
+    padding: 8px 14px;
+    border-bottom: 1px solid var(--gray-200);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .contest-textarea {
+    width: 100%;
+    min-height: 200px;
+    padding: 16px 18px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    line-height: 1.7;
+    color: var(--text);
+    background: #fafbfc;
+    border: none;
+    outline: none;
+    resize: vertical;
+    tab-size: 4;
+    box-sizing: border-box;
+  }
+
+  .contest-textarea::placeholder {
+    color: var(--gray-300);
+  }
+
+  @media print {
+    body { background: white; }
+    .page { box-shadow: none; margin: 0; page-break-after: always; }
+    .contest-textarea { border: 1px solid var(--gray-300); min-height: 180px; }
+  }
+
+</style>
+</head>
+<body>
+
+<div class="page">
+  <div class="chapter-page">
+    <div class="chapter-sidebar"></div>
+    <div class="chapter-accent-bar"></div>
+    <div class="chapter-body">
+      <div class="chapter-watermark">34</div>
+      <div class="chapter-label">Chapter 34</div>
+      <h1 class="chapter-title">재귀</h1>
+      <p class="chapter-sub">함수가 자기 자신을 호출하는 재귀의 원리를 배우고 팩토리얼, 피보나치를 재귀로 구현해요.</p>
+
+      <h3 class="obj-title">이 유닛에서 배우는 것</h3>
+      <ul class="obj-list">
+        <li>재귀의 뜻을 설명할 수 있어요.</li>
+        <li>기저 조건과 재귀 호출의 역할을 알아요.</li>
+        <li>팩토리얼을 재귀로 구현할 수 있어요.</li>
+        <li>피보나치 수열을 재귀로 구현할 수 있어요.</li>
+        <li>[심화] 재귀와 반복의 변환을 이해해요.</li>
+        <li>[심화] 하노이 탑을 재귀로 풀 수 있어요.</li>
+        <li>[심화 내용] 재귀의 시간 복잡도와 메모이제이션을 알아요.</li>
+      </ul>
+
+      <h3 class="prereq-title">선수 학습</h3>
+      <div class="prereq-flow">
+        <div class="prereq-item">함수 개념 (U23)</div><div class="prereq-arrow">→</div>
+        <div class="prereq-item current">팩토리얼 (U33)</div>
+      </div>
+
+      
+
+      <span class="page-num">1</span>
+    </div>
+  </div>
+</div>
+<div class="page">
+  <div class="content-page">
+    <div class="unit-header-bar">
+      <span class="unit-tag">UNIT 34</span>
+      <span class="unit-title-sm">재귀</span>
+    </div>
+<h2 class="section-title">재귀가 뭘까?</h2>
+
+<div class="note-box"><span class="note-label">[핵심] 재귀란?</span>
+<b>재귀(Recursion)</b> = 함수가 <b>자기 자신을 호출</b>하는 것<br><br>반드시 필요한 2가지:<br>1. <b>기저 조건(Base Case)</b>: 멈추는 조건. 없으면 무한 루프!<br>2. <b>재귀 호출(Recursive Call)</b>: 자기 자신을 호출하되 문제를 줄여서!<br><br>재귀 = '큰 문제를 작은 문제로 분해' (U23 분해와 연결!)</div>
+<h2 class="section-title">팩토리얼 — 재귀의 교과서</h2>
+<div class="note-box"><span class="note-label">[핵심] 팩토리얼의 재귀 정의</span>
+5! = 5 × 4!<br>4! = 4 × 3!<br>3! = 3 × 2!<br>2! = 2 × 1!<br>1! = 1 ← <b>기저 조건!</b><br><br>일반화: n! = n × (n-1)!  (n ≥ 2)<br>기저: 1! = 1 (또는 0! = 1)</div>
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span><span class="code-bar-file">factorial_recursive.c</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;stdio.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">factorial</span>(<span class="s-type">int</span> n) {</span></div>
+<div class="code-line"><span class="ln">4</span><span class="lc">    <span class="s-kw">if</span> (n &lt;= <span class="s-num">1</span>) <span class="s-kw">return</span> <span class="s-num">1</span>;     <span class="s-cm">// 기저 조건!</span></span></div>
+<div class="code-line"><span class="ln">5</span><span class="lc">    <span class="s-kw">return</span> n * <span class="s-fn">factorial</span>(n - <span class="s-num">1</span>);  <span class="s-cm">// 재귀 호출!</span></span></div>
+<div class="code-line"><span class="ln">6</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">7</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">8</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">main</span>(<span class="s-type">void</span>) {</span></div>
+<div class="code-line"><span class="ln">9</span><span class="lc">    <span class="s-kw">for</span> (<span class="s-type">int</span> i = <span class="s-num">0</span>; i &lt;= <span class="s-num">10</span>; i++)</span></div>
+<div class="code-line"><span class="ln">10</span><span class="lc">        <span class="s-fn">printf</span>(<span class="s-str">"%d! = %d\n"</span>, i, <span class="s-fn">factorial</span>(i));</span></div>
+<div class="code-line"><span class="ln">11</span><span class="lc">    <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">12</span><span class="lc">}</span></div>
+</div>
+</div>
+<div class="output-wrap"><div class="output-bar">실행 결과</div><div class="output-body">0! = 1
+1! = 1
+2! = 2
+3! = 6
+4! = 24
+5! = 120
+6! = 720
+7! = 5040
+8! = 40320
+9! = 362880
+10! = 3628800</div></div>
+<table class="trace"><thead><tr><th>호출</th><th>n</th><th>계산</th><th>반환</th></tr></thead><tbody><tr><td>factorial(4)</td><td>4</td><td>4 × factorial(3)</td><td>4 × 6 = 24</td></tr><tr><td>  factorial(3)</td><td>3</td><td>3 × factorial(2)</td><td>3 × 2 = 6</td></tr><tr><td>    factorial(2)</td><td>2</td><td>2 × factorial(1)</td><td>2 × 1 = 2</td></tr><tr><td>      factorial(1)</td><td>1</td><td>기저 조건!</td><td>1</td></tr></tbody></table>
+<div style="margin:22px 0"></div>
+<h2 class="section-title">재귀의 동작 원리 — 콜 스택</h2>
+<div class="note-box"><span class="note-label">[핵심] 콜 스택 (Call Stack)</span>
+재귀 호출 때마다 함수가 <b>스택</b>에 쌓여요!<br><br>factorial(4) → factorial(3) → factorial(2) → factorial(1)<br><br>기저 조건 도달 → 하나씩 <b>돌아오며</b> 계산<br>factorial(1)=1 → factorial(2)=2 → factorial(3)=6 → factorial(4)=24<br><br>스택이 너무 깊으면? → <b>스택 오버플로!</b></div>
+<table class="trace"><thead><tr><th>단계</th><th>동작</th><th>스택 상태</th><th>스택 깊이</th></tr></thead><tbody><tr><td>1</td><td>factorial(4) 호출</td><td>[factorial(4)]</td><td>1</td></tr><tr><td>2</td><td>factorial(3) 호출</td><td>[factorial(4), factorial(3)]</td><td>2</td></tr><tr><td>3</td><td>factorial(2) 호출</td><td>[factorial(4), factorial(3), factorial(2)]</td><td>3</td></tr><tr><td>4</td><td>factorial(1) 호출</td><td>[factorial(4), factorial(3), factorial(2), factorial(1)]</td><td>4 (최대)</td></tr><tr><td>5</td><td>factorial(1) 반환 → 1</td><td>[factorial(4), factorial(3), factorial(2)]</td><td>3</td></tr><tr><td>6</td><td>factorial(2) 반환 → 2</td><td>[factorial(4), factorial(3)]</td><td>2</td></tr><tr><td>7</td><td>factorial(3) 반환 → 6</td><td>[factorial(4)]</td><td>1</td></tr><tr><td>8</td><td>factorial(4) 반환 → 24</td><td>[]</td><td>0</td></tr></tbody></table>
+
+<h2 class="section-title">피보나치 수열</h2>
+<div class="note-box"><span class="note-label">[핵심] 피보나치 수열</span>
+0, 1, 1, 2, 3, 5, 8, 13, 21, 34, 55, ...<br><br>규칙: F(n) = F(n-1) + F(n-2)<br>기저: F(0) = 0, F(1) = 1<br><br>앞의 두 수를 더하면 다음 수!</div>
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span><span class="code-bar-file">fib_recursive.c</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;stdio.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">fib</span>(<span class="s-type">int</span> n) {</span></div>
+<div class="code-line"><span class="ln">4</span><span class="lc">    <span class="s-kw">if</span> (n &lt;= <span class="s-num">0</span>) <span class="s-kw">return</span> <span class="s-num">0</span>;     <span class="s-cm">// 기저 1</span></span></div>
+<div class="code-line"><span class="ln">5</span><span class="lc">    <span class="s-kw">if</span> (n == <span class="s-num">1</span>) <span class="s-kw">return</span> <span class="s-num">1</span>;     <span class="s-cm">// 기저 2</span></span></div>
+<div class="code-line"><span class="ln">6</span><span class="lc">    <span class="s-kw">return</span> <span class="s-fn">fib</span>(n-<span class="s-num">1</span>) + <span class="s-fn">fib</span>(n-<span class="s-num">2</span>);  <span class="s-cm">// 재귀!</span></span></div>
+<div class="code-line"><span class="ln">7</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">8</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">9</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">main</span>(<span class="s-type">void</span>) {</span></div>
+<div class="code-line"><span class="ln">10</span><span class="lc">    <span class="s-kw">for</span> (<span class="s-type">int</span> i = <span class="s-num">0</span>; i &lt;= <span class="s-num">10</span>; i++)</span></div>
+<div class="code-line"><span class="ln">11</span><span class="lc">        <span class="s-fn">printf</span>(<span class="s-str">"F(%d) = %d\n"</span>, i, <span class="s-fn">fib</span>(i));</span></div>
+<div class="code-line"><span class="ln">12</span><span class="lc">    <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">13</span><span class="lc">}</span></div>
+</div>
+</div>
+<div class="output-wrap"><div class="output-bar">실행 결과</div><div class="output-body">F(0) = 0
+F(1) = 1
+F(2) = 1
+F(3) = 2
+F(4) = 3
+F(5) = 5
+F(6) = 8
+F(7) = 13
+F(8) = 21
+F(9) = 34
+F(10) = 55</div></div>
+<table class="trace"><thead><tr><th>호출</th><th>n</th><th>계산 과정</th><th>반환값</th></tr></thead><tbody><tr><td>fib(5)</td><td>5</td><td>fib(4) + fib(3)</td><td>3 + 2 = 5</td></tr><tr><td>  fib(4)</td><td>4</td><td>fib(3) + fib(2)</td><td>2 + 1 = 3</td></tr><tr><td>    fib(3)</td><td>3</td><td>fib(2) + fib(1)</td><td>1 + 1 = 2</td></tr><tr><td>      fib(2)</td><td>2</td><td>fib(1) + fib(0)</td><td>1 + 0 = 1</td></tr><tr><td>        fib(1)</td><td>1</td><td>기저 조건</td><td>1</td></tr><tr><td>        fib(0)</td><td>0</td><td>기저 조건</td><td>0</td></tr><tr><td>      fib(1)</td><td>1</td><td>기저 조건</td><td>1</td></tr><tr><td>    fib(2)</td><td>2</td><td>fib(1) + fib(0)</td><td>1 + 0 = 1</td></tr><tr><td>  fib(3)</td><td>3</td><td>fib(2) + fib(1)</td><td>1 + 1 = 2</td></tr></tbody></table>
+<div style="margin:22px 0"></div>
+<h2 class="section-title">[심화] 재귀 vs 반복</h2>
+<div class="debug-section"><div class="debug-bar">DEBUG LAB — 에러를 찾으시오</div><div class="debug-body">
+
+<p style="margin:14px 0 0; font-size:14px;"><b>에러:</b> </p>
+<p style="font-size:14px;"><b>수정:</b> </p>
+</div></div>
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span><span class="code-bar-file">factorial_iterative.c</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc"><span class="s-cm">// 반복 버전 팩토리얼</span></span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">factorial_iter</span>(<span class="s-type">int</span> n) {</span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc">    <span class="s-type">int</span> result = <span class="s-num">1</span>;</span></div>
+<div class="code-line"><span class="ln">4</span><span class="lc">    <span class="s-kw">for</span> (<span class="s-type">int</span> i = <span class="s-num">2</span>; i &lt;= n; i++)</span></div>
+<div class="code-line"><span class="ln">5</span><span class="lc">        result *= i;</span></div>
+<div class="code-line"><span class="ln">6</span><span class="lc">    <span class="s-kw">return</span> result;</span></div>
+<div class="code-line"><span class="ln">7</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">8</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">9</span><span class="lc"><span class="s-cm">// 반복 버전 피보나치 — O(n)!</span></span></div>
+<div class="code-line"><span class="ln">10</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">fib_iter</span>(<span class="s-type">int</span> n) {</span></div>
+<div class="code-line"><span class="ln">11</span><span class="lc">    <span class="s-kw">if</span> (n &lt;= <span class="s-num">0</span>) <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">12</span><span class="lc">    <span class="s-kw">if</span> (n == <span class="s-num">1</span>) <span class="s-kw">return</span> <span class="s-num">1</span>;</span></div>
+<div class="code-line"><span class="ln">13</span><span class="lc">    <span class="s-type">int</span> a = <span class="s-num">0</span>, b = <span class="s-num">1</span>;</span></div>
+<div class="code-line"><span class="ln">14</span><span class="lc">    <span class="s-kw">for</span> (<span class="s-type">int</span> i = <span class="s-num">2</span>; i &lt;= n; i++) {</span></div>
+<div class="code-line"><span class="ln">15</span><span class="lc">        <span class="s-type">int</span> temp = a + b;</span></div>
+<div class="code-line"><span class="ln">16</span><span class="lc">        a = b;</span></div>
+<div class="code-line"><span class="ln">17</span><span class="lc">        b = temp;</span></div>
+<div class="code-line"><span class="ln">18</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">19</span><span class="lc">    <span class="s-kw">return</span> b;</span></div>
+<div class="code-line"><span class="ln">20</span><span class="lc">}</span></div>
+</div>
+</div>
+<table class="trace"><thead><tr><th>단계</th><th>재귀 방식</th><th>반복 방식</th></tr></thead><tbody><tr><td>1</td><td>factorial(5) 호출</td><td>result=1, i=2</td></tr><tr><td>2</td><td>5 × factorial(4) 대기</td><td>result=1×2=2, i=3</td></tr><tr><td>3</td><td>4 × factorial(3) 대기</td><td>result=2×3=6, i=4</td></tr><tr><td>4</td><td>3 × factorial(2) 대기</td><td>result=6×4=24, i=5</td></tr><tr><td>5</td><td>2 × factorial(1) 대기</td><td>result=24×5=120 완료</td></tr><tr><td>6</td><td>기저 도달! 1 반환</td><td>—</td></tr><tr><td>7</td><td>2×1=2 반환</td><td>—</td></tr><tr><td>8</td><td>3×2=6 반환</td><td>—</td></tr><tr><td>9</td><td>4×6=24 반환</td><td>—</td></tr><tr><td>10</td><td>5×24=120 반환</td><td>—</td></tr></tbody></table>
+<h2 class="section-title">[심화] 하노이 탑</h2>
+<p>재귀의 가장 유명한 예제! N개 원판을 A기둥에서 C기둥으로 옮기기.</p>
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span><span class="code-bar-file">hanoi.c</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;stdio.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc"><span class="s-type">void</span> <span class="s-fn">hanoi</span>(<span class="s-type">int</span> n, <span class="s-type">char</span> from, <span class="s-type">char</span> to, <span class="s-type">char</span> via) {</span></div>
+<div class="code-line"><span class="ln">4</span><span class="lc">    <span class="s-kw">if</span> (n == <span class="s-num">1</span>) {</span></div>
+<div class="code-line"><span class="ln">5</span><span class="lc">        <span class="s-fn">printf</span>(<span class="s-str">"원판 1: %c → %c\n"</span>, from, to);</span></div>
+<div class="code-line"><span class="ln">6</span><span class="lc">        <span class="s-kw">return</span>;</span></div>
+<div class="code-line"><span class="ln">7</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">8</span><span class="lc">    <span class="s-fn">hanoi</span>(n-<span class="s-num">1</span>, from, via, to);  <span class="s-cm">// 위의 n-1개를 보조로</span></span></div>
+<div class="code-line"><span class="ln">9</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"원판 %d: %c → %c\n"</span>, n, from, to);  <span class="s-cm">// 가장 큰 것 이동</span></span></div>
+<div class="code-line"><span class="ln">10</span><span class="lc">    <span class="s-fn">hanoi</span>(n-<span class="s-num">1</span>, via, to, from);  <span class="s-cm">// n-1개를 목표로</span></span></div>
+<div class="code-line"><span class="ln">11</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">12</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">13</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">main</span>(<span class="s-type">void</span>) {</span></div>
+<div class="code-line"><span class="ln">14</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"=== 하노이 탑 (3개 원판) ===\n"</span>);</span></div>
+<div class="code-line"><span class="ln">15</span><span class="lc">    <span class="s-fn">hanoi</span>(<span class="s-num">3</span>, <span class="s-str">'A'</span>, <span class="s-str">'C'</span>, <span class="s-str">'B'</span>);</span></div>
+<div class="code-line"><span class="ln">16</span><span class="lc">    <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">17</span><span class="lc">}</span></div>
+</div>
+</div>
+<div class="output-wrap"><div class="output-bar">실행 결과</div><div class="output-body">=== 하노이 탑 (3개 원판) ===
+원판 1: A → C
+원판 2: A → B
+원판 1: C → B
+원판 3: A → C
+원판 1: B → A
+원판 2: B → C
+원판 1: A → C</div></div>
+<table class="trace"><thead><tr><th>이동 순서</th><th>원판</th><th>출발</th><th>도착</th><th>설명</th></tr></thead><tbody><tr><td>1</td><td>원판 1</td><td>A</td><td>C</td><td>가장 작은 원판을 C로 이동합니다</td></tr><tr><td>2</td><td>원판 2</td><td>A</td><td>B</td><td>중간 원판을 B로 이동합니다</td></tr><tr><td>3</td><td>원판 1</td><td>C</td><td>B</td><td>작은 원판을 B 위로 옮깁니다</td></tr><tr><td>4</td><td>원판 3</td><td>A</td><td>C</td><td>가장 큰 원판을 목표 C로 이동합니다</td></tr><tr><td>5</td><td>원판 1</td><td>B</td><td>A</td><td>작은 원판을 A로 잠시 옮깁니다</td></tr><tr><td>6</td><td>원판 2</td><td>B</td><td>C</td><td>중간 원판을 C 위로 이동합니다</td></tr><tr><td>7</td><td>원판 1</td><td>A</td><td>C</td><td>마지막으로 작은 원판을 C로 올립니다</td></tr></tbody></table>
+<div style="margin:22px 0"></div>
+<div class="note-box"><span class="note-label">[심화] 하노이 탑 이동 횟수</span>
+N개 원판: <b>2ⁿ - 1</b>번 이동 필요<br><br>3개: 2³-1 = 7번<br>10개: 2¹⁰-1 = 1,023번<br>64개: 2⁶⁴-1 ≈ 1.8 × 10¹⁹번<br>(1초에 1번 옮기면 약 5,850억 년!)</div>
+<table class="trace"><thead><tr><th>원판 수 (N)</th><th>이동 횟수 (2ⁿ-1)</th><th>1초에 1번 옮길 때 걸리는 시간</th></tr></thead><tbody><tr><td>1</td><td>1</td><td>1초</td></tr><tr><td>2</td><td>3</td><td>3초</td></tr><tr><td>3</td><td>7</td><td>7초</td></tr><tr><td>5</td><td>31</td><td>31초</td></tr><tr><td>10</td><td>1,023</td><td>약 17분</td></tr><tr><td>20</td><td>1,048,575</td><td>약 12일</td></tr><tr><td>30</td><td>1,073,741,823</td><td>약 34년</td></tr><tr><td>64</td><td>18,446,744,073,709,551,615</td><td>약 5,850억 년</td></tr></tbody></table>
+<h2 class="section-title">[심화] 피보나치의 문제점 — 중복 계산</h2>
+<div class="warn"><span class="warn-label">[심화] 재귀 피보나치의 비효율</span>
+fib(5)를 계산하면:<br>fib(5) = fib(4) + fib(3)<br>fib(4) = fib(3) + fib(2) ← fib(3) 또 계산!<br>fib(3) = fib(2) + fib(1) ← fib(2) 또 계산!<br><br>fib(5)에서 fib(2)를 <b>3번</b>이나 중복 계산!<br>시간 복잡도: <b>O(2ⁿ)</b> — 지수적으로 느려짐!</div>
+<table class="trace"><thead><tr><th>함수 호출</th><th>호출 횟수</th><th>실제로 필요한 횟수</th><th>낭비</th></tr></thead><tbody><tr><td>fib(5)</td><td>1번</td><td>1번</td><td>없음</td></tr><tr><td>fib(4)</td><td>1번</td><td>1번</td><td>없음</td></tr><tr><td>fib(3)</td><td>2번</td><td>1번</td><td>1번 낭비</td></tr><tr><td>fib(2)</td><td>3번</td><td>1번</td><td>2번 낭비</td></tr><tr><td>fib(1)</td><td>5번</td><td>1번</td><td>4번 낭비</td></tr><tr><td>fib(0)</td><td>3번</td><td>1번</td><td>2번 낭비</td></tr><tr><td>합계</td><td>15번</td><td>6번</td><td>9번 낭비</td></tr></tbody></table>
+<h2 class="section-title">[심화 내용] 메모이제이션 — 중복 제거</h2>
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span><span class="code-bar-file">fib_memo.c</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;stdio.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc"><span class="s-type">int</span> memo[<span class="s-num">100</span>] = {<span class="s-num">0</span>};  <span class="s-cm">// 계산 결과 저장</span></span></div>
+<div class="code-line"><span class="ln">4</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">5</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">fib</span>(<span class="s-type">int</span> n) {</span></div>
+<div class="code-line"><span class="ln">6</span><span class="lc">    <span class="s-kw">if</span> (n &lt;= <span class="s-num">0</span>) <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">7</span><span class="lc">    <span class="s-kw">if</span> (n == <span class="s-num">1</span>) <span class="s-kw">return</span> <span class="s-num">1</span>;</span></div>
+<div class="code-line"><span class="ln">8</span><span class="lc">    <span class="s-kw">if</span> (memo[n] != <span class="s-num">0</span>) <span class="s-kw">return</span> memo[n];  <span class="s-cm">// 이미 계산했으면 반환!</span></span></div>
+<div class="code-line"><span class="ln">9</span><span class="lc">    memo[n] = <span class="s-fn">fib</span>(n-<span class="s-num">1</span>) + <span class="s-fn">fib</span>(n-<span class="s-num">2</span>);</span></div>
+<div class="code-line"><span class="ln">10</span><span class="lc">    <span class="s-kw">return</span> memo[n];</span></div>
+<div class="code-line"><span class="ln">11</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">12</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">13</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">main</span>(<span class="s-type">void</span>) {</span></div>
+<div class="code-line"><span class="ln">14</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"F(40) = %d\n"</span>, <span class="s-fn">fib</span>(<span class="s-num">40</span>));  <span class="s-cm">// 순식간에 계산!</span></span></div>
+<div class="code-line"><span class="ln">15</span><span class="lc">    <span class="s-cm">// 메모이제이션 없으면 수 초~수 분 걸림</span></span></div>
+<div class="code-line"><span class="ln">16</span><span class="lc">    <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">17</span><span class="lc">}</span></div>
+</div>
+</div>
+<div class="output-wrap"><div class="output-bar">실행 결과</div><div class="output-body">F(40) = 102334155</div></div>
+<div class="note-box"><span class="note-label">[심화 내용] 메모이제이션 vs 일반 재귀</span>
+<b>일반 재귀</b>: fib(40) → O(2⁴⁰) ≈ 1조 번 연산 → 수 분<br><b>메모이제이션</b>: fib(40) → O(40)번 연산 → 즉시!<br><br>이미 계산한 값을 저장(memo)해서 재사용<br>→ 이것이 <b>동적 프로그래밍(DP)</b>의 기초!</div>
+<div class="debug-section"><div class="debug-bar">DEBUG LAB — 에러를 찾으시오</div><div class="debug-body">
+
+<p style="margin:14px 0 0; font-size:14px;"><b>에러:</b> </p>
+<p style="font-size:14px;"><b>수정:</b> </p>
+</div></div>
+<table class="trace"><thead><tr><th>호출</th><th>memo 확인</th><th>계산</th><th>memo 저장</th><th>반환</th></tr></thead><tbody><tr><td>fib(5)</td><td>memo[5]=0 없음</td><td>fib(4)+fib(3)</td><td>memo[5]=5</td><td>5</td></tr><tr><td>  fib(4)</td><td>memo[4]=0 없음</td><td>fib(3)+fib(2)</td><td>memo[4]=3</td><td>3</td></tr><tr><td>    fib(3)</td><td>memo[3]=0 없음</td><td>fib(2)+fib(1)</td><td>memo[3]=2</td><td>2</td></tr><tr><td>      fib(2)</td><td>memo[2]=0 없음</td><td>fib(1)+fib(0)</td><td>memo[2]=1</td><td>1</td></tr><tr><td>        fib(1)</td><td>기저 조건</td><td>—</td><td>—</td><td>1</td></tr><tr><td>        fib(0)</td><td>기저 조건</td><td>—</td><td>—</td><td>0</td></tr><tr><td>      fib(1)</td><td>기저 조건</td><td>—</td><td>—</td><td>1</td></tr><tr><td>    fib(2)</td><td>memo[2]=1 있음!</td><td>저장값 사용</td><td>—</td><td>1 (즉시)</td></tr><tr><td>  fib(3)</td><td>memo[3]=2 있음!</td><td>저장값 사용</td><td>—</td><td>2 (즉시)</td></tr></tbody></table>
+<h2 class="section-title">[심화 내용] 꼬리 재귀 최적화</h2>
+<div class="note-box"><span class="note-label">[심화 내용] 꼬리 재귀 (Tail Recursion)</span>
+재귀 호출이 함수의 <b>마지막 동작</b>인 경우<br>→ 컴파일러가 반복문으로 <b>자동 변환</b> 가능!<br><br>일반 재귀: return n * factorial(n-1); ← 곱셈이 남아있음<br>꼬리 재귀: return factorial_tail(n-1, n*acc); ← 마지막이 호출<br><br>GCC: -O2 옵션으로 꼬리 재귀 최적화 자동 적용</div>
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span><span class="code-bar-file">tail_recursion.c</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc"><span class="s-cm">// 꼬리 재귀 팩토리얼</span></span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">factorial_tail</span>(<span class="s-type">int</span> n, <span class="s-type">int</span> acc) {</span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc">    <span class="s-kw">if</span> (n &lt;= <span class="s-num">1</span>) <span class="s-kw">return</span> acc;</span></div>
+<div class="code-line"><span class="ln">4</span><span class="lc">    <span class="s-kw">return</span> <span class="s-fn">factorial_tail</span>(n - <span class="s-num">1</span>, n * acc);  <span class="s-cm">// 마지막이 재귀 호출!</span></span></div>
+<div class="code-line"><span class="ln">5</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">6</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">7</span><span class="lc"><span class="s-cm">// 사용: factorial_tail(5, 1) = 120</span></span></div>
+</div>
+</div>
+<table class="trace"><thead><tr><th>호출</th><th>n</th><th>acc</th><th>다음 호출</th><th>반환</th></tr></thead><tbody><tr><td>factorial_tail(5, 1)</td><td>5</td><td>1</td><td>factorial_tail(4, 5)</td><td>—</td></tr><tr><td>factorial_tail(4, 5)</td><td>4</td><td>5</td><td>factorial_tail(3, 20)</td><td>—</td></tr><tr><td>factorial_tail(3, 20)</td><td>3</td><td>20</td><td>factorial_tail(2, 60)</td><td>—</td></tr><tr><td>factorial_tail(2, 60)</td><td>2</td><td>60</td><td>factorial_tail(1, 120)</td><td>—</td></tr><tr><td>factorial_tail(1, 120)</td><td>1</td><td>120</td><td>기저 조건!</td><td>120</td></tr></tbody></table>
+<div style="margin:22px 0"></div>
+<h2 class="section-title">활동: 재귀 따라가기</h2>
+<div class="tip"><span class="tip-label">[활동] 종이 재귀 추적</span>
+종이에 factorial(5)의 호출 과정을 그려보세요!<br><br>factorial(5) → calls factorial(4)<br>  factorial(4) → calls factorial(3)<br>    ...<br>      factorial(1) → returns 1 (기저!)<br>    factorial(2) → returns 2×1 = 2<br>  factorial(3) → returns 3×2 = 6<br>factorial(4) → returns 4×6 = 24<br>factorial(5) → returns 5×24 = 120</div>
+<!-- fact-bite -->
+<h2 class="section-title">OX 퀴즈</h2>
+<!-- ox -->
+<h2 class="section-title">연습문제</h2>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 1</span><p style="margin:0;font-size:14px">재귀란 무엇인지 한 문장으로 설명하세요.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 2</span><p style="margin:0;font-size:14px">재귀에 반드시 필요한 2가지는?</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 3</span><p style="margin:0;font-size:14px">factorial(3)의 호출 과정과 결과를 쓰세요.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 4</span><p style="margin:0;font-size:14px">피보나치 수열의 처음 8개를 쓰세요.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 5</span><p style="margin:0;font-size:14px">기저 조건이 없으면 어떤 일이 벌어지나요?</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 6</span><p style="margin:0;font-size:14px">1~n까지 합을 재귀로 구하는 함수를 쓰세요.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 7</span><p style="margin:0;font-size:14px">재귀와 반복의 장단점을 각각 2가지씩 쓰세요.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 8</span><p style="margin:0;font-size:14px">하노이 탑 4개 원판의 이동 횟수는?</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 9</span><p style="margin:0;font-size:14px">재귀 피보나치에서 fib(5) 계산 시 fib(2)는 몇 번 호출되나요?</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 10</span><p style="margin:0;font-size:14px">콜 스택이란 무엇인가요?</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 11</span><p style="margin:0;font-size:14px">[심화] 하노이 탑 이동 횟수 공식 T(n)=2ⁿ-1을 재귀식 T(n)=2T(n-1)+1에서 유도하세요.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 12</span><p style="margin:0;font-size:14px">[심화] 메모이제이션이란 무엇이고, 왜 피보나치에 필요한가요?</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 13</span><p style="margin:0;font-size:14px">[심화] 꼬리 재귀와 일반 재귀의 차이를 설명하세요.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 14</span><p style="margin:0;font-size:14px">[심화 내용] 재귀 피보나치의 시간 복잡도가 O(2ⁿ)인 이유를 재귀 트리로 설명하세요.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 15</span><p style="margin:0;font-size:14px">[심화 내용] 동적 프로그래밍(DP)의 두 가지 접근법 이름을 쓰세요.</p></div>
+<h2 class="section-title">용어 정리</h2>
+<h2 class="section-title">[심화] 재귀 vs 반복 비교</h2>
+<div class="debug-section"><div class="debug-bar">DEBUG LAB — 에러를 찾으시오</div><div class="debug-body">
+
+<p style="margin:14px 0 0; font-size:14px;"><b>에러:</b> </p>
+<p style="font-size:14px;"><b>수정:</b> </p>
+</div></div>
+<h2 class="section-title">[심화 내용] 꼬리 재귀 최적화</h2>
+<div class="note-box"><span class="note-label">[심화 내용] 꼬리 재귀 (Tail Recursion)</span>
+<b>꼬리 재귀</b> = 재귀 호출이 함수의 마지막 동작<br><br><b>일반 재귀 (꼬리 아님):</b><br>int fact(int n) {<br>  if (n <= 1) return 1;<br>  return n * fact(n-1);  // 곱셈이 마지막!<br>}<br><br><b>꼬리 재귀:</b><br>int fact_tail(int n, int acc) {<br>  if (n <= 1) return acc;<br>  return fact_tail(n-1, n*acc);  // 재귀가 마지막!<br>}<br><br><b>컴파일러 최적화:</b><br>꼬리 재귀 → 반복문으로 자동 변환!<br>스택 프레임 재사용 → 스택 오버플로우 없음!<br><br>gcc -O2이면 꼬리 재귀 자동 최적화<br>함수형 언어(Haskell, Scheme)는 필수 지원</div>
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span><span class="code-bar-file">[C 코드] 재귀 활용 모음</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;stdio.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc"><span class="s-cm">// 1. 팩토리얼</span></span></div>
+<div class="code-line"><span class="ln">4</span><span class="lc"><span class="s-type">long</span> <span class="s-type">long</span> <span class="s-fn">factorial</span>(<span class="s-type">int</span> n) {</span></div>
+<div class="code-line"><span class="ln">5</span><span class="lc">    <span class="s-kw">return</span> (n &lt;= <span class="s-num">1</span>) ? <span class="s-num">1</span> : n * <span class="s-fn">factorial</span>(n - <span class="s-num">1</span>);</span></div>
+<div class="code-line"><span class="ln">6</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">7</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">8</span><span class="lc"><span class="s-cm">// 2. 하노이 탑</span></span></div>
+<div class="code-line"><span class="ln">9</span><span class="lc"><span class="s-type">void</span> <span class="s-fn">hanoi</span>(<span class="s-type">int</span> n, <span class="s-type">char</span> from, <span class="s-type">char</span> to, <span class="s-type">char</span> aux) {</span></div>
+<div class="code-line"><span class="ln">10</span><span class="lc">    <span class="s-kw">if</span> (n == <span class="s-num">1</span>) { <span class="s-fn">printf</span>(<span class="s-str">"%c-&gt;%c "</span>, from, to); <span class="s-kw">return</span>; }</span></div>
+<div class="code-line"><span class="ln">11</span><span class="lc">    <span class="s-fn">hanoi</span>(n-<span class="s-num">1</span>, from, aux, to);</span></div>
+<div class="code-line"><span class="ln">12</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"%c-&gt;%c "</span>, from, to);</span></div>
+<div class="code-line"><span class="ln">13</span><span class="lc">    <span class="s-fn">hanoi</span>(n-<span class="s-num">1</span>, aux, to, from);</span></div>
+<div class="code-line"><span class="ln">14</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">15</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">16</span><span class="lc"><span class="s-cm">// 3. 이진 탐색 (재귀)</span></span></div>
+<div class="code-line"><span class="ln">17</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">bsearch_rec</span>(<span class="s-type">int</span> a[], <span class="s-type">int</span> lo, <span class="s-type">int</span> hi, <span class="s-type">int</span> t) {</span></div>
+<div class="code-line"><span class="ln">18</span><span class="lc">    <span class="s-kw">if</span> (lo &gt; hi) <span class="s-kw">return</span> -<span class="s-num">1</span>;</span></div>
+<div class="code-line"><span class="ln">19</span><span class="lc">    <span class="s-type">int</span> mid = (lo + hi) / <span class="s-num">2</span>;</span></div>
+<div class="code-line"><span class="ln">20</span><span class="lc">    <span class="s-kw">if</span> (a[mid] == t) <span class="s-kw">return</span> mid;</span></div>
+<div class="code-line"><span class="ln">21</span><span class="lc">    <span class="s-kw">return</span> (a[mid] &lt; t) ? <span class="s-fn">bsearch_rec</span>(a, mid+<span class="s-num">1</span>, hi, t)</span></div>
+<div class="code-line"><span class="ln">22</span><span class="lc">                        : <span class="s-fn">bsearch_rec</span>(a, lo, mid-<span class="s-num">1</span>, t);</span></div>
+<div class="code-line"><span class="ln">23</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">24</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">25</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">main</span>() {</span></div>
+<div class="code-line"><span class="ln">26</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"5! = %lld\n"</span>, <span class="s-fn">factorial</span>(<span class="s-num">5</span>));</span></div>
+<div class="code-line"><span class="ln">27</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"하노이(3): "</span>); <span class="s-fn">hanoi</span>(<span class="s-num">3</span>, <span class="s-str">'A'</span>, <span class="s-str">'C'</span>, <span class="s-str">'B'</span>); <span class="s-fn">printf</span>(<span class="s-str">"\n"</span>);</span></div>
+<div class="code-line"><span class="ln">28</span><span class="lc">    <span class="s-type">int</span> arr[] = {<span class="s-num">1</span>,<span class="s-num">3</span>,<span class="s-num">5</span>,<span class="s-num">7</span>,<span class="s-num">9</span>,<span class="s-num">11</span>};</span></div>
+<div class="code-line"><span class="ln">29</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"7의 위치: %d\n"</span>, <span class="s-fn">bsearch_rec</span>(arr, <span class="s-num">0</span>, <span class="s-num">5</span>, <span class="s-num">7</span>));</span></div>
+<div class="code-line"><span class="ln">30</span><span class="lc">    <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">31</span><span class="lc">}</span></div>
+</div>
+</div>
+<div class="output-wrap"><div class="output-bar">실행 결과</div><div class="output-body">5! = 120
+하노이(3): A->C A->B C->B A->C B->A B->C A->C 
+7의 위치: 3</div></div>
+<h2 class="section-title">[심화 내용] 재귀와 수학적 귀납법</h2>
+<div class="note-box"><span class="note-label">[심화 내용] 재귀 = 수학적 귀납법</span>
+재귀 함수의 정확성 = 수학적 귀납법으로 증명!<br><br><b>귀납법 구조:</b><br>1. 기저 사례(Base Case): n=0 또는 n=1에서 참<br>2. 귀납 단계: n-1에서 참이면 n에서도 참<br><br><b>팩토리얼 증명:</b><br>fact(n) = n! 을 증명<br>Base: fact(1) = 1 = 1! ✓<br>귀납: fact(n-1) = (n-1)!이면<br>  fact(n) = n * fact(n-1) = n * (n-1)! = n! ✓<br><br><b>하노이 탑 이동 횟수:</b><br>T(n) = 2T(n-1) + 1<br>Base: T(1) = 1 = 2^1 - 1 ✓<br>귀납: T(n) = 2(2^(n-1)-1)+1 = 2^n - 1 ✓<br><br>재귀적 사고 = 귀납적 사고!</div>
+<!-- fact-bite -->
+<!-- fact-bite -->
+<h2 class="section-title">[심화 내용] 재귀와 프랙탈</h2>
+<div class="note-box"><span class="note-label">[심화 내용] 프랙탈 = 재귀적 도형</span>
+<b>프랙탈</b>: 부분이 전체와 닮은 도형 (자기 유사성)<br><br><b>코흐 눈송이:</b><br>삼각형의 각 변을 1/3로 나누고 가운데에 삼각형 추가<br>→ 무한 반복하면 눈송이 모양!<br>둘레 = 무한대, 면적 = 유한<br><br><b>시에르핀스키 삼각형:</b><br>삼각형에서 가운데 삼각형을 제거<br>→ 나머지 3개에 재귀 적용<br>면적 → 0, 그런데 도형은 존재!<br><br><b>만델브로 집합:</b><br>z = z^2 + c를 반복했을 때 발산하지 않는 c의 집합<br>무한히 확대해도 패턴이 반복!<br><br>자연에서도 발견: 나뭇가지, 해안선, 번개, 혈관</div>
+<h2 class="section-title">[심화 내용] 재귀적 자료구조</h2>
+<div class="note-box"><span class="note-label">[심화 내용] 재귀적으로 정의되는 자료구조</span>
+<b>연결 리스트:</b><br>List = Empty | Node(value, List)<br>각 노드가 다음 노드(리스트)를 가리킴<br><br><b>이진 트리:</b><br>Tree = Empty | Node(value, Tree, Tree)<br>각 노드가 두 하위 트리를 가짐<br><br><b>JSON/XML:</b><br>Object = {key: Value, ...}<br>Value = String | Number | Array | Object (재귀!)<br><br><b>파일 시스템:</b><br>Directory = {File | Directory, ...}<br>폴더 안에 폴더!<br><br>재귀적 자료구조 → 재귀적 알고리즘이 자연스러움<br>트리 탐색, JSON 파싱, 파일 검색 등</div>
+
+<h2 class="section-title">[심화] 재귀 함정과 디버깅</h2>
+<div class="warn"><span class="warn-label">[심화] 재귀 실수 TOP 5</span>
+<b>1. 기저 사례 누락</b><br>무한 재귀 → 스택 오버플로우!<br>반드시 종료 조건 먼저 작성<br><br><b>2. 기저 사례가 도달 불가능</b><br>n이 줄어들지 않으면 영원히 재귀<br>매 호출마다 문제가 작아지는지 확인<br><br><b>3. 반환값 무시</b><br>return f(n-1); 에서 return 빼먹기<br>→ 쓰레기 값 반환<br><br><b>4. 중복 계산</b><br>fib(5)에서 fib(3)이 2번 호출<br>→ 메모이제이션으로 해결<br><br><b>5. 전역 변수 오용</b><br>재귀 중 전역 변수 변경 → 예측 불가<br>가능하면 매개변수로 전달</div>
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span><span class="code-bar-file">[C 코드] 메모이제이션 피보나치</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;stdio.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc"><span class="s-type">long</span> <span class="s-type">long</span> memo[<span class="s-num">100</span>] = {<span class="s-num">0</span>};</span></div>
+<div class="code-line"><span class="ln">4</span><span class="lc"><span class="s-type">int</span> call_count = <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">5</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">6</span><span class="lc"><span class="s-cm">// 메모이제이션 없이</span></span></div>
+<div class="code-line"><span class="ln">7</span><span class="lc"><span class="s-type">long</span> <span class="s-type">long</span> <span class="s-fn">fib_slow</span>(<span class="s-type">int</span> n) {</span></div>
+<div class="code-line"><span class="ln">8</span><span class="lc">    call_count++;</span></div>
+<div class="code-line"><span class="ln">9</span><span class="lc">    <span class="s-kw">if</span> (n &lt;= <span class="s-num">1</span>) <span class="s-kw">return</span> n;</span></div>
+<div class="code-line"><span class="ln">10</span><span class="lc">    <span class="s-kw">return</span> <span class="s-fn">fib_slow</span>(n-<span class="s-num">1</span>) + <span class="s-fn">fib_slow</span>(n-<span class="s-num">2</span>);</span></div>
+<div class="code-line"><span class="ln">11</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">12</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">13</span><span class="lc"><span class="s-cm">// 메모이제이션 사용</span></span></div>
+<div class="code-line"><span class="ln">14</span><span class="lc"><span class="s-type">long</span> <span class="s-type">long</span> <span class="s-fn">fib_fast</span>(<span class="s-type">int</span> n) {</span></div>
+<div class="code-line"><span class="ln">15</span><span class="lc">    call_count++;</span></div>
+<div class="code-line"><span class="ln">16</span><span class="lc">    <span class="s-kw">if</span> (n &lt;= <span class="s-num">1</span>) <span class="s-kw">return</span> n;</span></div>
+<div class="code-line"><span class="ln">17</span><span class="lc">    <span class="s-kw">if</span> (memo[n]) <span class="s-kw">return</span> memo[n];</span></div>
+<div class="code-line"><span class="ln">18</span><span class="lc">    <span class="s-kw">return</span> memo[n] = <span class="s-fn">fib_fast</span>(n-<span class="s-num">1</span>) + <span class="s-fn">fib_fast</span>(n-<span class="s-num">2</span>);</span></div>
+<div class="code-line"><span class="ln">19</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">20</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">21</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">main</span>() {</span></div>
+<div class="code-line"><span class="ln">22</span><span class="lc">    call_count = <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">23</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"fib(30) = %lld\n"</span>, <span class="s-fn">fib_slow</span>(<span class="s-num">30</span>));</span></div>
+<div class="code-line"><span class="ln">24</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"호출 횟수 (메모이제이션 X): %d\n\n"</span>, call_count);</span></div>
+<div class="code-line"><span class="ln">25</span><span class="lc">    </span></div>
+<div class="code-line"><span class="ln">26</span><span class="lc">    call_count = <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">27</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"fib(30) = %lld\n"</span>, <span class="s-fn">fib_fast</span>(<span class="s-num">30</span>));</span></div>
+<div class="code-line"><span class="ln">28</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"호출 횟수 (메모이제이션 O): %d\n"</span>, call_count);</span></div>
+<div class="code-line"><span class="ln">29</span><span class="lc">    <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">30</span><span class="lc">}</span></div>
+</div>
+</div>
+<div class="output-wrap"><div class="output-bar">실행 결과</div><div class="output-body">fib(30) = 832040
+호출 횟수 (메모이제이션 X): 2692537
+
+fib(30) = 832040
+호출 횟수 (메모이제이션 O): 59</div></div>
+<div class="note-box"><span class="note-label">[심화 내용] 면접 재귀 문제</span>
+<b>Q1.</b> 문자열 뒤집기 (재귀)<br>reverse("hello") = reverse("ello") + "h" = "olleh"<br><br><b>Q2.</b> 거듭제곱 O(log n)<br>pow(x,n) = pow(x,n/2)^2 (짝수)<br>pow(x,n) = x * pow(x,n-1) (홀수)<br><br><b>Q3.</b> 괄호 생성 (n쌍)<br>open < n이면 여는 괄호 추가 가능<br>close < open이면 닫는 괄호 추가 가능<br>n=3: ((())), (()()),  (())(), ()(()),  ()()()<br><br><b>Q4.</b> 재귀 vs 반복 언제 선택?<br>트리/그래프 → 재귀, 선형 → 반복<br>깊이 깊으면 반복(스택으로 변환)</div>
+<!-- fact-bite -->
+
+<!-- fact-bite -->
+<table class="trace"><thead><tr><th>용어</th><th>설명</th></tr></thead><tbody><tr><td><code>재귀 (Recursion)</code></td><td>함수가 자기 자신을 호출하는 것.</td></tr><tr><td><code>기저 조건 (Base Case)</code></td><td>재귀를 멈추는 조건. 없으면 무한 호출.</td></tr><tr><td><code>콜 스택 (Call Stack)</code></td><td>함수 호출 정보를 저장하는 메모리. 재귀 깊으면 overflow.</td></tr><tr><td><code>스택 오버플로</code></td><td>콜 스택이 넘치는 오류. 재귀가 너무 깊을 때 발생.</td></tr><tr><td><code>피보나치 수열</code></td><td>F(n)=F(n-1)+F(n-2). 0,1,1,2,3,5,8,13,...</td></tr><tr><td><code>하노이 탑</code></td><td>N개 원판을 규칙에 따라 옮기는 재귀 문제. 2ⁿ-1번 이동.</td></tr><tr><td><code>메모이제이션</code></td><td>계산 결과를 저장해 재사용. DP의 Top-down 기법.</td></tr><tr><td><code>꼬리 재귀</code></td><td>재귀 호출이 함수의 마지막 동작인 경우. 최적화 가능.</td></tr><tr><td><code>DP</code></td><td>Dynamic Programming. 중복 하위 문제를 저장해 효율적으로 해결.</td></tr><tr><td><code>꼬리 재귀</code></td><td>재귀 호출이 함수의 마지막 동작인 재귀. 컴파일러가 반복문으로 최적화 가능.</td></tr><tr><td><code>스택 오버플로우</code></td><td>재귀가 너무 깊어 호출 스택이 넘치는 오류. 보통 수만~수십만 단계에서 발생.</td></tr><tr><td><code>하노이 탑</code></td><td>원판을 규칙에 따라 옮기는 문제. 최소 이동 = 2^n-1. 재귀의 대표 예제.</td></tr><tr><td><code>수학적 귀납법</code></td><td>기저 사례 + 귀납 단계로 모든 자연수에 대해 증명하는 방법. 재귀와 동일 구조.</td></tr></tbody></table>
+<div class="warmup-box"><div class="warmup-title">이번 유닛 핵심 정리</div><div class="wq"><b>1.</b> 재귀 = 함수가 자기 자신을 호출</div><div class="wq"><b>2.</b> 기저 조건 + 재귀 호출 = 2대 필수 요소</div><div class="wq"><b>3.</b> 팩토리얼, 피보나치 = 재귀의 교과서</div><div class="wq"><b>4.</b> [심화] 재귀 ↔ 반복 변환 가능</div><div class="wq"><b>5.</b> [심화] 하노이 탑: 2ⁿ-1번 이동</div><div class="wq"><b>6.</b> [심화 내용] 메모이제이션 → O(2ⁿ)을 O(n)으로</div><div class="wq"><b>7.</b> [심화 내용] 꼬리 재귀 최적화</div></div>
+<div class="tip"><span class="tip-label">이 유닛에서 연결된 축</span>
+<b>[수학연결]</b> 팩토리얼, 피보나치, 점화식<br><b>[C언어]</b> 재귀 함수 구현, 콜 스택<br><b>[KOI]</b> 분할정복, 백트래킹의 기초<br><b>[컴퓨팅 사고력]</b> 분해 (큰 → 작은 문제)<br><b>[코딩기초]</b> 메모이제이션, DP 기초<br><b>[디버깅]</b> 기저 조건 누락 = 스택 오버플로</div>
+<h2 class="section-title">실전 활용 연습</h2>
+<p>지금까지 배운 개념을 활용한 다양한 실전 예제와 연습문제입니다.</p>
+
+<h2 class="section-title">실생활 연결</h2>
+<div class="tip"><span class="tip-label">[실생활] 이 개념은 어디에 쓰일까?</span>
+게임 개발, 앱 만들기, 웹사이트, 로봇 제어, AI 학습 등 모든 분야에서 사용돼요!</div>
+
+<h2 class="section-title">추가 연습문제</h2>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 20</span><p style="margin:0;font-size:14px">이번 유닛에서 배운 핵심 개념 3가지를 자신의 말로 설명해 보세요.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 21</span><p style="margin:0;font-size:14px">이번 유닛의 개념을 활용한 자신만의 문제를 1개 만들어 보세요.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 22</span><p style="margin:0;font-size:14px">이번 유닛의 개념이 C언어에서 어떻게 사용되는지 조사해 보세요.</p></div>
+<h2 class="section-title">[심화] 더 알아보기</h2>
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+
+<p>이번 유닛의 모든 개념을 완전히 이해했습니다. 다음 유닛에서 더 발전된 개념을 배워보세요!</p>
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<div class="note-box"><span class="note-label">[다음 유닛 미리보기]</span>
+재귀를 배웠으니, 이제 <b>그래프</b>를 배울 차례! 점과 선으로 관계를 표현하는 자료구조!</div>
+
+
+    <span class="page-num">2</span>
+  </div>
+</div>
+</body>
+</html>

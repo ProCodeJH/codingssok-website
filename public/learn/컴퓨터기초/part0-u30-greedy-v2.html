@@ -1,0 +1,1252 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>코딩쏙 교재 — 탐욕법 (Greedy)</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+
+  :root {
+    --navy: #1a2e4a;
+    --navy-mid: #2c4a6e;
+    --navy-light: #3d6590;
+    --orange: #e07830;
+    --orange-light: #f5e6d8;
+    --white: #ffffff;
+    --bg: #f7f8fa;
+    --bg-warm: #faf9f7;
+    --gray-50: #f9fafb;
+    --gray-100: #f3f4f6;
+    --gray-200: #e5e7eb;
+    --gray-300: #d1d5db;
+    --gray-400: #9ca3af;
+    --gray-500: #6b7280;
+    --gray-600: #4b5563;
+    --gray-700: #374151;
+    --gray-800: #1f2937;
+    --text: #2d3748;
+    --green: #16a34a;
+    --green-bg: #dcfce7;
+    --red: #dc2626;
+    --red-bg: #fee2e2;
+    --blue: #2563eb;
+    --blue-bg: #dbeafe;
+    --yellow-bg: #fef9c3;
+    --font: 'Noto Sans KR', sans-serif;
+    --mono: 'JetBrains Mono', 'Consolas', monospace;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: var(--font); background: #e8eaed; font-size: 15px; }
+
+  /* ========== PAGE ========== */
+  .page {
+    width: 210mm;
+    min-height: 295mm;
+    margin: 24px auto;
+    background: var(--white);
+    box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* ========== PAGE 1: CHAPTER START ========== */
+  .chapter-page {
+    display: flex;
+    min-height: 295mm;
+  }
+
+  .chapter-sidebar {
+    width: 10px;
+    background: var(--navy);
+    flex-shrink: 0;
+  }
+
+  .chapter-accent-bar {
+    width: 7px;
+    background: var(--orange);
+    flex-shrink: 0;
+  }
+
+  .chapter-body {
+    flex: 1;
+    padding: 70px 65px 50px 55px;
+    position: relative;
+  }
+
+  .chapter-watermark {
+    position: absolute;
+    top: -10px;
+    right: -15px;
+    font-size: 280px;
+    font-weight: 900;
+    color: rgba(180,195,212,0.35);
+    line-height: 1;
+    pointer-events: none;
+    letter-spacing: -10px;
+  }
+
+  .chapter-label {
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--navy-mid);
+    letter-spacing: 2px;
+    margin-bottom: 4px;
+  }
+
+  .chapter-title {
+    font-size: 44px;
+    font-weight: 900;
+    color: var(--navy);
+    line-height: 1.15;
+    margin-bottom: 12px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .chapter-sub {
+    font-size: 16px;
+    color: var(--gray-500);
+    font-weight: 400;
+    margin-bottom: 20px;
+    padding-bottom: 28px;
+    border-bottom: 1px solid var(--gray-200);
+  }
+
+  /* Learning objectives */
+  .obj-title {
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--navy);
+    margin-bottom: 16px;
+    margin-top: 32px;
+  }
+
+  .obj-list {
+    list-style: none;
+    margin-bottom: 40px;
+  }
+
+  .obj-list li {
+    padding: 5px 0 5px 24px;
+    position: relative;
+    font-size: 15px;
+    color: var(--gray-700);
+    line-height: 1.6;
+  }
+
+  .obj-list li::before {
+    content: '•';
+    position: absolute;
+    left: 8px;
+    color: var(--navy-mid);
+    font-weight: 700;
+  }
+
+  /* Prerequisites flow */
+  .prereq-title {
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--navy);
+    margin-bottom: 18px;
+  }
+
+  .prereq-flow {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    margin-bottom: 44px;
+  }
+
+  .prereq-item {
+    padding: 9px 22px;
+    border: 1.5px solid var(--gray-300);
+    border-radius: 50px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--gray-600);
+    background: var(--white);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+  }
+
+  .prereq-item.current {
+    border-color: var(--navy);
+    color: var(--navy);
+    font-weight: 700;
+    background: #edf2f7;
+    box-shadow: 0 2px 6px rgba(26,46,74,0.12);
+  }
+
+  .prereq-arrow {
+    width: 36px;
+    text-align: center;
+    color: var(--gray-300);
+    font-size: 18px;
+    font-weight: 300;
+  }
+
+  /* Predict box */
+  .predict-box {
+    background: var(--gray-50);
+    border: 1.5px solid var(--gray-200);
+    border-radius: 12px;
+    padding: 24px 28px;
+  }
+
+  .predict-label {
+    display: inline-block;
+    background: var(--orange);
+    color: var(--white);
+    font-size: 12px;
+    font-weight: 600;
+    padding: 3px 12px;
+    border-radius: 4px;
+    margin-bottom: 14px;
+    letter-spacing: 0.5px;
+  }
+
+  .predict-q {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--navy);
+    margin-bottom: 16px;
+  }
+
+  .predict-code {
+    background: var(--white);
+    border: 1px solid var(--gray-200);
+    border-radius: 8px;
+    padding: 14px 18px;
+    font-family: var(--mono);
+    font-size: 13px;
+    line-height: 1.65;
+    color: var(--gray-700);
+  }
+
+  /* ========== PAGE 2: CORE CONTENT ========== */
+  .content-page {
+    padding: 55px 65px;
+  }
+
+  .unit-header-bar {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    margin-bottom: 8px;
+  }
+
+  .unit-tag {
+    font-size: 12px;
+    color: var(--orange);
+    font-weight: 600;
+    letter-spacing: 1px;
+  }
+
+  .unit-title-sm {
+    font-size: 14px;
+    color: var(--gray-400);
+    font-weight: 400;
+  }
+
+  .section-title {
+    font-size: 24px;
+    font-weight: 800;
+    color: var(--navy);
+    margin-bottom: 24px;
+    margin-top: 8px;
+    padding-left: 16px;
+    border-left: 5px solid var(--orange);
+  }
+
+  p {
+    font-size: 15.5px;
+    line-height: 1.9;
+    color: var(--text);
+    margin-bottom: 18px;
+  }
+
+  p code {
+    font-family: var(--mono);
+    font-size: 13.5px;
+    background: #f1f3f5;
+    padding: 2px 7px;
+    border-radius: 4px;
+    color: var(--navy);
+    font-weight: 500;
+  }
+
+  /* Code block */
+  .code-wrap {
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    border: 1px solid var(--gray-200);
+    margin: 22px 0;
+  }
+
+  .code-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 9px 18px;
+    background: var(--navy);
+    font-size: 12px;
+  }
+
+  .code-bar-lang {
+    font-family: var(--mono);
+    font-weight: 600;
+    color: var(--white);
+  }
+
+  .code-bar-file {
+    color: rgba(255,255,255,0.6);
+    font-weight: 400;
+  }
+
+  .code-body {
+    background: #f8f9fb;
+    padding: 20px 0;
+    font-family: var(--mono);
+    font-size: 13.5px;
+    line-height: 1.75;
+    border: 1px solid var(--gray-200);
+    border-top: none;
+    border-radius: 0 0 12px 12px;
+  }
+
+  .code-line {
+    display: flex;
+    padding: 0 20px;
+  }
+
+  .code-line:hover {
+    background: #f0f4f8;
+  }
+
+  .code-line.highlighted {
+    background: #fff8e1;
+  }
+
+  .ln {
+    width: 30px;
+    text-align: right;
+    color: #b8bfc8;
+    font-size: 12px;
+    margin-right: 18px;
+    user-select: none;
+    flex-shrink: 0;
+    padding-top: 1px;
+  }
+
+  .lc { flex: 1; }
+
+  /* syntax */
+  .s-pp { color: #8b5cf6; font-weight: 600; }
+  .s-str { color: #d97706; }
+  .s-type { color: #2563eb; font-weight: 500; }
+  .s-kw { color: #7c3aed; font-weight: 500; }
+  .s-fn { color: #059669; font-weight: 500; }
+  .s-num { color: #dc2626; }
+  .s-cm { color: #9ca3af; font-style: italic; }
+
+  /* Output block */
+  .output-wrap {
+    border-radius: 10px;
+    overflow: hidden;
+    margin: 10px 0 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    border: 1px solid #d1d5db;
+  }
+
+  .output-bar {
+    padding: 9px 18px;
+    background: #374151;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--white);
+    letter-spacing: 0.5px;
+  }
+
+  .output-body {
+    padding: 16px 20px;
+    font-family: var(--mono);
+    font-size: 13.5px;
+    line-height: 1.7;
+    color: var(--gray-800);
+    background: #f1f5f9;
+    border: 1px solid var(--gray-200);
+    border-top: none;
+    border-radius: 0 0 10px 10px;
+  }
+
+  /* Callout */
+  .tip {
+    margin: 28px 0;
+    padding: 18px 24px;
+    background: #dbeafe;
+    border-left: 5px solid #2563eb;
+    border-radius: 0 12px 12px 0;
+    font-size: 14.5px;
+    line-height: 1.8;
+    color: var(--text);
+  }
+
+  .tip-label {
+    font-weight: 700;
+    color: #2563eb;
+    font-size: 13px;
+    display: block;
+    margin-bottom: 4px;
+  }
+
+  .warn {
+    margin: 28px 0;
+    padding: 18px 24px;
+    background: #fef3c7;
+    border-left: 5px solid #d97706;
+    border-radius: 0 12px 12px 0;
+    font-size: 14.5px;
+    line-height: 1.8;
+  }
+
+  .warn-label {
+    font-weight: 700;
+    color: #d97706;
+    font-size: 13px;
+    display: block;
+    margin-bottom: 4px;
+  }
+
+  .note-box {
+    margin: 28px 0;
+    padding: 18px 24px;
+    background: #e2e8f0;
+    border-left: 5px solid #64748b;
+    border-radius: 0 12px 12px 0;
+    font-size: 14.5px;
+    line-height: 1.8;
+  }
+
+  .note-label {
+    font-weight: 700;
+    color: var(--gray-600);
+    font-size: 13px;
+    display: block;
+    margin-bottom: 4px;
+  }
+
+  /* Trace table */
+  table.trace {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    margin: 28px 0;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+    font-size: 14px;
+  }
+
+  table.trace th {
+    background: var(--navy);
+    color: var(--white);
+    padding: 10px 16px;
+    text-align: left;
+    font-weight: 500;
+    font-size: 13px;
+  }
+
+  table.trace td {
+    padding: 10px 16px;
+    border-bottom: 1px solid var(--gray-200);
+    color: var(--gray-700);
+  }
+
+  table.trace tr:nth-child(even) td { background: var(--gray-50); }
+  table.trace tr:last-child td { border-bottom: none; }
+
+  table.trace td code {
+    font-family: var(--mono);
+    font-size: 12.5px;
+    background: #eef1f5;
+    padding: 2px 6px;
+    border-radius: 4px;
+    color: var(--navy);
+  }
+
+  /* ========== PAGE 3: PROBLEMS ========== */
+  .problems-header {
+    margin-bottom: 8px;
+  }
+
+  .problems-chapter-ref {
+    font-size: 13px;
+    color: var(--gray-500);
+    margin-bottom: 4px;
+  }
+
+  .problems-title {
+    font-size: 28px;
+    font-weight: 800;
+    color: var(--navy);
+    margin-bottom: 24px;
+  }
+
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 16px;
+  }
+
+  .prob-card {
+    background: var(--white);
+    border: 1px solid var(--gray-200);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 3px 15px rgba(0,0,0,0.06);
+  }
+
+  .prob-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 16px;
+    background: var(--navy);
+  }
+
+  .prob-num {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--white);
+  }
+
+  .diff {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    font-size: 12px;
+    font-weight: 800;
+  }
+
+  .diff-basic { background: #22c55e; color: white; }
+  .diff-mid { background: #f59e0b; color: white; }
+  .diff-hard { background: #ef4444; color: white; }
+
+  .prob-desc {
+    font-size: 13.5px;
+    line-height: 1.65;
+    color: var(--gray-600);
+    margin-bottom: 10px;
+    padding: 14px 16px 0;
+  }
+
+  .prob-code {
+    background: var(--gray-50);
+    border: 1px solid var(--gray-200);
+    border-radius: 6px;
+    padding: 10px 14px;
+    margin: 0 16px 16px;
+    font-family: var(--mono);
+    font-size: 12.5px;
+    line-height: 1.55;
+    color: var(--gray-600);
+  }
+
+  /* Competition section */
+  .comp-section {
+    margin-top: 32px;
+    padding-top: 24px;
+    border-top: 2px solid var(--navy);
+  }
+
+  .comp-title {
+    font-size: 22px;
+    font-weight: 800;
+    color: var(--navy);
+    margin-bottom: 20px;
+  }
+
+  .comp-card {
+    background: var(--white);
+    border: 1.5px solid var(--gray-200);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 18px rgba(0,0,0,0.06);
+  }
+
+  .comp-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 16px;
+    background: #0f766e;
+  }
+
+  .comp-header .comp-name {
+    color: var(--white);
+    font-size: 15px;
+    font-weight: 700;
+    margin: 0;
+  }
+
+  .comp-inner {
+    padding: 14px 18px 18px;
+  }
+
+  .comp-badge {
+    display: inline-block;
+    padding: 3px 12px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 700;
+  }
+
+  .badge-bj { background: #93c5fd; color: #1e3a5f; }
+  .badge-cu { background: #c4b5fd; color: #3b1f7e; }
+  .badge-pg { background: #7dd3fc; color: #0c4a6e; }
+
+  .comp-name {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--navy);
+    margin-bottom: 6px;
+  }
+
+  .comp-desc {
+    font-size: 14px;
+    color: var(--gray-600);
+    line-height: 1.7;
+    margin-bottom: 14px;
+  }
+
+  .io-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+
+  .io-card {
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid var(--gray-200);
+  }
+
+  .io-h {
+    padding: 6px 14px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--gray-600);
+    background: #e2e8f0;
+  }
+
+  .io-c {
+    padding: 10px 14px;
+    font-family: var(--mono);
+    font-size: 13px;
+    line-height: 1.5;
+    background: var(--white);
+  }
+
+  /* ========== DEBUG LAB ========== */
+  .debug-section {
+    margin: 24px 0;
+    border: 2px solid var(--red);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+
+  .debug-bar {
+    background: var(--red);
+    color: var(--white);
+    padding: 10px 20px;
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 1px;
+  }
+
+  .debug-body {
+    padding: 20px;
+    background: #fef2f2;
+  }
+
+  /* 10축 connection */
+  .connect-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 16px;
+    margin: 28px 0;
+  }
+
+  .connect-card {
+    border-radius: 12px;
+    padding: 20px;
+    text-align: center;
+    border: 1px solid var(--gray-200);
+    box-shadow: 0 3px 14px rgba(0,0,0,0.05);
+  }
+
+  .connect-card h5 {
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 8px;
+  }
+
+  .connect-card p {
+    font-size: 13px;
+    margin: 0;
+    color: var(--gray-600);
+    line-height: 1.6;
+  }
+
+  .cc1 { border-top: 3px solid #8b5cf6; }
+  .cc1 h5 { color: #8b5cf6; }
+  .cc2 { border-top: 3px solid var(--green); }
+  .cc2 h5 { color: var(--green); }
+  .cc3 { border-top: 3px solid var(--navy); }
+  .cc3 h5 { color: var(--navy); }
+
+  /* PAGE NUMBER */
+  .page-num {
+    position: absolute;
+    bottom: 20px;
+    right: 30px;
+    font-size: 12px;
+    color: var(--gray-400);
+  }
+
+  /* WARMUP */
+  .warmup-box {
+    background: #e0e7f1;
+    border-radius: 12px;
+    padding: 24px 28px;
+    margin: 28px 0;
+    border: 2px solid #c7d2e0;
+  }
+
+  .warmup-title {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--navy);
+    margin-bottom: 14px;
+  }
+
+  .wq {
+    padding: 9px 16px;
+    background: var(--white);
+    border-radius: 8px;
+    margin-bottom: 8px;
+    font-size: 14px;
+    border: 1px solid var(--gray-200);
+    color: var(--gray-700);
+  }
+
+  .wq b { color: var(--navy); margin-right: 6px; }
+  .wq .hint { color: var(--gray-400); font-size: 13px; }
+
+  /* ===== CONTEST PROBLEMS PAGE ===== */
+  .contest-page-wrap .chapter-page {
+    min-height: auto;
+  }
+
+  .contest-page-wrap .chapter-page > div:last-child {
+    min-width: 0;
+    overflow-wrap: break-word;
+    word-break: break-word;
+  }
+
+  .contest-card {
+    background: white;
+    border: 1.5px solid var(--gray-200);
+    border-radius: 12px;
+    margin-bottom: 28px;
+    overflow: hidden;
+    break-inside: avoid;
+  }
+
+  .contest-header {
+    background: var(--navy);
+    color: white;
+    padding: 14px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .contest-num-source {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .contest-num {
+    font-weight: 700;
+    font-size: 16px;
+  }
+
+  .contest-source {
+    background: rgba(255,255,255,0.15);
+    padding: 3px 10px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 500;
+  }
+
+  .contest-body {
+    padding: 20px 24px 24px;
+  }
+
+  .contest-question {
+    font-size: 15px;
+    line-height: 1.7;
+    color: var(--text);
+    margin: 0 0 16px;
+    word-break: break-word;
+    overflow-wrap: break-word;
+  }
+
+  .contest-expected {
+    background: #1e293b;
+    border-radius: 8px;
+    overflow: hidden;
+    margin-bottom: 20px;
+  }
+
+  .contest-expected-label {
+    background: #334155;
+    color: #94a3b8;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 6px 14px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .contest-expected-body {
+    color: #e2e8f0;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    line-height: 1.6;
+    padding: 12px 16px;
+    margin: 0;
+    white-space: pre;
+  }
+
+  .contest-write-area {
+    border: 2px dashed var(--gray-300);
+    border-radius: 10px;
+    overflow: hidden;
+    transition: border-color 0.2s;
+  }
+
+  .contest-write-area:focus-within {
+    border-color: var(--orange);
+    border-style: solid;
+  }
+
+  .contest-write-label {
+    background: var(--bg);
+    color: var(--gray-500);
+    font-size: 12px;
+    font-weight: 600;
+    padding: 8px 14px;
+    border-bottom: 1px solid var(--gray-200);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .contest-textarea {
+    width: 100%;
+    min-height: 200px;
+    padding: 16px 18px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    line-height: 1.7;
+    color: var(--text);
+    background: #fafbfc;
+    border: none;
+    outline: none;
+    resize: vertical;
+    tab-size: 4;
+    box-sizing: border-box;
+  }
+
+  .contest-textarea::placeholder {
+    color: var(--gray-300);
+  }
+
+  @media print {
+    body { background: white; }
+    .page { box-shadow: none; margin: 0; page-break-after: always; }
+    .contest-textarea { border: 1px solid var(--gray-300); min-height: 180px; }
+  }
+
+</style>
+</head>
+<body>
+
+<div class="page">
+  <div class="chapter-page">
+    <div class="chapter-sidebar"></div>
+    <div class="chapter-accent-bar"></div>
+    <div class="chapter-body">
+      <div class="chapter-watermark">30</div>
+      <div class="chapter-label">Chapter 30</div>
+      <h1 class="chapter-title">탐욕법 (Greedy)</h1>
+      <p class="chapter-sub">매 순간 가장 좋은 선택을 하는 탐욕법을 배우고, 항상 최적인지 생각해 봐요.</p>
+
+      <h3 class="obj-title">이 유닛에서 배우는 것</h3>
+      <ul class="obj-list">
+        <li>탐욕법(Greedy)의 뜻을 설명할 수 있어요.</li>
+        <li>매 순간 최선의 선택이 전체 최선이 되는 경우를 이해해요.</li>
+        <li>거스름돈 문제를 그리디로 풀 수 있어요.</li>
+        <li>그리디가 실패하는 경우를 알아요.</li>
+        <li>[심화] 활동 선택 문제를 그리디로 풀 수 있어요.</li>
+        <li>[심화] 그리디가 최적인 조건을 이해해요.</li>
+        <li>[심화 내용] 그리디의 정당성 증명 기법을 알아요.</li>
+      </ul>
+
+      <h3 class="prereq-title">선수 학습</h3>
+      <div class="prereq-flow">
+        <div class="prereq-item">완전 탐색 (U29)</div><div class="prereq-arrow">→</div>
+        <div class="prereq-item current">반복문, 조건문 기본</div>
+      </div>
+
+      
+
+      <span class="page-num">1</span>
+    </div>
+  </div>
+</div>
+<div class="page">
+  <div class="content-page">
+    <div class="unit-header-bar">
+      <span class="unit-tag">UNIT 30</span>
+      <span class="unit-title-sm">탐욕법 (Greedy)</span>
+    </div>
+<h2 class="section-title">탐욕법이 뭘까?</h2>
+
+<div class="note-box"><span class="note-label">[핵심] 탐욕법이란?</span>
+<b>탐욕법(Greedy Algorithm)</b> = 매 순간 <b>가장 좋아 보이는 선택</b>을 하는 전략<br><br>특징:<br>1. <b>한 번 선택하면 되돌리지 않음</b><br>2. 현재 상황에서 <b>최선</b>을 선택<br>3. <b>빠르다!</b> 보통 O(n) 또는 O(n log n)<br><br>주의: 항상 전체 최적이 되는 건 아니에요!</div>
+<h2 class="section-title">예시 1: 거스름돈 문제</h2>
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span><span class="code-bar-file">greedy_coin.c</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;stdio.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">main</span>(<span class="s-type">void</span>) {</span></div>
+<div class="code-line"><span class="ln">4</span><span class="lc">    <span class="s-type">int</span> coins[] = {<span class="s-num">500</span>, <span class="s-num">100</span>, <span class="s-num">50</span>, <span class="s-num">10</span>};</span></div>
+<div class="code-line"><span class="ln">5</span><span class="lc">    <span class="s-type">int</span> n = <span class="s-num">4</span>;</span></div>
+<div class="code-line"><span class="ln">6</span><span class="lc">    <span class="s-type">int</span> amount = <span class="s-num">1260</span>;</span></div>
+<div class="code-line"><span class="ln">7</span><span class="lc">    <span class="s-type">int</span> count = <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">8</span><span class="lc">    </span></div>
+<div class="code-line"><span class="ln">9</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"%d원 거슬러주기:\n"</span>, amount);</span></div>
+<div class="code-line"><span class="ln">10</span><span class="lc">    <span class="s-kw">for</span> (<span class="s-type">int</span> i = <span class="s-num">0</span>; i &lt; n; i++) {</span></div>
+<div class="code-line"><span class="ln">11</span><span class="lc">        <span class="s-type">int</span> use = amount / coins[i];  <span class="s-cm">// 가장 큰 동전부터!</span></span></div>
+<div class="code-line"><span class="ln">12</span><span class="lc">        <span class="s-kw">if</span> (use &gt; <span class="s-num">0</span>) {</span></div>
+<div class="code-line"><span class="ln">13</span><span class="lc">            <span class="s-fn">printf</span>(<span class="s-str">"  %d원 × %d개\n"</span>, coins[i], use);</span></div>
+<div class="code-line"><span class="ln">14</span><span class="lc">            count += use;</span></div>
+<div class="code-line"><span class="ln">15</span><span class="lc">            amount -= coins[i] * use;</span></div>
+<div class="code-line"><span class="ln">16</span><span class="lc">        }</span></div>
+<div class="code-line"><span class="ln">17</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">18</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"총 동전 %d개\n"</span>, count);</span></div>
+<div class="code-line"><span class="ln">19</span><span class="lc">    <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">20</span><span class="lc">}</span></div>
+</div>
+</div>
+<div class="output-wrap"><div class="output-bar">실행 결과</div><div class="output-body">1260원 거슬러주기:
+  500원 × 2개
+  100원 × 2개
+  50원 × 1개
+  10원 × 1개
+총 동전 6개</div></div>
+<table class="trace"><thead><tr><th>단계</th><th>현재 동전</th><th>남은 금액</th><th>사용 개수</th><th>누적 동전 수</th></tr></thead><tbody><tr><td>시작</td><td>—</td><td>1260</td><td>—</td><td>0</td></tr><tr><td>1</td><td>500원</td><td>260</td><td>2</td><td>2</td></tr><tr><td>2</td><td>100원</td><td>60</td><td>2</td><td>4</td></tr><tr><td>3</td><td>50원</td><td>10</td><td>1</td><td>5</td></tr><tr><td>4</td><td>10원</td><td>0</td><td>1</td><td>6</td></tr></tbody></table>
+<div style="margin:22px 0"></div>
+
+<h2 class="section-title">그리디가 실패하는 경우!</h2>
+<div class="warn"><span class="warn-label">[주의] 그리디는 항상 최적이 아니야!</span>
+동전이 {500, <b>400</b>, 100, 10}일 때:<br><br>800원 거스름돈:<br>• 그리디: 500 + 100×3 = <b>4개</b><br>• 최적: 400 + 400 = <b>2개!</b><br><br>그리디가 실패한 이유:<br>큰 동전을 쓴 결과가 나중에 더 안 좋은 결과를 만듦</div>
+<table class="trace"><thead><tr><th>방법</th><th>단계1</th><th>단계2</th><th>단계3</th><th>총 동전 수</th></tr></thead><tbody><tr><td>그리디</td><td>500원 x1 (남은:300)</td><td>100원 x3 (남은:0)</td><td>—</td><td>4개</td></tr><tr><td>최적해</td><td>400원 x1 (남은:400)</td><td>400원 x1 (남은:0)</td><td>—</td><td>2개</td></tr></tbody></table>
+<table class="trace"><thead><tr><th>방법</th><th>단계1</th><th>단계2</th><th>단계3</th><th>총 동전 수</th></tr></thead><tbody><tr><td>그리디</td><td>4원 x1 (남은:2)</td><td>1원 x1 (남은:1)</td><td>1원 x1 (남은:0)</td><td>3개</td></tr><tr><td>최적해</td><td>3원 x1 (남은:3)</td><td>3원 x1 (남은:0)</td><td>—</td><td>2개</td></tr></tbody></table>
+<div class="debug-section"><div class="debug-bar">DEBUG LAB — 에러를 찾으시오</div><div class="debug-body">
+
+<p style="margin:14px 0 0; font-size:14px;"><b>에러:</b> </p>
+<p style="font-size:14px;"><b>수정:</b> </p>
+</div></div>
+<h2 class="section-title">예시 2: 회의실 배정 (활동 선택)</h2>
+<p>여러 회의가 있을 때, 최대한 많은 회의를 하려면?</p>
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span><span class="code-bar-file">greedy_meeting.c</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;stdio.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">main</span>(<span class="s-type">void</span>) {</span></div>
+<div class="code-line"><span class="ln">4</span><span class="lc">    <span class="s-cm">// 회의: {시작, 끝}</span></span></div>
+<div class="code-line"><span class="ln">5</span><span class="lc">    <span class="s-type">int</span> start[] = {<span class="s-num">1</span>, <span class="s-num">3</span>, <span class="s-num">0</span>, <span class="s-num">5</span>, <span class="s-num">3</span>, <span class="s-num">5</span>, <span class="s-num">6</span>, <span class="s-num">8</span>};</span></div>
+<div class="code-line"><span class="ln">6</span><span class="lc">    <span class="s-type">int</span> end[]   = {<span class="s-num">4</span>, <span class="s-num">5</span>, <span class="s-num">6</span>, <span class="s-num">7</span>, <span class="s-num">8</span>, <span class="s-num">9</span>, <span class="s-num">10</span>, <span class="s-num">11</span>};</span></div>
+<div class="code-line"><span class="ln">7</span><span class="lc">    <span class="s-type">int</span> n = <span class="s-num">8</span>;</span></div>
+<div class="code-line"><span class="ln">8</span><span class="lc">    </span></div>
+<div class="code-line"><span class="ln">9</span><span class="lc">    <span class="s-cm">// 그리디: 끝나는 시간이 빠른 순으로 선택!</span></span></div>
+<div class="code-line"><span class="ln">10</span><span class="lc">    <span class="s-cm">// (이미 끝 시간 기준 정렬되어 있다고 가정)</span></span></div>
+<div class="code-line"><span class="ln">11</span><span class="lc">    <span class="s-type">int</span> count = <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">12</span><span class="lc">    <span class="s-type">int</span> lastEnd = <span class="s-num">0</span>;  <span class="s-cm">// 마지막 회의 끝난 시간</span></span></div>
+<div class="code-line"><span class="ln">13</span><span class="lc">    </span></div>
+<div class="code-line"><span class="ln">14</span><span class="lc">    <span class="s-kw">for</span> (<span class="s-type">int</span> i = <span class="s-num">0</span>; i &lt; n; i++) {</span></div>
+<div class="code-line"><span class="ln">15</span><span class="lc">        <span class="s-kw">if</span> (start[i] &gt;= lastEnd) {  <span class="s-cm">// 안 겹치면 선택!</span></span></div>
+<div class="code-line"><span class="ln">16</span><span class="lc">            <span class="s-fn">printf</span>(<span class="s-str">"회의 %d: %d~%d 선택\n"</span>, i+<span class="s-num">1</span>, start[i], end[i]);</span></div>
+<div class="code-line"><span class="ln">17</span><span class="lc">            lastEnd = end[i];</span></div>
+<div class="code-line"><span class="ln">18</span><span class="lc">            count++;</span></div>
+<div class="code-line"><span class="ln">19</span><span class="lc">        }</span></div>
+<div class="code-line"><span class="ln">20</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">21</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"최대 %d개 회의 가능\n"</span>, count);</span></div>
+<div class="code-line"><span class="ln">22</span><span class="lc">    <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">23</span><span class="lc">}</span></div>
+</div>
+</div>
+<div class="output-wrap"><div class="output-bar">실행 결과</div><div class="output-body">회의 1: 1~4 선택
+회의 2: 5~7 선택
+회의 3: 8~11 선택
+최대 3개 회의 가능</div></div>
+<table class="trace"><thead><tr><th>회의</th><th>시작</th><th>끝</th><th>마지막 끝 시간</th><th>겹침?</th><th>선택?</th></tr></thead><tbody><tr><td>회의1</td><td>1</td><td>4</td><td>0</td><td>X (1≥0)</td><td>O 선택!</td></tr><tr><td>회의2</td><td>3</td><td>5</td><td>4</td><td>O (3<4)</td><td>X 패스</td></tr><tr><td>회의3</td><td>0</td><td>6</td><td>4</td><td>O (0<4)</td><td>X 패스</td></tr><tr><td>회의4</td><td>5</td><td>7</td><td>4</td><td>X (5≥4)</td><td>O 선택!</td></tr><tr><td>회의5</td><td>3</td><td>8</td><td>7</td><td>O (3<7)</td><td>X 패스</td></tr><tr><td>회의6</td><td>5</td><td>9</td><td>7</td><td>O (5<7)</td><td>X 패스</td></tr><tr><td>회의7</td><td>6</td><td>10</td><td>7</td><td>O (6<7)</td><td>X 패스</td></tr><tr><td>회의8</td><td>8</td><td>11</td><td>7</td><td>X (8≥7)</td><td>O 선택!</td></tr></tbody></table>
+<div style="margin:22px 0"></div>
+<div class="note-box"><span class="note-label">[핵심] 활동 선택의 그리디 전략</span>
+핵심: <b>끝나는 시간이 빠른 것</b>부터 선택!<br><br>왜 이게 최적인가?<br>→ 빨리 끝나는 활동을 고르면 남은 시간이 더 많아져서<br>→ 더 많은 활동을 넣을 수 있으니까!<br><br>이 경우 그리디가 <b>증명 가능하게 최적</b>이에요.</div>
+<h2 class="section-title">예시 3: 분할 가능 배낭 문제</h2>
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span><span class="code-bar-file">greedy_knapsack.c</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;stdio.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">main</span>(<span class="s-type">void</span>) {</span></div>
+<div class="code-line"><span class="ln">4</span><span class="lc">    <span class="s-cm">// 물건: {무게, 가치}</span></span></div>
+<div class="code-line"><span class="ln">5</span><span class="lc">    <span class="s-type">float</span> weight[] = {<span class="s-num">10</span>, <span class="s-num">20</span>, <span class="s-num">30</span>};</span></div>
+<div class="code-line"><span class="ln">6</span><span class="lc">    <span class="s-type">float</span> value[]  = {<span class="s-num">60</span>, <span class="s-num">100</span>, <span class="s-num">120</span>};</span></div>
+<div class="code-line"><span class="ln">7</span><span class="lc">    <span class="s-type">int</span> n = <span class="s-num">3</span>;</span></div>
+<div class="code-line"><span class="ln">8</span><span class="lc">    <span class="s-type">float</span> capacity = <span class="s-num">50</span>;</span></div>
+<div class="code-line"><span class="ln">9</span><span class="lc">    </span></div>
+<div class="code-line"><span class="ln">10</span><span class="lc">    <span class="s-cm">// 가치/무게 비율: 6, 5, 4</span></span></div>
+<div class="code-line"><span class="ln">11</span><span class="lc">    <span class="s-cm">// 그리디: 비율 높은 것부터!</span></span></div>
+<div class="code-line"><span class="ln">12</span><span class="lc">    <span class="s-cm">// (이미 비율 순 정렬 가정)</span></span></div>
+<div class="code-line"><span class="ln">13</span><span class="lc">    </span></div>
+<div class="code-line"><span class="ln">14</span><span class="lc">    <span class="s-type">float</span> totalValue = <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">15</span><span class="lc">    <span class="s-kw">for</span> (<span class="s-type">int</span> i = <span class="s-num">0</span>; i &lt; n; i++) {</span></div>
+<div class="code-line"><span class="ln">16</span><span class="lc">        <span class="s-kw">if</span> (capacity &gt;= weight[i]) {</span></div>
+<div class="code-line"><span class="ln">17</span><span class="lc">            <span class="s-cm">// 통째로 넣기</span></span></div>
+<div class="code-line"><span class="ln">18</span><span class="lc">            capacity -= weight[i];</span></div>
+<div class="code-line"><span class="ln">19</span><span class="lc">            totalValue += value[i];</span></div>
+<div class="code-line"><span class="ln">20</span><span class="lc">            <span class="s-fn">printf</span>(<span class="s-str">"물건%d: 전부 넣기 (%.0f)\n"</span>, i+<span class="s-num">1</span>, value[i]);</span></div>
+<div class="code-line"><span class="ln">21</span><span class="lc">        } <span class="s-kw">else</span> {</span></div>
+<div class="code-line"><span class="ln">22</span><span class="lc">            <span class="s-cm">// 잘라서 넣기 (분할 가능!)</span></span></div>
+<div class="code-line"><span class="ln">23</span><span class="lc">            <span class="s-type">float</span> fraction = capacity / weight[i];</span></div>
+<div class="code-line"><span class="ln">24</span><span class="lc">            totalValue += value[i] * fraction;</span></div>
+<div class="code-line"><span class="ln">25</span><span class="lc">            <span class="s-fn">printf</span>(<span class="s-str">"물건%d: %.0f%% 넣기 (%.0f)\n"</span>, </span></div>
+<div class="code-line"><span class="ln">26</span><span class="lc">                   i+<span class="s-num">1</span>, fraction*<span class="s-num">100</span>, value[i]*fraction);</span></div>
+<div class="code-line"><span class="ln">27</span><span class="lc">            capacity = <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">28</span><span class="lc">            <span class="s-kw">break</span>;</span></div>
+<div class="code-line"><span class="ln">29</span><span class="lc">        }</span></div>
+<div class="code-line"><span class="ln">30</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">31</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"최대 가치: %.0f\n"</span>, totalValue);</span></div>
+<div class="code-line"><span class="ln">32</span><span class="lc">    <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">33</span><span class="lc">}</span></div>
+</div>
+</div>
+<div class="output-wrap"><div class="output-bar">실행 결과</div><div class="output-body">물건1: 전부 넣기 (60)
+물건2: 전부 넣기 (100)
+물건3: 67% 넣기 (80)
+최대 가치: 240</div></div>
+<table class="trace"><thead><tr><th>물건</th><th>무게</th><th>가치</th><th>단가(가치/무게)</th><th>남은 용량</th><th>넣는 양</th><th>획득 가치</th></tr></thead><tbody><tr><td>물건1</td><td>10kg</td><td>60</td><td>6.0 (최고!)</td><td>50→40</td><td>전부(10kg)</td><td>60</td></tr><tr><td>물건2</td><td>20kg</td><td>100</td><td>5.0</td><td>40→20</td><td>전부(20kg)</td><td>100</td></tr><tr><td>물건3</td><td>30kg</td><td>120</td><td>4.0</td><td>20→0</td><td>67%(20kg)</td><td>80</td></tr><tr><td>합계</td><td>—</td><td>—</td><td>—</td><td>0</td><td>—</td><td>240</td></tr></tbody></table>
+<div style="margin:22px 0"></div>
+<div class="debug-section"><div class="debug-bar">DEBUG LAB — 에러를 찾으시오</div><div class="debug-body">
+
+<p style="margin:14px 0 0; font-size:14px;"><b>에러:</b> </p>
+<p style="font-size:14px;"><b>수정:</b> </p>
+</div></div>
+<div class="debug-section"><div class="debug-bar">DEBUG LAB — 에러를 찾으시오</div><div class="debug-body">
+
+<p style="margin:14px 0 0; font-size:14px;"><b>에러:</b> </p>
+<p style="font-size:14px;"><b>수정:</b> </p>
+</div></div>
+<h2 class="section-title">[심화] 그리디가 최적인 2가지 조건</h2>
+<div class="note-box"><span class="note-label">[심화] 그리디 정당성의 2가지 조건</span>
+그리디가 최적 해를 보장하려면 두 조건이 필요:<br><br>1. <b>탐욕적 선택 속성 (Greedy Choice Property)</b><br>→ 매 순간 최선의 선택이 전체 최선에 포함됨<br><br>2. <b>최적 부분 구조 (Optimal Substructure)</b><br>→ 하위 문제의 최적 해가 전체 문제의 최적 해에 포함됨<br><br>두 조건 모두 성립하면 그리디 = 최적!</div>
+<table class="trace"><thead><tr><th>문제</th><th>전략</th><th>최적?</th><th>시간</th></tr></thead><tbody><tr><td>거스름돈(한국)</td><td>큰 동전 우선</td><td>O (배수 조건)</td><td>O(종류)</td></tr><tr><td>거스름돈(임의)</td><td>큰 동전 우선</td><td>X (반례 존재)</td><td>—</td></tr><tr><td>활동 선택</td><td>빨리 끝나는 것 우선</td><td>O (증명 가능)</td><td>O(n log n)</td></tr><tr><td>분할 배낭</td><td>가치/무게 비율 우선</td><td>O</td><td>O(n log n)</td></tr><tr><td>0-1 배낭</td><td>그리디 불가</td><td>X</td><td>DP 필요</td></tr><tr><td>허프만 코딩</td><td>빈도 낮은 것 합치기</td><td>O</td><td>O(n log n)</td></tr></tbody></table>
+<div style="margin:22px 0"></div>
+<h2 class="section-title">[심화] 그리디 실전: 최소 동전 (DP와 비교)</h2>
+<div class="note-box"><span class="note-label">[심화] 0-1 배낭 vs 분할 배낭</span>
+<b>분할 배낭</b>: 물건을 잘라서 넣을 수 있음 → <b>그리디 OK</b><br><b>0-1 배낭</b>: 물건을 통째로만 넣을 수 있음 → <b>그리디 X, DP 필요</b><br><br>비슷해 보이지만 '분할 가능 여부'에 따라 전략이 완전히 달라!</div>
+<h2 class="section-title">[심화 내용] 그리디 정당성 증명</h2>
+<div class="note-box"><span class="note-label">[심화 내용] 교환 논증 (Exchange Argument)</span>
+그리디 해가 최적임을 증명하는 대표적 기법:<br><br>1. 최적 해 OPT가 있다고 가정<br>2. OPT가 그리디와 다른 부분이 있으면<br>3. 그 부분을 그리디의 선택으로 <b>교환</b>해도 더 나빠지지 않음을 보임<br>4. 따라서 그리디 해 = 최적 해<br><br>예: 활동 선택 문제 — 빨리 끝나는 것을 안 고른 최적 해가 있다면,<br>교환해도 회의 수가 줄지 않으므로 그리디가 최적.</div>
+<h2 class="section-title">[심화 내용] 허프만 코딩 — 그리디의 명작</h2>
+<div class="note-box"><span class="note-label">[심화 내용] 허프만 코딩</span>
+<b>허프만 코딩</b> = 빈도가 높은 문자에 짧은 코드, 낮은 문자에 긴 코드<br><br>그리디 전략: 빈도가 가장 낮은 두 노드를 합치기<br><br>예: A(45%), B(13%), C(12%), D(16%), E(9%), F(5%)<br>→ 합치기: (E5+F5)=14 → (B13+C12)=25 → ...<br>→ 최소 비트로 데이터 압축 가능!<br><br>ZIP, JPEG, MP3 등의 압축 알고리즘 기초!</div>
+<table class="trace"><thead><tr><th>단계</th><th>현재 노드들</th><th>가장 작은 2개</th><th>합친 결과</th><th>남은 노드 수</th></tr></thead><tbody><tr><td>시작</td><td>A(45) B(13) C(12) D(16) E(9) F(5)</td><td>—</td><td>—</td><td>6</td></tr><tr><td>1</td><td>A(45) B(13) C(12) D(16) EF(14)</td><td>E(9)+F(5)</td><td>EF(14)</td><td>5</td></tr><tr><td>2</td><td>A(45) CB(25) D(16) EF(14)</td><td>C(12)+B(13)</td><td>CB(25)</td><td>4</td></tr><tr><td>3</td><td>A(45) CB(25) EFD(30)</td><td>EF(14)+D(16)</td><td>EFD(30)</td><td>3</td></tr><tr><td>4</td><td>A(45) CBEFD(55)</td><td>CB(25)+EFD(30)</td><td>CBEFD(55)</td><td>2</td></tr><tr><td>5</td><td>root(100)</td><td>A(45)+CBEFD(55)</td><td>root(100)</td><td>1 (완성!)</td></tr></tbody></table>
+<table class="trace"><thead><tr><th>문자</th><th>빈도</th><th>코드</th><th>코드 길이</th><th>빈도 x 길이</th></tr></thead><tbody><tr><td>A</td><td>45%</td><td>0</td><td>1비트</td><td>45</td></tr><tr><td>B</td><td>13%</td><td>101</td><td>3비트</td><td>39</td></tr><tr><td>C</td><td>12%</td><td>100</td><td>3비트</td><td>36</td></tr><tr><td>D</td><td>16%</td><td>111</td><td>3비트</td><td>48</td></tr><tr><td>E</td><td>9%</td><td>1101</td><td>4비트</td><td>36</td></tr><tr><td>F</td><td>5%</td><td>1100</td><td>4비트</td><td>20</td></tr><tr><td>합계</td><td>100%</td><td>—</td><td>평균 2.24비트</td><td>224</td></tr></tbody></table>
+<h2 class="section-title">KOI 연결: 그리디 문제 판별법</h2>
+<div class="tip"><span class="tip-label">[KOI] 그리디 문제의 신호</span>
+이런 키워드가 보이면 그리디를 시도!<br><br>• "<b>최소 개수</b>" + 정렬 가능 → 그리디<br>• "<b>최대한 많이</b>" + 선택 기준 명확 → 그리디<br>• "<b>정렬 후</b> 순서대로" → 그리디<br><br>하지만 반드시 반례를 확인하세요!<br>그리디가 안 되면 DP나 완전 탐색으로 전환!</div>
+<!-- fact-bite -->
+<table class="trace"><thead><tr><th>단계</th><th>동전</th><th>사용 개수</th><th>사용 금액</th><th>남은 금액</th><th>누적 동전</th></tr></thead><tbody><tr><td>1</td><td>500원</td><td>3</td><td>1500</td><td>260</td><td>3</td></tr><tr><td>2</td><td>100원</td><td>2</td><td>200</td><td>60</td><td>5</td></tr><tr><td>3</td><td>50원</td><td>1</td><td>50</td><td>10</td><td>6</td></tr><tr><td>4</td><td>10원</td><td>1</td><td>10</td><td>0</td><td>7</td></tr></tbody></table>
+<h2 class="section-title">OX 퀴즈</h2>
+<!-- ox -->
+<h2 class="section-title">연습문제</h2>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 1</span><p style="margin:0;font-size:14px">그리디 알고리즘이란 무엇인지 한 문장으로 설명하세요.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 2</span><p style="margin:0;font-size:14px">1760원을 500,100,50,10원 동전으로 거슬러주세요. (그리디)</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 3</span><p style="margin:0;font-size:14px">그리디의 장점과 단점을 각각 하나씩 쓰세요.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 4</span><p style="margin:0;font-size:14px">완전 탐색과 그리디의 가장 큰 차이를 설명하세요.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 5</span><p style="margin:0;font-size:14px">그리디에서 한 번 선택하면 어떻게 하나요?</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 6</span><p style="margin:0;font-size:14px">동전 {500,400,100,10}으로 800원 거스름돈. 그리디 결과와 최적 해를 비교하세요.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 7</span><p style="margin:0;font-size:14px">활동 선택 문제에서 '끝나는 시간 기준'이 최적인 이유를 설명하세요.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 8</span><p style="margin:0;font-size:14px">분할 배낭과 0-1 배낭의 차이를 설명하세요.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 9</span><p style="margin:0;font-size:14px">회의 (1~3), (2~5), (4~6), (3~8)에서 최대 회의 수를 구하세요.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 10</span><p style="margin:0;font-size:14px">그리디가 최적인 2가지 조건의 이름을 쓰세요.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 11</span><p style="margin:0;font-size:14px">[심화] 교환 논증(Exchange Argument)이란 무엇인가요?</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 12</span><p style="margin:0;font-size:14px">[심화] 허프만 코딩의 기본 원리를 설명하세요.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 13</span><p style="margin:0;font-size:14px">[심화] 그리디가 실패하면 어떤 알고리즘을 대안으로 쓸 수 있나요?</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 14</span><p style="margin:0;font-size:14px">[심화 내용] 0-1 배낭 문제에서 그리디가 실패하는 반례를 하나 드세요.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 15</span><p style="margin:0;font-size:14px">[심화 내용] 크루스칼 알고리즘이 그리디인 이유를 설명하세요.</p></div>
+<h2 class="section-title">용어 정리</h2>
+<h2 class="section-title">[심화 내용] 탐욕법이 최적인 조건</h2>
+<div class="note-box"><span class="note-label">[심화 내용] 탐욕적 선택 속성과 최적 부분 구조</span>
+탐욕법이 최적해를 보장하려면 두 조건이 필요:<br><br><b>1. 탐욕적 선택 속성 (Greedy Choice Property)</b><br>매 단계의 최선의 선택이 전체 최적해에 포함됨<br><br><b>2. 최적 부분 구조 (Optimal Substructure)</b><br>부분 문제의 최적해로 전체 최적해를 구성할 수 있음<br><br><b>최적인 경우:</b><br>- 거스름돈 (동전이 배수 관계일 때만!)<br>- 활동 선택 (끝나는 시간 기준)<br>- Huffman 코딩<br>- Kruskal/Prim MST<br>- Dijkstra 최단 경로 (음수 간선 없을 때)<br><br><b>최적이 아닌 경우:</b><br>- 거스름돈 {1, 3, 4}로 6원: 그리디=4+1+1(3개), 최적=3+3(2개)!<br>- 0/1 배낭 문제<br>- TSP (외판원)</div>
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span><span class="code-bar-file">[C 코드] 활동 선택 문제 (그리디)</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;stdio.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc"><span class="s-cm">// 끝나는 시간 기준 정렬 후 탐욕 선택</span></span></div>
+<div class="code-line"><span class="ln">4</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">main</span>() {</span></div>
+<div class="code-line"><span class="ln">5</span><span class="lc">    <span class="s-cm">// {시작, 끝} 이미 끝시간 순 정렬</span></span></div>
+<div class="code-line"><span class="ln">6</span><span class="lc">    <span class="s-type">int</span> start[] = {<span class="s-num">1</span>, <span class="s-num">3</span>, <span class="s-num">0</span>, <span class="s-num">5</span>, <span class="s-num">8</span>, <span class="s-num">5</span>};</span></div>
+<div class="code-line"><span class="ln">7</span><span class="lc">    <span class="s-type">int</span> end[]   = {<span class="s-num">2</span>, <span class="s-num">4</span>, <span class="s-num">6</span>, <span class="s-num">7</span>, <span class="s-num">9</span>, <span class="s-num">9</span>};</span></div>
+<div class="code-line"><span class="ln">8</span><span class="lc">    <span class="s-type">int</span> n = <span class="s-num">6</span>;</span></div>
+<div class="code-line"><span class="ln">9</span><span class="lc">    </span></div>
+<div class="code-line"><span class="ln">10</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"선택된 활동:\n"</span>);</span></div>
+<div class="code-line"><span class="ln">11</span><span class="lc">    <span class="s-type">int</span> last_end = <span class="s-num">0</span>, count = <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">12</span><span class="lc">    <span class="s-kw">for</span> (<span class="s-type">int</span> i = <span class="s-num">0</span>; i &lt; n; i++) {</span></div>
+<div class="code-line"><span class="ln">13</span><span class="lc">        <span class="s-kw">if</span> (start[i] &gt;= last_end) {  <span class="s-cm">// 겹치지 않으면 선택!</span></span></div>
+<div class="code-line"><span class="ln">14</span><span class="lc">            <span class="s-fn">printf</span>(<span class="s-str">"  활동 %d: [%d, %d)\n"</span>, i, start[i], end[i]);</span></div>
+<div class="code-line"><span class="ln">15</span><span class="lc">            last_end = end[i];</span></div>
+<div class="code-line"><span class="ln">16</span><span class="lc">            count++;</span></div>
+<div class="code-line"><span class="ln">17</span><span class="lc">        }</span></div>
+<div class="code-line"><span class="ln">18</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">19</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"최대 %d개 활동 가능\n"</span>, count);</span></div>
+<div class="code-line"><span class="ln">20</span><span class="lc">    <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">21</span><span class="lc">}</span></div>
+</div>
+</div>
+<div class="output-wrap"><div class="output-bar">실행 결과</div><div class="output-body">선택된 활동:
+  활동 0: [1, 2)
+  활동 1: [3, 4)
+  활동 3: [5, 7)
+  활동 4: [8, 9)
+최대 4개 활동 가능</div></div>
+<h2 class="section-title">[심화 내용] Huffman 코딩</h2>
+<div class="note-box"><span class="note-label">[심화 내용] 허프만 코딩 = 탐욕법의 걸작</span>
+<b>목표:</b> 빈도 높은 문자는 짧은 코드, 낮은 문자는 긴 코드<br><br>문자 빈도: A=45, B=13, C=12, D=16, E=9, F=5<br><br><b>탐욕 전략:</b> 가장 빈도 낮은 두 개를 합치기!<br><br>1. E(9)+F(5) = EF(14)<br>2. C(12)+B(13) = CB(25)<br>3. EF(14)+D(16) = EFD(30)<br>4. CB(25)+EFD(30) = CBEFD(55)<br>5. A(45)+CBEFD(55) = root(100)<br><br>결과 코드: A=0, B=101, C=100, D=111, E=1101, F=1100<br><br>고정 3비트보다 평균 2.24비트! 25% 절약!<br>ZIP, JPEG, MP3 등 거의 모든 압축에 사용</div>
+<!-- fact-bite -->
+<!-- fact-bite -->
+<h2 class="section-title">[심화 내용] 탐욕법 vs DP 비교</h2>
+<div class="debug-section"><div class="debug-bar">DEBUG LAB — 에러를 찾으시오</div><div class="debug-body">
+
+<p style="margin:14px 0 0; font-size:14px;"><b>에러:</b> </p>
+<p style="font-size:14px;"><b>수정:</b> </p>
+</div></div>
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span><span class="code-bar-file">[C 코드] 탐욕법이 실패하는 예</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;stdio.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc"><span class="s-cm">// 동전: {1, 3, 4}로 6원 만들기</span></span></div>
+<div class="code-line"><span class="ln">4</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">greedy_coins</span>(<span class="s-type">int</span> coins[], <span class="s-type">int</span> n, <span class="s-type">int</span> amount) {</span></div>
+<div class="code-line"><span class="ln">5</span><span class="lc">    <span class="s-type">int</span> count = <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">6</span><span class="lc">    <span class="s-kw">for</span> (<span class="s-type">int</span> i = n-<span class="s-num">1</span>; i &gt;= <span class="s-num">0</span>; i--)</span></div>
+<div class="code-line"><span class="ln">7</span><span class="lc">        <span class="s-kw">while</span> (amount &gt;= coins[i]) { amount -= coins[i]; count++; }</span></div>
+<div class="code-line"><span class="ln">8</span><span class="lc">    <span class="s-kw">return</span> count;</span></div>
+<div class="code-line"><span class="ln">9</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">10</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">11</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">main</span>() {</span></div>
+<div class="code-line"><span class="ln">12</span><span class="lc">    <span class="s-type">int</span> coins[] = {<span class="s-num">1</span>, <span class="s-num">3</span>, <span class="s-num">4</span>};</span></div>
+<div class="code-line"><span class="ln">13</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"그리디: 6원 = %d개 동전\n"</span>, <span class="s-fn">greedy_coins</span>(coins, <span class="s-num">3</span>, <span class="s-num">6</span>));</span></div>
+<div class="code-line"><span class="ln">14</span><span class="lc">    <span class="s-cm">// 그리디: 4+1+1 = 3개</span></span></div>
+<div class="code-line"><span class="ln">15</span><span class="lc">    <span class="s-cm">// 최적: 3+3 = 2개!</span></span></div>
+<div class="code-line"><span class="ln">16</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"최적: 3+3 = 2개 (그리디 실패!)\n"</span>);</span></div>
+<div class="code-line"><span class="ln">17</span><span class="lc">    <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">18</span><span class="lc">}</span></div>
+</div>
+</div>
+<div class="output-wrap"><div class="output-bar">실행 결과</div><div class="output-body">그리디: 6원 = 3개 동전
+최적: 3+3 = 2개 (그리디 실패!)</div></div>
+<div class="warn"><span class="warn-label">[심화 내용] 탐욕법 함정 주의</span>
+그리디가 맞는지 확인하는 방법:<br><br><b>1. 반례 찾기</b><br>작은 입력에서 완전 탐색과 비교<br>하나라도 다르면 그리디 실패!<br><br><b>2. 수학적 증명</b><br>탐욕적 선택 속성 + 최적 부분 구조<br>교환 논법(Exchange Argument)으로 증명<br><br><b>3. 직관 체크</b><br>"이 선택이 미래에 후회될 수 있는가?"<br>후회 가능성이 있으면 그리디가 아닌 DP!</div>
+<div class="note-box"><span class="note-label">[심화 내용] 유명한 그리디 알고리즘 모음</span>
+<b>1. Kruskal MST</b><br>간선을 가중치 순 정렬 → 사이클 안 만들면 추가<br>Union-Find 사용, O(E log E)<br><br><b>2. Prim MST</b><br>현재 트리에서 가장 가까운 정점 추가<br>우선순위 큐 사용, O(E log V)<br><br><b>3. Dijkstra 최단 경로</b><br>현재 가장 가까운 미방문 정점 처리<br>O(V^2) 또는 O(E log V) (힙 사용)<br><br><b>4. 분할 가능 배낭</b><br>단가(가치/무게) 순 정렬 → 높은 것부터<br>물건을 쪼갤 수 있으면 그리디 OK!<br><br><b>5. 작업 스케줄링</b><br>마감이 빠른 순 / 소요시간 짧은 순</div>
+
+<h2 class="section-title">[심화] 그리디 정당성 증명 — 교환 논법</h2>
+<div class="note-box"><span class="note-label">[심화] 교환 논법 (Exchange Argument)</span>
+그리디가 최적임을 증명하는 가장 일반적인 방법:<br><br><b>단계:</b><br>1. 최적해 OPT가 있다고 가정<br>2. OPT와 그리디 해 G가 다른 첫 번째 지점 찾기<br>3. OPT에서 해당 선택을 G의 선택으로 교환해도<br>   해가 나빠지지 않음을 보임<br>4. 반복하면 OPT → G로 변환 가능<br>5. 따라서 G도 최적!<br><br><b>예: 활동 선택</b><br>OPT에서 첫 활동이 a1, G에서 첫 활동이 g1(가장 빨리 끝남)<br>g1이 a1보다 일찍 끝나므로 a1을 g1로 교환해도<br>나머지 활동에 더 많은 시간이 남음 → 최적 유지!</div>
+<!-- fact-bite -->
+
+<div class="tip"><span class="tip-label">[활동] 그리디 판별 연습</span>
+다음 문제에 그리디를 써도 되는지 판단해 보세요:<br><br><b>1. 회의실 배정</b>: 최대한 많은 회의 잡기<br>→ O! 끝시간 순 정렬 + 그리디<br><br><b>2. 동전 {1, 5, 12}로 16원</b><br>→ X! 그리디: 12+1+1+1+1=5개, 최적: 5+5+5+1=4개<br><br><b>3. 짐을 박스에 나누기 (bin packing)</b><br>→ X! NP-hard 문제. 그리디는 근사만 가능<br><br><b>4. 체육복 빌려주기</b><br>→ O! 번호 순서대로 빌려주면 최적<br><br>핵심: "지금 선택이 미래 선택에 영향?"<br>영향 없으면 그리디, 있으면 DP!</div>
+<!-- fact-bite -->
+
+<table class="trace"><thead><tr><th>용어</th><th>설명</th></tr></thead><tbody><tr><td><code>탐욕법 (Greedy)</code></td><td>매 순간 가장 좋아 보이는 선택을 하는 알고리즘 전략.</td></tr><tr><td><code>탐욕적 선택 속성</code></td><td>매 순간의 최선이 전체 최선에 포함되는 성질.</td></tr><tr><td><code>최적 부분 구조</code></td><td>하위 문제의 최적 해가 전체 최적 해에 포함되는 성질.</td></tr><tr><td><code>활동 선택 문제</code></td><td>겹치지 않게 최대한 많은 활동을 선택하는 문제.</td></tr><tr><td><code>교환 논증</code></td><td>Exchange Argument. 그리디 정당성 증명 기법.</td></tr><tr><td><code>허프만 코딩</code></td><td>빈도 기반 가변 길이 코드. 데이터 압축의 기초.</td></tr><tr><td><code>분할 배낭</code></td><td>물건을 잘라 넣을 수 있는 배낭 문제. 그리디 OK.</td></tr><tr><td><code>0-1 배낭</code></td><td>물건을 통째로만 넣는 배낭 문제. DP 필요.</td></tr><tr><td><code>크루스칼</code></td><td>최소 신장 트리를 구하는 그리디 알고리즘.</td></tr><tr><td><code>탐욕적 선택 속성</code></td><td>매 단계 최선의 선택이 전체 최적해에 포함되는 성질.</td></tr><tr><td><code>허프만 코딩</code></td><td>빈도 기반 가변 길이 코드. 데이터 압축의 기초. 탐욕법의 대표 예.</td></tr><tr><td><code>활동 선택</code></td><td>겹치지 않는 최대 활동 수를 구하는 문제. 끝시간 정렬 + 탐욕.</td></tr><tr><td><code>MST</code></td><td>Minimum Spanning Tree. 최소 비용으로 모든 노드를 연결하는 트리.</td></tr></tbody></table>
+<div class="warmup-box"><div class="warmup-title">이번 유닛 핵심 정리</div><div class="wq"><b>1.</b> 그리디 = 매 순간 최선을 선택</div><div class="wq"><b>2.</b> 장점: 빠르다! 단점: 항상 최적은 아님</div><div class="wq"><b>3.</b> 거스름돈(배수 동전), 활동 선택 → 그리디 OK</div><div class="wq"><b>4.</b> 0-1 배낭, 임의 동전 → 그리디 실패</div><div class="wq"><b>5.</b> [심화] 2가지 조건: 탐욕적 선택 + 최적 부분 구조</div><div class="wq"><b>6.</b> [심화] 반례 확인 필수!</div><div class="wq"><b>7.</b> [심화 내용] 교환 논증으로 정당성 증명</div></div>
+<div class="tip"><span class="tip-label">이 유닛에서 연결된 축</span>
+<b>[컴퓨팅 사고력]</b> 매 순간의 판단 + 전체 최적 관계<br><b>[C언어]</b> 정렬 후 반복문으로 선택<br><b>[KOI]</b> 그리디 문제 자주 출제 (정렬+선택 패턴)<br><b>[코딩기초]</b> 정렬, 조건문, 반복문 조합<br><b>[디버깅]</b> 반례 찾기 = 그리디 검증의 핵심<br><b>[실생활]</b> 거스름돈, 일정 관리, 자원 배분</div>
+<h2 class="section-title">실전 활용 연습</h2>
+<p>지금까지 배운 개념을 활용한 다양한 실전 예제와 연습문제입니다.</p>
+
+<h2 class="section-title">실생활 연결</h2>
+<div class="tip"><span class="tip-label">[실생활] 이 개념은 어디에 쓰일까?</span>
+게임 개발, 앱 만들기, 웹사이트, 로봇 제어, AI 학습 등 모든 분야에서 사용돼요!</div>
+
+<h2 class="section-title">추가 연습문제</h2>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 20</span><p style="margin:0;font-size:14px">이번 유닛에서 배운 핵심 개념 3가지를 자신의 말로 설명해 보세요.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 21</span><p style="margin:0;font-size:14px">이번 유닛의 개념을 활용한 자신만의 문제를 1개 만들어 보세요.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 22</span><p style="margin:0;font-size:14px">이번 유닛의 개념이 C언어에서 어떻게 사용되는지 조사해 보세요.</p></div>
+<h2 class="section-title">[심화] 더 알아보기</h2>
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+
+<p>이번 유닛의 모든 개념을 완전히 이해했습니다. 다음 유닛에서 더 발전된 개념을 배워보세요!</p>
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<div class="note-box"><span class="note-label">[다음 유닛 미리보기]</span>
+그리디가 안 될 때는? 실제로 시뮬레이션해 보는 <b>시뮬레이션</b> 알고리즘을 배워요!</div>
+
+
+    <span class="page-num">2</span>
+  </div>
+</div>
+</body>
+</html>

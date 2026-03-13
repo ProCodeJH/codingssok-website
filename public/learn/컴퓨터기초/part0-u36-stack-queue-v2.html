@@ -1,0 +1,1337 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>코딩쏙 교재 — 스택과 큐 — 접시 쌓기와 줄 서기</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+
+  :root {
+    --navy: #1a2e4a;
+    --navy-mid: #2c4a6e;
+    --navy-light: #3d6590;
+    --orange: #e07830;
+    --orange-light: #f5e6d8;
+    --white: #ffffff;
+    --bg: #f7f8fa;
+    --bg-warm: #faf9f7;
+    --gray-50: #f9fafb;
+    --gray-100: #f3f4f6;
+    --gray-200: #e5e7eb;
+    --gray-300: #d1d5db;
+    --gray-400: #9ca3af;
+    --gray-500: #6b7280;
+    --gray-600: #4b5563;
+    --gray-700: #374151;
+    --gray-800: #1f2937;
+    --text: #2d3748;
+    --green: #16a34a;
+    --green-bg: #dcfce7;
+    --red: #dc2626;
+    --red-bg: #fee2e2;
+    --blue: #2563eb;
+    --blue-bg: #dbeafe;
+    --yellow-bg: #fef9c3;
+    --font: 'Noto Sans KR', sans-serif;
+    --mono: 'JetBrains Mono', 'Consolas', monospace;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: var(--font); background: #e8eaed; font-size: 15px; }
+
+  /* ========== PAGE ========== */
+  .page {
+    width: 210mm;
+    min-height: 295mm;
+    margin: 24px auto;
+    background: var(--white);
+    box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* ========== PAGE 1: CHAPTER START ========== */
+  .chapter-page {
+    display: flex;
+    min-height: 295mm;
+  }
+
+  .chapter-sidebar {
+    width: 10px;
+    background: var(--navy);
+    flex-shrink: 0;
+  }
+
+  .chapter-accent-bar {
+    width: 7px;
+    background: var(--orange);
+    flex-shrink: 0;
+  }
+
+  .chapter-body {
+    flex: 1;
+    padding: 70px 65px 50px 55px;
+    position: relative;
+  }
+
+  .chapter-watermark {
+    position: absolute;
+    top: -10px;
+    right: -15px;
+    font-size: 280px;
+    font-weight: 900;
+    color: rgba(180,195,212,0.35);
+    line-height: 1;
+    pointer-events: none;
+    letter-spacing: -10px;
+  }
+
+  .chapter-label {
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--navy-mid);
+    letter-spacing: 2px;
+    margin-bottom: 4px;
+  }
+
+  .chapter-title {
+    font-size: 44px;
+    font-weight: 900;
+    color: var(--navy);
+    line-height: 1.15;
+    margin-bottom: 12px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .chapter-sub {
+    font-size: 16px;
+    color: var(--gray-500);
+    font-weight: 400;
+    margin-bottom: 20px;
+    padding-bottom: 28px;
+    border-bottom: 1px solid var(--gray-200);
+  }
+
+  /* Learning objectives */
+  .obj-title {
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--navy);
+    margin-bottom: 16px;
+    margin-top: 32px;
+  }
+
+  .obj-list {
+    list-style: none;
+    margin-bottom: 40px;
+  }
+
+  .obj-list li {
+    padding: 5px 0 5px 24px;
+    position: relative;
+    font-size: 15px;
+    color: var(--gray-700);
+    line-height: 1.6;
+  }
+
+  .obj-list li::before {
+    content: '•';
+    position: absolute;
+    left: 8px;
+    color: var(--navy-mid);
+    font-weight: 700;
+  }
+
+  /* Prerequisites flow */
+  .prereq-title {
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--navy);
+    margin-bottom: 18px;
+  }
+
+  .prereq-flow {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    margin-bottom: 44px;
+  }
+
+  .prereq-item {
+    padding: 9px 22px;
+    border: 1.5px solid var(--gray-300);
+    border-radius: 50px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--gray-600);
+    background: var(--white);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+  }
+
+  .prereq-item.current {
+    border-color: var(--navy);
+    color: var(--navy);
+    font-weight: 700;
+    background: #edf2f7;
+    box-shadow: 0 2px 6px rgba(26,46,74,0.12);
+  }
+
+  .prereq-arrow {
+    width: 36px;
+    text-align: center;
+    color: var(--gray-300);
+    font-size: 18px;
+    font-weight: 300;
+  }
+
+  /* Predict box */
+  .predict-box {
+    background: var(--gray-50);
+    border: 1.5px solid var(--gray-200);
+    border-radius: 12px;
+    padding: 24px 28px;
+  }
+
+  .predict-label {
+    display: inline-block;
+    background: var(--orange);
+    color: var(--white);
+    font-size: 12px;
+    font-weight: 600;
+    padding: 3px 12px;
+    border-radius: 4px;
+    margin-bottom: 14px;
+    letter-spacing: 0.5px;
+  }
+
+  .predict-q {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--navy);
+    margin-bottom: 16px;
+  }
+
+  .predict-code {
+    background: var(--white);
+    border: 1px solid var(--gray-200);
+    border-radius: 8px;
+    padding: 14px 18px;
+    font-family: var(--mono);
+    font-size: 13px;
+    line-height: 1.65;
+    color: var(--gray-700);
+  }
+
+  /* ========== PAGE 2: CORE CONTENT ========== */
+  .content-page {
+    padding: 55px 65px;
+  }
+
+  .unit-header-bar {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    margin-bottom: 8px;
+  }
+
+  .unit-tag {
+    font-size: 12px;
+    color: var(--orange);
+    font-weight: 600;
+    letter-spacing: 1px;
+  }
+
+  .unit-title-sm {
+    font-size: 14px;
+    color: var(--gray-400);
+    font-weight: 400;
+  }
+
+  .section-title {
+    font-size: 24px;
+    font-weight: 800;
+    color: var(--navy);
+    margin-bottom: 24px;
+    margin-top: 8px;
+    padding-left: 16px;
+    border-left: 5px solid var(--orange);
+  }
+
+  p {
+    font-size: 15.5px;
+    line-height: 1.9;
+    color: var(--text);
+    margin-bottom: 18px;
+  }
+
+  p code {
+    font-family: var(--mono);
+    font-size: 13.5px;
+    background: #f1f3f5;
+    padding: 2px 7px;
+    border-radius: 4px;
+    color: var(--navy);
+    font-weight: 500;
+  }
+
+  /* Code block */
+  .code-wrap {
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    border: 1px solid var(--gray-200);
+    margin: 22px 0;
+  }
+
+  .code-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 9px 18px;
+    background: var(--navy);
+    font-size: 12px;
+  }
+
+  .code-bar-lang {
+    font-family: var(--mono);
+    font-weight: 600;
+    color: var(--white);
+  }
+
+  .code-bar-file {
+    color: rgba(255,255,255,0.6);
+    font-weight: 400;
+  }
+
+  .code-body {
+    background: #f8f9fb;
+    padding: 20px 0;
+    font-family: var(--mono);
+    font-size: 13.5px;
+    line-height: 1.75;
+    border: 1px solid var(--gray-200);
+    border-top: none;
+    border-radius: 0 0 12px 12px;
+  }
+
+  .code-line {
+    display: flex;
+    padding: 0 20px;
+  }
+
+  .code-line:hover {
+    background: #f0f4f8;
+  }
+
+  .code-line.highlighted {
+    background: #fff8e1;
+  }
+
+  .ln {
+    width: 30px;
+    text-align: right;
+    color: #b8bfc8;
+    font-size: 12px;
+    margin-right: 18px;
+    user-select: none;
+    flex-shrink: 0;
+    padding-top: 1px;
+  }
+
+  .lc { flex: 1; }
+
+  /* syntax */
+  .s-pp { color: #8b5cf6; font-weight: 600; }
+  .s-str { color: #d97706; }
+  .s-type { color: #2563eb; font-weight: 500; }
+  .s-kw { color: #7c3aed; font-weight: 500; }
+  .s-fn { color: #059669; font-weight: 500; }
+  .s-num { color: #dc2626; }
+  .s-cm { color: #9ca3af; font-style: italic; }
+
+  /* Output block */
+  .output-wrap {
+    border-radius: 10px;
+    overflow: hidden;
+    margin: 10px 0 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    border: 1px solid #d1d5db;
+  }
+
+  .output-bar {
+    padding: 9px 18px;
+    background: #374151;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--white);
+    letter-spacing: 0.5px;
+  }
+
+  .output-body {
+    padding: 16px 20px;
+    font-family: var(--mono);
+    font-size: 13.5px;
+    line-height: 1.7;
+    color: var(--gray-800);
+    background: #f1f5f9;
+    border: 1px solid var(--gray-200);
+    border-top: none;
+    border-radius: 0 0 10px 10px;
+  }
+
+  /* Callout */
+  .tip {
+    margin: 28px 0;
+    padding: 18px 24px;
+    background: #dbeafe;
+    border-left: 5px solid #2563eb;
+    border-radius: 0 12px 12px 0;
+    font-size: 14.5px;
+    line-height: 1.8;
+    color: var(--text);
+  }
+
+  .tip-label {
+    font-weight: 700;
+    color: #2563eb;
+    font-size: 13px;
+    display: block;
+    margin-bottom: 4px;
+  }
+
+  .warn {
+    margin: 28px 0;
+    padding: 18px 24px;
+    background: #fef3c7;
+    border-left: 5px solid #d97706;
+    border-radius: 0 12px 12px 0;
+    font-size: 14.5px;
+    line-height: 1.8;
+  }
+
+  .warn-label {
+    font-weight: 700;
+    color: #d97706;
+    font-size: 13px;
+    display: block;
+    margin-bottom: 4px;
+  }
+
+  .note-box {
+    margin: 28px 0;
+    padding: 18px 24px;
+    background: #e2e8f0;
+    border-left: 5px solid #64748b;
+    border-radius: 0 12px 12px 0;
+    font-size: 14.5px;
+    line-height: 1.8;
+  }
+
+  .note-label {
+    font-weight: 700;
+    color: var(--gray-600);
+    font-size: 13px;
+    display: block;
+    margin-bottom: 4px;
+  }
+
+  /* Trace table */
+  table.trace {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    margin: 28px 0;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+    font-size: 14px;
+  }
+
+  table.trace th {
+    background: var(--navy);
+    color: var(--white);
+    padding: 10px 16px;
+    text-align: left;
+    font-weight: 500;
+    font-size: 13px;
+  }
+
+  table.trace td {
+    padding: 10px 16px;
+    border-bottom: 1px solid var(--gray-200);
+    color: var(--gray-700);
+  }
+
+  table.trace tr:nth-child(even) td { background: var(--gray-50); }
+  table.trace tr:last-child td { border-bottom: none; }
+
+  table.trace td code {
+    font-family: var(--mono);
+    font-size: 12.5px;
+    background: #eef1f5;
+    padding: 2px 6px;
+    border-radius: 4px;
+    color: var(--navy);
+  }
+
+  /* ========== PAGE 3: PROBLEMS ========== */
+  .problems-header {
+    margin-bottom: 8px;
+  }
+
+  .problems-chapter-ref {
+    font-size: 13px;
+    color: var(--gray-500);
+    margin-bottom: 4px;
+  }
+
+  .problems-title {
+    font-size: 28px;
+    font-weight: 800;
+    color: var(--navy);
+    margin-bottom: 24px;
+  }
+
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 16px;
+  }
+
+  .prob-card {
+    background: var(--white);
+    border: 1px solid var(--gray-200);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 3px 15px rgba(0,0,0,0.06);
+  }
+
+  .prob-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 16px;
+    background: var(--navy);
+  }
+
+  .prob-num {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--white);
+  }
+
+  .diff {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    font-size: 12px;
+    font-weight: 800;
+  }
+
+  .diff-basic { background: #22c55e; color: white; }
+  .diff-mid { background: #f59e0b; color: white; }
+  .diff-hard { background: #ef4444; color: white; }
+
+  .prob-desc {
+    font-size: 13.5px;
+    line-height: 1.65;
+    color: var(--gray-600);
+    margin-bottom: 10px;
+    padding: 14px 16px 0;
+  }
+
+  .prob-code {
+    background: var(--gray-50);
+    border: 1px solid var(--gray-200);
+    border-radius: 6px;
+    padding: 10px 14px;
+    margin: 0 16px 16px;
+    font-family: var(--mono);
+    font-size: 12.5px;
+    line-height: 1.55;
+    color: var(--gray-600);
+  }
+
+  /* Competition section */
+  .comp-section {
+    margin-top: 32px;
+    padding-top: 24px;
+    border-top: 2px solid var(--navy);
+  }
+
+  .comp-title {
+    font-size: 22px;
+    font-weight: 800;
+    color: var(--navy);
+    margin-bottom: 20px;
+  }
+
+  .comp-card {
+    background: var(--white);
+    border: 1.5px solid var(--gray-200);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 18px rgba(0,0,0,0.06);
+  }
+
+  .comp-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 16px;
+    background: #0f766e;
+  }
+
+  .comp-header .comp-name {
+    color: var(--white);
+    font-size: 15px;
+    font-weight: 700;
+    margin: 0;
+  }
+
+  .comp-inner {
+    padding: 14px 18px 18px;
+  }
+
+  .comp-badge {
+    display: inline-block;
+    padding: 3px 12px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 700;
+  }
+
+  .badge-bj { background: #93c5fd; color: #1e3a5f; }
+  .badge-cu { background: #c4b5fd; color: #3b1f7e; }
+  .badge-pg { background: #7dd3fc; color: #0c4a6e; }
+
+  .comp-name {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--navy);
+    margin-bottom: 6px;
+  }
+
+  .comp-desc {
+    font-size: 14px;
+    color: var(--gray-600);
+    line-height: 1.7;
+    margin-bottom: 14px;
+  }
+
+  .io-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+
+  .io-card {
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid var(--gray-200);
+  }
+
+  .io-h {
+    padding: 6px 14px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--gray-600);
+    background: #e2e8f0;
+  }
+
+  .io-c {
+    padding: 10px 14px;
+    font-family: var(--mono);
+    font-size: 13px;
+    line-height: 1.5;
+    background: var(--white);
+  }
+
+  /* ========== DEBUG LAB ========== */
+  .debug-section {
+    margin: 24px 0;
+    border: 2px solid var(--red);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+
+  .debug-bar {
+    background: var(--red);
+    color: var(--white);
+    padding: 10px 20px;
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 1px;
+  }
+
+  .debug-body {
+    padding: 20px;
+    background: #fef2f2;
+  }
+
+  /* 10축 connection */
+  .connect-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 16px;
+    margin: 28px 0;
+  }
+
+  .connect-card {
+    border-radius: 12px;
+    padding: 20px;
+    text-align: center;
+    border: 1px solid var(--gray-200);
+    box-shadow: 0 3px 14px rgba(0,0,0,0.05);
+  }
+
+  .connect-card h5 {
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 8px;
+  }
+
+  .connect-card p {
+    font-size: 13px;
+    margin: 0;
+    color: var(--gray-600);
+    line-height: 1.6;
+  }
+
+  .cc1 { border-top: 3px solid #8b5cf6; }
+  .cc1 h5 { color: #8b5cf6; }
+  .cc2 { border-top: 3px solid var(--green); }
+  .cc2 h5 { color: var(--green); }
+  .cc3 { border-top: 3px solid var(--navy); }
+  .cc3 h5 { color: var(--navy); }
+
+  /* PAGE NUMBER */
+  .page-num {
+    position: absolute;
+    bottom: 20px;
+    right: 30px;
+    font-size: 12px;
+    color: var(--gray-400);
+  }
+
+  /* WARMUP */
+  .warmup-box {
+    background: #e0e7f1;
+    border-radius: 12px;
+    padding: 24px 28px;
+    margin: 28px 0;
+    border: 2px solid #c7d2e0;
+  }
+
+  .warmup-title {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--navy);
+    margin-bottom: 14px;
+  }
+
+  .wq {
+    padding: 9px 16px;
+    background: var(--white);
+    border-radius: 8px;
+    margin-bottom: 8px;
+    font-size: 14px;
+    border: 1px solid var(--gray-200);
+    color: var(--gray-700);
+  }
+
+  .wq b { color: var(--navy); margin-right: 6px; }
+  .wq .hint { color: var(--gray-400); font-size: 13px; }
+
+  /* ===== CONTEST PROBLEMS PAGE ===== */
+  .contest-page-wrap .chapter-page {
+    min-height: auto;
+  }
+
+  .contest-page-wrap .chapter-page > div:last-child {
+    min-width: 0;
+    overflow-wrap: break-word;
+    word-break: break-word;
+  }
+
+  .contest-card {
+    background: white;
+    border: 1.5px solid var(--gray-200);
+    border-radius: 12px;
+    margin-bottom: 28px;
+    overflow: hidden;
+    break-inside: avoid;
+  }
+
+  .contest-header {
+    background: var(--navy);
+    color: white;
+    padding: 14px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .contest-num-source {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .contest-num {
+    font-weight: 700;
+    font-size: 16px;
+  }
+
+  .contest-source {
+    background: rgba(255,255,255,0.15);
+    padding: 3px 10px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 500;
+  }
+
+  .contest-body {
+    padding: 20px 24px 24px;
+  }
+
+  .contest-question {
+    font-size: 15px;
+    line-height: 1.7;
+    color: var(--text);
+    margin: 0 0 16px;
+    word-break: break-word;
+    overflow-wrap: break-word;
+  }
+
+  .contest-expected {
+    background: #1e293b;
+    border-radius: 8px;
+    overflow: hidden;
+    margin-bottom: 20px;
+  }
+
+  .contest-expected-label {
+    background: #334155;
+    color: #94a3b8;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 6px 14px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .contest-expected-body {
+    color: #e2e8f0;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    line-height: 1.6;
+    padding: 12px 16px;
+    margin: 0;
+    white-space: pre;
+  }
+
+  .contest-write-area {
+    border: 2px dashed var(--gray-300);
+    border-radius: 10px;
+    overflow: hidden;
+    transition: border-color 0.2s;
+  }
+
+  .contest-write-area:focus-within {
+    border-color: var(--orange);
+    border-style: solid;
+  }
+
+  .contest-write-label {
+    background: var(--bg);
+    color: var(--gray-500);
+    font-size: 12px;
+    font-weight: 600;
+    padding: 8px 14px;
+    border-bottom: 1px solid var(--gray-200);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .contest-textarea {
+    width: 100%;
+    min-height: 200px;
+    padding: 16px 18px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    line-height: 1.7;
+    color: var(--text);
+    background: #fafbfc;
+    border: none;
+    outline: none;
+    resize: vertical;
+    tab-size: 4;
+    box-sizing: border-box;
+  }
+
+  .contest-textarea::placeholder {
+    color: var(--gray-300);
+  }
+
+  @media print {
+    body { background: white; }
+    .page { box-shadow: none; margin: 0; page-break-after: always; }
+    .contest-textarea { border: 1px solid var(--gray-300); min-height: 180px; }
+  }
+
+</style>
+</head>
+<body>
+
+<div class="page">
+  <div class="chapter-page">
+    <div class="chapter-sidebar"></div>
+    <div class="chapter-accent-bar"></div>
+    <div class="chapter-body">
+      <div class="chapter-watermark">36</div>
+      <div class="chapter-label">Chapter 36</div>
+      <h1 class="chapter-title">스택과 큐</h1>
+      <p class="chapter-sub">스택(LIFO)과 큐(FIFO)의 개념을 일상 비유로 이해하고, 배열로 직접 구현해요.</p>
+
+      <h3 class="obj-title">이 유닛에서 배우는 것</h3>
+      <ul class="obj-list">
+        <li>스택(LIFO)과 큐(FIFO)의 차이를 설명할 수 있어요.</li>
+        <li>push/pop, enqueue/dequeue 연산을 이해해요.</li>
+        <li>일상에서 스택과 큐의 예시를 찾을 수 있어요.</li>
+        <li>C 배열로 간단한 스택과 큐를 구현할 수 있어요.</li>
+      </ul>
+
+      <h3 class="prereq-title">선수 학습</h3>
+      <div class="prereq-flow">
+        <div class="prereq-item">배열 (기본 이해)</div><div class="prereq-arrow">→</div>
+        <div class="prereq-item">반복문과 조건문 (기본)</div><div class="prereq-arrow">→</div>
+        <div class="prereq-item current">함수 개념 (기본)</div>
+      </div>
+
+      
+
+      <span class="page-num">1</span>
+    </div>
+  </div>
+</div>
+<div class="page">
+  <div class="content-page">
+    <div class="unit-header-bar">
+      <span class="unit-tag">UNIT 36</span>
+      <span class="unit-title-sm">스택과 큐</span>
+    </div>
+<h2 class="section-title">스택 — 접시 쌓기!</h2>
+
+<p><b>스택(Stack)</b>은 데이터를 쌓아 올리는 구조예요. 마지막에 넣은 것을 가장 먼저 꺼내요. 이걸 <b>LIFO(Last In, First Out)</b>라고 해요.</p>
+<div class="note-box"><span class="note-label">[핵심] 스택의 두 가지 연산</span>
+<b>push(값)</b> = 위에 쌓기 (넣기)<br>접시 위에 새 접시를 올려요.<br><br><b>pop()</b> = 위에서 꺼내기 (빼기)<br>맨 위의 접시를 가져가요.<br><br><b>LIFO</b> = Last In, First Out<br>마지막에 넣은 것이 먼저 나온다!<br><br> 스택에서는 중간이나 바닥의 데이터를 바로 꺼낼 수 없어요!</div>
+<!-- image -->
+<table class="trace"><thead><tr><th>연산</th><th>top</th><th>stack[0]</th><th>stack[1]</th><th>stack[2]</th><th>설명</th></tr></thead><tbody><tr><td>초기 상태</td><td>-1</td><td>-</td><td>-</td><td>-</td><td>스택이 비어 있습니다</td></tr><tr><td>push(10)</td><td>0</td><td>10</td><td>-</td><td>-</td><td>top이 0으로 증가, 10 저장</td></tr><tr><td>push(20)</td><td>1</td><td>10</td><td>20</td><td>-</td><td>top이 1로 증가, 20 저장</td></tr><tr><td>push(30)</td><td>2</td><td>10</td><td>20</td><td>30</td><td>top이 2로 증가, 30 저장</td></tr></tbody></table>
+<table class="trace"><thead><tr><th>연산</th><th>top</th><th>꺼낸 값</th><th>stack[0]</th><th>stack[1]</th><th>stack[2]</th></tr></thead><tbody><tr><td>현재 상태</td><td>2</td><td>-</td><td>10</td><td>20</td><td>30</td></tr><tr><td>pop()</td><td>1</td><td>30</td><td>10</td><td>20</td><td>-</td></tr><tr><td>pop()</td><td>0</td><td>20</td><td>10</td><td>-</td><td>-</td></tr><tr><td>pop()</td><td>-1</td><td>10</td><td>-</td><td>-</td><td>-</td></tr></tbody></table>
+<div style="margin:22px 0"></div>
+<h2 class="section-title">일상 속 스택</h2>
+
+<div class="note-box"><span class="note-label">[실생활] 스택의 예시</span>
+️ <b>접시 쌓기</b> — 위에서부터 꺼낸다<br>️ <b>Ctrl+Z</b> — 마지막 작업부터 되돌린다<br> <b>뒤로가기</b> — 가장 최근 페이지로 돌아간다<br> <b>택배 상자 쌓기</b> — 위의 상자부터 내린다<br> <b>앱 전환</b> — 최근 앱이 맨 위에!</div>
+<h2 class="section-title">큐 — 줄 서기!</h2>
+<p><b>큐(Queue)</b>는 줄 서기와 같은 구조예요. 먼저 온 사람이 먼저 나가요. 이걸 <b>FIFO(First In, First Out)</b>라고 해요.</p>
+<div class="note-box"><span class="note-label">[핵심] 큐의 두 가지 연산</span>
+<b>enqueue(값)</b> = 뒤에 서기 (넣기)<br>줄 맨 뒤에 새 사람이 서요.<br><br><b>dequeue()</b> = 앞에서 나가기 (빼기)<br>맨 앞의 사람이 나가요.<br><br><b>FIFO</b> = First In, First Out<br>먼저 넣은 것이 먼저 나온다!<br><br> 새치기는 안 돼요! 항상 뒤에 서고 앞에서 나가요.</div>
+<!-- image -->
+<table class="trace"><thead><tr><th>연산</th><th>front</th><th>rear</th><th>queue[0]</th><th>queue[1]</th><th>queue[2]</th><th>설명</th></tr></thead><tbody><tr><td>초기 상태</td><td>0</td><td>0</td><td>-</td><td>-</td><td>-</td><td>큐가 비어 있습니다</td></tr><tr><td>enqueue(10)</td><td>0</td><td>1</td><td>10</td><td>-</td><td>-</td><td>rear에 10 저장, rear 증가</td></tr><tr><td>enqueue(20)</td><td>0</td><td>2</td><td>10</td><td>20</td><td>-</td><td>rear에 20 저장, rear 증가</td></tr><tr><td>enqueue(30)</td><td>0</td><td>3</td><td>10</td><td>20</td><td>30</td><td>rear에 30 저장, rear 증가</td></tr><tr><td>dequeue()</td><td>1</td><td>3</td><td>-</td><td>20</td><td>30</td><td>front의 10을 꺼냄, front 증가</td></tr></tbody></table>
+<div style="margin:22px 0"></div>
+
+<h2 class="section-title">LIFO v FIFO 비교</h2>
+<!-- image -->
+<div class="debug-section"><div class="debug-bar">DEBUG LAB — 에러를 찾으시오</div><div class="debug-body">
+
+<p style="margin:14px 0 0; font-size:14px;"><b>에러:</b> </p>
+<p style="font-size:14px;"><b>수정:</b> </p>
+</div></div>
+<h2 class="section-title">C 연결 — 배열로 스택 구현</h2>
+<div class="note-box"><span class="note-label">[C 코드] 배열로 스택 구현</span>
+int stack[100];  // 스택 배열<br>int top = -1;    // 비어있으면 -1<br><br>// push: 위에 쌓기<br>void push(int val) {<br>    top++;<br>    stack[top] = val;<br>}<br><br>// pop: 위에서 꺼내기<br>int pop() {<br>    int val = stack[top];<br>    top--;<br>    return val;<br>}<br><br>push(10); push(20); push(30);<br>printf("%d\n", pop()); // 30 (마지막!)</div>
+<table class="trace"><thead><tr><th>코드</th><th>top</th><th>stack[0]</th><th>stack[1]</th><th>stack[2]</th><th>반환값</th></tr></thead><tbody><tr><td>int top = -1;</td><td>-1</td><td>?</td><td>?</td><td>?</td><td>-</td></tr><tr><td>push(10)</td><td>0</td><td>10</td><td>?</td><td>?</td><td>-</td></tr><tr><td>push(20)</td><td>1</td><td>10</td><td>20</td><td>?</td><td>-</td></tr><tr><td>push(30)</td><td>2</td><td>10</td><td>20</td><td>30</td><td>-</td></tr><tr><td>pop()</td><td>1</td><td>10</td><td>20</td><td>-</td><td>30</td></tr></tbody></table>
+<h2 class="section-title">C 연결 — 배열로 큐 구현</h2>
+<div class="note-box"><span class="note-label">[C 코드] 배열로 큐 구현</span>
+int queue[100];<br>int front = 0, rear = 0;<br><br>// enqueue: 뒤에 넣기<br>void enqueue(int val) {<br>    queue[rear] = val;<br>    rear++;<br>}<br><br>// dequeue: 앞에서 꺼내기<br>int dequeue() {<br>    int val = queue[front];<br>    front++;<br>    return val;<br>}<br><br>enqueue(10); enqueue(20); enqueue(30);<br>printf("%d\n", dequeue()); // 10 (처음!)</div>
+<table class="trace"><thead><tr><th>코드</th><th>front</th><th>rear</th><th>queue[0]</th><th>queue[1]</th><th>queue[2]</th><th>반환값</th></tr></thead><tbody><tr><td>int front=0, rear=0;</td><td>0</td><td>0</td><td>?</td><td>?</td><td>?</td><td>-</td></tr><tr><td>enqueue(10)</td><td>0</td><td>1</td><td>10</td><td>?</td><td>?</td><td>-</td></tr><tr><td>enqueue(20)</td><td>0</td><td>2</td><td>10</td><td>20</td><td>?</td><td>-</td></tr><tr><td>enqueue(30)</td><td>0</td><td>3</td><td>10</td><td>20</td><td>30</td><td>-</td></tr><tr><td>dequeue()</td><td>1</td><td>3</td><td>-</td><td>20</td><td>30</td><td>10</td></tr></tbody></table>
+<div class="warn"><span class="warn-label">[주의] 빈 스택/큐에서 꺼내기</span>
+스택이 비어있는데 pop()을 하면? → 에러!<br>큐가 비어있는데 dequeue()를 하면? → 에러!<br><br>실제 코드에서는 반드시 <b>비어있는지 확인</b>한 후 꺼내야 해요.<br>if (top >= 0) pop();  // 스택이 비어있지 않을 때만<br>if (front < rear) dequeue();  // 큐가 비어있지 않을 때만</div>
+<div class="tip"><span class="tip-label">[활동] 카드로 스택/큐 시뮬레이션</span>
+카드 5장을 준비하고 1~5 숫자를 쓰세요.<br><br><b>스택 실험:</b><br>1. 카드를 1→2→3→4→5 순서로 쌓아요<br>2. 하나씩 꺼내면 5→4→3→2→1 (LIFO!)<br><br><b>큐 실험:</b><br>1. 카드를 1→2→3→4→5 순서로 줄 세워요<br>2. 앞에서 꺼내면 1→2→3→4→5 (FIFO!)</div>
+
+<div style="margin:22px 0"></div>
+<h2 class="section-title">연습문제</h2>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 1</span><p style="margin:0;font-size:14px">스택은 FIFO(First In First Out) 구조이다. (O/X)</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 2</span><p style="margin:0;font-size:14px">프린터 대기열은 어떤 자료구조와 같을까?<br>(1) 스택 (2) 큐 (3) 배열 (4) 그래프</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 3</span><p style="margin:0;font-size:14px">스택에 push(1), push(2), push(3)을 하고 pop()을 하면 어떤 값이 나오나요?</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 4</span><p style="margin:0;font-size:14px">큐에 enqueue(A), enqueue(B), dequeue(), enqueue(C), dequeue()를 하면 큐에 남는 것은?</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 5</span><p style="margin:0;font-size:14px">스택에 1, 2, 3, 4, 5를 push한 후 3번 pop하면, 스택에 남는 값들과 pop된 값들을 적으세요.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 6</span><p style="margin:0;font-size:14px">Ctrl+Z(되돌리기)와 Ctrl+Y(다시 실행)를 스택 두 개로 어떻게 구현할 수 있을지 설명해 보세요.</p></div>
+<h2 class="section-title">용어 정리</h2>
+<h2 class="section-title">[심화] 스택의 활용</h2>
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span><span class="code-bar-file">[C 코드] 스택으로 괄호 검사</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;stdio.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;string.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">4</span><span class="lc"><span class="s-type">char</span> stack[<span class="s-num">1000</span>];</span></div>
+<div class="code-line"><span class="ln">5</span><span class="lc"><span class="s-type">int</span> top = -<span class="s-num">1</span>;</span></div>
+<div class="code-line"><span class="ln">6</span><span class="lc"><span class="s-type">void</span> <span class="s-fn">push</span>(<span class="s-type">char</span> c) { stack[++top] = c; }</span></div>
+<div class="code-line"><span class="ln">7</span><span class="lc"><span class="s-type">char</span> <span class="s-fn">pop</span>() { <span class="s-kw">return</span> (top &gt;= <span class="s-num">0</span>) ? stack[top--] : <span class="s-num">0</span>; }</span></div>
+<div class="code-line"><span class="ln">8</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">is_empty</span>() { <span class="s-kw">return</span> top &lt; <span class="s-num">0</span>; }</span></div>
+<div class="code-line"><span class="ln">9</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">10</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">check_brackets</span>(<span class="s-kw">const</span> <span class="s-type">char</span> *s) {</span></div>
+<div class="code-line"><span class="ln">11</span><span class="lc">    top = -<span class="s-num">1</span>;</span></div>
+<div class="code-line"><span class="ln">12</span><span class="lc">    <span class="s-kw">for</span> (<span class="s-type">int</span> i = <span class="s-num">0</span>; s[i]; i++) {</span></div>
+<div class="code-line"><span class="ln">13</span><span class="lc">        <span class="s-kw">if</span> (s[i]==<span class="s-str">'('</span> || s[i]==<span class="s-str">'['</span> || s[i]==<span class="s-str">'{'</span>) <span class="s-fn">push</span>(s[i]);</span></div>
+<div class="code-line"><span class="ln">14</span><span class="lc">        <span class="s-kw">else</span> <span class="s-kw">if</span> (s[i]==<span class="s-str">')'</span> || s[i]==<span class="s-str">']'</span> || s[i]==<span class="s-str">'}'</span>) {</span></div>
+<div class="code-line"><span class="ln">15</span><span class="lc">            <span class="s-kw">if</span> (<span class="s-fn">is_empty</span>()) <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">16</span><span class="lc">            <span class="s-type">char</span> c = <span class="s-fn">pop</span>();</span></div>
+<div class="code-line"><span class="ln">17</span><span class="lc">            <span class="s-kw">if</span> (s[i]==<span class="s-str">')'</span> &amp;&amp; c!=<span class="s-str">'('</span>) <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">18</span><span class="lc">            <span class="s-kw">if</span> (s[i]==<span class="s-str">']'</span> &amp;&amp; c!=<span class="s-str">'['</span>) <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">19</span><span class="lc">            <span class="s-kw">if</span> (s[i]==<span class="s-str">'}'</span> &amp;&amp; c!=<span class="s-str">'{'</span>) <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">20</span><span class="lc">        }</span></div>
+<div class="code-line"><span class="ln">21</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">22</span><span class="lc">    <span class="s-kw">return</span> <span class="s-fn">is_empty</span>();</span></div>
+<div class="code-line"><span class="ln">23</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">24</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">25</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">main</span>() {</span></div>
+<div class="code-line"><span class="ln">26</span><span class="lc">    <span class="s-kw">const</span> <span class="s-type">char</span> *tests[] = {<span class="s-str">"(())"</span>, <span class="s-str">"([{}])"</span>, <span class="s-str">"((]"</span>, <span class="s-str">"{[}]"</span>, <span class="s-str">""</span>, <span class="s-str">"("</span>};</span></div>
+<div class="code-line"><span class="ln">27</span><span class="lc">    <span class="s-kw">for</span> (<span class="s-type">int</span> i = <span class="s-num">0</span>; i &lt; <span class="s-num">6</span>; i++)</span></div>
+<div class="code-line"><span class="ln">28</span><span class="lc">        <span class="s-fn">printf</span>(<span class="s-str">"\"%s\" -&gt; %s\n"</span>, tests[i], <span class="s-fn">check_brackets</span>(tests[i]) ? <span class="s-str">"OK"</span> : <span class="s-str">"ERROR"</span>);</span></div>
+<div class="code-line"><span class="ln">29</span><span class="lc">    <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">30</span><span class="lc">}</span></div>
+</div>
+</div>
+<div class="output-wrap"><div class="output-bar">실행 결과</div><div class="output-body">"(())" -> OK
+"([{}])" -> OK
+"((]" -> ERROR
+"{[}]" -> ERROR
+"" -> OK
+"(" -> ERROR</div></div>
+<table class="trace"><thead><tr><th>읽은 문자</th><th>동작</th><th>스택 상태</th><th>결과</th></tr></thead><tbody><tr><td>(</td><td>push</td><td>[ ( ]</td><td>여는 괄호 → 스택에 넣기</td></tr><tr><td>[</td><td>push</td><td>[ (, [ ]</td><td>여는 괄호 → 스택에 넣기</td></tr><tr><td>{</td><td>push</td><td>[ (, [, { ]</td><td>여는 괄호 → 스택에 넣기</td></tr><tr><td>}</td><td>pop → { 확인</td><td>[ (, [ ]</td><td>짝이 맞음! 계속 진행</td></tr><tr><td>]</td><td>pop → [ 확인</td><td>[ ( ]</td><td>짝이 맞음! 계속 진행</td></tr><tr><td>)</td><td>pop → ( 확인</td><td>[ ]</td><td>짝이 맞음! 스택 비어있음</td></tr><tr><td>끝</td><td>스택 확인</td><td>비어있음</td><td>OK! 모든 괄호가 짝이 맞습니다</td></tr></tbody></table>
+<div style="margin:22px 0"></div>
+<h2 class="section-title">[심화] 큐의 활용</h2>
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span><span class="code-bar-file">[C 코드] 원형 큐 구현</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;stdio.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc"><span class="s-pp">#define</span> SIZE <span class="s-num">5</span></span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">4</span><span class="lc"><span class="s-type">int</span> queue[SIZE];</span></div>
+<div class="code-line"><span class="ln">5</span><span class="lc"><span class="s-type">int</span> front = <span class="s-num">0</span>, rear = <span class="s-num">0</span>, count = <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">6</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">7</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">enqueue</span>(<span class="s-type">int</span> x) {</span></div>
+<div class="code-line"><span class="ln">8</span><span class="lc">    <span class="s-kw">if</span> (count == SIZE) { <span class="s-fn">printf</span>(<span class="s-str">"Full!\n"</span>); <span class="s-kw">return</span> <span class="s-num">0</span>; }</span></div>
+<div class="code-line"><span class="ln">9</span><span class="lc">    queue[rear] = x;</span></div>
+<div class="code-line"><span class="ln">10</span><span class="lc">    rear = (rear + <span class="s-num">1</span>) % SIZE;</span></div>
+<div class="code-line"><span class="ln">11</span><span class="lc">    count++;</span></div>
+<div class="code-line"><span class="ln">12</span><span class="lc">    <span class="s-kw">return</span> <span class="s-num">1</span>;</span></div>
+<div class="code-line"><span class="ln">13</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">14</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">15</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">dequeue</span>() {</span></div>
+<div class="code-line"><span class="ln">16</span><span class="lc">    <span class="s-kw">if</span> (count == <span class="s-num">0</span>) { <span class="s-fn">printf</span>(<span class="s-str">"Empty!\n"</span>); <span class="s-kw">return</span> -<span class="s-num">1</span>; }</span></div>
+<div class="code-line"><span class="ln">17</span><span class="lc">    <span class="s-type">int</span> x = queue[front];</span></div>
+<div class="code-line"><span class="ln">18</span><span class="lc">    front = (front + <span class="s-num">1</span>) % SIZE;</span></div>
+<div class="code-line"><span class="ln">19</span><span class="lc">    count--;</span></div>
+<div class="code-line"><span class="ln">20</span><span class="lc">    <span class="s-kw">return</span> x;</span></div>
+<div class="code-line"><span class="ln">21</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">22</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">23</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">main</span>() {</span></div>
+<div class="code-line"><span class="ln">24</span><span class="lc">    <span class="s-fn">enqueue</span>(<span class="s-num">10</span>); <span class="s-fn">enqueue</span>(<span class="s-num">20</span>); <span class="s-fn">enqueue</span>(<span class="s-num">30</span>);</span></div>
+<div class="code-line"><span class="ln">25</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"dequeue: %d\n"</span>, <span class="s-fn">dequeue</span>());</span></div>
+<div class="code-line"><span class="ln">26</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"dequeue: %d\n"</span>, <span class="s-fn">dequeue</span>());</span></div>
+<div class="code-line"><span class="ln">27</span><span class="lc">    <span class="s-fn">enqueue</span>(<span class="s-num">40</span>); <span class="s-fn">enqueue</span>(<span class="s-num">50</span>); <span class="s-fn">enqueue</span>(<span class="s-num">60</span>);</span></div>
+<div class="code-line"><span class="ln">28</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"큐 크기: %d\n"</span>, count);</span></div>
+<div class="code-line"><span class="ln">29</span><span class="lc">    <span class="s-kw">while</span> (count &gt; <span class="s-num">0</span>) <span class="s-fn">printf</span>(<span class="s-str">"%d "</span>, <span class="s-fn">dequeue</span>());</span></div>
+<div class="code-line"><span class="ln">30</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"\n"</span>);</span></div>
+<div class="code-line"><span class="ln">31</span><span class="lc">    <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">32</span><span class="lc">}</span></div>
+</div>
+</div>
+<div class="output-wrap"><div class="output-bar">실행 결과</div><div class="output-body">dequeue: 10
+dequeue: 20
+큐 크기: 4
+30 40 50 60</div></div>
+<table class="trace"><thead><tr><th>연산</th><th>front</th><th>rear</th><th>count</th><th>큐 내용</th><th>설명</th></tr></thead><tbody><tr><td>초기</td><td>0</td><td>0</td><td>0</td><td>[ ]</td><td>빈 큐</td></tr><tr><td>enqueue(10)</td><td>0</td><td>1</td><td>1</td><td>[10]</td><td>rear=(0+1)%5=1</td></tr><tr><td>enqueue(20)</td><td>0</td><td>2</td><td>2</td><td>[10,20]</td><td>rear=(1+1)%5=2</td></tr><tr><td>enqueue(30)</td><td>0</td><td>3</td><td>3</td><td>[10,20,30]</td><td>rear=(2+1)%5=3</td></tr><tr><td>dequeue()→10</td><td>1</td><td>3</td><td>2</td><td>[20,30]</td><td>front=(0+1)%5=1</td></tr><tr><td>dequeue()→20</td><td>2</td><td>3</td><td>1</td><td>[30]</td><td>front=(1+1)%5=2</td></tr><tr><td>enqueue(40)</td><td>2</td><td>4</td><td>2</td><td>[30,40]</td><td>rear=(3+1)%5=4</td></tr><tr><td>enqueue(50)</td><td>2</td><td>0</td><td>3</td><td>[30,40,50]</td><td>rear=(4+1)%5=0 (순환!)</td></tr><tr><td>enqueue(60)</td><td>2</td><td>1</td><td>4</td><td>[30,40,50,60]</td><td>rear=(0+1)%5=1</td></tr></tbody></table>
+<h2 class="section-title">[심화 내용] 스택/큐의 고급 변형</h2>
+<div class="note-box"><span class="note-label">[심화 내용] 스택/큐 변형 자료구조</span>
+<b>1. 덱 (Deque)</b><br>양쪽 끝에서 삽입/삭제 가능<br>= 스택 + 큐의 합체!<br>슬라이딩 윈도우 최대/최소에 활용<br><br><b>2. 우선순위 큐 (Priority Queue)</b><br>우선순위가 높은 것이 먼저 나옴<br>힙(Heap)으로 구현: O(log n) 삽입/삭제<br>다익스트라, 허프만 코딩에 필수<br><br><b>3. 모노톤 스택 (Monotonic Stack)</b><br>스택에 단조증가/감소 순서 유지<br>Next Greater Element 문제: O(n)!<br><br><b>4. 두 스택으로 큐 만들기</b><br>inStack → outStack 이동으로 FIFO 구현<br>amortized O(1)! 면접 단골 문제</div>
+<div class="debug-section"><div class="debug-bar">DEBUG LAB — 에러를 찾으시오</div><div class="debug-body">
+
+<p style="margin:14px 0 0; font-size:14px;"><b>에러:</b> </p>
+<p style="font-size:14px;"><b>수정:</b> </p>
+</div></div>
+<div class="debug-section"><div class="debug-bar">DEBUG LAB — 에러를 찾으시오</div><div class="debug-body">
+
+<p style="margin:14px 0 0; font-size:14px;"><b>에러:</b> </p>
+<p style="font-size:14px;"><b>수정:</b> </p>
+</div></div>
+<h2 class="section-title">[심화 내용] 콜 스택과 함수 호출</h2>
+<div class="note-box"><span class="note-label">[심화 내용] 프로그램의 콜 스택</span>
+<b>함수 호출 = 스택 push</b><br><b>함수 반환 = 스택 pop</b><br><br>main() 호출 → push main<br>  foo() 호출 → push foo<br>    bar() 호출 → push bar<br>    bar() 반환 → pop bar<br>  foo() 반환 → pop foo<br>main() 반환 → pop main<br><br><b>스택 프레임 구조:</b><br>- 반환 주소 (어디로 돌아갈지)<br>- 매개변수<br>- 지역 변수<br>- 이전 프레임 포인터<br><br>재귀가 깊으면 스택 오버플로우!<br>기본 스택 크기: 1~8MB (OS마다 다름)</div>
+<div class="debug-section"><div class="debug-bar">DEBUG LAB — 에러를 찾으시오</div><div class="debug-body">
+
+<p style="margin:14px 0 0; font-size:14px;"><b>에러:</b> </p>
+<p style="font-size:14px;"><b>수정:</b> </p>
+</div></div>
+<!-- fact-bite -->
+<!-- fact-bite -->
+<h2 class="section-title">[심화 내용] 스택 머신과 역폴란드 표기법</h2>
+<div class="note-box"><span class="note-label">[심화 내용] 후위 표기법 (Reverse Polish Notation)</span>
+<b>중위 표기법:</b> 3 + 4 * 2 (우리가 쓰는 방식)<br><b>후위 표기법:</b> 3 4 2 * + (스택으로 계산!)<br><br><b>스택 계산 과정:</b><br>3 → push 3   [3]<br>4 → push 4   [3, 4]<br>2 → push 2   [3, 4, 2]<br>* → pop 4,2 → 4*2=8 → push [3, 8]<br>+ → pop 3,8 → 3+8=11 → push [11]<br>결과: 11<br><br><b>장점:</b><br>- 괄호 불필요!<br>- 연산자 우선순위 처리 불필요<br>- 스택 하나로 계산 가능<br><br>컴파일러가 수식을 중위→후위 변환 후 계산!</div>
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span><span class="code-bar-file">[C 코드] 후위 표기식 계산기</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;stdio.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;stdlib.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;string.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">4</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;ctype.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">5</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">6</span><span class="lc"><span class="s-type">int</span> stack[<span class="s-num">100</span>], top = -<span class="s-num">1</span>;</span></div>
+<div class="code-line"><span class="ln">7</span><span class="lc"><span class="s-type">void</span> <span class="s-fn">push</span>(<span class="s-type">int</span> x) { stack[++top] = x; }</span></div>
+<div class="code-line"><span class="ln">8</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">pop</span>() { <span class="s-kw">return</span> stack[top--]; }</span></div>
+<div class="code-line"><span class="ln">9</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">10</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">eval_rpn</span>(<span class="s-kw">const</span> <span class="s-type">char</span> *expr) {</span></div>
+<div class="code-line"><span class="ln">11</span><span class="lc">    <span class="s-type">char</span> buf[<span class="s-num">200</span>];</span></div>
+<div class="code-line"><span class="ln">12</span><span class="lc">    <span class="s-fn">strcpy</span>(buf, expr);</span></div>
+<div class="code-line"><span class="ln">13</span><span class="lc">    <span class="s-type">char</span> *tok = <span class="s-fn">strtok</span>(buf, <span class="s-str">" "</span>);</span></div>
+<div class="code-line"><span class="ln">14</span><span class="lc">    <span class="s-kw">while</span> (tok) {</span></div>
+<div class="code-line"><span class="ln">15</span><span class="lc">        <span class="s-kw">if</span> (<span class="s-fn">isdigit</span>(tok[<span class="s-num">0</span>]) || (tok[<span class="s-num">0</span>]==<span class="s-str">'-'</span> &amp;&amp; tok[<span class="s-num">1</span>])) {</span></div>
+<div class="code-line"><span class="ln">16</span><span class="lc">            <span class="s-fn">push</span>(<span class="s-fn">atoi</span>(tok));</span></div>
+<div class="code-line"><span class="ln">17</span><span class="lc">        } <span class="s-kw">else</span> {</span></div>
+<div class="code-line"><span class="ln">18</span><span class="lc">            <span class="s-type">int</span> b = <span class="s-fn">pop</span>(), a = <span class="s-fn">pop</span>();</span></div>
+<div class="code-line"><span class="ln">19</span><span class="lc">            <span class="s-kw">switch</span>(tok[<span class="s-num">0</span>]) {</span></div>
+<div class="code-line"><span class="ln">20</span><span class="lc">                <span class="s-kw">case</span> <span class="s-str">'+'</span>: <span class="s-fn">push</span>(a+b); <span class="s-kw">break</span>;</span></div>
+<div class="code-line"><span class="ln">21</span><span class="lc">                <span class="s-kw">case</span> <span class="s-str">'-'</span>: <span class="s-fn">push</span>(a-b); <span class="s-kw">break</span>;</span></div>
+<div class="code-line"><span class="ln">22</span><span class="lc">                <span class="s-kw">case</span> <span class="s-str">'*'</span>: <span class="s-fn">push</span>(a*b); <span class="s-kw">break</span>;</span></div>
+<div class="code-line"><span class="ln">23</span><span class="lc">                <span class="s-kw">case</span> <span class="s-str">'/'</span>: <span class="s-fn">push</span>(a/b); <span class="s-kw">break</span>;</span></div>
+<div class="code-line"><span class="ln">24</span><span class="lc">            }</span></div>
+<div class="code-line"><span class="ln">25</span><span class="lc">        }</span></div>
+<div class="code-line"><span class="ln">26</span><span class="lc">        tok = <span class="s-fn">strtok</span>(<span class="s-kw">NULL</span>, <span class="s-str">" "</span>);</span></div>
+<div class="code-line"><span class="ln">27</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">28</span><span class="lc">    <span class="s-kw">return</span> <span class="s-fn">pop</span>();</span></div>
+<div class="code-line"><span class="ln">29</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">30</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">31</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">main</span>() {</span></div>
+<div class="code-line"><span class="ln">32</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"3 4 2 * + = %d\n"</span>, <span class="s-fn">eval_rpn</span>(<span class="s-str">"3 4 2 * +"</span>));</span></div>
+<div class="code-line"><span class="ln">33</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"5 1 2 + 4 * + 3 - = %d\n"</span>, <span class="s-fn">eval_rpn</span>(<span class="s-str">"5 1 2 + 4 * + 3 -"</span>));</span></div>
+<div class="code-line"><span class="ln">34</span><span class="lc">    <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">35</span><span class="lc">}</span></div>
+</div>
+</div>
+<div class="output-wrap"><div class="output-bar">실행 결과</div><div class="output-body">3 4 2 * + = 11
+5 1 2 + 4 * + 3 - = 14</div></div>
+<table class="trace"><thead><tr><th>읽은 토큰</th><th>동작</th><th>스택 상태</th><th>설명</th></tr></thead><tbody><tr><td>3</td><td>push(3)</td><td>[3]</td><td>숫자는 스택에 넣습니다</td></tr><tr><td>4</td><td>push(4)</td><td>[3, 4]</td><td>숫자는 스택에 넣습니다</td></tr><tr><td>2</td><td>push(2)</td><td>[3, 4, 2]</td><td>숫자는 스택에 넣습니다</td></tr><tr><td>*</td><td>pop 4,2 → 4*2=8</td><td>[3, 8]</td><td>연산자: 두 수를 꺼내 계산 후 결과를 넣습니다</td></tr><tr><td>+</td><td>pop 3,8 → 3+8=11</td><td>[11]</td><td>연산자: 두 수를 꺼내 계산 후 결과를 넣습니다</td></tr><tr><td>끝</td><td>pop → 11</td><td>[ ]</td><td>최종 결과: 11</td></tr></tbody></table>
+<h2 class="section-title">[심화 내용] BFS와 큐 — 최단 경로</h2>
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span><span class="code-bar-file">[C 코드] BFS로 미로 최단 경로</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;stdio.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;string.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">4</span><span class="lc"><span class="s-pp">#define</span> N <span class="s-num">5</span></span></div>
+<div class="code-line"><span class="ln">5</span><span class="lc"><span class="s-type">int</span> maze[N][N] = {</span></div>
+<div class="code-line"><span class="ln">6</span><span class="lc">    {<span class="s-num">0</span>,<span class="s-num">0</span>,<span class="s-num">1</span>,<span class="s-num">0</span>,<span class="s-num">0</span>},</span></div>
+<div class="code-line"><span class="ln">7</span><span class="lc">    {<span class="s-num">0</span>,<span class="s-num">0</span>,<span class="s-num">0</span>,<span class="s-num">0</span>,<span class="s-num">1</span>},</span></div>
+<div class="code-line"><span class="ln">8</span><span class="lc">    {<span class="s-num">1</span>,<span class="s-num">0</span>,<span class="s-num">1</span>,<span class="s-num">0</span>,<span class="s-num">0</span>},</span></div>
+<div class="code-line"><span class="ln">9</span><span class="lc">    {<span class="s-num">0</span>,<span class="s-num">0</span>,<span class="s-num">0</span>,<span class="s-num">1</span>,<span class="s-num">0</span>},</span></div>
+<div class="code-line"><span class="ln">10</span><span class="lc">    {<span class="s-num">0</span>,<span class="s-num">1</span>,<span class="s-num">0</span>,<span class="s-num">0</span>,<span class="s-num">0</span>}</span></div>
+<div class="code-line"><span class="ln">11</span><span class="lc">};</span></div>
+<div class="code-line"><span class="ln">12</span><span class="lc"><span class="s-type">int</span> dist[N][N];</span></div>
+<div class="code-line"><span class="ln">13</span><span class="lc"><span class="s-type">int</span> dx[]={-<span class="s-num">1</span>,<span class="s-num">1</span>,<span class="s-num">0</span>,<span class="s-num">0</span>}, dy[]={<span class="s-num">0</span>,<span class="s-num">0</span>,-<span class="s-num">1</span>,<span class="s-num">1</span>};</span></div>
+<div class="code-line"><span class="ln">14</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">15</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">main</span>() {</span></div>
+<div class="code-line"><span class="ln">16</span><span class="lc">    <span class="s-fn">memset</span>(dist, -<span class="s-num">1</span>, <span class="s-kw">sizeof</span>(dist));</span></div>
+<div class="code-line"><span class="ln">17</span><span class="lc">    <span class="s-type">int</span> qx[<span class="s-num">100</span>], qy[<span class="s-num">100</span>], front=<span class="s-num">0</span>, rear=<span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">18</span><span class="lc">    qx[rear]=<span class="s-num">0</span>; qy[rear]=<span class="s-num">0</span>; rear++;</span></div>
+<div class="code-line"><span class="ln">19</span><span class="lc">    dist[<span class="s-num">0</span>][<span class="s-num">0</span>] = <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">20</span><span class="lc">    </span></div>
+<div class="code-line"><span class="ln">21</span><span class="lc">    <span class="s-kw">while</span> (front &lt; rear) {</span></div>
+<div class="code-line"><span class="ln">22</span><span class="lc">        <span class="s-type">int</span> x=qx[front], y=qy[front]; front++;</span></div>
+<div class="code-line"><span class="ln">23</span><span class="lc">        <span class="s-kw">for</span> (<span class="s-type">int</span> d=<span class="s-num">0</span>; d&lt;<span class="s-num">4</span>; d++) {</span></div>
+<div class="code-line"><span class="ln">24</span><span class="lc">            <span class="s-type">int</span> nx=x+dx[d], ny=y+dy[d];</span></div>
+<div class="code-line"><span class="ln">25</span><span class="lc">            <span class="s-kw">if</span> (nx&gt;=<span class="s-num">0</span>&amp;&amp;nx&lt;N&amp;&amp;ny&gt;=<span class="s-num">0</span>&amp;&amp;ny&lt;N&amp;&amp;maze[nx][ny]==<span class="s-num">0</span>&amp;&amp;dist[nx][ny]==-<span class="s-num">1</span>) {</span></div>
+<div class="code-line"><span class="ln">26</span><span class="lc">                dist[nx][ny] = dist[x][y]+<span class="s-num">1</span>;</span></div>
+<div class="code-line"><span class="ln">27</span><span class="lc">                qx[rear]=nx; qy[rear]=ny; rear++;</span></div>
+<div class="code-line"><span class="ln">28</span><span class="lc">            }</span></div>
+<div class="code-line"><span class="ln">29</span><span class="lc">        }</span></div>
+<div class="code-line"><span class="ln">30</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">31</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"(0,0)→(4,4) 최단 거리: %d\n"</span>, dist[N-<span class="s-num">1</span>][N-<span class="s-num">1</span>]);</span></div>
+<div class="code-line"><span class="ln">32</span><span class="lc">    </span></div>
+<div class="code-line"><span class="ln">33</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"\n거리 맵:\n"</span>);</span></div>
+<div class="code-line"><span class="ln">34</span><span class="lc">    <span class="s-kw">for</span> (<span class="s-type">int</span> i=<span class="s-num">0</span>;i&lt;N;i++) {</span></div>
+<div class="code-line"><span class="ln">35</span><span class="lc">        <span class="s-kw">for</span> (<span class="s-type">int</span> j=<span class="s-num">0</span>;j&lt;N;j++) <span class="s-fn">printf</span>(<span class="s-str">"%3d"</span>, dist[i][j]);</span></div>
+<div class="code-line"><span class="ln">36</span><span class="lc">        <span class="s-fn">printf</span>(<span class="s-str">"\n"</span>);</span></div>
+<div class="code-line"><span class="ln">37</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">38</span><span class="lc">    <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">39</span><span class="lc">}</span></div>
+</div>
+</div>
+<div class="output-wrap"><div class="output-bar">실행 결과</div><div class="output-body">(0,0)→(4,4) 최단 거리: 8
+
+거리 맵:
+  0  1 -1  7  8
+  1  2  3  4 -1
+ -1  3 -1  5  6
+  5  4  5 -1  7
+  6 -1  6  7  8</div></div>
+<h2 class="section-title">[심화] 스택으로 DFS, 큐로 BFS</h2>
+<div class="tip"><span class="tip-label">[심화] 탐색 알고리즘과 자료구조 매칭</span>
+<b>DFS (깊이 우선 탐색):</b><br>- 스택 사용 (또는 재귀 = 콜스택)<br>- 한 방향으로 깊이 파고듦<br>- 미로에서: 막히면 되돌아가기<br>- 활용: 연결 요소, 위상정렬, 사이클 검출<br><br><b>BFS (너비 우선 탐색):</b><br>- 큐 사용<br>- 가까운 것부터 탐색 (원 모양 확산)<br>- 미로에서: 최단 거리 보장!<br>- 활용: 최단경로, 레벨순 탐색<br><br><b>요약:</b><br>스택 → DFS → 깊이 → 되돌아가기<br>큐 → BFS → 너비 → 최단거리<br><br>자료구조만 바꾸면 DFS↔BFS 전환!</div>
+<div class="note-box"><span class="note-label">[심화 내용] 면접 문제</span>
+<b>Q1.</b> 두 스택으로 큐 구현<br>A: inStack에 push, dequeue 시 outStack이 비면 inStack→outStack으로 이동 후 pop. amortized O(1)!<br><br><b>Q2.</b> 히스토그램 최대 직사각형<br>A: 모노톤 스택으로 O(n)! 높이가 줄어들면 스택에서 pop하며 넓이 계산.<br><br><b>Q3.</b> 스택 min() O(1)로 구현<br>A: 메인 스택 + 최소값 스택 병행. push/pop 시 min 스택도 갱신.<br><br><b>Q4.</b> 큐 max() O(1)로 구현<br>A: 덱(모노톤 큐) 사용. 새 원소보다 작은 건 뒤에서 제거.</div>
+
+<h2 class="section-title">[심화] 스택 응용: 중위→후위 변환 (Shunting-yard)</h2>
+<div class="note-box"><span class="note-label">[심화] 다익스트라의 Shunting-yard 알고리즘</span>
+중위 표기 → 후위 표기 변환 알고리즘<br><br><b>규칙:</b><br>1. 숫자 → 출력<br>2. ( → 스택에 push<br>3. ) → ( 나올 때까지 pop하여 출력<br>4. 연산자:<br>   스택 top의 우선순위 >= 현재 → pop하여 출력<br>   현재 연산자 push<br>5. 끝나면 스택 전부 pop<br><br><b>예: 3 + 4 * 2</b><br>3 → 출력: 3<br>+ → push +  [+]<br>4 → 출력: 3 4<br>* → * > + 이므로 push  [+, *]<br>2 → 출력: 3 4 2<br>끝 → pop: 3 4 2 * +<br><br>컴파일러가 수식을 처리하는 핵심 알고리즘!</div>
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span><span class="code-bar-file">[C 코드] 중위→후위 변환</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;stdio.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;ctype.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">4</span><span class="lc"><span class="s-type">char</span> ops[<span class="s-num">100</span>]; <span class="s-type">int</span> ot = -<span class="s-num">1</span>;</span></div>
+<div class="code-line"><span class="ln">5</span><span class="lc"><span class="s-type">void</span> <span class="s-fn">opush</span>(<span class="s-type">char</span> c) { ops[++ot] = c; }</span></div>
+<div class="code-line"><span class="ln">6</span><span class="lc"><span class="s-type">char</span> <span class="s-fn">opop</span>() { <span class="s-kw">return</span> ops[ot--]; }</span></div>
+<div class="code-line"><span class="ln">7</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">prec</span>(<span class="s-type">char</span> c) { <span class="s-kw">return</span> (c==<span class="s-str">'+'</span>||c==<span class="s-str">'-'</span>) ? <span class="s-num">1</span> : (c==<span class="s-str">'*'</span>||c==<span class="s-str">'/'</span>) ? <span class="s-num">2</span> : <span class="s-num">0</span>; }</span></div>
+<div class="code-line"><span class="ln">8</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">9</span><span class="lc"><span class="s-type">void</span> <span class="s-fn">infix_to_postfix</span>(<span class="s-kw">const</span> <span class="s-type">char</span> *s) {</span></div>
+<div class="code-line"><span class="ln">10</span><span class="lc">    <span class="s-kw">for</span> (<span class="s-type">int</span> i = <span class="s-num">0</span>; s[i]; i++) {</span></div>
+<div class="code-line"><span class="ln">11</span><span class="lc">        <span class="s-kw">if</span> (<span class="s-fn">isdigit</span>(s[i])) <span class="s-fn">printf</span>(<span class="s-str">"%c "</span>, s[i]);</span></div>
+<div class="code-line"><span class="ln">12</span><span class="lc">        <span class="s-kw">else</span> <span class="s-kw">if</span> (s[i] == <span class="s-str">'('</span>) <span class="s-fn">opush</span>(<span class="s-str">'('</span>);</span></div>
+<div class="code-line"><span class="ln">13</span><span class="lc">        <span class="s-kw">else</span> <span class="s-kw">if</span> (s[i] == <span class="s-str">')'</span>) {</span></div>
+<div class="code-line"><span class="ln">14</span><span class="lc">            <span class="s-kw">while</span> (ot &gt;= <span class="s-num">0</span> &amp;&amp; ops[ot] != <span class="s-str">'('</span>) <span class="s-fn">printf</span>(<span class="s-str">"%c "</span>, <span class="s-fn">opop</span>());</span></div>
+<div class="code-line"><span class="ln">15</span><span class="lc">            <span class="s-kw">if</span> (ot &gt;= <span class="s-num">0</span>) <span class="s-fn">opop</span>(); <span class="s-cm">// discard (</span></span></div>
+<div class="code-line"><span class="ln">16</span><span class="lc">        } <span class="s-kw">else</span> <span class="s-kw">if</span> (s[i]==<span class="s-str">'+'</span>||s[i]==<span class="s-str">'-'</span>||s[i]==<span class="s-str">'*'</span>||s[i]==<span class="s-str">'/'</span>) {</span></div>
+<div class="code-line"><span class="ln">17</span><span class="lc">            <span class="s-kw">while</span> (ot &gt;= <span class="s-num">0</span> &amp;&amp; <span class="s-fn">prec</span>(ops[ot]) &gt;= <span class="s-fn">prec</span>(s[i])) <span class="s-fn">printf</span>(<span class="s-str">"%c "</span>, <span class="s-fn">opop</span>());</span></div>
+<div class="code-line"><span class="ln">18</span><span class="lc">            <span class="s-fn">opush</span>(s[i]);</span></div>
+<div class="code-line"><span class="ln">19</span><span class="lc">        }</span></div>
+<div class="code-line"><span class="ln">20</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">21</span><span class="lc">    <span class="s-kw">while</span> (ot &gt;= <span class="s-num">0</span>) <span class="s-fn">printf</span>(<span class="s-str">"%c "</span>, <span class="s-fn">opop</span>());</span></div>
+<div class="code-line"><span class="ln">22</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"\n"</span>);</span></div>
+<div class="code-line"><span class="ln">23</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">24</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">25</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">main</span>() {</span></div>
+<div class="code-line"><span class="ln">26</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"3+4*2 -&gt; "</span>); <span class="s-fn">infix_to_postfix</span>(<span class="s-str">"3+4*2"</span>);</span></div>
+<div class="code-line"><span class="ln">27</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"(3+4)*2 -&gt; "</span>); <span class="s-fn">infix_to_postfix</span>(<span class="s-str">"(3+4)*2"</span>);</span></div>
+<div class="code-line"><span class="ln">28</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"1+2*3-4/2 -&gt; "</span>); <span class="s-fn">infix_to_postfix</span>(<span class="s-str">"1+2*3-4/2"</span>);</span></div>
+<div class="code-line"><span class="ln">29</span><span class="lc">    <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">30</span><span class="lc">}</span></div>
+</div>
+</div>
+<div class="output-wrap"><div class="output-bar">실행 결과</div><div class="output-body">3+4*2 -> 3 4 2 * + 
+(3+4)*2 -> 3 4 + 2 * 
+1+2*3-4/2 -> 1 2 3 * + 4 2 / -</div></div>
+<h2 class="section-title">[심화 내용] 큐의 고급 응용</h2>
+<div class="note-box"><span class="note-label">[심화 내용] OS 프로세스 스케줄링과 큐</span>
+<b>운영체제의 프로세스 스케줄링 = 큐!</b><br><br><b>1. FCFS (First Come First Served)</b><br>단순 큐. 먼저 온 프로세스 먼저 실행<br>단점: 긴 작업이 앞에 있으면 뒤가 기다림<br><br><b>2. Round Robin</b><br>큐에서 꺼내 time quantum만큼 실행<br>시간 초과 시 큐 뒤로 다시 삽입<br>공평하지만 컨텍스트 스위칭 비용<br><br><b>3. 다단계 큐 (Multi-level Queue)</b><br>우선순위별 여러 큐<br>실시간 > 시스템 > 대화형 > 배치<br><br><b>4. 우선순위 큐 스케줄링</b><br>우선순위 높은 프로세스 먼저<br>기아(Starvation) 문제 → 에이징으로 해결</div>
+<div class="tip"><span class="tip-label">[활동] 스택/큐 활용 문제</span>
+<b>1. 뒤로가기 버튼</b><br>웹 브라우저의 뒤로/앞으로 = 스택 2개!<br>뒤로: 현재→forward 스택, back 스택→현재<br><br><b>2. 프린터 대기열</b><br>인쇄 요청 순서대로 = 큐!<br><br><b>3. 함수 호출 추적</b><br>디버거의 콜 스택 표시 = 스택 내용 출력<br><br><b>4. 핫도그 가게</b><br>손님 도착(enqueue) → 주문 처리(dequeue)<br>VIP는 우선순위 큐로!<br><br>일상에서 스택/큐를 찾아보세요!</div>
+<h2 class="section-title">[심화] 실전 스택/큐 문제 풀이</h2>
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span><span class="code-bar-file">[C 코드] 스택으로 10진수→2진수 변환</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;stdio.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc"><span class="s-type">void</span> <span class="s-fn">dec_to_bin</span>(<span class="s-type">int</span> n) {</span></div>
+<div class="code-line"><span class="ln">4</span><span class="lc">    <span class="s-type">int</span> stack[<span class="s-num">32</span>], top = -<span class="s-num">1</span>;</span></div>
+<div class="code-line"><span class="ln">5</span><span class="lc">    <span class="s-kw">if</span> (n == <span class="s-num">0</span>) { <span class="s-fn">printf</span>(<span class="s-str">"0"</span>); <span class="s-kw">return</span>; }</span></div>
+<div class="code-line"><span class="ln">6</span><span class="lc">    <span class="s-kw">while</span> (n &gt; <span class="s-num">0</span>) {</span></div>
+<div class="code-line"><span class="ln">7</span><span class="lc">        stack[++top] = n % <span class="s-num">2</span>;</span></div>
+<div class="code-line"><span class="ln">8</span><span class="lc">        n /= <span class="s-num">2</span>;</span></div>
+<div class="code-line"><span class="ln">9</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">10</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"이진수: "</span>);</span></div>
+<div class="code-line"><span class="ln">11</span><span class="lc">    <span class="s-kw">while</span> (top &gt;= <span class="s-num">0</span>) <span class="s-fn">printf</span>(<span class="s-str">"%d"</span>, stack[top--]);</span></div>
+<div class="code-line"><span class="ln">12</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">13</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">14</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">main</span>() {</span></div>
+<div class="code-line"><span class="ln">15</span><span class="lc">    <span class="s-type">int</span> nums[] = {<span class="s-num">0</span>, <span class="s-num">1</span>, <span class="s-num">10</span>, <span class="s-num">42</span>, <span class="s-num">255</span>, <span class="s-num">1024</span>};</span></div>
+<div class="code-line"><span class="ln">16</span><span class="lc">    <span class="s-kw">for</span> (<span class="s-type">int</span> i = <span class="s-num">0</span>; i &lt; <span class="s-num">6</span>; i++) {</span></div>
+<div class="code-line"><span class="ln">17</span><span class="lc">        <span class="s-fn">printf</span>(<span class="s-str">"%4d -&gt; "</span>, nums[i]);</span></div>
+<div class="code-line"><span class="ln">18</span><span class="lc">        <span class="s-fn">dec_to_bin</span>(nums[i]);</span></div>
+<div class="code-line"><span class="ln">19</span><span class="lc">        <span class="s-fn">printf</span>(<span class="s-str">"\n"</span>);</span></div>
+<div class="code-line"><span class="ln">20</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">21</span><span class="lc">    <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">22</span><span class="lc">}</span></div>
+</div>
+</div>
+<div class="output-wrap"><div class="output-bar">실행 결과</div><div class="output-body">   0 -> 이진수: 0
+   1 -> 이진수: 1
+  10 -> 이진수: 1010
+  42 -> 이진수: 101010
+ 255 -> 이진수: 11111111
+1024 -> 이진수: 10000000000</div></div>
+<div class="note-box"><span class="note-label">[심화 내용] 메시지 큐와 분산 시스템</span>
+<b>메시지 큐 (Message Queue)</b>:<br>분산 시스템에서 서비스 간 통신 도구<br><br><b>생산자 → [메시지 큐] → 소비자</b><br><br>장점:<br>1. 비동기 처리: 생산자가 기다릴 필요 없음<br>2. 부하 분산: 소비자가 처리 가능할 때 꺼냄<br>3. 장애 격리: 한쪽이 죽어도 메시지 보존<br><br>대표 서비스:<br>- RabbitMQ: AMQP 프로토콜<br>- Apache Kafka: 대용량 스트리밍<br>- AWS SQS: 클라우드 관리형<br>- Redis: 인메모리 큐<br><br>유튜브 업로드 → 인코딩 큐 → 트랜스코딩<br>주문 접수 → 결제 큐 → 배송 큐 → 알림 큐</div>
+<!-- fact-bite -->
+<div class="tip"><span class="tip-label">[활동] 스택/큐 직접 체험</span>
+<b>스택 체험: 카드 더미</b><br>카드 5장을 쌓고 하나씩 뒤집어 보세요.<br>마지막에 올린 카드가 먼저 나와요 = LIFO!<br><br><b>큐 체험: 줄 서기</b><br>학교 매점에서 줄을 서 보세요.<br>먼저 온 사람이 먼저 주문 = FIFO!<br><br><b>덱 체험: 양방향 통로</b><br>복도 양쪽에서 들어갈 수 있는 상황<br>= 양쪽에서 넣고 뺄 수 있는 덱!<br><br><b>우선순위 큐 체험: 응급실</b><br>먼저 온 순서가 아니라 위급한 순서!<br>= 우선순위가 높은 것이 먼저 나오는 큐</div>
+<!-- fact-bite -->
+<div class="note-box"><span class="note-label">[심화 내용] 스택/큐 관련 알고리즘 문제 모음</span>
+<b>Easy:</b><br>1. 유효한 괄호 (LeetCode 20)<br>2. 큐를 스택으로 구현 (LeetCode 225)<br>3. 스택을 큐로 구현 (LeetCode 232)<br><br><b>Medium:</b><br>4. 일일 온도 — 모노톤 스택 (LeetCode 739)<br>5. 슬라이딩 윈도우 최대값 — 모노톤 큐 (LeetCode 239)<br>6. Min Stack (LeetCode 155)<br><br><b>Hard:</b><br>7. 히스토그램 최대 직사각형 (LeetCode 84)<br>8. 빗물 트래핑 (LeetCode 42)<br><br>이 8문제를 풀면 스택/큐 마스터!</div>
+<!-- fact-bite -->
+
+<table class="trace"><thead><tr><th>용어</th><th>설명</th></tr></thead><tbody><tr><td><code>스택 (Stack)</code></td><td>데이터를 쌓아 올리는 구조. 마지막에 넣은 것이 먼저 나옴 (LIFO).</td></tr><tr><td><code>큐 (Queue)</code></td><td>줄 서기와 같은 구조. 먼저 넣은 것이 먼저 나옴 (FIFO).</td></tr><tr><td><code>LIFO</code></td><td>Last In, First Out. 마지막에 넣은 것이 가장 먼저 나오는 방식.</td></tr><tr><td><code>FIFO</code></td><td>First In, First Out. 먼저 넣은 것이 가장 먼저 나오는 방식.</td></tr><tr><td><code>push / pop</code></td><td>스택에 데이터를 넣는 것(push)과 꺼내는 것(pop).</td></tr><tr><td><code>enqueue / dequeue</code></td><td>큐에 데이터를 넣는 것(enqueue)과 꺼내는 것(dequeue).</td></tr><tr><td><code>덱(Deque)</code></td><td>Double-Ended Queue. 양쪽에서 삽입/삭제 가능. 스택+큐 기능.</td></tr><tr><td><code>우선순위 큐</code></td><td>우선순위 높은 원소가 먼저 나오는 큐. 힙으로 구현. O(log n).</td></tr><tr><td><code>모노톤 스택</code></td><td>단조 순서를 유지하는 스택. NGE 등 구간 문제에 O(n) 풀이.</td></tr><tr><td><code>콜 스택</code></td><td>함수 호출 정보를 저장하는 스택. 반환 주소, 매개변수, 지역변수 포함.</td></tr><tr><td><code>원형 큐</code></td><td>배열을 원형으로 사용하는 큐. front/rear가 배열 끝에서 처음으로 순환.</td></tr><tr><td><code>스택 오버플로우</code></td><td>콜 스택이 넘치는 오류. 깊은 재귀나 무한 재귀에서 발생.</td></tr></tbody></table>
+<div class="warmup-box"><div class="warmup-title">이번 유닛 핵심 정리</div><div class="wq"><b>1.</b> 스택 = 접시 쌓기 (LIFO) — push/pop</div><div class="wq"><b>2.</b> 큐 = 줄 서기 (FIFO) — enqueue/dequeue</div><div class="wq"><b>3.</b> 스택: Ctrl+Z, 뒤로가기, 함수 호출 스택</div><div class="wq"><b>4.</b> 큐: 프린터, 놀이공원 줄, BFS 탐색</div></div>
+<div class="tip"><span class="tip-label">이 유닛에서 연결된 축</span>
+<b>[C언어]</b> 배열과 변수로 스택/큐 구현<br><b>[컴퓨팅 사고력]</b> 데이터의 입출력 순서를 설계하는 사고<br><b>[디버깅]</b> 빈 스택/큐에서 꺼내는 오류(언더플로우) 방지<br><b>[KOI]</b> BFS=큐, DFS=스택 — KOI 그래프 탐색의 핵심!<br><b>[자료구조]</b> 스택과 큐는 가장 기본적인 자료구조</div>
+<h2 class="section-title">실전 활용 연습</h2>
+<p>지금까지 배운 개념을 활용한 다양한 실전 예제와 연습문제입니다.</p>
+
+<h2 class="section-title">실생활 연결</h2>
+<div class="tip"><span class="tip-label">[실생활] 이 개념은 어디에 쓰일까?</span>
+게임 개발, 앱 만들기, 웹사이트, 로봇 제어, AI 학습 등 모든 분야에서 사용돼요!</div>
+
+<h2 class="section-title">추가 연습문제</h2>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 20</span><p style="margin:0;font-size:14px">이번 유닛에서 배운 핵심 개념 3가지를 자신의 말로 설명해 보세요.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 21</span><p style="margin:0;font-size:14px">이번 유닛의 개념을 활용한 자신만의 문제를 1개 만들어 보세요.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 22</span><p style="margin:0;font-size:14px">이번 유닛의 개념이 C언어에서 어떻게 사용되는지 조사해 보세요.</p></div>
+<h2 class="section-title">[심화] 더 알아보기</h2>
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+
+<p>이번 유닛의 모든 개념을 완전히 이해했습니다. 다음 유닛에서 더 발전된 개념을 배워보세요!</p>
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<div class="note-box"><span class="note-label">[이산수학 맛보기 완료!]</span>
+축하해요! Part 0의 이산수학 맛보기(집합, 순열과 조합, 재귀, 그래프, 스택과 큐)를 모두 배웠어요!<br>이 개념들은 Part 1에서 C 프로그래밍을 배울 때 계속 다시 만나게 될 거예요.</div>
+
+
+    <span class="page-num">2</span>
+  </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,1326 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>코딩쏙 교재 — 불 대수 — 논리식을 간단하게</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+
+  :root {
+    --navy: #1a2e4a;
+    --navy-mid: #2c4a6e;
+    --navy-light: #3d6590;
+    --orange: #e07830;
+    --orange-light: #f5e6d8;
+    --white: #ffffff;
+    --bg: #f7f8fa;
+    --bg-warm: #faf9f7;
+    --gray-50: #f9fafb;
+    --gray-100: #f3f4f6;
+    --gray-200: #e5e7eb;
+    --gray-300: #d1d5db;
+    --gray-400: #9ca3af;
+    --gray-500: #6b7280;
+    --gray-600: #4b5563;
+    --gray-700: #374151;
+    --gray-800: #1f2937;
+    --text: #2d3748;
+    --green: #16a34a;
+    --green-bg: #dcfce7;
+    --red: #dc2626;
+    --red-bg: #fee2e2;
+    --blue: #2563eb;
+    --blue-bg: #dbeafe;
+    --yellow-bg: #fef9c3;
+    --font: 'Noto Sans KR', sans-serif;
+    --mono: 'JetBrains Mono', 'Consolas', monospace;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: var(--font); background: #e8eaed; font-size: 15px; }
+
+  /* ========== PAGE ========== */
+  .page {
+    width: 210mm;
+    min-height: 295mm;
+    margin: 24px auto;
+    background: var(--white);
+    box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* ========== PAGE 1: CHAPTER START ========== */
+  .chapter-page {
+    display: flex;
+    min-height: 295mm;
+  }
+
+  .chapter-sidebar {
+    width: 10px;
+    background: var(--navy);
+    flex-shrink: 0;
+  }
+
+  .chapter-accent-bar {
+    width: 7px;
+    background: var(--orange);
+    flex-shrink: 0;
+  }
+
+  .chapter-body {
+    flex: 1;
+    padding: 70px 65px 50px 55px;
+    position: relative;
+  }
+
+  .chapter-watermark {
+    position: absolute;
+    top: -10px;
+    right: -15px;
+    font-size: 280px;
+    font-weight: 900;
+    color: rgba(180,195,212,0.35);
+    line-height: 1;
+    pointer-events: none;
+    letter-spacing: -10px;
+  }
+
+  .chapter-label {
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--navy-mid);
+    letter-spacing: 2px;
+    margin-bottom: 4px;
+  }
+
+  .chapter-title {
+    font-size: 44px;
+    font-weight: 900;
+    color: var(--navy);
+    line-height: 1.15;
+    margin-bottom: 12px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .chapter-sub {
+    font-size: 16px;
+    color: var(--gray-500);
+    font-weight: 400;
+    margin-bottom: 20px;
+    padding-bottom: 28px;
+    border-bottom: 1px solid var(--gray-200);
+  }
+
+  /* Learning objectives */
+  .obj-title {
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--navy);
+    margin-bottom: 16px;
+    margin-top: 32px;
+  }
+
+  .obj-list {
+    list-style: none;
+    margin-bottom: 40px;
+  }
+
+  .obj-list li {
+    padding: 5px 0 5px 24px;
+    position: relative;
+    font-size: 15px;
+    color: var(--gray-700);
+    line-height: 1.6;
+  }
+
+  .obj-list li::before {
+    content: '•';
+    position: absolute;
+    left: 8px;
+    color: var(--navy-mid);
+    font-weight: 700;
+  }
+
+  /* Prerequisites flow */
+  .prereq-title {
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--navy);
+    margin-bottom: 18px;
+  }
+
+  .prereq-flow {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    margin-bottom: 44px;
+  }
+
+  .prereq-item {
+    padding: 9px 22px;
+    border: 1.5px solid var(--gray-300);
+    border-radius: 50px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--gray-600);
+    background: var(--white);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+  }
+
+  .prereq-item.current {
+    border-color: var(--navy);
+    color: var(--navy);
+    font-weight: 700;
+    background: #edf2f7;
+    box-shadow: 0 2px 6px rgba(26,46,74,0.12);
+  }
+
+  .prereq-arrow {
+    width: 36px;
+    text-align: center;
+    color: var(--gray-300);
+    font-size: 18px;
+    font-weight: 300;
+  }
+
+  /* Predict box */
+  .predict-box {
+    background: var(--gray-50);
+    border: 1.5px solid var(--gray-200);
+    border-radius: 12px;
+    padding: 24px 28px;
+  }
+
+  .predict-label {
+    display: inline-block;
+    background: var(--orange);
+    color: var(--white);
+    font-size: 12px;
+    font-weight: 600;
+    padding: 3px 12px;
+    border-radius: 4px;
+    margin-bottom: 14px;
+    letter-spacing: 0.5px;
+  }
+
+  .predict-q {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--navy);
+    margin-bottom: 16px;
+  }
+
+  .predict-code {
+    background: var(--white);
+    border: 1px solid var(--gray-200);
+    border-radius: 8px;
+    padding: 14px 18px;
+    font-family: var(--mono);
+    font-size: 13px;
+    line-height: 1.65;
+    color: var(--gray-700);
+  }
+
+  /* ========== PAGE 2: CORE CONTENT ========== */
+  .content-page {
+    padding: 55px 65px;
+  }
+
+  .unit-header-bar {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    margin-bottom: 8px;
+  }
+
+  .unit-tag {
+    font-size: 12px;
+    color: var(--orange);
+    font-weight: 600;
+    letter-spacing: 1px;
+  }
+
+  .unit-title-sm {
+    font-size: 14px;
+    color: var(--gray-400);
+    font-weight: 400;
+  }
+
+  .section-title {
+    font-size: 24px;
+    font-weight: 800;
+    color: var(--navy);
+    margin-bottom: 24px;
+    margin-top: 8px;
+    padding-left: 16px;
+    border-left: 5px solid var(--orange);
+  }
+
+  p {
+    font-size: 15.5px;
+    line-height: 1.9;
+    color: var(--text);
+    margin-bottom: 18px;
+  }
+
+  p code {
+    font-family: var(--mono);
+    font-size: 13.5px;
+    background: #f1f3f5;
+    padding: 2px 7px;
+    border-radius: 4px;
+    color: var(--navy);
+    font-weight: 500;
+  }
+
+  /* Code block */
+  .code-wrap {
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    border: 1px solid var(--gray-200);
+    margin: 22px 0;
+  }
+
+  .code-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 9px 18px;
+    background: var(--navy);
+    font-size: 12px;
+  }
+
+  .code-bar-lang {
+    font-family: var(--mono);
+    font-weight: 600;
+    color: var(--white);
+  }
+
+  .code-bar-file {
+    color: rgba(255,255,255,0.6);
+    font-weight: 400;
+  }
+
+  .code-body {
+    background: #f8f9fb;
+    padding: 20px 0;
+    font-family: var(--mono);
+    font-size: 13.5px;
+    line-height: 1.75;
+    border: 1px solid var(--gray-200);
+    border-top: none;
+    border-radius: 0 0 12px 12px;
+  }
+
+  .code-line {
+    display: flex;
+    padding: 0 20px;
+  }
+
+  .code-line:hover {
+    background: #f0f4f8;
+  }
+
+  .code-line.highlighted {
+    background: #fff8e1;
+  }
+
+  .ln {
+    width: 30px;
+    text-align: right;
+    color: #b8bfc8;
+    font-size: 12px;
+    margin-right: 18px;
+    user-select: none;
+    flex-shrink: 0;
+    padding-top: 1px;
+  }
+
+  .lc { flex: 1; }
+
+  /* syntax */
+  .s-pp { color: #8b5cf6; font-weight: 600; }
+  .s-str { color: #d97706; }
+  .s-type { color: #2563eb; font-weight: 500; }
+  .s-kw { color: #7c3aed; font-weight: 500; }
+  .s-fn { color: #059669; font-weight: 500; }
+  .s-num { color: #dc2626; }
+  .s-cm { color: #9ca3af; font-style: italic; }
+
+  /* Output block */
+  .output-wrap {
+    border-radius: 10px;
+    overflow: hidden;
+    margin: 10px 0 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    border: 1px solid #d1d5db;
+  }
+
+  .output-bar {
+    padding: 9px 18px;
+    background: #374151;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--white);
+    letter-spacing: 0.5px;
+  }
+
+  .output-body {
+    padding: 16px 20px;
+    font-family: var(--mono);
+    font-size: 13.5px;
+    line-height: 1.7;
+    color: var(--gray-800);
+    background: #f1f5f9;
+    border: 1px solid var(--gray-200);
+    border-top: none;
+    border-radius: 0 0 10px 10px;
+  }
+
+  /* Callout */
+  .tip {
+    margin: 28px 0;
+    padding: 18px 24px;
+    background: #dbeafe;
+    border-left: 5px solid #2563eb;
+    border-radius: 0 12px 12px 0;
+    font-size: 14.5px;
+    line-height: 1.8;
+    color: var(--text);
+  }
+
+  .tip-label {
+    font-weight: 700;
+    color: #2563eb;
+    font-size: 13px;
+    display: block;
+    margin-bottom: 4px;
+  }
+
+  .warn {
+    margin: 28px 0;
+    padding: 18px 24px;
+    background: #fef3c7;
+    border-left: 5px solid #d97706;
+    border-radius: 0 12px 12px 0;
+    font-size: 14.5px;
+    line-height: 1.8;
+  }
+
+  .warn-label {
+    font-weight: 700;
+    color: #d97706;
+    font-size: 13px;
+    display: block;
+    margin-bottom: 4px;
+  }
+
+  .note-box {
+    margin: 28px 0;
+    padding: 18px 24px;
+    background: #e2e8f0;
+    border-left: 5px solid #64748b;
+    border-radius: 0 12px 12px 0;
+    font-size: 14.5px;
+    line-height: 1.8;
+  }
+
+  .note-label {
+    font-weight: 700;
+    color: var(--gray-600);
+    font-size: 13px;
+    display: block;
+    margin-bottom: 4px;
+  }
+
+  /* Trace table */
+  table.trace {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    margin: 28px 0;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+    font-size: 14px;
+  }
+
+  table.trace th {
+    background: var(--navy);
+    color: var(--white);
+    padding: 10px 16px;
+    text-align: left;
+    font-weight: 500;
+    font-size: 13px;
+  }
+
+  table.trace td {
+    padding: 10px 16px;
+    border-bottom: 1px solid var(--gray-200);
+    color: var(--gray-700);
+  }
+
+  table.trace tr:nth-child(even) td { background: var(--gray-50); }
+  table.trace tr:last-child td { border-bottom: none; }
+
+  table.trace td code {
+    font-family: var(--mono);
+    font-size: 12.5px;
+    background: #eef1f5;
+    padding: 2px 6px;
+    border-radius: 4px;
+    color: var(--navy);
+  }
+
+  /* ========== PAGE 3: PROBLEMS ========== */
+  .problems-header {
+    margin-bottom: 8px;
+  }
+
+  .problems-chapter-ref {
+    font-size: 13px;
+    color: var(--gray-500);
+    margin-bottom: 4px;
+  }
+
+  .problems-title {
+    font-size: 28px;
+    font-weight: 800;
+    color: var(--navy);
+    margin-bottom: 24px;
+  }
+
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 16px;
+  }
+
+  .prob-card {
+    background: var(--white);
+    border: 1px solid var(--gray-200);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 3px 15px rgba(0,0,0,0.06);
+  }
+
+  .prob-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 16px;
+    background: var(--navy);
+  }
+
+  .prob-num {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--white);
+  }
+
+  .diff {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    font-size: 12px;
+    font-weight: 800;
+  }
+
+  .diff-basic { background: #22c55e; color: white; }
+  .diff-mid { background: #f59e0b; color: white; }
+  .diff-hard { background: #ef4444; color: white; }
+
+  .prob-desc {
+    font-size: 13.5px;
+    line-height: 1.65;
+    color: var(--gray-600);
+    margin-bottom: 10px;
+    padding: 14px 16px 0;
+  }
+
+  .prob-code {
+    background: var(--gray-50);
+    border: 1px solid var(--gray-200);
+    border-radius: 6px;
+    padding: 10px 14px;
+    margin: 0 16px 16px;
+    font-family: var(--mono);
+    font-size: 12.5px;
+    line-height: 1.55;
+    color: var(--gray-600);
+  }
+
+  /* Competition section */
+  .comp-section {
+    margin-top: 32px;
+    padding-top: 24px;
+    border-top: 2px solid var(--navy);
+  }
+
+  .comp-title {
+    font-size: 22px;
+    font-weight: 800;
+    color: var(--navy);
+    margin-bottom: 20px;
+  }
+
+  .comp-card {
+    background: var(--white);
+    border: 1.5px solid var(--gray-200);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 18px rgba(0,0,0,0.06);
+  }
+
+  .comp-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 16px;
+    background: #0f766e;
+  }
+
+  .comp-header .comp-name {
+    color: var(--white);
+    font-size: 15px;
+    font-weight: 700;
+    margin: 0;
+  }
+
+  .comp-inner {
+    padding: 14px 18px 18px;
+  }
+
+  .comp-badge {
+    display: inline-block;
+    padding: 3px 12px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 700;
+  }
+
+  .badge-bj { background: #93c5fd; color: #1e3a5f; }
+  .badge-cu { background: #c4b5fd; color: #3b1f7e; }
+  .badge-pg { background: #7dd3fc; color: #0c4a6e; }
+
+  .comp-name {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--navy);
+    margin-bottom: 6px;
+  }
+
+  .comp-desc {
+    font-size: 14px;
+    color: var(--gray-600);
+    line-height: 1.7;
+    margin-bottom: 14px;
+  }
+
+  .io-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+
+  .io-card {
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid var(--gray-200);
+  }
+
+  .io-h {
+    padding: 6px 14px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--gray-600);
+    background: #e2e8f0;
+  }
+
+  .io-c {
+    padding: 10px 14px;
+    font-family: var(--mono);
+    font-size: 13px;
+    line-height: 1.5;
+    background: var(--white);
+  }
+
+  /* ========== DEBUG LAB ========== */
+  .debug-section {
+    margin: 24px 0;
+    border: 2px solid var(--red);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+
+  .debug-bar {
+    background: var(--red);
+    color: var(--white);
+    padding: 10px 20px;
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 1px;
+  }
+
+  .debug-body {
+    padding: 20px;
+    background: #fef2f2;
+  }
+
+  /* 10축 connection */
+  .connect-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 16px;
+    margin: 28px 0;
+  }
+
+  .connect-card {
+    border-radius: 12px;
+    padding: 20px;
+    text-align: center;
+    border: 1px solid var(--gray-200);
+    box-shadow: 0 3px 14px rgba(0,0,0,0.05);
+  }
+
+  .connect-card h5 {
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 8px;
+  }
+
+  .connect-card p {
+    font-size: 13px;
+    margin: 0;
+    color: var(--gray-600);
+    line-height: 1.6;
+  }
+
+  .cc1 { border-top: 3px solid #8b5cf6; }
+  .cc1 h5 { color: #8b5cf6; }
+  .cc2 { border-top: 3px solid var(--green); }
+  .cc2 h5 { color: var(--green); }
+  .cc3 { border-top: 3px solid var(--navy); }
+  .cc3 h5 { color: var(--navy); }
+
+  /* PAGE NUMBER */
+  .page-num {
+    position: absolute;
+    bottom: 20px;
+    right: 30px;
+    font-size: 12px;
+    color: var(--gray-400);
+  }
+
+  /* WARMUP */
+  .warmup-box {
+    background: #e0e7f1;
+    border-radius: 12px;
+    padding: 24px 28px;
+    margin: 28px 0;
+    border: 2px solid #c7d2e0;
+  }
+
+  .warmup-title {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--navy);
+    margin-bottom: 14px;
+  }
+
+  .wq {
+    padding: 9px 16px;
+    background: var(--white);
+    border-radius: 8px;
+    margin-bottom: 8px;
+    font-size: 14px;
+    border: 1px solid var(--gray-200);
+    color: var(--gray-700);
+  }
+
+  .wq b { color: var(--navy); margin-right: 6px; }
+  .wq .hint { color: var(--gray-400); font-size: 13px; }
+
+  /* ===== CONTEST PROBLEMS PAGE ===== */
+  .contest-page-wrap .chapter-page {
+    min-height: auto;
+  }
+
+  .contest-page-wrap .chapter-page > div:last-child {
+    min-width: 0;
+    overflow-wrap: break-word;
+    word-break: break-word;
+  }
+
+  .contest-card {
+    background: white;
+    border: 1.5px solid var(--gray-200);
+    border-radius: 12px;
+    margin-bottom: 28px;
+    overflow: hidden;
+    break-inside: avoid;
+  }
+
+  .contest-header {
+    background: var(--navy);
+    color: white;
+    padding: 14px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .contest-num-source {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .contest-num {
+    font-weight: 700;
+    font-size: 16px;
+  }
+
+  .contest-source {
+    background: rgba(255,255,255,0.15);
+    padding: 3px 10px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 500;
+  }
+
+  .contest-body {
+    padding: 20px 24px 24px;
+  }
+
+  .contest-question {
+    font-size: 15px;
+    line-height: 1.7;
+    color: var(--text);
+    margin: 0 0 16px;
+    word-break: break-word;
+    overflow-wrap: break-word;
+  }
+
+  .contest-expected {
+    background: #1e293b;
+    border-radius: 8px;
+    overflow: hidden;
+    margin-bottom: 20px;
+  }
+
+  .contest-expected-label {
+    background: #334155;
+    color: #94a3b8;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 6px 14px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .contest-expected-body {
+    color: #e2e8f0;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    line-height: 1.6;
+    padding: 12px 16px;
+    margin: 0;
+    white-space: pre;
+  }
+
+  .contest-write-area {
+    border: 2px dashed var(--gray-300);
+    border-radius: 10px;
+    overflow: hidden;
+    transition: border-color 0.2s;
+  }
+
+  .contest-write-area:focus-within {
+    border-color: var(--orange);
+    border-style: solid;
+  }
+
+  .contest-write-label {
+    background: var(--bg);
+    color: var(--gray-500);
+    font-size: 12px;
+    font-weight: 600;
+    padding: 8px 14px;
+    border-bottom: 1px solid var(--gray-200);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .contest-textarea {
+    width: 100%;
+    min-height: 200px;
+    padding: 16px 18px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    line-height: 1.7;
+    color: var(--text);
+    background: #fafbfc;
+    border: none;
+    outline: none;
+    resize: vertical;
+    tab-size: 4;
+    box-sizing: border-box;
+  }
+
+  .contest-textarea::placeholder {
+    color: var(--gray-300);
+  }
+
+  @media print {
+    body { background: white; }
+    .page { box-shadow: none; margin: 0; page-break-after: always; }
+    .contest-textarea { border: 1px solid var(--gray-300); min-height: 180px; }
+  }
+
+</style>
+</head>
+<body>
+
+<div class="page">
+  <div class="chapter-page">
+    <div class="chapter-sidebar"></div>
+    <div class="chapter-accent-bar"></div>
+    <div class="chapter-body">
+      <div class="chapter-watermark">S-02</div>
+      <div class="chapter-label">Chapter S-02</div>
+      <h1 class="chapter-title">불 대수</h1>
+      <p class="chapter-sub">복잡한 논리식을 간단하게 줄이는 불 대수 법칙을 배워요. 게이트 수를 줄이면 회로가 빠르고 저렴해져요!</p>
+
+      <h3 class="obj-title">이 유닛에서 배우는 것</h3>
+      <ul class="obj-list">
+        <li>불 대수의 기본 법칙 10가지를 알고 적용할 수 있어요.</li>
+        <li>복잡한 논리식을 간소화할 수 있어요.</li>
+        <li>간소화된 논리식으로 게이트 수를 줄일 수 있어요.</li>
+        <li>카르노 맵(2변수)으로 논리식을 간소화할 수 있어요.</li>
+        <li>C언어 조건문을 불 대수로 간소화할 수 있어요.</li>
+        <li>[심화] 3변수 카르노 맵을 이해할 수 있어요.</li>
+      </ul>
+
+      <h3 class="prereq-title">선수 학습</h3>
+      <div class="prereq-flow">
+        <div class="prereq-item">S-01 '논리 게이트'를 배웠다</div><div class="prereq-arrow">→</div>
+        <div class="prereq-item current">U0-09~13 'AND, OR, NOT, 논리 조합'을 배웠다</div>
+      </div>
+
+      
+
+      <span class="page-num">1</span>
+    </div>
+  </div>
+</div>
+<div class="page">
+  <div class="content-page">
+    <div class="unit-header-bar">
+      <span class="unit-tag">UNIT S-02</span>
+      <span class="unit-title-sm">불 대수</span>
+    </div>
+<h2 class="section-title">왜 논리식을 줄여야 할까?</h2>
+
+<p>CPU 안에는 게이트가 수십억 개 들어 있어요. 게이트 하나를 줄이면 별것 아닌 것 같지만, 그게 수백만 번 반복되면 엄청난 차이가 나요. <b>불 대수</b>는 논리식을 수학적으로 줄이는 방법이에요.</p>
+<div class="note-box"><span class="note-label">[예시] 간소화의 효과</span>
+<b>원래 논리식:</b> F = (A AND B) OR (A AND NOT B)<br>→ AND 게이트 2개 + OR 게이트 1개 + NOT 게이트 1개 = <b>4개</b><br><br><b>간소화 후:</b> F = A<br>→ 게이트 <b>0개</b> (그냥 A를 연결하면 끝!)<br><br>왜 같을까? A가 1이면 B가 뭐든 결과가 1이고, A가 0이면 B가 뭐든 결과가 0이니까요.</div>
+<div class="note-box"><span class="note-label">[핵심] 불 대수란?</span>
+<b>불 대수(Boolean Algebra)</b> = 0과 1만 사용하는 수학 체계<br><br>일반 수학에서 +, -, x 로 숫자를 계산하듯이,<br>불 대수에서는 AND, OR, NOT으로 참/거짓을 계산해요.<br><br>표기법:<br>• A AND B = A · B = AB (곱셈처럼)<br>• A OR B = A + B (덧셈처럼)<br>• NOT A = A' = A̅ (따옴표 또는 윗줄)</div>
+<h2 class="section-title">기본 법칙 1 — 항등법칙</h2>
+<p>항등법칙은 '아무것도 바꾸지 않는 값'에 대한 법칙이에요. 숫자에 0을 더하거나 1을 곱해도 변하지 않는 것과 같아요.</p>
+<div class="note-box"><span class="note-label">[법칙 1] 항등법칙 (Identity Law)</span>
+<b>OR 항등:</b> A + 0 = A &nbsp;&nbsp;(0을 OR해도 변하지 않아요)<br><b>AND 항등:</b> A · 1 = A &nbsp;&nbsp;(1을 AND해도 변하지 않아요)<br><br>0은 OR의 항등원, 1은 AND의 항등원이에요.<br><br>비유: '아무 일도 안 일어남 OR 비가 옴' = '비가 옴'<br>비유: '항상 참 AND 비가 옴' = '비가 옴'</div>
+<table class="trace"><thead><tr><th>A</th><th>A + 0</th><th>A · 1</th></tr></thead><tbody><tr><td>0</td><td>0</td><td>0</td></tr><tr><td>1</td><td>1</td><td>1</td></tr></tbody></table>
+<h2 class="section-title">기본 법칙 2 — 지배법칙</h2>
+<p>지배법칙은 '결과를 무조건 하나로 만드는 값'에 대한 법칙이에요.</p>
+<div class="note-box"><span class="note-label">[법칙 2] 지배법칙 (Domination Law)</span>
+<b>OR 지배:</b> A + 1 = 1 &nbsp;&nbsp;(1을 OR하면 무조건 1)<br><b>AND 지배:</b> A · 0 = 0 &nbsp;&nbsp;(0을 AND하면 무조건 0)<br><br>1은 OR의 지배원, 0은 AND의 지배원이에요.<br><br>비유: '뭐든지 OR 항상 참' = '항상 참'<br>비유: '뭐든지 AND 절대 거짓' = '절대 거짓'</div>
+<table class="trace"><thead><tr><th>A</th><th>A + 1</th><th>A · 0</th></tr></thead><tbody><tr><td>0</td><td>1</td><td>0</td></tr><tr><td>1</td><td>1</td><td>0</td></tr></tbody></table>
+<h2 class="section-title">기본 법칙 3 — 멱등법칙</h2>
+<div class="note-box"><span class="note-label">[법칙 3] 멱등법칙 (Idempotent Law)</span>
+<b>OR:</b> A + A = A &nbsp;&nbsp;(같은 값을 OR해도 변하지 않아요)<br><b>AND:</b> A · A = A &nbsp;&nbsp;(같은 값을 AND해도 변하지 않아요)<br><br>'비가 옴 OR 비가 옴' = '비가 옴'<br>'비가 옴 AND 비가 옴' = '비가 옴'<br><br>중복은 의미가 없어요. 하나로 줄일 수 있어요.</div>
+<table class="trace"><thead><tr><th>A</th><th>A + A</th><th>A · A</th></tr></thead><tbody><tr><td>0</td><td>0</td><td>0</td></tr><tr><td>1</td><td>1</td><td>1</td></tr></tbody></table>
+<h2 class="section-title">기본 법칙 4 — 보원법칙</h2>
+<div class="note-box"><span class="note-label">[법칙 4] 보원법칙 (Complement Law)</span>
+<b>OR:</b> A + A' = 1 &nbsp;&nbsp;(반대끼리 OR하면 무조건 1)<br><b>AND:</b> A · A' = 0 &nbsp;&nbsp;(반대끼리 AND하면 무조건 0)<br><br>A가 1이면 A'는 0 → 1 OR 0 = 1, 1 AND 0 = 0<br>A가 0이면 A'는 1 → 0 OR 1 = 1, 0 AND 1 = 0<br><br>어떤 경우든 성립해요! 이 법칙은 간소화에서 자주 쓰여요.</div>
+<table class="trace"><thead><tr><th>A</th><th>A'</th><th>A + A'</th><th>A · A'</th></tr></thead><tbody><tr><td>0</td><td>1</td><td>1</td><td>0</td></tr><tr><td>1</td><td>0</td><td>1</td><td>0</td></tr></tbody></table>
+<h2 class="section-title">기본 법칙 5 — 이중 부정</h2>
+<div class="note-box"><span class="note-label">[법칙 5] 이중 부정 (Double Negation)</span>
+<b>(A')' = A</b><br><br>NOT을 두 번 하면 원래대로 돌아와요.<br><br>'비가 안 오는 게 아니다' = '비가 온다'<br>NOT(NOT(1)) = NOT(0) = 1 ← 원래대로!</div>
+<h2 class="section-title">기본 법칙 6 — 교환법칙, 결합법칙, 분배법칙</h2>
+<p>일반 수학의 덧셈, 곱셈과 비슷한 법칙들이에요. 순서를 바꾸거나, 묶거나, 펼칠 수 있어요.</p>
+<div class="note-box"><span class="note-label">[법칙 6] 교환·결합·분배법칙</span>
+<b>교환법칙 (Commutative):</b><br>A + B = B + A &nbsp;&nbsp;/&nbsp;&nbsp; A · B = B · A<br>순서를 바꿔도 결과가 같아요.<br><br><b>결합법칙 (Associative):</b><br>(A + B) + C = A + (B + C)<br>(A · B) · C = A · (B · C)<br>괄호를 옮겨도 결과가 같아요.<br><br><b>분배법칙 (Distributive):</b><br>A · (B + C) = A·B + A·C &nbsp;&nbsp;← 일반 수학과 같음<br>A + (B · C) = (A+B) · (A+C) &nbsp;&nbsp;← 일반 수학에는 없는 법칙!</div>
+<div class="warn"><span class="warn-label">[주의] 불 대수만의 특별한 분배법칙</span>
+일반 수학: 2 + (3 × 4) = 2 + 12 = 14<br>(2+3) × (2+4) = 5 × 6 = 30 &nbsp;&nbsp;← 다르죠?<br><br>불 대수: A + (B · C) = (A+B) · (A+C) &nbsp;&nbsp;← 이게 성립해요!<br><br>확인: A=1, B=0, C=1<br>왼쪽: 1 + (0·1) = 1 + 0 = 1<br>오른쪽: (1+0)·(1+1) = 1·1 = 1 ← 같아요!</div>
+<h2 class="section-title">기본 법칙 7 — 흡수법칙</h2>
+
+<div class="note-box"><span class="note-label">[법칙 7] 흡수법칙 (Absorption Law)</span>
+<b>흡수 1:</b> A + A·B = A<br><b>흡수 2:</b> A · (A+B) = A<br><br><b>증명 (흡수 1):</b><br>A + A·B<br>= A·1 + A·B &nbsp;&nbsp;(항등법칙: A = A·1)<br>= A·(1 + B) &nbsp;&nbsp;(분배법칙으로 A를 묶기)<br>= A·1 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(지배법칙: 1+B = 1)<br>= A &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(항등법칙)<br><br>'비가 옴 OR (비가 옴 AND 우산 없음)' = '비가 옴'<br>→ 비가 오면 우산이 있든 없든 결과는 '비가 옴'이에요.</div>
+<table class="trace"><thead><tr><th>A</th><th>B</th><th>AB</th><th>A + AB</th><th>검증(=A?)</th></tr></thead><tbody><tr><td>0</td><td>0</td><td>0</td><td>0</td><td>O</td></tr><tr><td>0</td><td>1</td><td>0</td><td>0</td><td>O</td></tr><tr><td>1</td><td>0</td><td>0</td><td>1</td><td>O</td></tr><tr><td>1</td><td>1</td><td>1</td><td>1</td><td>O</td></tr></tbody></table>
+<h2 class="section-title">기본 법칙 8 — 드모르간 법칙</h2>
+<p>S-01에서 이미 배운 법칙이에요. 불 대수에서 가장 중요한 법칙 중 하나예요.</p>
+<div class="note-box"><span class="note-label">[법칙 8] 드모르간 법칙 (De Morgan's Law)</span>
+<b>법칙 1:</b> (A · B)' = A' + B'<br>NOT(A AND B) = (NOT A) OR (NOT B)<br><br><b>법칙 2:</b> (A + B)' = A' · B'<br>NOT(A OR B) = (NOT A) AND (NOT B)<br><br><b>외우는 팁:</b> NOT이 안으로 들어가면 AND↔OR이 바뀐다!<br><br>C언어에서:<br><code>!(a && b)</code> 은 <code>(!a || !b)</code> 와 같아요<br><code>!(a || b)</code> 은 <code>(!a && !b)</code> 와 같아요</div>
+<table class="trace"><thead><tr><th>A</th><th>B</th><th>(AB)'</th><th>A'+B'</th><th>(A+B)'</th><th>A'B'</th></tr></thead><tbody><tr><td>0</td><td>0</td><td>1</td><td>1</td><td>1</td><td>1</td></tr><tr><td>0</td><td>1</td><td>1</td><td>1</td><td>0</td><td>0</td></tr><tr><td>1</td><td>0</td><td>1</td><td>1</td><td>0</td><td>0</td></tr><tr><td>1</td><td>1</td><td>0</td><td>0</td><td>0</td><td>0</td></tr></tbody></table>
+<h2 class="section-title">법칙 총정리표</h2>
+<table class="trace"><thead><tr><th>법칙</th><th>OR 버전</th><th>AND 버전</th></tr></thead><tbody><tr><td>항등</td><td>A + 0 = A</td><td>A · 1 = A</td></tr><tr><td>지배</td><td>A + 1 = 1</td><td>A · 0 = 0</td></tr><tr><td>멱등</td><td>A + A = A</td><td>A · A = A</td></tr><tr><td>보원</td><td>A + A' = 1</td><td>A · A' = 0</td></tr><tr><td>교환</td><td>A + B = B + A</td><td>A · B = B · A</td></tr><tr><td>결합</td><td>(A+B)+C = A+(B+C)</td><td>(AB)C = A(BC)</td></tr><tr><td>분배</td><td>A+(BC) = (A+B)(A+C)</td><td>A(B+C) = AB+AC</td></tr><tr><td>흡수</td><td>A + AB = A</td><td>A(A+B) = A</td></tr><tr><td>드모르간</td><td>(A+B)' = A'B'</td><td>(AB)' = A'+B'</td></tr><tr><td>이중부정</td><td>(A')' = A</td><td></td></tr></tbody></table>
+<div class="tip"><span class="tip-label">[팁] 법칙 외우기 전략</span>
+전부 외울 필요 없어요. 이것만 기억하세요:<br><br>1. <b>보원법칙</b>: A와 A'를 만나게 하면 사라져요 (AND→0, OR→1)<br>2. <b>흡수법칙</b>: A + AB = A (큰 게 작은 걸 흡수)<br>3. <b>드모르간</b>: NOT이 안으로 들어가면 AND↔OR 변환<br>4. <b>분배법칙</b>: 일반 수학처럼 묶고 펼치기<br><br>이 4개면 대부분의 간소화를 할 수 있어요.</div>
+<table class="trace"><thead><tr><th>법칙</th><th>핵심 역할</th><th>간소화에서 쓰이는 상황</th></tr></thead><tbody><tr><td>항등법칙</td><td>불필요한 0(OR), 1(AND) 제거</td><td>A·1 → A 처럼 정리할 때</td></tr><tr><td>지배법칙</td><td>결과를 상수로 확정</td><td>1+B → 1 처럼 상수화할 때</td></tr><tr><td>멱등법칙</td><td>중복 변수 제거</td><td>A+A → A 처럼 중복 제거</td></tr><tr><td>보원법칙</td><td>변수와 보수를 소멸</td><td>B+B' → 1 로 소거할 때</td></tr><tr><td>이중부정</td><td>NOT 2개 제거</td><td>(A')' → A 로 정리할 때</td></tr><tr><td>교환법칙</td><td>순서 재배열</td><td>항을 묶기 위해 순서를 바꿀 때</td></tr><tr><td>결합법칙</td><td>괄호 재배치</td><td>연산 순서를 조정할 때</td></tr><tr><td>분배법칙</td><td>묶기 또는 펼치기</td><td>공통 인수를 묶어낼 때</td></tr><tr><td>흡수법칙</td><td>불필요한 항 흡수</td><td>A+AB → A 로 항 제거</td></tr><tr><td>드모르간</td><td>NOT 분배 + 연산 변환</td><td>NOT을 안으로 넣을 때</td></tr></tbody></table>
+<div class="debug-section"><div class="debug-bar">DEBUG LAB — 에러를 찾으시오</div><div class="debug-body">
+
+<p style="margin:14px 0 0; font-size:14px;"><b>에러:</b> </p>
+<p style="font-size:14px;"><b>수정:</b> </p>
+</div></div>
+<h2 class="section-title">간소화 실전 연습</h2>
+
+<div class="note-box"><span class="note-label">[실전 1] AB + AB' = ?</span>
+AB + AB'<br>= A(B + B') &nbsp;&nbsp;← 분배법칙 (A를 묶음)<br>= A · 1 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;← 보원법칙 (B + B' = 1)<br>= <b>A</b> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;← 항등법칙<br><br>게이트: AND 2개 + OR 1개 + NOT 1개 → <b>0개</b>로 줄어듦!</div>
+<div style="margin:22px 0"></div>
+<div class="note-box"><span class="note-label">[실전 2] A + A'B = ?</span>
+A + A'B<br>= (A + A')(A + B) &nbsp;&nbsp;← 분배법칙 (OR 버전)<br>= 1 · (A + B) &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;← 보원법칙<br>= <b>A + B</b> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;← 항등법칙<br><br>또는 다른 방법:<br>A + A'B<br>= A·1 + A'B &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;← 항등법칙<br>= A(1+B) + A'B &nbsp;&nbsp;← 지배법칙으로 1+B=1이므로 이 방향은 복잡<br><br>첫 번째 방법이 더 깔끔해요. 여러 방법 중 짧은 걸 고르면 돼요.</div>
+<div class="note-box"><span class="note-label">[실전 3] AB + A'C + BC = ?</span>
+<b>합의 정리 (Consensus Theorem)</b><br><br>AB + A'C + BC<br>= AB + A'C + BC(A + A') &nbsp;&nbsp;← 보원법칙: A+A'=1 → BC·1=BC<br>= AB + A'C + ABC + A'BC &nbsp;&nbsp;← 분배법칙<br>= AB(1+C) + A'C(1+B) &nbsp;&nbsp;← 재배열 후 묶기<br>= AB + A'C &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;← 지배법칙: 1+C=1<br><br>BC 항이 통째로 사라졌어요! 이걸 <b>합의 정리</b>라고 해요.<br>게이트 1개 + NOT 1개를 줄인 거예요.</div>
+<div class="tip"><span class="tip-label">[팁] 간소화 전략</span>
+1. 같은 변수가 보이면 <b>묶기</b> (분배법칙)<br>2. A와 A'가 만나면 <b>소멸</b> (보원법칙)<br>3. A + AB 보이면 <b>흡수</b><br>4. NOT이 복잡하면 <b>드모르간</b>으로 풀기<br>5. 줄였으면 <b>진리표로 검증</b>하기</div>
+<div style="margin:22px 0"></div>
+<table class="trace"><thead><tr><th>단계</th><th>식</th><th>적용 법칙</th><th>설명</th></tr></thead><tbody><tr><td>1</td><td>AB + A'B + AB'</td><td>(원래 식)</td><td>3개 항으로 이루어진 식</td></tr><tr><td>2</td><td>B(A + A') + AB'</td><td>분배법칙</td><td>처음 두 항에서 B를 묶음</td></tr><tr><td>3</td><td>B · 1 + AB'</td><td>보원법칙</td><td>A + A' = 1</td></tr><tr><td>4</td><td>B + AB'</td><td>항등법칙</td><td>B · 1 = B</td></tr><tr><td>5</td><td>B + A</td><td>흡수법칙 변형</td><td>B + AB' = B + A (X + X'Y = X + Y 적용)</td></tr><tr><td>6</td><td>A + B</td><td>교환법칙</td><td>최종 결과 (순서 정리)</td></tr></tbody></table>
+<div class="debug-section"><div class="debug-bar">DEBUG LAB — 에러를 찾으시오</div><div class="debug-body">
+
+<p style="margin:14px 0 0; font-size:14px;"><b>에러:</b> </p>
+<p style="font-size:14px;"><b>수정:</b> </p>
+</div></div>
+<h2 class="section-title">카르노 맵 — 눈으로 간소화하기</h2>
+
+<p>카르노 맵(K-map)은 진리표를 특별한 형태의 표로 바꿔서, 인접한 1들을 묶으면 간소화된 식이 바로 나오는 방법이에요.</p>
+<div class="note-box"><span class="note-label">[핵심] 2변수 카르노 맵</span>
+변수 A, B에 대한 카르노 맵:<br><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; B=0 &nbsp; B=1<br>A=0 &nbsp;| &nbsp;m0 &nbsp;| &nbsp;m1 &nbsp;|<br>A=1 &nbsp;| &nbsp;m2 &nbsp;| &nbsp;m3 &nbsp;|<br><br>m0 = A'B', m1 = A'B, m2 = AB', m3 = AB<br><br><b>규칙:</b><br>1. 진리표에서 출력이 1인 칸에 1을 써요<br>2. 인접한 1들을 2의 거듭제곱(1,2,4) 크기로 묶어요<br>3. 묶인 영역에서 변하지 않는 변수만 남겨요</div>
+<div style="margin:22px 0"></div>
+<table class="trace"><thead><tr><th>위치</th><th>A</th><th>B</th><th>민텀 번호</th><th>민텀 표현</th></tr></thead><tbody><tr><td>왼쪽 위</td><td>0</td><td>0</td><td>m0</td><td>A'B'</td></tr><tr><td>오른쪽 위</td><td>0</td><td>1</td><td>m1</td><td>A'B</td></tr><tr><td>왼쪽 아래</td><td>1</td><td>0</td><td>m2</td><td>AB'</td></tr><tr><td>오른쪽 아래</td><td>1</td><td>1</td><td>m3</td><td>AB</td></tr></tbody></table>
+<div class="note-box"><span class="note-label">[예제] F = A'B + AB를 카르노 맵으로</span>
+진리표: F(0,0)=0, F(0,1)=1, F(1,0)=0, F(1,1)=1<br><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; B=0 &nbsp; B=1<br>A=0 &nbsp;| &nbsp; 0 &nbsp;&nbsp;| &nbsp; <b>1</b> &nbsp;&nbsp;|<br>A=1 &nbsp;| &nbsp; 0 &nbsp;&nbsp;| &nbsp; <b>1</b> &nbsp;&nbsp;|<br><br>1이 세로로 나란히 → B열 전체가 1<br>→ A는 변하고(0→1), B는 변하지 않음(항상 1)<br>→ 결과: <b>F = B</b><br><br>검증: A'B + AB = B(A'+A) = B·1 = B ← 맞아요!</div>
+<div class="note-box"><span class="note-label">[예제] F = A'B' + A'B + AB를 카르노 맵으로</span>
+진리표: F(0,0)=1, F(0,1)=1, F(1,0)=0, F(1,1)=1<br><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; B=0 &nbsp; B=1<br>A=0 &nbsp;| &nbsp; <b>1</b> &nbsp;&nbsp;| &nbsp; <b>1</b> &nbsp;&nbsp;|<br>A=1 &nbsp;| &nbsp; 0 &nbsp;&nbsp;| &nbsp; <b>1</b> &nbsp;&nbsp;|<br><br>묶기 1: 윗줄 전체 (A=0) → <b>A'</b><br>묶기 2: 오른쪽 열 전체 (B=1) → <b>B</b><br><br>결과: <b>F = A' + B</b><br><br>검증: 원래식 3항 → 간소화 후 2항. 게이트 줄었어요!</div>
+<h2 class="section-title">[심화] 3변수 카르노 맵</h2>
+<p>변수가 3개면 카르노 맵이 2x4 표가 돼요. 중요한 점은 열 순서가 00, 01, 11, 10 (그레이 코드)이라는 거예요. 인접한 칸끼리 1비트만 달라야 하거든요.</p>
+<div class="note-box"><span class="note-label">[심화] 3변수 카르노 맵 구조</span>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; BC=00 &nbsp; BC=01 &nbsp; BC=11 &nbsp; BC=10<br>A=0 &nbsp;&nbsp;| &nbsp; m0 &nbsp;&nbsp;| &nbsp; m1 &nbsp;&nbsp;| &nbsp; m3 &nbsp;&nbsp;| &nbsp; m2 &nbsp;&nbsp;|<br>A=1 &nbsp;&nbsp;| &nbsp; m4 &nbsp;&nbsp;| &nbsp; m5 &nbsp;&nbsp;| &nbsp; m7 &nbsp;&nbsp;| &nbsp; m6 &nbsp;&nbsp;|<br><br><b>주의:</b> 열 순서가 00→01→<b>11→10</b> (10이 아니라 11 먼저!)<br>이유: 인접한 칸이 1비트만 다르게 하기 위해서<br><br>묶기 규칙: 1, 2, 4, 8개씩 직사각형으로 묶기<br>양쪽 끝도 인접해요 (맵이 원통처럼 연결됨)</div>
+<div class="note-box"><span class="note-label">[심화 예제] F(A,B,C) = Σm(0,2,4,6)</span>
+m0=A'B'C', m2=A'BC', m4=AB'C', m6=ABC'<br><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; BC=00 &nbsp; BC=01 &nbsp; BC=11 &nbsp; BC=10<br>A=0 &nbsp;&nbsp;| &nbsp; <b>1</b> &nbsp;&nbsp;&nbsp;| &nbsp; 0 &nbsp;&nbsp;&nbsp;| &nbsp; 0 &nbsp;&nbsp;&nbsp;| &nbsp; <b>1</b> &nbsp;&nbsp;&nbsp;|<br>A=1 &nbsp;&nbsp;| &nbsp; <b>1</b> &nbsp;&nbsp;&nbsp;| &nbsp; 0 &nbsp;&nbsp;&nbsp;| &nbsp; 0 &nbsp;&nbsp;&nbsp;| &nbsp; <b>1</b> &nbsp;&nbsp;&nbsp;|<br><br>1이 있는 칸: 00열과 10열 (양 끝) → 4개를 하나로 묶기!<br>변하지 않는 변수: C=0 (C')<br>A는 변하고, B도 변함<br><br>결과: <b>F = C'</b><br><br>원래 4항 → 1항으로! 이건 그냥 'C가 0일 때 1'이라는 뜻이에요.</div>
+<div style="margin:22px 0"></div>
+<table class="trace"><thead><tr><th>위치</th><th>A</th><th>B</th><th>C</th><th>민텀</th><th>BC값</th></tr></thead><tbody><tr><td>1행 1열</td><td>0</td><td>0</td><td>0</td><td>m0</td><td>BC=00</td></tr><tr><td>1행 2열</td><td>0</td><td>0</td><td>1</td><td>m1</td><td>BC=01</td></tr><tr><td>1행 3열</td><td>0</td><td>1</td><td>1</td><td>m3</td><td>BC=11</td></tr><tr><td>1행 4열</td><td>0</td><td>1</td><td>0</td><td>m2</td><td>BC=10</td></tr><tr><td>2행 1열</td><td>1</td><td>0</td><td>0</td><td>m4</td><td>BC=00</td></tr><tr><td>2행 2열</td><td>1</td><td>0</td><td>1</td><td>m5</td><td>BC=01</td></tr><tr><td>2행 3열</td><td>1</td><td>1</td><td>1</td><td>m7</td><td>BC=11</td></tr><tr><td>2행 4열</td><td>1</td><td>1</td><td>0</td><td>m6</td><td>BC=10</td></tr></tbody></table>
+<div class="debug-section"><div class="debug-bar">DEBUG LAB — 에러를 찾으시오</div><div class="debug-body">
+
+<p style="margin:14px 0 0; font-size:14px;"><b>에러:</b> </p>
+<p style="font-size:14px;"><b>수정:</b> </p>
+</div></div>
+<div class="debug-section"><div class="debug-bar">DEBUG LAB — 에러를 찾으시오</div><div class="debug-body">
+
+<p style="margin:14px 0 0; font-size:14px;"><b>에러:</b> </p>
+<p style="font-size:14px;"><b>수정:</b> </p>
+</div></div>
+<h2 class="section-title">C언어 조건문 간소화</h2>
+
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span><span class="code-bar-file">조건문 간소화 전</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;stdio.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">main</span>(<span class="s-type">void</span>) {</span></div>
+<div class="code-line"><span class="ln">4</span><span class="lc">    <span class="s-type">int</span> score = <span class="s-num">85</span>;</span></div>
+<div class="code-line"><span class="ln">5</span><span class="lc">    <span class="s-type">int</span> attendance = <span class="s-num">1</span>;  <span class="s-cm">// 1 = 출석 양호</span></span></div>
+<div class="code-line"><span class="ln">6</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">7</span><span class="lc">    <span class="s-cm">// 복잡한 조건</span></span></div>
+<div class="code-line"><span class="ln">8</span><span class="lc">    <span class="s-kw">if</span> ((score &gt;= <span class="s-num">60</span> &amp;&amp; attendance) ||</span></div>
+<div class="code-line"><span class="ln">9</span><span class="lc">        (score &gt;= <span class="s-num">60</span> &amp;&amp; !attendance &amp;&amp; score &gt;= <span class="s-num">90</span>)) {</span></div>
+<div class="code-line"><span class="ln">10</span><span class="lc">        <span class="s-fn">printf</span>(<span class="s-str">"합격!\n"</span>);</span></div>
+<div class="code-line"><span class="ln">11</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">12</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">13</span><span class="lc">    <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">14</span><span class="lc">}</span></div>
+</div>
+</div>
+<p>이 조건을 불 대수로 정리해 볼게요. A = (score >= 60), B = attendance로 놓으면:</p>
+<div class="note-box"><span class="note-label">불 대수로 조건문 간소화</span>
+원래: (A AND B) OR (A AND NOT B AND C)<br>여기서 C = (score >= 90)이고, C가 참이면 A도 반드시 참<br><br>정리:<br>AB + AB'C<br>= A(B + B'C) &nbsp;&nbsp;← A를 묶음<br>= A((B+B')(B+C)) &nbsp;&nbsp;← 분배법칙<br>= A(1·(B+C)) &nbsp;&nbsp;← 보원법칙<br>= <b>A(B + C)</b> &nbsp;&nbsp;← 항등법칙<br><br>즉: score >= 60 AND (출석 양호 OR score >= 90)</div>
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span><span class="code-bar-file">조건문 간소화 후</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;stdio.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">main</span>(<span class="s-type">void</span>) {</span></div>
+<div class="code-line"><span class="ln">4</span><span class="lc">    <span class="s-type">int</span> score = <span class="s-num">85</span>;</span></div>
+<div class="code-line"><span class="ln">5</span><span class="lc">    <span class="s-type">int</span> attendance = <span class="s-num">1</span>;</span></div>
+<div class="code-line"><span class="ln">6</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">7</span><span class="lc">    <span class="s-cm">// 간소화된 조건 (같은 결과!)</span></span></div>
+<div class="code-line"><span class="ln">8</span><span class="lc">    <span class="s-kw">if</span> (score &gt;= <span class="s-num">60</span> &amp;&amp; (attendance || score &gt;= <span class="s-num">90</span>)) {</span></div>
+<div class="code-line"><span class="ln">9</span><span class="lc">        <span class="s-fn">printf</span>(<span class="s-str">"합격!\n"</span>);</span></div>
+<div class="code-line"><span class="ln">10</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">11</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">12</span><span class="lc">    <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">13</span><span class="lc">}</span></div>
+</div>
+</div>
+<div class="tip"><span class="tip-label">[팁] 코드 간소화의 장점</span>
+1. <b>읽기 쉬움</b>: 조건이 뭘 뜻하는지 한눈에 보여요<br>2. <b>버그 줄어듦</b>: 조건이 짧으면 실수할 곳이 줄어요<br>3. <b>속도 향상</b>: 비교 연산 횟수가 줄어요<br><br>코드 리뷰할 때 '이 조건 줄일 수 있지 않나?' 생각하는 습관을 들이세요.</div>
+<h2 class="section-title">[디버깅] 드모르간으로 조건 뒤집기</h2>
+<p>조건을 뒤집어야 할 때 드모르간 법칙을 모르면 실수하기 쉬워요.</p>
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span><span class="code-bar-file">[디버깅] 조건 뒤집기 실수</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;stdio.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">main</span>(<span class="s-type">void</span>) {</span></div>
+<div class="code-line"><span class="ln">4</span><span class="lc">    <span class="s-type">int</span> age = <span class="s-num">15</span>;</span></div>
+<div class="code-line"><span class="ln">5</span><span class="lc">    <span class="s-type">int</span> hasTicket = <span class="s-num">1</span>;</span></div>
+<div class="code-line"><span class="ln">6</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">7</span><span class="lc">    <span class="s-cm">// 입장 조건: 12세 이상 AND 티켓 있음</span></span></div>
+<div class="code-line"><span class="ln">8</span><span class="lc">    <span class="s-cm">// 입장 불가를 판단하고 싶다면?</span></span></div>
+<div class="code-line"><span class="ln">9</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">10</span><span class="lc">    <span class="s-cm">// 틀린 코드 (흔한 실수!)</span></span></div>
+<div class="code-line"><span class="ln">11</span><span class="lc">    <span class="s-kw">if</span> (!age &gt;= <span class="s-num">12</span> &amp;&amp; !hasTicket) {  <span class="s-cm">// NOT의 범위 오류</span></span></div>
+<div class="code-line"><span class="ln">12</span><span class="lc">        <span class="s-fn">printf</span>(<span class="s-str">"입장 불가\n"</span>);</span></div>
+<div class="code-line"><span class="ln">13</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">14</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">15</span><span class="lc">    <span class="s-cm">// 맞는 코드 (드모르간 적용)</span></span></div>
+<div class="code-line"><span class="ln">16</span><span class="lc">    <span class="s-cm">// NOT(A AND B) = NOT A OR NOT B</span></span></div>
+<div class="code-line"><span class="ln">17</span><span class="lc">    <span class="s-kw">if</span> (!(age &gt;= <span class="s-num">12</span>) || !hasTicket) {</span></div>
+<div class="code-line"><span class="ln">18</span><span class="lc">        <span class="s-fn">printf</span>(<span class="s-str">"입장 불가\n"</span>);</span></div>
+<div class="code-line"><span class="ln">19</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">20</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">21</span><span class="lc">    <span class="s-cm">// 더 읽기 쉬운 버전</span></span></div>
+<div class="code-line"><span class="ln">22</span><span class="lc">    <span class="s-kw">if</span> (age &lt; <span class="s-num">12</span> || !hasTicket) {</span></div>
+<div class="code-line"><span class="ln">23</span><span class="lc">        <span class="s-fn">printf</span>(<span class="s-str">"입장 불가\n"</span>);</span></div>
+<div class="code-line"><span class="ln">24</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">25</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">26</span><span class="lc">    <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">27</span><span class="lc">}</span></div>
+</div>
+</div>
+<div class="warn"><span class="warn-label">[주의] 조건 뒤집기 규칙</span>
+NOT(A AND B) = (NOT A) <b>OR</b> (NOT B) ← AND가 OR로!<br>NOT(A OR B) = (NOT A) <b>AND</b> (NOT B) ← OR이 AND로!<br><br><b>비교 연산자도 뒤집어야 해요:</b><br>NOT(>=) → < &nbsp;&nbsp;NOT(>) → <=<br>NOT(==) → != &nbsp;&nbsp;NOT(<=) → ><br><br>예: NOT(age >= 12 AND hasTicket)<br>= (age < 12) OR (!hasTicket)</div>
+<div style="margin:22px 0"></div>
+<h2 class="section-title">역사 — 불 대수의 탄생</h2>
+<div class="note-box"><span class="note-label">[역사] 조지 불 — '사고의 법칙'</span>
+<b>조지 불</b>(1815~1864)은 14살에 그리스어를 독학할 만큼 천재였어요. 1854년에 '사고의 법칙에 대한 연구'라는 책을 써서, 인간의 논리적 사고를 수학 공식으로 표현할 수 있다고 주장했어요. 당시 사람들은 '이게 뭐에 쓸모가 있지?' 했지만, 80년 뒤 섀넌이 이걸로 컴퓨터를 만들었어요. 불 대수가 없었으면 지금의 컴퓨터, 스마트폰, 인터넷도 없었을 거예요.</div>
+<div class="note-box"><span class="note-label">[역사] 모리스 카르노 — 눈으로 푸는 간소화</span>
+<b>모리스 카르노</b>(Maurice Karnaugh, 1924~)는 벨 연구소의 엔지니어였어요. 1953년에 카르노 맵을 발명했어요. 복잡한 대수 계산 없이 표에 1을 채우고 묶기만 하면 최적의 논리식이 나오는 방법이에요. 전화 교환기 회로를 설계할 때 사용하려고 만들었다고 해요.</div>
+<h2 class="section-title">━━━ 10축 심화 학습 ━━━</h2>
+<h2 class="section-title">[KOI] 불 대수 실전 기출 유형</h2>
+<div class="note-box"><span class="note-label">[KOI 실전 문제 1] 논리식 간소화</span>
+<b>문제:</b> F = ABC + ABC' + A'BC를 간소화하시오.<br><br><b>풀이:</b><br>ABC + ABC' + A'BC<br>= AB(C + C') + A'BC &nbsp;&nbsp;← 분배법칙 (처음 두 항에서 AB 묶기)<br>= AB·1 + A'BC &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;← 보원법칙<br>= AB + A'BC &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;← 항등법칙<br>= B(A + A'C) &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;← B를 묶기<br>= B(A + C) &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;← A + A'C = A + C<br>= <b>AB + BC</b></div>
+<div class="note-box"><span class="note-label">[KOI 실전 문제 2] 카르노 맵</span>
+<b>문제:</b> F(A,B) = Σm(0,1,3)을 카르노 맵으로 간소화하시오.<br><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; B=0 &nbsp; B=1<br>A=0 &nbsp;| &nbsp; <b>1</b> &nbsp;&nbsp;| &nbsp; <b>1</b> &nbsp;&nbsp;|<br>A=1 &nbsp;| &nbsp; 0 &nbsp;&nbsp;| &nbsp; <b>1</b> &nbsp;&nbsp;|<br><br>묶기 1: 윗줄 전체 → A'<br>묶기 2: 오른쪽 열 → B<br><br><b>F = A' + B</b></div>
+<div class="note-box"><span class="note-label">[KOI 실전 문제 3] 게이트 수 최소화</span>
+<b>문제:</b> F = A'B'C + A'BC + AB'C + ABC를 최소 게이트로 구현하시오.<br><br>카르노 맵:<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; BC=00 &nbsp; BC=01 &nbsp; BC=11 &nbsp; BC=10<br>A=0 &nbsp;&nbsp;| &nbsp; 0 &nbsp;&nbsp;&nbsp;| &nbsp; <b>1</b> &nbsp;&nbsp;&nbsp;| &nbsp; <b>1</b> &nbsp;&nbsp;&nbsp;| &nbsp; 0 &nbsp;&nbsp;&nbsp;|<br>A=1 &nbsp;&nbsp;| &nbsp; 0 &nbsp;&nbsp;&nbsp;| &nbsp; <b>1</b> &nbsp;&nbsp;&nbsp;| &nbsp; <b>1</b> &nbsp;&nbsp;&nbsp;| &nbsp; 0 &nbsp;&nbsp;&nbsp;|<br><br>C=1인 열에 모두 1 → <b>F = C</b><br>원래 4개 항 → 변수 1개로!<br>필요한 게이트: <b>0개</b> (C를 직접 출력에 연결)</div>
+
+<h2 class="section-title">용어 정리</h2>
+<table class="trace"><thead><tr><th>용어</th><th>설명</th></tr></thead><tbody><tr><td><code>불 대수 (Boolean Algebra)</code></td><td>0과 1만 사용하는 수학 체계. AND, OR, NOT 연산으로 논리식을 계산하고 간소화해요.</td></tr><tr><td><code>항등법칙</code></td><td>A+0=A, A·1=A. 결과를 바꾸지 않는 값(0, 1)과의 연산.</td></tr><tr><td><code>보원법칙</code></td><td>A+A'=1, A·A'=0. 반대 값끼리 연산하면 항상 일정한 결과가 나와요.</td></tr><tr><td><code>흡수법칙</code></td><td>A+AB=A. 큰 항이 작은 항을 '흡수'해서 사라지게 해요.</td></tr><tr><td><code>드모르간 법칙</code></td><td>(AB)'=A'+B', (A+B)'=A'B'. NOT이 안으로 들어가면 AND↔OR이 바뀌어요.</td></tr><tr><td><code>카르노 맵 (K-map)</code></td><td>진리표를 특별한 표로 바꿔서, 인접한 1들을 묶어 논리식을 간소화하는 방법.</td></tr><tr><td><code>간소화 (Simplification)</code></td><td>같은 결과를 내면서 논리식을 더 짧게 줄이는 것. 게이트 수가 줄어들어요.</td></tr><tr><td><code>합의 정리 (Consensus Theorem)</code></td><td>AB+A'C+BC = AB+A'C. 세 번째 항이 불필요한 경우를 찾아 제거해요.</td></tr></tbody></table>
+<div class="warmup-box"><div class="warmup-title">이번 유닛 핵심 정리</div><div class="wq"><b>1.</b> 불 대수 = 0과 1의 수학. AND(·), OR(+), NOT(')으로 계산</div><div class="wq"><b>2.</b> 핵심 법칙 4개: 보원(A+A'=1), 흡수(A+AB=A), 드모르간, 분배법칙</div><div class="wq"><b>3.</b> 간소화 = 같은 결과, 더 적은 게이트 → 더 빠르고 저렴한 회로</div><div class="wq"><b>4.</b> 카르노 맵: 인접한 1을 묶으면 눈으로 간소화할 수 있어요</div><div class="wq"><b>5.</b> C언어 조건문도 불 대수로 줄일 수 있어요 (코드 품질 향상)</div><div class="wq"><b>6.</b> 드모르간 법칙: 조건 뒤집기의 핵심 (&&↔|| 변환)</div></div>
+<div class="tip"><span class="tip-label">이 유닛에서 연결된 축</span>
+<b>[하드웨어]</b> 불 대수로 논리식을 줄이면 게이트 수 감소 → 칩 면적, 전력, 비용 절감. 실제 CPU 설계에서 필수.<br><b>[C언어]</b> if 조건문 간소화, 드모르간으로 조건 뒤집기, 비트 연산 최적화.<br><b>[컴퓨팅사고력]</b> 같은 결과를 더 효율적으로 얻는 최적화 사고. 코드 리뷰의 핵심 역량.<br><b>[KOI]</b> 논리식 간소화, 카르노 맵은 정보올림피아드 필기 단골 유형.<br><b>[디버깅]</b> 드모르간 법칙 미적용 시 조건문 반전 오류. !(a&&b)와 !a&&!b는 다름!<br><b>[수학연결]</b> 불 대수는 집합론과 1:1 대응. AND=교집합, OR=합집합, NOT=여집합.</div>
+<div class="note-box"><span class="note-label">[실생활] 불 대수가 쓰이는 곳</span>
+검색 엔진(Google)에서 'python AND tutorial NOT video'처럼 검색하는 것이 불 대수예요. 엑셀의 AND(), OR(), NOT() 함수도 불 대수. 데이터베이스 SQL의 WHERE절도 불 대수. 네트워크 방화벽 규칙도 불 대수. 프로그래밍 어디에서든 불 대수를 쓰고 있어요.</div>
+<div class="note-box"><span class="note-label">[다음 유닛 미리보기]</span>
+컴퓨터는 데이터를 보낼 때 오류가 생길 수 있어요. 전선에 잡음이 끼면 0이 1로 바뀔 수 있거든요. 그런데 놀랍게도 오류가 생겼는지 '자동으로 감지'하는 방법이 있어요. <b>패리티 비트</b>라는 간단한 트릭으로요. 다음 유닛에서 알아봐요!</div>
+
+
+    <span class="page-num">2</span>
+  </div>
+</div>
+<div class="page">
+  <div class="chapter-page">
+    <div class="chapter-sidebar"></div>
+    <div class="chapter-accent-bar"></div>
+    <div style="flex:1; min-width:0; padding:50px 50px 40px 45px; position:relative;">
+      <div class="problems-chapter-ref">Chapter S-02: 불 대수</div>
+      <h2 class="problems-title">연습 문제 (Practice Problems)</h2>
+
+        <div class="prob-card">
+          <div class="prob-header">
+            <span class="prob-num">1. 다음을 간소화하세요. 사용한 법칙을 적으세요.
+(1) A + 0 = ?
+(2) A · A = ?
+(3) A + A' = ?
+(4) A · 0 = ?</span>
+            <span class="diff diff-basic">하</span>
+          </div>
+          <p class="prob-desc">다음을 간소화하세요. 사용한 법칙을 적으세요.<br>(1) A + 0 = ?<br>(2) A · A = ?<br>(3) A + A' = ?<br>(4) A · 0 = ?</p>
+          
+          <div class="contest-write-area" style="margin-top:12px;">
+            <div class="contest-write-label">코드 작성</div>
+            <textarea class="contest-textarea" rows="8" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+          </div>
+        </div>
+        <div class="prob-card">
+          <div class="prob-header">
+            <span class="prob-num">2. 다음을 간소화하세요.
+(1) A + AB = ?
+(2) A(A + B) = ?
+(3) A + 1 = ?
+(4) (A')' = ?</span>
+            <span class="diff diff-basic">하</span>
+          </div>
+          <p class="prob-desc">다음을 간소화하세요.<br>(1) A + AB = ?<br>(2) A(A + B) = ?<br>(3) A + 1 = ?<br>(4) (A')' = ?</p>
+          
+          <div class="contest-write-area" style="margin-top:12px;">
+            <div class="contest-write-label">코드 작성</div>
+            <textarea class="contest-textarea" rows="8" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+          </div>
+        </div>
+        <div class="prob-card">
+          <div class="prob-header">
+            <span class="prob-num">3. 다음 논리식을 간소화하세요. 매 단계 사용한 법칙을 표시하세요.
+F = AB + AB' + A'B</span>
+            <span class="diff diff-mid">중</span>
+          </div>
+          <p class="prob-desc">다음 논리식을 간소화하세요. 매 단계 사용한 법칙을 표시하세요.<br>F = AB + AB' + A'B</p>
+          
+          <div class="contest-write-area" style="margin-top:12px;">
+            <div class="contest-write-label">코드 작성</div>
+            <textarea class="contest-textarea" rows="8" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+          </div>
+        </div>
+        <div class="prob-card">
+          <div class="prob-header">
+            <span class="prob-num">4. 드모르간 법칙을 사용해서 다음을 변환하세요.
+(1) NOT(A AND B AND C) = ?
+(2) NOT(A OR B OR C) = ?
+(3) NOT((A AND B) OR C) = ?</span>
+            <span class="diff diff-mid">중</span>
+          </div>
+          <p class="prob-desc">드모르간 법칙을 사용해서 다음을 변환하세요.<br>(1) NOT(A AND B AND C) = ?<br>(2) NOT(A OR B OR C) = ?<br>(3) NOT((A AND B) OR C) = ?</p>
+          
+          <div class="contest-write-area" style="margin-top:12px;">
+            <div class="contest-write-label">코드 작성</div>
+            <textarea class="contest-textarea" rows="8" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+          </div>
+        </div>
+        <div class="prob-card">
+          <div class="prob-header">
+            <span class="prob-num">5. 다음 C언어 조건을 드모르간 법칙으로 뒤집으세요.
+if (age >= 18 && score > 80)
+→ 반대 조건 (이 조건이 거짓일 때)을 쓰세요.</span>
+            <span class="diff diff-mid">중</span>
+          </div>
+          <p class="prob-desc">다음 C언어 조건을 드모르간 법칙으로 뒤집으세요.<br>if (age >= 18 && score > 80)<br>→ 반대 조건 (이 조건이 거짓일 때)을 쓰세요.</p>
+          
+          <div class="contest-write-area" style="margin-top:12px;">
+            <div class="contest-write-label">코드 작성</div>
+            <textarea class="contest-textarea" rows="8" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+          </div>
+        </div>
+        <div class="prob-card">
+          <div class="prob-header">
+            <span class="prob-num">6. 2변수 카르노 맵으로 다음을 간소화하세요.
+F(A,B) = A'B' + AB' + AB</span>
+            <span class="diff diff-mid">중</span>
+          </div>
+          <p class="prob-desc">2변수 카르노 맵으로 다음을 간소화하세요.<br>F(A,B) = A'B' + AB' + AB</p>
+          
+          <div class="contest-write-area" style="margin-top:12px;">
+            <div class="contest-write-label">코드 작성</div>
+            <textarea class="contest-textarea" rows="8" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+          </div>
+        </div>
+        <div class="prob-card">
+          <div class="prob-header">
+            <span class="prob-num">7. [KOI] 3변수 카르노 맵으로 간소화하세요.
+F(A,B,C) = Σm(1,3,5,7)
+(힌트: m1=A'B'C, m3=A'BC, m5=AB'C, m7=ABC)</span>
+            <span class="diff diff-hard">상</span>
+          </div>
+          <p class="prob-desc">[KOI] 3변수 카르노 맵으로 간소화하세요.<br>F(A,B,C) = Σm(1,3,5,7)<br>(힌트: m1=A'B'C, m3=A'BC, m5=AB'C, m7=ABC)</p>
+          
+          <div class="contest-write-area" style="margin-top:12px;">
+            <div class="contest-write-label">코드 작성</div>
+            <textarea class="contest-textarea" rows="8" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+          </div>
+        </div>
+        <div class="prob-card">
+          <div class="prob-header">
+            <span class="prob-num">8. 다음 논리식을 간소화하고, 필요한 최소 게이트 수를 구하세요.
+F = A'B'C + A'BC + AB'C + ABC + AB'C' + ABC'</span>
+            <span class="diff diff-hard">상</span>
+          </div>
+          <p class="prob-desc">다음 논리식을 간소화하고, 필요한 최소 게이트 수를 구하세요.<br>F = A'B'C + A'BC + AB'C + ABC + AB'C' + ABC'</p>
+          
+          <div class="contest-write-area" style="margin-top:12px;">
+            <div class="contest-write-label">코드 작성</div>
+            <textarea class="contest-textarea" rows="8" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+          </div>
+        </div>
+        <div class="prob-card">
+          <div class="prob-header">
+            <span class="prob-num">9. [코딩] C언어 조건문을 불 대수로 간소화하세요.
+if ((x > 0 && y > 0) || (x > 0 && y <= 0))
+간소화 후 코드로 다시 쓰세요.</span>
+            <span class="diff diff-hard">상</span>
+          </div>
+          <p class="prob-desc">[코딩] C언어 조건문을 불 대수로 간소화하세요.<br>if ((x > 0 && y > 0) || (x > 0 && y <= 0))<br>간소화 후 코드로 다시 쓰세요.</p>
+          
+          <div class="contest-write-area" style="margin-top:12px;">
+            <div class="contest-write-label">코드 작성</div>
+            <textarea class="contest-textarea" rows="8" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+          </div>
+        </div>
+      <span class="page-num">3</span>
+    </div>
+  </div>
+</div>
+</body>
+</html>

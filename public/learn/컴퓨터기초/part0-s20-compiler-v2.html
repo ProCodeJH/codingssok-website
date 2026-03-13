@@ -1,0 +1,1415 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>코딩쏙 교재 — 컴파일러 원리</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+
+  :root {
+    --navy: #1a2e4a;
+    --navy-mid: #2c4a6e;
+    --navy-light: #3d6590;
+    --orange: #e07830;
+    --orange-light: #f5e6d8;
+    --white: #ffffff;
+    --bg: #f7f8fa;
+    --bg-warm: #faf9f7;
+    --gray-50: #f9fafb;
+    --gray-100: #f3f4f6;
+    --gray-200: #e5e7eb;
+    --gray-300: #d1d5db;
+    --gray-400: #9ca3af;
+    --gray-500: #6b7280;
+    --gray-600: #4b5563;
+    --gray-700: #374151;
+    --gray-800: #1f2937;
+    --text: #2d3748;
+    --green: #16a34a;
+    --green-bg: #dcfce7;
+    --red: #dc2626;
+    --red-bg: #fee2e2;
+    --blue: #2563eb;
+    --blue-bg: #dbeafe;
+    --yellow-bg: #fef9c3;
+    --font: 'Noto Sans KR', sans-serif;
+    --mono: 'JetBrains Mono', 'Consolas', monospace;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: var(--font); background: #e8eaed; font-size: 15px; }
+
+  /* ========== PAGE ========== */
+  .page {
+    width: 210mm;
+    min-height: 295mm;
+    margin: 24px auto;
+    background: var(--white);
+    box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* ========== PAGE 1: CHAPTER START ========== */
+  .chapter-page {
+    display: flex;
+    min-height: 295mm;
+  }
+
+  .chapter-sidebar {
+    width: 10px;
+    background: var(--navy);
+    flex-shrink: 0;
+  }
+
+  .chapter-accent-bar {
+    width: 7px;
+    background: var(--orange);
+    flex-shrink: 0;
+  }
+
+  .chapter-body {
+    flex: 1;
+    padding: 70px 65px 50px 55px;
+    position: relative;
+  }
+
+  .chapter-watermark {
+    position: absolute;
+    top: -10px;
+    right: -15px;
+    font-size: 280px;
+    font-weight: 900;
+    color: rgba(180,195,212,0.35);
+    line-height: 1;
+    pointer-events: none;
+    letter-spacing: -10px;
+  }
+
+  .chapter-label {
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--navy-mid);
+    letter-spacing: 2px;
+    margin-bottom: 4px;
+  }
+
+  .chapter-title {
+    font-size: 44px;
+    font-weight: 900;
+    color: var(--navy);
+    line-height: 1.15;
+    margin-bottom: 12px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .chapter-sub {
+    font-size: 16px;
+    color: var(--gray-500);
+    font-weight: 400;
+    margin-bottom: 20px;
+    padding-bottom: 28px;
+    border-bottom: 1px solid var(--gray-200);
+  }
+
+  /* Learning objectives */
+  .obj-title {
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--navy);
+    margin-bottom: 16px;
+    margin-top: 32px;
+  }
+
+  .obj-list {
+    list-style: none;
+    margin-bottom: 40px;
+  }
+
+  .obj-list li {
+    padding: 5px 0 5px 24px;
+    position: relative;
+    font-size: 15px;
+    color: var(--gray-700);
+    line-height: 1.6;
+  }
+
+  .obj-list li::before {
+    content: '•';
+    position: absolute;
+    left: 8px;
+    color: var(--navy-mid);
+    font-weight: 700;
+  }
+
+  /* Prerequisites flow */
+  .prereq-title {
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--navy);
+    margin-bottom: 18px;
+  }
+
+  .prereq-flow {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    margin-bottom: 44px;
+  }
+
+  .prereq-item {
+    padding: 9px 22px;
+    border: 1.5px solid var(--gray-300);
+    border-radius: 50px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--gray-600);
+    background: var(--white);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+  }
+
+  .prereq-item.current {
+    border-color: var(--navy);
+    color: var(--navy);
+    font-weight: 700;
+    background: #edf2f7;
+    box-shadow: 0 2px 6px rgba(26,46,74,0.12);
+  }
+
+  .prereq-arrow {
+    width: 36px;
+    text-align: center;
+    color: var(--gray-300);
+    font-size: 18px;
+    font-weight: 300;
+  }
+
+  /* Predict box */
+  .predict-box {
+    background: var(--gray-50);
+    border: 1.5px solid var(--gray-200);
+    border-radius: 12px;
+    padding: 24px 28px;
+  }
+
+  .predict-label {
+    display: inline-block;
+    background: var(--orange);
+    color: var(--white);
+    font-size: 12px;
+    font-weight: 600;
+    padding: 3px 12px;
+    border-radius: 4px;
+    margin-bottom: 14px;
+    letter-spacing: 0.5px;
+  }
+
+  .predict-q {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--navy);
+    margin-bottom: 16px;
+  }
+
+  .predict-code {
+    background: var(--white);
+    border: 1px solid var(--gray-200);
+    border-radius: 8px;
+    padding: 14px 18px;
+    font-family: var(--mono);
+    font-size: 13px;
+    line-height: 1.65;
+    color: var(--gray-700);
+  }
+
+  /* ========== PAGE 2: CORE CONTENT ========== */
+  .content-page {
+    padding: 55px 65px;
+  }
+
+  .unit-header-bar {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    margin-bottom: 8px;
+  }
+
+  .unit-tag {
+    font-size: 12px;
+    color: var(--orange);
+    font-weight: 600;
+    letter-spacing: 1px;
+  }
+
+  .unit-title-sm {
+    font-size: 14px;
+    color: var(--gray-400);
+    font-weight: 400;
+  }
+
+  .section-title {
+    font-size: 24px;
+    font-weight: 800;
+    color: var(--navy);
+    margin-bottom: 24px;
+    margin-top: 8px;
+    padding-left: 16px;
+    border-left: 5px solid var(--orange);
+  }
+
+  p {
+    font-size: 15.5px;
+    line-height: 1.9;
+    color: var(--text);
+    margin-bottom: 18px;
+  }
+
+  p code {
+    font-family: var(--mono);
+    font-size: 13.5px;
+    background: #f1f3f5;
+    padding: 2px 7px;
+    border-radius: 4px;
+    color: var(--navy);
+    font-weight: 500;
+  }
+
+  /* Code block */
+  .code-wrap {
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    border: 1px solid var(--gray-200);
+    margin: 22px 0;
+  }
+
+  .code-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 9px 18px;
+    background: var(--navy);
+    font-size: 12px;
+  }
+
+  .code-bar-lang {
+    font-family: var(--mono);
+    font-weight: 600;
+    color: var(--white);
+  }
+
+  .code-bar-file {
+    color: rgba(255,255,255,0.6);
+    font-weight: 400;
+  }
+
+  .code-body {
+    background: #f8f9fb;
+    padding: 20px 0;
+    font-family: var(--mono);
+    font-size: 13.5px;
+    line-height: 1.75;
+    border: 1px solid var(--gray-200);
+    border-top: none;
+    border-radius: 0 0 12px 12px;
+  }
+
+  .code-line {
+    display: flex;
+    padding: 0 20px;
+  }
+
+  .code-line:hover {
+    background: #f0f4f8;
+  }
+
+  .code-line.highlighted {
+    background: #fff8e1;
+  }
+
+  .ln {
+    width: 30px;
+    text-align: right;
+    color: #b8bfc8;
+    font-size: 12px;
+    margin-right: 18px;
+    user-select: none;
+    flex-shrink: 0;
+    padding-top: 1px;
+  }
+
+  .lc { flex: 1; }
+
+  /* syntax */
+  .s-pp { color: #8b5cf6; font-weight: 600; }
+  .s-str { color: #d97706; }
+  .s-type { color: #2563eb; font-weight: 500; }
+  .s-kw { color: #7c3aed; font-weight: 500; }
+  .s-fn { color: #059669; font-weight: 500; }
+  .s-num { color: #dc2626; }
+  .s-cm { color: #9ca3af; font-style: italic; }
+
+  /* Output block */
+  .output-wrap {
+    border-radius: 10px;
+    overflow: hidden;
+    margin: 10px 0 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    border: 1px solid #d1d5db;
+  }
+
+  .output-bar {
+    padding: 9px 18px;
+    background: #374151;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--white);
+    letter-spacing: 0.5px;
+  }
+
+  .output-body {
+    padding: 16px 20px;
+    font-family: var(--mono);
+    font-size: 13.5px;
+    line-height: 1.7;
+    color: var(--gray-800);
+    background: #f1f5f9;
+    border: 1px solid var(--gray-200);
+    border-top: none;
+    border-radius: 0 0 10px 10px;
+  }
+
+  /* Callout */
+  .tip {
+    margin: 28px 0;
+    padding: 18px 24px;
+    background: #dbeafe;
+    border-left: 5px solid #2563eb;
+    border-radius: 0 12px 12px 0;
+    font-size: 14.5px;
+    line-height: 1.8;
+    color: var(--text);
+  }
+
+  .tip-label {
+    font-weight: 700;
+    color: #2563eb;
+    font-size: 13px;
+    display: block;
+    margin-bottom: 4px;
+  }
+
+  .warn {
+    margin: 28px 0;
+    padding: 18px 24px;
+    background: #fef3c7;
+    border-left: 5px solid #d97706;
+    border-radius: 0 12px 12px 0;
+    font-size: 14.5px;
+    line-height: 1.8;
+  }
+
+  .warn-label {
+    font-weight: 700;
+    color: #d97706;
+    font-size: 13px;
+    display: block;
+    margin-bottom: 4px;
+  }
+
+  .note-box {
+    margin: 28px 0;
+    padding: 18px 24px;
+    background: #e2e8f0;
+    border-left: 5px solid #64748b;
+    border-radius: 0 12px 12px 0;
+    font-size: 14.5px;
+    line-height: 1.8;
+  }
+
+  .note-label {
+    font-weight: 700;
+    color: var(--gray-600);
+    font-size: 13px;
+    display: block;
+    margin-bottom: 4px;
+  }
+
+  /* Trace table */
+  table.trace {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    margin: 28px 0;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+    font-size: 14px;
+  }
+
+  table.trace th {
+    background: var(--navy);
+    color: var(--white);
+    padding: 10px 16px;
+    text-align: left;
+    font-weight: 500;
+    font-size: 13px;
+  }
+
+  table.trace td {
+    padding: 10px 16px;
+    border-bottom: 1px solid var(--gray-200);
+    color: var(--gray-700);
+  }
+
+  table.trace tr:nth-child(even) td { background: var(--gray-50); }
+  table.trace tr:last-child td { border-bottom: none; }
+
+  table.trace td code {
+    font-family: var(--mono);
+    font-size: 12.5px;
+    background: #eef1f5;
+    padding: 2px 6px;
+    border-radius: 4px;
+    color: var(--navy);
+  }
+
+  /* ========== PAGE 3: PROBLEMS ========== */
+  .problems-header {
+    margin-bottom: 8px;
+  }
+
+  .problems-chapter-ref {
+    font-size: 13px;
+    color: var(--gray-500);
+    margin-bottom: 4px;
+  }
+
+  .problems-title {
+    font-size: 28px;
+    font-weight: 800;
+    color: var(--navy);
+    margin-bottom: 24px;
+  }
+
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 16px;
+  }
+
+  .prob-card {
+    background: var(--white);
+    border: 1px solid var(--gray-200);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 3px 15px rgba(0,0,0,0.06);
+  }
+
+  .prob-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 16px;
+    background: var(--navy);
+  }
+
+  .prob-num {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--white);
+  }
+
+  .diff {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    font-size: 12px;
+    font-weight: 800;
+  }
+
+  .diff-basic { background: #22c55e; color: white; }
+  .diff-mid { background: #f59e0b; color: white; }
+  .diff-hard { background: #ef4444; color: white; }
+
+  .prob-desc {
+    font-size: 13.5px;
+    line-height: 1.65;
+    color: var(--gray-600);
+    margin-bottom: 10px;
+    padding: 14px 16px 0;
+  }
+
+  .prob-code {
+    background: var(--gray-50);
+    border: 1px solid var(--gray-200);
+    border-radius: 6px;
+    padding: 10px 14px;
+    margin: 0 16px 16px;
+    font-family: var(--mono);
+    font-size: 12.5px;
+    line-height: 1.55;
+    color: var(--gray-600);
+  }
+
+  /* Competition section */
+  .comp-section {
+    margin-top: 32px;
+    padding-top: 24px;
+    border-top: 2px solid var(--navy);
+  }
+
+  .comp-title {
+    font-size: 22px;
+    font-weight: 800;
+    color: var(--navy);
+    margin-bottom: 20px;
+  }
+
+  .comp-card {
+    background: var(--white);
+    border: 1.5px solid var(--gray-200);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 18px rgba(0,0,0,0.06);
+  }
+
+  .comp-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 16px;
+    background: #0f766e;
+  }
+
+  .comp-header .comp-name {
+    color: var(--white);
+    font-size: 15px;
+    font-weight: 700;
+    margin: 0;
+  }
+
+  .comp-inner {
+    padding: 14px 18px 18px;
+  }
+
+  .comp-badge {
+    display: inline-block;
+    padding: 3px 12px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 700;
+  }
+
+  .badge-bj { background: #93c5fd; color: #1e3a5f; }
+  .badge-cu { background: #c4b5fd; color: #3b1f7e; }
+  .badge-pg { background: #7dd3fc; color: #0c4a6e; }
+
+  .comp-name {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--navy);
+    margin-bottom: 6px;
+  }
+
+  .comp-desc {
+    font-size: 14px;
+    color: var(--gray-600);
+    line-height: 1.7;
+    margin-bottom: 14px;
+  }
+
+  .io-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+
+  .io-card {
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid var(--gray-200);
+  }
+
+  .io-h {
+    padding: 6px 14px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--gray-600);
+    background: #e2e8f0;
+  }
+
+  .io-c {
+    padding: 10px 14px;
+    font-family: var(--mono);
+    font-size: 13px;
+    line-height: 1.5;
+    background: var(--white);
+  }
+
+  /* ========== DEBUG LAB ========== */
+  .debug-section {
+    margin: 24px 0;
+    border: 2px solid var(--red);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+
+  .debug-bar {
+    background: var(--red);
+    color: var(--white);
+    padding: 10px 20px;
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 1px;
+  }
+
+  .debug-body {
+    padding: 20px;
+    background: #fef2f2;
+  }
+
+  /* 10축 connection */
+  .connect-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 16px;
+    margin: 28px 0;
+  }
+
+  .connect-card {
+    border-radius: 12px;
+    padding: 20px;
+    text-align: center;
+    border: 1px solid var(--gray-200);
+    box-shadow: 0 3px 14px rgba(0,0,0,0.05);
+  }
+
+  .connect-card h5 {
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 8px;
+  }
+
+  .connect-card p {
+    font-size: 13px;
+    margin: 0;
+    color: var(--gray-600);
+    line-height: 1.6;
+  }
+
+  .cc1 { border-top: 3px solid #8b5cf6; }
+  .cc1 h5 { color: #8b5cf6; }
+  .cc2 { border-top: 3px solid var(--green); }
+  .cc2 h5 { color: var(--green); }
+  .cc3 { border-top: 3px solid var(--navy); }
+  .cc3 h5 { color: var(--navy); }
+
+  /* PAGE NUMBER */
+  .page-num {
+    position: absolute;
+    bottom: 20px;
+    right: 30px;
+    font-size: 12px;
+    color: var(--gray-400);
+  }
+
+  /* WARMUP */
+  .warmup-box {
+    background: #e0e7f1;
+    border-radius: 12px;
+    padding: 24px 28px;
+    margin: 28px 0;
+    border: 2px solid #c7d2e0;
+  }
+
+  .warmup-title {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--navy);
+    margin-bottom: 14px;
+  }
+
+  .wq {
+    padding: 9px 16px;
+    background: var(--white);
+    border-radius: 8px;
+    margin-bottom: 8px;
+    font-size: 14px;
+    border: 1px solid var(--gray-200);
+    color: var(--gray-700);
+  }
+
+  .wq b { color: var(--navy); margin-right: 6px; }
+  .wq .hint { color: var(--gray-400); font-size: 13px; }
+
+  /* ===== CONTEST PROBLEMS PAGE ===== */
+  .contest-page-wrap .chapter-page {
+    min-height: auto;
+  }
+
+  .contest-page-wrap .chapter-page > div:last-child {
+    min-width: 0;
+    overflow-wrap: break-word;
+    word-break: break-word;
+  }
+
+  .contest-card {
+    background: white;
+    border: 1.5px solid var(--gray-200);
+    border-radius: 12px;
+    margin-bottom: 28px;
+    overflow: hidden;
+    break-inside: avoid;
+  }
+
+  .contest-header {
+    background: var(--navy);
+    color: white;
+    padding: 14px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .contest-num-source {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .contest-num {
+    font-weight: 700;
+    font-size: 16px;
+  }
+
+  .contest-source {
+    background: rgba(255,255,255,0.15);
+    padding: 3px 10px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 500;
+  }
+
+  .contest-body {
+    padding: 20px 24px 24px;
+  }
+
+  .contest-question {
+    font-size: 15px;
+    line-height: 1.7;
+    color: var(--text);
+    margin: 0 0 16px;
+    word-break: break-word;
+    overflow-wrap: break-word;
+  }
+
+  .contest-expected {
+    background: #1e293b;
+    border-radius: 8px;
+    overflow: hidden;
+    margin-bottom: 20px;
+  }
+
+  .contest-expected-label {
+    background: #334155;
+    color: #94a3b8;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 6px 14px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .contest-expected-body {
+    color: #e2e8f0;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    line-height: 1.6;
+    padding: 12px 16px;
+    margin: 0;
+    white-space: pre;
+  }
+
+  .contest-write-area {
+    border: 2px dashed var(--gray-300);
+    border-radius: 10px;
+    overflow: hidden;
+    transition: border-color 0.2s;
+  }
+
+  .contest-write-area:focus-within {
+    border-color: var(--orange);
+    border-style: solid;
+  }
+
+  .contest-write-label {
+    background: var(--bg);
+    color: var(--gray-500);
+    font-size: 12px;
+    font-weight: 600;
+    padding: 8px 14px;
+    border-bottom: 1px solid var(--gray-200);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .contest-textarea {
+    width: 100%;
+    min-height: 200px;
+    padding: 16px 18px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    line-height: 1.7;
+    color: var(--text);
+    background: #fafbfc;
+    border: none;
+    outline: none;
+    resize: vertical;
+    tab-size: 4;
+    box-sizing: border-box;
+  }
+
+  .contest-textarea::placeholder {
+    color: var(--gray-300);
+  }
+
+  @media print {
+    body { background: white; }
+    .page { box-shadow: none; margin: 0; page-break-after: always; }
+    .contest-textarea { border: 1px solid var(--gray-300); min-height: 180px; }
+  }
+
+</style>
+</head>
+<body>
+
+<div class="page">
+  <div class="chapter-page">
+    <div class="chapter-sidebar"></div>
+    <div class="chapter-accent-bar"></div>
+    <div class="chapter-body">
+      <div class="chapter-watermark">S-20</div>
+      <div class="chapter-label">Chapter S-20</div>
+      <h1 class="chapter-title">컴파일러 원리</h1>
+      <p class="chapter-sub"></p>
+
+      <h3 class="obj-title">이 유닛에서 배우는 것</h3>
+      <ul class="obj-list">
+        <li>C 소스코드가 실행 파일이 되기까지의 4단계(전처리, 컴파일, 어셈블, 링크)를 순서대로 설명할 수 있어요.</li>
+        <li>컴파일러와 인터프리터의 차이를 비유를 들어 설명할 수 있어요.</li>
+        <li>전처리 지시자(#include, #define, #ifdef)의 역할을 이해하고 활용할 수 있어요.</li>
+        <li>어휘 분석, 구문 분석, 의미 분석, 코드 최적화의 개념을 설명할 수 있어요.</li>
+        <li>컴파일 에러, 런타임 에러, 논리 에러를 구별할 수 있어요.</li>
+        <li>gcc 옵션(-E, -S, -c, -o 등)을 사용하여 각 컴파일 단계를 실행할 수 있어요.</li>
+        <li>여러 파일을 분할 컴파일하고 링크하는 과정을 이해할 수 있어요.</li>
+        <li>컴파일러의 역사(Grace Hopper, GCC, LLVM)를 알 수 있어요.</li>
+      </ul>
+
+      <h3 class="prereq-title">선수 학습</h3>
+      <div class="prereq-flow">
+        <div class="prereq-item">S-10 'CPU 구조'를 이해한다</div><div class="prereq-arrow">→</div>
+        <div class="prereq-item">S-16 '운영체제 기초'를 이해한다</div><div class="prereq-arrow">→</div>
+        <div class="prereq-item">U0-41 '컴파일'의 기본 개념을 알고 있다</div><div class="prereq-arrow">→</div>
+        <div class="prereq-item">U0-40 'C 프로그램 뼈대'를 배웠다</div><div class="prereq-arrow">→</div>
+        <div class="prereq-item current">U0-42 '주석과 들여쓰기'를 이해한다</div>
+      </div>
+
+      
+
+      <span class="page-num">1</span>
+    </div>
+  </div>
+</div>
+<div class="page">
+  <div class="content-page">
+    <div class="unit-header-bar">
+      <span class="unit-tag">UNIT S-20</span>
+      <span class="unit-title-sm">컴파일러 원리</span>
+    </div>
+<h2 class="section-title">printf("Hello")를 치면 컴퓨터 안에서 무슨 일이?</h2>
+
+<p>여러분이 C 언어로 작성한 소스코드는 사람이 읽을 수 있는 글자예요. 하지만 CPU는 오직 <b>0과 1로 된 기계어(Machine Code)</b>만 이해할 수 있어요. 그래서 사람이 쓴 코드를 컴퓨터가 이해할 수 있는 기계어로 <b>번역</b>해 주는 프로그램이 필요해요.</p>
+<p>이 번역 프로그램이 바로 <b>컴파일러(Compiler)</b>예요. 컴파일러는 여러분이 작성한 C 코드를 읽고, 여러 단계를 거쳐서 CPU가 바로 실행할 수 있는 실행 파일(.exe)로 만들어 줘요.</p>
+<div class="note-box"><span class="note-label"></span>
+<div style="font-weight:700;margin-bottom:6px;color:#1a2e4a">[생각해 보기] 번역이 필요한 이유</div>여러분이 영어를 모르는 친구에게 영어 편지를 전달해야 한다고 상상해 보세요.<br><br>1. 편지를 그대로 전달하면 친구가 이해할 수 있을까요?<br>2. 누군가가 한국어로 번역해 줘야 하지 않을까요?<br>3. 번역할 때 문법이 틀린 부분이 있으면 어떻게 할까요?<br><br>컴파일러가 하는 일이 바로 이런 '번역'이에요. C 언어라는 '외국어'를 기계어라는 'CPU의 모국어'로 바꿔 주는 거예요!</div>
+<h2 class="section-title">프로그래밍 언어의 번역 -- 사람의 언어에서 기계어로</h2>
+<p>프로그래밍 언어를 기계어로 번역하는 방법은 크게 두 가지가 있어요. 하나는 <b>컴파일러(Compiler)</b>이고, 다른 하나는 <b>인터프리터(Interpreter)</b>예요.</p>
+<p><b>컴파일러</b>는 소스코드 전체를 한꺼번에 읽어서, 처음부터 끝까지 번역한 다음에 실행 파일을 만들어요. 마치 책 전체를 번역한 다음에 번역본을 건네주는 것과 같아요. C, C++, Rust 같은 언어가 컴파일러를 사용해요.</p>
+<p><b>인터프리터</b>는 소스코드를 한 줄씩 읽으면서 바로바로 실행해요. 마치 통역사가 말을 한 문장씩 듣고 바로 통역해 주는 것과 같아요. Python, JavaScript 같은 언어가 인터프리터를 사용해요.</p>
+<div class="debug-section"><div class="debug-bar">DEBUG LAB — 에러를 찾으시오</div><div class="debug-body">
+
+<p style="margin:14px 0 0; font-size:14px;"><b>에러:</b> </p>
+<p style="font-size:14px;"><b>수정:</b> </p>
+</div></div>
+
+<table class="trace"><thead><tr><th>언어</th><th>번역 방식</th><th>실행 파일 생성</th><th>대표 용도</th></tr></thead><tbody><tr><td>C</td><td>컴파일러</td><td>O (.exe, .out)</td><td>운영체제, 임베디드, 시스템 프로그래밍</td></tr><tr><td>C++</td><td>컴파일러</td><td>O (.exe, .out)</td><td>게임, 브라우저, 고성능 프로그램</td></tr><tr><td>Java</td><td>컴파일러 + 인터프리터 (혼합)</td><td>O (.class)</td><td>안드로이드 앱, 서버</td></tr><tr><td>Python</td><td>인터프리터</td><td>X</td><td>인공지능, 데이터 분석, 웹</td></tr><tr><td>JavaScript</td><td>인터프리터 (JIT 포함)</td><td>X</td><td>웹 프론트엔드, 서버</td></tr><tr><td>Rust</td><td>컴파일러</td><td>O (.exe, .out)</td><td>시스템 프로그래밍, 웹어셈블리</td></tr><tr><td>Go</td><td>컴파일러</td><td>O (단일 실행 파일)</td><td>서버, 클라우드</td></tr></tbody></table>
+<h2 class="section-title">C 컴파일의 4단계 -- 전체 그림 먼저 보기</h2>
+<p>C 소스코드가 실행 파일이 되기까지는 <b>4단계</b>를 거쳐요. 각 단계는 서로 다른 일을 하고, 서로 다른 결과물을 만들어요. 마치 공장에서 원재료가 여러 공정을 거쳐 완제품이 되는 것과 같아요.</p>
+<div style="margin:22px 0"></div>
+<table class="trace"><thead><tr><th>단계</th><th>입력 파일</th><th>출력 파일</th><th>담당 프로그램</th><th>비유</th></tr></thead><tbody><tr><td>전처리</td><td>hello.c (소스코드)</td><td>hello.i (전처리된 소스)</td><td>전처리기 (cpp)</td><td>요리 재료 준비 (씻고 다듬기)</td></tr><tr><td>컴파일</td><td>hello.i (전처리된 소스)</td><td>hello.s (어셈블리 코드)</td><td>컴파일러 (cc1)</td><td>레시피를 작업 지시서로 변환</td></tr><tr><td>어셈블</td><td>hello.s (어셈블리 코드)</td><td>hello.o (목적 파일)</td><td>어셈블러 (as)</td><td>작업 지시서를 기계에 입력</td></tr><tr><td>링크</td><td>hello.o + 라이브러리</td><td>hello.exe (실행 파일)</td><td>링커 (ld)</td><td>부품들을 조립해서 완제품 만들기</td></tr></tbody></table>
+<div class="note-box"><span class="note-label"></span>
+<div style="font-weight:700;margin-bottom:6px;color:#1a2e4a">[비유] 컴파일 4단계를 요리에 비유하면?</div>카레를 만든다고 생각해 보세요!<br><br>1. <b>전처리 (재료 준비)</b>: 감자, 당근, 양파를 씻고 깎고 잘라요. 재료를 '사용 가능한 상태'로 준비하는 거예요. (#include = 재료 꺼내오기, #define = 레시피 약칭 정하기)<br><br>2. <b>컴파일 (조리법 번역)</b>: 한국어 레시피를 요리사가 이해하는 작업 순서로 바꿔요. '감자를 볶다'를 '프라이팬 - 기름 - 감자 - 중불 5분'으로 변환하는 거예요.<br><br>3. <b>어셈블 (실제 조리)</b>: 작업 순서대로 실제로 음식을 만들어요. 글자가 실제 동작으로 바뀌는 거예요.<br><br>4. <b>링크 (담아서 완성)</b>: 밥, 카레, 반찬을 한 그릇에 담아 완성해요. 여러 부품을 합쳐서 완제품을 만드는 거예요.</div>
+
+<h2 class="section-title">1단계: 전처리 (Preprocessor)</h2>
+<p><b>전처리(Preprocessing)</b>는 컴파일의 가장 첫 번째 단계예요. 전처리기(Preprocessor)가 소스코드에서 <b># 으로 시작하는 지시자</b>들을 처리해요. 전처리기는 코드의 의미를 이해하지 않고, 단순히 <b>텍스트를 변환</b>하는 일만 해요.</p>
+<p>전처리기가 하는 일을 쉽게 말하면, 본격적인 번역(컴파일) 전에 '준비 작업'을 하는 거예요. 마치 시험 전에 교과서의 중요 부분을 복사해서 노트에 붙여넣고, 약어를 풀어쓰는 것과 같아요.</p>
+<h2 class="section-title">#include -- 파일 복사 붙여넣기</h2>
+<p><b>#include &lt;stdio.h&gt;</b>는 "stdio.h 파일의 내용을 여기에 통째로 복사해서 붙여넣어 줘"라는 뜻이에요. 실제로 전처리기는 stdio.h 파일을 찾아서, 그 안의 수천 줄의 코드를 여러분의 소스코드에 삽입해요.</p>
+<div style="margin:22px 0"></div>
+<div class="note-box"><span class="note-label"></span>
+<div style="font-weight:700;margin-bottom:6px;color:#1a2e4a">[비유] #include는 복사-붙여넣기</div>수학 숙제를 하는데, 공식집이 따로 있다고 해 보세요.<br><br><b>#include &lt;공식집.h&gt;</b> = "공식집 전체를 숙제 앞에 복사해서 붙여넣어!"<br><br>이렇게 하면 숙제 안에서 공식을 바로 쓸 수 있게 돼요. printf() 함수를 쓸 수 있는 것도, stdio.h에 printf의 '설명서'가 있기 때문이에요.</div>
+<h2 class="section-title">#define -- 텍스트 치환</h2>
+<p><b>#define</b>은 특정 이름을 다른 텍스트로 바꿔치기하는 지시자예요. 전처리기는 코드에서 그 이름이 나오면, 전부 지정된 텍스트로 교체해요.</p>
+<table class="trace"><thead><tr><th>#define 정의</th><th>원본 코드</th><th>전처리 후 결과</th></tr></thead><tbody><tr><td>#define PI 3.14</td><td>area = PI * r * r;</td><td>area = 3.14 * r * r;</td></tr><tr><td>#define MAX 100</td><td>int arr[MAX];</td><td>int arr[100];</td></tr><tr><td>#define HELLO "안녕"</td><td>printf(HELLO);</td><td>printf("안녕");</td></tr><tr><td>#define SQUARE(x) ((x)*(x))</td><td>y = SQUARE(5);</td><td>y = ((5)*(5));</td></tr><tr><td>#define SQUARE(x) ((x)*(x))</td><td>y = SQUARE(a+1);</td><td>y = ((a+1)*(a+1));</td></tr></tbody></table>
+<div class="note-box"><span class="note-label"></span>
+<div style="font-weight:700;margin-bottom:6px;color:#1a2e4a">[주의] 매크로의 함정</div>만약 #define SQUARE(x) x*x 로 정의했다면 어떻게 될까요?<br><br><code>y = SQUARE(3+2);</code><br><br>우리가 기대하는 결과: (3+2) * (3+2) = 5 * 5 = <b>25</b><br>실제 결과: 3+2 * 3+2 = 3+6+2 = <b>11</b> (곱셈이 먼저!)<br><br>그래서 매크로를 정의할 때는 반드시 <b>괄호</b>로 감싸야 해요!<br>#define SQUARE(x) ((x)*(x)) 이렇게요.</div>
+<h2 class="section-title">#ifdef -- 조건부 컴파일</h2>
+<p><b>#ifdef</b>는 "만약 이 이름이 정의되어 있으면, 아래 코드를 포함해"라는 뜻이에요. 반대로 <b>#ifndef</b>는 "정의되어 있지 않으면 포함해"라는 뜻이에요. 하나의 소스코드로 여러 상황에 맞는 프로그램을 만들 수 있어요.</p>
+<table class="trace"><thead><tr><th>지시자</th><th>역할</th><th>비유</th></tr></thead><tbody><tr><td>#include <파일></td><td>시스템 헤더 파일의 내용을 복사 삽입</td><td>도서관에서 책을 빌려와서 복사</td></tr><tr><td>#include "파일"</td><td>사용자 헤더 파일의 내용을 복사 삽입</td><td>내 노트의 내용을 복사</td></tr><tr><td>#define 이름 값</td><td>이름을 값으로 텍스트 치환</td><td>별명(닉네임) 정하기</td></tr><tr><td>#define 이름(x) 식</td><td>매크로 함수 (텍스트 치환)</td><td>수학 공식 약칭 정하기</td></tr><tr><td>#undef 이름</td><td>정의한 매크로를 취소</td><td>별명 사용 중단</td></tr><tr><td>#ifdef / #endif</td><td>이름이 정의되어 있으면 코드 포함</td><td>조건에 맞으면 복사</td></tr><tr><td>#ifndef / #endif</td><td>이름이 정의되어 있지 않으면 코드 포함</td><td>조건에 안 맞으면 복사</td></tr><tr><td>#if / #elif / #else / #endif</td><td>조건식에 따라 코드 포함 여부 결정</td><td>if-else와 비슷한 전처리 조건문</td></tr><tr><td>#pragma once</td><td>헤더 파일이 한 번만 포함되도록 보장</td><td>이미 복사했으면 다시 복사하지 않기</td></tr></tbody></table>
+
+<h2 class="section-title">2단계: 컴파일 (소스코드에서 어셈블리로)</h2>
+<p>전처리가 끝난 소스코드(.i 파일)는 이제 본격적으로 <b>컴파일러</b>에게 전달돼요. 컴파일러는 C 코드를 읽고, CPU가 이해하기 한 단계 전인 <b>어셈블리 코드(.s 파일)</b>로 번역해요. 이 과정은 여러 세부 단계로 나뉘어요.</p>
+<div style="margin:22px 0"></div>
+<h2 class="section-title">어휘 분석 (Lexical Analysis) -- 코드를 단어로 쪼개기</h2>
+<p><b>어휘 분석(Lexical Analysis)</b>은 소스코드를 <b>토큰(Token)</b>이라는 의미 있는 최소 단위로 쪼개는 과정이에요. 마치 국어 시간에 문장을 단어 단위로 나누는 것과 같아요.</p>
+<p>"나는 학교에 간다"를 [나는] [학교에] [간다]로 나누듯이, 컴파일러도 코드를 [int] [x] [=] [5] [+] [3] [;]으로 나눠요. 이때 빈칸이나 줄바꿈 같은 공백 문자는 버려요.</p>
+<table class="trace"><thead><tr><th>순서</th><th>토큰</th><th>토큰 종류</th><th>설명</th></tr></thead><tbody><tr><td>1</td><td>int</td><td>키워드 (Keyword)</td><td>C 언어에서 미리 정해진 예약어</td></tr><tr><td>2</td><td>x</td><td>식별자 (Identifier)</td><td>프로그래머가 만든 변수 이름</td></tr><tr><td>3</td><td>=</td><td>연산자 (Operator)</td><td>대입 연산자</td></tr><tr><td>4</td><td>5</td><td>정수 리터럴 (Integer Literal)</td><td>숫자 상수</td></tr><tr><td>5</td><td>+</td><td>연산자 (Operator)</td><td>덧셈 연산자</td></tr><tr><td>6</td><td>3</td><td>정수 리터럴 (Integer Literal)</td><td>숫자 상수</td></tr><tr><td>7</td><td>;</td><td>구분자 (Delimiter)</td><td>문장의 끝을 표시</td></tr></tbody></table>
+<table class="trace"><thead><tr><th>토큰 종류</th><th>설명</th><th>예시</th></tr></thead><tbody><tr><td>키워드 (Keyword)</td><td>C 언어에서 미리 정의된 예약어</td><td>int, if, while, return, for</td></tr><tr><td>식별자 (Identifier)</td><td>프로그래머가 만든 이름</td><td>x, count, main, printf</td></tr><tr><td>연산자 (Operator)</td><td>연산을 수행하는 기호</td><td>+, -, *, =, ==, !=</td></tr><tr><td>리터럴 (Literal)</td><td>코드에 직접 쓴 값</td><td>42, 3.14, 'A', "Hello"</td></tr><tr><td>구분자 (Delimiter)</td><td>코드 구조를 나누는 기호</td><td>;, (, ), {, }, [, ]</td></tr><tr><td>주석 (Comment)</td><td>설명용 글 (컴파일러가 무시)</td><td>/* ... */, // ...</td></tr></tbody></table>
+<div class="note-box"><span class="note-label"></span>
+<div style="font-weight:700;margin-bottom:6px;color:#1a2e4a">[비유] 어휘 분석은 국어 시간의 '형태소 분석'</div>국어 시간에 배우는 형태소 분석을 떠올려 보세요!<br><br>"학생이 책을 읽었다" --> [학생] [이] [책] [을] [읽] [었] [다]<br><br>각 형태소가 명사, 조사, 동사 어간, 과거 시제 등으로 분류되듯이,<br>코드의 토큰도 키워드, 식별자, 연산자 등으로 분류돼요.</div>
+<h2 class="section-title">구문 분석 (Syntax Analysis) -- 문법 체크와 구문 트리</h2>
+<p><b>구문 분석(Syntax Analysis)</b>은 토큰들이 C 언어의 <b>문법 규칙</b>에 맞는지 확인하는 과정이에요. 그리고 문법에 맞으면 <b>구문 트리(AST, Abstract Syntax Tree)</b>라는 나무 구조를 만들어요.</p>
+<p>국어 시간에 문장을 분석할 때 "주어 + 목적어 + 서술어" 구조로 나누잖아요? 구문 분석도 비슷해요. "int x = 5 + 3;"이 C 언어 문법에 맞는 올바른 문장인지 확인하는 거예요.</p>
+<table class="trace"><thead><tr><th>노드</th><th>종류</th><th>왼쪽 자식</th><th>오른쪽 자식</th><th>설명</th></tr></thead><tbody><tr><td>=</td><td>대입 연산</td><td>x</td><td>+(5,3)</td><td>최상위: x에 값을 대입</td></tr><tr><td>x</td><td>변수</td><td>-</td><td>-</td><td>대입의 왼쪽: 값을 저장할 변수</td></tr><tr><td>+</td><td>덧셈 연산</td><td>5</td><td>3</td><td>대입의 오른쪽: 5+3을 계산</td></tr><tr><td>5</td><td>정수 리터럴</td><td>-</td><td>-</td><td>덧셈의 왼쪽 피연산자</td></tr><tr><td>3</td><td>정수 리터럴</td><td>-</td><td>-</td><td>덧셈의 오른쪽 피연산자</td></tr></tbody></table>
+<p>구문 트리(AST)는 코드의 구조를 나무 형태로 표현한 것이에요. 연산의 우선순위도 트리 구조에 자연스럽게 반영돼요. 깊이 있는 노드일수록 먼저 계산되거든요.</p>
+<div class="note-box"><span class="note-label"></span>
+<div style="font-weight:700;margin-bottom:6px;color:#1a2e4a">[예시] 구문 오류(Syntax Error)가 발생하는 경우</div>구문 분석 단계에서 문법 오류를 발견하면 <b>컴파일 에러</b>가 발생해요.<br><br><code>int x = 5 +;</code> --> 오류! + 뒤에 피연산자가 없어요<br><code>int = 5;</code> --> 오류! 변수 이름이 없어요<br><code>int x = 5</code> --> 오류! 세미콜론(;)이 빠졌어요<br><code>if x > 5 {}</code> --> 오류! 조건식에 괄호가 없어요 -- if (x > 5) {}가 맞아요</div>
+<h2 class="section-title">의미 분석 (Semantic Analysis) -- 뜻이 맞는지 확인</h2>
+<p><b>의미 분석(Semantic Analysis)</b>은 문법적으로는 맞지만 <b>의미적으로 틀린 것</b>을 잡아내는 과정이에요. 비유하면, "나는 사과를 마셨다"는 문법은 맞지만 뜻이 이상하잖아요? 의미 분석이 이런 걸 잡아내요.</p>
+<table class="trace"><thead><tr><th>코드</th><th>문법</th><th>의미</th><th>오류 내용</th></tr></thead><tbody><tr><td>int x = "hello";</td><td>맞음</td><td>틀림</td><td>정수 변수에 문자열을 넣으려고 함 (타입 불일치)</td></tr><tr><td>y = 10;</td><td>맞음</td><td>틀림</td><td>y가 선언되지 않은 변수 (미선언 변수 사용)</td></tr><tr><td>int x; int x;</td><td>맞음</td><td>틀림</td><td>같은 이름의 변수를 두 번 선언 (중복 선언)</td></tr><tr><td>int arr[5]; arr[10] = 1;</td><td>맞음</td><td>경고</td><td>배열 범위를 벗어난 접근 (일부 컴파일러만 감지)</td></tr><tr><td>return "hello";</td><td>맞음</td><td>틀림</td><td>int 함수에서 문자열을 반환 (반환 타입 불일치)</td></tr></tbody></table>
+
+<h2 class="section-title">코드 최적화 -- 불필요한 계산 제거</h2>
+<p><b>코드 최적화(Optimization)</b>는 프로그램의 실행 결과는 바꾸지 않으면서, 더 빠르게 또는 더 적은 메모리를 사용하도록 코드를 개선하는 과정이에요.</p>
+<table class="trace"><thead><tr><th>최적화 종류</th><th>최적화 전</th><th>최적화 후</th><th>설명</th></tr></thead><tbody><tr><td>상수 접기 (Constant Folding)</td><td>x = 3 + 5;</td><td>x = 8;</td><td>컴파일 시에 미리 계산</td></tr><tr><td>죽은 코드 제거 (Dead Code)</td><td>x = 5; x = 10; (x=5는 의미 없음)</td><td>x = 10;</td><td>사용되지 않는 코드 제거</td></tr><tr><td>공통 부분식 제거</td><td>a = b*c + d; e = b*c + f;</td><td>t = b*c; a = t+d; e = t+f;</td><td>같은 계산을 한 번만 수행</td></tr><tr><td>루프 불변 코드 이동</td><td>for(i) { x = a*b; arr[i] = x+i; }</td><td>x = a*b; for(i) { arr[i] = x+i; }</td><td>루프 밖으로 불변 코드 이동</td></tr><tr><td>강도 절감</td><td>x = y * 2;</td><td>x = y << 1;</td><td>곱셈을 더 빠른 시프트로 변환</td></tr><tr><td>인라인 함수 확장</td><td>square(5) 호출</td><td>5 * 5</td><td>함수 호출 없이 코드를 직접 삽입</td></tr></tbody></table>
+<div class="note-box"><span class="note-label"></span>
+<div style="font-weight:700;margin-bottom:6px;color:#1a2e4a">[비유] 최적화는 동선 정리</div>요리할 때 냉장고에서 재료를 하나 꺼내고 요리하고, 또 냉장고에 가서 하나 꺼내고 하면 비효율적이죠?<br><br>최적화는 '냉장고에서 필요한 재료를 한꺼번에 꺼내오기' 같은 거예요. 결과(완성된 요리)는 같지만, 과정이 훨씬 효율적이 돼요.</div>
+<h2 class="section-title">어셈블리 코드 생성</h2>
+<p>최적화가 끝나면 컴파일러는 <b>어셈블리 코드</b>를 생성해요. 어셈블리 코드는 기계어와 1:1로 대응하는 저수준 코드인데, 사람이 읽을 수 있도록 약어(니모닉)를 사용해요.</p>
+<table class="trace"><thead><tr><th>C 코드</th><th>어셈블리 (x86)</th><th>설명</th></tr></thead><tbody><tr><td>int x = 5;</td><td>mov DWORD PTR [rbp-4], 5</td><td>메모리(x의 위치)에 5를 저장</td></tr><tr><td>x = x + 3;</td><td>add DWORD PTR [rbp-4], 3</td><td>메모리(x의 위치)의 값에 3을 더함</td></tr><tr><td>y = x;</td><td>mov eax, DWORD PTR [rbp-4]; mov DWORD PTR [rbp-8], eax</td><td>x의 값을 레지스터를 거쳐 y에 복사</td></tr><tr><td>if (x > 0)</td><td>cmp DWORD PTR [rbp-4], 0; jle .L2</td><td>x와 0을 비교, 작거나 같으면 .L2로 점프</td></tr><tr><td>return 0;</td><td>mov eax, 0; ret</td><td>반환값 0을 eax에 넣고 함수 종료</td></tr><tr><td>printf("Hi");</td><td>lea rdi, [.LC0]; call printf</td><td>문자열 주소를 전달하고 printf 함수 호출</td></tr></tbody></table>
+<h2 class="section-title">3단계: 어셈블 (어셈블리에서 기계어로)</h2>
+<p><b>어셈블(Assembly)</b> 단계에서는 <b>어셈블러(Assembler)</b>가 어셈블리 코드(.s 파일)를 <b>기계어 바이너리(.o 파일)</b>로 변환해요. 이 결과물을 <b>목적 파일(Object File)</b>이라고 해요.</p>
+<p>어셈블리 코드의 각 명령어는 기계어 명령어와 거의 1:1로 대응해요. 그래서 어셈블러의 작업은 비교적 단순해요. 어셈블리 약어(니모닉)를 대응하는 이진수 코드로 바꿔 주면 돼요.</p>
+<table class="trace"><thead><tr><th>어셈블리 명령어</th><th>기계어 (16진수)</th><th>기계어 (2진수, 일부)</th><th>설명</th></tr></thead><tbody><tr><td>mov eax, 5</td><td>B8 05 00 00 00</td><td>10111000 00000101...</td><td>eax 레지스터에 5를 넣기</td></tr><tr><td>add eax, 3</td><td>83 C0 03</td><td>10000011 11000000 00000011</td><td>eax에 3을 더하기</td></tr><tr><td>ret</td><td>C3</td><td>11000011</td><td>함수에서 돌아가기</td></tr><tr><td>push rbp</td><td>55</td><td>01010101</td><td>rbp 레지스터 값을 스택에 저장</td></tr><tr><td>nop</td><td>90</td><td>10010000</td><td>아무 일도 하지 않기 (1 클럭 소비)</td></tr></tbody></table>
+<p>목적 파일(.o)은 기계어 코드가 들어 있지만, 아직 실행할 수는 없어요. 왜냐하면 printf 같은 외부 함수의 실제 주소를 아직 모르기 때문이에요. 이 주소를 채워넣는 것이 다음 단계인 '링크'예요.</p>
+<div class="note-box"><span class="note-label"></span>
+<div style="font-weight:700;margin-bottom:6px;color:#1a2e4a">[핵심] 목적 파일의 구성</div>목적 파일(.o)에는 다음 내용이 들어 있어요:<br><br>1. <b>코드 섹션 (.text)</b>: 기계어로 번역된 프로그램 코드<br>2. <b>데이터 섹션 (.data)</b>: 초기값이 있는 전역 변수<br>3. <b>BSS 섹션 (.bss)</b>: 초기값이 없는 전역 변수<br>4. <b>심볼 테이블</b>: 함수 이름, 변수 이름과 주소 목록<br>5. <b>재배치 정보</b>: 아직 주소를 모르는 부분의 위치 정보 (링커가 나중에 채움)</div>
+<h2 class="section-title">4단계: 링크 (여러 목적 파일 합치기)</h2>
+<p><b>링크(Linking)</b>는 컴파일의 마지막 단계예요. <b>링커(Linker)</b>가 여러 개의 목적 파일(.o)과 라이브러리 파일을 합쳐서 하나의 <b>실행 파일(.exe)</b>을 만들어요.</p>
+<p>여러분이 printf를 사용할 때, printf의 코드는 여러분의 .c 파일에 없어요. printf의 실제 기계어 코드는 <b>C 표준 라이브러리(libc)</b>에 들어 있어요. 링커가 여러분의 코드와 이 라이브러리를 연결해 줘요.</p>
+<div style="margin:22px 0"></div>
+<h2 class="section-title">정적 링크 vs 동적 링크</h2>
+<p>라이브러리를 연결하는 방법에는 두 가지가 있어요. <b>정적 링크(Static Linking)</b>는 라이브러리 코드를 실행 파일 안에 복사해 넣는 방식이고, <b>동적 링크(Dynamic Linking)</b>는 실행할 때 라이브러리를 불러오는 방식이에요.</p>
+<div class="debug-section"><div class="debug-bar">DEBUG LAB — 에러를 찾으시오</div><div class="debug-body">
+
+<p style="margin:14px 0 0; font-size:14px;"><b>에러:</b> </p>
+<p style="font-size:14px;"><b>수정:</b> </p>
+</div></div>
+
+<h2 class="section-title">컴파일 에러 vs 런타임 에러 vs 논리 에러</h2>
+<p>프로그래밍에서 발생하는 오류는 크게 세 가지로 나뉘어요. <b>컴파일 에러</b>는 번역 중에, <b>런타임 에러</b>는 실행 중에, <b>논리 에러</b>는 결과가 틀릴 때 발생해요.</p>
+<div class="debug-section"><div class="debug-bar">DEBUG LAB — 에러를 찾으시오</div><div class="debug-body">
+
+<p style="margin:14px 0 0; font-size:14px;"><b>에러:</b> </p>
+<p style="font-size:14px;"><b>수정:</b> </p>
+</div></div>
+<table class="trace"><thead><tr><th>에러 유형</th><th>코드 예시</th><th>증상</th><th>원인</th><th>해결 방법</th></tr></thead><tbody><tr><td>컴파일 에러</td><td>int x = 5</td><td>컴파일 실패</td><td>세미콜론(;) 누락</td><td>세미콜론 추가: int x = 5;</td></tr><tr><td>컴파일 에러</td><td>prinft("Hi");</td><td>컴파일 실패</td><td>함수 이름 오타 (printf)</td><td>올바른 이름으로 수정</td></tr><tr><td>컴파일 에러</td><td>int x = "hello";</td><td>컴파일 실패</td><td>타입 불일치 (int에 문자열)</td><td>타입을 맞추거나 변수 타입 변경</td></tr><tr><td>컴파일 에러</td><td>#include <stido.h></td><td>컴파일 실패</td><td>헤더 파일 이름 오타</td><td>올바른 이름: stdio.h</td></tr><tr><td>컴파일 에러</td><td>if x > 5 {}</td><td>컴파일 실패</td><td>조건식에 괄호 누락</td><td>if (x > 5) {}로 수정</td></tr><tr><td>런타임 에러</td><td>int y = 10 / 0;</td><td>프로그램 비정상 종료</td><td>0으로 나누기</td><td>나눗셈 전에 0인지 확인</td></tr><tr><td>런타임 에러</td><td>int a[5]; a[10]=1;</td><td>예측 불가 동작</td><td>배열 범위 초과</td><td>인덱스 범위 확인</td></tr><tr><td>런타임 에러</td><td>int *p=NULL; *p=5;</td><td>세그멘테이션 폴트</td><td>NULL 포인터 접근</td><td>포인터가 NULL인지 확인</td></tr><tr><td>런타임 에러</td><td>재귀 함수 무한 호출</td><td>스택 오버플로</td><td>종료 조건 없는 재귀</td><td>종료 조건 추가</td></tr><tr><td>런타임 에러</td><td>매우 큰 배열 선언</td><td>메모리 부족</td><td>스택 메모리 초과</td><td>동적 메모리 할당 사용</td></tr><tr><td>논리 에러</td><td>avg = (a+b+c) / 2;</td><td>실행은 되지만 결과가 틀림</td><td>3으로 나눠야 하는데 2로 나눔</td><td>수식 로직 수정: / 3</td></tr><tr><td>논리 에러</td><td>for(i=0; i<n; i--)</td><td>무한 루프</td><td>i++로 해야 하는데 i--로 함</td><td>증감식 수정: i++</td></tr><tr><td>논리 에러</td><td>if (x = 5)</td><td>항상 참</td><td>==을 써야 하는데 =을 씀</td><td>비교 연산자 사용: ==</td></tr><tr><td>논리 에러</td><td>max = 0; (음수 배열)</td><td>최댓값이 0으로 나옴</td><td>초기값이 데이터보다 큼</td><td>첫 번째 원소로 초기화</td></tr></tbody></table>
+<div class="debug-section"><div class="debug-bar">DEBUG LAB — 에러를 찾으시오</div><div class="debug-body">
+
+<p style="margin:14px 0 0; font-size:14px;"><b>에러:</b> </p>
+<p style="font-size:14px;"><b>수정:</b> </p>
+</div></div>
+<div class="note-box"><span class="note-label"></span>
+<div style="font-weight:700;margin-bottom:6px;color:#1a2e4a">[핵심] 에러의 위험도</div><b>컴파일 에러</b>: 가장 덜 위험해요! 컴파일러가 정확히 위치와 원인을 알려주니까요. 수정이 쉬워요.<br><br><b>런타임 에러</b>: 중간 정도예요. 프로그램이 멈추니까 문제가 있다는 건 알 수 있어요. 하지만 원인을 찾기 어려울 수 있어요.<br><br><b>논리 에러</b>: 가장 위험해요! 프로그램이 잘 돌아가는 것처럼 보이지만 결과가 틀려요. 발견하기가 가장 어렵답니다.</div>
+<h2 class="section-title">gcc 옵션 실전 -- 각 단계를 직접 눈으로 보기</h2>
+<p>지금까지 배운 4단계를 <b>gcc</b> 명령어로 직접 확인할 수 있어요. gcc는 각 단계를 중간에 멈추고 결과를 보여주는 옵션을 제공해요.</p>
+<table class="trace"><thead><tr><th>옵션</th><th>의미</th><th>사용 예시</th><th>결과</th></tr></thead><tbody><tr><td>-E</td><td>전처리만 수행 (1단계에서 멈춤)</td><td>gcc -E hello.c -o hello.i</td><td>전처리된 소스코드 (.i)</td></tr><tr><td>-S</td><td>컴파일까지 수행 (2단계에서 멈춤)</td><td>gcc -S hello.c</td><td>어셈블리 코드 (.s)</td></tr><tr><td>-c</td><td>어셈블까지 수행 (3단계에서 멈춤)</td><td>gcc -c hello.c</td><td>목적 파일 (.o)</td></tr><tr><td>-o 이름</td><td>출력 파일 이름 지정</td><td>gcc hello.c -o hello</td><td>지정한 이름의 실행 파일</td></tr><tr><td>-Wall</td><td>모든 경고 메시지 표시</td><td>gcc -Wall hello.c -o hello</td><td>경고도 모두 보여줌</td></tr><tr><td>-g</td><td>디버깅 정보 포함</td><td>gcc -g hello.c -o hello</td><td>gdb로 디버깅 가능</td></tr><tr><td>-O2</td><td>최적화 레벨 2 적용</td><td>gcc -O2 hello.c -o hello</td><td>빠르게 실행되는 코드</td></tr></tbody></table>
+<div style="margin:22px 0"></div>
+<table class="trace"><thead><tr><th>옵션</th><th>최적화 수준</th><th>컴파일 속도</th><th>실행 속도</th><th>파일 크기</th><th>용도</th></tr></thead><tbody><tr><td>-O0</td><td>최적화 없음 (기본값)</td><td>가장 빠름</td><td>느림</td><td>보통</td><td>디버깅용 (코드 그대로 번역)</td></tr><tr><td>-O1</td><td>기본 최적화</td><td>빠름</td><td>보통</td><td>약간 작음</td><td>일반 개발</td></tr><tr><td>-O2</td><td>표준 최적화</td><td>보통</td><td>빠름</td><td>작음</td><td>배포용 (가장 많이 사용)</td></tr><tr><td>-O3</td><td>공격적 최적화</td><td>느림</td><td>가장 빠름</td><td>커질 수 있음</td><td>최고 성능이 필요할 때</td></tr><tr><td>-Os</td><td>크기 최적화</td><td>보통</td><td>보통</td><td>가장 작음</td><td>메모리가 적은 임베디드</td></tr></tbody></table>
+<h2 class="section-title">[C code 1] gcc -E로 전처리 결과 확인하기</h2>
+<p>gcc -E 옵션을 사용하면 전처리 결과를 직접 눈으로 확인할 수 있어요. 짧은 코드가 전처리 후에 얼마나 길어지는지 보면 깜짝 놀랄 거예요!</p>
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span><span class="code-bar-file">[실습] 전처리 결과 확인하기</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;stdio.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc"><span class="s-pp">#define</span> PI <span class="s-num">3.14159</span></span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc"><span class="s-pp">#define</span> <span class="s-fn">AREA</span>(r) (PI * (r) * (r))</span></div>
+<div class="code-line"><span class="ln">4</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">5</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">main</span>(<span class="s-type">void</span>) {</span></div>
+<div class="code-line"><span class="ln">6</span><span class="lc">    <span class="s-type">double</span> radius = <span class="s-num">5.0</span>;</span></div>
+<div class="code-line"><span class="ln">7</span><span class="lc">    <span class="s-type">double</span> area = <span class="s-fn">AREA</span>(radius);</span></div>
+<div class="code-line"><span class="ln">8</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"반지름 %.1f인 원의 넓이: %.2f\n"</span>, radius, area);</span></div>
+<div class="code-line"><span class="ln">9</span><span class="lc">    <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">10</span><span class="lc">}</span></div>
+</div>
+</div>
+<p>이 파일을 <code>gcc -E circle.c -o circle.i</code>로 전처리하면, circle.i 파일에서 다음을 확인할 수 있어요:<br><br>1. #include &lt;stdio.h&gt;가 사라지고, stdio.h의 내용(수백 줄)이 대신 들어와 있어요.<br>2. PI가 3.14159로, AREA(radius)가 (3.14159 * (radius) * (radius))로 바뀌어 있어요.<br>3. 원본 코드는 10줄인데, 전처리 후에는 수백~수천 줄이 돼요!</p>
+<h2 class="section-title">[C code 2] gcc -S로 어셈블리 코드 확인하기</h2>
+<p>gcc -S 옵션을 사용하면 C 코드가 어떤 어셈블리 코드로 번역되는지 확인할 수 있어요. 간단한 덧셈 프로그램이 어셈블리로 어떻게 바뀌는지 살펴봐요.</p>
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span><span class="code-bar-file">[실습] 간단한 연산의 어셈블리 코드 확인</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc"><span class="s-cm">/* add.c -- gcc -S add.c 로 어셈블리 확인 */</span></span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">add</span>(<span class="s-type">int</span> a, <span class="s-type">int</span> b) {</span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc">    <span class="s-kw">return</span> a + b;</span></div>
+<div class="code-line"><span class="ln">4</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">5</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">6</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">main</span>(<span class="s-type">void</span>) {</span></div>
+<div class="code-line"><span class="ln">7</span><span class="lc">    <span class="s-type">int</span> result = <span class="s-fn">add</span>(<span class="s-num">3</span>, <span class="s-num">5</span>);</span></div>
+<div class="code-line"><span class="ln">8</span><span class="lc">    <span class="s-kw">return</span> result;</span></div>
+<div class="code-line"><span class="ln">9</span><span class="lc">}</span></div>
+</div>
+</div>
+<p><code>gcc -S add.c</code>를 실행하면 add.s 파일이 만들어져요. 그 안에서 add 함수 부분을 보면 이런 어셈블리 코드가 있어요:<br><br><code>add:<br>&nbsp;&nbsp;push rbp<br>&nbsp;&nbsp;mov rbp, rsp<br>&nbsp;&nbsp;mov DWORD PTR [rbp-4], edi &nbsp;&nbsp;; 첫 번째 인자 a를 저장<br>&nbsp;&nbsp;mov DWORD PTR [rbp-8], esi &nbsp;&nbsp;; 두 번째 인자 b를 저장<br>&nbsp;&nbsp;mov edx, DWORD PTR [rbp-4]<br>&nbsp;&nbsp;mov eax, DWORD PTR [rbp-8]<br>&nbsp;&nbsp;add eax, edx &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;; a + b 계산<br>&nbsp;&nbsp;pop rbp<br>&nbsp;&nbsp;ret &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;; 결과 반환</code></p>
+<h2 class="section-title">[C code 3] 여러 파일 분할 컴파일</h2>
+<p>실제 프로젝트에서는 하나의 파일에 모든 코드를 넣지 않아요. 기능별로 파일을 나누고, 각각 컴파일한 다음 링크해요. 이것을 <b>분할 컴파일</b>이라고 해요.</p>
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span><span class="code-bar-file">math_util.h -- 헤더 파일 (함수 선언)</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc"><span class="s-pp">#ifndef</span> MATH_UTIL_H</span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc"><span class="s-pp">#define</span> MATH_UTIL_H</span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">4</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">add</span>(<span class="s-type">int</span> a, <span class="s-type">int</span> b);</span></div>
+<div class="code-line"><span class="ln">5</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">multiply</span>(<span class="s-type">int</span> a, <span class="s-type">int</span> b);</span></div>
+<div class="code-line"><span class="ln">6</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">7</span><span class="lc"><span class="s-pp">#endif</span></span></div>
+</div>
+</div>
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span><span class="code-bar-file">math_util.c -- 구현 파일 (함수 정의)</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">"math_util.h"</span></span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">add</span>(<span class="s-type">int</span> a, <span class="s-type">int</span> b) {</span></div>
+<div class="code-line"><span class="ln">4</span><span class="lc">    <span class="s-kw">return</span> a + b;</span></div>
+<div class="code-line"><span class="ln">5</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">6</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">7</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">multiply</span>(<span class="s-type">int</span> a, <span class="s-type">int</span> b) {</span></div>
+<div class="code-line"><span class="ln">8</span><span class="lc">    <span class="s-kw">return</span> a * b;</span></div>
+<div class="code-line"><span class="ln">9</span><span class="lc">}</span></div>
+</div>
+</div>
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span><span class="code-bar-file">main.c -- 메인 파일</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;stdio.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">"math_util.h"</span></span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">4</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">main</span>(<span class="s-type">void</span>) {</span></div>
+<div class="code-line"><span class="ln">5</span><span class="lc">    <span class="s-type">int</span> sum = <span class="s-fn">add</span>(<span class="s-num">10</span>, <span class="s-num">20</span>);</span></div>
+<div class="code-line"><span class="ln">6</span><span class="lc">    <span class="s-type">int</span> product = <span class="s-fn">multiply</span>(<span class="s-num">5</span>, <span class="s-num">6</span>);</span></div>
+<div class="code-line"><span class="ln">7</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"합: %d\n"</span>, sum);</span></div>
+<div class="code-line"><span class="ln">8</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"곱: %d\n"</span>, product);</span></div>
+<div class="code-line"><span class="ln">9</span><span class="lc">    <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">10</span><span class="lc">}</span></div>
+</div>
+</div>
+<p>분할 컴파일 명령어:<br><br><code>gcc -c math_util.c -o math_util.o &nbsp;&nbsp;/* math_util.c만 컴파일 */<br>gcc -c main.c -o main.o &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;/* main.c만 컴파일 */<br>gcc main.o math_util.o -o program &nbsp;/* 두 목적 파일을 링크 */</code><br><br>math_util.c를 수정해도 main.c는 다시 컴파일할 필요가 없어요. math_util.c만 다시 컴파일하고 링크하면 돼요. 이게 분할 컴파일의 장점이에요!</p>
+<div class="note-box"><span class="note-label"></span>
+<div style="font-weight:700;margin-bottom:6px;color:#1a2e4a">[핵심] #ifndef 헤더 가드</div>math_util.h에서 #ifndef MATH_UTIL_H / #define MATH_UTIL_H / #endif가 보이죠?<br><br>이것은 <b>헤더 가드(Header Guard)</b>라고 해요. 같은 헤더 파일이 여러 번 포함되는 것을 방지해요.<br><br>만약 헤더 가드가 없으면, 같은 함수 선언이 두 번 들어가서 '중복 선언' 에러가 발생할 수 있어요.</div>
+<h2 class="section-title">[C code 4] 간단한 토크나이저 (어휘 분석기) 구현</h2>
+<p>컴파일러의 첫 단계인 어휘 분석(토큰 분리)을 직접 간단하게 만들어 볼 수 있어요. 아래 코드는 수식 문자열을 숫자와 연산자로 분리하는 간단한 토크나이저예요.</p>
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span><span class="code-bar-file">간단한 토크나이저 -- 수식을 토큰으로 분리</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;stdio.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;ctype.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">4</span><span class="lc"><span class="s-type">void</span> <span class="s-fn">tokenize</span>(<span class="s-kw">const</span> <span class="s-type">char</span> *expr) {</span></div>
+<div class="code-line"><span class="ln">5</span><span class="lc">    <span class="s-type">int</span> i = <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">6</span><span class="lc">    <span class="s-type">int</span> token_num = <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">7</span><span class="lc">    </span></div>
+<div class="code-line"><span class="ln">8</span><span class="lc">    <span class="s-kw">while</span> (expr[i] != '\<span class="s-num">0</span>') {</span></div>
+<div class="code-line"><span class="ln">9</span><span class="lc">        <span class="s-cm">/* 공백은 건너뛰기 */</span></span></div>
+<div class="code-line"><span class="ln">10</span><span class="lc">        <span class="s-kw">if</span> (expr[i] == <span class="s-str">' '</span>) {</span></div>
+<div class="code-line"><span class="ln">11</span><span class="lc">            i++;</span></div>
+<div class="code-line"><span class="ln">12</span><span class="lc">            <span class="s-kw">continue</span>;</span></div>
+<div class="code-line"><span class="ln">13</span><span class="lc">        }</span></div>
+<div class="code-line"><span class="ln">14</span><span class="lc">        </span></div>
+<div class="code-line"><span class="ln">15</span><span class="lc">        token_num++;</span></div>
+<div class="code-line"><span class="ln">16</span><span class="lc">        </span></div>
+<div class="code-line"><span class="ln">17</span><span class="lc">        <span class="s-cm">/* 숫자인 경우: 연속된 숫자를 하나의 토큰으로 */</span></span></div>
+<div class="code-line"><span class="ln">18</span><span class="lc">        <span class="s-kw">if</span> (<span class="s-fn">isdigit</span>(expr[i])) {</span></div>
+<div class="code-line"><span class="ln">19</span><span class="lc">            <span class="s-fn">printf</span>(<span class="s-str">"토큰 %d: "</span>, token_num);</span></div>
+<div class="code-line"><span class="ln">20</span><span class="lc">            <span class="s-kw">while</span> (<span class="s-fn">isdigit</span>(expr[i])) {</span></div>
+<div class="code-line"><span class="ln">21</span><span class="lc">                <span class="s-fn">printf</span>(<span class="s-str">"%c"</span>, expr[i]);</span></div>
+<div class="code-line"><span class="ln">22</span><span class="lc">                i++;</span></div>
+<div class="code-line"><span class="ln">23</span><span class="lc">            }</span></div>
+<div class="code-line"><span class="ln">24</span><span class="lc">            <span class="s-fn">printf</span>(<span class="s-str">" (숫자)\n"</span>);</span></div>
+<div class="code-line"><span class="ln">25</span><span class="lc">        }</span></div>
+<div class="code-line"><span class="ln">26</span><span class="lc">        <span class="s-cm">/* 연산자인 경우 */</span></span></div>
+<div class="code-line"><span class="ln">27</span><span class="lc">        <span class="s-kw">else</span> <span class="s-kw">if</span> (expr[i]==<span class="s-str">'+'</span> || expr[i]==<span class="s-str">'-'</span> ||</span></div>
+<div class="code-line"><span class="ln">28</span><span class="lc">                 expr[i]==<span class="s-str">'*'</span> || expr[i]==<span class="s-str">'/'</span>) {</span></div>
+<div class="code-line"><span class="ln">29</span><span class="lc">            <span class="s-fn">printf</span>(<span class="s-str">"토큰 %d: %c (연산자)\n"</span>, token_num, expr[i]);</span></div>
+<div class="code-line"><span class="ln">30</span><span class="lc">            i++;</span></div>
+<div class="code-line"><span class="ln">31</span><span class="lc">        }</span></div>
+<div class="code-line"><span class="ln">32</span><span class="lc">        <span class="s-cm">/* 괄호인 경우 */</span></span></div>
+<div class="code-line"><span class="ln">33</span><span class="lc">        <span class="s-kw">else</span> <span class="s-kw">if</span> (expr[i]==<span class="s-str">'('</span> || expr[i]==<span class="s-str">')'</span>) {</span></div>
+<div class="code-line"><span class="ln">34</span><span class="lc">            <span class="s-fn">printf</span>(<span class="s-str">"토큰 %d: %c (괄호)\n"</span>, token_num, expr[i]);</span></div>
+<div class="code-line"><span class="ln">35</span><span class="lc">            i++;</span></div>
+<div class="code-line"><span class="ln">36</span><span class="lc">        }</span></div>
+<div class="code-line"><span class="ln">37</span><span class="lc">        <span class="s-cm">/* 알 수 없는 문자 */</span></span></div>
+<div class="code-line"><span class="ln">38</span><span class="lc">        <span class="s-kw">else</span> {</span></div>
+<div class="code-line"><span class="ln">39</span><span class="lc">            <span class="s-fn">printf</span>(<span class="s-str">"토큰 %d: %c (알 수 없음)\n"</span>, token_num, expr[i]);</span></div>
+<div class="code-line"><span class="ln">40</span><span class="lc">            i++;</span></div>
+<div class="code-line"><span class="ln">41</span><span class="lc">        }</span></div>
+<div class="code-line"><span class="ln">42</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">43</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"총 %d개의 토큰\n"</span>, token_num);</span></div>
+<div class="code-line"><span class="ln">44</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">45</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">46</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">main</span>(<span class="s-type">void</span>) {</span></div>
+<div class="code-line"><span class="ln">47</span><span class="lc">    <span class="s-fn">tokenize</span>(<span class="s-str">"12 + 34 * (5 - 2)"</span>);</span></div>
+<div class="code-line"><span class="ln">48</span><span class="lc">    <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">49</span><span class="lc">}</span></div>
+</div>
+</div>
+
+<h2 class="section-title">[Debugging 1] 링크 에러 -- 함수를 찾을 수 없어요!</h2>
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span><span class="code-bar-file">[버그 찾기] 링크 에러가 발생하는 코드</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc"><span class="s-cm">/* main.c */</span></span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;stdio.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">4</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">calculate</span>(<span class="s-type">int</span> x, <span class="s-type">int</span> y);  <span class="s-cm">/* 함수 선언 */</span></span></div>
+<div class="code-line"><span class="ln">5</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">6</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">main</span>(<span class="s-type">void</span>) {</span></div>
+<div class="code-line"><span class="ln">7</span><span class="lc">    <span class="s-type">int</span> result = <span class="s-fn">calculate</span>(<span class="s-num">10</span>, <span class="s-num">20</span>);</span></div>
+<div class="code-line"><span class="ln">8</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"결과: %d\n"</span>, result);</span></div>
+<div class="code-line"><span class="ln">9</span><span class="lc">    <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">10</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">11</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">12</span><span class="lc"><span class="s-cm">/* calculate 함수의 정의(본문)가 어디에도 없어요! */</span></span></div>
+</div>
+</div>
+<p><b>에러 원인:</b> calculate 함수를 '선언'만 하고 '정의(구현)'를 하지 않았어요. 컴파일(2~3단계)은 성공하지만, <b>링크 단계(4단계)</b>에서 에러가 발생해요. 링커가 calculate의 실제 기계어 코드를 어디에서도 찾을 수 없기 때문이에요.<br><br><b>해결 방법:</b><br>1. calculate 함수의 본문을 같은 파일이나 별도 파일에 작성해요.<br>2. 별도 파일에 작성한 경우, 링크할 때 그 파일도 포함해요.<br><code>gcc main.c calc.c -o program</code></p>
+<h2 class="section-title">[Debugging 2] 헤더 중복 포함 에러</h2>
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span><span class="code-bar-file">[버그 찾기] 헤더 가드가 없는 코드</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc"><span class="s-cm">/* myheader.h -- 헤더 가드가 없어요! */</span></span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc"><span class="s-kw">struct</span> Point {</span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc">    <span class="s-type">int</span> x;</span></div>
+<div class="code-line"><span class="ln">4</span><span class="lc">    <span class="s-type">int</span> y;</span></div>
+<div class="code-line"><span class="ln">5</span><span class="lc">};</span></div>
+<div class="code-line"><span class="ln">6</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">7</span><span class="lc"><span class="s-cm">/* main.c */</span></span></div>
+<div class="code-line"><span class="ln">8</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;stdio.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">9</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">"myheader.h"</span></span></div>
+<div class="code-line"><span class="ln">10</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">"myheader.h"</span>  <span class="s-cm">/* 실수로 두 번 포함! */</span></span></div>
+<div class="code-line"><span class="ln">11</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">12</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">main</span>(<span class="s-type">void</span>) {</span></div>
+<div class="code-line"><span class="ln">13</span><span class="lc">    <span class="s-kw">struct</span> Point p = {<span class="s-num">3</span>, <span class="s-num">5</span>};</span></div>
+<div class="code-line"><span class="ln">14</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"(%d, %d)\n"</span>, p.x, p.y);</span></div>
+<div class="code-line"><span class="ln">15</span><span class="lc">    <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">16</span><span class="lc">}</span></div>
+</div>
+</div>
+<p><b>에러 원인:</b> myheader.h에 <b>헤더 가드</b>가 없어서, 같은 헤더가 두 번 포함되면 struct Point가 두 번 정의돼요. C에서는 같은 구조체를 두 번 정의할 수 없으므로 에러가 발생해요.<br><br><b>해결 방법:</b> myheader.h에 헤더 가드를 추가해요.<br><code>#ifndef MYHEADER_H<br>#define MYHEADER_H<br><br>struct Point { int x; int y; };<br><br>#endif</code></p>
+<h2 class="section-title">[Debugging 3] 매크로 부작용</h2>
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span><span class="code-bar-file">[버그 찾기] 매크로의 부작용</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;stdio.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc"><span class="s-pp">#define</span> <span class="s-fn">MAX</span>(a, b) (a &gt; b ? a : b)</span></div>
+<div class="code-line"><span class="ln">4</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">5</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">main</span>(<span class="s-type">void</span>) {</span></div>
+<div class="code-line"><span class="ln">6</span><span class="lc">    <span class="s-type">int</span> x = <span class="s-num">3</span>;</span></div>
+<div class="code-line"><span class="ln">7</span><span class="lc">    <span class="s-type">int</span> y = <span class="s-num">5</span>;</span></div>
+<div class="code-line"><span class="ln">8</span><span class="lc">    <span class="s-type">int</span> result = <span class="s-fn">MAX</span>(x++, y++);</span></div>
+<div class="code-line"><span class="ln">9</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"result = %d\n"</span>, result);</span></div>
+<div class="code-line"><span class="ln">10</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"x = %d, y = %d\n"</span>, x, y);</span></div>
+<div class="code-line"><span class="ln">11</span><span class="lc">    <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">12</span><span class="lc">}</span></div>
+</div>
+</div>
+<p><b>에러 원인:</b> MAX(x++, y++)는 전처리 후 (x++ > y++ ? x++ : y++)로 바뀌어요. y++가 <b>두 번</b> 실행돼요! (한 번은 비교할 때, 한 번은 결과를 결정할 때) 그래서 y가 5에서 7로 2가 증가해요.<br><br><b>해결 방법:</b><br>1. 매크로 대신 <b>함수</b>를 사용해요. 함수는 인자를 한 번만 평가하니까요.<br>2. 매크로를 쓸 때는 ++, -- 같은 부작용이 있는 표현식을 인자로 넣지 않아요.</p>
+<h2 class="section-title">역사 속의 컴파일러</h2>
+<p>컴파일러의 역사는 컴퓨터 과학의 역사와 함께해요. 최초의 컴파일러부터 현대의 LLVM/Clang까지, 컴파일러는 계속 발전해 왔어요.</p>
+<table class="trace"><thead><tr><th>연도</th><th>사건</th><th>인물 / 프로젝트</th><th>의미</th></tr></thead><tbody><tr><td>1952</td><td>최초의 컴파일러 A-0 개발</td><td>그레이스 호퍼 (Grace Hopper)</td><td>수학 공식을 기계어로 번역하는 최초의 프로그램</td></tr><tr><td>1957</td><td>FORTRAN 컴파일러 출시</td><td>존 배커스 (John Backus), IBM</td><td>최초의 상용 고급 언어 컴파일러, 과학 계산용</td></tr><tr><td>1972</td><td>C 언어 탄생</td><td>데니스 리치 (Dennis Ritchie)</td><td>UNIX를 만들기 위해 C 언어를 설계</td></tr><tr><td>1978</td><td>K&R C (The C Programming Language 출판)</td><td>커니핸 & 리치</td><td>C 언어의 첫 번째 교과서이자 사실상의 표준</td></tr><tr><td>1987</td><td>GCC 1.0 출시</td><td>리처드 스톨만 (Richard Stallman)</td><td>자유 소프트웨어 운동의 핵심, 무료로 누구나 사용 가능</td></tr><tr><td>1989</td><td>ANSI C (C89) 표준 제정</td><td>ANSI 위원회</td><td>C 언어의 첫 번째 공식 표준</td></tr><tr><td>2003</td><td>LLVM 프로젝트 시작</td><td>크리스 래트너 (Chris Lattner)</td><td>모듈화된 컴파일러 구조, Apple이 적극 지원</td></tr><tr><td>2007</td><td>Clang 출시</td><td>LLVM 프로젝트</td><td>GCC의 대안, 빠른 컴파일과 친절한 에러 메시지</td></tr></tbody></table>
+<div class="note-box"><span class="note-label"></span>
+<div style="font-weight:700;margin-bottom:6px;color:#1a2e4a">[역사] 그레이스 호퍼 -- 컴파일러의 어머니</div><b>그레이스 호퍼(Grace Hopper, 1906~1992)</b>는 미국 해군 제독이자 컴퓨터 과학자예요. 1952년에 세계 최초의 컴파일러 <b>A-0</b>를 만들었어요.<br><br>당시 사람들은 '컴퓨터가 코드를 번역할 수 있다'는 생각 자체를 믿지 않았어요. 호퍼가 컴파일러를 발표했을 때, 동료들은 '컴퓨터는 산술만 할 수 있고, 프로그램을 작성할 수는 없다'고 반박했어요.<br><br>하지만 호퍼의 컴파일러는 정말 작동했고, 이후 COBOL 언어 개발에도 큰 역할을 했어요. '버그(Bug)'라는 용어를 대중화시킨 것도 호퍼예요. 컴퓨터에서 진짜 나방(bug)을 발견한 일화로 유명하죠!</div>
+<div class="note-box"><span class="note-label"></span>
+<div style="font-weight:700;margin-bottom:6px;color:#1a2e4a">[역사] GCC와 자유 소프트웨어 운동</div><b>GCC(GNU Compiler Collection)</b>는 1987년 <b>리처드 스톨만</b>이 시작한 GNU 프로젝트의 핵심 도구예요.<br><br>스톨만은 '모든 소프트웨어는 자유로워야 한다'고 믿었어요. 당시 상용 컴파일러는 비싸서 학생이나 개인이 사용하기 어려웠죠. GCC는 <b>무료</b>이면서 <b>소스코드가 공개</b>된 컴파일러예요.<br><br>GCC 덕분에 전 세계 누구나 C 프로그램을 컴파일할 수 있게 되었어요. 리눅스(Linux)도 GCC로 컴파일된 거예요! 지금 여러분이 사용하는 gcc도 이 프로젝트의 후손이에요.</div>
+<div class="note-box"><span class="note-label"></span>
+<div style="font-weight:700;margin-bottom:6px;color:#1a2e4a">[역사] LLVM/Clang -- 현대 컴파일러의 혁신</div><b>LLVM</b>은 2003년 <b>크리스 래트너</b>가 대학원생 시절에 시작한 프로젝트예요. 컴파일러를 레고 블록처럼 모듈화해서, 여러 언어와 여러 CPU를 지원할 수 있게 설계했어요.<br><br><b>Clang</b>은 LLVM을 기반으로 만든 C/C++ 컴파일러예요. GCC보다 <b>컴파일 속도가 빠르고</b>, <b>에러 메시지가 친절해요</b>. Apple이 적극 지원해서 macOS와 iOS 개발의 기본 컴파일러가 되었어요.<br><br>래트너는 이후 Apple에서 <b>Swift</b> 언어도 만들었어요!</div>
+<h2 class="section-title">[KOI 도전 1] 전처리 결과 추론</h2>
+<div class="note-box"><span class="note-label"></span>
+<div style="font-weight:700;margin-bottom:6px;color:#1a2e4a">[KOI 유형] 전처리 결과 추론</div>다음 코드의 전처리 결과와 실행 결과를 구하세요.<br><br><code>#include &lt;stdio.h&gt;<br>#define A 3<br>#define B (A + 2)<br>#define C (B * B)<br><br>int main(void) {<br>&nbsp;&nbsp;printf("%d\n", C);<br>&nbsp;&nbsp;return 0;<br>}</code><br><br><b>풀이 과정:</b><br>1. A는 3으로 치환<br>2. B는 (A + 2) = (3 + 2)로 치환<br>3. C는 (B * B) = ((3 + 2) * (3 + 2))로 치환<br>4. 계산: (5) * (5) = 25<br><br><b>정답: 25</b><br><br><b>주의:</b> 만약 #define B A + 2 (괄호 없이)로 정의했다면?<br>C = A + 2 * A + 2 = 3 + 6 + 2 = 11이 돼요! 괄호가 중요한 이유예요.</div>
+<h2 class="section-title">[KOI 도전 2] 컴파일 단계 순서 문제</h2>
+<div class="note-box"><span class="note-label"></span>
+<div style="font-weight:700;margin-bottom:6px;color:#1a2e4a">[KOI 유형] 컴파일 과정 순서 배열</div>다음 과정을 C 프로그램이 실행 파일이 되는 올바른 순서로 배열하세요.<br><br>(가) 여러 목적 파일과 라이브러리를 합쳐 실행 파일을 만든다<br>(나) #include, #define 등의 전처리 지시자를 처리한다<br>(다) 어셈블리 코드를 기계어 바이너리(목적 파일)로 변환한다<br>(라) C 소스코드를 분석하여 어셈블리 코드를 생성한다<br><br><b>정답: (나) --> (라) --> (다) --> (가)</b><br><br>(나) 전처리: #include, #define 처리<br>(라) 컴파일: C 코드 --> 어셈블리 코드<br>(다) 어셈블: 어셈블리 --> 기계어 (목적 파일)<br>(가) 링크: 목적 파일 + 라이브러리 --> 실행 파일</div>
+<h2 class="section-title">[KOI 도전 3] 에러 유형 판별</h2>
+<div class="note-box"><span class="note-label"></span>
+<div style="font-weight:700;margin-bottom:6px;color:#1a2e4a">[KOI 유형] 에러 유형 판별</div>다음 코드에서 발생하는 에러의 유형(컴파일 에러 / 런타임 에러 / 논리 에러)을 구분하세요.<br><br>(1) <code>int x = 10 / 0;</code><br>정답: <b>런타임 에러</b> -- 0으로 나누기는 실행 중에 오류 발생<br><br>(2) <code>int arr[3] = {1, 2, 3};<br>int sum = arr[0] + arr[1];<br>printf("평균: %d\n", sum / 3);</code><br>정답: <b>논리 에러</b> -- 3개 원소의 합이 아니라 2개만 더했음. 프로그램은 정상 실행되지만 결과가 틀림<br><br>(3) <code>int x = 5<br>printf("%d", x);</code><br>정답: <b>컴파일 에러</b> -- 첫째 줄 끝에 세미콜론(;)이 빠짐</div>
+<h2 class="section-title">용어 사전</h2>
+<table class="trace"><thead><tr><th>용어</th><th>설명</th></tr></thead><tbody><tr><td><code>컴파일러 (Compiler)</code></td><td>소스코드 전체를 한꺼번에 읽어서 기계어로 번역하고, 실행 파일을 만들어 주는 프로그램이에요. C, C++, Rust 등이 사용해요.</td></tr><tr><td><code>인터프리터 (Interpreter)</code></td><td>소스코드를 한 줄씩 읽으면서 바로 실행하는 프로그램이에요. Python, JavaScript 등이 사용해요.</td></tr><tr><td><code>전처리기 (Preprocessor)</code></td><td>컴파일 전에 #include, #define 등의 전처리 지시자를 처리하는 프로그램이에요. 텍스트 치환만 수행해요.</td></tr><tr><td><code>토큰 (Token)</code></td><td>소스코드를 구성하는 의미 있는 최소 단위예요. 키워드, 식별자, 연산자, 리터럴, 구분자 등이 있어요.</td></tr><tr><td><code>구문 트리 / AST (Abstract Syntax Tree)</code></td><td>소스코드의 구조를 나무 형태로 표현한 것이에요. 구문 분석 단계에서 만들어지고, 연산의 우선순위가 반영돼요.</td></tr><tr><td><code>링커 (Linker)</code></td><td>여러 목적 파일(.o)과 라이브러리를 합쳐서 하나의 실행 파일을 만드는 프로그램이에요.</td></tr><tr><td><code>목적 파일 (Object File)</code></td><td>어셈블러가 만든 기계어 파일(.o)이에요. 실행 파일이 되려면 링크 단계를 거쳐야 해요.</td></tr><tr><td><code>GCC (GNU Compiler Collection)</code></td><td>1987년 리처드 스톨만이 시작한 무료 오픈소스 컴파일러예요. C, C++, Fortran 등 여러 언어를 지원해요.</td></tr></tbody></table>
+<h2 class="section-title">한눈에 보기</h2>
+<div class="warmup-box"><div class="warmup-title">컴파일러 원리 -- 한눈에 보기</div><div class="wq"><b>1.</b> 컴파일러는 C 소스코드 전체를 한꺼번에 기계어로 번역해서 실행 파일을 만들어요. 인터프리터는 한 줄씩 바로 실행해요.</div><div class="wq"><b>2.</b> C 컴파일 4단계: 전처리(.c->.i) -> 컴파일(.i->.s) -> 어셈블(.s->.o) -> 링크(.o->실행파일).</div><div class="wq"><b>3.</b> 전처리: #include(파일 복사), #define(텍스트 치환), #ifdef(조건부 포함). 텍스트 변환만 해요.</div><div class="wq"><b>4.</b> 컴파일 세부 과정: 어휘 분석(토큰 분리) -> 구문 분석(문법 체크, AST) -> 의미 분석(타입 체크) -> 최적화 -> 어셈블리 생성.</div><div class="wq"><b>5.</b> 어셈블: 어셈블리 명령어를 1:1로 기계어 바이너리로 변환해서 목적 파일(.o)을 만들어요.</div><div class="wq"><b>6.</b> 링크: 여러 목적 파일과 라이브러리를 합쳐서 실행 파일을 만들어요. 정적/동적 링크 방식이 있어요.</div><div class="wq"><b>7.</b> 에러 3종류: 컴파일 에러(문법 틀림, 발견 쉬움) > 런타임 에러(실행 중 멈춤) > 논리 에러(결과 틀림, 발견 어려움).</div><div class="wq"><b>8.</b> gcc 옵션: -E(전처리만), -S(어셈블리까지), -c(목적파일까지), -o(출력이름), -Wall(경고 표시), -O2(최적화).</div><div class="wq"><b>9.</b> 매크로 사용 시 괄호가 매우 중요해요! #define SQUARE(x) ((x)*(x))처럼 꼭 괄호로 감싸세요.</div><div class="wq"><b>10.</b> Grace Hopper(1952, 최초 컴파일러), GCC(1987, 자유 소프트웨어), LLVM/Clang(2003, 모듈화 컴파일러).</div></div>
+<h2 class="section-title">10축 평가</h2>
+<div class="note-box"><span class="note-label"></span>
+<div style="font-weight:700;margin-bottom:6px;color:#1a2e4a">[10축 매핑] 이 단원에서 기른 능력</div>1. <b>컴퓨팅 사고력</b> -- 컴파일의 4단계를 이해하고, 소스코드가 실행 파일이 되는 전체 과정을 체계적으로 분석하는 능력을 키웠어요.<br>2. <b>문제 해결력</b> -- 컴파일 에러, 런타임 에러, 논리 에러를 구분하고 각각의 해결 전략을 세우는 능력을 배웠어요.<br>3. <b>논리적 추론</b> -- 전처리 매크로 치환 과정을 추적하고, 괄호의 유무에 따른 결과 차이를 논리적으로 분석했어요.<br>4. <b>수학적 사고</b> -- 수식의 우선순위, AST 트리 구조, 최적화의 상수 접기 등 수학적 개념을 컴파일러에 적용했어요.<br>5. <b>코딩 능력</b> -- gcc 옵션으로 각 단계를 실행하고, 분할 컴파일, 헤더 가드, 토크나이저를 직접 작성했어요.<br>6. <b>디버깅 능력</b> -- 링크 에러, 헤더 중복 포함, 매크로 부작용 등 실전적인 버그를 분석하고 수정했어요.<br>7. <b>의사소통</b> -- 요리, 번역가/통역사, 공장 공정 등 일상 비유로 컴파일러 개념을 쉽게 설명할 수 있어요.<br>8. <b>창의성</b> -- 간단한 토크나이저를 직접 설계하고, 컴파일러의 각 단계를 실습으로 확인하는 창의적 탐구를 했어요.<br>9. <b>정보 윤리</b> -- GCC와 자유 소프트웨어 운동을 통해 기술의 공유와 개방의 가치를 이해했어요.<br>10. <b>융합 능력</b> -- CPU 구조(S-10), 운영체제(S-16), C 뼈대(U0-40), 컴파일(U0-41) 등 이전 단원의 지식을 컴파일러 원리에 통합했어요.</div>
+
+    <span class="page-num">2</span>
+  </div>
+</div>
+<div class="page">
+  <div class="chapter-page">
+    <div class="chapter-sidebar"></div>
+    <div class="chapter-accent-bar"></div>
+    <div style="flex:1; min-width:0; padding:50px 50px 40px 45px; position:relative;">
+      <div class="problems-chapter-ref">Chapter S-20: 컴파일러 원리</div>
+      <h2 class="problems-title">연습 문제 (Practice Problems)</h2>
+
+        <div class="prob-card">
+          <div class="prob-header">
+            <span class="prob-num">1. 다음 빈칸을 채우세요.(1) C 소스코드를 기계어로 번역해 주는 프로그램을 ( &nbsp; &nbsp; )(이)라고 해요.(2) 컴파일러가 소스코드 전체를 한꺼번에 번역하는 반면, ( &nbsp; &nbsp; )는 한 줄씩 읽으면서 바로 실행해요.(3) C 컴파일의 4단계는 ( &nbsp; &nbsp; ) --> 컴파일 --> ( &nbsp; &nbsp; ) --> ( &nbsp; &nbsp; ) 순서예요.(4) #include는 지정된 ( &nbsp; &nbsp; ) 파일의 내용을 소스코드에 복사 삽입하는 전처리 지시자예요.(5) 여러 목적 파일(.o)과 라이브러리를 합쳐서 실행 파일을 만드는 단계를 ( &nbsp; &nbsp; )(이)라고 해요.</span>
+            <span class="diff diff-basic">하</span>
+          </div>
+          <p class="prob-desc">다음 빈칸을 채우세요.<br><br>(1) C 소스코드를 기계어로 번역해 주는 프로그램을 ( &nbsp; &nbsp; )(이)라고 해요.<br><br>(2) 컴파일러가 소스코드 전체를 한꺼번에 번역하는 반면, ( &nbsp; &nbsp; )는 한 줄씩 읽으면서 바로 실행해요.<br><br>(3) C 컴파일의 4단계는 ( &nbsp; &nbsp; ) --> 컴파일 --> ( &nbsp; &nbsp; ) --> ( &nbsp; &nbsp; ) 순서예요.<br><br>(4) #include는 지정된 ( &nbsp; &nbsp; ) 파일의 내용을 소스코드에 복사 삽입하는 전처리 지시자예요.<br><br>(5) 여러 목적 파일(.o)과 라이브러리를 합쳐서 실행 파일을 만드는 단계를 ( &nbsp; &nbsp; )(이)라고 해요.</p>
+          
+          <div class="contest-write-area" style="margin-top:12px;">
+            <div class="contest-write-label">코드 작성</div>
+            <textarea class="contest-textarea" rows="8" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+          </div>
+        </div>
+        <div class="prob-card">
+          <div class="prob-header">
+            <span class="prob-num">2. 다음 설명이 맞으면 O, 틀리면 X를 쓰고 이유를 설명하세요.(1) 컴파일러는 소스코드를 한 줄씩 읽으면서 바로 실행한다. ( &nbsp; &nbsp; )(2) #define은 실행 중에 값을 바꾸는 변수 선언이다. ( &nbsp; &nbsp; )(3) 어휘 분석은 소스코드를 토큰(의미 있는 최소 단위)으로 쪼개는 과정이다. ( &nbsp; &nbsp; )(4) 컴파일 에러가 있으면 실행 파일이 만들어지지 않는다. ( &nbsp; &nbsp; )(5) 동적 링크를 사용하면 실행 파일 크기가 정적 링크보다 작다. ( &nbsp; &nbsp; )(6) 논리 에러는 컴파일러가 자동으로 찾아 준다. ( &nbsp; &nbsp; )</span>
+            <span class="diff diff-basic">하</span>
+          </div>
+          <p class="prob-desc">다음 설명이 맞으면 O, 틀리면 X를 쓰고 이유를 설명하세요.<br><br>(1) 컴파일러는 소스코드를 한 줄씩 읽으면서 바로 실행한다. ( &nbsp; &nbsp; )<br><br>(2) #define은 실행 중에 값을 바꾸는 변수 선언이다. ( &nbsp; &nbsp; )<br><br>(3) 어휘 분석은 소스코드를 토큰(의미 있는 최소 단위)으로 쪼개는 과정이다. ( &nbsp; &nbsp; )<br><br>(4) 컴파일 에러가 있으면 실행 파일이 만들어지지 않는다. ( &nbsp; &nbsp; )<br><br>(5) 동적 링크를 사용하면 실행 파일 크기가 정적 링크보다 작다. ( &nbsp; &nbsp; )<br><br>(6) 논리 에러는 컴파일러가 자동으로 찾아 준다. ( &nbsp; &nbsp; )</p>
+          
+          <div class="contest-write-area" style="margin-top:12px;">
+            <div class="contest-write-label">코드 작성</div>
+            <textarea class="contest-textarea" rows="8" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+          </div>
+        </div>
+        <div class="prob-card">
+          <div class="prob-header">
+            <span class="prob-num">3. 다음 코드의 전처리 후 결과를 쓰세요. (#include는 무시하고, #define 치환 결과만 쓰세요)#define WIDTH 10#define HEIGHT 5#define AREA (WIDTH * HEIGHT)int main(void) {&nbsp;&nbsp;int size = AREA;&nbsp;&nbsp;int double_area = AREA * 2;&nbsp;&nbsp;return 0;}(1) int size = AREA; 는 전처리 후 어떻게 바뀌나요?(2) int double_area = AREA * 2; 는 전처리 후 어떻게 바뀌나요?(3) (2)의 계산 결과는 얼마인가요?</span>
+            <span class="diff diff-basic">하</span>
+          </div>
+          <p class="prob-desc">다음 코드의 전처리 후 결과를 쓰세요. (#include는 무시하고, #define 치환 결과만 쓰세요)<br><br><code>#define WIDTH 10<br>#define HEIGHT 5<br>#define AREA (WIDTH * HEIGHT)<br><br>int main(void) {<br>&nbsp;&nbsp;int size = AREA;<br>&nbsp;&nbsp;int double_area = AREA * 2;<br>&nbsp;&nbsp;return 0;<br>}</code><br><br>(1) int size = AREA; 는 전처리 후 어떻게 바뀌나요?<br><br>(2) int double_area = AREA * 2; 는 전처리 후 어떻게 바뀌나요?<br><br>(3) (2)의 계산 결과는 얼마인가요?</p>
+          
+          <div class="contest-write-area" style="margin-top:12px;">
+            <div class="contest-write-label">코드 작성</div>
+            <textarea class="contest-textarea" rows="8" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+          </div>
+        </div>
+        <div class="prob-card">
+          <div class="prob-header">
+            <span class="prob-num">4. 다음 코드를 어휘 분석(토큰 분리)하세요. 각 토큰의 종류(키워드, 식별자, 연산자, 리터럴, 구분자)도 함께 쓰세요.int sum = a + 10;표를 만들어서 순서, 토큰, 토큰 종류를 정리해 보세요.</span>
+            <span class="diff diff-mid">중</span>
+          </div>
+          <p class="prob-desc">다음 코드를 어휘 분석(토큰 분리)하세요. 각 토큰의 종류(키워드, 식별자, 연산자, 리터럴, 구분자)도 함께 쓰세요.<br><br><code>int sum = a + 10;</code><br><br>표를 만들어서 순서, 토큰, 토큰 종류를 정리해 보세요.</p>
+          
+          <div class="contest-write-area" style="margin-top:12px;">
+            <div class="contest-write-label">코드 작성</div>
+            <textarea class="contest-textarea" rows="8" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+          </div>
+        </div>
+        <div class="prob-card">
+          <div class="prob-header">
+            <span class="prob-num">5. 다음 상황에서 어떤 에러가 발생하는지 쓰고, 그 이유를 설명하세요.(1) 함수를 선언만 하고 정의(본문)를 쓰지 않은 채 그 함수를 호출하는 코드를 컴파일했다.(2) 배열 크기가 5인데, 인덱스 10에 값을 넣는 코드를 실행했다.(3) 1부터 100까지의 합을 구하는 프로그램에서 for문의 조건을 i (4) 세미콜론을 빼먹고 컴파일했다.(5) #define DOUBLE(x) x+x 로 정의한 후, result = 3 * DOUBLE(5); 를 실행했다.</span>
+            <span class="diff diff-mid">중</span>
+          </div>
+          <p class="prob-desc">다음 상황에서 어떤 에러가 발생하는지 쓰고, 그 이유를 설명하세요.<br><br>(1) 함수를 선언만 하고 정의(본문)를 쓰지 않은 채 그 함수를 호출하는 코드를 컴파일했다.<br><br>(2) 배열 크기가 5인데, 인덱스 10에 값을 넣는 코드를 실행했다.<br><br>(3) 1부터 100까지의 합을 구하는 프로그램에서 for문의 조건을 i <= 99로 잘못 썼다.<br><br>(4) 세미콜론을 빼먹고 컴파일했다.<br><br>(5) #define DOUBLE(x) x+x 로 정의한 후, result = 3 * DOUBLE(5); 를 실행했다.</p>
+          
+          <div class="contest-write-area" style="margin-top:12px;">
+            <div class="contest-write-label">코드 작성</div>
+            <textarea class="contest-textarea" rows="8" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+          </div>
+        </div>
+        <div class="prob-card">
+          <div class="prob-header">
+            <span class="prob-num">6. 다음 gcc 명령어가 컴파일 4단계 중 어디까지 실행하는지 쓰고, 생성되는 파일을 쓰세요.(1) gcc -E program.c -o program.i(2) gcc -S program.c(3) gcc -c program.c(4) gcc program.c -o program(5) gcc -c a.c -o a.o && gcc -c b.c -o b.o && gcc a.o b.o -o result</span>
+            <span class="diff diff-mid">중</span>
+          </div>
+          <p class="prob-desc">다음 gcc 명령어가 컴파일 4단계 중 어디까지 실행하는지 쓰고, 생성되는 파일을 쓰세요.<br><br>(1) gcc -E program.c -o program.i<br><br>(2) gcc -S program.c<br><br>(3) gcc -c program.c<br><br>(4) gcc program.c -o program<br><br>(5) gcc -c a.c -o a.o && gcc -c b.c -o b.o && gcc a.o b.o -o result</p>
+          
+          <div class="contest-write-area" style="margin-top:12px;">
+            <div class="contest-write-label">코드 작성</div>
+            <textarea class="contest-textarea" rows="8" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+          </div>
+        </div>
+        <div class="prob-card">
+          <div class="prob-header">
+            <span class="prob-num">7. 다음 C 코드에서 버그를 모두 찾고, 각 버그가 컴파일 에러 / 런타임 에러 / 논리 에러 중 어디에 해당하는지 분류하세요.#include &lt;stdio.h&gt;#define AVERAGE(a, b) a + b / 2int main(void) {&nbsp;&nbsp;int scores[3] = {80, 90, 100};&nbsp;&nbsp;int total = 0;&nbsp;&nbsp;int i;&nbsp;&nbsp;&nbsp;&nbsp;for (i = 0; i &lt;= 3; i++) {&nbsp;&nbsp;&nbsp;&nbsp;total = total + scores[i];&nbsp;&nbsp;}&nbsp;&nbsp;&nbsp;&nbsp;int avg = AVERAGE(80, 90);&nbsp;&nbsp;printf("총합: %d\n", total);&nbsp;&nbsp;printf("평균: %d\n", avg);&nbsp;&nbsp;return 0;}(1) 이 코드에서 버그를 모두 찾으세요. (최소 2개)(2) 각 버그가 어떤 에러 유형인지 분류하세요.(3) 각 버그의 수정 방법을 쓰세요.</span>
+            <span class="diff diff-hard">상</span>
+          </div>
+          <p class="prob-desc">다음 C 코드에서 버그를 모두 찾고, 각 버그가 컴파일 에러 / 런타임 에러 / 논리 에러 중 어디에 해당하는지 분류하세요.<br><br><code>#include &lt;stdio.h&gt;<br>#define AVERAGE(a, b) a + b / 2<br><br>int main(void) {<br>&nbsp;&nbsp;int scores[3] = {80, 90, 100};<br>&nbsp;&nbsp;int total = 0;<br>&nbsp;&nbsp;int i;<br>&nbsp;&nbsp;<br>&nbsp;&nbsp;for (i = 0; i &lt;= 3; i++) {<br>&nbsp;&nbsp;&nbsp;&nbsp;total = total + scores[i];<br>&nbsp;&nbsp;}<br>&nbsp;&nbsp;<br>&nbsp;&nbsp;int avg = AVERAGE(80, 90);<br>&nbsp;&nbsp;printf("총합: %d\n", total);<br>&nbsp;&nbsp;printf("평균: %d\n", avg);<br>&nbsp;&nbsp;return 0;<br>}</code><br><br>(1) 이 코드에서 버그를 모두 찾으세요. (최소 2개)<br><br>(2) 각 버그가 어떤 에러 유형인지 분류하세요.<br><br>(3) 각 버그의 수정 방법을 쓰세요.</p>
+          
+          <div class="contest-write-area" style="margin-top:12px;">
+            <div class="contest-write-label">코드 작성</div>
+            <textarea class="contest-textarea" rows="8" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+          </div>
+        </div>
+        <div class="prob-card">
+          <div class="prob-header">
+            <span class="prob-num">8. 여러분이 간단한 계산기 프로그램(더하기, 빼기, 곱하기, 나누기)을 만들려고 해요. 이 프로그램을 분할 컴파일 방식으로 구성하세요.(1) 헤더 파일(calc.h)에 어떤 내용을 넣어야 할까요? 헤더 가드를 포함해서 작성하세요.(2) 구현 파일(calc.c)에 사칙연산 함수를 하나만 예시로 작성하세요.(3) 메인 파일(main.c)에서 calc.h를 포함하고 함수를 호출하는 코드를 작성하세요.(4) 이 세 파일을 분할 컴파일하고 링크하는 gcc 명령어를 순서대로 쓰세요.(5) 만약 calc.c에서 나눗셈 함수를 수정했다면, 어떤 파일만 다시 컴파일하면 될까요? 그 이유는?</span>
+            <span class="diff diff-hard">상</span>
+          </div>
+          <p class="prob-desc">여러분이 간단한 계산기 프로그램(더하기, 빼기, 곱하기, 나누기)을 만들려고 해요. 이 프로그램을 분할 컴파일 방식으로 구성하세요.<br><br>(1) 헤더 파일(calc.h)에 어떤 내용을 넣어야 할까요? 헤더 가드를 포함해서 작성하세요.<br><br>(2) 구현 파일(calc.c)에 사칙연산 함수를 하나만 예시로 작성하세요.<br><br>(3) 메인 파일(main.c)에서 calc.h를 포함하고 함수를 호출하는 코드를 작성하세요.<br><br>(4) 이 세 파일을 분할 컴파일하고 링크하는 gcc 명령어를 순서대로 쓰세요.<br><br>(5) 만약 calc.c에서 나눗셈 함수를 수정했다면, 어떤 파일만 다시 컴파일하면 될까요? 그 이유는?</p>
+          
+          <div class="contest-write-area" style="margin-top:12px;">
+            <div class="contest-write-label">코드 작성</div>
+            <textarea class="contest-textarea" rows="8" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+          </div>
+        </div>
+      <span class="page-num">3</span>
+    </div>
+  </div>
+</div>
+</body>
+</html>

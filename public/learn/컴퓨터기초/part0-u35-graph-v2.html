@@ -1,0 +1,1322 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>코딩쏙 교재 — 그래프 기초 — 점과 선으로 세상을 표현하기</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+
+  :root {
+    --navy: #1a2e4a;
+    --navy-mid: #2c4a6e;
+    --navy-light: #3d6590;
+    --orange: #e07830;
+    --orange-light: #f5e6d8;
+    --white: #ffffff;
+    --bg: #f7f8fa;
+    --bg-warm: #faf9f7;
+    --gray-50: #f9fafb;
+    --gray-100: #f3f4f6;
+    --gray-200: #e5e7eb;
+    --gray-300: #d1d5db;
+    --gray-400: #9ca3af;
+    --gray-500: #6b7280;
+    --gray-600: #4b5563;
+    --gray-700: #374151;
+    --gray-800: #1f2937;
+    --text: #2d3748;
+    --green: #16a34a;
+    --green-bg: #dcfce7;
+    --red: #dc2626;
+    --red-bg: #fee2e2;
+    --blue: #2563eb;
+    --blue-bg: #dbeafe;
+    --yellow-bg: #fef9c3;
+    --font: 'Noto Sans KR', sans-serif;
+    --mono: 'JetBrains Mono', 'Consolas', monospace;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: var(--font); background: #e8eaed; font-size: 15px; }
+
+  /* ========== PAGE ========== */
+  .page {
+    width: 210mm;
+    min-height: 295mm;
+    margin: 24px auto;
+    background: var(--white);
+    box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* ========== PAGE 1: CHAPTER START ========== */
+  .chapter-page {
+    display: flex;
+    min-height: 295mm;
+  }
+
+  .chapter-sidebar {
+    width: 10px;
+    background: var(--navy);
+    flex-shrink: 0;
+  }
+
+  .chapter-accent-bar {
+    width: 7px;
+    background: var(--orange);
+    flex-shrink: 0;
+  }
+
+  .chapter-body {
+    flex: 1;
+    padding: 70px 65px 50px 55px;
+    position: relative;
+  }
+
+  .chapter-watermark {
+    position: absolute;
+    top: -10px;
+    right: -15px;
+    font-size: 280px;
+    font-weight: 900;
+    color: rgba(180,195,212,0.35);
+    line-height: 1;
+    pointer-events: none;
+    letter-spacing: -10px;
+  }
+
+  .chapter-label {
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--navy-mid);
+    letter-spacing: 2px;
+    margin-bottom: 4px;
+  }
+
+  .chapter-title {
+    font-size: 44px;
+    font-weight: 900;
+    color: var(--navy);
+    line-height: 1.15;
+    margin-bottom: 12px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .chapter-sub {
+    font-size: 16px;
+    color: var(--gray-500);
+    font-weight: 400;
+    margin-bottom: 20px;
+    padding-bottom: 28px;
+    border-bottom: 1px solid var(--gray-200);
+  }
+
+  /* Learning objectives */
+  .obj-title {
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--navy);
+    margin-bottom: 16px;
+    margin-top: 32px;
+  }
+
+  .obj-list {
+    list-style: none;
+    margin-bottom: 40px;
+  }
+
+  .obj-list li {
+    padding: 5px 0 5px 24px;
+    position: relative;
+    font-size: 15px;
+    color: var(--gray-700);
+    line-height: 1.6;
+  }
+
+  .obj-list li::before {
+    content: '•';
+    position: absolute;
+    left: 8px;
+    color: var(--navy-mid);
+    font-weight: 700;
+  }
+
+  /* Prerequisites flow */
+  .prereq-title {
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--navy);
+    margin-bottom: 18px;
+  }
+
+  .prereq-flow {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    margin-bottom: 44px;
+  }
+
+  .prereq-item {
+    padding: 9px 22px;
+    border: 1.5px solid var(--gray-300);
+    border-radius: 50px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--gray-600);
+    background: var(--white);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+  }
+
+  .prereq-item.current {
+    border-color: var(--navy);
+    color: var(--navy);
+    font-weight: 700;
+    background: #edf2f7;
+    box-shadow: 0 2px 6px rgba(26,46,74,0.12);
+  }
+
+  .prereq-arrow {
+    width: 36px;
+    text-align: center;
+    color: var(--gray-300);
+    font-size: 18px;
+    font-weight: 300;
+  }
+
+  /* Predict box */
+  .predict-box {
+    background: var(--gray-50);
+    border: 1.5px solid var(--gray-200);
+    border-radius: 12px;
+    padding: 24px 28px;
+  }
+
+  .predict-label {
+    display: inline-block;
+    background: var(--orange);
+    color: var(--white);
+    font-size: 12px;
+    font-weight: 600;
+    padding: 3px 12px;
+    border-radius: 4px;
+    margin-bottom: 14px;
+    letter-spacing: 0.5px;
+  }
+
+  .predict-q {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--navy);
+    margin-bottom: 16px;
+  }
+
+  .predict-code {
+    background: var(--white);
+    border: 1px solid var(--gray-200);
+    border-radius: 8px;
+    padding: 14px 18px;
+    font-family: var(--mono);
+    font-size: 13px;
+    line-height: 1.65;
+    color: var(--gray-700);
+  }
+
+  /* ========== PAGE 2: CORE CONTENT ========== */
+  .content-page {
+    padding: 55px 65px;
+  }
+
+  .unit-header-bar {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    margin-bottom: 8px;
+  }
+
+  .unit-tag {
+    font-size: 12px;
+    color: var(--orange);
+    font-weight: 600;
+    letter-spacing: 1px;
+  }
+
+  .unit-title-sm {
+    font-size: 14px;
+    color: var(--gray-400);
+    font-weight: 400;
+  }
+
+  .section-title {
+    font-size: 24px;
+    font-weight: 800;
+    color: var(--navy);
+    margin-bottom: 24px;
+    margin-top: 8px;
+    padding-left: 16px;
+    border-left: 5px solid var(--orange);
+  }
+
+  p {
+    font-size: 15.5px;
+    line-height: 1.9;
+    color: var(--text);
+    margin-bottom: 18px;
+  }
+
+  p code {
+    font-family: var(--mono);
+    font-size: 13.5px;
+    background: #f1f3f5;
+    padding: 2px 7px;
+    border-radius: 4px;
+    color: var(--navy);
+    font-weight: 500;
+  }
+
+  /* Code block */
+  .code-wrap {
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    border: 1px solid var(--gray-200);
+    margin: 22px 0;
+  }
+
+  .code-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 9px 18px;
+    background: var(--navy);
+    font-size: 12px;
+  }
+
+  .code-bar-lang {
+    font-family: var(--mono);
+    font-weight: 600;
+    color: var(--white);
+  }
+
+  .code-bar-file {
+    color: rgba(255,255,255,0.6);
+    font-weight: 400;
+  }
+
+  .code-body {
+    background: #f8f9fb;
+    padding: 20px 0;
+    font-family: var(--mono);
+    font-size: 13.5px;
+    line-height: 1.75;
+    border: 1px solid var(--gray-200);
+    border-top: none;
+    border-radius: 0 0 12px 12px;
+  }
+
+  .code-line {
+    display: flex;
+    padding: 0 20px;
+  }
+
+  .code-line:hover {
+    background: #f0f4f8;
+  }
+
+  .code-line.highlighted {
+    background: #fff8e1;
+  }
+
+  .ln {
+    width: 30px;
+    text-align: right;
+    color: #b8bfc8;
+    font-size: 12px;
+    margin-right: 18px;
+    user-select: none;
+    flex-shrink: 0;
+    padding-top: 1px;
+  }
+
+  .lc { flex: 1; }
+
+  /* syntax */
+  .s-pp { color: #8b5cf6; font-weight: 600; }
+  .s-str { color: #d97706; }
+  .s-type { color: #2563eb; font-weight: 500; }
+  .s-kw { color: #7c3aed; font-weight: 500; }
+  .s-fn { color: #059669; font-weight: 500; }
+  .s-num { color: #dc2626; }
+  .s-cm { color: #9ca3af; font-style: italic; }
+
+  /* Output block */
+  .output-wrap {
+    border-radius: 10px;
+    overflow: hidden;
+    margin: 10px 0 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    border: 1px solid #d1d5db;
+  }
+
+  .output-bar {
+    padding: 9px 18px;
+    background: #374151;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--white);
+    letter-spacing: 0.5px;
+  }
+
+  .output-body {
+    padding: 16px 20px;
+    font-family: var(--mono);
+    font-size: 13.5px;
+    line-height: 1.7;
+    color: var(--gray-800);
+    background: #f1f5f9;
+    border: 1px solid var(--gray-200);
+    border-top: none;
+    border-radius: 0 0 10px 10px;
+  }
+
+  /* Callout */
+  .tip {
+    margin: 28px 0;
+    padding: 18px 24px;
+    background: #dbeafe;
+    border-left: 5px solid #2563eb;
+    border-radius: 0 12px 12px 0;
+    font-size: 14.5px;
+    line-height: 1.8;
+    color: var(--text);
+  }
+
+  .tip-label {
+    font-weight: 700;
+    color: #2563eb;
+    font-size: 13px;
+    display: block;
+    margin-bottom: 4px;
+  }
+
+  .warn {
+    margin: 28px 0;
+    padding: 18px 24px;
+    background: #fef3c7;
+    border-left: 5px solid #d97706;
+    border-radius: 0 12px 12px 0;
+    font-size: 14.5px;
+    line-height: 1.8;
+  }
+
+  .warn-label {
+    font-weight: 700;
+    color: #d97706;
+    font-size: 13px;
+    display: block;
+    margin-bottom: 4px;
+  }
+
+  .note-box {
+    margin: 28px 0;
+    padding: 18px 24px;
+    background: #e2e8f0;
+    border-left: 5px solid #64748b;
+    border-radius: 0 12px 12px 0;
+    font-size: 14.5px;
+    line-height: 1.8;
+  }
+
+  .note-label {
+    font-weight: 700;
+    color: var(--gray-600);
+    font-size: 13px;
+    display: block;
+    margin-bottom: 4px;
+  }
+
+  /* Trace table */
+  table.trace {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    margin: 28px 0;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+    font-size: 14px;
+  }
+
+  table.trace th {
+    background: var(--navy);
+    color: var(--white);
+    padding: 10px 16px;
+    text-align: left;
+    font-weight: 500;
+    font-size: 13px;
+  }
+
+  table.trace td {
+    padding: 10px 16px;
+    border-bottom: 1px solid var(--gray-200);
+    color: var(--gray-700);
+  }
+
+  table.trace tr:nth-child(even) td { background: var(--gray-50); }
+  table.trace tr:last-child td { border-bottom: none; }
+
+  table.trace td code {
+    font-family: var(--mono);
+    font-size: 12.5px;
+    background: #eef1f5;
+    padding: 2px 6px;
+    border-radius: 4px;
+    color: var(--navy);
+  }
+
+  /* ========== PAGE 3: PROBLEMS ========== */
+  .problems-header {
+    margin-bottom: 8px;
+  }
+
+  .problems-chapter-ref {
+    font-size: 13px;
+    color: var(--gray-500);
+    margin-bottom: 4px;
+  }
+
+  .problems-title {
+    font-size: 28px;
+    font-weight: 800;
+    color: var(--navy);
+    margin-bottom: 24px;
+  }
+
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 16px;
+  }
+
+  .prob-card {
+    background: var(--white);
+    border: 1px solid var(--gray-200);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 3px 15px rgba(0,0,0,0.06);
+  }
+
+  .prob-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 16px;
+    background: var(--navy);
+  }
+
+  .prob-num {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--white);
+  }
+
+  .diff {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    font-size: 12px;
+    font-weight: 800;
+  }
+
+  .diff-basic { background: #22c55e; color: white; }
+  .diff-mid { background: #f59e0b; color: white; }
+  .diff-hard { background: #ef4444; color: white; }
+
+  .prob-desc {
+    font-size: 13.5px;
+    line-height: 1.65;
+    color: var(--gray-600);
+    margin-bottom: 10px;
+    padding: 14px 16px 0;
+  }
+
+  .prob-code {
+    background: var(--gray-50);
+    border: 1px solid var(--gray-200);
+    border-radius: 6px;
+    padding: 10px 14px;
+    margin: 0 16px 16px;
+    font-family: var(--mono);
+    font-size: 12.5px;
+    line-height: 1.55;
+    color: var(--gray-600);
+  }
+
+  /* Competition section */
+  .comp-section {
+    margin-top: 32px;
+    padding-top: 24px;
+    border-top: 2px solid var(--navy);
+  }
+
+  .comp-title {
+    font-size: 22px;
+    font-weight: 800;
+    color: var(--navy);
+    margin-bottom: 20px;
+  }
+
+  .comp-card {
+    background: var(--white);
+    border: 1.5px solid var(--gray-200);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 18px rgba(0,0,0,0.06);
+  }
+
+  .comp-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 16px;
+    background: #0f766e;
+  }
+
+  .comp-header .comp-name {
+    color: var(--white);
+    font-size: 15px;
+    font-weight: 700;
+    margin: 0;
+  }
+
+  .comp-inner {
+    padding: 14px 18px 18px;
+  }
+
+  .comp-badge {
+    display: inline-block;
+    padding: 3px 12px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 700;
+  }
+
+  .badge-bj { background: #93c5fd; color: #1e3a5f; }
+  .badge-cu { background: #c4b5fd; color: #3b1f7e; }
+  .badge-pg { background: #7dd3fc; color: #0c4a6e; }
+
+  .comp-name {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--navy);
+    margin-bottom: 6px;
+  }
+
+  .comp-desc {
+    font-size: 14px;
+    color: var(--gray-600);
+    line-height: 1.7;
+    margin-bottom: 14px;
+  }
+
+  .io-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+
+  .io-card {
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid var(--gray-200);
+  }
+
+  .io-h {
+    padding: 6px 14px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--gray-600);
+    background: #e2e8f0;
+  }
+
+  .io-c {
+    padding: 10px 14px;
+    font-family: var(--mono);
+    font-size: 13px;
+    line-height: 1.5;
+    background: var(--white);
+  }
+
+  /* ========== DEBUG LAB ========== */
+  .debug-section {
+    margin: 24px 0;
+    border: 2px solid var(--red);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+
+  .debug-bar {
+    background: var(--red);
+    color: var(--white);
+    padding: 10px 20px;
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 1px;
+  }
+
+  .debug-body {
+    padding: 20px;
+    background: #fef2f2;
+  }
+
+  /* 10축 connection */
+  .connect-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 16px;
+    margin: 28px 0;
+  }
+
+  .connect-card {
+    border-radius: 12px;
+    padding: 20px;
+    text-align: center;
+    border: 1px solid var(--gray-200);
+    box-shadow: 0 3px 14px rgba(0,0,0,0.05);
+  }
+
+  .connect-card h5 {
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 8px;
+  }
+
+  .connect-card p {
+    font-size: 13px;
+    margin: 0;
+    color: var(--gray-600);
+    line-height: 1.6;
+  }
+
+  .cc1 { border-top: 3px solid #8b5cf6; }
+  .cc1 h5 { color: #8b5cf6; }
+  .cc2 { border-top: 3px solid var(--green); }
+  .cc2 h5 { color: var(--green); }
+  .cc3 { border-top: 3px solid var(--navy); }
+  .cc3 h5 { color: var(--navy); }
+
+  /* PAGE NUMBER */
+  .page-num {
+    position: absolute;
+    bottom: 20px;
+    right: 30px;
+    font-size: 12px;
+    color: var(--gray-400);
+  }
+
+  /* WARMUP */
+  .warmup-box {
+    background: #e0e7f1;
+    border-radius: 12px;
+    padding: 24px 28px;
+    margin: 28px 0;
+    border: 2px solid #c7d2e0;
+  }
+
+  .warmup-title {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--navy);
+    margin-bottom: 14px;
+  }
+
+  .wq {
+    padding: 9px 16px;
+    background: var(--white);
+    border-radius: 8px;
+    margin-bottom: 8px;
+    font-size: 14px;
+    border: 1px solid var(--gray-200);
+    color: var(--gray-700);
+  }
+
+  .wq b { color: var(--navy); margin-right: 6px; }
+  .wq .hint { color: var(--gray-400); font-size: 13px; }
+
+  /* ===== CONTEST PROBLEMS PAGE ===== */
+  .contest-page-wrap .chapter-page {
+    min-height: auto;
+  }
+
+  .contest-page-wrap .chapter-page > div:last-child {
+    min-width: 0;
+    overflow-wrap: break-word;
+    word-break: break-word;
+  }
+
+  .contest-card {
+    background: white;
+    border: 1.5px solid var(--gray-200);
+    border-radius: 12px;
+    margin-bottom: 28px;
+    overflow: hidden;
+    break-inside: avoid;
+  }
+
+  .contest-header {
+    background: var(--navy);
+    color: white;
+    padding: 14px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .contest-num-source {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .contest-num {
+    font-weight: 700;
+    font-size: 16px;
+  }
+
+  .contest-source {
+    background: rgba(255,255,255,0.15);
+    padding: 3px 10px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 500;
+  }
+
+  .contest-body {
+    padding: 20px 24px 24px;
+  }
+
+  .contest-question {
+    font-size: 15px;
+    line-height: 1.7;
+    color: var(--text);
+    margin: 0 0 16px;
+    word-break: break-word;
+    overflow-wrap: break-word;
+  }
+
+  .contest-expected {
+    background: #1e293b;
+    border-radius: 8px;
+    overflow: hidden;
+    margin-bottom: 20px;
+  }
+
+  .contest-expected-label {
+    background: #334155;
+    color: #94a3b8;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 6px 14px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .contest-expected-body {
+    color: #e2e8f0;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    line-height: 1.6;
+    padding: 12px 16px;
+    margin: 0;
+    white-space: pre;
+  }
+
+  .contest-write-area {
+    border: 2px dashed var(--gray-300);
+    border-radius: 10px;
+    overflow: hidden;
+    transition: border-color 0.2s;
+  }
+
+  .contest-write-area:focus-within {
+    border-color: var(--orange);
+    border-style: solid;
+  }
+
+  .contest-write-label {
+    background: var(--bg);
+    color: var(--gray-500);
+    font-size: 12px;
+    font-weight: 600;
+    padding: 8px 14px;
+    border-bottom: 1px solid var(--gray-200);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .contest-textarea {
+    width: 100%;
+    min-height: 200px;
+    padding: 16px 18px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    line-height: 1.7;
+    color: var(--text);
+    background: #fafbfc;
+    border: none;
+    outline: none;
+    resize: vertical;
+    tab-size: 4;
+    box-sizing: border-box;
+  }
+
+  .contest-textarea::placeholder {
+    color: var(--gray-300);
+  }
+
+  @media print {
+    body { background: white; }
+    .page { box-shadow: none; margin: 0; page-break-after: always; }
+    .contest-textarea { border: 1px solid var(--gray-300); min-height: 180px; }
+  }
+
+</style>
+</head>
+<body>
+
+<div class="page">
+  <div class="chapter-page">
+    <div class="chapter-sidebar"></div>
+    <div class="chapter-accent-bar"></div>
+    <div class="chapter-body">
+      <div class="chapter-watermark">35</div>
+      <div class="chapter-label">Chapter 35</div>
+      <h1 class="chapter-title">그래프 기초</h1>
+      <p class="chapter-sub">정점과 간선으로 이루어진 그래프의 기본 개념을 배우고, 인접 행렬·인접 리스트로 표현해요.</p>
+
+      <h3 class="obj-title">이 유닛에서 배우는 것</h3>
+      <ul class="obj-list">
+        <li>그래프의 정점과 간선을 설명할 수 있어요.</li>
+        <li>무방향/방향 그래프를 구분해요.</li>
+        <li>인접 행렬과 인접 리스트로 그래프를 표현해요.</li>
+        <li>[심화] BFS와 DFS로 그래프를 탐색해요.</li>
+        <li>[심화] 가중치 그래프와 최단 경로를 이해해요.</li>
+        <li>[심화 내용] 다익스트라, 위상 정렬 개념을 알아요.</li>
+      </ul>
+
+      <h3 class="prereq-title">선수 학습</h3>
+      <div class="prereq-flow">
+        <div class="prereq-item">배열과 반복문</div><div class="prereq-arrow">→</div>
+        <div class="prereq-item current">재귀 기본 (U34)</div>
+      </div>
+
+      
+
+      <span class="page-num">1</span>
+    </div>
+  </div>
+</div>
+<div class="page">
+  <div class="content-page">
+    <div class="unit-header-bar">
+      <span class="unit-tag">UNIT 35</span>
+      <span class="unit-title-sm">그래프 기초</span>
+    </div>
+<h2 class="section-title">그래프가 뭘까?</h2>
+
+<div class="note-box"><span class="note-label">[핵심] 그래프란?</span>
+<b>그래프(Graph)</b> = <b>정점(Vertex)</b>과 <b>간선(Edge)</b>으로 이루어진 자료구조<br><br>G = (V, E)<br>V = 정점(노드)의 집합<br>E = 간선(연결)의 집합<br><br>예: 도시(정점) + 도로(간선) = 도로 지도!</div>
+<div style="margin:22px 0"></div>
+<h2 class="section-title">그래프 용어</h2>
+<table class="trace"><thead><tr><th>용어</th><th>영어</th><th>의미</th><th>예시</th></tr></thead><tbody><tr><td>정점</td><td>Vertex/Node</td><td>점. 데이터가 담긴 곳</td><td>도시, 사람, 컴퓨터</td></tr><tr><td>간선</td><td>Edge</td><td>선. 정점 사이의 연결</td><td>도로, 관계, 케이블</td></tr><tr><td>차수</td><td>Degree</td><td>한 정점에 연결된 간선 수</td><td>친구 3명 = 차수 3</td></tr><tr><td>경로</td><td>Path</td><td>정점→정점 가는 순서</td><td>서울→대전→부산</td></tr><tr><td>사이클</td><td>Cycle</td><td>돌아오는 경로</td><td>A→B→C→A</td></tr><tr><td>연결</td><td>Connected</td><td>모든 정점이 이어짐</td><td>모든 도시에 도로</td></tr></tbody></table>
+<table class="trace"><thead><tr><th>종류</th><th>간선 방향</th><th>가중치</th><th>사이클 허용</th><th>대표 예시</th></tr></thead><tbody><tr><td>무방향 그래프</td><td>양방향</td><td>없음</td><td>가능</td><td>친구 관계</td></tr><tr><td>방향 그래프</td><td>단방향(화살표)</td><td>없음</td><td>가능</td><td>팔로우, 하이퍼링크</td></tr><tr><td>가중치 그래프</td><td>양방향 또는 단방향</td><td>있음</td><td>가능</td><td>도로 지도(거리)</td></tr><tr><td>DAG</td><td>단방향</td><td>없음 또는 있음</td><td>불가능</td><td>수강 선수과목</td></tr><tr><td>트리</td><td>루트 기준 아래로</td><td>없음</td><td>불가능</td><td>가계도, 폴더 구조</td></tr><tr><td>완전 그래프</td><td>양방향</td><td>없음</td><td>가능</td><td>모든 정점이 서로 연결</td></tr></tbody></table>
+<h2 class="section-title">무방향 vs 방향 그래프</h2>
+<div class="debug-section"><div class="debug-bar">DEBUG LAB — 에러를 찾으시오</div><div class="debug-body">
+
+<p style="margin:14px 0 0; font-size:14px;"><b>에러:</b> </p>
+<p style="font-size:14px;"><b>수정:</b> </p>
+</div></div>
+<h2 class="section-title">인접 행렬로 표현</h2>
+<div class="note-box"><span class="note-label">[핵심] 인접 행렬</span>
+N×N 2차원 배열로 그래프 표현<br><br>adj[i][j] = 1이면 i→j 간선 있음<br>adj[i][j] = 0이면 없음<br><br>무방향: adj[i][j] = adj[j][i] (대칭!)<br><br>장점: 간선 확인 O(1)<br>단점: 메모리 O(N²)</div>
+<div style="margin:22px 0"></div>
+<table class="trace"><thead><tr><th>단계</th><th>간선 추가</th><th>adj[u][v]</th><th>adj[v][u]</th><th>변경된 셀</th></tr></thead><tbody><tr><td>1</td><td>(0,1)</td><td>adj[0][1]=1</td><td>adj[1][0]=1</td><td>2개</td></tr><tr><td>2</td><td>(0,2)</td><td>adj[0][2]=1</td><td>adj[2][0]=1</td><td>2개</td></tr><tr><td>3</td><td>(1,3)</td><td>adj[1][3]=1</td><td>adj[3][1]=1</td><td>2개</td></tr><tr><td>4</td><td>(2,3)</td><td>adj[2][3]=1</td><td>adj[3][2]=1</td><td>2개</td></tr><tr><td>5</td><td>(3,4)</td><td>adj[3][4]=1</td><td>adj[4][3]=1</td><td>2개</td></tr></tbody></table>
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span><span class="code-bar-file">adj_matrix.c</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;stdio.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc"><span class="s-pp">#define</span> N <span class="s-num">5</span></span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">4</span><span class="lc"><span class="s-type">int</span> adj[N][N] = {<span class="s-num">0</span>};</span></div>
+<div class="code-line"><span class="ln">5</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">6</span><span class="lc"><span class="s-type">void</span> <span class="s-fn">addEdge</span>(<span class="s-type">int</span> u, <span class="s-type">int</span> v) {</span></div>
+<div class="code-line"><span class="ln">7</span><span class="lc">    adj[u][v] = <span class="s-num">1</span>;</span></div>
+<div class="code-line"><span class="ln">8</span><span class="lc">    adj[v][u] = <span class="s-num">1</span>;  <span class="s-cm">// 무방향이면 양쪽!</span></span></div>
+<div class="code-line"><span class="ln">9</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">10</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">11</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">main</span>(<span class="s-type">void</span>) {</span></div>
+<div class="code-line"><span class="ln">12</span><span class="lc">    <span class="s-fn">addEdge</span>(<span class="s-num">0</span>, <span class="s-num">1</span>);</span></div>
+<div class="code-line"><span class="ln">13</span><span class="lc">    <span class="s-fn">addEdge</span>(<span class="s-num">0</span>, <span class="s-num">2</span>);</span></div>
+<div class="code-line"><span class="ln">14</span><span class="lc">    <span class="s-fn">addEdge</span>(<span class="s-num">1</span>, <span class="s-num">3</span>);</span></div>
+<div class="code-line"><span class="ln">15</span><span class="lc">    <span class="s-fn">addEdge</span>(<span class="s-num">2</span>, <span class="s-num">3</span>);</span></div>
+<div class="code-line"><span class="ln">16</span><span class="lc">    <span class="s-fn">addEdge</span>(<span class="s-num">3</span>, <span class="s-num">4</span>);</span></div>
+<div class="code-line"><span class="ln">17</span><span class="lc">    </span></div>
+<div class="code-line"><span class="ln">18</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"인접 행렬:\n"</span>);</span></div>
+<div class="code-line"><span class="ln">19</span><span class="lc">    <span class="s-kw">for</span> (<span class="s-type">int</span> i = <span class="s-num">0</span>; i &lt; N; i++) {</span></div>
+<div class="code-line"><span class="ln">20</span><span class="lc">        <span class="s-kw">for</span> (<span class="s-type">int</span> j = <span class="s-num">0</span>; j &lt; N; j++)</span></div>
+<div class="code-line"><span class="ln">21</span><span class="lc">            <span class="s-fn">printf</span>(<span class="s-str">"%d "</span>, adj[i][j]);</span></div>
+<div class="code-line"><span class="ln">22</span><span class="lc">        <span class="s-fn">printf</span>(<span class="s-str">"\n"</span>);</span></div>
+<div class="code-line"><span class="ln">23</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">24</span><span class="lc">    <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">25</span><span class="lc">}</span></div>
+</div>
+</div>
+<div class="output-wrap"><div class="output-bar">실행 결과</div><div class="output-body">인접 행렬:
+0 1 1 0 0
+1 0 0 1 0
+1 0 0 1 0
+0 1 1 0 1
+0 0 0 1 0</div></div>
+<h2 class="section-title">인접 리스트로 표현</h2>
+<div class="note-box"><span class="note-label">[핵심] 인접 리스트</span>
+각 정점마다 연결된 정점 목록을 저장<br><br>0: [1, 2]<br>1: [0, 3]<br>2: [0, 3]<br>3: [1, 2, 4]<br>4: [3]<br><br>장점: 메모리 효율적 O(V+E)<br>단점: 간선 확인 O(degree)</div>
+<table class="trace"><thead><tr><th>단계</th><th>간선 추가</th><th>정점 u의 리스트</th><th>정점 v의 리스트</th></tr></thead><tbody><tr><td>1</td><td>(0,1)</td><td>0: [1]</td><td>1: [0]</td></tr><tr><td>2</td><td>(0,2)</td><td>0: [1, 2]</td><td>2: [0]</td></tr><tr><td>3</td><td>(1,3)</td><td>1: [0, 3]</td><td>3: [1]</td></tr><tr><td>4</td><td>(2,3)</td><td>2: [0, 3]</td><td>3: [1, 2]</td></tr><tr><td>5</td><td>(3,4)</td><td>3: [1, 2, 4]</td><td>4: [3]</td></tr></tbody></table>
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span><span class="code-bar-file">adj_list.c</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;stdio.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc"><span class="s-pp">#define</span> N <span class="s-num">5</span></span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc"><span class="s-pp">#define</span> MAX_EDGE <span class="s-num">10</span></span></div>
+<div class="code-line"><span class="ln">4</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">5</span><span class="lc"><span class="s-type">int</span> adj[N][MAX_EDGE];  <span class="s-cm">// 각 정점의 인접 리스트</span></span></div>
+<div class="code-line"><span class="ln">6</span><span class="lc"><span class="s-type">int</span> deg[N] = {<span class="s-num">0</span>};       <span class="s-cm">// 각 정점의 차수</span></span></div>
+<div class="code-line"><span class="ln">7</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">8</span><span class="lc"><span class="s-type">void</span> <span class="s-fn">addEdge</span>(<span class="s-type">int</span> u, <span class="s-type">int</span> v) {</span></div>
+<div class="code-line"><span class="ln">9</span><span class="lc">    adj[u][deg[u]++] = v;</span></div>
+<div class="code-line"><span class="ln">10</span><span class="lc">    adj[v][deg[v]++] = u;</span></div>
+<div class="code-line"><span class="ln">11</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">12</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">13</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">main</span>(<span class="s-type">void</span>) {</span></div>
+<div class="code-line"><span class="ln">14</span><span class="lc">    <span class="s-fn">addEdge</span>(<span class="s-num">0</span>,<span class="s-num">1</span>); <span class="s-fn">addEdge</span>(<span class="s-num">0</span>,<span class="s-num">2</span>);</span></div>
+<div class="code-line"><span class="ln">15</span><span class="lc">    <span class="s-fn">addEdge</span>(<span class="s-num">1</span>,<span class="s-num">3</span>); <span class="s-fn">addEdge</span>(<span class="s-num">2</span>,<span class="s-num">3</span>); <span class="s-fn">addEdge</span>(<span class="s-num">3</span>,<span class="s-num">4</span>);</span></div>
+<div class="code-line"><span class="ln">16</span><span class="lc">    </span></div>
+<div class="code-line"><span class="ln">17</span><span class="lc">    <span class="s-kw">for</span> (<span class="s-type">int</span> i = <span class="s-num">0</span>; i &lt; N; i++) {</span></div>
+<div class="code-line"><span class="ln">18</span><span class="lc">        <span class="s-fn">printf</span>(<span class="s-str">"%d: ["</span>, i);</span></div>
+<div class="code-line"><span class="ln">19</span><span class="lc">        <span class="s-kw">for</span> (<span class="s-type">int</span> j = <span class="s-num">0</span>; j &lt; deg[i]; j++)</span></div>
+<div class="code-line"><span class="ln">20</span><span class="lc">            <span class="s-fn">printf</span>(<span class="s-str">"%d%s"</span>, adj[i][j], j&lt;deg[i]-<span class="s-num">1</span>?<span class="s-str">","</span>:<span class="s-str">""</span>);</span></div>
+<div class="code-line"><span class="ln">21</span><span class="lc">        <span class="s-fn">printf</span>(<span class="s-str">"]\n"</span>);</span></div>
+<div class="code-line"><span class="ln">22</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">23</span><span class="lc">    <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">24</span><span class="lc">}</span></div>
+</div>
+</div>
+<div class="output-wrap"><div class="output-bar">실행 결과</div><div class="output-body">0: [1,2]
+1: [0,3]
+2: [0,3]
+3: [1,2,4]
+4: [3]</div></div>
+<div class="debug-section"><div class="debug-bar">DEBUG LAB — 에러를 찾으시오</div><div class="debug-body">
+
+<p style="margin:14px 0 0; font-size:14px;"><b>에러:</b> </p>
+<p style="font-size:14px;"><b>수정:</b> </p>
+</div></div>
+<h2 class="section-title">[심화] BFS — 너비 우선 탐색</h2>
+<div class="note-box"><span class="note-label">[심화] BFS (Breadth-First Search)</span>
+<b>가까운 것부터</b> 탐색! 큐(Queue) 사용<br><br>1. 시작점을 큐에 넣고 방문 표시<br>2. 큐에서 꺼내기<br>3. 인접한 미방문 정점을 큐에 넣기<br>4. 큐가 빌 때까지 반복<br><br>특징: <b>최단 거리</b> 보장! (간선 가중치 동일 시)</div>
+<div style="margin:22px 0"></div>
+<table class="trace"><thead><tr><th>단계</th><th>큐에서 꺼낸 정점</th><th>방문 확인</th><th>큐에 추가</th><th>현재 큐 상태</th></tr></thead><tbody><tr><td>초기</td><td>—</td><td>0 방문</td><td>0</td><td>[0]</td></tr><tr><td>1</td><td>0</td><td>1,2 미방문</td><td>1, 2</td><td>[1, 2]</td></tr><tr><td>2</td><td>1</td><td>3 미방문</td><td>3</td><td>[2, 3]</td></tr><tr><td>3</td><td>2</td><td>3 이미 방문</td><td>없음</td><td>[3]</td></tr><tr><td>4</td><td>3</td><td>4 미방문</td><td>4</td><td>[4]</td></tr><tr><td>5</td><td>4</td><td>이웃 없음</td><td>없음</td><td>[] (종료)</td></tr></tbody></table>
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span><span class="code-bar-file">bfs.c</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;stdio.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc"><span class="s-pp">#define</span> N <span class="s-num">5</span></span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">4</span><span class="lc"><span class="s-type">int</span> adj[N][N], visited[N];</span></div>
+<div class="code-line"><span class="ln">5</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">6</span><span class="lc"><span class="s-type">void</span> <span class="s-fn">bfs</span>(<span class="s-type">int</span> start) {</span></div>
+<div class="code-line"><span class="ln">7</span><span class="lc">    <span class="s-type">int</span> queue[N], front = <span class="s-num">0</span>, rear = <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">8</span><span class="lc">    visited[start] = <span class="s-num">1</span>;</span></div>
+<div class="code-line"><span class="ln">9</span><span class="lc">    queue[rear++] = start;</span></div>
+<div class="code-line"><span class="ln">10</span><span class="lc">    </span></div>
+<div class="code-line"><span class="ln">11</span><span class="lc">    <span class="s-kw">while</span> (front &lt; rear) {</span></div>
+<div class="code-line"><span class="ln">12</span><span class="lc">        <span class="s-type">int</span> v = queue[front++];</span></div>
+<div class="code-line"><span class="ln">13</span><span class="lc">        <span class="s-fn">printf</span>(<span class="s-str">"%d "</span>, v);</span></div>
+<div class="code-line"><span class="ln">14</span><span class="lc">        <span class="s-kw">for</span> (<span class="s-type">int</span> i = <span class="s-num">0</span>; i &lt; N; i++) {</span></div>
+<div class="code-line"><span class="ln">15</span><span class="lc">            <span class="s-kw">if</span> (adj[v][i] &amp;&amp; !visited[i]) {</span></div>
+<div class="code-line"><span class="ln">16</span><span class="lc">                visited[i] = <span class="s-num">1</span>;</span></div>
+<div class="code-line"><span class="ln">17</span><span class="lc">                queue[rear++] = i;</span></div>
+<div class="code-line"><span class="ln">18</span><span class="lc">            }</span></div>
+<div class="code-line"><span class="ln">19</span><span class="lc">        }</span></div>
+<div class="code-line"><span class="ln">20</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">21</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">22</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">23</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">main</span>(<span class="s-type">void</span>) {</span></div>
+<div class="code-line"><span class="ln">24</span><span class="lc">    adj[<span class="s-num">0</span>][<span class="s-num">1</span>]=adj[<span class="s-num">1</span>][<span class="s-num">0</span>]=<span class="s-num">1</span>; adj[<span class="s-num">0</span>][<span class="s-num">2</span>]=adj[<span class="s-num">2</span>][<span class="s-num">0</span>]=<span class="s-num">1</span>;</span></div>
+<div class="code-line"><span class="ln">25</span><span class="lc">    adj[<span class="s-num">1</span>][<span class="s-num">3</span>]=adj[<span class="s-num">3</span>][<span class="s-num">1</span>]=<span class="s-num">1</span>; adj[<span class="s-num">2</span>][<span class="s-num">3</span>]=adj[<span class="s-num">3</span>][<span class="s-num">2</span>]=<span class="s-num">1</span>;</span></div>
+<div class="code-line"><span class="ln">26</span><span class="lc">    adj[<span class="s-num">3</span>][<span class="s-num">4</span>]=adj[<span class="s-num">4</span>][<span class="s-num">3</span>]=<span class="s-num">1</span>;</span></div>
+<div class="code-line"><span class="ln">27</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"BFS(0): "</span>); <span class="s-fn">bfs</span>(<span class="s-num">0</span>); <span class="s-fn">printf</span>(<span class="s-str">"\n"</span>);</span></div>
+<div class="code-line"><span class="ln">28</span><span class="lc">    <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">29</span><span class="lc">}</span></div>
+</div>
+</div>
+<div class="output-wrap"><div class="output-bar">실행 결과</div><div class="output-body">BFS(0): 0 1 2 3 4</div></div>
+<h2 class="section-title">[심화] DFS — 깊이 우선 탐색</h2>
+<div class="note-box"><span class="note-label">[심화] DFS (Depth-First Search)</span>
+<b>깊이 끝까지</b> 가본 후 돌아오기! 스택/재귀 사용<br><br>1. 시작점 방문 표시<br>2. 인접한 미방문 정점으로 재귀 호출<br>3. 더 이상 갈 곳 없으면 돌아옴(백트래킹)<br><br>특징: <b>경로 탐색, 사이클 감지</b>에 유리</div>
+<div style="margin:22px 0"></div>
+<table class="trace"><thead><tr><th>단계</th><th>현재 정점</th><th>동작</th><th>재귀 스택</th><th>방문 완료 목록</th></tr></thead><tbody><tr><td>1</td><td>0</td><td>방문 → 이웃 1로 이동</td><td>[0]</td><td>[0]</td></tr><tr><td>2</td><td>1</td><td>방문 → 이웃 3으로 이동</td><td>[0, 1]</td><td>[0, 1]</td></tr><tr><td>3</td><td>3</td><td>방문 → 이웃 2로 이동</td><td>[0, 1, 3]</td><td>[0, 1, 3]</td></tr><tr><td>4</td><td>2</td><td>방문 → 이웃 모두 방문됨 → 돌아감</td><td>[0, 1, 3, 2]</td><td>[0, 1, 3, 2]</td></tr><tr><td>5</td><td>3</td><td>이웃 4로 이동</td><td>[0, 1, 3]</td><td>[0, 1, 3, 2]</td></tr><tr><td>6</td><td>4</td><td>방문 → 이웃 모두 방문됨 → 종료</td><td>[0, 1, 3, 4]</td><td>[0, 1, 3, 2, 4]</td></tr></tbody></table>
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span><span class="code-bar-file">dfs.c</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;stdio.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc"><span class="s-pp">#define</span> N <span class="s-num">5</span></span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">4</span><span class="lc"><span class="s-type">int</span> adj[N][N], visited[N];</span></div>
+<div class="code-line"><span class="ln">5</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">6</span><span class="lc"><span class="s-type">void</span> <span class="s-fn">dfs</span>(<span class="s-type">int</span> v) {</span></div>
+<div class="code-line"><span class="ln">7</span><span class="lc">    visited[v] = <span class="s-num">1</span>;</span></div>
+<div class="code-line"><span class="ln">8</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"%d "</span>, v);</span></div>
+<div class="code-line"><span class="ln">9</span><span class="lc">    <span class="s-kw">for</span> (<span class="s-type">int</span> i = <span class="s-num">0</span>; i &lt; N; i++)</span></div>
+<div class="code-line"><span class="ln">10</span><span class="lc">        <span class="s-kw">if</span> (adj[v][i] &amp;&amp; !visited[i])</span></div>
+<div class="code-line"><span class="ln">11</span><span class="lc">            <span class="s-fn">dfs</span>(i);  <span class="s-cm">// 재귀!</span></span></div>
+<div class="code-line"><span class="ln">12</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">13</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">14</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">main</span>(<span class="s-type">void</span>) {</span></div>
+<div class="code-line"><span class="ln">15</span><span class="lc">    adj[<span class="s-num">0</span>][<span class="s-num">1</span>]=adj[<span class="s-num">1</span>][<span class="s-num">0</span>]=<span class="s-num">1</span>; adj[<span class="s-num">0</span>][<span class="s-num">2</span>]=adj[<span class="s-num">2</span>][<span class="s-num">0</span>]=<span class="s-num">1</span>;</span></div>
+<div class="code-line"><span class="ln">16</span><span class="lc">    adj[<span class="s-num">1</span>][<span class="s-num">3</span>]=adj[<span class="s-num">3</span>][<span class="s-num">1</span>]=<span class="s-num">1</span>; adj[<span class="s-num">2</span>][<span class="s-num">3</span>]=adj[<span class="s-num">3</span>][<span class="s-num">2</span>]=<span class="s-num">1</span>;</span></div>
+<div class="code-line"><span class="ln">17</span><span class="lc">    adj[<span class="s-num">3</span>][<span class="s-num">4</span>]=adj[<span class="s-num">4</span>][<span class="s-num">3</span>]=<span class="s-num">1</span>;</span></div>
+<div class="code-line"><span class="ln">18</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"DFS(0): "</span>); <span class="s-fn">dfs</span>(<span class="s-num">0</span>); <span class="s-fn">printf</span>(<span class="s-str">"\n"</span>);</span></div>
+<div class="code-line"><span class="ln">19</span><span class="lc">    <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">20</span><span class="lc">}</span></div>
+</div>
+</div>
+<div class="output-wrap"><div class="output-bar">실행 결과</div><div class="output-body">DFS(0): 0 1 3 2 4</div></div>
+<div class="debug-section"><div class="debug-bar">DEBUG LAB — 에러를 찾으시오</div><div class="debug-body">
+
+<p style="margin:14px 0 0; font-size:14px;"><b>에러:</b> </p>
+<p style="font-size:14px;"><b>수정:</b> </p>
+</div></div>
+<h2 class="section-title">[심화 내용] 가중치 그래프와 다익스트라</h2>
+<div class="note-box"><span class="note-label">[심화 내용] 다익스트라 알고리즘</span>
+간선에 <b>가중치(거리)</b>가 있을 때 최단 경로!<br><br>전략: 아직 방문 안 한 정점 중 <b>거리가 가장 짧은 것</b> 선택<br>→ 그리디 + BFS의 확장!<br><br>시간: O(V²) 또는 O((V+E) log V) (우선순위 큐 사용)<br><br>조건: 음수 가중치가 없어야 함!</div>
+<table class="trace"><thead><tr><th>단계</th><th>방문 정점</th><th>A까지 거리</th><th>B까지 거리</th><th>C까지 거리</th><th>D까지 거리</th></tr></thead><tbody><tr><td>초기</td><td>—</td><td>0</td><td>∞</td><td>∞</td><td>∞</td></tr><tr><td>1</td><td>A</td><td>0</td><td>4 (A→B)</td><td>2 (A→C)</td><td>∞</td></tr><tr><td>2</td><td>C</td><td>0</td><td>3 (A→C→B)</td><td>2</td><td>7 (A→C→D)</td></tr><tr><td>3</td><td>B</td><td>0</td><td>3</td><td>2</td><td>6 (A→C→B→D)</td></tr><tr><td>4</td><td>D</td><td>0</td><td>3</td><td>2</td><td>6</td></tr></tbody></table>
+<h2 class="section-title">[심화 내용] 위상 정렬</h2>
+<div class="note-box"><span class="note-label">[심화 내용] 위상 정렬 (Topological Sort)</span>
+<b>방향 비순환 그래프(DAG)</b>에서 순서 정하기<br><br>예: 과목 수강 선수과목<br>미적분 → 선형대수 → 확률 → 머신러닝<br>미적분 → 물리 → 양자역학<br><br>사이클이 있으면 위상 정렬 불가능!<br><br>알고리즘: BFS(Kahn) 또는 DFS 후위 역순</div>
+<table class="trace"><thead><tr><th>단계</th><th>진입 차수 0인 정점</th><th>큐에서 꺼낸 정점</th><th>결과 순서</th><th>갱신된 진입 차수</th></tr></thead><tbody><tr><td>초기</td><td>A (진입0)</td><td>—</td><td>[]</td><td>A:0, B:1, C:1, D:2</td></tr><tr><td>1</td><td>A</td><td>A</td><td>[A]</td><td>B:0, C:0, D:2</td></tr><tr><td>2</td><td>B, C</td><td>B</td><td>[A, B]</td><td>C:0, D:1</td></tr><tr><td>3</td><td>C</td><td>C</td><td>[A, B, C]</td><td>D:0</td></tr><tr><td>4</td><td>D</td><td>D</td><td>[A, B, C, D]</td><td>모두 처리 완료</td></tr></tbody></table>
+<h2 class="section-title">실생활 속 그래프</h2>
+<table class="trace"><thead><tr><th>분야</th><th>정점</th><th>간선</th><th>종류</th></tr></thead><tbody><tr><td>SNS</td><td>사용자</td><td>팔로우</td><td>방향 그래프</td></tr><tr><td>도로 지도</td><td>교차로</td><td>도로</td><td>무방향 가중치</td></tr><tr><td>웹</td><td>웹페이지</td><td>하이퍼링크</td><td>방향 그래프</td></tr><tr><td>전기 회로</td><td>부품</td><td>전선</td><td>무방향</td></tr><tr><td>수강 신청</td><td>과목</td><td>선수과목</td><td>방향(DAG)</td></tr><tr><td>게임 맵</td><td>위치</td><td>이동 경로</td><td>무방향 가중치</td></tr></tbody></table>
+<!-- fact-bite -->
+<h2 class="section-title">OX 퀴즈</h2>
+<!-- ox -->
+<h2 class="section-title">연습문제</h2>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 1</span><p style="margin:0;font-size:14px">그래프란 무엇인지 한 문장으로 설명하세요.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 2</span><p style="margin:0;font-size:14px">정점(Vertex)과 간선(Edge)의 뜻을 쓰세요.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 3</span><p style="margin:0;font-size:14px">무방향 그래프와 방향 그래프의 차이를 설명하세요.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 4</span><p style="margin:0;font-size:14px">인접 행렬에서 adj[2][3]=1은 무엇을 의미하나요?</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 5</span><p style="margin:0;font-size:14px">정점 5개, 간선 4개인 그래프의 인접 행렬 크기는?</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 6</span><p style="margin:0;font-size:14px">인접 행렬과 인접 리스트의 장단점을 비교하세요.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 7</span><p style="margin:0;font-size:14px">BFS와 DFS의 차이를 자료구조 기준으로 설명하세요.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 8</span><p style="margin:0;font-size:14px">0-1-3, 0-2-3 경로가 있을 때 BFS(0)의 방문 순서는?</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 9</span><p style="margin:0;font-size:14px">차수가 3인 정점의 의미를 설명하세요.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 10</span><p style="margin:0;font-size:14px">실생활에서 방향 그래프의 예를 2가지 드세요.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 11</span><p style="margin:0;font-size:14px">[심화] BFS로 최단 거리를 구할 수 있는 이유를 설명하세요.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 12</span><p style="margin:0;font-size:14px">[심화] DFS로 사이클을 감지하는 원리를 설명하세요.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 13</span><p style="margin:0;font-size:14px">[심화] 인접 행렬 O(N²) vs 인접 리스트 O(V+E)의 차이가 중요한 경우는?</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 14</span><p style="margin:0;font-size:14px">[심화 내용] 다익스트라가 음수 가중치에서 실패하는 이유를 설명하세요.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 15</span><p style="margin:0;font-size:14px">[심화 내용] 위상 정렬의 활용 예시를 2가지 드세요.</p></div>
+<h2 class="section-title">용어 정리</h2>
+<h2 class="section-title">[심화] C로 그래프 구현</h2>
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span><span class="code-bar-file">[C 코드] 인접 리스트 그래프 + BFS</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;stdio.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;string.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">4</span><span class="lc"><span class="s-pp">#define</span> MAX <span class="s-num">100</span></span></div>
+<div class="code-line"><span class="ln">5</span><span class="lc"><span class="s-type">int</span> adj[MAX][MAX];  <span class="s-cm">// 인접 행렬</span></span></div>
+<div class="code-line"><span class="ln">6</span><span class="lc"><span class="s-type">int</span> n;  <span class="s-cm">// 정점 수</span></span></div>
+<div class="code-line"><span class="ln">7</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">8</span><span class="lc"><span class="s-cm">// BFS</span></span></div>
+<div class="code-line"><span class="ln">9</span><span class="lc"><span class="s-type">void</span> <span class="s-fn">bfs</span>(<span class="s-type">int</span> start) {</span></div>
+<div class="code-line"><span class="ln">10</span><span class="lc">    <span class="s-type">int</span> visited[MAX] = {<span class="s-num">0</span>};</span></div>
+<div class="code-line"><span class="ln">11</span><span class="lc">    <span class="s-type">int</span> queue[MAX], front = <span class="s-num">0</span>, rear = <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">12</span><span class="lc">    queue[rear++] = start;</span></div>
+<div class="code-line"><span class="ln">13</span><span class="lc">    visited[start] = <span class="s-num">1</span>;</span></div>
+<div class="code-line"><span class="ln">14</span><span class="lc">    </span></div>
+<div class="code-line"><span class="ln">15</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"BFS from %d: "</span>, start);</span></div>
+<div class="code-line"><span class="ln">16</span><span class="lc">    <span class="s-kw">while</span> (front &lt; rear) {</span></div>
+<div class="code-line"><span class="ln">17</span><span class="lc">        <span class="s-type">int</span> v = queue[front++];</span></div>
+<div class="code-line"><span class="ln">18</span><span class="lc">        <span class="s-fn">printf</span>(<span class="s-str">"%d "</span>, v);</span></div>
+<div class="code-line"><span class="ln">19</span><span class="lc">        <span class="s-kw">for</span> (<span class="s-type">int</span> u = <span class="s-num">0</span>; u &lt; n; u++) {</span></div>
+<div class="code-line"><span class="ln">20</span><span class="lc">            <span class="s-kw">if</span> (adj[v][u] &amp;&amp; !visited[u]) {</span></div>
+<div class="code-line"><span class="ln">21</span><span class="lc">                visited[u] = <span class="s-num">1</span>;</span></div>
+<div class="code-line"><span class="ln">22</span><span class="lc">                queue[rear++] = u;</span></div>
+<div class="code-line"><span class="ln">23</span><span class="lc">            }</span></div>
+<div class="code-line"><span class="ln">24</span><span class="lc">        }</span></div>
+<div class="code-line"><span class="ln">25</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">26</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"\n"</span>);</span></div>
+<div class="code-line"><span class="ln">27</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">28</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">29</span><span class="lc"><span class="s-cm">// DFS</span></span></div>
+<div class="code-line"><span class="ln">30</span><span class="lc"><span class="s-type">int</span> vis[MAX];</span></div>
+<div class="code-line"><span class="ln">31</span><span class="lc"><span class="s-type">void</span> <span class="s-fn">dfs</span>(<span class="s-type">int</span> v) {</span></div>
+<div class="code-line"><span class="ln">32</span><span class="lc">    vis[v] = <span class="s-num">1</span>;</span></div>
+<div class="code-line"><span class="ln">33</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"%d "</span>, v);</span></div>
+<div class="code-line"><span class="ln">34</span><span class="lc">    <span class="s-kw">for</span> (<span class="s-type">int</span> u = <span class="s-num">0</span>; u &lt; n; u++)</span></div>
+<div class="code-line"><span class="ln">35</span><span class="lc">        <span class="s-kw">if</span> (adj[v][u] &amp;&amp; !vis[u]) <span class="s-fn">dfs</span>(u);</span></div>
+<div class="code-line"><span class="ln">36</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">37</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">38</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">main</span>() {</span></div>
+<div class="code-line"><span class="ln">39</span><span class="lc">    n = <span class="s-num">6</span>;</span></div>
+<div class="code-line"><span class="ln">40</span><span class="lc">    <span class="s-cm">// 간선 추가 (무방향)</span></span></div>
+<div class="code-line"><span class="ln">41</span><span class="lc">    <span class="s-type">int</span> edges[][<span class="s-num">2</span>] = {{<span class="s-num">0</span>,<span class="s-num">1</span>},{<span class="s-num">0</span>,<span class="s-num">2</span>},{<span class="s-num">1</span>,<span class="s-num">3</span>},{<span class="s-num">2</span>,<span class="s-num">4</span>},{<span class="s-num">3</span>,<span class="s-num">5</span>},{<span class="s-num">4</span>,<span class="s-num">5</span>}};</span></div>
+<div class="code-line"><span class="ln">42</span><span class="lc">    <span class="s-kw">for</span> (<span class="s-type">int</span> i = <span class="s-num">0</span>; i &lt; <span class="s-num">6</span>; i++) {</span></div>
+<div class="code-line"><span class="ln">43</span><span class="lc">        adj[edges[i][<span class="s-num">0</span>]][edges[i][<span class="s-num">1</span>]] = <span class="s-num">1</span>;</span></div>
+<div class="code-line"><span class="ln">44</span><span class="lc">        adj[edges[i][<span class="s-num">1</span>]][edges[i][<span class="s-num">0</span>]] = <span class="s-num">1</span>;</span></div>
+<div class="code-line"><span class="ln">45</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">46</span><span class="lc">    </span></div>
+<div class="code-line"><span class="ln">47</span><span class="lc">    <span class="s-fn">bfs</span>(<span class="s-num">0</span>);</span></div>
+<div class="code-line"><span class="ln">48</span><span class="lc">    </span></div>
+<div class="code-line"><span class="ln">49</span><span class="lc">    <span class="s-fn">memset</span>(vis, <span class="s-num">0</span>, <span class="s-kw">sizeof</span>(vis));</span></div>
+<div class="code-line"><span class="ln">50</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"DFS from 0: "</span>);</span></div>
+<div class="code-line"><span class="ln">51</span><span class="lc">    <span class="s-fn">dfs</span>(<span class="s-num">0</span>);</span></div>
+<div class="code-line"><span class="ln">52</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"\n"</span>);</span></div>
+<div class="code-line"><span class="ln">53</span><span class="lc">    <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">54</span><span class="lc">}</span></div>
+</div>
+</div>
+<div class="output-wrap"><div class="output-bar">실행 결과</div><div class="output-body">BFS from 0: 0 1 2 3 4 5 
+DFS from 0: 0 1 3 5 4 2</div></div>
+<h2 class="section-title">[심화 내용] 그래프 알고리즘 모음</h2>
+<div class="note-box"><span class="note-label">[심화 내용] 핵심 그래프 알고리즘</span>
+<b>탐색:</b><br>- BFS: 최단 경로(무가중치) O(V+E)<br>- DFS: 연결 요소, 위상 정렬, 사이클 검출<br><br><b>최단 경로:</b><br>- Dijkstra: 양수 가중치 O(E log V)<br>- Bellman-Ford: 음수 간선 OK O(VE)<br>- Floyd-Warshall: 모든 쌍 O(V^3)<br><br><b>최소 신장 트리:</b><br>- Kruskal: 간선 정렬 + Union-Find O(E log E)<br>- Prim: 우선순위 큐 O(E log V)<br><br><b>기타:</b><br>- 위상 정렬: DAG 순서 결정<br>- 강결합 요소: Tarjan/Kosaraju<br>- 네트워크 플로우: 최대 유량<br><br>그래프는 CS에서 가장 많이 쓰이는 자료구조!</div>
+<table class="trace"><thead><tr><th>알고리즘</th><th>목적</th><th>시간 복잡도</th><th>자료구조</th><th>제한 조건</th></tr></thead><tbody><tr><td>BFS</td><td>최단 경로 (무가중치)</td><td>O(V+E)</td><td>큐</td><td>가중치 동일</td></tr><tr><td>DFS</td><td>경로 탐색, 사이클 검출</td><td>O(V+E)</td><td>스택/재귀</td><td>없음</td></tr><tr><td>다익스트라</td><td>최단 경로 (양수 가중치)</td><td>O(E log V)</td><td>우선순위 큐</td><td>음수 가중치 불가</td></tr><tr><td>벨만-포드</td><td>최단 경로 (음수 허용)</td><td>O(VE)</td><td>배열</td><td>음수 사이클 불가</td></tr><tr><td>플로이드-워셜</td><td>모든 쌍 최단 경로</td><td>O(V³)</td><td>2차원 배열</td><td>음수 사이클 불가</td></tr><tr><td>크루스칼</td><td>최소 신장 트리</td><td>O(E log E)</td><td>Union-Find</td><td>연결 그래프</td></tr><tr><td>위상 정렬</td><td>DAG 순서 결정</td><td>O(V+E)</td><td>큐 또는 스택</td><td>사이클 없어야 함</td></tr></tbody></table>
+<h2 class="section-title">[심화 내용] 그래프의 실전 응용</h2>
+<div class="note-box"><span class="note-label">[심화 내용] 그래프가 쓰이는 곳</span>
+<b>소셜 네트워크:</b><br>사람 = 정점, 친구 = 간선<br>Facebook 그래프: 30억 정점, 수천억 간선<br><br><b>웹:</b><br>페이지 = 정점, 링크 = 간선 (방향 그래프)<br>PageRank: 그래프에서 중요한 페이지 찾기 (Google!)<br><br><b>지도/네비게이션:</b><br>교차로 = 정점, 도로 = 간선 (가중치 = 거리/시간)<br>Dijkstra/A*로 최단 경로<br><br><b>컴파일러:</b><br>변수 = 정점, 의존성 = 간선<br>위상 정렬로 실행 순서 결정<br><br><b>추천 시스템:</b><br>사용자-상품 이분 그래프<br>협업 필터링으로 추천</div>
+<!-- fact-bite -->
+<!-- fact-bite -->
+<h2 class="section-title">[심화 내용] 그래프 표현 비교</h2>
+<div class="debug-section"><div class="debug-bar">DEBUG LAB — 에러를 찾으시오</div><div class="debug-body">
+
+<p style="margin:14px 0 0; font-size:14px;"><b>에러:</b> </p>
+<p style="font-size:14px;"><b>수정:</b> </p>
+</div></div>
+<h2 class="section-title">[심화 내용] 그래프 이론의 시작</h2>
+<div class="note-box"><span class="note-label">[심화 내용] 쾨니히스베르크 다리 문제 (1736)</span>
+<b>문제:</b> 7개의 다리를 각각 정확히 한 번씩 건너서 돌아올 수 있는가?<br><br><b>오일러의 답:</b> 불가능!<br><br><b>증명:</b> 각 땅(정점)에 연결된 다리(간선) 수가<br>모두 짝수여야 한 붓 그리기 가능.<br>쾨니히스베르크에는 홀수 차수 정점이 4개 → 불가능<br><br><b>오일러 경로:</b> 모든 간선을 한 번씩 (홀수 차수 0 또는 2개)<br><b>오일러 회로:</b> 모든 간선을 한 번씩 + 시작점 복귀 (홀수 차수 0개)<br><br>이것이 <b>그래프 이론의 탄생</b>! (1736년, 오일러)<br>수학 역사상 최초의 위상수학적 문제</div>
+
+<h2 class="section-title">[심화] 그래프 문제 유형</h2>
+<div class="tip"><span class="tip-label">[심화] 그래프 문제 판별법</span>
+<b>1. 연결 요소 찾기</b><br>"몇 개의 그룹?" → BFS/DFS<br>예: 섬의 개수, 네트워크 그룹<br><br><b>2. 최단 경로</b><br>"A에서 B까지 최소 거리?" → BFS/다익스트라<br>예: 미로 탈출, 네비게이션<br><br><b>3. 사이클 검출</b><br>"순환이 있는가?" → DFS (back edge)<br>예: 교착 상태, 선수과목 체크<br><br><b>4. 위상 정렬</b><br>"순서대로 나열" → DFS/BFS(Kahn)<br>예: 빌드 순서, 수강 순서<br><br><b>5. 이분 그래프</b><br>"2색으로 칠할 수 있나?" → BFS/DFS<br>예: 매칭 문제, 팀 나누기<br><br>문제를 그래프로 모델링하는 것이 핵심!</div>
+<div class="debug-section"><div class="debug-bar">DEBUG LAB — 에러를 찾으시오</div><div class="debug-body">
+
+<p style="margin:14px 0 0; font-size:14px;"><b>에러:</b> </p>
+<p style="font-size:14px;"><b>수정:</b> </p>
+</div></div>
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span><span class="code-bar-file">[C 코드] 연결 요소 개수 세기</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;stdio.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;string.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">4</span><span class="lc"><span class="s-pp">#define</span> MAX <span class="s-num">100</span></span></div>
+<div class="code-line"><span class="ln">5</span><span class="lc"><span class="s-type">int</span> adj[MAX][MAX], visited[MAX], n;</span></div>
+<div class="code-line"><span class="ln">6</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">7</span><span class="lc"><span class="s-type">void</span> <span class="s-fn">dfs</span>(<span class="s-type">int</span> v) {</span></div>
+<div class="code-line"><span class="ln">8</span><span class="lc">    visited[v] = <span class="s-num">1</span>;</span></div>
+<div class="code-line"><span class="ln">9</span><span class="lc">    <span class="s-kw">for</span> (<span class="s-type">int</span> u = <span class="s-num">0</span>; u &lt; n; u++)</span></div>
+<div class="code-line"><span class="ln">10</span><span class="lc">        <span class="s-kw">if</span> (adj[v][u] &amp;&amp; !visited[u]) <span class="s-fn">dfs</span>(u);</span></div>
+<div class="code-line"><span class="ln">11</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">12</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">13</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">count_components</span>() {</span></div>
+<div class="code-line"><span class="ln">14</span><span class="lc">    <span class="s-fn">memset</span>(visited, <span class="s-num">0</span>, <span class="s-kw">sizeof</span>(visited));</span></div>
+<div class="code-line"><span class="ln">15</span><span class="lc">    <span class="s-type">int</span> count = <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">16</span><span class="lc">    <span class="s-kw">for</span> (<span class="s-type">int</span> v = <span class="s-num">0</span>; v &lt; n; v++) {</span></div>
+<div class="code-line"><span class="ln">17</span><span class="lc">        <span class="s-kw">if</span> (!visited[v]) {</span></div>
+<div class="code-line"><span class="ln">18</span><span class="lc">            <span class="s-fn">dfs</span>(v);</span></div>
+<div class="code-line"><span class="ln">19</span><span class="lc">            count++;</span></div>
+<div class="code-line"><span class="ln">20</span><span class="lc">        }</span></div>
+<div class="code-line"><span class="ln">21</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">22</span><span class="lc">    <span class="s-kw">return</span> count;</span></div>
+<div class="code-line"><span class="ln">23</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">24</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">25</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">main</span>() {</span></div>
+<div class="code-line"><span class="ln">26</span><span class="lc">    n = <span class="s-num">7</span>;</span></div>
+<div class="code-line"><span class="ln">27</span><span class="lc">    <span class="s-cm">// 그룹1: 0-1-2, 그룹2: 3-4, 그룹3: 5-6</span></span></div>
+<div class="code-line"><span class="ln">28</span><span class="lc">    adj[<span class="s-num">0</span>][<span class="s-num">1</span>]=adj[<span class="s-num">1</span>][<span class="s-num">0</span>]=<span class="s-num">1</span>;</span></div>
+<div class="code-line"><span class="ln">29</span><span class="lc">    adj[<span class="s-num">1</span>][<span class="s-num">2</span>]=adj[<span class="s-num">2</span>][<span class="s-num">1</span>]=<span class="s-num">1</span>;</span></div>
+<div class="code-line"><span class="ln">30</span><span class="lc">    adj[<span class="s-num">3</span>][<span class="s-num">4</span>]=adj[<span class="s-num">4</span>][<span class="s-num">3</span>]=<span class="s-num">1</span>;</span></div>
+<div class="code-line"><span class="ln">31</span><span class="lc">    adj[<span class="s-num">5</span>][<span class="s-num">6</span>]=adj[<span class="s-num">6</span>][<span class="s-num">5</span>]=<span class="s-num">1</span>;</span></div>
+<div class="code-line"><span class="ln">32</span><span class="lc">    </span></div>
+<div class="code-line"><span class="ln">33</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"정점 7개, 연결 요소: %d개\n"</span>, <span class="s-fn">count_components</span>());</span></div>
+<div class="code-line"><span class="ln">34</span><span class="lc">    <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">35</span><span class="lc">}</span></div>
+</div>
+</div>
+<div class="output-wrap"><div class="output-bar">실행 결과</div><div class="output-body">정점 7개, 연결 요소: 3개</div></div>
+<div class="note-box"><span class="note-label">[심화 내용] 면접 그래프 문제</span>
+<b>Q1.</b> BFS vs DFS 차이?<br>BFS: 큐, 최단경로, 레벨순<br>DFS: 스택/재귀, 연결성, 사이클검출<br><br><b>Q2.</b> 인접 행렬 vs 인접 리스트 언제 사용?<br>행렬: 밀집(E≈V^2), O(1) 간선확인<br>리스트: 희소(E≪V^2), 메모리 절약<br><br><b>Q3.</b> 이분 그래프 판별 방법?<br>BFS로 2색 칠하기. 인접한 같은 색 → 이분 아님<br><br><b>Q4.</b> 음수 가중치가 있으면?<br>다익스트라 불가 → 벨만포드 사용<br>음수 사이클이 있으면 최단경로 정의 불가!</div>
+<!-- fact-bite -->
+<div class="tip"><span class="tip-label">[활동] 그래프 모델링 연습</span>
+다음 상황을 그래프로 모델링해 보세요:<br><br><b>1. 지하철 노선도</b><br>정점=역, 간선=노선, 가중치=소요시간<br>문제: A역에서 B역까지 최단 시간?<br>→ 다익스트라!<br><br><b>2. SNS 팔로우</b><br>정점=사용자, 간선=팔로우 (방향!)<br>문제: A가 B에게 도달 가능한가?<br>→ BFS/DFS!<br><br><b>3. 수강 신청</b><br>정점=과목, 간선=선수과목 관계<br>문제: 어떤 순서로 들을까?<br>→ 위상 정렬!<br><br>핵심: "정점과 간선이 뭔지" 정의하면<br>나머지는 알고리즘이 해결!</div>
+
+<table class="trace"><thead><tr><th>용어</th><th>설명</th></tr></thead><tbody><tr><td><code>그래프</code></td><td>정점(V)과 간선(E)으로 이루어진 자료구조. G=(V,E).</td></tr><tr><td><code>정점</code></td><td>Vertex/Node. 데이터가 담긴 점.</td></tr><tr><td><code>간선</code></td><td>Edge. 정점 사이의 연결.</td></tr><tr><td><code>차수</code></td><td>Degree. 한 정점에 연결된 간선 수.</td></tr><tr><td><code>인접 행렬</code></td><td>N×N 배열로 그래프 표현. adj[i][j]=1이면 연결.</td></tr><tr><td><code>인접 리스트</code></td><td>각 정점의 연결 목록으로 표현. 메모리 효율적.</td></tr><tr><td><code>BFS</code></td><td>너비 우선 탐색. 큐 사용. 최단 거리 보장.</td></tr><tr><td><code>DFS</code></td><td>깊이 우선 탐색. 스택/재귀. 경로, 사이클 탐지.</td></tr><tr><td><code>DAG</code></td><td>Directed Acyclic Graph. 방향 비순환 그래프.</td></tr><tr><td><code>다익스트라</code></td><td>가중치 그래프의 최단 경로. 음수 불가.</td></tr><tr><td><code>위상 정렬</code></td><td>DAG에서 의존 순서 결정. 선수과목 등.</td></tr><tr><td><code>인접 행렬</code></td><td>V*V 2차원 배열로 그래프 표현. adj[i][j]=1이면 i→j 간선 존재. 공간 O(V^2).</td></tr><tr><td><code>인접 리스트</code></td><td>각 정점의 이웃 목록으로 그래프 표현. 공간 O(V+E). 희소 그래프에 유리.</td></tr><tr><td><code>BFS</code></td><td>Breadth-First Search. 너비 우선 탐색. 큐 사용. 최단 경로(무가중치).</td></tr><tr><td><code>DFS</code></td><td>Depth-First Search. 깊이 우선 탐색. 스택/재귀 사용.</td></tr><tr><td><code>Dijkstra</code></td><td>양수 가중치 그래프의 최단 경로 알고리즘. O(E log V).</td></tr><tr><td><code>PageRank</code></td><td>웹 그래프에서 페이지 중요도를 계산하는 알고리즘. Google 검색의 핵심.</td></tr><tr><td><code>위상 정렬</code></td><td>DAG(비순환 방향 그래프)에서 선후 관계를 만족하는 순서 결정.</td></tr></tbody></table>
+<div class="warmup-box"><div class="warmup-title">이번 유닛 핵심 정리</div><div class="wq"><b>1.</b> 그래프 = 정점(V) + 간선(E)</div><div class="wq"><b>2.</b> 무방향(양방향) vs 방향(단방향)</div><div class="wq"><b>3.</b> 인접 행렬: O(N²) 메모리, O(1) 확인</div><div class="wq"><b>4.</b> 인접 리스트: O(V+E) 메모리, 효율적</div><div class="wq"><b>5.</b> [심화] BFS=큐+최단거리, DFS=재귀+깊이탐색</div><div class="wq"><b>6.</b> [심화 내용] 다익스트라: 가중치 최단 경로</div><div class="wq"><b>7.</b> [심화 내용] 위상 정렬: DAG 순서 결정</div></div>
+<div class="tip"><span class="tip-label">이 유닛에서 연결된 축</span>
+<b>[수학연결]</b> 그래프 이론 = 이산수학의 핵심<br><b>[C언어]</b> 2차원 배열(행렬), 연결 리스트<br><b>[KOI]</b> BFS/DFS = KOI 2차 필수!<br><b>[컴퓨팅 사고력]</b> 관계의 추상화<br><b>[코딩기초]</b> 큐, 스택, 재귀 활용<br><b>[디버깅]</b> 방문 체크 누락 = 무한 루프</div>
+<h2 class="section-title">실전 활용 연습</h2>
+<p>지금까지 배운 개념을 활용한 다양한 실전 예제와 연습문제입니다.</p>
+
+<h2 class="section-title">실생활 연결</h2>
+<div class="tip"><span class="tip-label">[실생활] 이 개념은 어디에 쓰일까?</span>
+게임 개발, 앱 만들기, 웹사이트, 로봇 제어, AI 학습 등 모든 분야에서 사용돼요!</div>
+
+<h2 class="section-title">추가 연습문제</h2>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 20</span><p style="margin:0;font-size:14px">이번 유닛에서 배운 핵심 개념 3가지를 자신의 말로 설명해 보세요.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 21</span><p style="margin:0;font-size:14px">이번 유닛의 개념을 활용한 자신만의 문제를 1개 만들어 보세요.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 22</span><p style="margin:0;font-size:14px">이번 유닛의 개념이 C언어에서 어떻게 사용되는지 조사해 보세요.</p></div>
+<h2 class="section-title">[심화] 더 알아보기</h2>
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+
+<p>이번 유닛의 모든 개념을 완전히 이해했습니다. 다음 유닛에서 더 발전된 개념을 배워보세요!</p>
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<div class="note-box"><span class="note-label">[다음 유닛 미리보기]</span>
+그래프를 배웠으니 이제 <b>스택과 큐</b>를 배울 차례!</div>
+
+
+    <span class="page-num">2</span>
+  </div>
+</div>
+</body>
+</html>

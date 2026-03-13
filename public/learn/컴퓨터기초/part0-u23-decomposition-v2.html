@@ -1,0 +1,1316 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>코딩쏙 교재 — 분해 (Decomposition)</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+
+  :root {
+    --navy: #1a2e4a;
+    --navy-mid: #2c4a6e;
+    --navy-light: #3d6590;
+    --orange: #e07830;
+    --orange-light: #f5e6d8;
+    --white: #ffffff;
+    --bg: #f7f8fa;
+    --bg-warm: #faf9f7;
+    --gray-50: #f9fafb;
+    --gray-100: #f3f4f6;
+    --gray-200: #e5e7eb;
+    --gray-300: #d1d5db;
+    --gray-400: #9ca3af;
+    --gray-500: #6b7280;
+    --gray-600: #4b5563;
+    --gray-700: #374151;
+    --gray-800: #1f2937;
+    --text: #2d3748;
+    --green: #16a34a;
+    --green-bg: #dcfce7;
+    --red: #dc2626;
+    --red-bg: #fee2e2;
+    --blue: #2563eb;
+    --blue-bg: #dbeafe;
+    --yellow-bg: #fef9c3;
+    --font: 'Noto Sans KR', sans-serif;
+    --mono: 'JetBrains Mono', 'Consolas', monospace;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: var(--font); background: #e8eaed; font-size: 15px; }
+
+  /* ========== PAGE ========== */
+  .page {
+    width: 210mm;
+    min-height: 295mm;
+    margin: 24px auto;
+    background: var(--white);
+    box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* ========== PAGE 1: CHAPTER START ========== */
+  .chapter-page {
+    display: flex;
+    min-height: 295mm;
+  }
+
+  .chapter-sidebar {
+    width: 10px;
+    background: var(--navy);
+    flex-shrink: 0;
+  }
+
+  .chapter-accent-bar {
+    width: 7px;
+    background: var(--orange);
+    flex-shrink: 0;
+  }
+
+  .chapter-body {
+    flex: 1;
+    padding: 70px 65px 50px 55px;
+    position: relative;
+  }
+
+  .chapter-watermark {
+    position: absolute;
+    top: -10px;
+    right: -15px;
+    font-size: 280px;
+    font-weight: 900;
+    color: rgba(180,195,212,0.35);
+    line-height: 1;
+    pointer-events: none;
+    letter-spacing: -10px;
+  }
+
+  .chapter-label {
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--navy-mid);
+    letter-spacing: 2px;
+    margin-bottom: 4px;
+  }
+
+  .chapter-title {
+    font-size: 44px;
+    font-weight: 900;
+    color: var(--navy);
+    line-height: 1.15;
+    margin-bottom: 12px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .chapter-sub {
+    font-size: 16px;
+    color: var(--gray-500);
+    font-weight: 400;
+    margin-bottom: 20px;
+    padding-bottom: 28px;
+    border-bottom: 1px solid var(--gray-200);
+  }
+
+  /* Learning objectives */
+  .obj-title {
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--navy);
+    margin-bottom: 16px;
+    margin-top: 32px;
+  }
+
+  .obj-list {
+    list-style: none;
+    margin-bottom: 40px;
+  }
+
+  .obj-list li {
+    padding: 5px 0 5px 24px;
+    position: relative;
+    font-size: 15px;
+    color: var(--gray-700);
+    line-height: 1.6;
+  }
+
+  .obj-list li::before {
+    content: '•';
+    position: absolute;
+    left: 8px;
+    color: var(--navy-mid);
+    font-weight: 700;
+  }
+
+  /* Prerequisites flow */
+  .prereq-title {
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--navy);
+    margin-bottom: 18px;
+  }
+
+  .prereq-flow {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    margin-bottom: 44px;
+  }
+
+  .prereq-item {
+    padding: 9px 22px;
+    border: 1.5px solid var(--gray-300);
+    border-radius: 50px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--gray-600);
+    background: var(--white);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+  }
+
+  .prereq-item.current {
+    border-color: var(--navy);
+    color: var(--navy);
+    font-weight: 700;
+    background: #edf2f7;
+    box-shadow: 0 2px 6px rgba(26,46,74,0.12);
+  }
+
+  .prereq-arrow {
+    width: 36px;
+    text-align: center;
+    color: var(--gray-300);
+    font-size: 18px;
+    font-weight: 300;
+  }
+
+  /* Predict box */
+  .predict-box {
+    background: var(--gray-50);
+    border: 1.5px solid var(--gray-200);
+    border-radius: 12px;
+    padding: 24px 28px;
+  }
+
+  .predict-label {
+    display: inline-block;
+    background: var(--orange);
+    color: var(--white);
+    font-size: 12px;
+    font-weight: 600;
+    padding: 3px 12px;
+    border-radius: 4px;
+    margin-bottom: 14px;
+    letter-spacing: 0.5px;
+  }
+
+  .predict-q {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--navy);
+    margin-bottom: 16px;
+  }
+
+  .predict-code {
+    background: var(--white);
+    border: 1px solid var(--gray-200);
+    border-radius: 8px;
+    padding: 14px 18px;
+    font-family: var(--mono);
+    font-size: 13px;
+    line-height: 1.65;
+    color: var(--gray-700);
+  }
+
+  /* ========== PAGE 2: CORE CONTENT ========== */
+  .content-page {
+    padding: 55px 65px;
+  }
+
+  .unit-header-bar {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    margin-bottom: 8px;
+  }
+
+  .unit-tag {
+    font-size: 12px;
+    color: var(--orange);
+    font-weight: 600;
+    letter-spacing: 1px;
+  }
+
+  .unit-title-sm {
+    font-size: 14px;
+    color: var(--gray-400);
+    font-weight: 400;
+  }
+
+  .section-title {
+    font-size: 24px;
+    font-weight: 800;
+    color: var(--navy);
+    margin-bottom: 24px;
+    margin-top: 8px;
+    padding-left: 16px;
+    border-left: 5px solid var(--orange);
+  }
+
+  p {
+    font-size: 15.5px;
+    line-height: 1.9;
+    color: var(--text);
+    margin-bottom: 18px;
+  }
+
+  p code {
+    font-family: var(--mono);
+    font-size: 13.5px;
+    background: #f1f3f5;
+    padding: 2px 7px;
+    border-radius: 4px;
+    color: var(--navy);
+    font-weight: 500;
+  }
+
+  /* Code block */
+  .code-wrap {
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    border: 1px solid var(--gray-200);
+    margin: 22px 0;
+  }
+
+  .code-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 9px 18px;
+    background: var(--navy);
+    font-size: 12px;
+  }
+
+  .code-bar-lang {
+    font-family: var(--mono);
+    font-weight: 600;
+    color: var(--white);
+  }
+
+  .code-bar-file {
+    color: rgba(255,255,255,0.6);
+    font-weight: 400;
+  }
+
+  .code-body {
+    background: #f8f9fb;
+    padding: 20px 0;
+    font-family: var(--mono);
+    font-size: 13.5px;
+    line-height: 1.75;
+    border: 1px solid var(--gray-200);
+    border-top: none;
+    border-radius: 0 0 12px 12px;
+  }
+
+  .code-line {
+    display: flex;
+    padding: 0 20px;
+  }
+
+  .code-line:hover {
+    background: #f0f4f8;
+  }
+
+  .code-line.highlighted {
+    background: #fff8e1;
+  }
+
+  .ln {
+    width: 30px;
+    text-align: right;
+    color: #b8bfc8;
+    font-size: 12px;
+    margin-right: 18px;
+    user-select: none;
+    flex-shrink: 0;
+    padding-top: 1px;
+  }
+
+  .lc { flex: 1; }
+
+  /* syntax */
+  .s-pp { color: #8b5cf6; font-weight: 600; }
+  .s-str { color: #d97706; }
+  .s-type { color: #2563eb; font-weight: 500; }
+  .s-kw { color: #7c3aed; font-weight: 500; }
+  .s-fn { color: #059669; font-weight: 500; }
+  .s-num { color: #dc2626; }
+  .s-cm { color: #9ca3af; font-style: italic; }
+
+  /* Output block */
+  .output-wrap {
+    border-radius: 10px;
+    overflow: hidden;
+    margin: 10px 0 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    border: 1px solid #d1d5db;
+  }
+
+  .output-bar {
+    padding: 9px 18px;
+    background: #374151;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--white);
+    letter-spacing: 0.5px;
+  }
+
+  .output-body {
+    padding: 16px 20px;
+    font-family: var(--mono);
+    font-size: 13.5px;
+    line-height: 1.7;
+    color: var(--gray-800);
+    background: #f1f5f9;
+    border: 1px solid var(--gray-200);
+    border-top: none;
+    border-radius: 0 0 10px 10px;
+  }
+
+  /* Callout */
+  .tip {
+    margin: 28px 0;
+    padding: 18px 24px;
+    background: #dbeafe;
+    border-left: 5px solid #2563eb;
+    border-radius: 0 12px 12px 0;
+    font-size: 14.5px;
+    line-height: 1.8;
+    color: var(--text);
+  }
+
+  .tip-label {
+    font-weight: 700;
+    color: #2563eb;
+    font-size: 13px;
+    display: block;
+    margin-bottom: 4px;
+  }
+
+  .warn {
+    margin: 28px 0;
+    padding: 18px 24px;
+    background: #fef3c7;
+    border-left: 5px solid #d97706;
+    border-radius: 0 12px 12px 0;
+    font-size: 14.5px;
+    line-height: 1.8;
+  }
+
+  .warn-label {
+    font-weight: 700;
+    color: #d97706;
+    font-size: 13px;
+    display: block;
+    margin-bottom: 4px;
+  }
+
+  .note-box {
+    margin: 28px 0;
+    padding: 18px 24px;
+    background: #e2e8f0;
+    border-left: 5px solid #64748b;
+    border-radius: 0 12px 12px 0;
+    font-size: 14.5px;
+    line-height: 1.8;
+  }
+
+  .note-label {
+    font-weight: 700;
+    color: var(--gray-600);
+    font-size: 13px;
+    display: block;
+    margin-bottom: 4px;
+  }
+
+  /* Trace table */
+  table.trace {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    margin: 28px 0;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+    font-size: 14px;
+  }
+
+  table.trace th {
+    background: var(--navy);
+    color: var(--white);
+    padding: 10px 16px;
+    text-align: left;
+    font-weight: 500;
+    font-size: 13px;
+  }
+
+  table.trace td {
+    padding: 10px 16px;
+    border-bottom: 1px solid var(--gray-200);
+    color: var(--gray-700);
+  }
+
+  table.trace tr:nth-child(even) td { background: var(--gray-50); }
+  table.trace tr:last-child td { border-bottom: none; }
+
+  table.trace td code {
+    font-family: var(--mono);
+    font-size: 12.5px;
+    background: #eef1f5;
+    padding: 2px 6px;
+    border-radius: 4px;
+    color: var(--navy);
+  }
+
+  /* ========== PAGE 3: PROBLEMS ========== */
+  .problems-header {
+    margin-bottom: 8px;
+  }
+
+  .problems-chapter-ref {
+    font-size: 13px;
+    color: var(--gray-500);
+    margin-bottom: 4px;
+  }
+
+  .problems-title {
+    font-size: 28px;
+    font-weight: 800;
+    color: var(--navy);
+    margin-bottom: 24px;
+  }
+
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 16px;
+  }
+
+  .prob-card {
+    background: var(--white);
+    border: 1px solid var(--gray-200);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 3px 15px rgba(0,0,0,0.06);
+  }
+
+  .prob-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 16px;
+    background: var(--navy);
+  }
+
+  .prob-num {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--white);
+  }
+
+  .diff {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    font-size: 12px;
+    font-weight: 800;
+  }
+
+  .diff-basic { background: #22c55e; color: white; }
+  .diff-mid { background: #f59e0b; color: white; }
+  .diff-hard { background: #ef4444; color: white; }
+
+  .prob-desc {
+    font-size: 13.5px;
+    line-height: 1.65;
+    color: var(--gray-600);
+    margin-bottom: 10px;
+    padding: 14px 16px 0;
+  }
+
+  .prob-code {
+    background: var(--gray-50);
+    border: 1px solid var(--gray-200);
+    border-radius: 6px;
+    padding: 10px 14px;
+    margin: 0 16px 16px;
+    font-family: var(--mono);
+    font-size: 12.5px;
+    line-height: 1.55;
+    color: var(--gray-600);
+  }
+
+  /* Competition section */
+  .comp-section {
+    margin-top: 32px;
+    padding-top: 24px;
+    border-top: 2px solid var(--navy);
+  }
+
+  .comp-title {
+    font-size: 22px;
+    font-weight: 800;
+    color: var(--navy);
+    margin-bottom: 20px;
+  }
+
+  .comp-card {
+    background: var(--white);
+    border: 1.5px solid var(--gray-200);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 18px rgba(0,0,0,0.06);
+  }
+
+  .comp-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 16px;
+    background: #0f766e;
+  }
+
+  .comp-header .comp-name {
+    color: var(--white);
+    font-size: 15px;
+    font-weight: 700;
+    margin: 0;
+  }
+
+  .comp-inner {
+    padding: 14px 18px 18px;
+  }
+
+  .comp-badge {
+    display: inline-block;
+    padding: 3px 12px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 700;
+  }
+
+  .badge-bj { background: #93c5fd; color: #1e3a5f; }
+  .badge-cu { background: #c4b5fd; color: #3b1f7e; }
+  .badge-pg { background: #7dd3fc; color: #0c4a6e; }
+
+  .comp-name {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--navy);
+    margin-bottom: 6px;
+  }
+
+  .comp-desc {
+    font-size: 14px;
+    color: var(--gray-600);
+    line-height: 1.7;
+    margin-bottom: 14px;
+  }
+
+  .io-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+
+  .io-card {
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid var(--gray-200);
+  }
+
+  .io-h {
+    padding: 6px 14px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--gray-600);
+    background: #e2e8f0;
+  }
+
+  .io-c {
+    padding: 10px 14px;
+    font-family: var(--mono);
+    font-size: 13px;
+    line-height: 1.5;
+    background: var(--white);
+  }
+
+  /* ========== DEBUG LAB ========== */
+  .debug-section {
+    margin: 24px 0;
+    border: 2px solid var(--red);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+
+  .debug-bar {
+    background: var(--red);
+    color: var(--white);
+    padding: 10px 20px;
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 1px;
+  }
+
+  .debug-body {
+    padding: 20px;
+    background: #fef2f2;
+  }
+
+  /* 10축 connection */
+  .connect-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 16px;
+    margin: 28px 0;
+  }
+
+  .connect-card {
+    border-radius: 12px;
+    padding: 20px;
+    text-align: center;
+    border: 1px solid var(--gray-200);
+    box-shadow: 0 3px 14px rgba(0,0,0,0.05);
+  }
+
+  .connect-card h5 {
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 8px;
+  }
+
+  .connect-card p {
+    font-size: 13px;
+    margin: 0;
+    color: var(--gray-600);
+    line-height: 1.6;
+  }
+
+  .cc1 { border-top: 3px solid #8b5cf6; }
+  .cc1 h5 { color: #8b5cf6; }
+  .cc2 { border-top: 3px solid var(--green); }
+  .cc2 h5 { color: var(--green); }
+  .cc3 { border-top: 3px solid var(--navy); }
+  .cc3 h5 { color: var(--navy); }
+
+  /* PAGE NUMBER */
+  .page-num {
+    position: absolute;
+    bottom: 20px;
+    right: 30px;
+    font-size: 12px;
+    color: var(--gray-400);
+  }
+
+  /* WARMUP */
+  .warmup-box {
+    background: #e0e7f1;
+    border-radius: 12px;
+    padding: 24px 28px;
+    margin: 28px 0;
+    border: 2px solid #c7d2e0;
+  }
+
+  .warmup-title {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--navy);
+    margin-bottom: 14px;
+  }
+
+  .wq {
+    padding: 9px 16px;
+    background: var(--white);
+    border-radius: 8px;
+    margin-bottom: 8px;
+    font-size: 14px;
+    border: 1px solid var(--gray-200);
+    color: var(--gray-700);
+  }
+
+  .wq b { color: var(--navy); margin-right: 6px; }
+  .wq .hint { color: var(--gray-400); font-size: 13px; }
+
+  /* ===== CONTEST PROBLEMS PAGE ===== */
+  .contest-page-wrap .chapter-page {
+    min-height: auto;
+  }
+
+  .contest-page-wrap .chapter-page > div:last-child {
+    min-width: 0;
+    overflow-wrap: break-word;
+    word-break: break-word;
+  }
+
+  .contest-card {
+    background: white;
+    border: 1.5px solid var(--gray-200);
+    border-radius: 12px;
+    margin-bottom: 28px;
+    overflow: hidden;
+    break-inside: avoid;
+  }
+
+  .contest-header {
+    background: var(--navy);
+    color: white;
+    padding: 14px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .contest-num-source {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .contest-num {
+    font-weight: 700;
+    font-size: 16px;
+  }
+
+  .contest-source {
+    background: rgba(255,255,255,0.15);
+    padding: 3px 10px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 500;
+  }
+
+  .contest-body {
+    padding: 20px 24px 24px;
+  }
+
+  .contest-question {
+    font-size: 15px;
+    line-height: 1.7;
+    color: var(--text);
+    margin: 0 0 16px;
+    word-break: break-word;
+    overflow-wrap: break-word;
+  }
+
+  .contest-expected {
+    background: #1e293b;
+    border-radius: 8px;
+    overflow: hidden;
+    margin-bottom: 20px;
+  }
+
+  .contest-expected-label {
+    background: #334155;
+    color: #94a3b8;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 6px 14px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .contest-expected-body {
+    color: #e2e8f0;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    line-height: 1.6;
+    padding: 12px 16px;
+    margin: 0;
+    white-space: pre;
+  }
+
+  .contest-write-area {
+    border: 2px dashed var(--gray-300);
+    border-radius: 10px;
+    overflow: hidden;
+    transition: border-color 0.2s;
+  }
+
+  .contest-write-area:focus-within {
+    border-color: var(--orange);
+    border-style: solid;
+  }
+
+  .contest-write-label {
+    background: var(--bg);
+    color: var(--gray-500);
+    font-size: 12px;
+    font-weight: 600;
+    padding: 8px 14px;
+    border-bottom: 1px solid var(--gray-200);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .contest-textarea {
+    width: 100%;
+    min-height: 200px;
+    padding: 16px 18px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    line-height: 1.7;
+    color: var(--text);
+    background: #fafbfc;
+    border: none;
+    outline: none;
+    resize: vertical;
+    tab-size: 4;
+    box-sizing: border-box;
+  }
+
+  .contest-textarea::placeholder {
+    color: var(--gray-300);
+  }
+
+  @media print {
+    body { background: white; }
+    .page { box-shadow: none; margin: 0; page-break-after: always; }
+    .contest-textarea { border: 1px solid var(--gray-300); min-height: 180px; }
+  }
+
+</style>
+</head>
+<body>
+
+<div class="page">
+  <div class="chapter-page">
+    <div class="chapter-sidebar"></div>
+    <div class="chapter-accent-bar"></div>
+    <div class="chapter-body">
+      <div class="chapter-watermark">23</div>
+      <div class="chapter-label">Chapter 23</div>
+      <h1 class="chapter-title">분해 (Decomposition)</h1>
+      <p class="chapter-sub">큰 문제를 작은 조각으로 나누면 쉽게 풀 수 있어요. 분해는 컴퓨팅 사고력의 첫 번째 단계예요.</p>
+
+      <h3 class="obj-title">이 유닛에서 배우는 것</h3>
+      <ul class="obj-list">
+        <li>문제를 작은 부분으로 나누는 분해 전략을 이해해요.</li>
+        <li>큰 문제를 단계별로 쪼개서 풀 수 있어요.</li>
+        <li>프로그래밍에서 함수로 분해하는 방법을 알아요.</li>
+        <li>[심화] 하향식(Top-down)과 상향식(Bottom-up) 분해를 비교해요.</li>
+        <li>[심화] 모듈화와 재사용성의 가치를 이해해요.</li>
+        <li>[심화 내용] 분할 정복(Divide and Conquer) 알고리즘을 이해해요.</li>
+        <li>[심화 내용] 소프트웨어 아키텍처의 분해 원칙을 알아요.</li>
+        <li>[심화 내용] 마이크로서비스와 모놀리식의 차이를 이해해요.</li>
+        <li>[심화 내용] Unix 철학과 단일 책임 원칙을 알아요.</li>
+      </ul>
+
+      <h3 class="prereq-title">선수 학습</h3>
+      <div class="prereq-flow">
+        <div class="prereq-item">일상생활에서 순서대로 일을 해 본 경험</div><div class="prereq-arrow">→</div>
+        <div class="prereq-item current">함수 호출 개념 (맛보기 수준)</div>
+      </div>
+
+      
+
+      <span class="page-num">1</span>
+    </div>
+  </div>
+</div>
+<div class="page">
+  <div class="content-page">
+    <div class="unit-header-bar">
+      <span class="unit-tag">UNIT 23</span>
+      <span class="unit-title-sm">분해 (Decomposition)</span>
+    </div>
+<h2 class="section-title">문제가 너무 커! 어떡하지?</h2>
+
+<p>세상의 모든 큰 문제는 사실 <b>작은 문제들의 모음</b>이에요. 100페이지 공부도, 학교 축제 준비도, 게임 만들기도 — 전부 작은 조각으로 나눌 수 있어요. 이렇게 큰 문제를 작은 조각으로 쪼개는 것을 <b>분해(Decomposition)</b>라고 해요.</p>
+<div class="note-box"><span class="note-label">[핵심] 분해란?</span>
+<b>분해(Decomposition)</b> = 크고 복잡한 문제를 <b>작고 간단한 조각</b>으로 나누는 것<br><br>왜 분해할까?<br>1. 작은 문제는 <b>풀기 쉬워요</b><br>2. 한 조각씩 <b>차근차근</b> 해결할 수 있어요<br>3. 여러 사람이 <b>나눠서</b> 할 수 있어요<br>4. 버그가 생기면 <b>어디서 틀렸는지</b> 찾기 쉬워요</div>
+<div style="margin:22px 0"></div>
+<!-- image -->
+<h2 class="section-title">예시 1: 아침 등교 분해하기</h2>
+<p>"학교에 가기"는 꽤 큰 일이에요. 하지만 분해하면 이렇게 돼요.</p>
+<!-- image -->
+<table class="trace"><thead><tr><th>단계</th><th>할 일</th><th>걸리는 시간</th><th>필요한 것</th></tr></thead><tbody><tr><td>1</td><td>알람 끄기</td><td>1분</td><td>알람 시계</td></tr><tr><td>2</td><td>세수하기</td><td>5분</td><td>수건, 치약</td></tr><tr><td>3</td><td>옷 입기</td><td>5분</td><td>교복 또는 사복</td></tr><tr><td>4</td><td>밥 먹기</td><td>15분</td><td>아침 식사</td></tr><tr><td>5</td><td>가방 챙기기</td><td>3분</td><td>교과서, 필통</td></tr><tr><td>6</td><td>출발하기</td><td>1분</td><td>신발, 열쇠</td></tr></tbody></table>
+
+<h2 class="section-title">예시 2: 자판기 분해하기</h2>
+<!-- image -->
+<div style="margin:22px 0"></div>
+<h2 class="section-title">C 언어에서의 분해 = 함수!</h2>
+<p>프로그래밍에서 분해는 <b>함수</b>로 구현해요. main() 안에 모든 코드를 넣는 대신, 작은 함수들로 쪼개면 읽기도 쉽고 수정하기도 쉬워요.</p>
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span><span class="code-bar-file">no_decompose.c</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc"><span class="s-cm">// ❌ 분해 안 한 코드 — main에 다 넣기</span></span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;stdio.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">4</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">main</span>(<span class="s-type">void</span>) {</span></div>
+<div class="code-line"><span class="ln">5</span><span class="lc">    <span class="s-cm">// 물 끓이기</span></span></div>
+<div class="code-line"><span class="ln">6</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"물을 냄비에 넣습니다\n"</span>);</span></div>
+<div class="code-line"><span class="ln">7</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"불을 켭니다\n"</span>);</span></div>
+<div class="code-line"><span class="ln">8</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"물이 끓을 때까지 기다립니다\n"</span>);</span></div>
+<div class="code-line"><span class="ln">9</span><span class="lc">    <span class="s-cm">// 스프 넣기</span></span></div>
+<div class="code-line"><span class="ln">10</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"스프 봉지를 뜯습니다\n"</span>);</span></div>
+<div class="code-line"><span class="ln">11</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"스프를 물에 넣습니다\n"</span>);</span></div>
+<div class="code-line"><span class="ln">12</span><span class="lc">    <span class="s-cm">// 면 넣기</span></span></div>
+<div class="code-line"><span class="ln">13</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"면을 넣습니다\n"</span>);</span></div>
+<div class="code-line"><span class="ln">14</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"3분 기다립니다\n"</span>);</span></div>
+<div class="code-line"><span class="ln">15</span><span class="lc">    <span class="s-cm">// 완성</span></span></div>
+<div class="code-line"><span class="ln">16</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"그릇에 담습니다\n"</span>);</span></div>
+<div class="code-line"><span class="ln">17</span><span class="lc">    <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">18</span><span class="lc">}</span></div>
+</div>
+</div>
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span><span class="code-bar-file">decompose.c</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc"><span class="s-cm">// ✅ 분해한 코드 — 함수로 쪼개기</span></span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;stdio.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">4</span><span class="lc"><span class="s-type">void</span> <span class="s-fn">boilWater</span>(<span class="s-type">void</span>) {</span></div>
+<div class="code-line"><span class="ln">5</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"물을 냄비에 넣습니다\n"</span>);</span></div>
+<div class="code-line"><span class="ln">6</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"불을 켭니다\n"</span>);</span></div>
+<div class="code-line"><span class="ln">7</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"물이 끓을 때까지 기다립니다\n"</span>);</span></div>
+<div class="code-line"><span class="ln">8</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">9</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">10</span><span class="lc"><span class="s-type">void</span> <span class="s-fn">addSoup</span>(<span class="s-type">void</span>) {</span></div>
+<div class="code-line"><span class="ln">11</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"스프 봉지를 뜯습니다\n"</span>);</span></div>
+<div class="code-line"><span class="ln">12</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"스프를 물에 넣습니다\n"</span>);</span></div>
+<div class="code-line"><span class="ln">13</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">14</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">15</span><span class="lc"><span class="s-type">void</span> <span class="s-fn">addNoodle</span>(<span class="s-type">void</span>) {</span></div>
+<div class="code-line"><span class="ln">16</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"면을 넣습니다\n"</span>);</span></div>
+<div class="code-line"><span class="ln">17</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"3분 기다립니다\n"</span>);</span></div>
+<div class="code-line"><span class="ln">18</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">19</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">20</span><span class="lc"><span class="s-type">void</span> <span class="s-fn">serve</span>(<span class="s-type">void</span>) {</span></div>
+<div class="code-line"><span class="ln">21</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"그릇에 담습니다\n"</span>);</span></div>
+<div class="code-line"><span class="ln">22</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">23</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">24</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">main</span>(<span class="s-type">void</span>) {</span></div>
+<div class="code-line"><span class="ln">25</span><span class="lc">    <span class="s-fn">boilWater</span>();   <span class="s-cm">// 1. 물 끓이기</span></span></div>
+<div class="code-line"><span class="ln">26</span><span class="lc">    <span class="s-fn">addSoup</span>();     <span class="s-cm">// 2. 스프 넣기</span></span></div>
+<div class="code-line"><span class="ln">27</span><span class="lc">    <span class="s-fn">addNoodle</span>();   <span class="s-cm">// 3. 면 넣기</span></span></div>
+<div class="code-line"><span class="ln">28</span><span class="lc">    <span class="s-fn">serve</span>();       <span class="s-cm">// 4. 담기</span></span></div>
+<div class="code-line"><span class="ln">29</span><span class="lc">    <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">30</span><span class="lc">}</span></div>
+</div>
+</div>
+<!-- image -->
+<table class="trace"><thead><tr><th>비교 항목</th><th>분해 안 한 코드</th><th>함수로 분해한 코드</th></tr></thead><tbody><tr><td>함수 개수</td><td>main() 1개뿐</td><td>boilWater, addSoup 등 5개</td></tr><tr><td>줄 수 (main)</td><td>약 12줄</td><td>약 5줄</td></tr><tr><td>읽기 쉬움</td><td>주석 없으면 무슨 일인지 모름</td><td>함수 이름만 봐도 이해됨</td></tr><tr><td>수정 편의</td><td>전체를 다 살펴봐야 함</td><td>해당 함수만 고치면 됨</td></tr><tr><td>재사용</td><td>불가능</td><td>boilWater()를 다른 요리에도 사용 가능</td></tr></tbody></table>
+<div class="tip"><span class="tip-label">[팁] 함수 이름 짓기</span>
+함수 이름은 <b>뭘 하는지</b> 바로 알 수 있게 지어요.<br>• boilWater() — 물 끓이기<br>• addSoup() — 스프 넣기<br>• calculateScore() — 점수 계산하기<br><br>동사로 시작하면 좋아요!</div>
+<h2 class="section-title">[심화] 함수의 입력과 출력</h2>
+<p>함수는 <b>입력(매개변수)</b>을 받아서 <b>출력(반환값)</b>을 내놓을 수 있어요.</p>
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span><span class="code-bar-file">function_io.c</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;stdio.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc"><span class="s-cm">// 입력: 두 정수 a, b</span></span></div>
+<div class="code-line"><span class="ln">4</span><span class="lc"><span class="s-cm">// 출력: 두 수의 합 (int)</span></span></div>
+<div class="code-line"><span class="ln">5</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">add</span>(<span class="s-type">int</span> a, <span class="s-type">int</span> b) {</span></div>
+<div class="code-line"><span class="ln">6</span><span class="lc">    <span class="s-kw">return</span> a + b;</span></div>
+<div class="code-line"><span class="ln">7</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">8</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">9</span><span class="lc"><span class="s-cm">// 입력: 정수 n</span></span></div>
+<div class="code-line"><span class="ln">10</span><span class="lc"><span class="s-cm">// 출력: 없음 (void) — 화면에 출력만</span></span></div>
+<div class="code-line"><span class="ln">11</span><span class="lc"><span class="s-type">void</span> <span class="s-fn">printSquare</span>(<span class="s-type">int</span> n) {</span></div>
+<div class="code-line"><span class="ln">12</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"%d의 제곱 = %d\n"</span>, n, n * n);</span></div>
+<div class="code-line"><span class="ln">13</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">14</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">15</span><span class="lc"><span class="s-cm">// 입력: 없음</span></span></div>
+<div class="code-line"><span class="ln">16</span><span class="lc"><span class="s-cm">// 출력: 없음 — 인사만</span></span></div>
+<div class="code-line"><span class="ln">17</span><span class="lc"><span class="s-type">void</span> <span class="s-fn">greet</span>(<span class="s-type">void</span>) {</span></div>
+<div class="code-line"><span class="ln">18</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"안녕하세요!\n"</span>);</span></div>
+<div class="code-line"><span class="ln">19</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">20</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">21</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">main</span>(<span class="s-type">void</span>) {</span></div>
+<div class="code-line"><span class="ln">22</span><span class="lc">    <span class="s-fn">greet</span>();                          <span class="s-cm">// 입력X, 출력X</span></span></div>
+<div class="code-line"><span class="ln">23</span><span class="lc">    <span class="s-fn">printSquare</span>(<span class="s-num">5</span>);                   <span class="s-cm">// 입력O, 출력X</span></span></div>
+<div class="code-line"><span class="ln">24</span><span class="lc">    <span class="s-type">int</span> result = <span class="s-fn">add</span>(<span class="s-num">3</span>, <span class="s-num">4</span>);           <span class="s-cm">// 입력O, 출력O</span></span></div>
+<div class="code-line"><span class="ln">25</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"3 + 4 = %d\n"</span>, result);  <span class="s-cm">// 7</span></span></div>
+<div class="code-line"><span class="ln">26</span><span class="lc">    <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">27</span><span class="lc">}</span></div>
+</div>
+</div>
+<div class="output-wrap"><div class="output-bar">실행 결과</div><div class="output-body">안녕하세요!
+5의 제곱 = 25
+3 + 4 = 7</div></div>
+<div style="margin:22px 0"></div>
+<table class="trace"><thead><tr><th>유형</th><th>입력</th><th>출력</th><th>예시</th></tr></thead><tbody><tr><td>둘 다 없음</td><td>없음 (void)</td><td>없음 (void)</td><td>greet()</td></tr><tr><td>입력만</td><td>있음 (int n)</td><td>없음 (void)</td><td>printSquare(5)</td></tr><tr><td>출력만</td><td>없음</td><td>있음 (int)</td><td>getAge()</td></tr><tr><td>둘 다</td><td>있음 (int a, b)</td><td>있음 (int)</td><td>add(3, 4)</td></tr></tbody></table>
+<h2 class="section-title">[심화] Top-down vs Bottom-up</h2>
+<div class="debug-section"><div class="debug-bar">DEBUG LAB — 에러를 찾으시오</div><div class="debug-body">
+
+<p style="margin:14px 0 0; font-size:14px;"><b>에러:</b> </p>
+<p style="font-size:14px;"><b>수정:</b> </p>
+</div></div>
+
+<table class="trace"><thead><tr><th>프로젝트</th><th>Top-down 분해</th><th>Bottom-up 조립</th></tr></thead><tbody><tr><td>게임 만들기</td><td>게임 → 캐릭터/맵/UI/사운드</td><td>이동 함수 → 캐릭터 모듈 → 게임</td></tr><tr><td>웹사이트</td><td>사이트 → 메인/게시판/로그인</td><td>버튼 → 폼 → 페이지 → 사이트</td></tr><tr><td>요리 앱</td><td>앱 → 레시피/타이머/장보기</td><td>검색 기능 → 레시피 모듈 → 앱</td></tr><tr><td>학교 축제</td><td>축제 → 무대/부스/홍보/청소</td><td>포스터 → 홍보 팀 → 축제 전체</td></tr></tbody></table>
+<h2 class="section-title">[심화] 좋은 분해의 원칙</h2>
+<div class="debug-section"><div class="debug-bar">DEBUG LAB — 에러를 찾으시오</div><div class="debug-body">
+
+<p style="margin:14px 0 0; font-size:14px;"><b>에러:</b> </p>
+<p style="font-size:14px;"><b>수정:</b> </p>
+</div></div>
+<div class="note-box"><span class="note-label">[심화] 좋은 함수의 조건</span>
+1. <b>한 가지 일만</b> 한다 (SRP: Single Responsibility Principle)<br>2. <b>이름만 봐도</b> 뭘 하는지 안다<br>3. 너무 길지 않다 (20~30줄 이하 권장)<br>4. 다른 함수에 <b>의존이 적다</b> (독립적)<br>5. <b>재사용</b> 가능하다 (다른 곳에서도 쓸 수 있다)</div>
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span><span class="code-bar-file">bad_vs_good.c</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc"><span class="s-cm">// ❌ 나쁜 함수: 너무 많은 일을 함</span></span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc"><span class="s-type">void</span> <span class="s-fn">doEverything</span>(<span class="s-type">int</span> data[], <span class="s-type">int</span> n) {</span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc">    <span class="s-cm">// 정렬도 하고, 검색도 하고, 출력도 하고...</span></span></div>
+<div class="code-line"><span class="ln">4</span><span class="lc">    <span class="s-cm">// 200줄짜리 괴물 함수</span></span></div>
+<div class="code-line"><span class="ln">5</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">6</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">7</span><span class="lc"><span class="s-cm">// ✅ 좋은 분해: 각각 한 가지 일만</span></span></div>
+<div class="code-line"><span class="ln">8</span><span class="lc"><span class="s-type">void</span> <span class="s-fn">sortData</span>(<span class="s-type">int</span> data[], <span class="s-type">int</span> n) {</span></div>
+<div class="code-line"><span class="ln">9</span><span class="lc">    <span class="s-cm">// 정렬만!</span></span></div>
+<div class="code-line"><span class="ln">10</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">11</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">12</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">findMax</span>(<span class="s-type">int</span> data[], <span class="s-type">int</span> n) {</span></div>
+<div class="code-line"><span class="ln">13</span><span class="lc">    <span class="s-cm">// 최댓값 찾기만!</span></span></div>
+<div class="code-line"><span class="ln">14</span><span class="lc">    <span class="s-type">int</span> max = data[<span class="s-num">0</span>];</span></div>
+<div class="code-line"><span class="ln">15</span><span class="lc">    <span class="s-kw">for</span> (<span class="s-type">int</span> i = <span class="s-num">1</span>; i &lt; n; i++)</span></div>
+<div class="code-line"><span class="ln">16</span><span class="lc">        <span class="s-kw">if</span> (data[i] &gt; max) max = data[i];</span></div>
+<div class="code-line"><span class="ln">17</span><span class="lc">    <span class="s-kw">return</span> max;</span></div>
+<div class="code-line"><span class="ln">18</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">19</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">20</span><span class="lc"><span class="s-type">void</span> <span class="s-fn">printData</span>(<span class="s-type">int</span> data[], <span class="s-type">int</span> n) {</span></div>
+<div class="code-line"><span class="ln">21</span><span class="lc">    <span class="s-cm">// 출력만!</span></span></div>
+<div class="code-line"><span class="ln">22</span><span class="lc">    <span class="s-kw">for</span> (<span class="s-type">int</span> i = <span class="s-num">0</span>; i &lt; n; i++)</span></div>
+<div class="code-line"><span class="ln">23</span><span class="lc">        <span class="s-fn">printf</span>(<span class="s-str">"%d "</span>, data[i]);</span></div>
+<div class="code-line"><span class="ln">24</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"\n"</span>);</span></div>
+<div class="code-line"><span class="ln">25</span><span class="lc">}</span></div>
+</div>
+</div>
+<h2 class="section-title">[심화] 헤더 파일과 모듈화</h2>
+<p>함수가 많아지면 하나의 파일에 다 넣으면 복잡해져요. <b>헤더 파일(.h)</b>로 선언을 분리하고, <b>소스 파일(.c)</b>에 구현을 넣어요.</p>
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span><span class="code-bar-file">math_utils.h</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc"><span class="s-cm">// math_utils.h — 함수 선언 (인터페이스)</span></span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc"><span class="s-pp">#ifndef</span> MATH_UTILS_H</span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc"><span class="s-pp">#define</span> MATH_UTILS_H</span></div>
+<div class="code-line"><span class="ln">4</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">5</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">add</span>(<span class="s-type">int</span> a, <span class="s-type">int</span> b);</span></div>
+<div class="code-line"><span class="ln">6</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">multiply</span>(<span class="s-type">int</span> a, <span class="s-type">int</span> b);</span></div>
+<div class="code-line"><span class="ln">7</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">factorial</span>(<span class="s-type">int</span> n);</span></div>
+<div class="code-line"><span class="ln">8</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">9</span><span class="lc"><span class="s-pp">#endif</span></span></div>
+</div>
+</div>
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span><span class="code-bar-file">math_utils.c</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc"><span class="s-cm">// math_utils.c — 함수 구현</span></span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">"math_utils.h"</span></span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">4</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">add</span>(<span class="s-type">int</span> a, <span class="s-type">int</span> b) { <span class="s-kw">return</span> a + b; }</span></div>
+<div class="code-line"><span class="ln">5</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">multiply</span>(<span class="s-type">int</span> a, <span class="s-type">int</span> b) { <span class="s-kw">return</span> a * b; }</span></div>
+<div class="code-line"><span class="ln">6</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">factorial</span>(<span class="s-type">int</span> n) {</span></div>
+<div class="code-line"><span class="ln">7</span><span class="lc">    <span class="s-kw">if</span> (n &lt;= <span class="s-num">1</span>) <span class="s-kw">return</span> <span class="s-num">1</span>;</span></div>
+<div class="code-line"><span class="ln">8</span><span class="lc">    <span class="s-kw">return</span> n * <span class="s-fn">factorial</span>(n - <span class="s-num">1</span>);</span></div>
+<div class="code-line"><span class="ln">9</span><span class="lc">}</span></div>
+</div>
+</div>
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span><span class="code-bar-file">main.c</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc"><span class="s-cm">// main.c — 메인 프로그램</span></span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;stdio.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">"math_utils.h"</span>  <span class="s-cm">// 선언만 가져오기</span></span></div>
+<div class="code-line"><span class="ln">4</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">5</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">main</span>(<span class="s-type">void</span>) {</span></div>
+<div class="code-line"><span class="ln">6</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"%d\n"</span>, <span class="s-fn">add</span>(<span class="s-num">3</span>, <span class="s-num">4</span>));        <span class="s-cm">// 7</span></span></div>
+<div class="code-line"><span class="ln">7</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"%d\n"</span>, <span class="s-fn">factorial</span>(<span class="s-num">5</span>));      <span class="s-cm">// 120</span></span></div>
+<div class="code-line"><span class="ln">8</span><span class="lc">    <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">9</span><span class="lc">}</span></div>
+</div>
+</div>
+<table class="trace"><thead><tr><th>파일</th><th>역할</th><th>포함 내용</th><th>확장자</th></tr></thead><tbody><tr><td>헤더 파일</td><td>함수 선언 (인터페이스)</td><td>함수 원형, 상수 정의</td><td>.h</td></tr><tr><td>소스 파일</td><td>함수 구현 (본체)</td><td>함수의 실제 코드</td><td>.c</td></tr><tr><td>메인 파일</td><td>프로그램 시작점</td><td>main() 함수</td><td>.c</td></tr><tr><td>라이브러리</td><td>미리 만든 기능 모음</td><td>stdio.h, math.h 등</td><td>.h + .a/.so</td></tr></tbody></table>
+<div class="tip"><span class="tip-label">[팁] #ifndef / #endif = 인클루드 가드</span>
+같은 헤더가 여러 번 포함되는 것을 방지!<br><br>#ifndef MATH_UTILS_H → '이 이름이 정의 안 됐으면'<br>#define MATH_UTILS_H → '이 이름을 정의해'<br>...내용...<br>#endif → '끝'<br><br>두 번째 포함 시 이미 정의되어 있으므로 건너뜀.</div>
+<h2 class="section-title">[심화 내용] 분할정복 (Divide and Conquer)</h2>
+<p>분해의 알고리즘 버전! 문제를 <b>나누고(Divide)</b>, 각각 <b>풀고(Conquer)</b>, <b>합치는(Combine)</b> 전략이에요.</p>
+<div class="note-box"><span class="note-label">[심화 내용] 분할정복의 3단계</span>
+1. <b>Divide</b>: 문제를 2개 이상의 하위 문제로 나눈다<br>2. <b>Conquer</b>: 각 하위 문제를 재귀적으로 풀거나, 충분히 작으면 직접 푼다<br>3. <b>Combine</b>: 하위 문제의 해답을 합쳐 원래 문제의 해답을 만든다</div>
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span><span class="code-bar-file">merge_sort.c</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc"><span class="s-cm">// 병합 정렬 — 분할정복의 대표 예시</span></span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;stdio.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">4</span><span class="lc"><span class="s-type">void</span> <span class="s-fn">merge</span>(<span class="s-type">int</span> arr[], <span class="s-type">int</span> l, <span class="s-type">int</span> m, <span class="s-type">int</span> r) {</span></div>
+<div class="code-line"><span class="ln">5</span><span class="lc">    <span class="s-type">int</span> i = l, j = m + <span class="s-num">1</span>, k = <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">6</span><span class="lc">    <span class="s-type">int</span> temp[r - l + <span class="s-num">1</span>];</span></div>
+<div class="code-line"><span class="ln">7</span><span class="lc">    <span class="s-kw">while</span> (i &lt;= m &amp;&amp; j &lt;= r) {</span></div>
+<div class="code-line"><span class="ln">8</span><span class="lc">        <span class="s-kw">if</span> (arr[i] &lt;= arr[j]) temp[k++] = arr[i++];</span></div>
+<div class="code-line"><span class="ln">9</span><span class="lc">        <span class="s-kw">else</span> temp[k++] = arr[j++];</span></div>
+<div class="code-line"><span class="ln">10</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">11</span><span class="lc">    <span class="s-kw">while</span> (i &lt;= m) temp[k++] = arr[i++];</span></div>
+<div class="code-line"><span class="ln">12</span><span class="lc">    <span class="s-kw">while</span> (j &lt;= r) temp[k++] = arr[j++];</span></div>
+<div class="code-line"><span class="ln">13</span><span class="lc">    <span class="s-kw">for</span> (<span class="s-type">int</span> p = <span class="s-num">0</span>; p &lt; k; p++) arr[l + p] = temp[p];</span></div>
+<div class="code-line"><span class="ln">14</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">15</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">16</span><span class="lc"><span class="s-type">void</span> <span class="s-fn">mergeSort</span>(<span class="s-type">int</span> arr[], <span class="s-type">int</span> l, <span class="s-type">int</span> r) {</span></div>
+<div class="code-line"><span class="ln">17</span><span class="lc">    <span class="s-kw">if</span> (l &gt;= r) <span class="s-kw">return</span>;           <span class="s-cm">// 충분히 작으면 멈춤</span></span></div>
+<div class="code-line"><span class="ln">18</span><span class="lc">    <span class="s-type">int</span> m = (l + r) / <span class="s-num">2</span>;</span></div>
+<div class="code-line"><span class="ln">19</span><span class="lc">    <span class="s-fn">mergeSort</span>(arr, l, m);         <span class="s-cm">// 왼쪽 반 정렬</span></span></div>
+<div class="code-line"><span class="ln">20</span><span class="lc">    <span class="s-fn">mergeSort</span>(arr, m + <span class="s-num">1</span>, r);     <span class="s-cm">// 오른쪽 반 정렬</span></span></div>
+<div class="code-line"><span class="ln">21</span><span class="lc">    <span class="s-fn">merge</span>(arr, l, m, r);          <span class="s-cm">// 합치기</span></span></div>
+<div class="code-line"><span class="ln">22</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">23</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">24</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">main</span>(<span class="s-type">void</span>) {</span></div>
+<div class="code-line"><span class="ln">25</span><span class="lc">    <span class="s-type">int</span> arr[] = {<span class="s-num">5</span>, <span class="s-num">2</span>, <span class="s-num">8</span>, <span class="s-num">1</span>, <span class="s-num">9</span>, <span class="s-num">3</span>};</span></div>
+<div class="code-line"><span class="ln">26</span><span class="lc">    <span class="s-type">int</span> n = <span class="s-num">6</span>;</span></div>
+<div class="code-line"><span class="ln">27</span><span class="lc">    <span class="s-fn">mergeSort</span>(arr, <span class="s-num">0</span>, n - <span class="s-num">1</span>);</span></div>
+<div class="code-line"><span class="ln">28</span><span class="lc">    <span class="s-kw">for</span> (<span class="s-type">int</span> i = <span class="s-num">0</span>; i &lt; n; i++) <span class="s-fn">printf</span>(<span class="s-str">"%d "</span>, arr[i]);</span></div>
+<div class="code-line"><span class="ln">29</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"\n"</span>);  <span class="s-cm">// 1 2 3 5 8 9</span></span></div>
+<div class="code-line"><span class="ln">30</span><span class="lc">    <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">31</span><span class="lc">}</span></div>
+</div>
+</div>
+<div class="output-wrap"><div class="output-bar">실행 결과</div><div class="output-body">1 2 3 5 8 9</div></div>
+<div style="margin:22px 0"></div>
+<table class="trace"><thead><tr><th>알고리즘</th><th>Divide</th><th>Conquer</th><th>Combine</th><th>시간</th></tr></thead><tbody><tr><td>병합 정렬</td><td>반으로 나눔</td><td>각각 정렬</td><td>합병</td><td>O(n log n)</td></tr><tr><td>퀵 정렬</td><td>피벗 기준 분할</td><td>각각 정렬</td><td>없음(제자리)</td><td>O(n log n)</td></tr><tr><td>이진 탐색</td><td>반으로 나눔</td><td>한쪽만 탐색</td><td>없음</td><td>O(log n)</td></tr><tr><td>거듭제곱</td><td>지수를 반으로</td><td>재귀 계산</td><td>곱셈</td><td>O(log n)</td></tr></tbody></table>
+<table class="trace"><thead><tr><th>문제</th><th>일반 풀이</th><th>시간</th><th>분할정복</th><th>시간</th></tr></thead><tbody><tr><td>정렬 (n개)</td><td>버블 정렬</td><td>O(n²)</td><td>병합 정렬</td><td>O(n log n)</td></tr><tr><td>탐색 (정렬된 배열)</td><td>처음부터 하나씩</td><td>O(n)</td><td>이진 탐색</td><td>O(log n)</td></tr><tr><td>거듭제곱 (a^n)</td><td>a를 n번 곱하기</td><td>O(n)</td><td>지수를 반씩 나누기</td><td>O(log n)</td></tr><tr><td>큰 수 곱셈</td><td>필산 곱셈</td><td>O(n²)</td><td>카라츠바</td><td>O(n^1.585)</td></tr></tbody></table>
+<h2 class="section-title">[심화 내용] 리팩토링 — 코드 분해 개선</h2>
+<div class="note-box"><span class="note-label">[심화 내용] 리팩토링이란?</span>
+<b>리팩토링(Refactoring)</b> = 동작은 바꾸지 않으면서 코드 구조를 개선하는 것<br><br>대표적인 리팩토링:<br>• <b>함수 추출(Extract Function)</b>: 긴 코드에서 일부를 함수로 분리<br>• <b>변수 인라인</b>: 불필요한 임시 변수 제거<br>• <b>이름 바꾸기</b>: 의미 있는 이름으로 교체<br><br>마틴 파울러의 《Refactoring》 참조</div>
+<div class="debug-section"><div class="debug-bar">DEBUG LAB — 에러를 찾으시오</div><div class="debug-body">
+
+<p style="margin:14px 0 0; font-size:14px;"><b>에러:</b> </p>
+<p style="font-size:14px;"><b>수정:</b> </p>
+</div></div>
+<h2 class="section-title">활동: 라면 끓이기 분해!</h2>
+<!-- image -->
+<div class="tip"><span class="tip-label">[활동] 나만의 분해 도전!</span>
+다음 중 하나를 골라서 <b>최소 8단계</b>로 분해해 보세요!<br><br>1. 게임 한 판 하기<br>2. 햄버거 만들기<br>3. 도서관에서 책 빌리기<br>4. 생일 파티 준비하기<br><br>각 단계가 크면 더 작은 단계로 또 쪼개!</div>
+<h2 class="section-title">KOI 연결: 문제 분석의 첫걸음</h2>
+<div class="tip"><span class="tip-label">[KOI] 문제 분해 3단계</span>
+KOI 문제를 풀 때 가장 먼저 하는 것이 <b>분해</b>예요.<br><br>1. <b>입력</b>: 뭘 받지? (N, 배열, 좌표...)<br>2. <b>처리</b>: 뭘 해야 하지? (정렬, 탐색, 시뮬레이션...)<br>3. <b>출력</b>: 뭘 내놓지? (최댓값, 경로, 개수...)<br><br>이 3단계로 나누면 복잡한 문제도 길이 보여요!</div>
+<table class="trace"><thead><tr><th>문제</th><th>입력</th><th>처리</th><th>출력</th></tr></thead><tbody><tr><td>최댓값 구하기</td><td>정수 N개</td><td>배열 순회하며 비교</td><td>가장 큰 수</td></tr><tr><td>짝수 개수 세기</td><td>정수 N개</td><td>2로 나눠 나머지 확인</td><td>짝수의 개수</td></tr><tr><td>평균 구하기</td><td>정수 N개</td><td>합계 구한 뒤 N으로 나눔</td><td>평균값</td></tr><tr><td>문자열 뒤집기</td><td>문자열 1개</td><td>앞뒤 문자를 교환</td><td>뒤집힌 문자열</td></tr></tbody></table>
+<!-- fact-bite -->
+<h2 class="section-title">OX 퀴즈</h2>
+<!-- ox -->
+<h2 class="section-title">연습문제</h2>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 1</span><p style="margin:0;font-size:14px">분해(Decomposition)란 무엇인지 한 문장으로 설명하세요.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 2</span><p style="margin:0;font-size:14px">C에서 코드를 분해할 때 사용하는 것은? (1)변수 (2)배열 (3)함수 (4)for문</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 3</span><p style="margin:0;font-size:14px">분해의 장점 3가지를 쓰세요.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 4</span><p style="margin:0;font-size:14px">아침 등교를 5단계로 분해해 보세요.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 5</span><p style="margin:0;font-size:14px">함수 이름을 지을 때 어떤 품사로 시작하면 좋나요?</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 6</span><p style="margin:0;font-size:14px">"도서관에서 책 빌리기"를 6단계 이상으로 분해하세요.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 7</span><p style="margin:0;font-size:14px">SRP(단일 책임 원칙)가 무엇인지 설명하고, 위반 예시를 하나 드세요.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 8</span><p style="margin:0;font-size:14px">Top-down과 Bottom-up 분해의 차이를 레고 비유로 설명하세요.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 9</span><p style="margin:0;font-size:14px">헤더 파일(.h)과 소스 파일(.c)을 분리하는 이유를 설명하세요.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 10</span><p style="margin:0;font-size:14px">KOI 문제를 입력/처리/출력 3단계로 분해하는 예시를 하나 드세요.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 11</span><p style="margin:0;font-size:14px">[심화] 인클루드 가드(#ifndef)가 필요한 이유를 설명하세요.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 12</span><p style="margin:0;font-size:14px">[심화] 함수 추출 리팩토링이란 무엇인가요?</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 13</span><p style="margin:0;font-size:14px">[심화] 분할정복의 3단계(Divide, Conquer, Combine)를 병합 정렬로 설명하세요.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 14</span><p style="margin:0;font-size:14px">[심화 내용] 이진 탐색이 분할정복인 이유를 설명하세요.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 15</span><p style="margin:0;font-size:14px">[심화 내용] 병합 정렬의 시간 복잡도가 O(n log n)인 이유를 분해 깊이와 각 단계의 작업량으로 설명하세요.</p></div>
+<h2 class="section-title">용어 정리</h2>
+<h2 class="section-title">[심화 내용] 분할 정복 알고리즘</h2>
+<div class="note-box"><span class="note-label">[심화 내용] 분할 정복 (Divide and Conquer)</span>
+<b>3단계:</b><br>1. <b>분할(Divide)</b>: 문제를 작은 부분 문제로 나눔<br>2. <b>정복(Conquer)</b>: 각 부분 문제를 재귀적으로 해결<br>3. <b>결합(Combine)</b>: 부분 해를 합쳐서 전체 해 구성<br><br><b>대표 알고리즘:</b><br>- Merge Sort: 반으로 나누고, 정렬하고, 합치기 O(n log n)<br>- Quick Sort: 피벗 기준 분할, 재귀 O(n log n) 평균<br>- Binary Search: 반으로 나누고, 한쪽만 탐색 O(log n)<br>- Karatsuba 곱셈: 큰 수 곱셈 O(n^1.585)<br>- Strassen 행렬 곱: O(n^2.807) vs 일반 O(n^3)<br><br><b>마스터 정리:</b> T(n) = aT(n/b) + O(n^d)</div>
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span><span class="code-bar-file">[C 코드] 분할 정복 — 머지 소트</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;stdio.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc"><span class="s-type">void</span> <span class="s-fn">merge</span>(<span class="s-type">int</span> arr[], <span class="s-type">int</span> l, <span class="s-type">int</span> m, <span class="s-type">int</span> r) {</span></div>
+<div class="code-line"><span class="ln">4</span><span class="lc">    <span class="s-type">int</span> temp[<span class="s-num">100</span>], i = l, j = m+<span class="s-num">1</span>, k = <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">5</span><span class="lc">    <span class="s-kw">while</span> (i &lt;= m &amp;&amp; j &lt;= r)</span></div>
+<div class="code-line"><span class="ln">6</span><span class="lc">        temp[k++] = (arr[i] &lt;= arr[j]) ? arr[i++] : arr[j++];</span></div>
+<div class="code-line"><span class="ln">7</span><span class="lc">    <span class="s-kw">while</span> (i &lt;= m) temp[k++] = arr[i++];</span></div>
+<div class="code-line"><span class="ln">8</span><span class="lc">    <span class="s-kw">while</span> (j &lt;= r) temp[k++] = arr[j++];</span></div>
+<div class="code-line"><span class="ln">9</span><span class="lc">    <span class="s-kw">for</span> (<span class="s-type">int</span> t = <span class="s-num">0</span>; t &lt; k; t++) arr[l+t] = temp[t];</span></div>
+<div class="code-line"><span class="ln">10</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">11</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">12</span><span class="lc"><span class="s-type">void</span> <span class="s-fn">merge_sort</span>(<span class="s-type">int</span> arr[], <span class="s-type">int</span> l, <span class="s-type">int</span> r) {</span></div>
+<div class="code-line"><span class="ln">13</span><span class="lc">    <span class="s-kw">if</span> (l &gt;= r) <span class="s-kw">return</span>;</span></div>
+<div class="code-line"><span class="ln">14</span><span class="lc">    <span class="s-type">int</span> m = (l + r) / <span class="s-num">2</span>;</span></div>
+<div class="code-line"><span class="ln">15</span><span class="lc">    <span class="s-fn">merge_sort</span>(arr, l, m);     <span class="s-cm">// 왼쪽 정복</span></span></div>
+<div class="code-line"><span class="ln">16</span><span class="lc">    <span class="s-fn">merge_sort</span>(arr, m+<span class="s-num">1</span>, r);   <span class="s-cm">// 오른쪽 정복</span></span></div>
+<div class="code-line"><span class="ln">17</span><span class="lc">    <span class="s-fn">merge</span>(arr, l, m, r);       <span class="s-cm">// 결합!</span></span></div>
+<div class="code-line"><span class="ln">18</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">19</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">20</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">main</span>() {</span></div>
+<div class="code-line"><span class="ln">21</span><span class="lc">    <span class="s-type">int</span> arr[] = {<span class="s-num">38</span>, <span class="s-num">27</span>, <span class="s-num">43</span>, <span class="s-num">3</span>, <span class="s-num">9</span>, <span class="s-num">82</span>, <span class="s-num">10</span>};</span></div>
+<div class="code-line"><span class="ln">22</span><span class="lc">    <span class="s-type">int</span> n = <span class="s-num">7</span>;</span></div>
+<div class="code-line"><span class="ln">23</span><span class="lc">    <span class="s-fn">merge_sort</span>(arr, <span class="s-num">0</span>, n-<span class="s-num">1</span>);</span></div>
+<div class="code-line"><span class="ln">24</span><span class="lc">    <span class="s-kw">for</span> (<span class="s-type">int</span> i = <span class="s-num">0</span>; i &lt; n; i++) <span class="s-fn">printf</span>(<span class="s-str">"%d "</span>, arr[i]);</span></div>
+<div class="code-line"><span class="ln">25</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"\n"</span>);</span></div>
+<div class="code-line"><span class="ln">26</span><span class="lc">    <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">27</span><span class="lc">}</span></div>
+</div>
+</div>
+<div class="output-wrap"><div class="output-bar">실행 결과</div><div class="output-body">3 9 10 27 38 43 82</div></div>
+<h2 class="section-title">[심화 내용] 소프트웨어 분해 원칙</h2>
+<div class="note-box"><span class="note-label">[심화 내용] SOLID와 단일 책임 원칙</span>
+<b>Unix 철학:</b><br>"한 가지 일을 잘 하는 작은 프로그램을 만들어라"<br>ls | grep ".txt" | wc -l (파이프로 조합!)<br><br><b>단일 책임 원칙 (SRP):</b><br>각 모듈/함수/클래스는 하나의 책임만 가져야 한다<br><br><b>높은 응집도(Cohesion):</b><br>관련된 기능은 함께 모아두기<br><br><b>낮은 결합도(Coupling):</b><br>모듈 간 의존성을 최소화<br><br><b>인터페이스 분리:</b><br>필요한 것만 공개, 나머지는 숨기기 (캡슐화)</div>
+<div class="debug-section"><div class="debug-bar">DEBUG LAB — 에러를 찾으시오</div><div class="debug-body">
+
+<p style="margin:14px 0 0; font-size:14px;"><b>에러:</b> </p>
+<p style="font-size:14px;"><b>수정:</b> </p>
+</div></div>
+<h2 class="section-title">[심화 내용] 분해의 역사</h2>
+<div class="note-box"><span class="note-label">[심화 내용] 프로그래밍 분해의 진화</span>
+<b>1950s</b> — 서브루틴: GOTO 대신 CALL/RETURN<br><b>1960s</b> — 구조적 프로그래밍: 함수 단위 분해 (Dijkstra)<br><b>1970s</b> — 모듈: 관련 함수를 파일로 묶기 (Modula-2)<br><b>1980s</b> — 객체지향: 데이터+함수를 클래스로 캡슐화 (C++)<br><b>1990s</b> — 컴포넌트: 재사용 가능한 독립 단위 (COM, JavaBeans)<br><b>2000s</b> — SOA: 서비스 단위 분해 (웹 서비스)<br><b>2010s</b> — 마이크로서비스: 더 작은 독립 서비스 (Docker, K8s)<br><b>2020s</b> — 서버리스: 함수 단위 배포 (AWS Lambda)</div>
+<!-- fact-bite -->
+<!-- fact-bite -->
+<table class="trace"><thead><tr><th>용어</th><th>설명</th></tr></thead><tbody><tr><td><code>분해 (Decomposition)</code></td><td>크고 복잡한 문제를 작고 관리 가능한 조각으로 나누는 것.</td></tr><tr><td><code>함수 (Function)</code></td><td>특정 작업을 수행하는 코드 덩어리. 분해의 프로그래밍 도구.</td></tr><tr><td><code>매개변수 (Parameter)</code></td><td>함수에 전달하는 입력값. 예: add(3, 4)에서 3과 4.</td></tr><tr><td><code>반환값 (Return Value)</code></td><td>함수가 돌려주는 출력값. return으로 반환.</td></tr><tr><td><code>SRP</code></td><td>Single Responsibility Principle. 함수/클래스는 한 가지 일만 해야 한다.</td></tr><tr><td><code>Top-down</code></td><td>큰 문제부터 분해해 내려가는 방식. 설계도 먼저.</td></tr><tr><td><code>Bottom-up</code></td><td>작은 부품부터 쌓아 올리는 방식. 레고 블록 조립.</td></tr><tr><td><code>헤더 파일 (.h)</code></td><td>함수 선언을 모아둔 파일. 여러 소스에서 공유.</td></tr><tr><td><code>분할정복</code></td><td>Divide and Conquer. 나누고 → 풀고 → 합치기.</td></tr><tr><td><code>리팩토링</code></td><td>동작은 유지하면서 코드 구조를 개선하는 것.</td></tr><tr><td><code>모듈화</code></td><td>프로그램을 독립적인 부분(모듈)으로 나누는 것.</td></tr><tr><td><code>분할 정복</code></td><td>문제를 작은 부분으로 나누고(분할), 각각 풀고(정복), 합치는(결합) 알고리즘 설계 기법.</td></tr><tr><td><code>단일 책임 원칙</code></td><td>모듈/함수/클래스는 하나의 책임만 가져야 한다는 원칙.</td></tr><tr><td><code>응집도(Cohesion)</code></td><td>모듈 내부의 기능이 얼마나 관련되어 있는지. 높을수록 좋음.</td></tr><tr><td><code>결합도(Coupling)</code></td><td>모듈 간의 의존성 정도. 낮을수록 좋음.</td></tr><tr><td><code>마이크로서비스</code></td><td>큰 시스템을 작은 독립 서비스로 분해하는 아키텍처.</td></tr><tr><td><code>서버리스</code></td><td>함수 단위로 배포하고 실행하는 클라우드 컴퓨팅 모델.</td></tr></tbody></table>
+<div class="warmup-box"><div class="warmup-title">이번 유닛 핵심 정리</div><div class="wq"><b>1.</b> 분해 = 큰 문제를 작은 조각으로 나누기</div><div class="wq"><b>2.</b> 하향식: 큰 그림부터 → 세부사항</div><div class="wq"><b>3.</b> 상향식: 작은 조각부터 → 조합</div><div class="wq"><b>4.</b> 함수 = 코드의 분해 단위</div><div class="wq"><b>5.</b> [심화] 모듈화: 관련 함수를 파일로 묶기</div><div class="wq"><b>6.</b> [심화 내용] 분할 정복: 나누고 → 풀고 → 합치기</div><div class="wq"><b>7.</b> [심화 내용] Unix 철학: 한 가지 일을 잘 하라</div><div class="wq"><b>8.</b> [심화 내용] 마이크로서비스: 현대 웹의 분해 방식</div></div>
+<div class="tip"><span class="tip-label">이 유닛에서 연결된 축</span>
+<b>[컴퓨팅 사고력]</b> 분해 = 4대 핵심 중 첫 번째!<br><b>[C언어]</b> 함수, 헤더 파일, 모듈화<br><b>[KOI]</b> 문제 분석 = 입력/처리/출력 분해<br><b>[실생활]</b> 큰 일도 쪼개면 쉬워요<br><b>[디버깅]</b> 함수별로 쪼개면 버그 찾기 쉬움<br><b>[코딩기초]</b> 함수 = 프로그래밍의 기본 단위</div>
+<h2 class="section-title">실전 활용 연습</h2>
+<p>지금까지 배운 개념을 활용한 다양한 실전 예제와 연습문제입니다.</p>
+
+<h2 class="section-title">실생활 연결</h2>
+<div class="tip"><span class="tip-label">[실생활] 이 개념은 어디에 쓰일까?</span>
+게임 개발, 앱 만들기, 웹사이트, 로봇 제어, AI 학습 등 모든 분야에서 사용돼요!</div>
+
+<h2 class="section-title">추가 연습문제</h2>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 20</span><p style="margin:0;font-size:14px">이번 유닛에서 배운 핵심 개념 3가지를 자신의 말로 설명해 보세요.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 21</span><p style="margin:0;font-size:14px">이번 유닛의 개념을 활용한 자신만의 문제를 1개 만들어 보세요.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 22</span><p style="margin:0;font-size:14px">이번 유닛의 개념이 C언어에서 어떻게 사용되는지 조사해 보세요.</p></div>
+<h2 class="section-title">[심화] 더 알아보기</h2>
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+
+<p>이번 유닛의 모든 개념을 완전히 이해했습니다. 다음 유닛에서 더 발전된 개념을 배워보세요!</p>
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<div class="note-box"><span class="note-label">[다음 유닛 미리보기]</span>
+문제를 작은 조각으로 나눴어요. 그 조각들 속에서 <b>반복되는 규칙</b>이 보이면? 더 효율적으로 풀 수 있어요! 다음은 <b>패턴 인식</b>!</div>
+
+
+    <span class="page-num">2</span>
+  </div>
+</div>
+</body>
+</html>

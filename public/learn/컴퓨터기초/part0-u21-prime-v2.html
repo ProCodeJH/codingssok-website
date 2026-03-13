@@ -1,0 +1,1281 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>코딩쏙 교재 — 소수(Prime Number) — 나누어지지 않는 특별한 수</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+
+  :root {
+    --navy: #1a2e4a;
+    --navy-mid: #2c4a6e;
+    --navy-light: #3d6590;
+    --orange: #e07830;
+    --orange-light: #f5e6d8;
+    --white: #ffffff;
+    --bg: #f7f8fa;
+    --bg-warm: #faf9f7;
+    --gray-50: #f9fafb;
+    --gray-100: #f3f4f6;
+    --gray-200: #e5e7eb;
+    --gray-300: #d1d5db;
+    --gray-400: #9ca3af;
+    --gray-500: #6b7280;
+    --gray-600: #4b5563;
+    --gray-700: #374151;
+    --gray-800: #1f2937;
+    --text: #2d3748;
+    --green: #16a34a;
+    --green-bg: #dcfce7;
+    --red: #dc2626;
+    --red-bg: #fee2e2;
+    --blue: #2563eb;
+    --blue-bg: #dbeafe;
+    --yellow-bg: #fef9c3;
+    --font: 'Noto Sans KR', sans-serif;
+    --mono: 'JetBrains Mono', 'Consolas', monospace;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: var(--font); background: #e8eaed; font-size: 15px; }
+
+  /* ========== PAGE ========== */
+  .page {
+    width: 210mm;
+    min-height: 295mm;
+    margin: 24px auto;
+    background: var(--white);
+    box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* ========== PAGE 1: CHAPTER START ========== */
+  .chapter-page {
+    display: flex;
+    min-height: 295mm;
+  }
+
+  .chapter-sidebar {
+    width: 10px;
+    background: var(--navy);
+    flex-shrink: 0;
+  }
+
+  .chapter-accent-bar {
+    width: 7px;
+    background: var(--orange);
+    flex-shrink: 0;
+  }
+
+  .chapter-body {
+    flex: 1;
+    padding: 70px 65px 50px 55px;
+    position: relative;
+  }
+
+  .chapter-watermark {
+    position: absolute;
+    top: -10px;
+    right: -15px;
+    font-size: 280px;
+    font-weight: 900;
+    color: rgba(180,195,212,0.35);
+    line-height: 1;
+    pointer-events: none;
+    letter-spacing: -10px;
+  }
+
+  .chapter-label {
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--navy-mid);
+    letter-spacing: 2px;
+    margin-bottom: 4px;
+  }
+
+  .chapter-title {
+    font-size: 44px;
+    font-weight: 900;
+    color: var(--navy);
+    line-height: 1.15;
+    margin-bottom: 12px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .chapter-sub {
+    font-size: 16px;
+    color: var(--gray-500);
+    font-weight: 400;
+    margin-bottom: 20px;
+    padding-bottom: 28px;
+    border-bottom: 1px solid var(--gray-200);
+  }
+
+  /* Learning objectives */
+  .obj-title {
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--navy);
+    margin-bottom: 16px;
+    margin-top: 32px;
+  }
+
+  .obj-list {
+    list-style: none;
+    margin-bottom: 40px;
+  }
+
+  .obj-list li {
+    padding: 5px 0 5px 24px;
+    position: relative;
+    font-size: 15px;
+    color: var(--gray-700);
+    line-height: 1.6;
+  }
+
+  .obj-list li::before {
+    content: '•';
+    position: absolute;
+    left: 8px;
+    color: var(--navy-mid);
+    font-weight: 700;
+  }
+
+  /* Prerequisites flow */
+  .prereq-title {
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--navy);
+    margin-bottom: 18px;
+  }
+
+  .prereq-flow {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    margin-bottom: 44px;
+  }
+
+  .prereq-item {
+    padding: 9px 22px;
+    border: 1.5px solid var(--gray-300);
+    border-radius: 50px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--gray-600);
+    background: var(--white);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+  }
+
+  .prereq-item.current {
+    border-color: var(--navy);
+    color: var(--navy);
+    font-weight: 700;
+    background: #edf2f7;
+    box-shadow: 0 2px 6px rgba(26,46,74,0.12);
+  }
+
+  .prereq-arrow {
+    width: 36px;
+    text-align: center;
+    color: var(--gray-300);
+    font-size: 18px;
+    font-weight: 300;
+  }
+
+  /* Predict box */
+  .predict-box {
+    background: var(--gray-50);
+    border: 1.5px solid var(--gray-200);
+    border-radius: 12px;
+    padding: 24px 28px;
+  }
+
+  .predict-label {
+    display: inline-block;
+    background: var(--orange);
+    color: var(--white);
+    font-size: 12px;
+    font-weight: 600;
+    padding: 3px 12px;
+    border-radius: 4px;
+    margin-bottom: 14px;
+    letter-spacing: 0.5px;
+  }
+
+  .predict-q {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--navy);
+    margin-bottom: 16px;
+  }
+
+  .predict-code {
+    background: var(--white);
+    border: 1px solid var(--gray-200);
+    border-radius: 8px;
+    padding: 14px 18px;
+    font-family: var(--mono);
+    font-size: 13px;
+    line-height: 1.65;
+    color: var(--gray-700);
+  }
+
+  /* ========== PAGE 2: CORE CONTENT ========== */
+  .content-page {
+    padding: 55px 65px;
+  }
+
+  .unit-header-bar {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    margin-bottom: 8px;
+  }
+
+  .unit-tag {
+    font-size: 12px;
+    color: var(--orange);
+    font-weight: 600;
+    letter-spacing: 1px;
+  }
+
+  .unit-title-sm {
+    font-size: 14px;
+    color: var(--gray-400);
+    font-weight: 400;
+  }
+
+  .section-title {
+    font-size: 24px;
+    font-weight: 800;
+    color: var(--navy);
+    margin-bottom: 24px;
+    margin-top: 8px;
+    padding-left: 16px;
+    border-left: 5px solid var(--orange);
+  }
+
+  p {
+    font-size: 15.5px;
+    line-height: 1.9;
+    color: var(--text);
+    margin-bottom: 18px;
+  }
+
+  p code {
+    font-family: var(--mono);
+    font-size: 13.5px;
+    background: #f1f3f5;
+    padding: 2px 7px;
+    border-radius: 4px;
+    color: var(--navy);
+    font-weight: 500;
+  }
+
+  /* Code block */
+  .code-wrap {
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    border: 1px solid var(--gray-200);
+    margin: 22px 0;
+  }
+
+  .code-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 9px 18px;
+    background: var(--navy);
+    font-size: 12px;
+  }
+
+  .code-bar-lang {
+    font-family: var(--mono);
+    font-weight: 600;
+    color: var(--white);
+  }
+
+  .code-bar-file {
+    color: rgba(255,255,255,0.6);
+    font-weight: 400;
+  }
+
+  .code-body {
+    background: #f8f9fb;
+    padding: 20px 0;
+    font-family: var(--mono);
+    font-size: 13.5px;
+    line-height: 1.75;
+    border: 1px solid var(--gray-200);
+    border-top: none;
+    border-radius: 0 0 12px 12px;
+  }
+
+  .code-line {
+    display: flex;
+    padding: 0 20px;
+  }
+
+  .code-line:hover {
+    background: #f0f4f8;
+  }
+
+  .code-line.highlighted {
+    background: #fff8e1;
+  }
+
+  .ln {
+    width: 30px;
+    text-align: right;
+    color: #b8bfc8;
+    font-size: 12px;
+    margin-right: 18px;
+    user-select: none;
+    flex-shrink: 0;
+    padding-top: 1px;
+  }
+
+  .lc { flex: 1; }
+
+  /* syntax */
+  .s-pp { color: #8b5cf6; font-weight: 600; }
+  .s-str { color: #d97706; }
+  .s-type { color: #2563eb; font-weight: 500; }
+  .s-kw { color: #7c3aed; font-weight: 500; }
+  .s-fn { color: #059669; font-weight: 500; }
+  .s-num { color: #dc2626; }
+  .s-cm { color: #9ca3af; font-style: italic; }
+
+  /* Output block */
+  .output-wrap {
+    border-radius: 10px;
+    overflow: hidden;
+    margin: 10px 0 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    border: 1px solid #d1d5db;
+  }
+
+  .output-bar {
+    padding: 9px 18px;
+    background: #374151;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--white);
+    letter-spacing: 0.5px;
+  }
+
+  .output-body {
+    padding: 16px 20px;
+    font-family: var(--mono);
+    font-size: 13.5px;
+    line-height: 1.7;
+    color: var(--gray-800);
+    background: #f1f5f9;
+    border: 1px solid var(--gray-200);
+    border-top: none;
+    border-radius: 0 0 10px 10px;
+  }
+
+  /* Callout */
+  .tip {
+    margin: 28px 0;
+    padding: 18px 24px;
+    background: #dbeafe;
+    border-left: 5px solid #2563eb;
+    border-radius: 0 12px 12px 0;
+    font-size: 14.5px;
+    line-height: 1.8;
+    color: var(--text);
+  }
+
+  .tip-label {
+    font-weight: 700;
+    color: #2563eb;
+    font-size: 13px;
+    display: block;
+    margin-bottom: 4px;
+  }
+
+  .warn {
+    margin: 28px 0;
+    padding: 18px 24px;
+    background: #fef3c7;
+    border-left: 5px solid #d97706;
+    border-radius: 0 12px 12px 0;
+    font-size: 14.5px;
+    line-height: 1.8;
+  }
+
+  .warn-label {
+    font-weight: 700;
+    color: #d97706;
+    font-size: 13px;
+    display: block;
+    margin-bottom: 4px;
+  }
+
+  .note-box {
+    margin: 28px 0;
+    padding: 18px 24px;
+    background: #e2e8f0;
+    border-left: 5px solid #64748b;
+    border-radius: 0 12px 12px 0;
+    font-size: 14.5px;
+    line-height: 1.8;
+  }
+
+  .note-label {
+    font-weight: 700;
+    color: var(--gray-600);
+    font-size: 13px;
+    display: block;
+    margin-bottom: 4px;
+  }
+
+  /* Trace table */
+  table.trace {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    margin: 28px 0;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+    font-size: 14px;
+  }
+
+  table.trace th {
+    background: var(--navy);
+    color: var(--white);
+    padding: 10px 16px;
+    text-align: left;
+    font-weight: 500;
+    font-size: 13px;
+  }
+
+  table.trace td {
+    padding: 10px 16px;
+    border-bottom: 1px solid var(--gray-200);
+    color: var(--gray-700);
+  }
+
+  table.trace tr:nth-child(even) td { background: var(--gray-50); }
+  table.trace tr:last-child td { border-bottom: none; }
+
+  table.trace td code {
+    font-family: var(--mono);
+    font-size: 12.5px;
+    background: #eef1f5;
+    padding: 2px 6px;
+    border-radius: 4px;
+    color: var(--navy);
+  }
+
+  /* ========== PAGE 3: PROBLEMS ========== */
+  .problems-header {
+    margin-bottom: 8px;
+  }
+
+  .problems-chapter-ref {
+    font-size: 13px;
+    color: var(--gray-500);
+    margin-bottom: 4px;
+  }
+
+  .problems-title {
+    font-size: 28px;
+    font-weight: 800;
+    color: var(--navy);
+    margin-bottom: 24px;
+  }
+
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 16px;
+  }
+
+  .prob-card {
+    background: var(--white);
+    border: 1px solid var(--gray-200);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 3px 15px rgba(0,0,0,0.06);
+  }
+
+  .prob-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 16px;
+    background: var(--navy);
+  }
+
+  .prob-num {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--white);
+  }
+
+  .diff {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    font-size: 12px;
+    font-weight: 800;
+  }
+
+  .diff-basic { background: #22c55e; color: white; }
+  .diff-mid { background: #f59e0b; color: white; }
+  .diff-hard { background: #ef4444; color: white; }
+
+  .prob-desc {
+    font-size: 13.5px;
+    line-height: 1.65;
+    color: var(--gray-600);
+    margin-bottom: 10px;
+    padding: 14px 16px 0;
+  }
+
+  .prob-code {
+    background: var(--gray-50);
+    border: 1px solid var(--gray-200);
+    border-radius: 6px;
+    padding: 10px 14px;
+    margin: 0 16px 16px;
+    font-family: var(--mono);
+    font-size: 12.5px;
+    line-height: 1.55;
+    color: var(--gray-600);
+  }
+
+  /* Competition section */
+  .comp-section {
+    margin-top: 32px;
+    padding-top: 24px;
+    border-top: 2px solid var(--navy);
+  }
+
+  .comp-title {
+    font-size: 22px;
+    font-weight: 800;
+    color: var(--navy);
+    margin-bottom: 20px;
+  }
+
+  .comp-card {
+    background: var(--white);
+    border: 1.5px solid var(--gray-200);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 18px rgba(0,0,0,0.06);
+  }
+
+  .comp-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 16px;
+    background: #0f766e;
+  }
+
+  .comp-header .comp-name {
+    color: var(--white);
+    font-size: 15px;
+    font-weight: 700;
+    margin: 0;
+  }
+
+  .comp-inner {
+    padding: 14px 18px 18px;
+  }
+
+  .comp-badge {
+    display: inline-block;
+    padding: 3px 12px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 700;
+  }
+
+  .badge-bj { background: #93c5fd; color: #1e3a5f; }
+  .badge-cu { background: #c4b5fd; color: #3b1f7e; }
+  .badge-pg { background: #7dd3fc; color: #0c4a6e; }
+
+  .comp-name {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--navy);
+    margin-bottom: 6px;
+  }
+
+  .comp-desc {
+    font-size: 14px;
+    color: var(--gray-600);
+    line-height: 1.7;
+    margin-bottom: 14px;
+  }
+
+  .io-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+
+  .io-card {
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid var(--gray-200);
+  }
+
+  .io-h {
+    padding: 6px 14px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--gray-600);
+    background: #e2e8f0;
+  }
+
+  .io-c {
+    padding: 10px 14px;
+    font-family: var(--mono);
+    font-size: 13px;
+    line-height: 1.5;
+    background: var(--white);
+  }
+
+  /* ========== DEBUG LAB ========== */
+  .debug-section {
+    margin: 24px 0;
+    border: 2px solid var(--red);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+
+  .debug-bar {
+    background: var(--red);
+    color: var(--white);
+    padding: 10px 20px;
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 1px;
+  }
+
+  .debug-body {
+    padding: 20px;
+    background: #fef2f2;
+  }
+
+  /* 10축 connection */
+  .connect-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 16px;
+    margin: 28px 0;
+  }
+
+  .connect-card {
+    border-radius: 12px;
+    padding: 20px;
+    text-align: center;
+    border: 1px solid var(--gray-200);
+    box-shadow: 0 3px 14px rgba(0,0,0,0.05);
+  }
+
+  .connect-card h5 {
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 8px;
+  }
+
+  .connect-card p {
+    font-size: 13px;
+    margin: 0;
+    color: var(--gray-600);
+    line-height: 1.6;
+  }
+
+  .cc1 { border-top: 3px solid #8b5cf6; }
+  .cc1 h5 { color: #8b5cf6; }
+  .cc2 { border-top: 3px solid var(--green); }
+  .cc2 h5 { color: var(--green); }
+  .cc3 { border-top: 3px solid var(--navy); }
+  .cc3 h5 { color: var(--navy); }
+
+  /* PAGE NUMBER */
+  .page-num {
+    position: absolute;
+    bottom: 20px;
+    right: 30px;
+    font-size: 12px;
+    color: var(--gray-400);
+  }
+
+  /* WARMUP */
+  .warmup-box {
+    background: #e0e7f1;
+    border-radius: 12px;
+    padding: 24px 28px;
+    margin: 28px 0;
+    border: 2px solid #c7d2e0;
+  }
+
+  .warmup-title {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--navy);
+    margin-bottom: 14px;
+  }
+
+  .wq {
+    padding: 9px 16px;
+    background: var(--white);
+    border-radius: 8px;
+    margin-bottom: 8px;
+    font-size: 14px;
+    border: 1px solid var(--gray-200);
+    color: var(--gray-700);
+  }
+
+  .wq b { color: var(--navy); margin-right: 6px; }
+  .wq .hint { color: var(--gray-400); font-size: 13px; }
+
+  /* ===== CONTEST PROBLEMS PAGE ===== */
+  .contest-page-wrap .chapter-page {
+    min-height: auto;
+  }
+
+  .contest-page-wrap .chapter-page > div:last-child {
+    min-width: 0;
+    overflow-wrap: break-word;
+    word-break: break-word;
+  }
+
+  .contest-card {
+    background: white;
+    border: 1.5px solid var(--gray-200);
+    border-radius: 12px;
+    margin-bottom: 28px;
+    overflow: hidden;
+    break-inside: avoid;
+  }
+
+  .contest-header {
+    background: var(--navy);
+    color: white;
+    padding: 14px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .contest-num-source {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .contest-num {
+    font-weight: 700;
+    font-size: 16px;
+  }
+
+  .contest-source {
+    background: rgba(255,255,255,0.15);
+    padding: 3px 10px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 500;
+  }
+
+  .contest-body {
+    padding: 20px 24px 24px;
+  }
+
+  .contest-question {
+    font-size: 15px;
+    line-height: 1.7;
+    color: var(--text);
+    margin: 0 0 16px;
+    word-break: break-word;
+    overflow-wrap: break-word;
+  }
+
+  .contest-expected {
+    background: #1e293b;
+    border-radius: 8px;
+    overflow: hidden;
+    margin-bottom: 20px;
+  }
+
+  .contest-expected-label {
+    background: #334155;
+    color: #94a3b8;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 6px 14px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .contest-expected-body {
+    color: #e2e8f0;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    line-height: 1.6;
+    padding: 12px 16px;
+    margin: 0;
+    white-space: pre;
+  }
+
+  .contest-write-area {
+    border: 2px dashed var(--gray-300);
+    border-radius: 10px;
+    overflow: hidden;
+    transition: border-color 0.2s;
+  }
+
+  .contest-write-area:focus-within {
+    border-color: var(--orange);
+    border-style: solid;
+  }
+
+  .contest-write-label {
+    background: var(--bg);
+    color: var(--gray-500);
+    font-size: 12px;
+    font-weight: 600;
+    padding: 8px 14px;
+    border-bottom: 1px solid var(--gray-200);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .contest-textarea {
+    width: 100%;
+    min-height: 200px;
+    padding: 16px 18px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    line-height: 1.7;
+    color: var(--text);
+    background: #fafbfc;
+    border: none;
+    outline: none;
+    resize: vertical;
+    tab-size: 4;
+    box-sizing: border-box;
+  }
+
+  .contest-textarea::placeholder {
+    color: var(--gray-300);
+  }
+
+  @media print {
+    body { background: white; }
+    .page { box-shadow: none; margin: 0; page-break-after: always; }
+    .contest-textarea { border: 1px solid var(--gray-300); min-height: 180px; }
+  }
+
+</style>
+</head>
+<body>
+
+<div class="page">
+  <div class="chapter-page">
+    <div class="chapter-sidebar"></div>
+    <div class="chapter-accent-bar"></div>
+    <div class="chapter-body">
+      <div class="chapter-watermark">21</div>
+      <div class="chapter-label">Chapter 21</div>
+      <h1 class="chapter-title">소수(Prime Number)</h1>
+      <p class="chapter-sub">소수가 뭔지, 소수를 판별하는 방법, 에라토스테네스의 체를 배워요.</p>
+
+      <h3 class="obj-title">이 유닛에서 배우는 것</h3>
+      <ul class="obj-list">
+        <li>소수가 무엇인지 설명할 수 있어요.</li>
+        <li>100 이하의 소수를 에라토스테네스의 체로 찾을 수 있어요.</li>
+        <li>소수 판별법을 이해하고 적용할 수 있어요.</li>
+        <li>소인수분해를 할 수 있어요.</li>
+        <li>[심화] C 코드로 소수 판별과 에라토스테네스의 체를 구현할 수 있어요.</li>
+        <li>[심화] sqrt(n)까지만 확인하면 되는 이유를 설명할 수 있어요.</li>
+        <li>[심화 내용] 소수 정리(Prime Number Theorem)를 이해해요.</li>
+        <li>[심화 내용] RSA 암호에서 소수의 역할을 알아요.</li>
+        <li>[심화 내용] 밀러-라빈 소수 판별법을 이해해요.</li>
+        <li>[심화 내용] 메르센 소수와 GIMPS 프로젝트를 알아요.</li>
+        <li>[심화 내용] 골드바흐의 추측을 알아요.</li>
+      </ul>
+
+      <h3 class="prereq-title">선수 학습</h3>
+      <div class="prereq-flow">
+        <div class="prereq-item">나눗셈과 나머지 (U18~U19)</div><div class="prereq-arrow">→</div>
+        <div class="prereq-item">경우의 수와 반복 개념 (U20)</div><div class="prereq-arrow">→</div>
+        <div class="prereq-item current">곱셈, 약수의 기초 개념</div>
+      </div>
+
+      
+
+      <span class="page-num">1</span>
+    </div>
+  </div>
+</div>
+<div class="page">
+  <div class="content-page">
+    <div class="unit-header-bar">
+      <span class="unit-tag">UNIT 21</span>
+      <span class="unit-title-sm">소수(Prime Number)</span>
+    </div>
+<h2 class="section-title">소수란 무엇일까?</h2>
+
+<p><b>소수(Prime Number)</b>란, 1보다 큰 자연수 중에서 <b>1과 자기 자신만으로 나누어지는 수</b>예요. 다시 말해, 약수가 딱 2개(1과 자기 자신)인 수예요.</p>
+<div class="note-box"><span class="note-label">[핵심] 소수의 정의</span>
+<b>소수</b> = 1보다 크고, 1과 자기 자신 외에는 약수가 없는 수<br><br> 소수: 2, 3, 5, 7, 11, 13, 17, 19, 23, 29, ...<br> 소수가 아닌 수: 1(약수 1개), 4(=2×2), 6(=2×3), 9(=3×3), ...</div>
+<div class="warn"><span class="warn-label">[주의] 1은 소수가 아니에요!</span>
+1은 약수가 자기 자신(1) 하나뿐이에요. 소수는 약수가 <b>딱 2개</b>여야 하므로 1은 소수가 아니에요.<br>그리고 <b>2는 유일한 짝수 소수</b>예요! 나머지 짝수는 전부 2로 나누어지니까요.</div>
+<table class="trace"><thead><tr><th>수</th><th>약수</th><th>약수 개수</th><th>소수 여부</th></tr></thead><tbody><tr><td>2</td><td>1, 2</td><td>2개</td><td>소수</td></tr><tr><td>3</td><td>1, 3</td><td>2개</td><td>소수</td></tr><tr><td>4</td><td>1, 2, 4</td><td>3개</td><td>합성수</td></tr><tr><td>5</td><td>1, 5</td><td>2개</td><td>소수</td></tr><tr><td>6</td><td>1, 2, 3, 6</td><td>4개</td><td>합성수</td></tr><tr><td>7</td><td>1, 7</td><td>2개</td><td>소수</td></tr><tr><td>8</td><td>1, 2, 4, 8</td><td>4개</td><td>합성수</td></tr><tr><td>9</td><td>1, 3, 9</td><td>3개</td><td>합성수</td></tr><tr><td>10</td><td>1, 2, 5, 10</td><td>4개</td><td>합성수</td></tr><tr><td>11</td><td>1, 11</td><td>2개</td><td>소수</td></tr><tr><td>12</td><td>1, 2, 3, 4, 6, 12</td><td>6개</td><td>합성수</td></tr></tbody></table>
+<div class="debug-section"><div class="debug-bar">DEBUG LAB — 에러를 찾으시오</div><div class="debug-body">
+
+<p style="margin:14px 0 0; font-size:14px;"><b>에러:</b> </p>
+<p style="font-size:14px;"><b>수정:</b> </p>
+</div></div>
+<!-- fact-bite -->
+<h2 class="section-title">소수 판별법 — 이 수가 소수인지 어떻게 알까?</h2>
+<p>어떤 수 N이 소수인지 확인하려면, 2부터 하나씩 나눠 보면 돼요. 하지만 N까지 다 나눠볼 필요는 없어요! <b>√N(루트 N)까지만</b> 확인하면 충분해요.</p>
+<div class="note-box"><span class="note-label">[핵심] 소수 판별 — √N까지만 확인!</span>
+N이 소수인지 확인하는 방법:<br>2, 3, 4, 5, ... √N까지 N을 나눠 본다.<br>하나라도 나누어 떨어지면 → <b>소수 아님!</b><br>하나도 나누어지지 않으면 → <b>소수!</b><br><br><b>왜 √N까지만?</b><br>36 = 2×18 = 3×12 = 4×9 = <b>6×6</b><br>√36 = 6 이후는 순서만 바뀌므로 6까지만 확인하면 돼요!</div>
+<div style="margin:22px 0"></div>
+<div class="note-box"><span class="note-label">[예시] 29는 소수일까?</span>
+√29 ≈ 5.38 → 5까지만 확인!<br><br>29 ÷ 2 = 14 나머지 1 <br>29 ÷ 3 = 9 나머지 2 <br>29 ÷ 4 = 7 나머지 1 <br>29 ÷ 5 = 5 나머지 4 <br><br>하나도 나누어 떨어지지 않았으므로 → <b>29는 소수!</b></div>
+<table class="trace"><thead><tr><th>나누는 수 (i)</th><th>29 ÷ i</th><th>나머지</th><th>나누어 떨어짐?</th></tr></thead><tbody><tr><td>2</td><td>14</td><td>1</td><td>아니오</td></tr><tr><td>3</td><td>9</td><td>2</td><td>아니오</td></tr><tr><td>4</td><td>7</td><td>1</td><td>아니오</td></tr><tr><td>5</td><td>5</td><td>4</td><td>아니오</td></tr></tbody></table>
+<div class="note-box"><span class="note-label">[예시] 51은 소수일까?</span>
+√51 ≈ 7.14 → 7까지 확인!<br><br>51 ÷ 2 = 25 나머지 1 <br>51 ÷ 3 = 17 나머지 0  → <b>나누어 떨어짐!</b><br><br>3으로 나누어 떨어지므로 → <b>51은 소수가 아님!</b> (51 = 3 × 17)</div>
+<table class="trace"><thead><tr><th>나누는 수 (i)</th><th>51 ÷ i</th><th>나머지</th><th>나누어 떨어짐?</th></tr></thead><tbody><tr><td>2</td><td>25</td><td>1</td><td>아니오</td></tr><tr><td>3</td><td>17</td><td>0</td><td>예! → 중단</td></tr></tbody></table>
+<!-- image -->
+<h2 class="section-title">에라토스테네스의 체 — 소수를 한꺼번에 찾기!</h2>
+
+<p>에라토스테네스의 체는 소수의 배수를 하나씩 지워나가는 방법이에요. 2부터 시작해서, 소수를 찾으면 그 소수의 배수를 전부 지워요. 남은 수가 전부 소수!</p>
+<div class="note-box"><span class="note-label">[핵심] 에라토스테네스의 체 — 4단계</span>
+<b>1단계:</b> 2부터 N까지 숫자를 적는다.<br><b>2단계:</b> 2는 소수! 2의 배수(4,6,8,10,...)를 지운다.<br><b>3단계:</b> 다음 남은 수(3)도 소수! 3의 배수(9,15,21,...)를 지운다.<br><b>4단계:</b> 계속 반복! 5의 배수, 7의 배수... √N까지만 하면 끝!<br><br>지워지지 않고 남은 수 = 전부 소수!</div>
+<!-- image -->
+<div style="margin:22px 0"></div>
+<table class="trace"><thead><tr><th>단계</th><th>지우는 배수</th><th>지워지는 수</th><th>남은 수 개수</th></tr></thead><tbody><tr><td>시작</td><td>없음</td><td>없음</td><td>29개</td></tr><tr><td>2의 배수</td><td>4,6,8,10,...,30</td><td>14개 제거</td><td>15개</td></tr><tr><td>3의 배수</td><td>9,15,21,27</td><td>4개 제거</td><td>11개</td></tr><tr><td>5의 배수</td><td>25</td><td>1개 제거</td><td>10개</td></tr><tr><td>완료</td><td>√30≈5.4 → 끝</td><td>—</td><td>10개 소수</td></tr></tbody></table>
+<div class="tip"><span class="tip-label">[활동] 100까지 소수 색칠하기</span>
+종이에 1~100을 적고, 에라토스테네스의 체를 직접 해 보세요!<br><br>1. 1에 X 표시 (소수 아님)<br>2. 2에 동그라미, 4·6·8·10·... 에 빨간 줄<br>3. 3에 동그라미, 9·15·21·... 에 파란 줄<br>4. 5에 동그라미, 25·35·... 에 초록 줄<br>5. 7에 동그라미, 49·... 에 노란 줄<br>6. 남은 동그라미가 소수! (25개가 나와야 해요)</div>
+<h2 class="section-title">소수의 분포</h2>
+<p>소수는 숫자가 커질수록 점점 드물어져요. 1~100에는 25개, 101~200에는 21개, 201~300에는 16개... 하지만 소수는 무한히 많다는 것이 증명되어 있어요!</p>
+<!-- image -->
+<table class="trace"><thead><tr><th>범위</th><th>소수 개수</th><th>전체 수</th><th>소수 비율</th></tr></thead><tbody><tr><td>1~10</td><td>4개</td><td>10</td><td>40%</td></tr><tr><td>1~100</td><td>25개</td><td>100</td><td>25%</td></tr><tr><td>1~1,000</td><td>168개</td><td>1,000</td><td>16.8%</td></tr><tr><td>1~10,000</td><td>1,229개</td><td>10,000</td><td>12.3%</td></tr><tr><td>1~100,000</td><td>9,592개</td><td>100,000</td><td>9.6%</td></tr><tr><td>1~1,000,000</td><td>78,498개</td><td>1,000,000</td><td>7.8%</td></tr></tbody></table>
+<h2 class="section-title">C 언어와 연결 — 소수 판별 프로그램</h2>
+<div class="note-box"><span class="note-label">[C 미리보기] 소수 판별 코드</span>
+int is_prime(int n) {<br>&nbsp;&nbsp;if (n <= 1) return 0;  // 1 이하는 소수 아님<br>&nbsp;&nbsp;for (int i = 2; i * i <= n; i++) {<br>&nbsp;&nbsp;&nbsp;&nbsp;if (n % i == 0) return 0;  // 나누어 떨어지면 소수 아님<br>&nbsp;&nbsp;}<br>&nbsp;&nbsp;return 1;  // 소수!<br>}<br><br>핵심: <b>i * i <= n</b> → √N까지만 확인하는 조건!</div>
+<div class="debug-section"><div class="debug-bar">DEBUG LAB — 에러를 찾으시오</div><div class="debug-body">
+
+<p style="margin:14px 0 0; font-size:14px;"><b>에러:</b> </p>
+<p style="font-size:14px;"><b>수정:</b> </p>
+</div></div>
+<div class="tip"><span class="tip-label">[KOI] 소수 문제는 매년 출제!</span>
+KOI에서 소수 관련 문제는 거의 매년 출제돼요.<br><br>자주 나오는 유형:<br>• N이 소수인지 판별하기<br>• 1~N 사이 소수 모두 구하기 (에라토스테네스의 체)<br>• 두 소수의 합으로 표현하기 (골드바흐의 추측)<br>• 소인수분해 하기<br><br>에라토스테네스의 체를 코드로 구현할 수 있으면 대부분 풀 수 있어요!</div>
+
+<h2 class="section-title">연습문제</h2>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 1</span><p style="margin:0;font-size:14px">O/X: 1은 소수이다.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 2</span><p style="margin:0;font-size:14px">1부터 20까지의 소수를 모두 적어 보세요.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 3</span><p style="margin:0;font-size:14px">다음 중 소수가 아닌 수는?<br>(1) 23  (2) 37  (3) 51  (4) 67</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 4</span><p style="margin:0;font-size:14px">O/X: 2는 소수이다.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 5</span><p style="margin:0;font-size:14px">97이 소수인지 판별하세요. √97 ≈ 9.8이므로 9까지 확인하면 됩니다.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 6</span><p style="margin:0;font-size:14px">에라토스테네스의 체로 50까지 소수를 구할 때, 몇의 배수까지 지우면 충분한가요?</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 7</span><p style="margin:0;font-size:14px">짝수 소수는 2 하나뿐입니다. 그 이유를 설명해 보세요.</p></div>
+<h2 class="section-title">용어 정리</h2>
+<h2 class="section-title">[심화] C로 소수 판별 구현</h2>
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span><span class="code-bar-file">[C 코드] 소수 판별 3가지 방법</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;stdio.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;math.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;string.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">4</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">5</span><span class="lc"><span class="s-cm">// 방법 1: 기본 O(n)</span></span></div>
+<div class="code-line"><span class="ln">6</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">is_prime_basic</span>(<span class="s-type">int</span> n) {</span></div>
+<div class="code-line"><span class="ln">7</span><span class="lc">    <span class="s-kw">if</span> (n &lt; <span class="s-num">2</span>) <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">8</span><span class="lc">    <span class="s-kw">for</span> (<span class="s-type">int</span> i = <span class="s-num">2</span>; i &lt; n; i++)</span></div>
+<div class="code-line"><span class="ln">9</span><span class="lc">        <span class="s-kw">if</span> (n % i == <span class="s-num">0</span>) <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">10</span><span class="lc">    <span class="s-kw">return</span> <span class="s-num">1</span>;</span></div>
+<div class="code-line"><span class="ln">11</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">12</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">13</span><span class="lc"><span class="s-cm">// 방법 2: sqrt까지만 O(sqrt(n))</span></span></div>
+<div class="code-line"><span class="ln">14</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">is_prime_sqrt</span>(<span class="s-type">int</span> n) {</span></div>
+<div class="code-line"><span class="ln">15</span><span class="lc">    <span class="s-kw">if</span> (n &lt; <span class="s-num">2</span>) <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">16</span><span class="lc">    <span class="s-kw">if</span> (n &lt; <span class="s-num">4</span>) <span class="s-kw">return</span> <span class="s-num">1</span>;</span></div>
+<div class="code-line"><span class="ln">17</span><span class="lc">    <span class="s-kw">if</span> (n % <span class="s-num">2</span> == <span class="s-num">0</span> || n % <span class="s-num">3</span> == <span class="s-num">0</span>) <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">18</span><span class="lc">    <span class="s-kw">for</span> (<span class="s-type">int</span> i = <span class="s-num">5</span>; i * i &lt;= n; i += <span class="s-num">6</span>)</span></div>
+<div class="code-line"><span class="ln">19</span><span class="lc">        <span class="s-kw">if</span> (n % i == <span class="s-num">0</span> || n % (i+<span class="s-num">2</span>) == <span class="s-num">0</span>) <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">20</span><span class="lc">    <span class="s-kw">return</span> <span class="s-num">1</span>;</span></div>
+<div class="code-line"><span class="ln">21</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">22</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">23</span><span class="lc"><span class="s-cm">// 방법 3: 에라토스테네스의 체 O(n log log n)</span></span></div>
+<div class="code-line"><span class="ln">24</span><span class="lc"><span class="s-type">void</span> <span class="s-fn">sieve</span>(<span class="s-type">int</span> limit) {</span></div>
+<div class="code-line"><span class="ln">25</span><span class="lc">    <span class="s-type">char</span> is_p[<span class="s-num">1000001</span>];</span></div>
+<div class="code-line"><span class="ln">26</span><span class="lc">    <span class="s-fn">memset</span>(is_p, <span class="s-num">1</span>, limit + <span class="s-num">1</span>);</span></div>
+<div class="code-line"><span class="ln">27</span><span class="lc">    is_p[<span class="s-num">0</span>] = is_p[<span class="s-num">1</span>] = <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">28</span><span class="lc">    <span class="s-kw">for</span> (<span class="s-type">int</span> i = <span class="s-num">2</span>; i * i &lt;= limit; i++)</span></div>
+<div class="code-line"><span class="ln">29</span><span class="lc">        <span class="s-kw">if</span> (is_p[i])</span></div>
+<div class="code-line"><span class="ln">30</span><span class="lc">            <span class="s-kw">for</span> (<span class="s-type">int</span> j = i*i; j &lt;= limit; j += i)</span></div>
+<div class="code-line"><span class="ln">31</span><span class="lc">                is_p[j] = <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">32</span><span class="lc">    </span></div>
+<div class="code-line"><span class="ln">33</span><span class="lc">    <span class="s-type">int</span> count = <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">34</span><span class="lc">    <span class="s-kw">for</span> (<span class="s-type">int</span> i = <span class="s-num">2</span>; i &lt;= limit; i++)</span></div>
+<div class="code-line"><span class="ln">35</span><span class="lc">        <span class="s-kw">if</span> (is_p[i]) count++;</span></div>
+<div class="code-line"><span class="ln">36</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"2~%d 소수 개수: %d\n"</span>, limit, count);</span></div>
+<div class="code-line"><span class="ln">37</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">38</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">39</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">main</span>() {</span></div>
+<div class="code-line"><span class="ln">40</span><span class="lc">    <span class="s-cm">// 소수 판별 테스트</span></span></div>
+<div class="code-line"><span class="ln">41</span><span class="lc">    <span class="s-type">int</span> tests[] = {<span class="s-num">2</span>, <span class="s-num">3</span>, <span class="s-num">4</span>, <span class="s-num">17</span>, <span class="s-num">100</span>, <span class="s-num">997</span>};</span></div>
+<div class="code-line"><span class="ln">42</span><span class="lc">    <span class="s-kw">for</span> (<span class="s-type">int</span> i = <span class="s-num">0</span>; i &lt; <span class="s-num">6</span>; i++)</span></div>
+<div class="code-line"><span class="ln">43</span><span class="lc">        <span class="s-fn">printf</span>(<span class="s-str">"%d: %s\n"</span>, tests[i],</span></div>
+<div class="code-line"><span class="ln">44</span><span class="lc">               <span class="s-fn">is_prime_sqrt</span>(tests[i]) ? <span class="s-str">"소수"</span> : <span class="s-str">"합성수"</span>);</span></div>
+<div class="code-line"><span class="ln">45</span><span class="lc">    </span></div>
+<div class="code-line"><span class="ln">46</span><span class="lc">    <span class="s-fn">sieve</span>(<span class="s-num">100</span>);     <span class="s-cm">// 2~100: 25개</span></span></div>
+<div class="code-line"><span class="ln">47</span><span class="lc">    <span class="s-fn">sieve</span>(<span class="s-num">1000000</span>); <span class="s-cm">// 2~100만: 78498개</span></span></div>
+<div class="code-line"><span class="ln">48</span><span class="lc">    <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">49</span><span class="lc">}</span></div>
+</div>
+</div>
+<div class="output-wrap"><div class="output-bar">실행 결과</div><div class="output-body">2: 소수
+3: 소수
+4: 합성수
+17: 소수
+100: 합성수
+997: 소수
+2~100 소수 개수: 25
+2~1000000 소수 개수: 78498</div></div>
+<table class="trace"><thead><tr><th>단계</th><th>i 값</th><th>i*i ≤ 17?</th><th>17 % i</th><th>결과</th></tr></thead><tbody><tr><td>초기 검사</td><td>—</td><td>—</td><td>—</td><td>n=17 ≥ 2 → 계속</td></tr><tr><td>반복 1</td><td>2</td><td>4 ≤ 17 → 예</td><td>17%2 = 1</td><td>나누어지지 않음</td></tr><tr><td>반복 2</td><td>3</td><td>9 ≤ 17 → 예</td><td>17%3 = 2</td><td>나누어지지 않음</td></tr><tr><td>반복 3</td><td>4</td><td>16 ≤ 17 → 예</td><td>17%4 = 1</td><td>나누어지지 않음</td></tr><tr><td>반복 4</td><td>5</td><td>25 ≤ 17 → 아니오</td><td>—</td><td>반복 종료</td></tr><tr><td>반환</td><td>—</td><td>—</td><td>—</td><td>return 1 → 소수!</td></tr></tbody></table>
+<h2 class="section-title">[심화 내용] 소수 정리</h2>
+<div class="note-box"><span class="note-label">[심화 내용] 소수 정리 (Prime Number Theorem)</span>
+n 이하의 소수 개수 pi(n):<br><br><b>pi(n) ~ n / ln(n)</b><br><br>예:<br>pi(100) = 25, 100/ln(100) ≈ 22 (근사)<br>pi(1000) = 168, 1000/ln(1000) ≈ 145<br>pi(10^6) = 78498, 10^6/ln(10^6) ≈ 72382<br>pi(10^9) = 50847534, 10^9/ln(10^9) ≈ 48254942<br><br>n이 커질수록 근사가 좋아져요!<br><br><b>의미:</b> 소수는 무한하지만 점점 드물어진다<br>n 근처에서 소수를 만날 확률 ≈ 1/ln(n)<br><br>1896년 Hadamard와 de la Vallee Poussin이 독립적으로 증명</div>
+<h2 class="section-title">[심화 내용] 밀러-라빈 소수 판별법</h2>
+<div class="note-box"><span class="note-label">[심화 내용] 밀러-라빈 테스트</span>
+에라토스테네스의 체: 작은 수에 적합<br>밀러-라빈: <b>매우 큰 수</b>에 적합 (수백 자리!)<br><br><b>원리:</b> 페르마의 소정리 + 추가 조건<br>- 소수 p에 대해: a^(p-1) ≡ 1 (mod p)<br>- 합성수는 높은 확률로 이 조건을 위반<br><br><b>확률적 판별:</b><br>k번 테스트하면 오판 확률 < (1/4)^k<br>k=20이면 오판 확률 < 10^-12 (사실상 0)<br><br><b>결정적 버전:</b><br>a = {2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37}로<br>테스트하면 3.3 * 10^24 이하에서 100% 정확!<br><br>RSA 키 생성 시 사용: 수백 자리 소수를 찾을 때</div>
+<h2 class="section-title">[심화 내용] 특별한 소수들</h2>
+<div class="note-box"><span class="note-label">[심화 내용] 유명한 소수</span>
+<b>메르센 소수:</b> 2^p - 1 형태의 소수<br>2^2-1=3, 2^3-1=7, 2^5-1=31, 2^7-1=127<br>최대 발견: 2^136279841 - 1 (4100만 자리! 2024년)<br>GIMPS 프로젝트: 전세계 자원봉사 컴퓨터로 탐색<br><br><b>쌍둥이 소수:</b> 차이가 2인 소수 쌍<br>(3,5), (5,7), (11,13), (17,19), (29,31)<br>쌍둥이 소수 추측: 무한히 많다? (미해결!)<br><br><b>골드바흐의 추측:</b><br>2보다 큰 모든 짝수 = 두 소수의 합<br>4=2+2, 6=3+3, 8=3+5, 10=3+7=5+5<br>4*10^18까지 확인됐지만 증명은 아직! (1742년~)<br><br><b>소수 사막:</b><br>연속 합성수가 n개인 구간이 항상 존재<br>(n+1)!+2, (n+1)!+3, ..., (n+1)!+(n+1) = 연속 n개 합성수</div>
+<h2 class="section-title">[심화 내용] 소수와 암호학</h2>
+<div class="note-box"><span class="note-label">[심화 내용] 소수가 보안의 열쇠인 이유</span>
+<b>곱하기는 쉽고, 분해는 어렵다!</b><br><br>두 소수 곱하기:<br>p = 12553, q = 13007<br>n = p * q = 163,272,871 (0.001초)<br><br>소인수분해:<br>163,272,871 = ? * ? (시간이 오래 걸림!)<br><br><b>RSA-2048:</b><br>617자리 수 = 두 소수의 곱<br>현재 기술로 분해 불가능! (수십억 년)<br><br><b>양자 컴퓨터 위협:</b><br>Shor 알고리즘: 소인수분해를 다항 시간에 수행<br>충분히 큰 양자 컴퓨터가 나오면 RSA 무력화<br>-> 양자 내성 암호(Post-Quantum Crypto) 연구 중</div>
+<!-- fact-bite -->
+<!-- fact-bite -->
+<h2 class="section-title">[심화] 소인수분해 구현</h2>
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span><span class="code-bar-file">[C 코드] 소인수분해</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;stdio.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc"><span class="s-type">void</span> <span class="s-fn">factorize</span>(<span class="s-type">int</span> n) {</span></div>
+<div class="code-line"><span class="ln">4</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"%d = "</span>, n);</span></div>
+<div class="code-line"><span class="ln">5</span><span class="lc">    <span class="s-type">int</span> first = <span class="s-num">1</span>;</span></div>
+<div class="code-line"><span class="ln">6</span><span class="lc">    <span class="s-kw">for</span> (<span class="s-type">int</span> i = <span class="s-num">2</span>; i * i &lt;= n; i++) {</span></div>
+<div class="code-line"><span class="ln">7</span><span class="lc">        <span class="s-kw">while</span> (n % i == <span class="s-num">0</span>) {</span></div>
+<div class="code-line"><span class="ln">8</span><span class="lc">            <span class="s-kw">if</span> (!first) <span class="s-fn">printf</span>(<span class="s-str">" x "</span>);</span></div>
+<div class="code-line"><span class="ln">9</span><span class="lc">            <span class="s-fn">printf</span>(<span class="s-str">"%d"</span>, i);</span></div>
+<div class="code-line"><span class="ln">10</span><span class="lc">            n /= i;</span></div>
+<div class="code-line"><span class="ln">11</span><span class="lc">            first = <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">12</span><span class="lc">        }</span></div>
+<div class="code-line"><span class="ln">13</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">14</span><span class="lc">    <span class="s-kw">if</span> (n &gt; <span class="s-num">1</span>) {</span></div>
+<div class="code-line"><span class="ln">15</span><span class="lc">        <span class="s-kw">if</span> (!first) <span class="s-fn">printf</span>(<span class="s-str">" x "</span>);</span></div>
+<div class="code-line"><span class="ln">16</span><span class="lc">        <span class="s-fn">printf</span>(<span class="s-str">"%d"</span>, n);</span></div>
+<div class="code-line"><span class="ln">17</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">18</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"\n"</span>);</span></div>
+<div class="code-line"><span class="ln">19</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">20</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">21</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">main</span>() {</span></div>
+<div class="code-line"><span class="ln">22</span><span class="lc">    <span class="s-type">int</span> tests[] = {<span class="s-num">12</span>, <span class="s-num">60</span>, <span class="s-num">97</span>, <span class="s-num">100</span>, <span class="s-num">360</span>, <span class="s-num">2023</span>, <span class="s-num">997</span>};</span></div>
+<div class="code-line"><span class="ln">23</span><span class="lc">    <span class="s-kw">for</span> (<span class="s-type">int</span> i = <span class="s-num">0</span>; i &lt; <span class="s-num">7</span>; i++)</span></div>
+<div class="code-line"><span class="ln">24</span><span class="lc">        <span class="s-fn">factorize</span>(tests[i]);</span></div>
+<div class="code-line"><span class="ln">25</span><span class="lc">    <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">26</span><span class="lc">}</span></div>
+</div>
+</div>
+<div class="output-wrap"><div class="output-bar">실행 결과</div><div class="output-body">12 = 2 x 2 x 3
+60 = 2 x 2 x 3 x 5
+97 = 97
+100 = 2 x 2 x 5 x 5
+360 = 2 x 2 x 2 x 3 x 3 x 5
+2023 = 7 x 17 x 17
+997 = 997</div></div>
+<div style="margin:22px 0"></div>
+<table class="trace"><thead><tr><th>단계</th><th>현재 값</th><th>나누는 수</th><th>나누어짐?</th><th>결과</th></tr></thead><tbody><tr><td>1</td><td>60</td><td>2</td><td>예</td><td>60 ÷ 2 = 30</td></tr><tr><td>2</td><td>30</td><td>2</td><td>예</td><td>30 ÷ 2 = 15</td></tr><tr><td>3</td><td>15</td><td>2</td><td>아니오</td><td>넘어감</td></tr><tr><td>4</td><td>15</td><td>3</td><td>예</td><td>15 ÷ 3 = 5</td></tr><tr><td>5</td><td>5</td><td>3</td><td>아니오</td><td>넘어감</td></tr><tr><td>6</td><td>5</td><td>5 (√5<5)</td><td>—</td><td>5는 소수, 종료</td></tr></tbody></table>
+<h2 class="section-title">[심화 내용] 소수의 규칙성 탐색</h2>
+<div class="note-box"><span class="note-label">[심화 내용] 소수를 만드는 공식?</span>
+<b>오일러의 소수 생성 다항식:</b><br>f(n) = n^2 + n + 41<br>n=0: 41 (소수!), n=1: 43, n=2: 47, ..., n=39: 1601<br>n=0~39까지 40개 연속 소수! 하지만...<br>n=40: 1681 = 41^2 (합성수!)<br><br><b>소수 생성 공식은 없다!</b><br>소수의 분포에 완벽한 패턴은 아직 발견 안 됨<br><br><b>리만 가설 (Riemann Hypothesis):</b><br>소수의 분포와 관련된 수학 최대의 미해결 문제<br>클레이 수학 연구소 밀레니엄 문제 (상금 100만 달러!)<br>1859년 제안 이래 160년+ 미해결</div>
+<h2 class="section-title">[심화 내용] 세그먼트 체와 대규모 소수 탐색</h2>
+<div class="note-box"><span class="note-label">[심화 내용] 세그먼트 체 (Segmented Sieve)</span>
+일반 에라토스테네스의 체: O(n) 메모리 필요<br>n = 10^12이면 1TB 메모리... 불가능!<br><br><b>세그먼트 체:</b><br>1. sqrt(n) 이하의 소수를 먼저 구함<br>2. [L, R] 구간을 작은 블록으로 나눔<br>3. 각 블록에서 작은 소수들의 배수를 제거<br>4. 메모리: O(sqrt(n)) + 블록 크기<br><br>이 방법으로 10^12까지도 소수를 찾을 수 있어요!<br><br><b>실전 활용:</b><br>프로젝트 오일러, 대회 문제에서 자주 등장</div>
+<h2 class="section-title">[심화] 소수 관련 KOI 기출 유형</h2>
+<div class="note-box"><span class="note-label">[심화] KOI 소수 문제 패턴</span>
+<b>유형 1: N 이하 소수 개수</b><br>에라토스테네스의 체 + 개수 세기<br><br><b>유형 2: 소인수분해</b><br>2부터 sqrt(N)까지 나누기<br><br><b>유형 3: 골드바흐 파티션</b><br>짝수 N을 두 소수의 합으로 표현<br>체로 소수 구한 뒤 a+b=N인 (a,b) 찾기<br><br><b>유형 4: 팰린드롬 소수</b><br>앞뒤가 같은 소수 (예: 131, 757)<br><br><b>유형 5: 쌍둥이 소수</b><br>차이가 2인 소수 쌍 찾기</div>
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span><span class="code-bar-file">[C 코드] 골드바흐 파티션</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;stdio.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;string.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">4</span><span class="lc"><span class="s-pp">#define</span> MAX <span class="s-num">100001</span></span></div>
+<div class="code-line"><span class="ln">5</span><span class="lc"><span class="s-type">char</span> is_prime[MAX];</span></div>
+<div class="code-line"><span class="ln">6</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">7</span><span class="lc"><span class="s-type">void</span> <span class="s-fn">sieve</span>() {</span></div>
+<div class="code-line"><span class="ln">8</span><span class="lc">    <span class="s-fn">memset</span>(is_prime, <span class="s-num">1</span>, MAX);</span></div>
+<div class="code-line"><span class="ln">9</span><span class="lc">    is_prime[<span class="s-num">0</span>] = is_prime[<span class="s-num">1</span>] = <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">10</span><span class="lc">    <span class="s-kw">for</span> (<span class="s-type">int</span> i = <span class="s-num">2</span>; i * i &lt; MAX; i++)</span></div>
+<div class="code-line"><span class="ln">11</span><span class="lc">        <span class="s-kw">if</span> (is_prime[i])</span></div>
+<div class="code-line"><span class="ln">12</span><span class="lc">            <span class="s-kw">for</span> (<span class="s-type">int</span> j = i*i; j &lt; MAX; j += i)</span></div>
+<div class="code-line"><span class="ln">13</span><span class="lc">                is_prime[j] = <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">14</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">15</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">16</span><span class="lc"><span class="s-type">void</span> <span class="s-fn">goldbach</span>(<span class="s-type">int</span> n) {</span></div>
+<div class="code-line"><span class="ln">17</span><span class="lc">    <span class="s-kw">for</span> (<span class="s-type">int</span> a = <span class="s-num">2</span>; a &lt;= n/<span class="s-num">2</span>; a++) {</span></div>
+<div class="code-line"><span class="ln">18</span><span class="lc">        <span class="s-kw">if</span> (is_prime[a] &amp;&amp; is_prime[n-a]) {</span></div>
+<div class="code-line"><span class="ln">19</span><span class="lc">            <span class="s-fn">printf</span>(<span class="s-str">"%d = %d + %d\n"</span>, n, a, n-a);</span></div>
+<div class="code-line"><span class="ln">20</span><span class="lc">            <span class="s-kw">return</span>;</span></div>
+<div class="code-line"><span class="ln">21</span><span class="lc">        }</span></div>
+<div class="code-line"><span class="ln">22</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">23</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">24</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">25</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">main</span>() {</span></div>
+<div class="code-line"><span class="ln">26</span><span class="lc">    <span class="s-fn">sieve</span>();</span></div>
+<div class="code-line"><span class="ln">27</span><span class="lc">    <span class="s-type">int</span> tests[] = {<span class="s-num">4</span>, <span class="s-num">6</span>, <span class="s-num">8</span>, <span class="s-num">10</span>, <span class="s-num">20</span>, <span class="s-num">100</span>, <span class="s-num">1000</span>};</span></div>
+<div class="code-line"><span class="ln">28</span><span class="lc">    <span class="s-kw">for</span> (<span class="s-type">int</span> i = <span class="s-num">0</span>; i &lt; <span class="s-num">7</span>; i++)</span></div>
+<div class="code-line"><span class="ln">29</span><span class="lc">        <span class="s-fn">goldbach</span>(tests[i]);</span></div>
+<div class="code-line"><span class="ln">30</span><span class="lc">    <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">31</span><span class="lc">}</span></div>
+</div>
+</div>
+<div class="output-wrap"><div class="output-bar">실행 결과</div><div class="output-body">4 = 2 + 2
+6 = 3 + 3
+8 = 3 + 5
+10 = 3 + 7
+20 = 3 + 17
+100 = 3 + 97
+1000 = 3 + 997</div></div>
+<table class="trace"><thead><tr><th>짝수</th><th>소수 + 소수</th><th>다른 표현</th></tr></thead><tbody><tr><td>4</td><td>2 + 2</td><td>—</td></tr><tr><td>6</td><td>3 + 3</td><td>—</td></tr><tr><td>8</td><td>3 + 5</td><td>—</td></tr><tr><td>10</td><td>3 + 7</td><td>5 + 5</td></tr><tr><td>12</td><td>5 + 7</td><td>—</td></tr><tr><td>20</td><td>3 + 17</td><td>7 + 13</td></tr><tr><td>30</td><td>7 + 23</td><td>11 + 19</td></tr><tr><td>100</td><td>3 + 97</td><td>11 + 89</td></tr></tbody></table>
+<div class="debug-section"><div class="debug-bar">DEBUG LAB — 에러를 찾으시오</div><div class="debug-body">
+
+<p style="margin:14px 0 0; font-size:14px;"><b>에러:</b> </p>
+<p style="font-size:14px;"><b>수정:</b> </p>
+</div></div>
+<h2 class="section-title">[심화 내용] 소수와 컴퓨터 과학 면접</h2>
+<div class="note-box"><span class="note-label">[심화 내용] 소수 면접/시험 문제</span>
+<b>Q1.</b> 소수 판별의 최적 시간 복잡도는?<br>A: 결정적: AKS O(log^6(n)), 확률적: Miller-Rabin O(k*log^2(n))<br><br><b>Q2.</b> 에라토스테네스의 체의 시간/공간 복잡도?<br>A: 시간 O(n log log n), 공간 O(n)<br><br><b>Q3.</b> 1은 왜 소수가 아닌가?<br>A: 소인수분해의 유일성(산술의 기본 정리)을 보장하기 위해<br>12 = 2*2*3 (유일), 만약 1이 소수면 12 = 1*2*2*3 = 1*1*2*2*3... (유일하지 않음!)<br><br><b>Q4.</b> 해시 테이블 크기로 소수를 쓰는 이유?<br>A: 소수 크기면 key % size의 분포가 균등해짐<br>합성수면 약수의 배수에 충돌이 집중<br><br><b>Q5.</b> 2가 유일한 짝수 소수인 이유?<br>A: 2보다 큰 짝수 = 2로 나누어짐 = 합성수</div>
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span><span class="code-bar-file">[C 코드] 쌍둥이 소수 찾기</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;stdio.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;string.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">4</span><span class="lc"><span class="s-pp">#define</span> N <span class="s-num">1001</span></span></div>
+<div class="code-line"><span class="ln">5</span><span class="lc"><span class="s-type">char</span> sieve[N];</span></div>
+<div class="code-line"><span class="ln">6</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">7</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">main</span>() {</span></div>
+<div class="code-line"><span class="ln">8</span><span class="lc">    <span class="s-fn">memset</span>(sieve, <span class="s-num">1</span>, N);</span></div>
+<div class="code-line"><span class="ln">9</span><span class="lc">    sieve[<span class="s-num">0</span>] = sieve[<span class="s-num">1</span>] = <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">10</span><span class="lc">    <span class="s-kw">for</span> (<span class="s-type">int</span> i = <span class="s-num">2</span>; i*i &lt; N; i++)</span></div>
+<div class="code-line"><span class="ln">11</span><span class="lc">        <span class="s-kw">if</span> (sieve[i])</span></div>
+<div class="code-line"><span class="ln">12</span><span class="lc">            <span class="s-kw">for</span> (<span class="s-type">int</span> j = i*i; j &lt; N; j += i)</span></div>
+<div class="code-line"><span class="ln">13</span><span class="lc">                sieve[j] = <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">14</span><span class="lc">    </span></div>
+<div class="code-line"><span class="ln">15</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"1000 이하 쌍둥이 소수:\n"</span>);</span></div>
+<div class="code-line"><span class="ln">16</span><span class="lc">    <span class="s-type">int</span> count = <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">17</span><span class="lc">    <span class="s-kw">for</span> (<span class="s-type">int</span> i = <span class="s-num">2</span>; i &lt; N-<span class="s-num">2</span>; i++) {</span></div>
+<div class="code-line"><span class="ln">18</span><span class="lc">        <span class="s-kw">if</span> (sieve[i] &amp;&amp; sieve[i+<span class="s-num">2</span>]) {</span></div>
+<div class="code-line"><span class="ln">19</span><span class="lc">            <span class="s-fn">printf</span>(<span class="s-str">"(%d, %d) "</span>, i, i+<span class="s-num">2</span>);</span></div>
+<div class="code-line"><span class="ln">20</span><span class="lc">            count++;</span></div>
+<div class="code-line"><span class="ln">21</span><span class="lc">            <span class="s-kw">if</span> (count % <span class="s-num">5</span> == <span class="s-num">0</span>) <span class="s-fn">printf</span>(<span class="s-str">"\n"</span>);</span></div>
+<div class="code-line"><span class="ln">22</span><span class="lc">        }</span></div>
+<div class="code-line"><span class="ln">23</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">24</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"\n총 %d쌍\n"</span>, count);</span></div>
+<div class="code-line"><span class="ln">25</span><span class="lc">    <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">26</span><span class="lc">}</span></div>
+</div>
+</div>
+<div class="output-wrap"><div class="output-bar">실행 결과</div><div class="output-body">1000 이하 쌍둥이 소수:
+(3, 5) (5, 7) (11, 13) (17, 19) (29, 31) 
+(41, 43) (59, 61) (71, 73) (101, 103) (107, 109) 
+...
+총 35쌍</div></div>
+<div style="margin:22px 0"></div>
+<h2 class="section-title">[심화 내용] 산술의 기본 정리</h2>
+<div class="note-box"><span class="note-label">[심화 내용] 산술의 기본 정리 (Fundamental Theorem of Arithmetic)</span>
+<b>정리:</b> 1보다 큰 모든 자연수는 소수의 곱으로 <b>유일하게</b> 표현된다.<br>(순서만 다른 것은 같은 것으로 봄)<br><br>12 = 2 * 2 * 3 (유일!)<br>60 = 2 * 2 * 3 * 5 (유일!)<br>97 = 97 (소수 자체, 유일!)<br><br><b>왜 1은 소수가 아닌가?</b><br>만약 1이 소수라면:<br>12 = 2*2*3 = 1*2*2*3 = 1*1*2*2*3 = ...<br>무한히 많은 표현이 가능 -> 유일성 깨짐!<br><br><b>이 정리의 응용:</b><br>- GCD/LCM 계산 (소인수분해 이용)<br>- 약수 개수: (a1+1)*(a2+1)*...*<br>- RSA 암호: 큰 수의 소인수분해 어려움<br>- 정수론 전체의 기초!</div>
+<div class="note-box"><span class="note-label">[심화 내용] 소인수분해로 약수 개수 구하기</span>
+N = p1^a1 * p2^a2 * ... * pk^ak일 때<br><br><b>약수의 개수</b> = (a1+1) * (a2+1) * ... * (ak+1)<br><br>예: 360 = 2^3 * 3^2 * 5^1<br>약수 개수 = (3+1)*(2+1)*(1+1) = 4*3*2 = <b>24개</b><br><br><b>약수의 합</b> = (2^0+2^1+2^2+2^3) * (3^0+3^1+3^2) * (5^0+5^1)<br>= 15 * 13 * 6 = <b>1170</b><br><br>일일이 세지 않아도 공식으로 바로 계산!</div>
+<!-- fact-bite -->
+
+<div class="tip"><span class="tip-label">[활동] 소수 탐험 도전</span>
+1. 1~200 사이의 소수를 전부 찾아보세요 (에라토스테네스의 체 사용)<br>2. 쌍둥이 소수를 모두 표시해 보세요<br>3. 팰린드롬 소수를 찾아보세요 (앞뒤가 같은 소수: 131, 151, 181...)<br>4. 골드바흐 분할: 50 = ? + ? (소수 2개의 합)<br>5. 도전! 100번째 소수는 무엇일까요? (답: 541)</div>
+<table class="trace"><thead><tr><th>용어</th><th>설명</th></tr></thead><tbody><tr><td><code>소수(Prime Number)</code></td><td>1보다 크고, 1과 자기 자신만으로 나누어지는 수. 약수가 딱 2개인 수.</td></tr><tr><td><code>합성수(Composite Number)</code></td><td>1보다 크고 소수가 아닌 수. 1과 자기 자신 외에 다른 약수가 있는 수.</td></tr><tr><td><code>에라토스테네스의 체</code></td><td>소수의 배수를 차례로 지워서 소수를 찾는 효율적인 방법.</td></tr><tr><td><code>소수 판별</code></td><td>어떤 수가 소수인지 아닌지 확인하는 과정. 2부터 √N까지 나눠보는 방법.</td></tr><tr><td><code>√N (루트 N)</code></td><td>N의 제곱근. 소수 판별 시 이 값까지만 확인하면 충분함.</td></tr><tr><td><code>약수</code></td><td>어떤 수를 나머지 없이 나눌 수 있는 수. 예: 12의 약수는 1, 2, 3, 4, 6, 12.</td></tr><tr><td><code>배수</code></td><td>어떤 수에 자연수를 곱한 수. 예: 3의 배수는 3, 6, 9, 12, ...</td></tr><tr><td><code>소수 정리</code></td><td>n 이하 소수 개수 ≈ n/ln(n). 소수의 분포를 설명하는 정리.</td></tr><tr><td><code>밀러-라빈</code></td><td>큰 수의 소수 판별 확률적 알고리즘. RSA 키 생성에 사용.</td></tr><tr><td><code>메르센 소수</code></td><td>2^p - 1 형태의 소수. 가장 큰 소수 기록을 보유.</td></tr><tr><td><code>GIMPS</code></td><td>Great Internet Mersenne Prime Search. 메르센 소수를 찾는 분산 컴퓨팅 프로젝트.</td></tr><tr><td><code>쌍둥이 소수</code></td><td>차이가 2인 소수 쌍 (예: 11, 13). 무한히 많은지는 미해결.</td></tr><tr><td><code>골드바흐의 추측</code></td><td>2보다 큰 모든 짝수는 두 소수의 합. 1742년 이래 미해결.</td></tr><tr><td><code>양자 내성 암호</code></td><td>양자 컴퓨터의 소인수분해 공격에도 안전한 암호 체계.</td></tr><tr><td><code>Shor 알고리즘</code></td><td>양자 컴퓨터로 소인수분해를 다항 시간에 수행하는 알고리즘.</td></tr></tbody></table>
+<div class="warmup-box"><div class="warmup-title">이번 유닛 핵심 정리</div><div class="wq"><b>1.</b> 소수 = 1과 자기 자신만으로 나누어지는 수 (2 이상)</div><div class="wq"><b>2.</b> 에라토스테네스의 체: 배수를 지워서 소수를 찾는 방법</div><div class="wq"><b>3.</b> sqrt(n)까지만 확인하면 충분 (약수 쌍의 원리)</div><div class="wq"><b>4.</b> [심화] C로 소수 판별: O(sqrt(n)), 체: O(n log log n)</div><div class="wq"><b>5.</b> [심화 내용] 소수 정리: pi(n) ≈ n/ln(n)</div><div class="wq"><b>6.</b> [심화 내용] 밀러-라빈: 큰 수 소수 판별 (RSA에 사용)</div><div class="wq"><b>7.</b> [심화 내용] 메르센 소수: 가장 큰 소수 기록 보유</div><div class="wq"><b>8.</b> [심화 내용] 소인수분해의 어려움 = 인터넷 보안의 기초</div><div class="wq"><b>9.</b> [심화 내용] 골드바흐 추측: 280년간 미해결!</div></div>
+<div class="tip"><span class="tip-label">이 유닛에서 연결된 축</span>
+<b>[C언어]</b> 반복문 + 조건문 + 나머지 연산(%)으로 소수 판별 프로그램<br><b>[컴퓨팅 사고력]</b> 효율적 알고리즘 — 전부 확인 vs √N까지만 확인<br><b>[KOI]</b> 소수 판별, 에라토스테네스의 체는 필수 알고리즘<br><b>[알고리즘]</b> 에라토스테네스의 체 — O(N log log N)의 효율적 체 알고리즘</div>
+<div class="note-box"><span class="note-label">[실생활] 소수와 인터넷 보안</span>
+인터넷 쇼핑할 때 신용카드 번호가 안전하게 전송되는 이유? 바로 <b>RSA 암호</b> 덕분이에요. RSA는 '아주 큰 두 소수의 곱은 원래 소수를 찾기 어렵다'는 원리를 이용해요. 소수가 없으면 온라인 결제도 불가능해요!</div>
+<h2 class="section-title">실전 활용 연습</h2>
+<p>지금까지 배운 개념을 활용한 다양한 실전 예제와 연습문제입니다.</p>
+
+<h2 class="section-title">실생활 연결</h2>
+<div class="tip"><span class="tip-label">[실생활] 이 개념은 어디에 쓰일까?</span>
+게임 개발, 앱 만들기, 웹사이트, 로봇 제어, AI 학습 등 모든 분야에서 사용돼요!</div>
+
+<h2 class="section-title">추가 연습문제</h2>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 20</span><p style="margin:0;font-size:14px">이번 유닛에서 배운 핵심 개념 3가지를 자신의 말로 설명해 보세요.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 21</span><p style="margin:0;font-size:14px">이번 유닛의 개념을 활용한 자신만의 문제를 1개 만들어 보세요.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 22</span><p style="margin:0;font-size:14px">이번 유닛의 개념이 C언어에서 어떻게 사용되는지 조사해 보세요.</p></div>
+<h2 class="section-title">[심화] 더 알아보기</h2>
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+
+<p>이번 유닛의 모든 개념을 완전히 이해했습니다. 다음 유닛에서 더 발전된 개념을 배워보세요!</p>
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<div class="note-box"><span class="note-label">[다음 유닛 미리보기]</span>
+소수를 찾을 때 '약수'와 '나누기'를 많이 썼죠? 다음 유닛에서는 두 수의 <b>최대공약수(GCD)</b>와 <b>최소공배수(LCM)</b>를 구하는 놀라운 방법을 배울 거예요!</div>
+
+
+    <span class="page-num">2</span>
+  </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,1296 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>코딩쏙 교재 — 튜링 머신 맛보기 — 컴퓨터의 원조</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+
+  :root {
+    --navy: #1a2e4a;
+    --navy-mid: #2c4a6e;
+    --navy-light: #3d6590;
+    --orange: #e07830;
+    --orange-light: #f5e6d8;
+    --white: #ffffff;
+    --bg: #f7f8fa;
+    --bg-warm: #faf9f7;
+    --gray-50: #f9fafb;
+    --gray-100: #f3f4f6;
+    --gray-200: #e5e7eb;
+    --gray-300: #d1d5db;
+    --gray-400: #9ca3af;
+    --gray-500: #6b7280;
+    --gray-600: #4b5563;
+    --gray-700: #374151;
+    --gray-800: #1f2937;
+    --text: #2d3748;
+    --green: #16a34a;
+    --green-bg: #dcfce7;
+    --red: #dc2626;
+    --red-bg: #fee2e2;
+    --blue: #2563eb;
+    --blue-bg: #dbeafe;
+    --yellow-bg: #fef9c3;
+    --font: 'Noto Sans KR', sans-serif;
+    --mono: 'JetBrains Mono', 'Consolas', monospace;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: var(--font); background: #e8eaed; font-size: 15px; }
+
+  /* ========== PAGE ========== */
+  .page {
+    width: 210mm;
+    min-height: 295mm;
+    margin: 24px auto;
+    background: var(--white);
+    box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* ========== PAGE 1: CHAPTER START ========== */
+  .chapter-page {
+    display: flex;
+    min-height: 295mm;
+  }
+
+  .chapter-sidebar {
+    width: 10px;
+    background: var(--navy);
+    flex-shrink: 0;
+  }
+
+  .chapter-accent-bar {
+    width: 7px;
+    background: var(--orange);
+    flex-shrink: 0;
+  }
+
+  .chapter-body {
+    flex: 1;
+    padding: 70px 65px 50px 55px;
+    position: relative;
+  }
+
+  .chapter-watermark {
+    position: absolute;
+    top: -10px;
+    right: -15px;
+    font-size: 280px;
+    font-weight: 900;
+    color: rgba(180,195,212,0.35);
+    line-height: 1;
+    pointer-events: none;
+    letter-spacing: -10px;
+  }
+
+  .chapter-label {
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--navy-mid);
+    letter-spacing: 2px;
+    margin-bottom: 4px;
+  }
+
+  .chapter-title {
+    font-size: 44px;
+    font-weight: 900;
+    color: var(--navy);
+    line-height: 1.15;
+    margin-bottom: 12px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .chapter-sub {
+    font-size: 16px;
+    color: var(--gray-500);
+    font-weight: 400;
+    margin-bottom: 20px;
+    padding-bottom: 28px;
+    border-bottom: 1px solid var(--gray-200);
+  }
+
+  /* Learning objectives */
+  .obj-title {
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--navy);
+    margin-bottom: 16px;
+    margin-top: 32px;
+  }
+
+  .obj-list {
+    list-style: none;
+    margin-bottom: 40px;
+  }
+
+  .obj-list li {
+    padding: 5px 0 5px 24px;
+    position: relative;
+    font-size: 15px;
+    color: var(--gray-700);
+    line-height: 1.6;
+  }
+
+  .obj-list li::before {
+    content: '•';
+    position: absolute;
+    left: 8px;
+    color: var(--navy-mid);
+    font-weight: 700;
+  }
+
+  /* Prerequisites flow */
+  .prereq-title {
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--navy);
+    margin-bottom: 18px;
+  }
+
+  .prereq-flow {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    margin-bottom: 44px;
+  }
+
+  .prereq-item {
+    padding: 9px 22px;
+    border: 1.5px solid var(--gray-300);
+    border-radius: 50px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--gray-600);
+    background: var(--white);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+  }
+
+  .prereq-item.current {
+    border-color: var(--navy);
+    color: var(--navy);
+    font-weight: 700;
+    background: #edf2f7;
+    box-shadow: 0 2px 6px rgba(26,46,74,0.12);
+  }
+
+  .prereq-arrow {
+    width: 36px;
+    text-align: center;
+    color: var(--gray-300);
+    font-size: 18px;
+    font-weight: 300;
+  }
+
+  /* Predict box */
+  .predict-box {
+    background: var(--gray-50);
+    border: 1.5px solid var(--gray-200);
+    border-radius: 12px;
+    padding: 24px 28px;
+  }
+
+  .predict-label {
+    display: inline-block;
+    background: var(--orange);
+    color: var(--white);
+    font-size: 12px;
+    font-weight: 600;
+    padding: 3px 12px;
+    border-radius: 4px;
+    margin-bottom: 14px;
+    letter-spacing: 0.5px;
+  }
+
+  .predict-q {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--navy);
+    margin-bottom: 16px;
+  }
+
+  .predict-code {
+    background: var(--white);
+    border: 1px solid var(--gray-200);
+    border-radius: 8px;
+    padding: 14px 18px;
+    font-family: var(--mono);
+    font-size: 13px;
+    line-height: 1.65;
+    color: var(--gray-700);
+  }
+
+  /* ========== PAGE 2: CORE CONTENT ========== */
+  .content-page {
+    padding: 55px 65px;
+  }
+
+  .unit-header-bar {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    margin-bottom: 8px;
+  }
+
+  .unit-tag {
+    font-size: 12px;
+    color: var(--orange);
+    font-weight: 600;
+    letter-spacing: 1px;
+  }
+
+  .unit-title-sm {
+    font-size: 14px;
+    color: var(--gray-400);
+    font-weight: 400;
+  }
+
+  .section-title {
+    font-size: 24px;
+    font-weight: 800;
+    color: var(--navy);
+    margin-bottom: 24px;
+    margin-top: 8px;
+    padding-left: 16px;
+    border-left: 5px solid var(--orange);
+  }
+
+  p {
+    font-size: 15.5px;
+    line-height: 1.9;
+    color: var(--text);
+    margin-bottom: 18px;
+  }
+
+  p code {
+    font-family: var(--mono);
+    font-size: 13.5px;
+    background: #f1f3f5;
+    padding: 2px 7px;
+    border-radius: 4px;
+    color: var(--navy);
+    font-weight: 500;
+  }
+
+  /* Code block */
+  .code-wrap {
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    border: 1px solid var(--gray-200);
+    margin: 22px 0;
+  }
+
+  .code-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 9px 18px;
+    background: var(--navy);
+    font-size: 12px;
+  }
+
+  .code-bar-lang {
+    font-family: var(--mono);
+    font-weight: 600;
+    color: var(--white);
+  }
+
+  .code-bar-file {
+    color: rgba(255,255,255,0.6);
+    font-weight: 400;
+  }
+
+  .code-body {
+    background: #f8f9fb;
+    padding: 20px 0;
+    font-family: var(--mono);
+    font-size: 13.5px;
+    line-height: 1.75;
+    border: 1px solid var(--gray-200);
+    border-top: none;
+    border-radius: 0 0 12px 12px;
+  }
+
+  .code-line {
+    display: flex;
+    padding: 0 20px;
+  }
+
+  .code-line:hover {
+    background: #f0f4f8;
+  }
+
+  .code-line.highlighted {
+    background: #fff8e1;
+  }
+
+  .ln {
+    width: 30px;
+    text-align: right;
+    color: #b8bfc8;
+    font-size: 12px;
+    margin-right: 18px;
+    user-select: none;
+    flex-shrink: 0;
+    padding-top: 1px;
+  }
+
+  .lc { flex: 1; }
+
+  /* syntax */
+  .s-pp { color: #8b5cf6; font-weight: 600; }
+  .s-str { color: #d97706; }
+  .s-type { color: #2563eb; font-weight: 500; }
+  .s-kw { color: #7c3aed; font-weight: 500; }
+  .s-fn { color: #059669; font-weight: 500; }
+  .s-num { color: #dc2626; }
+  .s-cm { color: #9ca3af; font-style: italic; }
+
+  /* Output block */
+  .output-wrap {
+    border-radius: 10px;
+    overflow: hidden;
+    margin: 10px 0 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    border: 1px solid #d1d5db;
+  }
+
+  .output-bar {
+    padding: 9px 18px;
+    background: #374151;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--white);
+    letter-spacing: 0.5px;
+  }
+
+  .output-body {
+    padding: 16px 20px;
+    font-family: var(--mono);
+    font-size: 13.5px;
+    line-height: 1.7;
+    color: var(--gray-800);
+    background: #f1f5f9;
+    border: 1px solid var(--gray-200);
+    border-top: none;
+    border-radius: 0 0 10px 10px;
+  }
+
+  /* Callout */
+  .tip {
+    margin: 28px 0;
+    padding: 18px 24px;
+    background: #dbeafe;
+    border-left: 5px solid #2563eb;
+    border-radius: 0 12px 12px 0;
+    font-size: 14.5px;
+    line-height: 1.8;
+    color: var(--text);
+  }
+
+  .tip-label {
+    font-weight: 700;
+    color: #2563eb;
+    font-size: 13px;
+    display: block;
+    margin-bottom: 4px;
+  }
+
+  .warn {
+    margin: 28px 0;
+    padding: 18px 24px;
+    background: #fef3c7;
+    border-left: 5px solid #d97706;
+    border-radius: 0 12px 12px 0;
+    font-size: 14.5px;
+    line-height: 1.8;
+  }
+
+  .warn-label {
+    font-weight: 700;
+    color: #d97706;
+    font-size: 13px;
+    display: block;
+    margin-bottom: 4px;
+  }
+
+  .note-box {
+    margin: 28px 0;
+    padding: 18px 24px;
+    background: #e2e8f0;
+    border-left: 5px solid #64748b;
+    border-radius: 0 12px 12px 0;
+    font-size: 14.5px;
+    line-height: 1.8;
+  }
+
+  .note-label {
+    font-weight: 700;
+    color: var(--gray-600);
+    font-size: 13px;
+    display: block;
+    margin-bottom: 4px;
+  }
+
+  /* Trace table */
+  table.trace {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    margin: 28px 0;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+    font-size: 14px;
+  }
+
+  table.trace th {
+    background: var(--navy);
+    color: var(--white);
+    padding: 10px 16px;
+    text-align: left;
+    font-weight: 500;
+    font-size: 13px;
+  }
+
+  table.trace td {
+    padding: 10px 16px;
+    border-bottom: 1px solid var(--gray-200);
+    color: var(--gray-700);
+  }
+
+  table.trace tr:nth-child(even) td { background: var(--gray-50); }
+  table.trace tr:last-child td { border-bottom: none; }
+
+  table.trace td code {
+    font-family: var(--mono);
+    font-size: 12.5px;
+    background: #eef1f5;
+    padding: 2px 6px;
+    border-radius: 4px;
+    color: var(--navy);
+  }
+
+  /* ========== PAGE 3: PROBLEMS ========== */
+  .problems-header {
+    margin-bottom: 8px;
+  }
+
+  .problems-chapter-ref {
+    font-size: 13px;
+    color: var(--gray-500);
+    margin-bottom: 4px;
+  }
+
+  .problems-title {
+    font-size: 28px;
+    font-weight: 800;
+    color: var(--navy);
+    margin-bottom: 24px;
+  }
+
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 16px;
+  }
+
+  .prob-card {
+    background: var(--white);
+    border: 1px solid var(--gray-200);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 3px 15px rgba(0,0,0,0.06);
+  }
+
+  .prob-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 16px;
+    background: var(--navy);
+  }
+
+  .prob-num {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--white);
+  }
+
+  .diff {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    font-size: 12px;
+    font-weight: 800;
+  }
+
+  .diff-basic { background: #22c55e; color: white; }
+  .diff-mid { background: #f59e0b; color: white; }
+  .diff-hard { background: #ef4444; color: white; }
+
+  .prob-desc {
+    font-size: 13.5px;
+    line-height: 1.65;
+    color: var(--gray-600);
+    margin-bottom: 10px;
+    padding: 14px 16px 0;
+  }
+
+  .prob-code {
+    background: var(--gray-50);
+    border: 1px solid var(--gray-200);
+    border-radius: 6px;
+    padding: 10px 14px;
+    margin: 0 16px 16px;
+    font-family: var(--mono);
+    font-size: 12.5px;
+    line-height: 1.55;
+    color: var(--gray-600);
+  }
+
+  /* Competition section */
+  .comp-section {
+    margin-top: 32px;
+    padding-top: 24px;
+    border-top: 2px solid var(--navy);
+  }
+
+  .comp-title {
+    font-size: 22px;
+    font-weight: 800;
+    color: var(--navy);
+    margin-bottom: 20px;
+  }
+
+  .comp-card {
+    background: var(--white);
+    border: 1.5px solid var(--gray-200);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 18px rgba(0,0,0,0.06);
+  }
+
+  .comp-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 16px;
+    background: #0f766e;
+  }
+
+  .comp-header .comp-name {
+    color: var(--white);
+    font-size: 15px;
+    font-weight: 700;
+    margin: 0;
+  }
+
+  .comp-inner {
+    padding: 14px 18px 18px;
+  }
+
+  .comp-badge {
+    display: inline-block;
+    padding: 3px 12px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 700;
+  }
+
+  .badge-bj { background: #93c5fd; color: #1e3a5f; }
+  .badge-cu { background: #c4b5fd; color: #3b1f7e; }
+  .badge-pg { background: #7dd3fc; color: #0c4a6e; }
+
+  .comp-name {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--navy);
+    margin-bottom: 6px;
+  }
+
+  .comp-desc {
+    font-size: 14px;
+    color: var(--gray-600);
+    line-height: 1.7;
+    margin-bottom: 14px;
+  }
+
+  .io-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+
+  .io-card {
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid var(--gray-200);
+  }
+
+  .io-h {
+    padding: 6px 14px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--gray-600);
+    background: #e2e8f0;
+  }
+
+  .io-c {
+    padding: 10px 14px;
+    font-family: var(--mono);
+    font-size: 13px;
+    line-height: 1.5;
+    background: var(--white);
+  }
+
+  /* ========== DEBUG LAB ========== */
+  .debug-section {
+    margin: 24px 0;
+    border: 2px solid var(--red);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+
+  .debug-bar {
+    background: var(--red);
+    color: var(--white);
+    padding: 10px 20px;
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 1px;
+  }
+
+  .debug-body {
+    padding: 20px;
+    background: #fef2f2;
+  }
+
+  /* 10축 connection */
+  .connect-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 16px;
+    margin: 28px 0;
+  }
+
+  .connect-card {
+    border-radius: 12px;
+    padding: 20px;
+    text-align: center;
+    border: 1px solid var(--gray-200);
+    box-shadow: 0 3px 14px rgba(0,0,0,0.05);
+  }
+
+  .connect-card h5 {
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 8px;
+  }
+
+  .connect-card p {
+    font-size: 13px;
+    margin: 0;
+    color: var(--gray-600);
+    line-height: 1.6;
+  }
+
+  .cc1 { border-top: 3px solid #8b5cf6; }
+  .cc1 h5 { color: #8b5cf6; }
+  .cc2 { border-top: 3px solid var(--green); }
+  .cc2 h5 { color: var(--green); }
+  .cc3 { border-top: 3px solid var(--navy); }
+  .cc3 h5 { color: var(--navy); }
+
+  /* PAGE NUMBER */
+  .page-num {
+    position: absolute;
+    bottom: 20px;
+    right: 30px;
+    font-size: 12px;
+    color: var(--gray-400);
+  }
+
+  /* WARMUP */
+  .warmup-box {
+    background: #e0e7f1;
+    border-radius: 12px;
+    padding: 24px 28px;
+    margin: 28px 0;
+    border: 2px solid #c7d2e0;
+  }
+
+  .warmup-title {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--navy);
+    margin-bottom: 14px;
+  }
+
+  .wq {
+    padding: 9px 16px;
+    background: var(--white);
+    border-radius: 8px;
+    margin-bottom: 8px;
+    font-size: 14px;
+    border: 1px solid var(--gray-200);
+    color: var(--gray-700);
+  }
+
+  .wq b { color: var(--navy); margin-right: 6px; }
+  .wq .hint { color: var(--gray-400); font-size: 13px; }
+
+  /* ===== CONTEST PROBLEMS PAGE ===== */
+  .contest-page-wrap .chapter-page {
+    min-height: auto;
+  }
+
+  .contest-page-wrap .chapter-page > div:last-child {
+    min-width: 0;
+    overflow-wrap: break-word;
+    word-break: break-word;
+  }
+
+  .contest-card {
+    background: white;
+    border: 1.5px solid var(--gray-200);
+    border-radius: 12px;
+    margin-bottom: 28px;
+    overflow: hidden;
+    break-inside: avoid;
+  }
+
+  .contest-header {
+    background: var(--navy);
+    color: white;
+    padding: 14px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .contest-num-source {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .contest-num {
+    font-weight: 700;
+    font-size: 16px;
+  }
+
+  .contest-source {
+    background: rgba(255,255,255,0.15);
+    padding: 3px 10px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 500;
+  }
+
+  .contest-body {
+    padding: 20px 24px 24px;
+  }
+
+  .contest-question {
+    font-size: 15px;
+    line-height: 1.7;
+    color: var(--text);
+    margin: 0 0 16px;
+    word-break: break-word;
+    overflow-wrap: break-word;
+  }
+
+  .contest-expected {
+    background: #1e293b;
+    border-radius: 8px;
+    overflow: hidden;
+    margin-bottom: 20px;
+  }
+
+  .contest-expected-label {
+    background: #334155;
+    color: #94a3b8;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 6px 14px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .contest-expected-body {
+    color: #e2e8f0;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    line-height: 1.6;
+    padding: 12px 16px;
+    margin: 0;
+    white-space: pre;
+  }
+
+  .contest-write-area {
+    border: 2px dashed var(--gray-300);
+    border-radius: 10px;
+    overflow: hidden;
+    transition: border-color 0.2s;
+  }
+
+  .contest-write-area:focus-within {
+    border-color: var(--orange);
+    border-style: solid;
+  }
+
+  .contest-write-label {
+    background: var(--bg);
+    color: var(--gray-500);
+    font-size: 12px;
+    font-weight: 600;
+    padding: 8px 14px;
+    border-bottom: 1px solid var(--gray-200);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .contest-textarea {
+    width: 100%;
+    min-height: 200px;
+    padding: 16px 18px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    line-height: 1.7;
+    color: var(--text);
+    background: #fafbfc;
+    border: none;
+    outline: none;
+    resize: vertical;
+    tab-size: 4;
+    box-sizing: border-box;
+  }
+
+  .contest-textarea::placeholder {
+    color: var(--gray-300);
+  }
+
+  @media print {
+    body { background: white; }
+    .page { box-shadow: none; margin: 0; page-break-after: always; }
+    .contest-textarea { border: 1px solid var(--gray-300); min-height: 180px; }
+  }
+
+</style>
+</head>
+<body>
+
+<div class="page">
+  <div class="chapter-page">
+    <div class="chapter-sidebar"></div>
+    <div class="chapter-accent-bar"></div>
+    <div class="chapter-body">
+      <div class="chapter-watermark">S-08</div>
+      <div class="chapter-label">Chapter S-08</div>
+      <h1 class="chapter-title">튜링 머신 맛보기</h1>
+      <p class="chapter-sub">테이프와 헤드만으로 모든 계산을 할 수 있다고? 현대 컴퓨터의 이론적 원조, 튜링 머신을 만나 봐요!</p>
+
+      <h3 class="obj-title">이 유닛에서 배우는 것</h3>
+      <ul class="obj-list">
+        <li>튜링 머신의 구성 요소(테이프, 헤드, 상태, 규칙)를 이해해요.</li>
+        <li>간단한 튜링 머신을 직접 따라가며 실행할 수 있어요.</li>
+        <li>튜링 머신이 현대 컴퓨터의 이론적 모델임을 알아요.</li>
+        <li>결정 문제와 '계산 가능성'의 개념을 이해해요.</li>
+        <li>C언어로 간단한 튜링 머신을 시뮬레이션할 수 있어요.</li>
+        <li>[심화] 정지 문제가 왜 풀 수 없는지 직관적으로 이해해요.</li>
+      </ul>
+
+      <h3 class="prereq-title">선수 학습</h3>
+      <div class="prereq-flow">
+        <div class="prereq-item">U0-03 '0과 1의 세계 (비트)'를 배웠다</div><div class="prereq-arrow">→</div>
+        <div class="prereq-item">C언어 배열, 반복문, 조건문을 안다</div><div class="prereq-arrow">→</div>
+        <div class="prereq-item current">상태(state)의 개념을 직관적으로 안다</div>
+      </div>
+
+      
+
+      <span class="page-num">1</span>
+    </div>
+  </div>
+</div>
+<div class="page">
+  <div class="content-page">
+    <div class="unit-header-bar">
+      <span class="unit-tag">UNIT S-08</span>
+      <span class="unit-title-sm">튜링 머신 맛보기</span>
+    </div>
+<h2 class="section-title">컴퓨터가 없던 시절의 '컴퓨터'</h2>
+
+<p>지금 우리가 쓰는 컴퓨터, 스마트폰, 슈퍼컴퓨터는 모두 1936년에 앨런 튜링이 상상한 기계와 본질적으로 같아요. 이 상상의 기계를 <b>튜링 머신(Turing Machine)</b>이라고 해요.</p>
+<div class="tip"><span class="tip-label">[배경] 튜링이 풀려던 문제</span>
+1928년, 수학자 힐베르트가 물었어요:<br>'모든 수학 문제를 기계적으로 풀 수 있는 방법이 있을까?'<br><br>튜링은 이 질문에 답하려고 '기계적으로 푼다'는 게 정확히 뭔지 정의해야 했어요.<br>그래서 가장 단순하면서도 모든 계산을 할 수 있는 기계를 설계했어요.<br><br>결론: <b>'풀 수 없는 문제가 존재한다!'</b><br>이것은 수학과 컴퓨터 과학의 역사를 바꾼 발견이에요.</div>
+<h2 class="section-title">튜링 머신의 구조</h2>
+<p>튜링 머신은 놀랍도록 단순해요. 부품이 딱 4개뿐이에요.</p>
+<div class="note-box"><span class="note-label">[핵심] 튜링 머신의 4가지 구성 요소</span>
+1. <b>테이프(Tape)</b>: 양쪽으로 무한히 긴 종이 테이프. 칸마다 기호 하나가 적혀 있어요.<br><br>2. <b>헤드(Head)</b>: 테이프 위를 움직이며 기호를 읽고 쓰는 장치. 한 번에 한 칸만 봐요.<br><br>3. <b>상태(State)</b>: 기계의 현재 '기분'. 유한 개의 상태가 있어요.<br><br>4. <b>규칙표(Transition Table)</b>: '현재 상태 + 읽은 기호 → 쓸 기호 + 이동 방향 + 다음 상태'<br><br>이게 전부예요! 이 4가지만으로 <b>컴퓨터가 할 수 있는 모든 것</b>을 할 수 있어요.</div>
+<div class="note-box"><span class="note-label">[비유] 튜링 머신 = 사람 + 종이 + 연필</span>
+튜링 머신을 사람에 비유하면:<br><br>• <b>테이프</b> = 무한히 긴 줄노트<br>• <b>헤드</b> = 연필을 든 손 (한 칸만 봄)<br>• <b>상태</b> = 지금 뭘 하고 있는지 (읽는 중? 쓰는 중? 찾는 중?)<br>• <b>규칙표</b> = '이럴 때는 이렇게 해'라고 적힌 매뉴얼<br><br>사람이 매뉴얼을 보며 기계적으로 작업하는 것 = 튜링 머신의 동작!</div>
+
+<div style="margin:22px 0"></div>
+<h2 class="section-title">첫 번째 튜링 머신 — 1을 모두 0으로 바꾸기</h2>
+<p>가장 간단한 튜링 머신을 만들어 볼게요. 테이프에 적힌 1을 모두 0으로 바꾸는 기계예요.</p>
+<div class="note-box"><span class="note-label">[규칙표] 1→0 변환기</span>
+<b>상태:</b> q0(작동 중), qH(정지)<br><b>기호:</b> 0, 1, _(빈칸)<br><br><pre>현재상태 | 읽은기호 → 쓸기호 | 이동 | 다음상태<br>---------+----------+---------+------+---------<br>   q0    |    1    →    0    |  →   |   q0<br>   q0    |    0    →    0    |  →   |   q0<br>   q0    |    _    →    _    |  멈춤 |   qH<br></pre><br>의미: 1이든 0이든 오른쪽으로 가면서, 1을 만나면 0으로 바꿔요.<br>빈칸(_)을 만나면 정지!</div>
+<table class="trace"><thead><tr><th>단계</th><th>상태</th><th>테이프</th><th>헤드 위치</th><th>행동</th></tr></thead><tbody><tr><td>0</td><td>q0</td><td>[1] 0  1  1  _</td><td>0</td><td>1 읽음 → 0 쓰기, 오른쪽</td></tr><tr><td>1</td><td>q0</td><td> 0 [0] 1  1  _</td><td>1</td><td>0 읽음 → 0 유지, 오른쪽</td></tr><tr><td>2</td><td>q0</td><td> 0  0 [1] 1  _</td><td>2</td><td>1 읽음 → 0 쓰기, 오른쪽</td></tr><tr><td>3</td><td>q0</td><td> 0  0  0 [1] _</td><td>3</td><td>1 읽음 → 0 쓰기, 오른쪽</td></tr><tr><td>4</td><td>q0</td><td> 0  0  0  0 [_]</td><td>4</td><td>_ 읽음 → 정지!</td></tr><tr><td>끝</td><td>qH</td><td> 0  0  0  0  _</td><td>-</td><td>모든 1이 0으로!</td></tr></tbody></table>
+<table class="trace"><thead><tr><th>단계</th><th>상태</th><th>테이프</th><th>헤드 위치</th><th>행동</th></tr></thead><tbody><tr><td>0</td><td>q0</td><td>[0] 1  1  0  _</td><td>0</td><td>0 읽음 -> 1 쓰기, 오른쪽</td></tr><tr><td>1</td><td>q0</td><td> 1 [1] 1  0  _</td><td>1</td><td>1 읽음 -> 0 쓰기, 오른쪽</td></tr><tr><td>2</td><td>q0</td><td> 1  0 [1] 0  _</td><td>2</td><td>1 읽음 -> 0 쓰기, 오른쪽</td></tr><tr><td>3</td><td>q0</td><td> 1  0  0 [0] _</td><td>3</td><td>0 읽음 -> 1 쓰기, 오른쪽</td></tr><tr><td>4</td><td>q0</td><td> 1  0  0  1 [_]</td><td>4</td><td>_ 읽음 -> 정지!</td></tr><tr><td>끝</td><td>qH</td><td> 1  0  0  1  _</td><td>-</td><td>0110 -> 1001 (모든 비트 반전!)</td></tr></tbody></table>
+<h2 class="section-title">두 번째 튜링 머신 — 1의 개수 세기 (짝수/홀수)</h2>
+<p>좀 더 재미있는 걸 만들어 볼게요. 테이프에 있는 1의 개수가 짝수인지 홀수인지 판별하는 기계예요.</p>
+<div class="note-box"><span class="note-label">[규칙표] 1의 개수 짝홀 판별기</span>
+<b>상태:</b> qE(짝수 개 봤음), qO(홀수 개 봤음), qH(정지)<br><b>기호:</b> 0, 1, _(빈칸)<br><br><pre>현재상태 | 읽은기호 → 쓸기호 | 이동 | 다음상태<br>---------+----------+---------+------+---------<br>   qE    |    1    →    1    |  →   |   qO     ← 짝→홀<br>   qE    |    0    →    0    |  →   |   qE<br>   qE    |    _    →    E    |  멈춤 |   qH     ← 짝수!<br>   qO    |    1    →    1    |  →   |   qE     ← 홀→짝<br>   qO    |    0    →    0    |  →   |   qO<br>   qO    |    _    →    O    |  멈춤 |   qH     ← 홀수!<br></pre><br>1을 만날 때마다 상태가 짝↔홀 전환돼요.<br>끝에 도달하면 현재 상태에 따라 E(짝수) 또는 O(홀수)를 써요.</div>
+<table class="trace"><thead><tr><th>단계</th><th>상태</th><th>헤드 읽기</th><th>행동</th><th>1의 개수</th></tr></thead><tbody><tr><td>0</td><td>qE</td><td>1</td><td>짝→홀, 오른쪽</td><td>1개(홀)</td></tr><tr><td>1</td><td>qO</td><td>0</td><td>유지, 오른쪽</td><td>1개(홀)</td></tr><tr><td>2</td><td>qO</td><td>1</td><td>홀→짝, 오른쪽</td><td>2개(짝)</td></tr><tr><td>3</td><td>qE</td><td>1</td><td>짝→홀, 오른쪽</td><td>3개(홀)</td></tr><tr><td>4</td><td>qO</td><td>_</td><td>O 쓰기, 정지!</td><td>3개(홀)</td></tr></tbody></table>
+<table class="trace"><thead><tr><th>단계</th><th>상태</th><th>헤드 읽기</th><th>행동</th><th>1의 개수</th></tr></thead><tbody><tr><td>0</td><td>qE</td><td>1</td><td>짝->홀, 오른쪽</td><td>1개(홀)</td></tr><tr><td>1</td><td>qO</td><td>1</td><td>홀->짝, 오른쪽</td><td>2개(짝)</td></tr><tr><td>2</td><td>qE</td><td>0</td><td>유지, 오른쪽</td><td>2개(짝)</td></tr><tr><td>3</td><td>qE</td><td>0</td><td>유지, 오른쪽</td><td>2개(짝)</td></tr><tr><td>4</td><td>qE</td><td>_</td><td>E 쓰기, 정지!</td><td>2개(짝)</td></tr></tbody></table>
+<div class="tip"><span class="tip-label">[연결] 패리티와 튜링 머신</span>
+이 튜링 머신은 S-04에서 배운 <b>짝수 패리티 검사</b>와 완전히 같아요!<br><br>• 상태 qE/qO = 1의 개수가 짝수/홀수<br>• 1을 만날 때마다 상태 전환 = XOR 연산<br>• 최종 상태 = 패리티 비트<br><br>패리티 검사를 튜링 머신으로 구현한 거예요.</div>
+<h2 class="section-title">세 번째 튜링 머신 — 이진수 +1</h2>
+<p>이번에는 진짜 계산을 하는 튜링 머신이에요. 이진수에 1을 더해요!</p>
+<div class="note-box"><span class="note-label">[규칙표] 이진수 +1 계산기</span>
+<b>아이디어:</b> 오른쪽 끝에서 시작해서 왼쪽으로 가며 올림 처리<br><br><b>상태:</b> qR(오른쪽 이동), qC(올림 중), qD(완료), qH(정지)<br><br><pre>현재상태 | 읽은기호 → 쓸기호 | 이동 | 다음상태<br>---------+----------+---------+------+---------<br>   qR    |  0 또는 1 → 그대로 |  →   |   qR     ← 끝까지 이동<br>   qR    |    _     →    _    |  ←   |   qC     ← 끝 도달, 올림 시작<br>   qC    |    0     →    1    |  ←   |   qD     ← 0→1, 올림 끝<br>   qC    |    1     →    0    |  ←   |   qC     ← 1→0, 올림 계속<br>   qC    |    _     →    1    |  멈춤 |   qH     ← 맨 앞 올림<br>   qD    |  0 또는 1 → 그대로 |  ←   |   qD     ← 왼쪽 끝까지<br>   qD    |    _     →    _    |  멈춤 |   qH     ← 완료!<br></pre></div>
+<table class="trace"><thead><tr><th>단계</th><th>상태</th><th>테이프</th><th>행동</th></tr></thead><tbody><tr><td>0</td><td>qR</td><td>[1] 0  1  1  _</td><td>오른쪽 이동...</td></tr><tr><td>1-3</td><td>qR</td><td> 1  0  1 [1] _</td><td>끝까지 이동</td></tr><tr><td>4</td><td>qR</td><td> 1  0  1  1 [_]</td><td>빈칸 → 올림 시작(←)</td></tr><tr><td>5</td><td>qC</td><td> 1  0  1 [1]</td><td>1→0, 올림 계속(←)</td></tr><tr><td>6</td><td>qC</td><td> 1  0 [1] 0</td><td>1→0, 올림 계속(←)</td></tr><tr><td>7</td><td>qC</td><td> 1 [0] 0  0</td><td>0→1, 올림 끝!(←)</td></tr><tr><td>8</td><td>qD</td><td>[1] 1  0  0</td><td>왼쪽 이동...</td></tr><tr><td>9</td><td>qD</td><td>[_] 1  1  0  0</td><td>빈칸 → 정지!</td></tr><tr><td>결과</td><td>qH</td><td>1 1 0 0</td><td>1011 + 1 = 1100 ✓</td></tr></tbody></table>
+<table class="trace"><thead><tr><th>단계</th><th>상태</th><th>테이프</th><th>행동</th></tr></thead><tbody><tr><td>0-2</td><td>qR</td><td> 1  1 [1] _</td><td>오른쪽 끝까지 이동</td></tr><tr><td>3</td><td>qR</td><td> 1  1  1 [_]</td><td>빈칸 -> 올림 시작(왼쪽)</td></tr><tr><td>4</td><td>qC</td><td> 1  1 [1]</td><td>1->0, 올림 계속(왼쪽)</td></tr><tr><td>5</td><td>qC</td><td> 1 [1] 0</td><td>1->0, 올림 계속(왼쪽)</td></tr><tr><td>6</td><td>qC</td><td>[1] 0  0</td><td>1->0, 올림 계속(왼쪽)</td></tr><tr><td>7</td><td>qC</td><td>[_] 0  0  0</td><td>빈칸 -> 1 쓰기, 정지!</td></tr><tr><td>결과</td><td>qH</td><td>1 0 0 0</td><td>111(=7) + 1 = 1000(=8)</td></tr></tbody></table>
+<table class="trace"><thead><tr><th>단계</th><th>상태</th><th>테이프</th><th>행동</th></tr></thead><tbody><tr><td>0-3</td><td>qR</td><td> 1  0  0 [0] _</td><td>오른쪽 끝까지 이동</td></tr><tr><td>4</td><td>qR</td><td> 1  0  0  0 [_]</td><td>빈칸 -> 올림 시작(왼쪽)</td></tr><tr><td>5</td><td>qC</td><td> 1  0  0 [0]</td><td>0->1, 올림 끝!(왼쪽)</td></tr><tr><td>6</td><td>qD</td><td> 1  0 [0] 1</td><td>왼쪽 이동...</td></tr><tr><td>7</td><td>qD</td><td> 1 [0] 0  1</td><td>왼쪽 이동...</td></tr><tr><td>8</td><td>qD</td><td>[1] 0  0  1</td><td>왼쪽 이동...</td></tr><tr><td>9</td><td>qD</td><td>[_] 1  0  0  1</td><td>빈칸 -> 정지!</td></tr><tr><td>결과</td><td>qH</td><td>1 0 0 1</td><td>1000(=8) + 1 = 1001(=9)</td></tr></tbody></table>
+<h2 class="section-title">튜링 머신 = 컴퓨터</h2>
+<p>이렇게 단순한 기계가 정말 컴퓨터와 같을까요?</p>
+<div class="note-box"><span class="note-label">[핵심] 처치-튜링 논제</span>
+<b>처치-튜링 논제(Church-Turing Thesis):</b><br><br>'사람이 기계적 절차로 계산할 수 있는 것은<br>튜링 머신으로도 계산할 수 있다.'<br><br>즉, 튜링 머신은 <b>모든 알고리즘</b>을 실행할 수 있어요!<br><br>여러분의 노트북, 스마트폰, 슈퍼컴퓨터는<br>튜링 머신보다 <b>빠를 뿐</b>, 계산 능력 자체는 같아요.<br>튜링 머신이 못 하는 건 어떤 컴퓨터도 못 해요.</div>
+<div class="debug-section"><div class="debug-bar">DEBUG LAB — 에러를 찾으시오</div><div class="debug-body">
+
+<p style="margin:14px 0 0; font-size:14px;"><b>에러:</b> </p>
+<p style="font-size:14px;"><b>수정:</b> </p>
+</div></div>
+<div style="margin:22px 0"></div>
+<h2 class="section-title">만능 튜링 머신 — 프로그램을 실행하는 프로그램</h2>
+<p>튜링의 가장 놀라운 아이디어가 하나 더 있어요.</p>
+<div class="note-box"><span class="note-label">[핵심] 만능 튜링 머신 (Universal Turing Machine)</span>
+보통 튜링 머신은 규칙표가 고정되어 있어요. (계산기처럼)<br><br>하지만 <b>만능 튜링 머신</b>은:<br>테이프에 <b>다른 튜링 머신의 규칙표 + 입력</b>을 적어주면,<br>그 튜링 머신을 <b>흉내 내서</b> 실행해요!<br><br>이것은 현대 컴퓨터의 핵심 아이디어예요:<br>• 규칙표를 테이프에 적음 = <b>프로그램을 메모리에 저장</b><br>• 만능 튜링 머신 = <b>프로그램을 실행하는 컴퓨터(CPU)</b><br><br>폰 노이만은 이 아이디어를 실제 컴퓨터로 만들었어요.<br>이것이 <b>저장 프로그램 방식(stored-program)</b>이에요.</div>
+<div class="tip"><span class="tip-label">[비유] 만능 튜링 머신 이해하기</span>
+일반 튜링 머신 = <b>계산기</b> (덧셈만 하는 기계)<br>만능 튜링 머신 = <b>컴퓨터</b> (프로그램에 따라 뭐든 하는 기계)<br><br>컴퓨터에 게임을 설치하면 게임기,<br>워드를 설치하면 타자기,<br>코딩 도구를 설치하면 개발 환경이 되잖아요?<br><br>하나의 기계가 프로그램에 따라 다르게 동작하는 것 —<br>이 아이디어의 원조가 바로 만능 튜링 머신이에요!</div>
+<div style="margin:22px 0"></div>
+<h2 class="section-title">결정 문제 — 컴퓨터도 못 푸는 문제?</h2>
+
+<p>튜링이 튜링 머신을 만든 진짜 이유는 '풀 수 없는 문제'가 있다는 걸 증명하기 위해서였어요.</p>
+<div class="note-box"><span class="note-label">[핵심] 정지 문제 (Halting Problem)</span>
+<b>문제:</b> 프로그램 P와 입력 X가 주어졌을 때,<br>P(X)가 언젠가 끝나는지(정지), 영원히 돌아가는지(무한루프) 판별하시오.<br><br><b>결론:</b> 이 문제를 풀 수 있는 프로그램은 <b>존재하지 않아요!</b><br><br>즉, '이 프로그램이 무한루프에 빠질까?'를<br>항상 정확히 답하는 프로그램을 만드는 건 <b>불가능</b>해요.</div>
+<div class="note-box"><span class="note-label">[예시] 정지 문제가 왜 중요할까?</span>
+만약 정지 문제를 풀 수 있다면:<br><br>• 모든 버그를 자동으로 찾을 수 있어요<br>• 프로그램이 올바른지 완벽히 검증할 수 있어요<br>• 수학의 모든 추측을 자동으로 증명/반증할 수 있어요<br><br>하지만 불가능하기 때문에:<br>• 디버깅은 영원히 사람의 몫이에요<br>• 프로그램 검증에는 한계가 있어요<br>• 수학에는 기계적으로 풀 수 없는 문제가 있어요</div>
+<h2 class="section-title">정지 문제 — 왜 풀 수 없을까?</h2>
+<p>정지 문제를 풀 수 없다는 걸 <b>귀류법(모순 증명)</b>으로 보여 줄게요.</p>
+<div class="note-box"><span class="note-label">[증명] 정지 문제의 불가능성 (간단 버전)</span>
+<b>가정:</b> 정지 문제를 풀 수 있는 프로그램 H가 있다고 해요.<br>H(P, X) = '정지' 또는 '무한루프'를 정확히 답해요.<br><br><b>악마의 프로그램 D를 만들어요:</b><br><pre>D(P) {<br>    if (H(P, P) == '정지') {<br>        while(1);  // 무한루프에 빠지기<br>    } else {<br>        return;    // 정지하기<br>    }<br>}</pre><br><b>질문:</b> D(D)는 정지할까, 무한루프일까?<br><br>경우 1: H가 'D(D)는 정지'라고 답하면 → D는 무한루프에 빠짐 → <b>모순!</b><br>경우 2: H가 'D(D)는 무한루프'라고 답하면 → D는 정지함 → <b>모순!</b><br><br>어느 쪽이든 모순 → H는 존재할 수 없어요! □</div>
+<div class="tip"><span class="tip-label">[비유] 이발사의 역설</span>
+정지 문제의 증명은 <b>이발사의 역설</b>과 같은 구조예요:<br><br>'스스로 면도하지 않는 사람만 면도해 주는 이발사'<br>→ 이발사 자신은? 면도하면 모순, 안 하면 모순!<br><br>정지 문제에서 D(D)도 마찬가지:<br>정지하면 무한루프, 무한루프면 정지 → 모순!<br><br>이것은 S-06에서 배운 비둘기집 원리처럼<br>'존재할 수 없음'을 증명하는 거예요.</div>
+<div style="margin:22px 0"></div>
+<table class="trace"><thead><tr><th>시나리오</th><th>H(D,D)의 답</th><th>D의 행동</th><th>실제 결과</th><th>H의 판정</th></tr></thead><tbody><tr><td>경우 1</td><td>정지</td><td>if 참 -> while(1)</td><td>무한루프</td><td>틀림! (모순)</td></tr><tr><td>경우 2</td><td>무한루프</td><td>else -> return</td><td>정지</td><td>틀림! (모순)</td></tr></tbody></table>
+<h2 class="section-title">계산 가능 vs 계산 불가능</h2>
+<div class="note-box"><span class="note-label">[핵심] 계산 가능성의 분류</span>
+<b>계산 가능(Computable)</b>: 알고리즘으로 풀 수 있는 문제<br>예: 정렬, 최단경로, 소수 판별, 체스 최적수<br><br><b>계산 불가능(Uncomputable)</b>: 어떤 알고리즘으로도 풀 수 없는 문제<br>예: 정지 문제, '이 프로그램에 버그가 있는가?'<br><br><b>중요:</b> '아직 못 풀었다'가 아니라 '절대 못 푼다'예요!<br>아무리 빠른 컴퓨터, 아무리 똑똑한 AI도 풀 수 없어요.</div>
+<div class="debug-section"><div class="debug-bar">DEBUG LAB — 에러를 찾으시오</div><div class="debug-body">
+
+<p style="margin:14px 0 0; font-size:14px;"><b>에러:</b> </p>
+<p style="font-size:14px;"><b>수정:</b> </p>
+</div></div>
+<div class="debug-section"><div class="debug-bar">DEBUG LAB — 에러를 찾으시오</div><div class="debug-body">
+
+<p style="margin:14px 0 0; font-size:14px;"><b>에러:</b> </p>
+<p style="font-size:14px;"><b>수정:</b> </p>
+</div></div>
+<table class="trace"><thead><tr><th>문제</th><th>분류</th><th>이유</th><th>비유</th></tr></thead><tbody><tr><td>두 수의 덧셈</td><td>결정 가능</td><td>항상 답을 구할 수 있음</td><td>1+1=2, 끝!</td></tr><tr><td>소수 판별</td><td>결정 가능</td><td>나눗셈으로 확인 가능</td><td>7은 소수? 2~6으로 나눠 보면 됨</td></tr><tr><td>정렬</td><td>결정 가능</td><td>비교 정렬 알고리즘 존재</td><td>카드 정렬하기</td></tr><tr><td>체스 최적수</td><td>결정 가능 (매우 어려움)</td><td>모든 경우를 볼 수 있음 (시간은 엄청 오래)</td><td>경우의 수가 우주 원자 수보다 많지만 유한</td></tr><tr><td>정지 문제</td><td>결정 불가능</td><td>귀류법으로 증명됨</td><td>이발사의 역설</td></tr><tr><td>프로그램 동등성</td><td>결정 불가능</td><td>정지 문제로 환원 가능</td><td>두 프로그램이 항상 같은 결과?</td></tr><tr><td>바이러스 완벽 탐지</td><td>결정 불가능</td><td>정지 문제의 변형</td><td>모든 바이러스를 잡는 백신은 불가능</td></tr><tr><td>수학 정리 자동 증명</td><td>결정 불가능</td><td>괴델 불완전성 정리와 관련</td><td>모든 참인 명제를 증명하는 기계는 불가능</td></tr></tbody></table>
+<h2 class="section-title">다양한 오토마타 — 튜링 머신의 친척들</h2>
+<p>튜링 머신 외에도 다양한 '자동 기계(오토마타)'가 있어요. 능력이 서로 다르답니다.</p>
+<table class="trace"><thead><tr><th>종류</th><th>메모리</th><th>인식 가능 언어</th><th>예시</th></tr></thead><tbody><tr><td>유한 오토마타 (FA)</td><td>없음</td><td>정규 언어</td><td>자판기, 신호등</td></tr><tr><td>푸시다운 오토마타 (PDA)</td><td>스택 1개</td><td>문맥 자유 언어</td><td>프로그래밍 언어 파서</td></tr><tr><td>튜링 머신 (TM)</td><td>무한 테이프</td><td>재귀 열거 언어</td><td>범용 컴퓨터</td></tr></tbody></table>
+<div class="note-box"><span class="note-label">[예시] 유한 오토마타 — 자판기</span>
+음료수 자판기도 일종의 유한 오토마타예요!<br><br>상태: '0원', '500원', '1000원', '음료 나옴'<br>입력: 500원 동전, 1000원 지폐, 버튼<br><br>규칙:<br>• 0원 + 500원 → 500원<br>• 500원 + 500원 → 1000원<br>• 1000원 + 버튼 → 음료 나옴 → 0원<br><br>메모리가 없어도 상태 전환만으로 동작해요!</div>
+<div class="debug-section"><div class="debug-bar">DEBUG LAB — 에러를 찾으시오</div><div class="debug-body">
+
+<p style="margin:14px 0 0; font-size:14px;"><b>에러:</b> </p>
+<p style="font-size:14px;"><b>수정:</b> </p>
+</div></div>
+<div style="margin:22px 0"></div>
+<h2 class="section-title">C 코드 — 튜링 머신 시뮬레이터</h2>
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span><span class="code-bar-file">1→0 변환 튜링 머신 시뮬레이터</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;stdio.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;string.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">4</span><span class="lc"><span class="s-pp">#define</span> TAPE_SIZE <span class="s-num">100</span></span></div>
+<div class="code-line"><span class="ln">5</span><span class="lc"><span class="s-pp">#define</span> BLANK <span class="s-str">'_'</span></span></div>
+<div class="code-line"><span class="ln">6</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">7</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">main</span>(<span class="s-type">void</span>) {</span></div>
+<div class="code-line"><span class="ln">8</span><span class="lc">    <span class="s-cm">// 테이프 초기화</span></span></div>
+<div class="code-line"><span class="ln">9</span><span class="lc">    <span class="s-type">char</span> tape[TAPE_SIZE];</span></div>
+<div class="code-line"><span class="ln">10</span><span class="lc">    <span class="s-fn">memset</span>(tape, BLANK, <span class="s-kw">sizeof</span>(tape));</span></div>
+<div class="code-line"><span class="ln">11</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">12</span><span class="lc">    <span class="s-cm">// 입력: 1011</span></span></div>
+<div class="code-line"><span class="ln">13</span><span class="lc">    <span class="s-type">char</span> input[] = <span class="s-str">"1011"</span>;</span></div>
+<div class="code-line"><span class="ln">14</span><span class="lc">    <span class="s-type">int</span> start = <span class="s-num">10</span>;  <span class="s-cm">// 테이프 중간부터 시작</span></span></div>
+<div class="code-line"><span class="ln">15</span><span class="lc">    <span class="s-fn">strncpy</span>(&amp;tape[start], input, <span class="s-fn">strlen</span>(input));</span></div>
+<div class="code-line"><span class="ln">16</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">17</span><span class="lc">    <span class="s-type">int</span> head = start;  <span class="s-cm">// 헤드 위치</span></span></div>
+<div class="code-line"><span class="ln">18</span><span class="lc">    <span class="s-type">int</span> state = <span class="s-num">0</span>;     <span class="s-cm">// 0=q0, 1=qH(정지)</span></span></div>
+<div class="code-line"><span class="ln">19</span><span class="lc">    <span class="s-type">int</span> step = <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">20</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">21</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"=== 1→0 변환 튜링 머신 ===\n\n"</span>);</span></div>
+<div class="code-line"><span class="ln">22</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">23</span><span class="lc">    <span class="s-kw">while</span> (state == <span class="s-num">0</span>) {</span></div>
+<div class="code-line"><span class="ln">24</span><span class="lc">        <span class="s-type">char</span> read = tape[head];</span></div>
+<div class="code-line"><span class="ln">25</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">26</span><span class="lc">        <span class="s-fn">printf</span>(<span class="s-str">"단계 %d: 상태=q0, 읽기='%c' → "</span>, step, read);</span></div>
+<div class="code-line"><span class="ln">27</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">28</span><span class="lc">        <span class="s-kw">if</span> (read == <span class="s-str">'1'</span>) {</span></div>
+<div class="code-line"><span class="ln">29</span><span class="lc">            tape[head] = <span class="s-str">'0'</span>;  <span class="s-cm">// 1→0 쓰기</span></span></div>
+<div class="code-line"><span class="ln">30</span><span class="lc">            <span class="s-fn">printf</span>(<span class="s-str">"'0' 쓰기, 오른쪽\n"</span>);</span></div>
+<div class="code-line"><span class="ln">31</span><span class="lc">            head++;</span></div>
+<div class="code-line"><span class="ln">32</span><span class="lc">        } <span class="s-kw">else</span> <span class="s-kw">if</span> (read == <span class="s-str">'0'</span>) {</span></div>
+<div class="code-line"><span class="ln">33</span><span class="lc">            <span class="s-fn">printf</span>(<span class="s-str">"유지, 오른쪽\n"</span>);</span></div>
+<div class="code-line"><span class="ln">34</span><span class="lc">            head++;</span></div>
+<div class="code-line"><span class="ln">35</span><span class="lc">        } <span class="s-kw">else</span> {  <span class="s-cm">// BLANK</span></span></div>
+<div class="code-line"><span class="ln">36</span><span class="lc">            <span class="s-fn">printf</span>(<span class="s-str">"빈칸 → 정지!\n"</span>);</span></div>
+<div class="code-line"><span class="ln">37</span><span class="lc">            state = <span class="s-num">1</span>;  <span class="s-cm">// qH</span></span></div>
+<div class="code-line"><span class="ln">38</span><span class="lc">        }</span></div>
+<div class="code-line"><span class="ln">39</span><span class="lc">        step++;</span></div>
+<div class="code-line"><span class="ln">40</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">41</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">42</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"\n결과: "</span>);</span></div>
+<div class="code-line"><span class="ln">43</span><span class="lc">    <span class="s-kw">for</span> (<span class="s-type">int</span> i = start; i &lt; start + (<span class="s-type">int</span>)<span class="s-fn">strlen</span>(input); i++) {</span></div>
+<div class="code-line"><span class="ln">44</span><span class="lc">        <span class="s-fn">printf</span>(<span class="s-str">"%c"</span>, tape[i]);</span></div>
+<div class="code-line"><span class="ln">45</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">46</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"\n"</span>);</span></div>
+<div class="code-line"><span class="ln">47</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">48</span><span class="lc">    <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">49</span><span class="lc">}</span></div>
+</div>
+</div>
+<div class="output-wrap"><div class="output-bar">실행 결과</div><div class="output-body">=== 1→0 변환 튜링 머신 ===
+
+단계 0: 상태=q0, 읽기='1' → '0' 쓰기, 오른쪽
+단계 1: 상태=q0, 읽기='0' → 유지, 오른쪽
+단계 2: 상태=q0, 읽기='1' → '0' 쓰기, 오른쪽
+단계 3: 상태=q0, 읽기='1' → '0' 쓰기, 오른쪽
+단계 4: 상태=q0, 읽기='_' → 빈칸 → 정지!
+
+결과: 0000</div></div>
+<h2 class="section-title">C 코드 — 범용 튜링 머신 시뮬레이터</h2>
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span><span class="code-bar-file">규칙표 기반 범용 튜링 머신</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;stdio.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;string.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">4</span><span class="lc"><span class="s-pp">#define</span> TAPE_SIZE <span class="s-num">200</span></span></div>
+<div class="code-line"><span class="ln">5</span><span class="lc"><span class="s-pp">#define</span> BLANK <span class="s-str">'_'</span></span></div>
+<div class="code-line"><span class="ln">6</span><span class="lc"><span class="s-pp">#define</span> MAX_RULES <span class="s-num">20</span></span></div>
+<div class="code-line"><span class="ln">7</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">8</span><span class="lc"><span class="s-kw">typedef</span> <span class="s-kw">struct</span> {</span></div>
+<div class="code-line"><span class="ln">9</span><span class="lc">    <span class="s-type">int</span> state;        <span class="s-cm">// 현재 상태</span></span></div>
+<div class="code-line"><span class="ln">10</span><span class="lc">    <span class="s-type">char</span> read;        <span class="s-cm">// 읽은 기호</span></span></div>
+<div class="code-line"><span class="ln">11</span><span class="lc">    <span class="s-type">char</span> write;       <span class="s-cm">// 쓸 기호</span></span></div>
+<div class="code-line"><span class="ln">12</span><span class="lc">    <span class="s-type">int</span> move;         <span class="s-cm">// -1=왼쪽, 0=멈춤, 1=오른쪽</span></span></div>
+<div class="code-line"><span class="ln">13</span><span class="lc">    <span class="s-type">int</span> next_state;   <span class="s-cm">// 다음 상태</span></span></div>
+<div class="code-line"><span class="ln">14</span><span class="lc">} Rule;</span></div>
+<div class="code-line"><span class="ln">15</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">16</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">main</span>(<span class="s-type">void</span>) {</span></div>
+<div class="code-line"><span class="ln">17</span><span class="lc">    <span class="s-type">char</span> tape[TAPE_SIZE];</span></div>
+<div class="code-line"><span class="ln">18</span><span class="lc">    <span class="s-fn">memset</span>(tape, BLANK, <span class="s-kw">sizeof</span>(tape));</span></div>
+<div class="code-line"><span class="ln">19</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">20</span><span class="lc">    <span class="s-cm">// 짝홀 판별기 규칙 (qE=0, qO=1, qH=2)</span></span></div>
+<div class="code-line"><span class="ln">21</span><span class="lc">    Rule rules[] = {</span></div>
+<div class="code-line"><span class="ln">22</span><span class="lc">        {<span class="s-num">0</span>, <span class="s-str">'1'</span>, <span class="s-str">'1'</span>,  <span class="s-num">1</span>, <span class="s-num">1</span>},  <span class="s-cm">// qE + 1 → 오른쪽, qO</span></span></div>
+<div class="code-line"><span class="ln">23</span><span class="lc">        {<span class="s-num">0</span>, <span class="s-str">'0'</span>, <span class="s-str">'0'</span>,  <span class="s-num">1</span>, <span class="s-num">0</span>},  <span class="s-cm">// qE + 0 → 오른쪽, qE</span></span></div>
+<div class="code-line"><span class="ln">24</span><span class="lc">        {<span class="s-num">0</span>, BLANK, <span class="s-str">'E'</span>, <span class="s-num">0</span>, <span class="s-num">2</span>}, <span class="s-cm">// qE + _ → E쓰기, 정지</span></span></div>
+<div class="code-line"><span class="ln">25</span><span class="lc">        {<span class="s-num">1</span>, <span class="s-str">'1'</span>, <span class="s-str">'1'</span>,  <span class="s-num">1</span>, <span class="s-num">0</span>},  <span class="s-cm">// qO + 1 → 오른쪽, qE</span></span></div>
+<div class="code-line"><span class="ln">26</span><span class="lc">        {<span class="s-num">1</span>, <span class="s-str">'0'</span>, <span class="s-str">'0'</span>,  <span class="s-num">1</span>, <span class="s-num">1</span>},  <span class="s-cm">// qO + 0 → 오른쪽, qO</span></span></div>
+<div class="code-line"><span class="ln">27</span><span class="lc">        {<span class="s-num">1</span>, BLANK, <span class="s-str">'O'</span>, <span class="s-num">0</span>, <span class="s-num">2</span>}, <span class="s-cm">// qO + _ → O쓰기, 정지</span></span></div>
+<div class="code-line"><span class="ln">28</span><span class="lc">    };</span></div>
+<div class="code-line"><span class="ln">29</span><span class="lc">    <span class="s-type">int</span> num_rules = <span class="s-num">6</span>;</span></div>
+<div class="code-line"><span class="ln">30</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">31</span><span class="lc">    <span class="s-cm">// 입력: 10110</span></span></div>
+<div class="code-line"><span class="ln">32</span><span class="lc">    <span class="s-type">char</span> input[] = <span class="s-str">"10110"</span>;</span></div>
+<div class="code-line"><span class="ln">33</span><span class="lc">    <span class="s-type">int</span> start = <span class="s-num">50</span>;</span></div>
+<div class="code-line"><span class="ln">34</span><span class="lc">    <span class="s-fn">strncpy</span>(&amp;tape[start], input, <span class="s-fn">strlen</span>(input));</span></div>
+<div class="code-line"><span class="ln">35</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">36</span><span class="lc">    <span class="s-type">int</span> head = start;</span></div>
+<div class="code-line"><span class="ln">37</span><span class="lc">    <span class="s-type">int</span> state = <span class="s-num">0</span>;  <span class="s-cm">// 시작: qE</span></span></div>
+<div class="code-line"><span class="ln">38</span><span class="lc">    <span class="s-type">int</span> steps = <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">39</span><span class="lc">    <span class="s-type">char</span> *state_names[] = {<span class="s-str">"qE"</span>, <span class="s-str">"qO"</span>, <span class="s-str">"qH"</span>};</span></div>
+<div class="code-line"><span class="ln">40</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">41</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"=== 짝홀 판별 튜링 머신 ===\n"</span>);</span></div>
+<div class="code-line"><span class="ln">42</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"입력: %s\n\n"</span>, input);</span></div>
+<div class="code-line"><span class="ln">43</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">44</span><span class="lc">    <span class="s-kw">while</span> (state != <span class="s-num">2</span> &amp;&amp; steps &lt; <span class="s-num">100</span>) {</span></div>
+<div class="code-line"><span class="ln">45</span><span class="lc">        <span class="s-type">char</span> read = tape[head];</span></div>
+<div class="code-line"><span class="ln">46</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">47</span><span class="lc">        <span class="s-cm">// 규칙 찾기</span></span></div>
+<div class="code-line"><span class="ln">48</span><span class="lc">        <span class="s-type">int</span> found = <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">49</span><span class="lc">        <span class="s-kw">for</span> (<span class="s-type">int</span> r = <span class="s-num">0</span>; r &lt; num_rules; r++) {</span></div>
+<div class="code-line"><span class="ln">50</span><span class="lc">            <span class="s-kw">if</span> (rules[r].state == state &amp;&amp; rules[r].read == read) {</span></div>
+<div class="code-line"><span class="ln">51</span><span class="lc">                <span class="s-fn">printf</span>(<span class="s-str">"%2d: [%s] '%c' → '%c' %s → [%s]\n"</span>,</span></div>
+<div class="code-line"><span class="ln">52</span><span class="lc">                       steps, state_names[state], read,</span></div>
+<div class="code-line"><span class="ln">53</span><span class="lc">                       rules[r].write,</span></div>
+<div class="code-line"><span class="ln">54</span><span class="lc">                       rules[r].move == <span class="s-num">1</span> ? <span class="s-str">"→"</span> :</span></div>
+<div class="code-line"><span class="ln">55</span><span class="lc">                       rules[r].move == -<span class="s-num">1</span> ? <span class="s-str">"←"</span> : <span class="s-str">"■"</span>,</span></div>
+<div class="code-line"><span class="ln">56</span><span class="lc">                       state_names[rules[r].next_state]);</span></div>
+<div class="code-line"><span class="ln">57</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">58</span><span class="lc">                tape[head] = rules[r].write;</span></div>
+<div class="code-line"><span class="ln">59</span><span class="lc">                head += rules[r].move;</span></div>
+<div class="code-line"><span class="ln">60</span><span class="lc">                state = rules[r].next_state;</span></div>
+<div class="code-line"><span class="ln">61</span><span class="lc">                found = <span class="s-num">1</span>;</span></div>
+<div class="code-line"><span class="ln">62</span><span class="lc">                <span class="s-kw">break</span>;</span></div>
+<div class="code-line"><span class="ln">63</span><span class="lc">            }</span></div>
+<div class="code-line"><span class="ln">64</span><span class="lc">        }</span></div>
+<div class="code-line"><span class="ln">65</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">66</span><span class="lc">        <span class="s-kw">if</span> (!found) {</span></div>
+<div class="code-line"><span class="ln">67</span><span class="lc">            <span class="s-fn">printf</span>(<span class="s-str">"규칙 없음! 비정상 정지.\n"</span>);</span></div>
+<div class="code-line"><span class="ln">68</span><span class="lc">            <span class="s-kw">break</span>;</span></div>
+<div class="code-line"><span class="ln">69</span><span class="lc">        }</span></div>
+<div class="code-line"><span class="ln">70</span><span class="lc">        steps++;</span></div>
+<div class="code-line"><span class="ln">71</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">72</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">73</span><span class="lc">    <span class="s-cm">// 결과 출력</span></span></div>
+<div class="code-line"><span class="ln">74</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"\n결과: 1의 개수는 "</span>);</span></div>
+<div class="code-line"><span class="ln">75</span><span class="lc">    <span class="s-kw">if</span> (tape[head] == <span class="s-str">'E'</span>) <span class="s-fn">printf</span>(<span class="s-str">"짝수\n"</span>);</span></div>
+<div class="code-line"><span class="ln">76</span><span class="lc">    <span class="s-kw">else</span> <span class="s-kw">if</span> (tape[head] == <span class="s-str">'O'</span>) <span class="s-fn">printf</span>(<span class="s-str">"홀수\n"</span>);</span></div>
+<div class="code-line"><span class="ln">77</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"(총 %d단계)\n"</span>, steps);</span></div>
+<div class="code-line"><span class="ln">78</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">79</span><span class="lc">    <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">80</span><span class="lc">}</span></div>
+</div>
+</div>
+<div class="output-wrap"><div class="output-bar">실행 결과</div><div class="output-body">=== 짝홀 판별 튜링 머신 ===
+입력: 10110
+
+ 0: [qE] '1' → '1' → → [qO]
+ 1: [qO] '0' → '0' → → [qO]
+ 2: [qO] '1' → '1' → → [qE]
+ 3: [qE] '1' → '1' → → [qO]
+ 4: [qO] '0' → '0' → → [qO]
+ 5: [qO] '_' → 'O' ■ → [qH]
+
+결과: 1의 개수는 홀수
+(총 6단계)</div></div>
+<div class="tip"><span class="tip-label">[코드 해설]</span>
+• <b>Rule 구조체</b>: 튜링 머신의 규칙 하나를 표현해요<br>• <b>규칙 배열</b>: 규칙표 전체를 데이터로 저장<br>• <b>규칙 찾기</b>: 현재 상태 + 읽은 기호로 맞는 규칙을 검색<br>• <b>규칙 적용</b>: 쓰기 → 이동 → 상태 변경<br><br>규칙만 바꾸면 다른 튜링 머신이 돼요! 이것이 <b>범용</b>의 의미예요.</div>
+<h2 class="section-title">C 코드 — 무한루프 탐지 (제한적)</h2>
+<p>정지 문제는 일반적으로 풀 수 없지만, <b>제한된 범위</b>에서는 탐지할 수 있어요.</p>
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span><span class="code-bar-file">간단한 무한루프 탐지 (타임아웃 방식)</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;stdio.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc"><span class="s-cm">// 간단한 프로그램 시뮬레이션</span></span></div>
+<div class="code-line"><span class="ln">4</span><span class="lc"><span class="s-cm">// program[i] = 다음에 실행할 줄 번호 (0이면 종료)</span></span></div>
+<div class="code-line"><span class="ln">5</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">simulate</span>(<span class="s-type">int</span> program[], <span class="s-type">int</span> size, <span class="s-type">int</span> max_steps) {</span></div>
+<div class="code-line"><span class="ln">6</span><span class="lc">    <span class="s-type">int</span> line = <span class="s-num">1</span>;  <span class="s-cm">// 현재 줄</span></span></div>
+<div class="code-line"><span class="ln">7</span><span class="lc">    <span class="s-type">int</span> steps = <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">8</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">9</span><span class="lc">    <span class="s-kw">while</span> (line != <span class="s-num">0</span> &amp;&amp; steps &lt; max_steps) {</span></div>
+<div class="code-line"><span class="ln">10</span><span class="lc">        <span class="s-kw">if</span> (line &lt; <span class="s-num">1</span> || line &gt; size) <span class="s-kw">return</span> -<span class="s-num">1</span>;  <span class="s-cm">// 오류</span></span></div>
+<div class="code-line"><span class="ln">11</span><span class="lc">        line = program[line];  <span class="s-cm">// 다음 줄로</span></span></div>
+<div class="code-line"><span class="ln">12</span><span class="lc">        steps++;</span></div>
+<div class="code-line"><span class="ln">13</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">14</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">15</span><span class="lc">    <span class="s-kw">if</span> (line == <span class="s-num">0</span>) <span class="s-kw">return</span> steps;  <span class="s-cm">// 정상 종료</span></span></div>
+<div class="code-line"><span class="ln">16</span><span class="lc">    <span class="s-kw">return</span> -<span class="s-num">1</span>;  <span class="s-cm">// 아마 무한루프 (확실하지 않음)</span></span></div>
+<div class="code-line"><span class="ln">17</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">18</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">19</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">main</span>(<span class="s-type">void</span>) {</span></div>
+<div class="code-line"><span class="ln">20</span><span class="lc">    <span class="s-cm">// 프로그램 1: 1→2→3→0 (정상 종료)</span></span></div>
+<div class="code-line"><span class="ln">21</span><span class="lc">    <span class="s-type">int</span> prog1[] = {<span class="s-num">0</span>, <span class="s-num">2</span>, <span class="s-num">3</span>, <span class="s-num">0</span>};</span></div>
+<div class="code-line"><span class="ln">22</span><span class="lc">    <span class="s-type">int</span> r1 = <span class="s-fn">simulate</span>(prog1, <span class="s-num">3</span>, <span class="s-num">1000</span>);</span></div>
+<div class="code-line"><span class="ln">23</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"프로그램 1: %s (%d단계)\n"</span>,</span></div>
+<div class="code-line"><span class="ln">24</span><span class="lc">           r1 &gt;= <span class="s-num">0</span> ? <span class="s-str">"정지"</span> : <span class="s-str">"무한루프?"</span>, r1);</span></div>
+<div class="code-line"><span class="ln">25</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">26</span><span class="lc">    <span class="s-cm">// 프로그램 2: 1→2→3→1 (무한루프)</span></span></div>
+<div class="code-line"><span class="ln">27</span><span class="lc">    <span class="s-type">int</span> prog2[] = {<span class="s-num">0</span>, <span class="s-num">2</span>, <span class="s-num">3</span>, <span class="s-num">1</span>};</span></div>
+<div class="code-line"><span class="ln">28</span><span class="lc">    <span class="s-type">int</span> r2 = <span class="s-fn">simulate</span>(prog2, <span class="s-num">3</span>, <span class="s-num">1000</span>);</span></div>
+<div class="code-line"><span class="ln">29</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"프로그램 2: %s\n"</span>,</span></div>
+<div class="code-line"><span class="ln">30</span><span class="lc">           r2 &gt;= <span class="s-num">0</span> ? <span class="s-str">"정지"</span> : <span class="s-str">"무한루프?"</span>);</span></div>
+<div class="code-line"><span class="ln">31</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">32</span><span class="lc">    <span class="s-cm">// 프로그램 3: 1→2→3→4→0 (정상)</span></span></div>
+<div class="code-line"><span class="ln">33</span><span class="lc">    <span class="s-type">int</span> prog3[] = {<span class="s-num">0</span>, <span class="s-num">2</span>, <span class="s-num">3</span>, <span class="s-num">4</span>, <span class="s-num">0</span>};</span></div>
+<div class="code-line"><span class="ln">34</span><span class="lc">    <span class="s-type">int</span> r3 = <span class="s-fn">simulate</span>(prog3, <span class="s-num">4</span>, <span class="s-num">1000</span>);</span></div>
+<div class="code-line"><span class="ln">35</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"프로그램 3: %s (%d단계)\n"</span>,</span></div>
+<div class="code-line"><span class="ln">36</span><span class="lc">           r3 &gt;= <span class="s-num">0</span> ? <span class="s-str">"정지"</span> : <span class="s-str">"무한루프?"</span>, r3);</span></div>
+<div class="code-line"><span class="ln">37</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">38</span><span class="lc">    <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">39</span><span class="lc">}</span></div>
+</div>
+</div>
+<div class="output-wrap"><div class="output-bar">실행 결과</div><div class="output-body">프로그램 1: 정지 (3단계)
+프로그램 2: 무한루프?
+프로그램 3: 정지 (4단계)</div></div>
+<div class="warn"><span class="warn-label">[주의] 타임아웃의 한계</span>
+이 방법은 <b>완벽하지 않아요</b>:<br><br>• 1000단계 안에 안 끝나면 '무한루프?'라고 판단하지만<br>• 실제로는 1001단계에 끝날 수도 있어요!<br><br>이것이 정지 문제의 본질이에요:<br>• 끝나는 프로그램: 기다리면 알 수 있어요<br>• 안 끝나는 프로그램: 아무리 오래 기다려도 '아직 안 끝남'과 '영원히 안 끝남'을 구별할 수 없어요</div>
+<h2 class="section-title">튜링 완전 — 이것도 컴퓨터?</h2>
+<p>튜링 머신과 같은 능력을 가진 시스템을 <b>튜링 완전(Turing Complete)</b>하다고 해요.</p>
+<div class="note-box"><span class="note-label">[핵심] 튜링 완전이란?</span>
+어떤 시스템이 튜링 머신을 흉내 낼 수 있으면 <b>튜링 완전</b>이에요.<br><br><b>튜링 완전한 것들:</b><br>• 모든 일반 프로그래밍 언어 (C, Python, Java, ...)<br>• 엑셀 스프레드시트 (놀랍죠?)<br>• 마인크래프트의 레드스톤<br>• 생명 게임 (Conway's Game of Life)<br>• HTML + CSS (이론적으로!)<br>• 매직 더 개더링 카드 게임<br><br><b>튜링 완전하지 않은 것:</b><br>• 계산기 (루프가 없어서)<br>• HTML만 (프로그래밍은 아니에요)<br>• 정규 표현식 (일부 언어에서)</div>
+<div class="tip"><span class="tip-label">[재미] 엑셀이 튜링 완전?</span>
+엑셀에서 셀 참조와 IF 함수만으로 튜링 머신을 만들 수 있어요!<br><br>• 셀 = 테이프의 칸<br>• IF/VLOOKUP = 규칙표<br>• 행 = 시간 단계<br><br>2021년에 마이크로소프트가 공식적으로 엑셀에 LAMBDA 함수를 추가하며<br>'엑셀은 이제 튜링 완전한 프로그래밍 언어'라고 발표했어요!</div>
+<h2 class="section-title">디버깅 — 튜링 머신 시뮬레이터의 흔한 실수</h2>
+
+<div class="warn"><span class="warn-label">[디버깅] 실수 1: 테이프 범위 초과</span>
+<b>잘못:</b> 헤드가 배열 범위를 벗어남<br><pre>char tape[100];<br>int head = 0;<br>head--;  // head = -1 → 배열 범위 밖!</pre><br><b>올바름:</b> 테이프 시작을 중간으로 설정하거나, 범위 체크<br><pre>int head = 50;  // 양쪽으로 여유<br>if (head < 0 || head >= TAPE_SIZE) {<br>    printf("테이프 범위 초과!\n");<br>    break;<br>}</pre></div>
+<div class="warn"><span class="warn-label">[디버깅] 실수 2: 무한루프 보호 없음</span>
+<b>잘못:</b> 규칙에 실수가 있으면 영원히 돌아감<br><pre>while (state != HALT) {  // 영원히 돌 수 있음!<br>    // ...<br>}</pre><br><b>올바름:</b> 최대 실행 횟수 제한<br><pre>int max_steps = 10000;<br>while (state != HALT && steps < max_steps) {<br>    // ...<br>    steps++;<br>}</pre><br>실제 컴퓨터에서도 무한루프를 방지하기 위해 타임아웃을 써요.</div>
+<div class="warn"><span class="warn-label">[디버깅] 실수 3: 규칙 누락</span>
+<b>잘못:</b> 모든 (상태, 기호) 조합에 대한 규칙이 없음<br><pre>// qE + '1' 규칙은 있지만 qE + '0' 규칙이 없으면?<br>// → 규칙 검색 실패 → 비정상 정지</pre><br><b>올바름:</b> 규칙을 못 찾으면 에러 처리<br><pre>if (!found) {<br>    printf("규칙 없음! (상태=%d, 기호='%c')\n",<br>           state, read);<br>    break;<br>}</pre></div>
+<h2 class="section-title">역사 — 앨런 튜링과 컴퓨터의 탄생</h2>
+<div class="note-box"><span class="note-label">[역사] 앨런 튜링 (1912-1954)</span>
+<b>1936년:</b> 24살에 '계산 가능한 수에 대하여' 논문 발표<br>→ 튜링 머신과 정지 문제의 불가능성을 증명<br><br><b>1939-1945년:</b> 2차 세계대전에서 독일의 에니그마 암호를 해독<br>→ 전쟁을 2년 단축하고 수천만 명의 목숨을 구했다고 평가돼요<br><br><b>1950년:</b> '기계가 생각할 수 있는가?' 논문 발표<br>→ <b>튜링 테스트</b>를 제안: AI의 출발점<br><br><b>컴퓨터 과학 최고 상</b>인 'ACM 튜링상'은 그의 이름을 딴 거예요.<br>2021년 영국 50파운드 지폐에 튜링의 초상이 실렸어요.</div>
+<div class="note-box"><span class="note-label">[역사] 컴퓨터 이론의 계보</span>
+<b>1936년:</b> 튜링 → 튜링 머신 (이론적 컴퓨터)<br><b>1936년:</b> 처치 → 람다 대수 (함수형 프로그래밍의 기초)<br><b>1945년:</b> 폰 노이만 → 저장 프로그램 방식 (현대 컴퓨터 구조)<br><b>1946년:</b> ENIAC 완성 (최초의 범용 전자 컴퓨터)<br><b>1950년:</b> 튜링 테스트 제안<br><b>1969년:</b> 인터넷의 전신 ARPANET 시작<br><b>2016년:</b> 알파고가 튜링 머신의 후손으로서 바둑 정복<br><br>모든 것은 1936년 튜링의 논문에서 시작되었어요!</div>
+<h2 class="section-title">KOI 도전 문제</h2>
+<div class="note-box"><span class="note-label">[KOI 유형] 문제 1 — 튜링 머신 시뮬레이션</span>
+<b>문제:</b> 규칙표와 초기 테이프가 주어진다. K단계 후 테이프 상태를 출력하시오.<br><br><b>입력:</b><br>2 2<br>0 0 0 1 0<br>0 1 1 1 1<br>1 0 1 0 0<br>1 1 0 0 1<br>0 1 1 0<br>5<br>(상태 2개, 기호 2개, 규칙 4개, 초기테이프=0110, K=5단계)<br><br><b>풀이:</b> 규칙표를 배열로 저장하고 K번 시뮬레이션.</div>
+<div class="note-box"><span class="note-label">[KOI 유형] 문제 2 — 유한 오토마타</span>
+<b>문제:</b> 유한 오토마타가 주어진다. 문자열이 입력될 때 수락(Accept) 또는 거부(Reject)를 출력하시오.<br><br><b>입력:</b><br>3 2 1<br>0 0 1<br>0 1 2<br>1 0 0<br>1 1 2<br>2 0 2<br>2 1 2<br>2<br>0101<br>0110<br>(상태 3개, 기호 2개, 수락 상태 1개={상태2}, 전이 6개, 테스트 2개)<br><br><b>풀이:</b> 전이표를 2차원 배열에 저장하고 문자열을 순회.</div>
+<div class="note-box"><span class="note-label">[KOI 유형] 문제 3 — 비버 문제 (작은 버전)</span>
+<b>문제:</b> 상태가 2개이고 기호가 {0, 1}인 튜링 머신 중, 빈 테이프에서 시작하여 정지할 때까지 테이프에 가장 많은 1을 쓰는 것을 찾으시오.<br><br><b>출력:</b> 최대 1의 개수<br><br><b>풀이:</b> 가능한 모든 규칙표를 생성하고 시뮬레이션. 2상태의 경우 답은 <b>4</b>예요.<br>(이것은 '바쁜 비버(Busy Beaver)' 문제의 작은 버전이에요!)</div>
+<h2 class="section-title">연습문제</h2>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 </span><p style="margin:0;font-size:14px">튜링 머신의 4가지 구성 요소를 쓰고, 각각 현대 컴퓨터에서 무엇에 해당하는지 짝지어 보세요.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 </span><p style="margin:0;font-size:14px">1→0 변환 튜링 머신에 입력 테이프 [0, 1, 0, 1, 1, _]을 넣으면, 각 단계를 추적하고 최종 결과를 쓰세요.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 </span><p style="margin:0;font-size:14px">짝홀 판별 튜링 머신에 입력 [1, 1, 0, 1, _]을 넣으면 결과가 E일까요 O일까요? 단계별로 추적하세요.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 </span><p style="margin:0;font-size:14px">이진수 +1 튜링 머신에 1111을 넣으면 결과는? 단계별로 추적하세요. (힌트: 올림이 맨 끝까지 전파돼요)</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 </span><p style="margin:0;font-size:14px">테이프의 모든 0을 1로, 모든 1을 0으로 바꾸는(NOT 연산) 튜링 머신의 규칙표를 작성하세요.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 </span><p style="margin:0;font-size:14px">정지 문제의 증명에서, 만약 H(D, D)가 '정지'라고 답하면 무슨 일이 일어나는지 단계별로 설명하세요.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 </span><p style="margin:0;font-size:14px">C언어로 이진수 +1 튜링 머신 시뮬레이터를 구현하세요. 입력으로 이진수 문자열을 받아 +1 결과를 출력.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 </span><p style="margin:0;font-size:14px">'바쁜 비버' 문제: 상태 2개, 기호 {0,1}인 튜링 머신 중 가장 많은 1을 쓰는 것을 찾는 C 프로그램을 작성하세요. (가능한 모든 규칙표를 열거하고 시뮬레이션)</p></div>
+<h2 class="section-title">정답과 풀이</h2>
+<h2 class="section-title">용어 정리</h2>
+<table class="trace"><thead><tr><th>용어</th><th>설명</th></tr></thead><tbody><tr><td><code>튜링 머신 (Turing Machine)</code></td><td>테이프, 헤드, 상태, 규칙표로 구성된 이론적 계산 모델</td></tr><tr><td><code>만능 튜링 머신 (UTM)</code></td><td>다른 튜링 머신의 규칙표를 입력받아 실행할 수 있는 튜링 머신</td></tr><tr><td><code>정지 문제 (Halting Problem)</code></td><td>프로그램이 정지하는지 판별하는 문제. 풀 수 없음이 증명됨</td></tr><tr><td><code>처치-튜링 논제</code></td><td>사람이 기계적으로 계산할 수 있는 것은 튜링 머신으로도 가능하다는 명제</td></tr><tr><td><code>튜링 완전 (Turing Complete)</code></td><td>튜링 머신과 같은 계산 능력을 가진 시스템</td></tr><tr><td><code>계산 가능 (Computable)</code></td><td>알고리즘으로 풀 수 있는 문제의 성질</td></tr><tr><td><code>오토마타 (Automata)</code></td><td>입력을 받아 상태를 전환하며 동작하는 추상적 기계</td></tr><tr><td><code>바쁜 비버 (Busy Beaver)</code></td><td>n상태 튜링 머신이 쓸 수 있는 최대 1의 개수를 구하는 문제</td></tr></tbody></table>
+<h2 class="section-title">시각 요약</h2>
+<div class="warmup-box"><div class="warmup-title">S-08 튜링 머신 한눈에 보기</div><div class="wq"><b>1.</b> <code></code> — 무한 메모리+읽기쓰기</div><div class="wq"><b>2.</b> <code></code> — 유한 상태로 동작</div><div class="wq"><b>3.</b> <code></code> — 처치-튜링 논제</div><div class="wq"><b>4.</b> <code></code> — 프로그램 실행하는 프로그램</div><div class="wq"><b>5.</b> <code></code> — 절대 풀 수 없는 문제</div><div class="wq"><b>6.</b> <code></code> — C, 엑셀, 마크</div><div class="wq"><b>7.</b> <code></code> — FA→PDA→TM 계층</div><div class="wq"><b>8.</b> <code></code> — 컴퓨터 과학의 아버지</div></div>
+
+    <span class="page-num">2</span>
+  </div>
+</div>
+<div class="page">
+  <div class="content-page">
+    <div class="unit-header-bar">
+      <span class="unit-tag">UNIT S-08</span>
+      <span class="unit-title-sm">3과목 연결</span>
+    </div>
+<h2 class="section-title">10축 매핑</h2>
+<div class="tip"><span class="tip-label">[10축 분석] S-08 튜링 머신</span>
+<b>① C언어</b>: 구조체(Rule), 배열(테이프), memset, strncpy, 시뮬레이터 구현<br><b>② 컴퓨팅사고력</b>: 추상화(계산=상태전환), 시뮬레이션, 귀류법 증명<br><b>③ 디버깅</b>: 테이프 범위 초과, 무한루프 보호, 규칙 누락<br><b>④ KOI</b>: TM 시뮬레이션, 유한 오토마타, 바쁜 비버<br><b>⑤ 실생활</b>: 자판기(FA), 엑셀 튜링 완전, 마인크래프트<br><b>⑥ 수학연결</b>: 처치-튜링 논제, 정지 문제 증명, 계산 가능성<br><b>⑦ 역사</b>: 앨런 튜링(1936), 에니그마, 폰 노이만, 튜링상<br><b>⑧ 개념확장</b>: 만능 TM→저장 프로그램, 오토마타 계층, NP 문제<br><b>⑨ 시각화</b>: 추적표(실행 과정), 비교표(TM vs 컴퓨터)<br><b>⑩ 융합</b>: S-04 패리티→TM 구현, S-06 비둘기집→존재 불가능 증명</div>
+
+
+    <span class="page-num">3</span>
+  </div>
+</div>
+</body>
+</html>

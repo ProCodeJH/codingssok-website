@@ -1,0 +1,1296 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>코딩쏙 교재 — 시뮬레이션</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+
+  :root {
+    --navy: #1a2e4a;
+    --navy-mid: #2c4a6e;
+    --navy-light: #3d6590;
+    --orange: #e07830;
+    --orange-light: #f5e6d8;
+    --white: #ffffff;
+    --bg: #f7f8fa;
+    --bg-warm: #faf9f7;
+    --gray-50: #f9fafb;
+    --gray-100: #f3f4f6;
+    --gray-200: #e5e7eb;
+    --gray-300: #d1d5db;
+    --gray-400: #9ca3af;
+    --gray-500: #6b7280;
+    --gray-600: #4b5563;
+    --gray-700: #374151;
+    --gray-800: #1f2937;
+    --text: #2d3748;
+    --green: #16a34a;
+    --green-bg: #dcfce7;
+    --red: #dc2626;
+    --red-bg: #fee2e2;
+    --blue: #2563eb;
+    --blue-bg: #dbeafe;
+    --yellow-bg: #fef9c3;
+    --font: 'Noto Sans KR', sans-serif;
+    --mono: 'JetBrains Mono', 'Consolas', monospace;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: var(--font); background: #e8eaed; font-size: 15px; }
+
+  /* ========== PAGE ========== */
+  .page {
+    width: 210mm;
+    min-height: 295mm;
+    margin: 24px auto;
+    background: var(--white);
+    box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* ========== PAGE 1: CHAPTER START ========== */
+  .chapter-page {
+    display: flex;
+    min-height: 295mm;
+  }
+
+  .chapter-sidebar {
+    width: 10px;
+    background: var(--navy);
+    flex-shrink: 0;
+  }
+
+  .chapter-accent-bar {
+    width: 7px;
+    background: var(--orange);
+    flex-shrink: 0;
+  }
+
+  .chapter-body {
+    flex: 1;
+    padding: 70px 65px 50px 55px;
+    position: relative;
+  }
+
+  .chapter-watermark {
+    position: absolute;
+    top: -10px;
+    right: -15px;
+    font-size: 280px;
+    font-weight: 900;
+    color: rgba(180,195,212,0.35);
+    line-height: 1;
+    pointer-events: none;
+    letter-spacing: -10px;
+  }
+
+  .chapter-label {
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--navy-mid);
+    letter-spacing: 2px;
+    margin-bottom: 4px;
+  }
+
+  .chapter-title {
+    font-size: 44px;
+    font-weight: 900;
+    color: var(--navy);
+    line-height: 1.15;
+    margin-bottom: 12px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .chapter-sub {
+    font-size: 16px;
+    color: var(--gray-500);
+    font-weight: 400;
+    margin-bottom: 20px;
+    padding-bottom: 28px;
+    border-bottom: 1px solid var(--gray-200);
+  }
+
+  /* Learning objectives */
+  .obj-title {
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--navy);
+    margin-bottom: 16px;
+    margin-top: 32px;
+  }
+
+  .obj-list {
+    list-style: none;
+    margin-bottom: 40px;
+  }
+
+  .obj-list li {
+    padding: 5px 0 5px 24px;
+    position: relative;
+    font-size: 15px;
+    color: var(--gray-700);
+    line-height: 1.6;
+  }
+
+  .obj-list li::before {
+    content: '•';
+    position: absolute;
+    left: 8px;
+    color: var(--navy-mid);
+    font-weight: 700;
+  }
+
+  /* Prerequisites flow */
+  .prereq-title {
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--navy);
+    margin-bottom: 18px;
+  }
+
+  .prereq-flow {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    margin-bottom: 44px;
+  }
+
+  .prereq-item {
+    padding: 9px 22px;
+    border: 1.5px solid var(--gray-300);
+    border-radius: 50px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--gray-600);
+    background: var(--white);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+  }
+
+  .prereq-item.current {
+    border-color: var(--navy);
+    color: var(--navy);
+    font-weight: 700;
+    background: #edf2f7;
+    box-shadow: 0 2px 6px rgba(26,46,74,0.12);
+  }
+
+  .prereq-arrow {
+    width: 36px;
+    text-align: center;
+    color: var(--gray-300);
+    font-size: 18px;
+    font-weight: 300;
+  }
+
+  /* Predict box */
+  .predict-box {
+    background: var(--gray-50);
+    border: 1.5px solid var(--gray-200);
+    border-radius: 12px;
+    padding: 24px 28px;
+  }
+
+  .predict-label {
+    display: inline-block;
+    background: var(--orange);
+    color: var(--white);
+    font-size: 12px;
+    font-weight: 600;
+    padding: 3px 12px;
+    border-radius: 4px;
+    margin-bottom: 14px;
+    letter-spacing: 0.5px;
+  }
+
+  .predict-q {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--navy);
+    margin-bottom: 16px;
+  }
+
+  .predict-code {
+    background: var(--white);
+    border: 1px solid var(--gray-200);
+    border-radius: 8px;
+    padding: 14px 18px;
+    font-family: var(--mono);
+    font-size: 13px;
+    line-height: 1.65;
+    color: var(--gray-700);
+  }
+
+  /* ========== PAGE 2: CORE CONTENT ========== */
+  .content-page {
+    padding: 55px 65px;
+  }
+
+  .unit-header-bar {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    margin-bottom: 8px;
+  }
+
+  .unit-tag {
+    font-size: 12px;
+    color: var(--orange);
+    font-weight: 600;
+    letter-spacing: 1px;
+  }
+
+  .unit-title-sm {
+    font-size: 14px;
+    color: var(--gray-400);
+    font-weight: 400;
+  }
+
+  .section-title {
+    font-size: 24px;
+    font-weight: 800;
+    color: var(--navy);
+    margin-bottom: 24px;
+    margin-top: 8px;
+    padding-left: 16px;
+    border-left: 5px solid var(--orange);
+  }
+
+  p {
+    font-size: 15.5px;
+    line-height: 1.9;
+    color: var(--text);
+    margin-bottom: 18px;
+  }
+
+  p code {
+    font-family: var(--mono);
+    font-size: 13.5px;
+    background: #f1f3f5;
+    padding: 2px 7px;
+    border-radius: 4px;
+    color: var(--navy);
+    font-weight: 500;
+  }
+
+  /* Code block */
+  .code-wrap {
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    border: 1px solid var(--gray-200);
+    margin: 22px 0;
+  }
+
+  .code-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 9px 18px;
+    background: var(--navy);
+    font-size: 12px;
+  }
+
+  .code-bar-lang {
+    font-family: var(--mono);
+    font-weight: 600;
+    color: var(--white);
+  }
+
+  .code-bar-file {
+    color: rgba(255,255,255,0.6);
+    font-weight: 400;
+  }
+
+  .code-body {
+    background: #f8f9fb;
+    padding: 20px 0;
+    font-family: var(--mono);
+    font-size: 13.5px;
+    line-height: 1.75;
+    border: 1px solid var(--gray-200);
+    border-top: none;
+    border-radius: 0 0 12px 12px;
+  }
+
+  .code-line {
+    display: flex;
+    padding: 0 20px;
+  }
+
+  .code-line:hover {
+    background: #f0f4f8;
+  }
+
+  .code-line.highlighted {
+    background: #fff8e1;
+  }
+
+  .ln {
+    width: 30px;
+    text-align: right;
+    color: #b8bfc8;
+    font-size: 12px;
+    margin-right: 18px;
+    user-select: none;
+    flex-shrink: 0;
+    padding-top: 1px;
+  }
+
+  .lc { flex: 1; }
+
+  /* syntax */
+  .s-pp { color: #8b5cf6; font-weight: 600; }
+  .s-str { color: #d97706; }
+  .s-type { color: #2563eb; font-weight: 500; }
+  .s-kw { color: #7c3aed; font-weight: 500; }
+  .s-fn { color: #059669; font-weight: 500; }
+  .s-num { color: #dc2626; }
+  .s-cm { color: #9ca3af; font-style: italic; }
+
+  /* Output block */
+  .output-wrap {
+    border-radius: 10px;
+    overflow: hidden;
+    margin: 10px 0 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    border: 1px solid #d1d5db;
+  }
+
+  .output-bar {
+    padding: 9px 18px;
+    background: #374151;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--white);
+    letter-spacing: 0.5px;
+  }
+
+  .output-body {
+    padding: 16px 20px;
+    font-family: var(--mono);
+    font-size: 13.5px;
+    line-height: 1.7;
+    color: var(--gray-800);
+    background: #f1f5f9;
+    border: 1px solid var(--gray-200);
+    border-top: none;
+    border-radius: 0 0 10px 10px;
+  }
+
+  /* Callout */
+  .tip {
+    margin: 28px 0;
+    padding: 18px 24px;
+    background: #dbeafe;
+    border-left: 5px solid #2563eb;
+    border-radius: 0 12px 12px 0;
+    font-size: 14.5px;
+    line-height: 1.8;
+    color: var(--text);
+  }
+
+  .tip-label {
+    font-weight: 700;
+    color: #2563eb;
+    font-size: 13px;
+    display: block;
+    margin-bottom: 4px;
+  }
+
+  .warn {
+    margin: 28px 0;
+    padding: 18px 24px;
+    background: #fef3c7;
+    border-left: 5px solid #d97706;
+    border-radius: 0 12px 12px 0;
+    font-size: 14.5px;
+    line-height: 1.8;
+  }
+
+  .warn-label {
+    font-weight: 700;
+    color: #d97706;
+    font-size: 13px;
+    display: block;
+    margin-bottom: 4px;
+  }
+
+  .note-box {
+    margin: 28px 0;
+    padding: 18px 24px;
+    background: #e2e8f0;
+    border-left: 5px solid #64748b;
+    border-radius: 0 12px 12px 0;
+    font-size: 14.5px;
+    line-height: 1.8;
+  }
+
+  .note-label {
+    font-weight: 700;
+    color: var(--gray-600);
+    font-size: 13px;
+    display: block;
+    margin-bottom: 4px;
+  }
+
+  /* Trace table */
+  table.trace {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    margin: 28px 0;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+    font-size: 14px;
+  }
+
+  table.trace th {
+    background: var(--navy);
+    color: var(--white);
+    padding: 10px 16px;
+    text-align: left;
+    font-weight: 500;
+    font-size: 13px;
+  }
+
+  table.trace td {
+    padding: 10px 16px;
+    border-bottom: 1px solid var(--gray-200);
+    color: var(--gray-700);
+  }
+
+  table.trace tr:nth-child(even) td { background: var(--gray-50); }
+  table.trace tr:last-child td { border-bottom: none; }
+
+  table.trace td code {
+    font-family: var(--mono);
+    font-size: 12.5px;
+    background: #eef1f5;
+    padding: 2px 6px;
+    border-radius: 4px;
+    color: var(--navy);
+  }
+
+  /* ========== PAGE 3: PROBLEMS ========== */
+  .problems-header {
+    margin-bottom: 8px;
+  }
+
+  .problems-chapter-ref {
+    font-size: 13px;
+    color: var(--gray-500);
+    margin-bottom: 4px;
+  }
+
+  .problems-title {
+    font-size: 28px;
+    font-weight: 800;
+    color: var(--navy);
+    margin-bottom: 24px;
+  }
+
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 16px;
+  }
+
+  .prob-card {
+    background: var(--white);
+    border: 1px solid var(--gray-200);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 3px 15px rgba(0,0,0,0.06);
+  }
+
+  .prob-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 16px;
+    background: var(--navy);
+  }
+
+  .prob-num {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--white);
+  }
+
+  .diff {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    font-size: 12px;
+    font-weight: 800;
+  }
+
+  .diff-basic { background: #22c55e; color: white; }
+  .diff-mid { background: #f59e0b; color: white; }
+  .diff-hard { background: #ef4444; color: white; }
+
+  .prob-desc {
+    font-size: 13.5px;
+    line-height: 1.65;
+    color: var(--gray-600);
+    margin-bottom: 10px;
+    padding: 14px 16px 0;
+  }
+
+  .prob-code {
+    background: var(--gray-50);
+    border: 1px solid var(--gray-200);
+    border-radius: 6px;
+    padding: 10px 14px;
+    margin: 0 16px 16px;
+    font-family: var(--mono);
+    font-size: 12.5px;
+    line-height: 1.55;
+    color: var(--gray-600);
+  }
+
+  /* Competition section */
+  .comp-section {
+    margin-top: 32px;
+    padding-top: 24px;
+    border-top: 2px solid var(--navy);
+  }
+
+  .comp-title {
+    font-size: 22px;
+    font-weight: 800;
+    color: var(--navy);
+    margin-bottom: 20px;
+  }
+
+  .comp-card {
+    background: var(--white);
+    border: 1.5px solid var(--gray-200);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 18px rgba(0,0,0,0.06);
+  }
+
+  .comp-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 16px;
+    background: #0f766e;
+  }
+
+  .comp-header .comp-name {
+    color: var(--white);
+    font-size: 15px;
+    font-weight: 700;
+    margin: 0;
+  }
+
+  .comp-inner {
+    padding: 14px 18px 18px;
+  }
+
+  .comp-badge {
+    display: inline-block;
+    padding: 3px 12px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 700;
+  }
+
+  .badge-bj { background: #93c5fd; color: #1e3a5f; }
+  .badge-cu { background: #c4b5fd; color: #3b1f7e; }
+  .badge-pg { background: #7dd3fc; color: #0c4a6e; }
+
+  .comp-name {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--navy);
+    margin-bottom: 6px;
+  }
+
+  .comp-desc {
+    font-size: 14px;
+    color: var(--gray-600);
+    line-height: 1.7;
+    margin-bottom: 14px;
+  }
+
+  .io-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+
+  .io-card {
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid var(--gray-200);
+  }
+
+  .io-h {
+    padding: 6px 14px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--gray-600);
+    background: #e2e8f0;
+  }
+
+  .io-c {
+    padding: 10px 14px;
+    font-family: var(--mono);
+    font-size: 13px;
+    line-height: 1.5;
+    background: var(--white);
+  }
+
+  /* ========== DEBUG LAB ========== */
+  .debug-section {
+    margin: 24px 0;
+    border: 2px solid var(--red);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+
+  .debug-bar {
+    background: var(--red);
+    color: var(--white);
+    padding: 10px 20px;
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 1px;
+  }
+
+  .debug-body {
+    padding: 20px;
+    background: #fef2f2;
+  }
+
+  /* 10축 connection */
+  .connect-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 16px;
+    margin: 28px 0;
+  }
+
+  .connect-card {
+    border-radius: 12px;
+    padding: 20px;
+    text-align: center;
+    border: 1px solid var(--gray-200);
+    box-shadow: 0 3px 14px rgba(0,0,0,0.05);
+  }
+
+  .connect-card h5 {
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 8px;
+  }
+
+  .connect-card p {
+    font-size: 13px;
+    margin: 0;
+    color: var(--gray-600);
+    line-height: 1.6;
+  }
+
+  .cc1 { border-top: 3px solid #8b5cf6; }
+  .cc1 h5 { color: #8b5cf6; }
+  .cc2 { border-top: 3px solid var(--green); }
+  .cc2 h5 { color: var(--green); }
+  .cc3 { border-top: 3px solid var(--navy); }
+  .cc3 h5 { color: var(--navy); }
+
+  /* PAGE NUMBER */
+  .page-num {
+    position: absolute;
+    bottom: 20px;
+    right: 30px;
+    font-size: 12px;
+    color: var(--gray-400);
+  }
+
+  /* WARMUP */
+  .warmup-box {
+    background: #e0e7f1;
+    border-radius: 12px;
+    padding: 24px 28px;
+    margin: 28px 0;
+    border: 2px solid #c7d2e0;
+  }
+
+  .warmup-title {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--navy);
+    margin-bottom: 14px;
+  }
+
+  .wq {
+    padding: 9px 16px;
+    background: var(--white);
+    border-radius: 8px;
+    margin-bottom: 8px;
+    font-size: 14px;
+    border: 1px solid var(--gray-200);
+    color: var(--gray-700);
+  }
+
+  .wq b { color: var(--navy); margin-right: 6px; }
+  .wq .hint { color: var(--gray-400); font-size: 13px; }
+
+  /* ===== CONTEST PROBLEMS PAGE ===== */
+  .contest-page-wrap .chapter-page {
+    min-height: auto;
+  }
+
+  .contest-page-wrap .chapter-page > div:last-child {
+    min-width: 0;
+    overflow-wrap: break-word;
+    word-break: break-word;
+  }
+
+  .contest-card {
+    background: white;
+    border: 1.5px solid var(--gray-200);
+    border-radius: 12px;
+    margin-bottom: 28px;
+    overflow: hidden;
+    break-inside: avoid;
+  }
+
+  .contest-header {
+    background: var(--navy);
+    color: white;
+    padding: 14px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .contest-num-source {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .contest-num {
+    font-weight: 700;
+    font-size: 16px;
+  }
+
+  .contest-source {
+    background: rgba(255,255,255,0.15);
+    padding: 3px 10px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 500;
+  }
+
+  .contest-body {
+    padding: 20px 24px 24px;
+  }
+
+  .contest-question {
+    font-size: 15px;
+    line-height: 1.7;
+    color: var(--text);
+    margin: 0 0 16px;
+    word-break: break-word;
+    overflow-wrap: break-word;
+  }
+
+  .contest-expected {
+    background: #1e293b;
+    border-radius: 8px;
+    overflow: hidden;
+    margin-bottom: 20px;
+  }
+
+  .contest-expected-label {
+    background: #334155;
+    color: #94a3b8;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 6px 14px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .contest-expected-body {
+    color: #e2e8f0;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    line-height: 1.6;
+    padding: 12px 16px;
+    margin: 0;
+    white-space: pre;
+  }
+
+  .contest-write-area {
+    border: 2px dashed var(--gray-300);
+    border-radius: 10px;
+    overflow: hidden;
+    transition: border-color 0.2s;
+  }
+
+  .contest-write-area:focus-within {
+    border-color: var(--orange);
+    border-style: solid;
+  }
+
+  .contest-write-label {
+    background: var(--bg);
+    color: var(--gray-500);
+    font-size: 12px;
+    font-weight: 600;
+    padding: 8px 14px;
+    border-bottom: 1px solid var(--gray-200);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .contest-textarea {
+    width: 100%;
+    min-height: 200px;
+    padding: 16px 18px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    line-height: 1.7;
+    color: var(--text);
+    background: #fafbfc;
+    border: none;
+    outline: none;
+    resize: vertical;
+    tab-size: 4;
+    box-sizing: border-box;
+  }
+
+  .contest-textarea::placeholder {
+    color: var(--gray-300);
+  }
+
+  @media print {
+    body { background: white; }
+    .page { box-shadow: none; margin: 0; page-break-after: always; }
+    .contest-textarea { border: 1px solid var(--gray-300); min-height: 180px; }
+  }
+
+</style>
+</head>
+<body>
+
+<div class="page">
+  <div class="chapter-page">
+    <div class="chapter-sidebar"></div>
+    <div class="chapter-accent-bar"></div>
+    <div class="chapter-body">
+      <div class="chapter-watermark">31</div>
+      <div class="chapter-label">Chapter 31</div>
+      <h1 class="chapter-title">시뮬레이션</h1>
+      <p class="chapter-sub">문제에서 시키는 대로 정확히 따라하는 시뮬레이션 방법을 배워요.</p>
+
+      <h3 class="obj-title">이 유닛에서 배우는 것</h3>
+      <ul class="obj-list">
+        <li>시뮬레이션이 무엇인지 설명할 수 있어요.</li>
+        <li>규칙을 보고 단계별로 상태를 추적할 수 있어요.</li>
+        <li>로봇 이동, 카드 섞기 등 시뮬레이션 문제를 이해해요.</li>
+        <li>[심화] 격자 시뮬레이션을 C로 구현할 수 있어요.</li>
+        <li>[심화] 시간 흐름 시뮬레이션을 이해해요.</li>
+        <li>[심화 내용] 몬테카를로 시뮬레이션의 원리를 알아요.</li>
+      </ul>
+
+      <h3 class="prereq-title">선수 학습</h3>
+      <div class="prereq-flow">
+        <div class="prereq-item">배열(리스트) 개념</div><div class="prereq-arrow">→</div>
+        <div class="prereq-item current">반복문과 조건문 (U27)</div>
+      </div>
+
+      
+
+      <span class="page-num">1</span>
+    </div>
+  </div>
+</div>
+<div class="page">
+  <div class="content-page">
+    <div class="unit-header-bar">
+      <span class="unit-tag">UNIT 31</span>
+      <span class="unit-title-sm">시뮬레이션</span>
+    </div>
+<h2 class="section-title">시뮬레이션이란?</h2>
+
+<div class="note-box"><span class="note-label">[핵심] 시뮬레이션</span>
+<b>시뮬레이션</b> = 문제에 주어진 규칙/명령을 <b>한 단계씩 정확히 실행</b>하는 것<br><br>🤖 로봇 이동: 명령대로 좌표 변경<br>🃏 카드 섞기: 교환 명령대로 배열 변경<br>🎮 게임 규칙: 턴마다 규칙 적용<br><br>핵심: <b>정확한 구현</b>이 전부!</div>
+<div style="margin:22px 0"></div>
+<h2 class="section-title">로봇 이동 시뮬레이션</h2>
+<p>5×5 격자에서 로봇이 (0,4)에서 출발해요. 명령: 위↑, 위↑, 오른쪽→, 오른쪽→, 아래↓, 오른쪽→.</p>
+<!-- image -->
+<table class="trace"><thead><tr><th>명령</th><th>x</th><th>y</th><th>위치</th></tr></thead><tbody><tr><td>시작</td><td>0</td><td>4</td><td>(0,4)</td></tr><tr><td>위↑</td><td>0</td><td>3</td><td>(0,3)</td></tr><tr><td>위↑</td><td>0</td><td>2</td><td>(0,2)</td></tr><tr><td>오른쪽→</td><td>1</td><td>2</td><td>(1,2)</td></tr><tr><td>오른쪽→</td><td>2</td><td>2</td><td>(2,2)</td></tr><tr><td>아래↓</td><td>2</td><td>3</td><td>(2,3)</td></tr><tr><td>오른쪽→</td><td>3</td><td>3</td><td>(3,3)</td></tr></tbody></table>
+<table class="trace"><thead><tr><th>명령</th><th>nx</th><th>ny</th><th>범위 OK?</th><th>x</th><th>y</th><th>설명</th></tr></thead><tbody><tr><td>시작</td><td>-</td><td>-</td><td>-</td><td>2</td><td>0</td><td>시작 위치입니다</td></tr><tr><td>위↑</td><td>2</td><td>-1</td><td>X</td><td>2</td><td>0</td><td>y=-1은 격자 밖! 이동 불가</td></tr><tr><td>오른쪽→</td><td>3</td><td>0</td><td>O</td><td>3</td><td>0</td><td>정상 이동합니다</td></tr><tr><td>오른쪽→</td><td>4</td><td>0</td><td>O</td><td>4</td><td>0</td><td>정상 이동합니다</td></tr><tr><td>오른쪽→</td><td>5</td><td>0</td><td>X</td><td>4</td><td>0</td><td>x=5는 격자 밖! 이동 불가</td></tr><tr><td>아래↓</td><td>4</td><td>1</td><td>O</td><td>4</td><td>1</td><td>정상 이동합니다</td></tr></tbody></table>
+<h2 class="section-title">카드 섞기 시뮬레이션</h2>
+<!-- image -->
+<div class="tip"><span class="tip-label">[팁] 교환(swap)의 원리</span>
+두 값을 교환할 때는 <b>임시 변수</b>가 필요!<br><br><b>잘못:</b> A=B; B=A; (A 사라짐!)<br><b>올바른:</b> temp=A; A=B; B=temp;<br><br>C 코드: int temp = a; a = b; b = temp;</div>
+<table class="trace"><thead><tr><th>단계</th><th>명령</th><th>[0]</th><th>[1]</th><th>[2]</th><th>[3]</th><th>[4]</th></tr></thead><tbody><tr><td>초기</td><td>-</td><td>1</td><td>2</td><td>3</td><td>4</td><td>5</td></tr><tr><td>1</td><td>교환(0,3)</td><td>4</td><td>2</td><td>3</td><td>1</td><td>5</td></tr><tr><td>2</td><td>교환(1,4)</td><td>4</td><td>5</td><td>3</td><td>1</td><td>2</td></tr><tr><td>3</td><td>교환(2,3)</td><td>4</td><td>5</td><td>1</td><td>3</td><td>2</td></tr></tbody></table>
+<table class="trace"><thead><tr><th>단계</th><th>올바른 방법</th><th>a</th><th>b</th><th>temp</th><th>잘못된 방법</th><th>a</th><th>b</th></tr></thead><tbody><tr><td>초기</td><td>-</td><td>3</td><td>7</td><td>?</td><td>-</td><td>3</td><td>7</td></tr><tr><td>1단계</td><td>temp = a</td><td>3</td><td>7</td><td>3</td><td>a = b</td><td>7</td><td>7</td></tr><tr><td>2단계</td><td>a = b</td><td>7</td><td>7</td><td>3</td><td>b = a</td><td>7</td><td>7</td></tr><tr><td>3단계</td><td>b = temp</td><td>7</td><td>3</td><td>3</td><td>-</td><td>7</td><td>7</td></tr></tbody></table>
+<div class="debug-section"><div class="debug-bar">DEBUG LAB — 에러를 찾으시오</div><div class="debug-body">
+
+<p style="margin:14px 0 0; font-size:14px;"><b>에러:</b> </p>
+<p style="font-size:14px;"><b>수정:</b> </p>
+</div></div>
+<h2 class="section-title">시뮬레이션 문제 풀이 4단계</h2>
+<!-- image -->
+<div style="margin:22px 0"></div>
+<div class="warn"><span class="warn-label">[주의] 자주 하는 실수</span>
+<b>1. 순서 실수:</b> 교환 순서 바꾸면 결과 달라짐!<br><b>2. 범위 초과:</b> 격자 밖으로 나가면? → 예외 처리<br><b>3. 인덱스 혼동:</b> 0부터? 1부터? → 문제 잘 읽기!<br><b>4. 상태 누락:</b> 중간 단계 건너뛰면 틀림!</div>
+<h2 class="section-title">[심화] C로 로봇 이동 구현</h2>
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span><span class="code-bar-file">robot_sim.c</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;stdio.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;string.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">4</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">main</span>(<span class="s-type">void</span>) {</span></div>
+<div class="code-line"><span class="ln">5</span><span class="lc">    <span class="s-type">int</span> x = <span class="s-num">0</span>, y = <span class="s-num">4</span>;  <span class="s-cm">// 시작 위치</span></span></div>
+<div class="code-line"><span class="ln">6</span><span class="lc">    <span class="s-type">int</span> W = <span class="s-num">5</span>, H = <span class="s-num">5</span>;  <span class="s-cm">// 격자 크기</span></span></div>
+<div class="code-line"><span class="ln">7</span><span class="lc">    </span></div>
+<div class="code-line"><span class="ln">8</span><span class="lc">    <span class="s-type">char</span> cmds[] = <span class="s-str">"UURRDR"</span>;  <span class="s-cm">// U=위, D=아래, L=왼, R=오른</span></span></div>
+<div class="code-line"><span class="ln">9</span><span class="lc">    <span class="s-type">int</span> dx[] = {<span class="s-num">0</span>, <span class="s-num">0</span>, -<span class="s-num">1</span>, <span class="s-num">1</span>};  <span class="s-cm">// U D L R</span></span></div>
+<div class="code-line"><span class="ln">10</span><span class="lc">    <span class="s-type">int</span> dy[] = {-<span class="s-num">1</span>, <span class="s-num">1</span>, <span class="s-num">0</span>, <span class="s-num">0</span>};</span></div>
+<div class="code-line"><span class="ln">11</span><span class="lc">    <span class="s-type">char</span> dir[] = <span class="s-str">"UDLR"</span>;</span></div>
+<div class="code-line"><span class="ln">12</span><span class="lc">    </span></div>
+<div class="code-line"><span class="ln">13</span><span class="lc">    <span class="s-kw">for</span> (<span class="s-type">int</span> i = <span class="s-num">0</span>; i &lt; (<span class="s-type">int</span>)<span class="s-fn">strlen</span>(cmds); i++) {</span></div>
+<div class="code-line"><span class="ln">14</span><span class="lc">        <span class="s-type">int</span> d = -<span class="s-num">1</span>;</span></div>
+<div class="code-line"><span class="ln">15</span><span class="lc">        <span class="s-kw">for</span> (<span class="s-type">int</span> j = <span class="s-num">0</span>; j &lt; <span class="s-num">4</span>; j++)</span></div>
+<div class="code-line"><span class="ln">16</span><span class="lc">            <span class="s-kw">if</span> (cmds[i] == dir[j]) d = j;</span></div>
+<div class="code-line"><span class="ln">17</span><span class="lc">        </span></div>
+<div class="code-line"><span class="ln">18</span><span class="lc">        <span class="s-type">int</span> nx = x + dx[d], ny = y + dy[d];</span></div>
+<div class="code-line"><span class="ln">19</span><span class="lc">        <span class="s-cm">// 범위 체크!</span></span></div>
+<div class="code-line"><span class="ln">20</span><span class="lc">        <span class="s-kw">if</span> (nx &gt;= <span class="s-num">0</span> &amp;&amp; nx &lt; W &amp;&amp; ny &gt;= <span class="s-num">0</span> &amp;&amp; ny &lt; H) {</span></div>
+<div class="code-line"><span class="ln">21</span><span class="lc">            x = nx; y = ny;</span></div>
+<div class="code-line"><span class="ln">22</span><span class="lc">        }</span></div>
+<div class="code-line"><span class="ln">23</span><span class="lc">        <span class="s-fn">printf</span>(<span class="s-str">"명령 %c → (%d, %d)\n"</span>, cmds[i], x, y);</span></div>
+<div class="code-line"><span class="ln">24</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">25</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"최종 위치: (%d, %d)\n"</span>, x, y);</span></div>
+<div class="code-line"><span class="ln">26</span><span class="lc">    <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">27</span><span class="lc">}</span></div>
+</div>
+</div>
+<div class="output-wrap"><div class="output-bar">실행 결과</div><div class="output-body">명령 U → (0, 3)
+명령 U → (0, 2)
+명령 R → (1, 2)
+명령 R → (2, 2)
+명령 D → (2, 3)
+명령 R → (3, 3)
+최종 위치: (3, 3)</div></div>
+<table class="trace"><thead><tr><th>반복(i)</th><th>cmds[i]</th><th>d</th><th>nx</th><th>ny</th><th>범위 OK?</th><th>x</th><th>y</th></tr></thead><tbody><tr><td>-</td><td>시작</td><td>-</td><td>-</td><td>-</td><td>-</td><td>0</td><td>4</td></tr><tr><td>0</td><td>U</td><td>0</td><td>0</td><td>3</td><td>O</td><td>0</td><td>3</td></tr><tr><td>1</td><td>U</td><td>0</td><td>0</td><td>2</td><td>O</td><td>0</td><td>2</td></tr><tr><td>2</td><td>R</td><td>3</td><td>1</td><td>2</td><td>O</td><td>1</td><td>2</td></tr><tr><td>3</td><td>R</td><td>3</td><td>2</td><td>2</td><td>O</td><td>2</td><td>2</td></tr><tr><td>4</td><td>D</td><td>1</td><td>2</td><td>3</td><td>O</td><td>2</td><td>3</td></tr><tr><td>5</td><td>R</td><td>3</td><td>3</td><td>3</td><td>O</td><td>3</td><td>3</td></tr></tbody></table>
+<h2 class="section-title">[심화] 카드 섞기 C 구현</h2>
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span><span class="code-bar-file">card_shuffle.c</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;stdio.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc"><span class="s-type">void</span> <span class="s-fn">swap</span>(<span class="s-type">int</span> *a, <span class="s-type">int</span> *b) {</span></div>
+<div class="code-line"><span class="ln">4</span><span class="lc">    <span class="s-type">int</span> tmp = *a; *a = *b; *b = tmp;</span></div>
+<div class="code-line"><span class="ln">5</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">6</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">7</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">main</span>(<span class="s-type">void</span>) {</span></div>
+<div class="code-line"><span class="ln">8</span><span class="lc">    <span class="s-type">int</span> cards[] = {<span class="s-num">1</span>, <span class="s-num">2</span>, <span class="s-num">3</span>, <span class="s-num">4</span>, <span class="s-num">5</span>};</span></div>
+<div class="code-line"><span class="ln">9</span><span class="lc">    <span class="s-type">int</span> n = <span class="s-num">5</span>;</span></div>
+<div class="code-line"><span class="ln">10</span><span class="lc">    </span></div>
+<div class="code-line"><span class="ln">11</span><span class="lc">    <span class="s-cm">// 교환 명령: (0,3), (1,4), (2,3)</span></span></div>
+<div class="code-line"><span class="ln">12</span><span class="lc">    <span class="s-type">int</span> from[] = {<span class="s-num">0</span>, <span class="s-num">1</span>, <span class="s-num">2</span>};</span></div>
+<div class="code-line"><span class="ln">13</span><span class="lc">    <span class="s-type">int</span> to[]   = {<span class="s-num">3</span>, <span class="s-num">4</span>, <span class="s-num">3</span>};</span></div>
+<div class="code-line"><span class="ln">14</span><span class="lc">    <span class="s-type">int</span> cmds = <span class="s-num">3</span>;</span></div>
+<div class="code-line"><span class="ln">15</span><span class="lc">    </span></div>
+<div class="code-line"><span class="ln">16</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"초기: "</span>);</span></div>
+<div class="code-line"><span class="ln">17</span><span class="lc">    <span class="s-kw">for</span> (<span class="s-type">int</span> i = <span class="s-num">0</span>; i &lt; n; i++) <span class="s-fn">printf</span>(<span class="s-str">"%d "</span>, cards[i]);</span></div>
+<div class="code-line"><span class="ln">18</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"\n"</span>);</span></div>
+<div class="code-line"><span class="ln">19</span><span class="lc">    </span></div>
+<div class="code-line"><span class="ln">20</span><span class="lc">    <span class="s-kw">for</span> (<span class="s-type">int</span> c = <span class="s-num">0</span>; c &lt; cmds; c++) {</span></div>
+<div class="code-line"><span class="ln">21</span><span class="lc">        <span class="s-fn">swap</span>(&amp;cards[from[c]], &amp;cards[to[c]]);</span></div>
+<div class="code-line"><span class="ln">22</span><span class="lc">        <span class="s-fn">printf</span>(<span class="s-str">"교환(%d,%d): "</span>, from[c], to[c]);</span></div>
+<div class="code-line"><span class="ln">23</span><span class="lc">        <span class="s-kw">for</span> (<span class="s-type">int</span> i = <span class="s-num">0</span>; i &lt; n; i++) <span class="s-fn">printf</span>(<span class="s-str">"%d "</span>, cards[i]);</span></div>
+<div class="code-line"><span class="ln">24</span><span class="lc">        <span class="s-fn">printf</span>(<span class="s-str">"\n"</span>);</span></div>
+<div class="code-line"><span class="ln">25</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">26</span><span class="lc">    <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">27</span><span class="lc">}</span></div>
+</div>
+</div>
+<div class="output-wrap"><div class="output-bar">실행 결과</div><div class="output-body">초기: 1 2 3 4 5
+교환(0,3): 4 2 3 1 5
+교환(1,4): 4 5 3 1 2
+교환(2,3): 4 5 1 3 2</div></div>
+<table class="trace"><thead><tr><th>단계</th><th>명령</th><th>cards[0]</th><th>cards[1]</th><th>cards[2]</th><th>cards[3]</th><th>cards[4]</th></tr></thead><tbody><tr><td>초기</td><td>-</td><td>1</td><td>2</td><td>3</td><td>4</td><td>5</td></tr><tr><td>1</td><td>swap(0,3)</td><td>4</td><td>2</td><td>3</td><td>1</td><td>5</td></tr><tr><td>2</td><td>swap(1,4)</td><td>4</td><td>5</td><td>3</td><td>1</td><td>2</td></tr><tr><td>3</td><td>swap(2,3)</td><td>4</td><td>5</td><td>1</td><td>3</td><td>2</td></tr></tbody></table>
+<h2 class="section-title">[심화] 달팽이 배열 시뮬레이션</h2>
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span><span class="code-bar-file">snail.c</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;stdio.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc"><span class="s-pp">#define</span> N <span class="s-num">5</span></span></div>
+<div class="code-line"><span class="ln">4</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">5</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">main</span>(<span class="s-type">void</span>) {</span></div>
+<div class="code-line"><span class="ln">6</span><span class="lc">    <span class="s-type">int</span> grid[N][N] = {<span class="s-num">0</span>};</span></div>
+<div class="code-line"><span class="ln">7</span><span class="lc">    <span class="s-cm">// 방향: 오른쪽→아래→왼쪽→위</span></span></div>
+<div class="code-line"><span class="ln">8</span><span class="lc">    <span class="s-type">int</span> dx[] = {<span class="s-num">1</span>, <span class="s-num">0</span>, -<span class="s-num">1</span>, <span class="s-num">0</span>};</span></div>
+<div class="code-line"><span class="ln">9</span><span class="lc">    <span class="s-type">int</span> dy[] = {<span class="s-num">0</span>, <span class="s-num">1</span>, <span class="s-num">0</span>, -<span class="s-num">1</span>};</span></div>
+<div class="code-line"><span class="ln">10</span><span class="lc">    <span class="s-type">int</span> dir = <span class="s-num">0</span>, x = <span class="s-num">0</span>, y = <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">11</span><span class="lc">    </span></div>
+<div class="code-line"><span class="ln">12</span><span class="lc">    <span class="s-kw">for</span> (<span class="s-type">int</span> num = <span class="s-num">1</span>; num &lt;= N * N; num++) {</span></div>
+<div class="code-line"><span class="ln">13</span><span class="lc">        grid[y][x] = num;</span></div>
+<div class="code-line"><span class="ln">14</span><span class="lc">        <span class="s-type">int</span> nx = x + dx[dir], ny = y + dy[dir];</span></div>
+<div class="code-line"><span class="ln">15</span><span class="lc">        <span class="s-cm">// 범위 밖이거나 이미 채워진 칸이면 방향 전환</span></span></div>
+<div class="code-line"><span class="ln">16</span><span class="lc">        <span class="s-kw">if</span> (nx &lt; <span class="s-num">0</span> || nx &gt;= N || ny &lt; <span class="s-num">0</span> || ny &gt;= N || grid[ny][nx] != <span class="s-num">0</span>)</span></div>
+<div class="code-line"><span class="ln">17</span><span class="lc">            dir = (dir + <span class="s-num">1</span>) % <span class="s-num">4</span>;</span></div>
+<div class="code-line"><span class="ln">18</span><span class="lc">        x += dx[dir]; y += dy[dir];</span></div>
+<div class="code-line"><span class="ln">19</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">20</span><span class="lc">    </span></div>
+<div class="code-line"><span class="ln">21</span><span class="lc">    <span class="s-kw">for</span> (<span class="s-type">int</span> i = <span class="s-num">0</span>; i &lt; N; i++) {</span></div>
+<div class="code-line"><span class="ln">22</span><span class="lc">        <span class="s-kw">for</span> (<span class="s-type">int</span> j = <span class="s-num">0</span>; j &lt; N; j++)</span></div>
+<div class="code-line"><span class="ln">23</span><span class="lc">            <span class="s-fn">printf</span>(<span class="s-str">"%3d"</span>, grid[i][j]);</span></div>
+<div class="code-line"><span class="ln">24</span><span class="lc">        <span class="s-fn">printf</span>(<span class="s-str">"\n"</span>);</span></div>
+<div class="code-line"><span class="ln">25</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">26</span><span class="lc">    <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">27</span><span class="lc">}</span></div>
+</div>
+</div>
+<div class="output-wrap"><div class="output-bar">실행 결과</div><div class="output-body">  1  2  3  4  5
+ 16 17 18 19  6
+ 15 24 25 20  7
+ 14 23 22 21  8
+ 13 12 11 10  9</div></div>
+<div class="tip"><span class="tip-label">[KOI 빈출] 달팽이 배열</span>
+달팽이 배열은 KOI에서 자주 나오는 시뮬레이션!<br><br>핵심 패턴:<br>1. 방향 배열 dx[], dy[]로 이동<br>2. 범위 밖이거나 방문했으면 <b>방향 전환</b><br>3. (dir + 1) % 4로 다음 방향</div>
+<table class="trace"><thead><tr><th>번호</th><th>x</th><th>y</th><th>방향</th><th>방향 전환?</th><th>grid 상태</th></tr></thead><tbody><tr><td>1</td><td>0</td><td>0</td><td>오른쪽→</td><td>-</td><td>[1, , ] [ , , ] [ , , ]</td></tr><tr><td>2</td><td>1</td><td>0</td><td>오른쪽→</td><td>-</td><td>[1,2, ] [ , , ] [ , , ]</td></tr><tr><td>3</td><td>2</td><td>0</td><td>오른쪽→</td><td>-</td><td>[1,2,3] [ , , ] [ , , ]</td></tr><tr><td>4</td><td>2</td><td>1</td><td>아래↓</td><td>전환!</td><td>[1,2,3] [ , ,4] [ , , ]</td></tr><tr><td>5</td><td>2</td><td>2</td><td>아래↓</td><td>-</td><td>[1,2,3] [ , ,4] [ , ,5]</td></tr><tr><td>6</td><td>1</td><td>2</td><td>왼쪽←</td><td>전환!</td><td>[1,2,3] [ , ,4] [ ,6,5]</td></tr><tr><td>7</td><td>0</td><td>2</td><td>왼쪽←</td><td>-</td><td>[1,2,3] [ , ,4] [7,6,5]</td></tr><tr><td>8</td><td>0</td><td>1</td><td>위↑</td><td>전환!</td><td>[1,2,3] [8, ,4] [7,6,5]</td></tr><tr><td>9</td><td>1</td><td>1</td><td>오른쪽→</td><td>전환!</td><td>[1,2,3] [8,9,4] [7,6,5]</td></tr></tbody></table>
+<div style="margin:22px 0"></div>
+<h2 class="section-title">[심화] 게임 시뮬레이션: 윷놀이</h2>
+<div class="note-box"><span class="note-label">[심화] 윷놀이 시뮬레이션</span>
+말의 위치를 추적하며 규칙 적용:<br><br>1. 도(1칸), 개(2칸), 걸(3칸), 윷(4칸), 모(5칸)<br>2. 말이 칸을 넘으면 <b>% 29</b> (총 29칸)<br>3. 상대 말과 같은 칸이면 <b>잡기</b> (시작점으로)<br>4. 자기 말과 같은 칸이면 <b>업기</b> (함께 이동)<br><br>시뮬레이션 = 규칙이 많을수록 꼼꼼한 구현이 중요!</div>
+<h2 class="section-title">[심화 내용] 몬테카를로 시뮬레이션</h2>
+<div class="note-box"><span class="note-label">[심화 내용] 몬테카를로 방법</span>
+<b>랜덤</b>을 이용해 근사값을 구하는 시뮬레이션!<br><br>예: 원주율(π) 구하기<br>1. 1×1 정사각형 안에 랜덤 점 N개 찍기<br>2. 원 안에 들어간 점 개수 = M<br>3. π ≈ 4 × M / N<br><br>N이 클수록 정확한 값에 가까워져요!<br><br>활용: 주식 예측, 물리 시뮬레이션, AI 게임(알파고)</div>
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span><span class="code-bar-file">monte_carlo_pi.c</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;stdio.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;stdlib.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;time.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">4</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">5</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">main</span>(<span class="s-type">void</span>) {</span></div>
+<div class="code-line"><span class="ln">6</span><span class="lc">    <span class="s-fn">srand</span>(<span class="s-fn">time</span>(<span class="s-kw">NULL</span>));</span></div>
+<div class="code-line"><span class="ln">7</span><span class="lc">    <span class="s-type">int</span> N = <span class="s-num">1000000</span>;  <span class="s-cm">// 100만 번 시도</span></span></div>
+<div class="code-line"><span class="ln">8</span><span class="lc">    <span class="s-type">int</span> inside = <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">9</span><span class="lc">    </span></div>
+<div class="code-line"><span class="ln">10</span><span class="lc">    <span class="s-kw">for</span> (<span class="s-type">int</span> i = <span class="s-num">0</span>; i &lt; N; i++) {</span></div>
+<div class="code-line"><span class="ln">11</span><span class="lc">        <span class="s-type">double</span> x = (<span class="s-type">double</span>)<span class="s-fn">rand</span>() / RAND_MAX;  <span class="s-cm">// 0~1</span></span></div>
+<div class="code-line"><span class="ln">12</span><span class="lc">        <span class="s-type">double</span> y = (<span class="s-type">double</span>)<span class="s-fn">rand</span>() / RAND_MAX;</span></div>
+<div class="code-line"><span class="ln">13</span><span class="lc">        <span class="s-kw">if</span> (x*x + y*y &lt;= <span class="s-num">1.0</span>)  <span class="s-cm">// 원 안?</span></span></div>
+<div class="code-line"><span class="ln">14</span><span class="lc">            inside++;</span></div>
+<div class="code-line"><span class="ln">15</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">16</span><span class="lc">    </span></div>
+<div class="code-line"><span class="ln">17</span><span class="lc">    <span class="s-type">double</span> pi = <span class="s-num">4.0</span> * inside / N;</span></div>
+<div class="code-line"><span class="ln">18</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"π ≈ %.6f\n"</span>, pi);  <span class="s-cm">// 약 3.141592</span></span></div>
+<div class="code-line"><span class="ln">19</span><span class="lc">    <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">20</span><span class="lc">}</span></div>
+</div>
+</div>
+<div class="output-wrap"><div class="output-bar">실행 결과</div><div class="output-body">π ≈ 3.141728</div></div>
+<table class="trace"><thead><tr><th>시도</th><th>x</th><th>y</th><th>x²+y²</th><th>원 안?</th><th>누적 inside</th><th>추정 π</th></tr></thead><tbody><tr><td>1</td><td>0.3</td><td>0.4</td><td>0.25</td><td>O</td><td>1</td><td>4.000</td></tr><tr><td>2</td><td>0.8</td><td>0.7</td><td>1.13</td><td>X</td><td>1</td><td>2.000</td></tr><tr><td>3</td><td>0.1</td><td>0.2</td><td>0.05</td><td>O</td><td>2</td><td>2.667</td></tr><tr><td>4</td><td>0.6</td><td>0.6</td><td>0.72</td><td>O</td><td>3</td><td>3.000</td></tr><tr><td>5</td><td>0.9</td><td>0.5</td><td>1.06</td><td>X</td><td>3</td><td>2.400</td></tr><tr><td>6</td><td>0.2</td><td>0.3</td><td>0.13</td><td>O</td><td>4</td><td>2.667</td></tr><tr><td>7</td><td>0.4</td><td>0.8</td><td>0.80</td><td>O</td><td>5</td><td>2.857</td></tr><tr><td>8</td><td>0.5</td><td>0.5</td><td>0.50</td><td>O</td><td>6</td><td>3.000</td></tr><tr><td>9</td><td>0.7</td><td>0.3</td><td>0.58</td><td>O</td><td>7</td><td>3.111</td></tr><tr><td>10</td><td>0.1</td><td>0.9</td><td>0.82</td><td>O</td><td>8</td><td>3.200</td></tr></tbody></table>
+<div style="margin:22px 0"></div>
+<h2 class="section-title">[심화 내용] 이산 사건 시뮬레이션</h2>
+<div class="note-box"><span class="note-label">[심화 내용] DES (Discrete Event Simulation)</span>
+<b>이산 사건 시뮬레이션</b> = 시간 흐름에 따른 사건을 모델링<br><br>예: 은행 대기줄 시뮬레이션<br>• 사건: 고객 도착, 서비스 시작, 서비스 완료<br>• 이벤트 큐에 사건을 시간순으로 넣고 처리<br><br>활용: 네트워크 트래픽, 공장 생산라인, 병원 대기 시간<br><br>현대 시뮬레이션의 핵심 기법!</div>
+<div class="debug-section"><div class="debug-bar">DEBUG LAB — 에러를 찾으시오</div><div class="debug-body">
+
+<p style="margin:14px 0 0; font-size:14px;"><b>에러:</b> </p>
+<p style="font-size:14px;"><b>수정:</b> </p>
+</div></div>
+<div class="debug-section"><div class="debug-bar">DEBUG LAB — 에러를 찾으시오</div><div class="debug-body">
+
+<p style="margin:14px 0 0; font-size:14px;"><b>에러:</b> </p>
+<p style="font-size:14px;"><b>수정:</b> </p>
+</div></div>
+<h2 class="section-title">활동: 종이 시뮬레이션</h2>
+<div class="tip"><span class="tip-label">[활동] 로봇 명령어 게임</span>
+5×5 격자를 그리고 로봇을 (2,2)에 놓으세요.<br><br><b>명령 1:</b> R R D D L → 최종 위치?<br><b>명령 2:</b> U U L D R R R → 최종 위치?<br><b>도전:</b> 친구와 서로 명령 만들어 풀어보세요!<br><br>격자 밖으로 나가면 이동 불가 처리!</div>
+<table class="trace"><thead><tr><th>명령</th><th>x</th><th>y</th><th>설명</th></tr></thead><tbody><tr><td>시작</td><td>2</td><td>2</td><td>시작 위치입니다</td></tr><tr><td>R</td><td>3</td><td>2</td><td>오른쪽으로 이동합니다</td></tr><tr><td>R</td><td>4</td><td>2</td><td>오른쪽으로 이동합니다</td></tr><tr><td>D</td><td>4</td><td>3</td><td>아래로 이동합니다</td></tr><tr><td>D</td><td>4</td><td>4</td><td>아래로 이동합니다</td></tr><tr><td>L</td><td>3</td><td>4</td><td>왼쪽으로 이동합니다</td></tr></tbody></table>
+<h2 class="section-title">KOI 연결: 시뮬레이션 문제</h2>
+<div class="tip"><span class="tip-label">[KOI] 시뮬레이션 문제 유형</span>
+매년 출제되는 유형:<br><br>🤖 로봇/캐릭터 이동 — 명령대로 격자 이동<br>🃏 배열 조작 — 규칙에 따라 원소 교환/회전<br>🎮 게임 시뮬레이션 — 턴제 승패 판정<br>🌀 달팽이 배열 — 나선형 채우기<br>⏰ 시간 시뮬레이션 — 매 초/분 상태 변화<br><br>팁: 부분 점수 받기 쉬운 문제! 기본부터 정확히!</div>
+<!-- fact-bite -->
+<h2 class="section-title">OX 퀴즈</h2>
+<!-- ox -->
+<h2 class="section-title">연습문제</h2>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 1</span><p style="margin:0;font-size:14px">시뮬레이션이란 무엇인지 한 문장으로 설명하세요.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 2</span><p style="margin:0;font-size:14px">로봇이 (0,0)에서 시작해 R,R,D,D를 실행하면 최종 위치는?</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 3</span><p style="margin:0;font-size:14px">배열 [1,2,3,4,5]에서 0번과 4번을 교환하면 결과는?</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 4</span><p style="margin:0;font-size:14px">swap에 임시 변수가 필요한 이유를 설명하세요.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 5</span><p style="margin:0;font-size:14px">시뮬레이션 문제 풀이 4단계를 쓰세요.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 6</span><p style="margin:0;font-size:14px">로봇이 (2,2)에서 시작, 5×5 격자, 명령 U,U,U → 최종 위치? (범위 초과 시 이동 불가)</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 7</span><p style="margin:0;font-size:14px">배열 [A,B,C,D]에서 교환(0,2), 교환(1,3) 후 결과는?</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 8</span><p style="margin:0;font-size:14px">시뮬레이션에서 자주 하는 실수 4가지를 쓰세요.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 9</span><p style="margin:0;font-size:14px">달팽이 배열에서 방향 전환 조건은?</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 10</span><p style="margin:0;font-size:14px">3×3 달팽이 배열을 손으로 채워보세요.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 11</span><p style="margin:0;font-size:14px">[심화] 로봇 이동 시뮬레이션에서 dx[], dy[] 배열의 역할을 설명하세요.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 12</span><p style="margin:0;font-size:14px">[심화] 달팽이 배열을 4×4로 만들 때 (dir+1)%4의 의미를 설명하세요.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 13</span><p style="margin:0;font-size:14px">[심화] 몬테카를로 시뮬레이션으로 π를 구하는 원리를 설명하세요.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 14</span><p style="margin:0;font-size:14px">[심화 내용] 이산 사건 시뮬레이션(DES)의 3가지 구성 요소를 쓰세요.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 15</span><p style="margin:0;font-size:14px">[심화 내용] 몬테카를로 시뮬레이션에서 N을 10배로 늘리면 정확도는 얼마나 좋아지나요?</p></div>
+<h2 class="section-title">용어 정리</h2>
+<h2 class="section-title">[심화 내용] 시뮬레이션의 종류와 응용</h2>
+<div class="note-box"><span class="note-label">[심화 내용] 시뮬레이션의 분류</span>
+<b>1. 이산 사건 시뮬레이션 (DES)</b><br>이벤트가 특정 시점에 발생<br>예: 네트워크 패킷 전송, 대기열 시스템<br>도구: SimPy, OPNET<br><br><b>2. 연속 시뮬레이션</b><br>미분방정식으로 시간에 따른 변화 모델링<br>예: 날씨 예보, 유체 역학, 회로 시뮬레이션<br>도구: MATLAB, Simulink<br><br><b>3. 에이전트 기반 시뮬레이션 (ABM)</b><br>개별 에이전트의 행동 규칙으로 전체 패턴 관찰<br>예: 교통 흐름, 전염병 확산, 경제 모델<br>도구: NetLogo, Mesa<br><br><b>4. 몬테카를로 시뮬레이션</b><br>랜덤 샘플링으로 확률/통계 계산<br>예: 원주율 추정, 금융 리스크, 물리 시뮬레이션</div>
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span><span class="code-bar-file">[C 코드] 몬테카를로로 원주율 계산</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;stdio.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;stdlib.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;time.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">4</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">5</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">main</span>() {</span></div>
+<div class="code-line"><span class="ln">6</span><span class="lc">    <span class="s-fn">srand</span>(<span class="s-fn">time</span>(<span class="s-kw">NULL</span>));</span></div>
+<div class="code-line"><span class="ln">7</span><span class="lc">    <span class="s-type">int</span> total = <span class="s-num">1000000</span>, inside = <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">8</span><span class="lc">    </span></div>
+<div class="code-line"><span class="ln">9</span><span class="lc">    <span class="s-kw">for</span> (<span class="s-type">int</span> i = <span class="s-num">0</span>; i &lt; total; i++) {</span></div>
+<div class="code-line"><span class="ln">10</span><span class="lc">        <span class="s-type">double</span> x = (<span class="s-type">double</span>)<span class="s-fn">rand</span>() / RAND_MAX;  <span class="s-cm">// 0~1</span></span></div>
+<div class="code-line"><span class="ln">11</span><span class="lc">        <span class="s-type">double</span> y = (<span class="s-type">double</span>)<span class="s-fn">rand</span>() / RAND_MAX;</span></div>
+<div class="code-line"><span class="ln">12</span><span class="lc">        <span class="s-kw">if</span> (x*x + y*y &lt;= <span class="s-num">1.0</span>) inside++;  <span class="s-cm">// 원 안?</span></span></div>
+<div class="code-line"><span class="ln">13</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">14</span><span class="lc">    </span></div>
+<div class="code-line"><span class="ln">15</span><span class="lc">    <span class="s-type">double</span> pi = <span class="s-num">4.0</span> * inside / total;</span></div>
+<div class="code-line"><span class="ln">16</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"시도 횟수: %d\n"</span>, total);</span></div>
+<div class="code-line"><span class="ln">17</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"원 안에 든 점: %d\n"</span>, inside);</span></div>
+<div class="code-line"><span class="ln">18</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"추정 pi = %.6f\n"</span>, pi);</span></div>
+<div class="code-line"><span class="ln">19</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"실제 pi = 3.141593\n"</span>);</span></div>
+<div class="code-line"><span class="ln">20</span><span class="lc">    <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">21</span><span class="lc">}</span></div>
+</div>
+</div>
+<div class="output-wrap"><div class="output-bar">실행 결과</div><div class="output-body">시도 횟수: 1000000
+원 안에 든 점: 785421
+추정 pi = 3.141684
+실제 pi = 3.141593</div></div>
+<h2 class="section-title">[심화 내용] 시뮬레이션과 게임 엔진</h2>
+<div class="note-box"><span class="note-label">[심화 내용] 게임 루프 = 시뮬레이션 루프</span>
+게임 엔진의 메인 루프는 시뮬레이션이에요!<br><br><b>게임 루프 구조:</b><br>while (게임 실행 중) {<br>  dt = 이전 프레임 이후 경과 시간<br>  입력 처리(keyboard, mouse)<br>  물리 시뮬레이션(충돌, 중력) // 시뮬레이션!<br>  AI 업데이트(적 행동 결정)<br>  애니메이션 업데이트<br>  렌더링(화면 그리기)<br>}<br><br><b>물리 엔진:</b> Box2D, PhysX, Bullet<br>위치 += 속도 * dt (오일러 적분)<br>속도 += 가속도 * dt<br>충돌 감지 + 반응<br><br>1초에 60번(60fps) 이 루프를 반복!</div>
+<!-- fact-bite -->
+<!-- fact-bite -->
+<h2 class="section-title">[심화] 시뮬레이션 실전 예제</h2>
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span><span class="code-bar-file">[C 코드] 주사위 시뮬레이션</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;stdio.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;stdlib.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;time.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">4</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">5</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">main</span>() {</span></div>
+<div class="code-line"><span class="ln">6</span><span class="lc">    <span class="s-fn">srand</span>(<span class="s-fn">time</span>(<span class="s-kw">NULL</span>));</span></div>
+<div class="code-line"><span class="ln">7</span><span class="lc">    <span class="s-type">int</span> freq[<span class="s-num">13</span>] = {<span class="s-num">0</span>};  <span class="s-cm">// 2~12</span></span></div>
+<div class="code-line"><span class="ln">8</span><span class="lc">    <span class="s-type">int</span> trials = <span class="s-num">100000</span>;</span></div>
+<div class="code-line"><span class="ln">9</span><span class="lc">    </span></div>
+<div class="code-line"><span class="ln">10</span><span class="lc">    <span class="s-cm">// 주사위 2개 합의 빈도</span></span></div>
+<div class="code-line"><span class="ln">11</span><span class="lc">    <span class="s-kw">for</span> (<span class="s-type">int</span> i = <span class="s-num">0</span>; i &lt; trials; i++) {</span></div>
+<div class="code-line"><span class="ln">12</span><span class="lc">        <span class="s-type">int</span> d1 = <span class="s-fn">rand</span>() % <span class="s-num">6</span> + <span class="s-num">1</span>;</span></div>
+<div class="code-line"><span class="ln">13</span><span class="lc">        <span class="s-type">int</span> d2 = <span class="s-fn">rand</span>() % <span class="s-num">6</span> + <span class="s-num">1</span>;</span></div>
+<div class="code-line"><span class="ln">14</span><span class="lc">        freq[d1 + d2]++;</span></div>
+<div class="code-line"><span class="ln">15</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">16</span><span class="lc">    </span></div>
+<div class="code-line"><span class="ln">17</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"주사위 2개 합 시뮬레이션 (%d회):\n"</span>, trials);</span></div>
+<div class="code-line"><span class="ln">18</span><span class="lc">    <span class="s-kw">for</span> (<span class="s-type">int</span> s = <span class="s-num">2</span>; s &lt;= <span class="s-num">12</span>; s++) {</span></div>
+<div class="code-line"><span class="ln">19</span><span class="lc">        <span class="s-type">double</span> pct = <span class="s-num">100.0</span> * freq[s] / trials;</span></div>
+<div class="code-line"><span class="ln">20</span><span class="lc">        <span class="s-fn">printf</span>(<span class="s-str">"  합 %2d: %5.2f%% "</span>, s, pct);</span></div>
+<div class="code-line"><span class="ln">21</span><span class="lc">        <span class="s-type">int</span> bars = (<span class="s-type">int</span>)(pct * <span class="s-num">2</span>);</span></div>
+<div class="code-line"><span class="ln">22</span><span class="lc">        <span class="s-kw">for</span> (<span class="s-type">int</span> b = <span class="s-num">0</span>; b &lt; bars; b++) <span class="s-fn">printf</span>(<span class="s-str">"#"</span>);</span></div>
+<div class="code-line"><span class="ln">23</span><span class="lc">        <span class="s-fn">printf</span>(<span class="s-str">"\n"</span>);</span></div>
+<div class="code-line"><span class="ln">24</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">25</span><span class="lc">    <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">26</span><span class="lc">}</span></div>
+</div>
+</div>
+<div class="output-wrap"><div class="output-bar">실행 결과</div><div class="output-body">주사위 2개 합 시뮬레이션 (100000회):
+  합  2:  2.78% #####
+  합  3:  5.54% ###########
+  합  4:  8.32% ################
+  합  5: 11.12% ######################
+  합  6: 13.89% ###########################
+  합  7: 16.65% #################################
+  합  8: 13.85% ###########################
+  합  9: 11.08% ######################
+  합 10:  8.34% ################
+  합 11:  5.58% ###########
+  합 12:  2.85% #####</div></div>
+<div class="note-box"><span class="note-label">[심화 내용] 시뮬레이션의 한계</span>
+<b>시뮬레이션의 장점:</b><br>- 복잡한 시스템을 수학 없이 분석 가능<br>- 실험 불가능한 상황도 모의 가능<br>- 확률적 현상을 직관적으로 이해<br><br><b>시뮬레이션의 한계:</b><br>1. <b>정확도</b>: 샘플 수에 의존 (많을수록 정확)<br>2. <b>모델 오류</b>: 현실을 완벽히 반영 불가<br>3. <b>계산 비용</b>: 복잡한 시뮬레이션은 매우 느림<br>4. <b>난수 품질</b>: 의사 난수의 주기/패턴 문제<br><br>"All models are wrong, but some are useful"<br>— George Box (통계학자)</div>
+<h2 class="section-title">[심화 내용] 유명한 시뮬레이션 사례</h2>
+<div class="note-box"><span class="note-label">[심화 내용] 세상을 바꾼 시뮬레이션</span>
+<b>1. 맨해튼 프로젝트 (1940s)</b><br>원자폭탄 핵반응 시뮬레이션<br>폰 노이만이 몬테카를로 방법 개발<br><br><b>2. 날씨 예보 (1950~)</b><br>대기 순환 수치 시뮬레이션<br>슈퍼컴퓨터의 주요 용도<br><br><b>3. 비행 시뮬레이터 (1960~)</b><br>파일럿 훈련용 가상 비행<br>현재 MS Flight Simulator 수준까지 발전<br><br><b>4. 단백질 접힘 (2020)</b><br>AlphaFold: 50년 미해결 문제 해결<br>아미노산 서열 → 3D 구조 예측<br><br><b>5. 자율주행 (2020s)</b><br>가상 도시에서 수십억 km 시뮬레이션 주행<br>실제 도로 테스트 전 안전성 검증</div>
+
+<h2 class="section-title">[심화] 시뮬레이션 구현 팁</h2>
+<div class="tip"><span class="tip-label">[심화] 시뮬레이션 구현 체크리스트</span>
+1. <b>상태 정의</b>: 시뮬레이션할 시스템의 변수 정리<br>   위치, 속도, 점수, 생명력 등<br><br>2. <b>시간 단위 결정</b>: 1턴 = 1초? 1프레임?<br>   dt가 너무 크면 부정확, 너무 작으면 느림<br><br>3. <b>업데이트 규칙</b>: 매 턴마다 상태 변화<br>   위치 += 속도 * dt<br>   체력 -= 데미지<br><br>4. <b>종료 조건</b>: 언제 시뮬레이션을 멈출지<br>   시간 초과, 목표 달성, 상태 수렴<br><br>5. <b>결과 수집</b>: 통계, 평균, 최대/최소<br>   여러 번 실행 → 평균 계산<br><br>6. <b>시각화</b>: 결과를 그래프/애니메이션으로<br>   디버깅에도 큰 도움!</div>
+<div class="note-box"><span class="note-label">[심화] KOI 시뮬레이션 문제 유형</span>
+<b>유형 1: 로봇 이동</b><br>명령어(상/하/좌/우) 순서대로 시뮬레이션<br>격자 범위 체크 필수!<br><br><b>유형 2: 카드 게임</b><br>규칙대로 카드 뽑기/내기 반복<br>큐/스택 자료구조 활용<br><br><b>유형 3: 뱀 게임</b><br>뱀이 이동하며 사과 먹기, 꼬리 관리<br>deque 자료구조 활용<br><br><b>유형 4: 톱니바퀴</b><br>인접 톱니 영향 → 연쇄 회전 시뮬레이션<br><br><b>팁:</b> 시뮬레이션 문제는 "문제를 정확히 구현하면 정답"<br>특별한 알고리즘보다 꼼꼼한 구현이 핵심!</div>
+<!-- fact-bite -->
+
+<div class="tip"><span class="tip-label">[활동] 시뮬레이션 도전 문제</span>
+<b>1. 개미 시뮬레이션</b><br>1D 막대 위에 개미 n마리. 만나면 방향 전환.<br>모든 개미가 떨어지는 시간 = 가장 먼 개미 거리!<br>(만나서 방향 전환 = 서로 통과와 같음!)<br><br><b>2. 생명 게임 (Game of Life)</b><br>Conway의 생명 게임: 격자 위 세포 생존/탄생/사망<br>규칙: 이웃 2~3이면 생존, 3이면 탄생, 나머지 사망<br><br><b>3. 랜덤 워크</b><br>2D 격자에서 무작위 이동. N번 후 원점 거리는?<br>평균 거리 = sqrt(N) (수학적으로 증명 가능!)<br><br>시뮬레이션 = 코딩 연습 최고의 소재!</div>
+<table class="trace"><thead><tr><th>용어</th><th>설명</th></tr></thead><tbody><tr><td><code>시뮬레이션</code></td><td>문제의 규칙을 그대로 따라 실행하는 것. 정확한 구현이 핵심.</td></tr><tr><td><code>상태 추적</code></td><td>매 단계의 변수 값을 기록하며 따라가는 것.</td></tr><tr><td><code>swap</code></td><td>두 값을 교환하는 연산. 임시 변수 필요.</td></tr><tr><td><code>방향 배열</code></td><td>dx[], dy[]로 이동 방향을 배열로 관리하는 패턴.</td></tr><tr><td><code>달팽이 배열</code></td><td>나선형으로 숫자를 채우는 시뮬레이션. KOI 빈출.</td></tr><tr><td><code>몬테카를로</code></td><td>랜덤을 이용해 근사값을 구하는 시뮬레이션 기법.</td></tr><tr><td><code>DES</code></td><td>Discrete Event Simulation. 시간 흐름에 따른 사건 모델링.</td></tr><tr><td><code>범위 체크</code></td><td>격자 밖으로 나가지 않도록 좌표를 확인하는 것.</td></tr><tr><td><code>몬테카를로</code></td><td>랜덤 샘플링으로 수치 계산하는 기법. 원주율 추정, 금융 리스크 등.</td></tr><tr><td><code>DES</code></td><td>Discrete Event Simulation. 이벤트 기반 시뮬레이션.</td></tr><tr><td><code>에이전트 기반 모델</code></td><td>개별 에이전트 행동 규칙으로 전체 시스템 패턴을 관찰하는 시뮬레이션.</td></tr><tr><td><code>오일러 적분</code></td><td>위치 += 속도*dt. 가장 간단한 수치 적분 방법. 게임 물리에 사용.</td></tr></tbody></table>
+<div class="warmup-box"><div class="warmup-title">이번 유닛 핵심 정리</div><div class="wq"><b>1.</b> 시뮬레이션 = 규칙대로 정확히 따라하기</div><div class="wq"><b>2.</b> 4단계: 규칙 파악→초기 상태→단계별 실행→결과</div><div class="wq"><b>3.</b> swap에는 임시 변수 필수!</div><div class="wq"><b>4.</b> [심화] 달팽이 배열 = 방향 배열 + 방향 전환</div><div class="wq"><b>5.</b> [심화] 격자 이동 = dx/dy 배열 패턴</div><div class="wq"><b>6.</b> [심화 내용] 몬테카를로: 랜덤으로 근사값</div><div class="wq"><b>7.</b> [심화 내용] DES: 사건 큐로 시간 흐름 모델링</div></div>
+<div class="tip"><span class="tip-label">이 유닛에서 연결된 축</span>
+<b>[컴퓨팅 사고력]</b> 규칙을 정확히 이해하고 단계별 추적<br><b>[C언어]</b> 배열+반복문+조건문 조합 구현<br><b>[디버깅]</b> 중간 상태 출력으로 오류 찾기<br><b>[KOI]</b> 매년 시뮬레이션 출제! 부분 점수 쉬움<br><b>[실생활]</b> 날씨 예측, 비행 시뮬레이터, 게임 물리<br><b>[코딩기초]</b> swap, 방향 배열, 범위 체크</div>
+<h2 class="section-title">실전 활용 연습</h2>
+<p>지금까지 배운 개념을 활용한 다양한 실전 예제와 연습문제입니다.</p>
+
+<h2 class="section-title">실생활 연결</h2>
+<div class="tip"><span class="tip-label">[실생활] 이 개념은 어디에 쓰일까?</span>
+게임 개발, 앱 만들기, 웹사이트, 로봇 제어, AI 학습 등 모든 분야에서 사용돼요!</div>
+
+<h2 class="section-title">추가 연습문제</h2>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 20</span><p style="margin:0;font-size:14px">이번 유닛에서 배운 핵심 개념 3가지를 자신의 말로 설명해 보세요.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 21</span><p style="margin:0;font-size:14px">이번 유닛의 개념을 활용한 자신만의 문제를 1개 만들어 보세요.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 22</span><p style="margin:0;font-size:14px">이번 유닛의 개념이 C언어에서 어떻게 사용되는지 조사해 보세요.</p></div>
+<h2 class="section-title">[심화] 더 알아보기</h2>
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+
+<p>이번 유닛의 모든 개념을 완전히 이해했습니다. 다음 유닛에서 더 발전된 개념을 배워보세요!</p>
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<div class="note-box"><span class="note-label">[다음 유닛 미리보기]</span>
+다음은 <b>집합(Sets)</b>! 원소의 모임을 다루는 수학 기초를 배워요.</div>
+
+
+    <span class="page-num">2</span>
+  </div>
+</div>
+</body>
+</html>

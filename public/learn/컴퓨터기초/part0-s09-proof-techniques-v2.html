@@ -1,0 +1,1265 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>코딩쏙 교재 — 증명 기법 기초 — 왜 그런지 보여주기</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+
+  :root {
+    --navy: #1a2e4a;
+    --navy-mid: #2c4a6e;
+    --navy-light: #3d6590;
+    --orange: #e07830;
+    --orange-light: #f5e6d8;
+    --white: #ffffff;
+    --bg: #f7f8fa;
+    --bg-warm: #faf9f7;
+    --gray-50: #f9fafb;
+    --gray-100: #f3f4f6;
+    --gray-200: #e5e7eb;
+    --gray-300: #d1d5db;
+    --gray-400: #9ca3af;
+    --gray-500: #6b7280;
+    --gray-600: #4b5563;
+    --gray-700: #374151;
+    --gray-800: #1f2937;
+    --text: #2d3748;
+    --green: #16a34a;
+    --green-bg: #dcfce7;
+    --red: #dc2626;
+    --red-bg: #fee2e2;
+    --blue: #2563eb;
+    --blue-bg: #dbeafe;
+    --yellow-bg: #fef9c3;
+    --font: 'Noto Sans KR', sans-serif;
+    --mono: 'JetBrains Mono', 'Consolas', monospace;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: var(--font); background: #e8eaed; font-size: 15px; }
+
+  /* ========== PAGE ========== */
+  .page {
+    width: 210mm;
+    min-height: 295mm;
+    margin: 24px auto;
+    background: var(--white);
+    box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* ========== PAGE 1: CHAPTER START ========== */
+  .chapter-page {
+    display: flex;
+    min-height: 295mm;
+  }
+
+  .chapter-sidebar {
+    width: 10px;
+    background: var(--navy);
+    flex-shrink: 0;
+  }
+
+  .chapter-accent-bar {
+    width: 7px;
+    background: var(--orange);
+    flex-shrink: 0;
+  }
+
+  .chapter-body {
+    flex: 1;
+    padding: 70px 65px 50px 55px;
+    position: relative;
+  }
+
+  .chapter-watermark {
+    position: absolute;
+    top: -10px;
+    right: -15px;
+    font-size: 280px;
+    font-weight: 900;
+    color: rgba(180,195,212,0.35);
+    line-height: 1;
+    pointer-events: none;
+    letter-spacing: -10px;
+  }
+
+  .chapter-label {
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--navy-mid);
+    letter-spacing: 2px;
+    margin-bottom: 4px;
+  }
+
+  .chapter-title {
+    font-size: 44px;
+    font-weight: 900;
+    color: var(--navy);
+    line-height: 1.15;
+    margin-bottom: 12px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .chapter-sub {
+    font-size: 16px;
+    color: var(--gray-500);
+    font-weight: 400;
+    margin-bottom: 20px;
+    padding-bottom: 28px;
+    border-bottom: 1px solid var(--gray-200);
+  }
+
+  /* Learning objectives */
+  .obj-title {
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--navy);
+    margin-bottom: 16px;
+    margin-top: 32px;
+  }
+
+  .obj-list {
+    list-style: none;
+    margin-bottom: 40px;
+  }
+
+  .obj-list li {
+    padding: 5px 0 5px 24px;
+    position: relative;
+    font-size: 15px;
+    color: var(--gray-700);
+    line-height: 1.6;
+  }
+
+  .obj-list li::before {
+    content: '•';
+    position: absolute;
+    left: 8px;
+    color: var(--navy-mid);
+    font-weight: 700;
+  }
+
+  /* Prerequisites flow */
+  .prereq-title {
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--navy);
+    margin-bottom: 18px;
+  }
+
+  .prereq-flow {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    margin-bottom: 44px;
+  }
+
+  .prereq-item {
+    padding: 9px 22px;
+    border: 1.5px solid var(--gray-300);
+    border-radius: 50px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--gray-600);
+    background: var(--white);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+  }
+
+  .prereq-item.current {
+    border-color: var(--navy);
+    color: var(--navy);
+    font-weight: 700;
+    background: #edf2f7;
+    box-shadow: 0 2px 6px rgba(26,46,74,0.12);
+  }
+
+  .prereq-arrow {
+    width: 36px;
+    text-align: center;
+    color: var(--gray-300);
+    font-size: 18px;
+    font-weight: 300;
+  }
+
+  /* Predict box */
+  .predict-box {
+    background: var(--gray-50);
+    border: 1.5px solid var(--gray-200);
+    border-radius: 12px;
+    padding: 24px 28px;
+  }
+
+  .predict-label {
+    display: inline-block;
+    background: var(--orange);
+    color: var(--white);
+    font-size: 12px;
+    font-weight: 600;
+    padding: 3px 12px;
+    border-radius: 4px;
+    margin-bottom: 14px;
+    letter-spacing: 0.5px;
+  }
+
+  .predict-q {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--navy);
+    margin-bottom: 16px;
+  }
+
+  .predict-code {
+    background: var(--white);
+    border: 1px solid var(--gray-200);
+    border-radius: 8px;
+    padding: 14px 18px;
+    font-family: var(--mono);
+    font-size: 13px;
+    line-height: 1.65;
+    color: var(--gray-700);
+  }
+
+  /* ========== PAGE 2: CORE CONTENT ========== */
+  .content-page {
+    padding: 55px 65px;
+  }
+
+  .unit-header-bar {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    margin-bottom: 8px;
+  }
+
+  .unit-tag {
+    font-size: 12px;
+    color: var(--orange);
+    font-weight: 600;
+    letter-spacing: 1px;
+  }
+
+  .unit-title-sm {
+    font-size: 14px;
+    color: var(--gray-400);
+    font-weight: 400;
+  }
+
+  .section-title {
+    font-size: 24px;
+    font-weight: 800;
+    color: var(--navy);
+    margin-bottom: 24px;
+    margin-top: 8px;
+    padding-left: 16px;
+    border-left: 5px solid var(--orange);
+  }
+
+  p {
+    font-size: 15.5px;
+    line-height: 1.9;
+    color: var(--text);
+    margin-bottom: 18px;
+  }
+
+  p code {
+    font-family: var(--mono);
+    font-size: 13.5px;
+    background: #f1f3f5;
+    padding: 2px 7px;
+    border-radius: 4px;
+    color: var(--navy);
+    font-weight: 500;
+  }
+
+  /* Code block */
+  .code-wrap {
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    border: 1px solid var(--gray-200);
+    margin: 22px 0;
+  }
+
+  .code-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 9px 18px;
+    background: var(--navy);
+    font-size: 12px;
+  }
+
+  .code-bar-lang {
+    font-family: var(--mono);
+    font-weight: 600;
+    color: var(--white);
+  }
+
+  .code-bar-file {
+    color: rgba(255,255,255,0.6);
+    font-weight: 400;
+  }
+
+  .code-body {
+    background: #f8f9fb;
+    padding: 20px 0;
+    font-family: var(--mono);
+    font-size: 13.5px;
+    line-height: 1.75;
+    border: 1px solid var(--gray-200);
+    border-top: none;
+    border-radius: 0 0 12px 12px;
+  }
+
+  .code-line {
+    display: flex;
+    padding: 0 20px;
+  }
+
+  .code-line:hover {
+    background: #f0f4f8;
+  }
+
+  .code-line.highlighted {
+    background: #fff8e1;
+  }
+
+  .ln {
+    width: 30px;
+    text-align: right;
+    color: #b8bfc8;
+    font-size: 12px;
+    margin-right: 18px;
+    user-select: none;
+    flex-shrink: 0;
+    padding-top: 1px;
+  }
+
+  .lc { flex: 1; }
+
+  /* syntax */
+  .s-pp { color: #8b5cf6; font-weight: 600; }
+  .s-str { color: #d97706; }
+  .s-type { color: #2563eb; font-weight: 500; }
+  .s-kw { color: #7c3aed; font-weight: 500; }
+  .s-fn { color: #059669; font-weight: 500; }
+  .s-num { color: #dc2626; }
+  .s-cm { color: #9ca3af; font-style: italic; }
+
+  /* Output block */
+  .output-wrap {
+    border-radius: 10px;
+    overflow: hidden;
+    margin: 10px 0 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    border: 1px solid #d1d5db;
+  }
+
+  .output-bar {
+    padding: 9px 18px;
+    background: #374151;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--white);
+    letter-spacing: 0.5px;
+  }
+
+  .output-body {
+    padding: 16px 20px;
+    font-family: var(--mono);
+    font-size: 13.5px;
+    line-height: 1.7;
+    color: var(--gray-800);
+    background: #f1f5f9;
+    border: 1px solid var(--gray-200);
+    border-top: none;
+    border-radius: 0 0 10px 10px;
+  }
+
+  /* Callout */
+  .tip {
+    margin: 28px 0;
+    padding: 18px 24px;
+    background: #dbeafe;
+    border-left: 5px solid #2563eb;
+    border-radius: 0 12px 12px 0;
+    font-size: 14.5px;
+    line-height: 1.8;
+    color: var(--text);
+  }
+
+  .tip-label {
+    font-weight: 700;
+    color: #2563eb;
+    font-size: 13px;
+    display: block;
+    margin-bottom: 4px;
+  }
+
+  .warn {
+    margin: 28px 0;
+    padding: 18px 24px;
+    background: #fef3c7;
+    border-left: 5px solid #d97706;
+    border-radius: 0 12px 12px 0;
+    font-size: 14.5px;
+    line-height: 1.8;
+  }
+
+  .warn-label {
+    font-weight: 700;
+    color: #d97706;
+    font-size: 13px;
+    display: block;
+    margin-bottom: 4px;
+  }
+
+  .note-box {
+    margin: 28px 0;
+    padding: 18px 24px;
+    background: #e2e8f0;
+    border-left: 5px solid #64748b;
+    border-radius: 0 12px 12px 0;
+    font-size: 14.5px;
+    line-height: 1.8;
+  }
+
+  .note-label {
+    font-weight: 700;
+    color: var(--gray-600);
+    font-size: 13px;
+    display: block;
+    margin-bottom: 4px;
+  }
+
+  /* Trace table */
+  table.trace {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    margin: 28px 0;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+    font-size: 14px;
+  }
+
+  table.trace th {
+    background: var(--navy);
+    color: var(--white);
+    padding: 10px 16px;
+    text-align: left;
+    font-weight: 500;
+    font-size: 13px;
+  }
+
+  table.trace td {
+    padding: 10px 16px;
+    border-bottom: 1px solid var(--gray-200);
+    color: var(--gray-700);
+  }
+
+  table.trace tr:nth-child(even) td { background: var(--gray-50); }
+  table.trace tr:last-child td { border-bottom: none; }
+
+  table.trace td code {
+    font-family: var(--mono);
+    font-size: 12.5px;
+    background: #eef1f5;
+    padding: 2px 6px;
+    border-radius: 4px;
+    color: var(--navy);
+  }
+
+  /* ========== PAGE 3: PROBLEMS ========== */
+  .problems-header {
+    margin-bottom: 8px;
+  }
+
+  .problems-chapter-ref {
+    font-size: 13px;
+    color: var(--gray-500);
+    margin-bottom: 4px;
+  }
+
+  .problems-title {
+    font-size: 28px;
+    font-weight: 800;
+    color: var(--navy);
+    margin-bottom: 24px;
+  }
+
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 16px;
+  }
+
+  .prob-card {
+    background: var(--white);
+    border: 1px solid var(--gray-200);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 3px 15px rgba(0,0,0,0.06);
+  }
+
+  .prob-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 16px;
+    background: var(--navy);
+  }
+
+  .prob-num {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--white);
+  }
+
+  .diff {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    font-size: 12px;
+    font-weight: 800;
+  }
+
+  .diff-basic { background: #22c55e; color: white; }
+  .diff-mid { background: #f59e0b; color: white; }
+  .diff-hard { background: #ef4444; color: white; }
+
+  .prob-desc {
+    font-size: 13.5px;
+    line-height: 1.65;
+    color: var(--gray-600);
+    margin-bottom: 10px;
+    padding: 14px 16px 0;
+  }
+
+  .prob-code {
+    background: var(--gray-50);
+    border: 1px solid var(--gray-200);
+    border-radius: 6px;
+    padding: 10px 14px;
+    margin: 0 16px 16px;
+    font-family: var(--mono);
+    font-size: 12.5px;
+    line-height: 1.55;
+    color: var(--gray-600);
+  }
+
+  /* Competition section */
+  .comp-section {
+    margin-top: 32px;
+    padding-top: 24px;
+    border-top: 2px solid var(--navy);
+  }
+
+  .comp-title {
+    font-size: 22px;
+    font-weight: 800;
+    color: var(--navy);
+    margin-bottom: 20px;
+  }
+
+  .comp-card {
+    background: var(--white);
+    border: 1.5px solid var(--gray-200);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 18px rgba(0,0,0,0.06);
+  }
+
+  .comp-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 16px;
+    background: #0f766e;
+  }
+
+  .comp-header .comp-name {
+    color: var(--white);
+    font-size: 15px;
+    font-weight: 700;
+    margin: 0;
+  }
+
+  .comp-inner {
+    padding: 14px 18px 18px;
+  }
+
+  .comp-badge {
+    display: inline-block;
+    padding: 3px 12px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 700;
+  }
+
+  .badge-bj { background: #93c5fd; color: #1e3a5f; }
+  .badge-cu { background: #c4b5fd; color: #3b1f7e; }
+  .badge-pg { background: #7dd3fc; color: #0c4a6e; }
+
+  .comp-name {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--navy);
+    margin-bottom: 6px;
+  }
+
+  .comp-desc {
+    font-size: 14px;
+    color: var(--gray-600);
+    line-height: 1.7;
+    margin-bottom: 14px;
+  }
+
+  .io-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+
+  .io-card {
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid var(--gray-200);
+  }
+
+  .io-h {
+    padding: 6px 14px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--gray-600);
+    background: #e2e8f0;
+  }
+
+  .io-c {
+    padding: 10px 14px;
+    font-family: var(--mono);
+    font-size: 13px;
+    line-height: 1.5;
+    background: var(--white);
+  }
+
+  /* ========== DEBUG LAB ========== */
+  .debug-section {
+    margin: 24px 0;
+    border: 2px solid var(--red);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+
+  .debug-bar {
+    background: var(--red);
+    color: var(--white);
+    padding: 10px 20px;
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 1px;
+  }
+
+  .debug-body {
+    padding: 20px;
+    background: #fef2f2;
+  }
+
+  /* 10축 connection */
+  .connect-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 16px;
+    margin: 28px 0;
+  }
+
+  .connect-card {
+    border-radius: 12px;
+    padding: 20px;
+    text-align: center;
+    border: 1px solid var(--gray-200);
+    box-shadow: 0 3px 14px rgba(0,0,0,0.05);
+  }
+
+  .connect-card h5 {
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 8px;
+  }
+
+  .connect-card p {
+    font-size: 13px;
+    margin: 0;
+    color: var(--gray-600);
+    line-height: 1.6;
+  }
+
+  .cc1 { border-top: 3px solid #8b5cf6; }
+  .cc1 h5 { color: #8b5cf6; }
+  .cc2 { border-top: 3px solid var(--green); }
+  .cc2 h5 { color: var(--green); }
+  .cc3 { border-top: 3px solid var(--navy); }
+  .cc3 h5 { color: var(--navy); }
+
+  /* PAGE NUMBER */
+  .page-num {
+    position: absolute;
+    bottom: 20px;
+    right: 30px;
+    font-size: 12px;
+    color: var(--gray-400);
+  }
+
+  /* WARMUP */
+  .warmup-box {
+    background: #e0e7f1;
+    border-radius: 12px;
+    padding: 24px 28px;
+    margin: 28px 0;
+    border: 2px solid #c7d2e0;
+  }
+
+  .warmup-title {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--navy);
+    margin-bottom: 14px;
+  }
+
+  .wq {
+    padding: 9px 16px;
+    background: var(--white);
+    border-radius: 8px;
+    margin-bottom: 8px;
+    font-size: 14px;
+    border: 1px solid var(--gray-200);
+    color: var(--gray-700);
+  }
+
+  .wq b { color: var(--navy); margin-right: 6px; }
+  .wq .hint { color: var(--gray-400); font-size: 13px; }
+
+  /* ===== CONTEST PROBLEMS PAGE ===== */
+  .contest-page-wrap .chapter-page {
+    min-height: auto;
+  }
+
+  .contest-page-wrap .chapter-page > div:last-child {
+    min-width: 0;
+    overflow-wrap: break-word;
+    word-break: break-word;
+  }
+
+  .contest-card {
+    background: white;
+    border: 1.5px solid var(--gray-200);
+    border-radius: 12px;
+    margin-bottom: 28px;
+    overflow: hidden;
+    break-inside: avoid;
+  }
+
+  .contest-header {
+    background: var(--navy);
+    color: white;
+    padding: 14px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .contest-num-source {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .contest-num {
+    font-weight: 700;
+    font-size: 16px;
+  }
+
+  .contest-source {
+    background: rgba(255,255,255,0.15);
+    padding: 3px 10px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 500;
+  }
+
+  .contest-body {
+    padding: 20px 24px 24px;
+  }
+
+  .contest-question {
+    font-size: 15px;
+    line-height: 1.7;
+    color: var(--text);
+    margin: 0 0 16px;
+    word-break: break-word;
+    overflow-wrap: break-word;
+  }
+
+  .contest-expected {
+    background: #1e293b;
+    border-radius: 8px;
+    overflow: hidden;
+    margin-bottom: 20px;
+  }
+
+  .contest-expected-label {
+    background: #334155;
+    color: #94a3b8;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 6px 14px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .contest-expected-body {
+    color: #e2e8f0;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    line-height: 1.6;
+    padding: 12px 16px;
+    margin: 0;
+    white-space: pre;
+  }
+
+  .contest-write-area {
+    border: 2px dashed var(--gray-300);
+    border-radius: 10px;
+    overflow: hidden;
+    transition: border-color 0.2s;
+  }
+
+  .contest-write-area:focus-within {
+    border-color: var(--orange);
+    border-style: solid;
+  }
+
+  .contest-write-label {
+    background: var(--bg);
+    color: var(--gray-500);
+    font-size: 12px;
+    font-weight: 600;
+    padding: 8px 14px;
+    border-bottom: 1px solid var(--gray-200);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .contest-textarea {
+    width: 100%;
+    min-height: 200px;
+    padding: 16px 18px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    line-height: 1.7;
+    color: var(--text);
+    background: #fafbfc;
+    border: none;
+    outline: none;
+    resize: vertical;
+    tab-size: 4;
+    box-sizing: border-box;
+  }
+
+  .contest-textarea::placeholder {
+    color: var(--gray-300);
+  }
+
+  @media print {
+    body { background: white; }
+    .page { box-shadow: none; margin: 0; page-break-after: always; }
+    .contest-textarea { border: 1px solid var(--gray-300); min-height: 180px; }
+  }
+
+</style>
+</head>
+<body>
+
+<div class="page">
+  <div class="chapter-page">
+    <div class="chapter-sidebar"></div>
+    <div class="chapter-accent-bar"></div>
+    <div class="chapter-body">
+      <div class="chapter-watermark">S-09</div>
+      <div class="chapter-label">Chapter S-09</div>
+      <h1 class="chapter-title">증명 기법 기초</h1>
+      <p class="chapter-sub">직접 증명, 귀류법, 수학적 귀납법으로 '반드시 그렇다'를 보이는 방법을 배워요. 프로그램이 올바른지 확인하는 힘이에요!</p>
+
+      <h3 class="obj-title">이 유닛에서 배우는 것</h3>
+      <ul class="obj-list">
+        <li>'증명'이 뭔지, 왜 필요한지 이해해요.</li>
+        <li>직접 증명으로 간단한 명제를 증명할 수 있어요.</li>
+        <li>귀류법(모순 증명)의 원리와 사용법을 알아요.</li>
+        <li>수학적 귀납법으로 'n에 대해 항상 성립'을 보일 수 있어요.</li>
+        <li>반례로 명제를 반증하는 방법을 알아요.</li>
+        <li>[심화] 프로그램의 정확성을 논리적으로 따져볼 수 있어요.</li>
+      </ul>
+
+      <h3 class="prereq-title">선수 학습</h3>
+      <div class="prereq-flow">
+        <div class="prereq-item">U0-09~13에서 논리(AND, OR, NOT)를 배웠다</div><div class="prereq-arrow">→</div>
+        <div class="prereq-item">기본적인 수식 계산이 가능하다</div><div class="prereq-arrow">→</div>
+        <div class="prereq-item current">S-08에서 정지 문제의 귀류법 증명을 봤다</div>
+      </div>
+
+      
+
+      <span class="page-num">1</span>
+    </div>
+  </div>
+</div>
+<div class="page">
+  <div class="content-page">
+    <div class="unit-header-bar">
+      <span class="unit-tag">UNIT S-09</span>
+      <span class="unit-title-sm">증명 기법 기초</span>
+    </div>
+<h2 class="section-title">증명이란 뭘까?</h2>
+
+<p>수학에서 <b>증명(proof)</b>이란, 어떤 주장이 <b>반드시 참</b>이라는 것을 논리적으로 보여주는 거예요. '아마 그럴 거야'가 아니라 '절대 틀릴 수 없다'를 보이는 거예요.</p>
+<div class="note-box"><span class="note-label">[핵심] 증명 vs 확인</span>
+<b>확인(테스트)</b>: 몇 가지 예시를 넣어서 맞는지 봐요<br>• 1+2 = 3 ✓, 1+2+3 = 6 ✓, 1+2+...+100 = 5050 ✓<br>• 하지만 101번째도 맞다는 보장은 없어요!<br><br><b>증명</b>: 모든 경우에 대해 참임을 논리적으로 보여요<br>• 어떤 n이든 1+2+...+n = n(n+1)/2<br>• 예외가 없다는 걸 100% 확신할 수 있어요!<br><br>프로그래밍에서도 마찬가지예요:<br>• 테스트: 몇 가지 입력으로 확인 → 버그를 발견할 수 있지만 없다는 보장은 못 해요<br>• 증명: 알고리즘이 모든 입력에 대해 올바르다는 걸 보여요</div>
+<div class="tip"><span class="tip-label">[팁] 프로그래머에게 증명이 왜 중요할까?</span>
+• 반복문이 반드시 끝나는지 확인할 때<br>• 알고리즘의 시간 복잡도를 분석할 때<br>• 정렬 알고리즘이 올바른지 증명할 때<br>• 재귀 함수가 맞는 답을 주는지 확인할 때<br>• KOI/정보올림피아드에서 풀이의 정확성을 논할 때<br><br>코딩 대회에서 '이 방법이 왜 맞는지' 설명하는 것이 증명이에요.</div>
+<div class="debug-section"><div class="debug-bar">DEBUG LAB — 에러를 찾으시오</div><div class="debug-body">
+
+<p style="margin:14px 0 0; font-size:14px;"><b>에러:</b> </p>
+<p style="font-size:14px;"><b>수정:</b> </p>
+</div></div>
+<h2 class="section-title">명제와 참/거짓</h2>
+<p>증명의 대상이 되는 문장을 <b>명제(proposition)</b>라고 해요.</p>
+<table class="trace"><thead><tr><th>문장</th><th>참/거짓 판별 가능?</th><th>명제인가?</th><th>판별 결과</th></tr></thead><tbody><tr><td>2는 짝수다</td><td>O</td><td>명제</td><td>참</td></tr><tr><td>모든 소수는 홀수다</td><td>O</td><td>명제</td><td>거짓 (반례: 2)</td></tr><tr><td>1+2+...+n = n(n+1)/2</td><td>O</td><td>명제</td><td>참</td></tr><tr><td>x는 크다</td><td>X (기준 없음)</td><td>명제 아님</td><td>-</td></tr><tr><td>숙제해!</td><td>X (명령문)</td><td>명제 아님</td><td>-</td></tr><tr><td>오늘 날씨 좋지?</td><td>X (의문문)</td><td>명제 아님</td><td>-</td></tr><tr><td>3+5 = 8</td><td>O</td><td>명제</td><td>참</td></tr><tr><td>n이 짝수이면 n+1은 홀수다</td><td>O</td><td>명제</td><td>참</td></tr></tbody></table>
+<div class="note-box"><span class="note-label">[핵심] 명제란?</span>
+<b>명제</b>: 참 또는 거짓으로 판별할 수 있는 문장<br><br>명제인 것:<br>• '2는 짝수다' → 참<br>• '모든 소수는 홀수다' → 거짓 (2는 짝수인 소수)<br>• '1+2+...+n = n(n+1)/2' → 참<br><br>명제가 아닌 것:<br>• 'x는 크다' → 기준이 없어서 참/거짓 판단 불가<br>• '숙제해!' → 명령문<br>• '오늘 날씨 좋지?' → 의문문</div>
+<div class="note-box"><span class="note-label">[예시] 조건부 명제 (if-then)</span>
+증명에서 가장 많이 등장하는 형태:<br><br><b>'P이면 Q이다'</b> (if P then Q, P → Q)<br><br>예:<br>• 'n이 짝수이면, n²도 짝수이다'<br>• 'x > 5이면, x > 3이다'<br>• '배열이 정렬되어 있으면, 이진 탐색이 동작한다'<br><br>이것은 C언어의 <b>if문</b>과 같은 구조예요!<br><pre>if (P) {<br>    // Q가 반드시 성립<br>}</pre></div>
+<h2 class="section-title">증명 기법 1 — 직접 증명</h2>
+<p>가장 기본적인 증명 방법이에요. P에서 출발해서 Q까지 한 걸음씩 논리적으로 걸어가요.</p>
+<div class="note-box"><span class="note-label">[핵심] 직접 증명 (Direct Proof)</span>
+<b>목표:</b> 'P이면 Q이다'를 증명<br><br><b>방법:</b><br>1. P가 참이라고 가정해요<br>2. 논리적 단계를 거쳐 Q가 참이 됨을 보여요<br><br>P → ... → ... → Q<br><br>가장 자연스럽고 직관적인 증명 방법이에요!</div>
+<div style="margin:22px 0"></div>
+<div class="note-box"><span class="note-label">[증명 1] 짝수의 합은 짝수</span>
+<b>명제:</b> 두 짝수의 합은 짝수이다.<br><br><b>증명:</b><br>1. a, b가 짝수라고 가정 (P)<br>2. 짝수의 정의: a = 2m, b = 2n (m, n은 정수)<br>3. a + b = 2m + 2n = 2(m + n)<br>4. m + n은 정수이므로, 2(m+n)은 짝수 (Q)<br><br>따라서 두 짝수의 합은 짝수이다. □</div>
+<div class="note-box"><span class="note-label">[증명 2] n이 짝수이면 n²도 짝수</span>
+<b>명제:</b> n이 짝수이면 n²도 짝수이다.<br><br><b>증명:</b><br>1. n이 짝수라고 가정 → n = 2k (k는 정수)<br>2. n² = (2k)² = 4k² = 2(2k²)<br>3. 2k²은 정수이므로, n² = 2×(정수) = 짝수<br><br>따라서 n이 짝수이면 n²도 짝수이다. □<br><br>□ 기호는 '증명 끝'이라는 뜻이에요. QED(증명 완료)라고도 써요.</div>
+<table class="trace"><thead><tr><th>단계</th><th>수식</th><th>근거</th><th>결과</th></tr></thead><tbody><tr><td>가정</td><td>a, b는 짝수</td><td>전제</td><td>a=2m, b=2n</td></tr><tr><td>정의 적용</td><td>a=2m, b=2n</td><td>짝수 정의</td><td>m, n은 정수</td></tr><tr><td>합 계산</td><td>a+b = 2m+2n</td><td>대입</td><td>2m+2n</td></tr><tr><td>인수 분해</td><td>2m+2n = 2(m+n)</td><td>분배 법칙</td><td>2(m+n)</td></tr><tr><td>정수 확인</td><td>m+n은 정수</td><td>정수의 합은 정수</td><td>정수</td></tr><tr><td>결론</td><td>a+b = 2(정수)</td><td>짝수 정의</td><td>짝수 -- QED</td></tr></tbody></table>
+<table class="trace"><thead><tr><th>단계</th><th>수식</th><th>근거</th><th>결과</th></tr></thead><tbody><tr><td>가정</td><td>n은 짝수</td><td>전제</td><td>n = 2k (k는 정수)</td></tr><tr><td>제곱</td><td>n^2 = (2k)^2</td><td>대입</td><td>(2k)^2</td></tr><tr><td>전개</td><td>(2k)^2 = 4k^2</td><td>거듭제곱 계산</td><td>4k^2</td></tr><tr><td>인수 분해</td><td>4k^2 = 2(2k^2)</td><td>2를 묶음</td><td>2(2k^2)</td></tr><tr><td>정수 확인</td><td>2k^2은 정수</td><td>정수의 곱은 정수</td><td>정수</td></tr><tr><td>결론</td><td>n^2 = 2 x (정수)</td><td>짝수 정의</td><td>짝수 -- QED</td></tr></tbody></table>
+<table class="trace"><thead><tr><th>단계</th><th>수식</th><th>근거</th><th>결과</th></tr></thead><tbody><tr><td>가정</td><td>a, b는 홀수</td><td>전제</td><td>a=2m+1, b=2n+1</td></tr><tr><td>정의 적용</td><td>a=2m+1, b=2n+1</td><td>홀수 정의</td><td>m, n은 정수</td></tr><tr><td>합 계산</td><td>a+b = (2m+1)+(2n+1)</td><td>대입</td><td>2m+2n+2</td></tr><tr><td>정리</td><td>2m+2n+2 = 2(m+n+1)</td><td>분배 법칙</td><td>2(m+n+1)</td></tr><tr><td>정수 확인</td><td>m+n+1은 정수</td><td>정수의 합은 정수</td><td>정수</td></tr><tr><td>결론</td><td>a+b = 2 x (정수)</td><td>짝수 정의</td><td>짝수 -- QED</td></tr></tbody></table>
+<h2 class="section-title">직접 증명 — 프로그래밍 응용</h2>
+<div class="note-box"><span class="note-label">[증명 3] 가우스의 공식</span>
+<b>명제:</b> 1 + 2 + 3 + ... + n = n(n+1)/2<br><br><b>직접 증명 (가우스의 방법):</b><br>S = 1 + 2 + 3 + ... + n<br>S = n + (n-1) + (n-2) + ... + 1  (역순으로 한 번 더)<br><br>두 줄을 더하면:<br>2S = (1+n) + (2+n-1) + (3+n-2) + ... + (n+1)<br>2S = (n+1) + (n+1) + (n+1) + ... + (n+1)  ← n개<br>2S = n(n+1)<br>S = n(n+1)/2 □<br><br>가우스가 10살 때 1+2+...+100을 이 방법으로 계산했대요!</div>
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span><span class="code-bar-file">가우스 공식 검증</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;stdio.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">main</span>(<span class="s-type">void</span>) {</span></div>
+<div class="code-line"><span class="ln">4</span><span class="lc">    <span class="s-kw">for</span> (<span class="s-type">int</span> n = <span class="s-num">1</span>; n &lt;= <span class="s-num">10</span>; n++) {</span></div>
+<div class="code-line"><span class="ln">5</span><span class="lc">        <span class="s-cm">// 직접 더하기</span></span></div>
+<div class="code-line"><span class="ln">6</span><span class="lc">        <span class="s-type">int</span> sum = <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">7</span><span class="lc">        <span class="s-kw">for</span> (<span class="s-type">int</span> i = <span class="s-num">1</span>; i &lt;= n; i++) {</span></div>
+<div class="code-line"><span class="ln">8</span><span class="lc">            sum += i;</span></div>
+<div class="code-line"><span class="ln">9</span><span class="lc">        }</span></div>
+<div class="code-line"><span class="ln">10</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">11</span><span class="lc">        <span class="s-cm">// 가우스 공식</span></span></div>
+<div class="code-line"><span class="ln">12</span><span class="lc">        <span class="s-type">int</span> formula = n * (n + <span class="s-num">1</span>) / <span class="s-num">2</span>;</span></div>
+<div class="code-line"><span class="ln">13</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">14</span><span class="lc">        <span class="s-fn">printf</span>(<span class="s-str">"n=%2d: 직접합=%3d, 공식=%3d, %s\n"</span>,</span></div>
+<div class="code-line"><span class="ln">15</span><span class="lc">               n, sum, formula,</span></div>
+<div class="code-line"><span class="ln">16</span><span class="lc">               sum == formula ? <span class="s-str">"일치!"</span> : <span class="s-str">"불일치!"</span>);</span></div>
+<div class="code-line"><span class="ln">17</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">18</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">19</span><span class="lc">    <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">20</span><span class="lc">}</span></div>
+</div>
+</div>
+<div class="output-wrap"><div class="output-bar">실행 결과</div><div class="output-body">n= 1: 직접합=  1, 공식=  1, 일치!
+n= 2: 직접합=  3, 공식=  3, 일치!
+n= 3: 직접합=  6, 공식=  6, 일치!
+n= 4: 직접합= 10, 공식= 10, 일치!
+n= 5: 직접합= 15, 공식= 15, 일치!
+n= 6: 직접합= 21, 공식= 21, 일치!
+n= 7: 직접합= 28, 공식= 28, 일치!
+n= 8: 직접합= 36, 공식= 36, 일치!
+n= 9: 직접합= 45, 공식= 45, 일치!
+n=10: 직접합= 55, 공식= 55, 일치!</div></div>
+<div class="warn"><span class="warn-label">[주의] 테스트 ≠ 증명</span>
+위 코드는 n=1~10에서 공식이 맞는지 <b>테스트</b>한 거예요.<br>n=11이나 n=1000000에서도 맞는다는 보장은 없어요!<br><br>가우스의 풀이는 <b>모든 n</b>에 대해 성립함을 <b>증명</b>한 거예요.<br>테스트는 증거, 증명은 확실한 답이에요.</div>
+<h2 class="section-title">증명 기법 2 — 귀류법 (모순 증명)</h2>
+
+<div style="margin:22px 0"></div>
+<div class="note-box"><span class="note-label">[핵심] 귀류법 (Proof by Contradiction)</span>
+<b>목표:</b> 명제 Q를 증명<br><br><b>방법:</b><br>1. Q가 거짓이라고 가정해요 (¬Q 가정)<br>2. 논리를 전개해요<br>3. 모순이 발생해요!<br>4. 따라서 가정이 틀림 → Q는 참!<br><br><b>핵심 논리:</b> 거짓에서 출발하면 반드시 모순에 도달<br>→ 출발점(가정)이 틀렸다 → 원래 명제가 참!</div>
+<div class="note-box"><span class="note-label">[증명 4] √2는 무리수다</span>
+<b>명제:</b> √2는 무리수이다 (분수로 나타낼 수 없다).<br><br><b>귀류법 증명:</b><br>1. <b>가정:</b> √2가 유리수라고 하자 → √2 = a/b (기약분수)<br>2. 양변을 제곱: 2 = a²/b² → a² = 2b²<br>3. a²이 짝수 → a도 짝수 → a = 2k<br>4. (2k)² = 2b² → 4k² = 2b² → b² = 2k²<br>5. b²이 짝수 → b도 짝수<br>6. a, b 둘 다 짝수 → 2로 더 약분 가능<br>7. 하지만 a/b는 기약분수라고 했음 → <b>모순!</b><br><br>가정이 틀림 → √2는 유리수가 아님 → 무리수! □</div>
+<table class="trace"><thead><tr><th>단계</th><th>내용</th><th>결과</th><th>상태</th></tr></thead><tbody><tr><td>1</td><td>sqrt(2)가 유리수라고 가정</td><td>sqrt(2) = a/b (기약분수)</td><td>가정 설정</td></tr><tr><td>2</td><td>양변 제곱</td><td>2 = a^2/b^2, 즉 a^2 = 2b^2</td><td>변환</td></tr><tr><td>3</td><td>a^2이 짝수</td><td>a도 짝수 (짝수^2만 짝수)</td><td>추론</td></tr><tr><td>4</td><td>a = 2k로 치환</td><td>4k^2 = 2b^2, 즉 b^2 = 2k^2</td><td>대입</td></tr><tr><td>5</td><td>b^2이 짝수</td><td>b도 짝수</td><td>추론</td></tr><tr><td>6</td><td>a, b 모두 짝수</td><td>2로 약분 가능</td><td>모순 발견!</td></tr><tr><td>7</td><td>기약분수 가정과 충돌</td><td>가정이 틀림</td><td>QED</td></tr></tbody></table>
+<div class="note-box"><span class="note-label">[증명 5] 소수는 무한히 많다</span>
+<b>명제:</b> 소수의 개수는 무한하다.<br><br><b>귀류법 증명 (유클리드, 기원전 300년!):</b><br>1. <b>가정:</b> 소수가 유한하다고 하자 → p₁, p₂, ..., pₙ이 전부<br>2. 새로운 수 만들기: N = p₁ × p₂ × ... × pₙ + 1<br>3. N을 p₁으로 나누면 나머지 1 (p₁의 배수 아님)<br>4. N을 p₂로 나누면 나머지 1, ..., pₙ으로도 나머지 1<br>5. N은 어떤 소수로도 안 나눠짐<br>6. 그러면 N 자체가 소수이거나, 목록에 없는 새 소수로 나눠짐<br>7. 어느 쪽이든 '전체 소수 목록'에 없는 소수가 존재 → <b>모순!</b><br><br>가정이 틀림 → 소수는 무한히 많다! □</div>
+<div class="debug-section"><div class="debug-bar">DEBUG LAB — 에러를 찾으시오</div><div class="debug-body">
+
+<p style="margin:14px 0 0; font-size:14px;"><b>에러:</b> </p>
+<p style="font-size:14px;"><b>수정:</b> </p>
+</div></div>
+<div class="tip"><span class="tip-label">[연결] S-08에서 본 귀류법</span>
+S-08에서 '정지 문제는 풀 수 없다'를 증명할 때도 귀류법을 썼어요!<br><br>1. 가정: 정지 문제를 푸는 H가 있다<br>2. H를 이용해 악마의 프로그램 D를 만듦<br>3. D(D)를 실행하면 모순!<br>4. 따라서 H는 존재할 수 없다<br><br>귀류법은 '존재하지 않는다'를 증명하는 데 특히 강력해요.</div>
+<h2 class="section-title">증명 기법 3 — 반례 (반증)</h2>
+<p>명제가 <b>거짓</b>임을 보이는 건 훨씬 쉬워요. 반례 하나만 찾으면 돼요!</p>
+<div style="margin:22px 0"></div>
+<div class="note-box"><span class="note-label">[핵심] 반례 (Counterexample)</span>
+'<b>모든</b> X에 대해 P이다'라는 명제를 반증하려면,<br>P가 성립하지 않는 X <b>하나</b>만 찾으면 돼요!<br><br>예:<br>• '모든 소수는 홀수다' → 반례: <b>2</b> (짝수인 소수)<br>• '모든 정수의 제곱은 양수다' → 반례: <b>0</b> (0²=0은 양수 아님)<br>• 'n²+n+41은 항상 소수다' → 반례: <b>n=41</b> (41²+41+41 = 41×43)</div>
+<div class="note-box"><span class="note-label">[예시] 유명한 반례 이야기</span>
+<b>오일러의 추측 (1769):</b><br>'a⁴ + b⁴ + c⁴ = d⁴를 만족하는 양의 정수는 없다'<br><br>200년 동안 아무도 반증하지 못했는데...<br><b>1988년:</b> 컴퓨터로 반례를 찾았어요!<br>2682440⁴ + 15365639⁴ + 18796760⁴ = 20615673⁴<br><br>하나의 반례가 200년 된 추측을 깨뜨렸어요!<br>이래서 프로그래밍이 수학에도 중요한 거예요.</div>
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span><span class="code-bar-file">반례 찾기: n²+n+41이 항상 소수인가?</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;stdio.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">is_prime</span>(<span class="s-type">int</span> n) {</span></div>
+<div class="code-line"><span class="ln">4</span><span class="lc">    <span class="s-kw">if</span> (n &lt; <span class="s-num">2</span>) <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">5</span><span class="lc">    <span class="s-kw">for</span> (<span class="s-type">int</span> i = <span class="s-num">2</span>; i * i &lt;= n; i++) {</span></div>
+<div class="code-line"><span class="ln">6</span><span class="lc">        <span class="s-kw">if</span> (n % i == <span class="s-num">0</span>) <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">7</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">8</span><span class="lc">    <span class="s-kw">return</span> <span class="s-num">1</span>;</span></div>
+<div class="code-line"><span class="ln">9</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">10</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">11</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">main</span>(<span class="s-type">void</span>) {</span></div>
+<div class="code-line"><span class="ln">12</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"n²+n+41 소수 검사:\n"</span>);</span></div>
+<div class="code-line"><span class="ln">13</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">14</span><span class="lc">    <span class="s-kw">for</span> (<span class="s-type">int</span> n = <span class="s-num">0</span>; n &lt;= <span class="s-num">45</span>; n++) {</span></div>
+<div class="code-line"><span class="ln">15</span><span class="lc">        <span class="s-type">int</span> val = n * n + n + <span class="s-num">41</span>;</span></div>
+<div class="code-line"><span class="ln">16</span><span class="lc">        <span class="s-type">int</span> prime = <span class="s-fn">is_prime</span>(val);</span></div>
+<div class="code-line"><span class="ln">17</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">18</span><span class="lc">        <span class="s-kw">if</span> (!prime) {</span></div>
+<div class="code-line"><span class="ln">19</span><span class="lc">            <span class="s-fn">printf</span>(<span class="s-str">"n=%d: %d → 소수 아님! ★ 반례 발견!\n"</span>,</span></div>
+<div class="code-line"><span class="ln">20</span><span class="lc">                   n, val);</span></div>
+<div class="code-line"><span class="ln">21</span><span class="lc">        }</span></div>
+<div class="code-line"><span class="ln">22</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">23</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">24</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"\nn=40: %d = 40×40+40+41 = 41×41\n"</span>, <span class="s-num">40</span>*<span class="s-num">40</span>+<span class="s-num">40</span>+<span class="s-num">41</span>);</span></div>
+<div class="code-line"><span class="ln">25</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"n=41: %d = 41×41+41+41 = 41×43\n"</span>, <span class="s-num">41</span>*<span class="s-num">41</span>+<span class="s-num">41</span>+<span class="s-num">41</span>);</span></div>
+<div class="code-line"><span class="ln">26</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">27</span><span class="lc">    <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">28</span><span class="lc">}</span></div>
+</div>
+</div>
+<div class="output-wrap"><div class="output-bar">실행 결과</div><div class="output-body">n²+n+41 소수 검사:
+n=40: 1681 → 소수 아님! ★ 반례 발견!
+n=41: 1763 → 소수 아님! ★ 반례 발견!
+
+n=40: 1681 = 40×40+40+41 = 41×41
+n=41: 1763 = 41×41+41+41 = 41×43</div></div>
+<table class="trace"><thead><tr><th>시도한 값</th><th>소수인가?</th><th>홀수인가?</th><th>명제 성립?</th></tr></thead><tbody><tr><td>2</td><td>O (소수)</td><td>X (짝수)</td><td>X -- 반례 발견!</td></tr><tr><td>3</td><td>O</td><td>O</td><td>O</td></tr><tr><td>5</td><td>O</td><td>O</td><td>O</td></tr><tr><td>7</td><td>O</td><td>O</td><td>O</td></tr><tr><td>11</td><td>O</td><td>O</td><td>O</td></tr></tbody></table>
+<table class="trace"><thead><tr><th>n</th><th>n^2+n+41</th><th>소수?</th><th>비고</th></tr></thead><tbody><tr><td>0</td><td>41</td><td>O</td><td></td></tr><tr><td>1</td><td>43</td><td>O</td><td></td></tr><tr><td>5</td><td>71</td><td>O</td><td></td></tr><tr><td>10</td><td>151</td><td>O</td><td></td></tr><tr><td>20</td><td>461</td><td>O</td><td></td></tr><tr><td>39</td><td>1601</td><td>O</td><td>아직 소수</td></tr><tr><td>40</td><td>1681 = 41 x 41</td><td>X</td><td>반례 발견!</td></tr><tr><td>41</td><td>1763 = 41 x 43</td><td>X</td><td>반례</td></tr></tbody></table>
+<div class="tip"><span class="tip-label">[팁] 반례 찾기 = 테스트</span>
+반례를 찾는 것은 프로그래밍에서 <b>테스트</b>와 같아요!<br><br>• 코드가 틀린 경우를 하나만 찾으면 → 버그 증명!<br>• 100개를 테스트해서 다 맞아도 → 101번째에 틀릴 수 있어요<br><br>그래서:<br>• 반례 찾기(반증): 하나만 찾으면 끝<br>• 항상 맞음 증명: 모든 경우를 논리적으로 커버해야 함</div>
+<h2 class="section-title">증명 기법 4 — 수학적 귀납법</h2>
+
+<div class="note-box"><span class="note-label">[핵심] 수학적 귀납법 (Mathematical Induction)</span>
+<b>목표:</b> '모든 자연수 n에 대해 P(n)이 성립'을 증명<br><br><b>2단계로 증명해요:</b><br><br><b>1단계 (기초): P(1)이 참임을 보여요</b><br>→ 첫 번째 도미노를 넘어뜨리는 것<br><br><b>2단계 (귀납): P(k)가 참이면 P(k+1)도 참임을 보여요</b><br>→ 도미노가 넘어지면 다음도 넘어진다는 것<br><br>이 두 가지를 보이면:<br>P(1) ✓ → P(2) ✓ → P(3) ✓ → ... → P(n) ✓ (전부!)</div>
+<div style="margin:22px 0"></div>
+<div class="note-box"><span class="note-label">[증명 6] 귀납법: 1+2+...+n = n(n+1)/2</span>
+<b>P(n):</b> 1+2+...+n = n(n+1)/2<br><br><b>1단계 (기초):</b> P(1) 확인<br>왼쪽: 1, 오른쪽: 1×2/2 = 1 → 같으므로 P(1) ✓<br><br><b>2단계 (귀납):</b> P(k)가 참이면 P(k+1)도 참?<br><br>P(k) 가정: 1+2+...+k = k(k+1)/2<br><br>P(k+1) 보이기: 1+2+...+k+(k+1)<br>= [1+2+...+k] + (k+1)<br>= k(k+1)/2 + (k+1)  ← P(k) 사용!<br>= k(k+1)/2 + 2(k+1)/2<br>= (k+1)(k+2)/2<br>= (k+1)((k+1)+1)/2  ✓ P(k+1) 성립!<br><br>따라서 모든 n≥1에 대해 P(n) 성립 □</div>
+<table class="trace"><thead><tr><th>n</th><th>P(n) 좌변 (직접 합)</th><th>P(n) 우변 (공식)</th><th>일치?</th><th>P(n)→P(n+1) 확인</th></tr></thead><tbody><tr><td>1 (기초)</td><td>1</td><td>1x2/2 = 1</td><td>O</td><td>기초 성립</td></tr><tr><td>2</td><td>1+2 = 3</td><td>2x3/2 = 3</td><td>O</td><td>P(1)+2 = 1+2 = 3</td></tr><tr><td>3</td><td>1+2+3 = 6</td><td>3x4/2 = 6</td><td>O</td><td>P(2)+3 = 3+3 = 6</td></tr><tr><td>4</td><td>1+2+3+4 = 10</td><td>4x5/2 = 10</td><td>O</td><td>P(3)+4 = 6+4 = 10</td></tr><tr><td>5</td><td>1+...+5 = 15</td><td>5x6/2 = 15</td><td>O</td><td>P(4)+5 = 10+5 = 15</td></tr><tr><td>k→k+1</td><td>P(k)+(k+1)</td><td>(k+1)(k+2)/2</td><td>O</td><td>귀납 단계 성립</td></tr></tbody></table>
+<div class="note-box"><span class="note-label">[증명 7] 귀납법: 2ⁿ > n (모든 n≥1)</span>
+<b>P(n):</b> 2ⁿ > n<br><br><b>기초:</b> P(1): 2¹ = 2 > 1 ✓<br><br><b>귀납:</b> P(k)가 참이면 → 2ᵏ > k<br><br>P(k+1) 보이기: 2ᵏ⁺¹ > k+1?<br>2ᵏ⁺¹ = 2 × 2ᵏ<br>> 2 × k  ← P(k) 사용<br>= k + k<br>≥ k + 1  (k≥1이므로)<br><br>따라서 2ᵏ⁺¹ > k+1 ✓ □<br><br>이것은 '지수 함수는 선형 함수보다 빨리 자란다'는 증명이에요.<br>알고리즘 시간 복잡도 분석에서 중요해요!</div>
+<h2 class="section-title">수학적 귀납법과 재귀</h2>
+<p>귀납법은 프로그래밍의 <b>재귀(recursion)</b>와 정확히 같은 구조예요!</p>
+<table class="trace"><thead><tr><th>n</th><th>2^n</th><th>n</th><th>2^n > n?</th><th>귀납 단계 확인</th></tr></thead><tbody><tr><td>1 (기초)</td><td>2</td><td>1</td><td>O</td><td>기초 성립</td></tr><tr><td>2</td><td>4</td><td>2</td><td>O</td><td>2x2^1=4 > 2 = 1+1</td></tr><tr><td>3</td><td>8</td><td>3</td><td>O</td><td>2x2^2=8 > 3 = 2+1</td></tr><tr><td>4</td><td>16</td><td>4</td><td>O</td><td>2x2^3=16 > 4 = 3+1</td></tr><tr><td>5</td><td>32</td><td>5</td><td>O</td><td>2x2^4=32 > 5 = 4+1</td></tr><tr><td>10</td><td>1024</td><td>10</td><td>O</td><td>지수 성장이 압도적</td></tr><tr><td>k→k+1</td><td>2x2^k</td><td>k+1</td><td>O</td><td>2k >= k+1 (k>=1)</td></tr></tbody></table>
+<table class="trace"><thead><tr><th>명제 P(n)</th><th>P(1) 좌변</th><th>P(1) 우변</th><th>일치?</th><th>기초 성립</th></tr></thead><tbody><tr><td>1+2+...+n = n(n+1)/2</td><td>1</td><td>1x2/2 = 1</td><td>O</td><td>성립</td></tr><tr><td>2^n > n</td><td>2^1 = 2</td><td>1</td><td>2 > 1 O</td><td>성립</td></tr><tr><td>1+3+...+(2n-1) = n^2</td><td>1</td><td>1^2 = 1</td><td>O</td><td>성립</td></tr><tr><td>1^2+2^2+...+n^2 = n(n+1)(2n+1)/6</td><td>1</td><td>1x2x3/6 = 1</td><td>O</td><td>성립</td></tr><tr><td>1^3+2^3+...+n^3 = [n(n+1)/2]^2</td><td>1</td><td>[1x2/2]^2 = 1</td><td>O</td><td>성립</td></tr><tr><td>n! >= 2^(n-1) (n>=1)</td><td>1! = 1</td><td>2^0 = 1</td><td>1 >= 1 O</td><td>성립</td></tr></tbody></table>
+<div class="debug-section"><div class="debug-bar">DEBUG LAB — 에러를 찾으시오</div><div class="debug-body">
+
+<p style="margin:14px 0 0; font-size:14px;"><b>에러:</b> </p>
+<p style="font-size:14px;"><b>수정:</b> </p>
+</div></div>
+<div class="debug-section"><div class="debug-bar">DEBUG LAB — 에러를 찾으시오</div><div class="debug-body">
+
+<p style="margin:14px 0 0; font-size:14px;"><b>에러:</b> </p>
+<p style="font-size:14px;"><b>수정:</b> </p>
+</div></div>
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span><span class="code-bar-file">귀납법 = 재귀: 1+2+...+n</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;stdio.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc"><span class="s-cm">// 재귀 함수 (귀납법 구조와 동일)</span></span></div>
+<div class="code-line"><span class="ln">4</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">sum_recursive</span>(<span class="s-type">int</span> n) {</span></div>
+<div class="code-line"><span class="ln">5</span><span class="lc">    <span class="s-cm">// 기초 단계 (base case)</span></span></div>
+<div class="code-line"><span class="ln">6</span><span class="lc">    <span class="s-kw">if</span> (n == <span class="s-num">1</span>) <span class="s-kw">return</span> <span class="s-num">1</span>;</span></div>
+<div class="code-line"><span class="ln">7</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">8</span><span class="lc">    <span class="s-cm">// 귀납 단계: P(k)를 이용해 P(k+1) 계산</span></span></div>
+<div class="code-line"><span class="ln">9</span><span class="lc">    <span class="s-kw">return</span> <span class="s-fn">sum_recursive</span>(n - <span class="s-num">1</span>) + n;</span></div>
+<div class="code-line"><span class="ln">10</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">11</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">12</span><span class="lc"><span class="s-cm">// 가우스 공식 (증명된 닫힌 형태)</span></span></div>
+<div class="code-line"><span class="ln">13</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">sum_formula</span>(<span class="s-type">int</span> n) {</span></div>
+<div class="code-line"><span class="ln">14</span><span class="lc">    <span class="s-kw">return</span> n * (n + <span class="s-num">1</span>) / <span class="s-num">2</span>;</span></div>
+<div class="code-line"><span class="ln">15</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">16</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">17</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">main</span>(<span class="s-type">void</span>) {</span></div>
+<div class="code-line"><span class="ln">18</span><span class="lc">    <span class="s-kw">for</span> (<span class="s-type">int</span> n = <span class="s-num">1</span>; n &lt;= <span class="s-num">10</span>; n++) {</span></div>
+<div class="code-line"><span class="ln">19</span><span class="lc">        <span class="s-fn">printf</span>(<span class="s-str">"n=%2d: 재귀=%3d, 공식=%3d\n"</span>,</span></div>
+<div class="code-line"><span class="ln">20</span><span class="lc">               n, <span class="s-fn">sum_recursive</span>(n), <span class="s-fn">sum_formula</span>(n));</span></div>
+<div class="code-line"><span class="ln">21</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">22</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">23</span><span class="lc">    <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">24</span><span class="lc">}</span></div>
+</div>
+</div>
+<div class="output-wrap"><div class="output-bar">실행 결과</div><div class="output-body">n= 1: 재귀=  1, 공식=  1
+n= 2: 재귀=  3, 공식=  3
+n= 3: 재귀=  6, 공식=  6
+n= 4: 재귀= 10, 공식= 10
+n= 5: 재귀= 15, 공식= 15
+n= 6: 재귀= 21, 공식= 21
+n= 7: 재귀= 28, 공식= 28
+n= 8: 재귀= 36, 공식= 36
+n= 9: 재귀= 45, 공식= 45
+n=10: 재귀= 55, 공식= 55</div></div>
+<h2 class="section-title">루프 불변량 — 반복문이 올바른지 증명하기</h2>
+<p>프로그래밍에서 '이 반복문이 맞는 결과를 내는가?'를 증명하는 방법이 있어요.</p>
+<div class="debug-section"><div class="debug-bar">DEBUG LAB — 에러를 찾으시오</div><div class="debug-body">
+
+<p style="margin:14px 0 0; font-size:14px;"><b>에러:</b> </p>
+<p style="font-size:14px;"><b>수정:</b> </p>
+</div></div>
+<div class="note-box"><span class="note-label">[핵심] 루프 불변량 (Loop Invariant)</span>
+<b>루프 불변량</b>: 반복문의 매 반복 시작 시 항상 참인 조건<br><br>증명 3단계 (귀납법과 같은 구조!):<br><br>1. <b>초기화</b>: 루프 시작 전에 불변량이 참인가? (기초)<br>2. <b>유지</b>: 반복 전에 참이면, 반복 후에도 참인가? (귀납)<br>3. <b>종료</b>: 루프가 끝날 때, 불변량 + 종료 조건 → 올바른 결과<br><br>이것이 알고리즘의 <b>정확성 증명</b>이에요!</div>
+<div style="margin:22px 0"></div>
+<div class="note-box"><span class="note-label">[예시] 합계 계산의 정확성 증명</span>
+<pre>int sum = 0;<br>for (int i = 1; i <= n; i++) {<br>    sum += i;<br>}</pre><br><b>불변량:</b> 'i번째 반복 시작 시, sum = 1+2+...+(i-1)'<br><br>1. <b>초기화:</b> i=1일 때, sum=0 = '아무것도 안 더한 합' ✓<br><br>2. <b>유지:</b> i=k 시작 시 sum = 1+...+(k-1) 이면<br>   sum += k → sum = 1+...+(k-1)+k = 1+...+k<br>   i=k+1 시작 시 sum = 1+...+k ✓<br><br>3. <b>종료:</b> i=n+1로 루프 종료 시<br>   불변량에 의해 sum = 1+...+n ✓ 올바른 결과!</div>
+<table class="trace"><thead><tr><th>반복 시작 시 i</th><th>반복 시작 시 sum</th><th>불변량: sum = (i-1)*i/2</th><th>성립?</th><th>반복 후 sum</th></tr></thead><tbody><tr><td>1</td><td>0</td><td>0 = 0x1/2 = 0</td><td>O</td><td>0+1 = 1</td></tr><tr><td>2</td><td>1</td><td>1 = 1x2/2 = 1</td><td>O</td><td>1+2 = 3</td></tr><tr><td>3</td><td>3</td><td>3 = 2x3/2 = 3</td><td>O</td><td>3+3 = 6</td></tr><tr><td>4</td><td>6</td><td>6 = 3x4/2 = 6</td><td>O</td><td>6+4 = 10</td></tr><tr><td>5</td><td>10</td><td>10 = 4x5/2 = 10</td><td>O</td><td>10+5 = 15</td></tr><tr><td>n+1 (종료)</td><td>n(n+1)/2</td><td>최종: sum = 1+2+...+n</td><td>O</td><td>루프 종료</td></tr></tbody></table>
+<h2 class="section-title">C 코드 — 루프 불변량 확인</h2>
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span><span class="code-bar-file">루프 불변량을 assert로 확인</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;stdio.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;assert.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">4</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">main</span>(<span class="s-type">void</span>) {</span></div>
+<div class="code-line"><span class="ln">5</span><span class="lc">    <span class="s-type">int</span> n = <span class="s-num">10</span>;</span></div>
+<div class="code-line"><span class="ln">6</span><span class="lc">    <span class="s-type">int</span> sum = <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">7</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">8</span><span class="lc">    <span class="s-kw">for</span> (<span class="s-type">int</span> i = <span class="s-num">1</span>; i &lt;= n; i++) {</span></div>
+<div class="code-line"><span class="ln">9</span><span class="lc">        <span class="s-cm">// 불변량 확인: sum = 1+2+...+(i-1)</span></span></div>
+<div class="code-line"><span class="ln">10</span><span class="lc">        <span class="s-fn">assert</span>(sum == (i - <span class="s-num">1</span>) * i / <span class="s-num">2</span>);</span></div>
+<div class="code-line"><span class="ln">11</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">12</span><span class="lc">        sum += i;</span></div>
+<div class="code-line"><span class="ln">13</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">14</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">15</span><span class="lc">    <span class="s-cm">// 종료 후: sum = 1+2+...+n</span></span></div>
+<div class="code-line"><span class="ln">16</span><span class="lc">    <span class="s-fn">assert</span>(sum == n * (n + <span class="s-num">1</span>) / <span class="s-num">2</span>);</span></div>
+<div class="code-line"><span class="ln">17</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">18</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"sum = %d (검증 완료!)\n"</span>, sum);</span></div>
+<div class="code-line"><span class="ln">19</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">20</span><span class="lc">    <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">21</span><span class="lc">}</span></div>
+</div>
+</div>
+<div class="output-wrap"><div class="output-bar">실행 결과</div><div class="output-body">sum = 55 (검증 완료!)</div></div>
+<div class="tip"><span class="tip-label">[코드 해설]</span>
+• <b>assert(조건)</b>: 조건이 거짓이면 프로그램 즉시 중단!<br>• 불변량을 assert로 넣으면, 증명이 맞는지 <b>실행 시 확인</b>해요<br>• 모든 assert를 통과하면 → 불변량이 실제로 유지됨을 확인<br><br>assert는 디버깅에서도 아주 유용한 도구예요!</div>
+<h2 class="section-title">증명 기법 5 — 경우 나누기</h2>
+<div class="note-box"><span class="note-label">[핵심] 경우 나누기 (Proof by Cases)</span>
+모든 경우를 빠짐없이 나누어 각각 증명하는 방법<br><br><b>방법:</b><br>1. 가능한 경우를 빠짐없이 나눠요<br>2. 각 경우에서 명제를 증명해요<br>3. 모든 경우에서 참이면 → 전체적으로 참!</div>
+<div style="margin:22px 0"></div>
+<table class="trace"><thead><tr><th>경우</th><th>a</th><th>b</th><th>ab</th><th>|ab|</th><th>|a| x |b|</th><th>일치?</th></tr></thead><tbody><tr><td>1: a>=0, b>=0</td><td>3</td><td>4</td><td>12</td><td>12</td><td>3 x 4 = 12</td><td>O</td></tr><tr><td>2: a>=0, b<0</td><td>3</td><td>-4</td><td>-12</td><td>12</td><td>3 x 4 = 12</td><td>O</td></tr><tr><td>3: a<0, b>=0</td><td>-3</td><td>4</td><td>-12</td><td>12</td><td>3 x 4 = 12</td><td>O</td></tr><tr><td>4: a<0, b<0</td><td>-3</td><td>-4</td><td>12</td><td>12</td><td>3 x 4 = 12</td><td>O</td></tr><tr><td>특수: a=0</td><td>0</td><td>5</td><td>0</td><td>0</td><td>0 x 5 = 0</td><td>O</td></tr><tr><td>특수: b=0</td><td>7</td><td>0</td><td>0</td><td>0</td><td>7 x 0 = 0</td><td>O</td></tr></tbody></table>
+<div class="note-box"><span class="note-label">[증명 8] |ab| = |a| × |b|</span>
+<b>명제:</b> 모든 실수 a, b에 대해 |ab| = |a|·|b|<br><br><b>경우 나누기:</b><br><br><b>경우 1:</b> a≥0, b≥0<br>|ab| = ab = |a|·|b| ✓<br><br><b>경우 2:</b> a≥0, b<0<br>|ab| = |a·b| = a·(-b) = |a|·|b| ✓<br><br><b>경우 3:</b> a<0, b≥0<br>|ab| = |a·b| = (-a)·b = |a|·|b| ✓<br><br><b>경우 4:</b> a<0, b<0<br>|ab| = |a·b| = (-a)·(-b) = |a|·|b| ✓<br><br>모든 경우에서 성립! □</div>
+<div class="tip"><span class="tip-label">[팁] 경우 나누기와 if-else</span>
+경우 나누기는 C의 <b>if-else if-else</b>와 같은 구조예요!<br><br><pre>if (a >= 0 && b >= 0) { /* 경우 1 */ }<br>else if (a >= 0 && b < 0) { /* 경우 2 */ }<br>else if (a < 0 && b >= 0) { /* 경우 3 */ }<br>else { /* 경우 4 */ }</pre><br>모든 경우를 빠짐없이 다루는 것이 핵심이에요.<br>경우를 빠뜨리면 버그가 생기듯, 증명에서도 빈틈이 생겨요!</div>
+<h2 class="section-title">증명 기법 요약</h2>
+<table class="trace"><thead><tr><th>기법</th><th>방법</th><th>사용 상황</th><th>프로그래밍 대응</th></tr></thead><tbody><tr><td>직접 증명</td><td>P → ... → Q</td><td>직관적으로 이어질 때</td><td>순차 코드</td></tr><tr><td>귀류법</td><td>¬Q → 모순</td><td>직접이 어려울 때, 불가능 증명</td><td>예외 처리</td></tr><tr><td>반례</td><td>하나만 찾기</td><td>거짓 반증</td><td>테스트/디버깅</td></tr><tr><td>수학적 귀납법</td><td>기초+귀납</td><td>'모든 n'에 대해</td><td>재귀 함수</td></tr><tr><td>경우 나누기</td><td>모든 경우 체크</td><td>경우마다 다를 때</td><td>if-else</td></tr></tbody></table>
+<h2 class="section-title">디버깅 — 증명에서 흔한 실수</h2>
+
+<div class="warn"><span class="warn-label">[디버깅] 실수 1: 귀납법에서 기초 빼먹기</span>
+<b>잘못:</b> 귀납 단계만 보이고 기초 단계를 생략<br><br>기초 없는 '증명': '모든 말의 색은 같다'<br>P(k): k마리 말은 색이 같다고 가정<br>P(k+1): k+1마리 → 첫 k마리 같고, 뒤 k마리도 같고...<br>→ 겹치는 부분이 있으므로 전부 같다?!<br><br>문제: P(1)→P(2)에서 겹치는 부분이 없어요!<br><b>기초 단계를 반드시 확인해야 해요.</b></div>
+<div class="warn"><span class="warn-label">[디버깅] 실수 2: 증명해야 할 것을 가정하기 (순환 논증)</span>
+<b>잘못:</b> 증명하려는 결론을 가정 속에 이미 사용<br><br>잘못된 '증명': 1+2+...+n = n(n+1)/2<br>'n(n+1)/2 = n(n+1)/2이므로 성립' → 아무것도 증명 안 한 거예요!<br><br><b>올바름:</b> 이미 알려진 사실에서 출발해서 결론에 도달해야 해요.<br>결론을 출발점으로 쓰면 안 돼요!</div>
+<div class="warn"><span class="warn-label">[디버깅] 실수 3: 몇 개 확인하고 '증명됨'</span>
+<b>잘못:</b> n=1,2,3,4,5에서 맞으니까 '항상 맞다'<br><br>이것은 증명이 아니라 <b>테스트</b>예요!<br><br>유명한 예: n²+n+41은 n=0~39까지 <b>40개</b> 연속 소수이지만,<br>n=40에서 41² = 1681 → 소수 아님!<br><br><b>테스트 = 반례를 못 찾은 것</b><br><b>증명 = 반례가 존재할 수 없음을 보인 것</b></div>
+<h2 class="section-title">역사 — 증명의 역사</h2>
+<div class="note-box"><span class="note-label">[역사] 유클리드에서 컴퓨터 증명까지</span>
+<b>기원전 300년:</b> 유클리드의 <원론> — 공리에서 출발하는 연역적 증명 체계<br>→ 소수가 무한히 많다는 증명 포함<br><br><b>1665년:</b> 뉴턴과 라이프니츠 → 미적분 발명, 귀납법 활용<br><br><b>1931년:</b> 괴델 → 불완전성 정리 ('증명할 수 없는 참인 명제가 있다!')<br><br><b>1976년:</b> 4색 정리 → 컴퓨터로 증명한 최초의 중요 정리<br>1936가지 경우를 컴퓨터가 확인<br><br><b>현재:</b> Coq, Lean 같은 <b>증명 보조기</b>로<br>컴퓨터가 증명의 정확성을 검증해요!</div>
+<div class="note-box"><span class="note-label">[역사] 가우스 소년의 전설</span>
+1786년, 독일의 10살 소년 가우스.<br>선생님이 벌로 '1부터 100까지 더해 오라'고 했어요.<br><br>다른 아이들이 열심히 더하는 동안,<br>가우스는 몇 초 만에 답을 냈어요: <b>5050</b><br><br>방법: (1+100) + (2+99) + ... + (50+51) = 101 × 50 = 5050<br><br>이것이 바로 우리가 증명한 공식 n(n+1)/2의 발견 순간이에요!<br>가우스는 '수학의 왕자'라 불리게 되었어요.</div>
+<h2 class="section-title">KOI 도전 문제</h2>
+<div class="note-box"><span class="note-label">[KOI 유형] 문제 1 — 공식 검증</span>
+<b>문제:</b> 1² + 2² + 3² + ... + n²의 합 공식이 n(n+1)(2n+1)/6인지 n=1~1000에서 검증하는 프로그램을 작성하시오. 불일치가 있으면 해당 n을 출력, 없으면 'ALL CORRECT'를 출력.<br><br><b>출력 예:</b> ALL CORRECT</div>
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span><span class="code-bar-file">[KOI 풀이] 제곱합 공식 검증</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;stdio.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">main</span>(<span class="s-type">void</span>) {</span></div>
+<div class="code-line"><span class="ln">4</span><span class="lc">    <span class="s-type">long</span> <span class="s-type">long</span> sum = <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">5</span><span class="lc">    <span class="s-type">int</span> all_correct = <span class="s-num">1</span>;</span></div>
+<div class="code-line"><span class="ln">6</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">7</span><span class="lc">    <span class="s-kw">for</span> (<span class="s-type">int</span> n = <span class="s-num">1</span>; n &lt;= <span class="s-num">1000</span>; n++) {</span></div>
+<div class="code-line"><span class="ln">8</span><span class="lc">        sum += (<span class="s-type">long</span> <span class="s-type">long</span>)n * n;</span></div>
+<div class="code-line"><span class="ln">9</span><span class="lc">        <span class="s-type">long</span> <span class="s-type">long</span> formula = (<span class="s-type">long</span> <span class="s-type">long</span>)n * (n + <span class="s-num">1</span>) * (<span class="s-num">2</span> * n + <span class="s-num">1</span>) / <span class="s-num">6</span>;</span></div>
+<div class="code-line"><span class="ln">10</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">11</span><span class="lc">        <span class="s-kw">if</span> (sum != formula) {</span></div>
+<div class="code-line"><span class="ln">12</span><span class="lc">            <span class="s-fn">printf</span>(<span class="s-str">"불일치! n=%d: 합=%lld, 공식=%lld\n"</span>,</span></div>
+<div class="code-line"><span class="ln">13</span><span class="lc">                   n, sum, formula);</span></div>
+<div class="code-line"><span class="ln">14</span><span class="lc">            all_correct = <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">15</span><span class="lc">        }</span></div>
+<div class="code-line"><span class="ln">16</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">17</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">18</span><span class="lc">    <span class="s-kw">if</span> (all_correct) {</span></div>
+<div class="code-line"><span class="ln">19</span><span class="lc">        <span class="s-fn">printf</span>(<span class="s-str">"ALL CORRECT\n"</span>);</span></div>
+<div class="code-line"><span class="ln">20</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">21</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">22</span><span class="lc">    <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">23</span><span class="lc">}</span></div>
+</div>
+</div>
+<div class="note-box"><span class="note-label">[KOI 유형] 문제 2 — 소수 판별과 반례</span>
+<b>문제:</b> f(n) = n² - n + 41이 소수가 아닌 가장 작은 양의 정수 n을 찾아 출력하시오.<br><br><b>출력:</b> 41<br>(f(41) = 41² - 41 + 41 = 41² = 1681 = 41×41)</div>
+<div class="note-box"><span class="note-label">[KOI 유형] 문제 3 — 귀납법 활용</span>
+<b>문제:</b> 다음을 수학적 귀납법으로 증명하시오:<br>1 + 3 + 5 + ... + (2n-1) = n²<br><br>그리고 n=1~100에서 C 프로그램으로 검증하시오.<br><br><b>풀이 방향:</b><br>기초: n=1일 때 1 = 1² ✓<br>귀납: P(k) 참이면, 1+3+...+(2k-1)+(2k+1) = k²+(2k+1) = (k+1)² ✓</div>
+<h2 class="section-title">연습문제</h2>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 </span><p style="margin:0;font-size:14px">'모든 3의 배수는 홀수다'라는 명제가 참인지 거짓인지 판별하세요. 거짓이면 반례를 하나 드세요.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 </span><p style="margin:0;font-size:14px">직접 증명: '두 홀수의 합은 짝수이다'를 증명하세요.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 </span><p style="margin:0;font-size:14px">수학적 귀납법의 두 단계를 설명하고, 도미노에 비유하세요.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 </span><p style="margin:0;font-size:14px">귀류법으로 증명하세요: '√3은 무리수이다.' (힌트: √2 증명과 비슷하지만 '3의 배수'를 사용해요)</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 </span><p style="margin:0;font-size:14px">수학적 귀납법으로 증명하세요: 1+3+5+...+(2n-1) = n²</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 </span><p style="margin:0;font-size:14px">C 프로그램을 작성하세요: 1³+2³+...+n³ = [n(n+1)/2]²인지 n=1~100에서 검증. (큐브 합 = 합의 제곱!)</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 </span><p style="margin:0;font-size:14px">루프 불변량을 이용하여, 다음 코드가 a×b를 올바르게 계산함을 증명하세요.<br>int mul = 0;<br>for (int i = 0; i < b; i++) {<br>    mul += a;<br>}</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 </span><p style="margin:0;font-size:14px">수학적 귀납법으로 증명하세요: n개의 직선으로 평면을 최대 n(n+1)/2 + 1 개의 영역으로 나눌 수 있다.</p></div>
+<h2 class="section-title">정답과 풀이</h2>
+<h2 class="section-title">용어 정리</h2>
+<table class="trace"><thead><tr><th>용어</th><th>설명</th></tr></thead><tbody><tr><td><code>증명 (Proof)</code></td><td>명제가 반드시 참임을 논리적으로 보이는 것</td></tr><tr><td><code>명제 (Proposition)</code></td><td>참 또는 거짓으로 판별할 수 있는 문장</td></tr><tr><td><code>직접 증명 (Direct Proof)</code></td><td>가정에서 결론까지 논리적으로 직접 이어가는 증명</td></tr><tr><td><code>귀류법 (Proof by Contradiction)</code></td><td>결론의 부정을 가정하여 모순을 유도하는 증명</td></tr><tr><td><code>수학적 귀납법 (Mathematical Induction)</code></td><td>기초+귀납으로 모든 자연수에 대해 성립함을 보이는 증명</td></tr><tr><td><code>반례 (Counterexample)</code></td><td>명제가 거짓임을 보여주는 하나의 예시</td></tr><tr><td><code>루프 불변량 (Loop Invariant)</code></td><td>반복문의 매 반복 시작 시 항상 참인 조건</td></tr><tr><td><code>QED (□)</code></td><td>'증명 완료'를 뜻하는 기호. 라틴어 Quod Erat Demonstrandum</td></tr></tbody></table>
+<h2 class="section-title">시각 요약</h2>
+<div class="warmup-box"><div class="warmup-title">S-09 증명 기법 한눈에 보기</div><div class="wq"><b>1.</b> <code></code> — P에서 Q로 한 걸음씩</div><div class="wq"><b>2.</b> <code></code> — 거짓 가정 → 모순</div><div class="wq"><b>3.</b> <code></code> — 하나만 찾으면 끝</div><div class="wq"><b>4.</b> <code></code> — 도미노처럼 쓰러뜨려</div><div class="wq"><b>5.</b> <code></code> — 빠짐없이 체크</div><div class="wq"><b>6.</b> <code></code> — 반복문 정확성 증명</div><div class="wq"><b>7.</b> <code></code> — 테스트가 아닌 확실함</div><div class="wq"><b>8.</b> <code></code> — 증명 완료!</div></div>
+
+    <span class="page-num">2</span>
+  </div>
+</div>
+<div class="page">
+  <div class="content-page">
+    <div class="unit-header-bar">
+      <span class="unit-tag">UNIT S-09</span>
+      <span class="unit-title-sm">3과목 연결</span>
+    </div>
+<h2 class="section-title">10축 매핑</h2>
+<div class="tip"><span class="tip-label">[10축 분석] S-09 증명 기법</span>
+<b>① C언어</b>: assert, 재귀 함수, for문 불변량, long long 타입<br><b>② 컴퓨팅사고력</b>: 논리적 추론, 귀납/연역, 추상화(패턴→공식)<br><b>③ 디버깅</b>: 기초 빼먹기, 순환 논증, 테스트≠증명 혼동<br><b>④ KOI</b>: 공식 검증, 반례 찾기, 귀납법 기반 풀이 논증<br><b>⑤ 실생활</b>: 가우스 소년, 오일러 추측 200년 반증<br><b>⑥ 수학연결</b>: 직접 증명, 귀류법, 귀납법, 반례, 가우스 공식<br><b>⑦ 역사</b>: 유클리드(기원전 300), 가우스(1786), 괴델(1931), 4색 정리(1976)<br><b>⑧ 개념확장</b>: 루프 불변량, 프로그램 정확성, 증명 보조기(Coq/Lean)<br><b>⑨ 시각화</b>: 단계별 시각화, 비교표, 추적표<br><b>⑩ 융합</b>: S-08 정지 문제 귀류법, S-06 비둘기집→존재 증명, 재귀=귀납</div>
+
+
+    <span class="page-num">3</span>
+  </div>
+</div>
+</body>
+</html>

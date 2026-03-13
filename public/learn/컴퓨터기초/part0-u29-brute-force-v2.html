@@ -1,0 +1,1341 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>코딩쏙 교재 — 완전 탐색 (Brute Force)</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+
+  :root {
+    --navy: #1a2e4a;
+    --navy-mid: #2c4a6e;
+    --navy-light: #3d6590;
+    --orange: #e07830;
+    --orange-light: #f5e6d8;
+    --white: #ffffff;
+    --bg: #f7f8fa;
+    --bg-warm: #faf9f7;
+    --gray-50: #f9fafb;
+    --gray-100: #f3f4f6;
+    --gray-200: #e5e7eb;
+    --gray-300: #d1d5db;
+    --gray-400: #9ca3af;
+    --gray-500: #6b7280;
+    --gray-600: #4b5563;
+    --gray-700: #374151;
+    --gray-800: #1f2937;
+    --text: #2d3748;
+    --green: #16a34a;
+    --green-bg: #dcfce7;
+    --red: #dc2626;
+    --red-bg: #fee2e2;
+    --blue: #2563eb;
+    --blue-bg: #dbeafe;
+    --yellow-bg: #fef9c3;
+    --font: 'Noto Sans KR', sans-serif;
+    --mono: 'JetBrains Mono', 'Consolas', monospace;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: var(--font); background: #e8eaed; font-size: 15px; }
+
+  /* ========== PAGE ========== */
+  .page {
+    width: 210mm;
+    min-height: 295mm;
+    margin: 24px auto;
+    background: var(--white);
+    box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* ========== PAGE 1: CHAPTER START ========== */
+  .chapter-page {
+    display: flex;
+    min-height: 295mm;
+  }
+
+  .chapter-sidebar {
+    width: 10px;
+    background: var(--navy);
+    flex-shrink: 0;
+  }
+
+  .chapter-accent-bar {
+    width: 7px;
+    background: var(--orange);
+    flex-shrink: 0;
+  }
+
+  .chapter-body {
+    flex: 1;
+    padding: 70px 65px 50px 55px;
+    position: relative;
+  }
+
+  .chapter-watermark {
+    position: absolute;
+    top: -10px;
+    right: -15px;
+    font-size: 280px;
+    font-weight: 900;
+    color: rgba(180,195,212,0.35);
+    line-height: 1;
+    pointer-events: none;
+    letter-spacing: -10px;
+  }
+
+  .chapter-label {
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--navy-mid);
+    letter-spacing: 2px;
+    margin-bottom: 4px;
+  }
+
+  .chapter-title {
+    font-size: 44px;
+    font-weight: 900;
+    color: var(--navy);
+    line-height: 1.15;
+    margin-bottom: 12px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .chapter-sub {
+    font-size: 16px;
+    color: var(--gray-500);
+    font-weight: 400;
+    margin-bottom: 20px;
+    padding-bottom: 28px;
+    border-bottom: 1px solid var(--gray-200);
+  }
+
+  /* Learning objectives */
+  .obj-title {
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--navy);
+    margin-bottom: 16px;
+    margin-top: 32px;
+  }
+
+  .obj-list {
+    list-style: none;
+    margin-bottom: 40px;
+  }
+
+  .obj-list li {
+    padding: 5px 0 5px 24px;
+    position: relative;
+    font-size: 15px;
+    color: var(--gray-700);
+    line-height: 1.6;
+  }
+
+  .obj-list li::before {
+    content: '•';
+    position: absolute;
+    left: 8px;
+    color: var(--navy-mid);
+    font-weight: 700;
+  }
+
+  /* Prerequisites flow */
+  .prereq-title {
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--navy);
+    margin-bottom: 18px;
+  }
+
+  .prereq-flow {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    margin-bottom: 44px;
+  }
+
+  .prereq-item {
+    padding: 9px 22px;
+    border: 1.5px solid var(--gray-300);
+    border-radius: 50px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--gray-600);
+    background: var(--white);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+  }
+
+  .prereq-item.current {
+    border-color: var(--navy);
+    color: var(--navy);
+    font-weight: 700;
+    background: #edf2f7;
+    box-shadow: 0 2px 6px rgba(26,46,74,0.12);
+  }
+
+  .prereq-arrow {
+    width: 36px;
+    text-align: center;
+    color: var(--gray-300);
+    font-size: 18px;
+    font-weight: 300;
+  }
+
+  /* Predict box */
+  .predict-box {
+    background: var(--gray-50);
+    border: 1.5px solid var(--gray-200);
+    border-radius: 12px;
+    padding: 24px 28px;
+  }
+
+  .predict-label {
+    display: inline-block;
+    background: var(--orange);
+    color: var(--white);
+    font-size: 12px;
+    font-weight: 600;
+    padding: 3px 12px;
+    border-radius: 4px;
+    margin-bottom: 14px;
+    letter-spacing: 0.5px;
+  }
+
+  .predict-q {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--navy);
+    margin-bottom: 16px;
+  }
+
+  .predict-code {
+    background: var(--white);
+    border: 1px solid var(--gray-200);
+    border-radius: 8px;
+    padding: 14px 18px;
+    font-family: var(--mono);
+    font-size: 13px;
+    line-height: 1.65;
+    color: var(--gray-700);
+  }
+
+  /* ========== PAGE 2: CORE CONTENT ========== */
+  .content-page {
+    padding: 55px 65px;
+  }
+
+  .unit-header-bar {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    margin-bottom: 8px;
+  }
+
+  .unit-tag {
+    font-size: 12px;
+    color: var(--orange);
+    font-weight: 600;
+    letter-spacing: 1px;
+  }
+
+  .unit-title-sm {
+    font-size: 14px;
+    color: var(--gray-400);
+    font-weight: 400;
+  }
+
+  .section-title {
+    font-size: 24px;
+    font-weight: 800;
+    color: var(--navy);
+    margin-bottom: 24px;
+    margin-top: 8px;
+    padding-left: 16px;
+    border-left: 5px solid var(--orange);
+  }
+
+  p {
+    font-size: 15.5px;
+    line-height: 1.9;
+    color: var(--text);
+    margin-bottom: 18px;
+  }
+
+  p code {
+    font-family: var(--mono);
+    font-size: 13.5px;
+    background: #f1f3f5;
+    padding: 2px 7px;
+    border-radius: 4px;
+    color: var(--navy);
+    font-weight: 500;
+  }
+
+  /* Code block */
+  .code-wrap {
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    border: 1px solid var(--gray-200);
+    margin: 22px 0;
+  }
+
+  .code-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 9px 18px;
+    background: var(--navy);
+    font-size: 12px;
+  }
+
+  .code-bar-lang {
+    font-family: var(--mono);
+    font-weight: 600;
+    color: var(--white);
+  }
+
+  .code-bar-file {
+    color: rgba(255,255,255,0.6);
+    font-weight: 400;
+  }
+
+  .code-body {
+    background: #f8f9fb;
+    padding: 20px 0;
+    font-family: var(--mono);
+    font-size: 13.5px;
+    line-height: 1.75;
+    border: 1px solid var(--gray-200);
+    border-top: none;
+    border-radius: 0 0 12px 12px;
+  }
+
+  .code-line {
+    display: flex;
+    padding: 0 20px;
+  }
+
+  .code-line:hover {
+    background: #f0f4f8;
+  }
+
+  .code-line.highlighted {
+    background: #fff8e1;
+  }
+
+  .ln {
+    width: 30px;
+    text-align: right;
+    color: #b8bfc8;
+    font-size: 12px;
+    margin-right: 18px;
+    user-select: none;
+    flex-shrink: 0;
+    padding-top: 1px;
+  }
+
+  .lc { flex: 1; }
+
+  /* syntax */
+  .s-pp { color: #8b5cf6; font-weight: 600; }
+  .s-str { color: #d97706; }
+  .s-type { color: #2563eb; font-weight: 500; }
+  .s-kw { color: #7c3aed; font-weight: 500; }
+  .s-fn { color: #059669; font-weight: 500; }
+  .s-num { color: #dc2626; }
+  .s-cm { color: #9ca3af; font-style: italic; }
+
+  /* Output block */
+  .output-wrap {
+    border-radius: 10px;
+    overflow: hidden;
+    margin: 10px 0 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    border: 1px solid #d1d5db;
+  }
+
+  .output-bar {
+    padding: 9px 18px;
+    background: #374151;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--white);
+    letter-spacing: 0.5px;
+  }
+
+  .output-body {
+    padding: 16px 20px;
+    font-family: var(--mono);
+    font-size: 13.5px;
+    line-height: 1.7;
+    color: var(--gray-800);
+    background: #f1f5f9;
+    border: 1px solid var(--gray-200);
+    border-top: none;
+    border-radius: 0 0 10px 10px;
+  }
+
+  /* Callout */
+  .tip {
+    margin: 28px 0;
+    padding: 18px 24px;
+    background: #dbeafe;
+    border-left: 5px solid #2563eb;
+    border-radius: 0 12px 12px 0;
+    font-size: 14.5px;
+    line-height: 1.8;
+    color: var(--text);
+  }
+
+  .tip-label {
+    font-weight: 700;
+    color: #2563eb;
+    font-size: 13px;
+    display: block;
+    margin-bottom: 4px;
+  }
+
+  .warn {
+    margin: 28px 0;
+    padding: 18px 24px;
+    background: #fef3c7;
+    border-left: 5px solid #d97706;
+    border-radius: 0 12px 12px 0;
+    font-size: 14.5px;
+    line-height: 1.8;
+  }
+
+  .warn-label {
+    font-weight: 700;
+    color: #d97706;
+    font-size: 13px;
+    display: block;
+    margin-bottom: 4px;
+  }
+
+  .note-box {
+    margin: 28px 0;
+    padding: 18px 24px;
+    background: #e2e8f0;
+    border-left: 5px solid #64748b;
+    border-radius: 0 12px 12px 0;
+    font-size: 14.5px;
+    line-height: 1.8;
+  }
+
+  .note-label {
+    font-weight: 700;
+    color: var(--gray-600);
+    font-size: 13px;
+    display: block;
+    margin-bottom: 4px;
+  }
+
+  /* Trace table */
+  table.trace {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    margin: 28px 0;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+    font-size: 14px;
+  }
+
+  table.trace th {
+    background: var(--navy);
+    color: var(--white);
+    padding: 10px 16px;
+    text-align: left;
+    font-weight: 500;
+    font-size: 13px;
+  }
+
+  table.trace td {
+    padding: 10px 16px;
+    border-bottom: 1px solid var(--gray-200);
+    color: var(--gray-700);
+  }
+
+  table.trace tr:nth-child(even) td { background: var(--gray-50); }
+  table.trace tr:last-child td { border-bottom: none; }
+
+  table.trace td code {
+    font-family: var(--mono);
+    font-size: 12.5px;
+    background: #eef1f5;
+    padding: 2px 6px;
+    border-radius: 4px;
+    color: var(--navy);
+  }
+
+  /* ========== PAGE 3: PROBLEMS ========== */
+  .problems-header {
+    margin-bottom: 8px;
+  }
+
+  .problems-chapter-ref {
+    font-size: 13px;
+    color: var(--gray-500);
+    margin-bottom: 4px;
+  }
+
+  .problems-title {
+    font-size: 28px;
+    font-weight: 800;
+    color: var(--navy);
+    margin-bottom: 24px;
+  }
+
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 16px;
+  }
+
+  .prob-card {
+    background: var(--white);
+    border: 1px solid var(--gray-200);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 3px 15px rgba(0,0,0,0.06);
+  }
+
+  .prob-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 16px;
+    background: var(--navy);
+  }
+
+  .prob-num {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--white);
+  }
+
+  .diff {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    font-size: 12px;
+    font-weight: 800;
+  }
+
+  .diff-basic { background: #22c55e; color: white; }
+  .diff-mid { background: #f59e0b; color: white; }
+  .diff-hard { background: #ef4444; color: white; }
+
+  .prob-desc {
+    font-size: 13.5px;
+    line-height: 1.65;
+    color: var(--gray-600);
+    margin-bottom: 10px;
+    padding: 14px 16px 0;
+  }
+
+  .prob-code {
+    background: var(--gray-50);
+    border: 1px solid var(--gray-200);
+    border-radius: 6px;
+    padding: 10px 14px;
+    margin: 0 16px 16px;
+    font-family: var(--mono);
+    font-size: 12.5px;
+    line-height: 1.55;
+    color: var(--gray-600);
+  }
+
+  /* Competition section */
+  .comp-section {
+    margin-top: 32px;
+    padding-top: 24px;
+    border-top: 2px solid var(--navy);
+  }
+
+  .comp-title {
+    font-size: 22px;
+    font-weight: 800;
+    color: var(--navy);
+    margin-bottom: 20px;
+  }
+
+  .comp-card {
+    background: var(--white);
+    border: 1.5px solid var(--gray-200);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 18px rgba(0,0,0,0.06);
+  }
+
+  .comp-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 16px;
+    background: #0f766e;
+  }
+
+  .comp-header .comp-name {
+    color: var(--white);
+    font-size: 15px;
+    font-weight: 700;
+    margin: 0;
+  }
+
+  .comp-inner {
+    padding: 14px 18px 18px;
+  }
+
+  .comp-badge {
+    display: inline-block;
+    padding: 3px 12px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 700;
+  }
+
+  .badge-bj { background: #93c5fd; color: #1e3a5f; }
+  .badge-cu { background: #c4b5fd; color: #3b1f7e; }
+  .badge-pg { background: #7dd3fc; color: #0c4a6e; }
+
+  .comp-name {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--navy);
+    margin-bottom: 6px;
+  }
+
+  .comp-desc {
+    font-size: 14px;
+    color: var(--gray-600);
+    line-height: 1.7;
+    margin-bottom: 14px;
+  }
+
+  .io-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+
+  .io-card {
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid var(--gray-200);
+  }
+
+  .io-h {
+    padding: 6px 14px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--gray-600);
+    background: #e2e8f0;
+  }
+
+  .io-c {
+    padding: 10px 14px;
+    font-family: var(--mono);
+    font-size: 13px;
+    line-height: 1.5;
+    background: var(--white);
+  }
+
+  /* ========== DEBUG LAB ========== */
+  .debug-section {
+    margin: 24px 0;
+    border: 2px solid var(--red);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+
+  .debug-bar {
+    background: var(--red);
+    color: var(--white);
+    padding: 10px 20px;
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 1px;
+  }
+
+  .debug-body {
+    padding: 20px;
+    background: #fef2f2;
+  }
+
+  /* 10축 connection */
+  .connect-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 16px;
+    margin: 28px 0;
+  }
+
+  .connect-card {
+    border-radius: 12px;
+    padding: 20px;
+    text-align: center;
+    border: 1px solid var(--gray-200);
+    box-shadow: 0 3px 14px rgba(0,0,0,0.05);
+  }
+
+  .connect-card h5 {
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 8px;
+  }
+
+  .connect-card p {
+    font-size: 13px;
+    margin: 0;
+    color: var(--gray-600);
+    line-height: 1.6;
+  }
+
+  .cc1 { border-top: 3px solid #8b5cf6; }
+  .cc1 h5 { color: #8b5cf6; }
+  .cc2 { border-top: 3px solid var(--green); }
+  .cc2 h5 { color: var(--green); }
+  .cc3 { border-top: 3px solid var(--navy); }
+  .cc3 h5 { color: var(--navy); }
+
+  /* PAGE NUMBER */
+  .page-num {
+    position: absolute;
+    bottom: 20px;
+    right: 30px;
+    font-size: 12px;
+    color: var(--gray-400);
+  }
+
+  /* WARMUP */
+  .warmup-box {
+    background: #e0e7f1;
+    border-radius: 12px;
+    padding: 24px 28px;
+    margin: 28px 0;
+    border: 2px solid #c7d2e0;
+  }
+
+  .warmup-title {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--navy);
+    margin-bottom: 14px;
+  }
+
+  .wq {
+    padding: 9px 16px;
+    background: var(--white);
+    border-radius: 8px;
+    margin-bottom: 8px;
+    font-size: 14px;
+    border: 1px solid var(--gray-200);
+    color: var(--gray-700);
+  }
+
+  .wq b { color: var(--navy); margin-right: 6px; }
+  .wq .hint { color: var(--gray-400); font-size: 13px; }
+
+  /* ===== CONTEST PROBLEMS PAGE ===== */
+  .contest-page-wrap .chapter-page {
+    min-height: auto;
+  }
+
+  .contest-page-wrap .chapter-page > div:last-child {
+    min-width: 0;
+    overflow-wrap: break-word;
+    word-break: break-word;
+  }
+
+  .contest-card {
+    background: white;
+    border: 1.5px solid var(--gray-200);
+    border-radius: 12px;
+    margin-bottom: 28px;
+    overflow: hidden;
+    break-inside: avoid;
+  }
+
+  .contest-header {
+    background: var(--navy);
+    color: white;
+    padding: 14px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .contest-num-source {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .contest-num {
+    font-weight: 700;
+    font-size: 16px;
+  }
+
+  .contest-source {
+    background: rgba(255,255,255,0.15);
+    padding: 3px 10px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 500;
+  }
+
+  .contest-body {
+    padding: 20px 24px 24px;
+  }
+
+  .contest-question {
+    font-size: 15px;
+    line-height: 1.7;
+    color: var(--text);
+    margin: 0 0 16px;
+    word-break: break-word;
+    overflow-wrap: break-word;
+  }
+
+  .contest-expected {
+    background: #1e293b;
+    border-radius: 8px;
+    overflow: hidden;
+    margin-bottom: 20px;
+  }
+
+  .contest-expected-label {
+    background: #334155;
+    color: #94a3b8;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 6px 14px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .contest-expected-body {
+    color: #e2e8f0;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    line-height: 1.6;
+    padding: 12px 16px;
+    margin: 0;
+    white-space: pre;
+  }
+
+  .contest-write-area {
+    border: 2px dashed var(--gray-300);
+    border-radius: 10px;
+    overflow: hidden;
+    transition: border-color 0.2s;
+  }
+
+  .contest-write-area:focus-within {
+    border-color: var(--orange);
+    border-style: solid;
+  }
+
+  .contest-write-label {
+    background: var(--bg);
+    color: var(--gray-500);
+    font-size: 12px;
+    font-weight: 600;
+    padding: 8px 14px;
+    border-bottom: 1px solid var(--gray-200);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .contest-textarea {
+    width: 100%;
+    min-height: 200px;
+    padding: 16px 18px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    line-height: 1.7;
+    color: var(--text);
+    background: #fafbfc;
+    border: none;
+    outline: none;
+    resize: vertical;
+    tab-size: 4;
+    box-sizing: border-box;
+  }
+
+  .contest-textarea::placeholder {
+    color: var(--gray-300);
+  }
+
+  @media print {
+    body { background: white; }
+    .page { box-shadow: none; margin: 0; page-break-after: always; }
+    .contest-textarea { border: 1px solid var(--gray-300); min-height: 180px; }
+  }
+
+</style>
+</head>
+<body>
+
+<div class="page">
+  <div class="chapter-page">
+    <div class="chapter-sidebar"></div>
+    <div class="chapter-accent-bar"></div>
+    <div class="chapter-body">
+      <div class="chapter-watermark">29</div>
+      <div class="chapter-label">Chapter 29</div>
+      <h1 class="chapter-title">완전 탐색 (Brute Force)</h1>
+      <p class="chapter-sub">모든 경우를 빠짐없이 다 해보는 완전 탐색 방법을 배워요.</p>
+
+      <h3 class="obj-title">이 유닛에서 배우는 것</h3>
+      <ul class="obj-list">
+        <li>완전 탐색(Brute Force)의 뜻을 설명할 수 있어요.</li>
+        <li>모든 경우를 나열하는 방법을 알아요.</li>
+        <li>반복문으로 완전 탐색을 구현할 수 있어요.</li>
+        <li>완전 탐색이 적합한 문제와 아닌 문제를 구분해요.</li>
+        <li>[심화] 비트마스크로 부분집합을 탐색할 수 있어요.</li>
+        <li>[심화] 순열과 조합의 완전 탐색을 이해해요.</li>
+        <li>[심화 내용] 가지치기와 백트래킹의 관계를 알아요.</li>
+      </ul>
+
+      <h3 class="prereq-title">선수 학습</h3>
+      <div class="prereq-flow">
+        <div class="prereq-item">반복문(for, while) 기본</div><div class="prereq-arrow">→</div>
+        <div class="prereq-item current">의사코드 작성 (U28)</div>
+      </div>
+
+      
+
+      <span class="page-num">1</span>
+    </div>
+  </div>
+</div>
+<div class="page">
+  <div class="content-page">
+    <div class="unit-header-bar">
+      <span class="unit-tag">UNIT 29</span>
+      <span class="unit-title-sm">완전 탐색 (Brute Force)</span>
+    </div>
+<h2 class="section-title">완전 탐색이 뭘까?</h2>
+
+<div class="note-box"><span class="note-label">[핵심] 완전 탐색이란?</span>
+<b>완전 탐색(Brute Force)</b> = 가능한 <b>모든 경우</b>를 빠짐없이 시도하는 방법<br><br>장점: 반드시 정답을 찾는다!<br>단점: 경우가 많으면 시간이 오래 걸린다<br><br>언제 쓸까?<br>• N이 <b>작을 때</b> (보통 N ≤ 20)<br>• 다른 방법이 <b>떠오르지 않을 때</b><br>• 정답을 <b>확인</b>하고 싶을 때</div>
+<h2 class="section-title">예시: 자물쇠 비밀번호 찾기</h2>
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span><span class="code-bar-file">lock_brute.c</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;stdio.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">main</span>(<span class="s-type">void</span>) {</span></div>
+<div class="code-line"><span class="ln">4</span><span class="lc">    <span class="s-type">int</span> password = <span class="s-num">742</span>;  <span class="s-cm">// 실제 비밀번호 (모른다고 가정)</span></span></div>
+<div class="code-line"><span class="ln">5</span><span class="lc">    </span></div>
+<div class="code-line"><span class="ln">6</span><span class="lc">    <span class="s-cm">// 완전 탐색: 000~999 전부 시도!</span></span></div>
+<div class="code-line"><span class="ln">7</span><span class="lc">    <span class="s-kw">for</span> (<span class="s-type">int</span> guess = <span class="s-num">0</span>; guess &lt;= <span class="s-num">999</span>; guess++) {</span></div>
+<div class="code-line"><span class="ln">8</span><span class="lc">        <span class="s-kw">if</span> (guess == password) {</span></div>
+<div class="code-line"><span class="ln">9</span><span class="lc">            <span class="s-fn">printf</span>(<span class="s-str">"비밀번호 찾았다! %03d\n"</span>, guess);</span></div>
+<div class="code-line"><span class="ln">10</span><span class="lc">            <span class="s-kw">break</span>;</span></div>
+<div class="code-line"><span class="ln">11</span><span class="lc">        }</span></div>
+<div class="code-line"><span class="ln">12</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">13</span><span class="lc">    <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">14</span><span class="lc">}</span></div>
+</div>
+</div>
+<div class="output-wrap"><div class="output-bar">실행 결과</div><div class="output-body">비밀번호 찾았다! 742</div></div>
+<div class="tip"><span class="tip-label">[팁] 완전 탐색의 핵심 패턴</span>
+1. <b>모든 경우 나열</b>: for문으로 전부 돌기<br>2. <b>조건 확인</b>: if로 정답인지 체크<br>3. <b>정답이면 멈춤</b>: break 또는 return<br><br>이 3단계만 기억하면 어떤 완전 탐색이든 구현 가능!</div>
+<div style="margin:22px 0"></div>
+<table class="trace"><thead><tr><th>시도 번호(guess)</th><th>guess == 742?</th><th>동작</th><th>결과</th></tr></thead><tbody><tr><td>0</td><td>0 ≠ 742</td><td>continue</td><td>다음 시도</td></tr><tr><td>1</td><td>1 ≠ 742</td><td>continue</td><td>다음 시도</td></tr><tr><td>...</td><td>...</td><td>continue</td><td>계속 반복</td></tr><tr><td>741</td><td>741 ≠ 742</td><td>continue</td><td>다음 시도</td></tr><tr><td>742</td><td>742 == 742 ✅</td><td>break!</td><td>비밀번호 찾음!</td></tr><tr><td>743~999</td><td>실행 안 됨</td><td>—</td><td>break로 종료됨</td></tr></tbody></table>
+<h2 class="section-title">예시: 배열에서 두 수의 합 찾기</h2>
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span><span class="code-bar-file">two_sum.c</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;stdio.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc"><span class="s-cm">// 배열에서 합이 target인 두 수 찾기</span></span></div>
+<div class="code-line"><span class="ln">4</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">main</span>(<span class="s-type">void</span>) {</span></div>
+<div class="code-line"><span class="ln">5</span><span class="lc">    <span class="s-type">int</span> arr[] = {<span class="s-num">2</span>, <span class="s-num">7</span>, <span class="s-num">11</span>, <span class="s-num">15</span>, <span class="s-num">1</span>};</span></div>
+<div class="code-line"><span class="ln">6</span><span class="lc">    <span class="s-type">int</span> n = <span class="s-num">5</span>;</span></div>
+<div class="code-line"><span class="ln">7</span><span class="lc">    <span class="s-type">int</span> target = <span class="s-num">9</span>;</span></div>
+<div class="code-line"><span class="ln">8</span><span class="lc">    </span></div>
+<div class="code-line"><span class="ln">9</span><span class="lc">    <span class="s-cm">// 완전 탐색: 모든 쌍 (i, j) 시도</span></span></div>
+<div class="code-line"><span class="ln">10</span><span class="lc">    <span class="s-kw">for</span> (<span class="s-type">int</span> i = <span class="s-num">0</span>; i &lt; n; i++) {</span></div>
+<div class="code-line"><span class="ln">11</span><span class="lc">        <span class="s-kw">for</span> (<span class="s-type">int</span> j = i + <span class="s-num">1</span>; j &lt; n; j++) {</span></div>
+<div class="code-line"><span class="ln">12</span><span class="lc">            <span class="s-kw">if</span> (arr[i] + arr[j] == target) {</span></div>
+<div class="code-line"><span class="ln">13</span><span class="lc">                <span class="s-fn">printf</span>(<span class="s-str">"arr[%d] + arr[%d] = %d + %d = %d\n"</span>,</span></div>
+<div class="code-line"><span class="ln">14</span><span class="lc">                       i, j, arr[i], arr[j], target);</span></div>
+<div class="code-line"><span class="ln">15</span><span class="lc">            }</span></div>
+<div class="code-line"><span class="ln">16</span><span class="lc">        }</span></div>
+<div class="code-line"><span class="ln">17</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">18</span><span class="lc">    <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">19</span><span class="lc">}</span></div>
+</div>
+</div>
+<div class="output-wrap"><div class="output-bar">실행 결과</div><div class="output-body">arr[0] + arr[1] = 2 + 7 = 9</div></div>
+<div class="note-box"><span class="note-label">[핵심] 2중 반복문 = 모든 쌍</span>
+배열에서 두 원소의 모든 조합을 확인하려면<br>2중 for문으로 <b>모든 쌍 (i, j)</b>를 시도!<br><br>j = i + 1부터 시작하면 중복 없이 탐색<br>시간 복잡도: O(n²)</div>
+<table class="trace"><thead><tr><th>i</th><th>j</th><th>arr[i]</th><th>arr[j]</th><th>합</th><th>target(9)?</th></tr></thead><tbody><tr><td>0</td><td>1</td><td>2</td><td>7</td><td>9</td><td>✅ 일치!</td></tr><tr><td>0</td><td>2</td><td>2</td><td>11</td><td>13</td><td>❌</td></tr><tr><td>0</td><td>3</td><td>2</td><td>15</td><td>17</td><td>❌</td></tr><tr><td>0</td><td>4</td><td>2</td><td>1</td><td>3</td><td>❌</td></tr><tr><td>1</td><td>2</td><td>7</td><td>11</td><td>18</td><td>❌</td></tr><tr><td>1</td><td>3</td><td>7</td><td>15</td><td>22</td><td>❌</td></tr><tr><td>1</td><td>4</td><td>7</td><td>1</td><td>8</td><td>❌</td></tr><tr><td>2</td><td>3</td><td>11</td><td>15</td><td>26</td><td>❌</td></tr><tr><td>2</td><td>4</td><td>11</td><td>1</td><td>12</td><td>❌</td></tr><tr><td>3</td><td>4</td><td>15</td><td>1</td><td>16</td><td>❌</td></tr></tbody></table>
+<div style="margin:22px 0"></div>
+<h2 class="section-title">완전 탐색이 적합한 경우</h2>
+<table class="trace"><thead><tr><th>경우의 수</th><th>적합?</th><th>이유</th><th>예시</th></tr></thead><tbody><tr><td>100</td><td>✅ 매우 적합</td><td>순식간</td><td>3자리 비밀번호</td></tr><tr><td>10,000</td><td>✅ 적합</td><td>0.01초 이내</td><td>4자리 비밀번호</td></tr><tr><td>1,000,000</td><td>⚠️ 주의</td><td>1초 내외</td><td>배열 순회</td></tr><tr><td>1,000,000,000</td><td>❌ 부적합</td><td>수 초~수 분</td><td>다른 방법 필요</td></tr><tr><td>2²⁰ ≈ 100만</td><td>✅ 경계선</td><td>부분집합 탐색</td><td>N≤20</td></tr></tbody></table>
+
+<div class="debug-section"><div class="debug-bar">DEBUG LAB — 에러를 찾으시오</div><div class="debug-body">
+
+<p style="margin:14px 0 0; font-size:14px;"><b>에러:</b> </p>
+<p style="font-size:14px;"><b>수정:</b> </p>
+</div></div>
+<h2 class="section-title">다양한 완전 탐색 유형</h2>
+<table class="trace"><thead><tr><th>유형</th><th>탐색 대상</th><th>반복문</th><th>경우의 수</th><th>예시</th></tr></thead><tbody><tr><td>선형 탐색</td><td>배열 원소</td><td>1중 for</td><td>N</td><td>최대값 찾기</td></tr><tr><td>쌍 탐색</td><td>모든 쌍</td><td>2중 for</td><td>N²</td><td>두 수의 합</td></tr><tr><td>트리플 탐색</td><td>세 원소 조합</td><td>3중 for</td><td>N³</td><td>세 수의 합</td></tr><tr><td>부분집합</td><td>모든 부분집합</td><td>비트마스크</td><td>2ⁿ</td><td>N≤20</td></tr><tr><td>순열</td><td>모든 배치</td><td>재귀/next_permutation</td><td>N!</td><td>N≤10</td></tr></tbody></table>
+<h2 class="section-title">[심화] 비트마스크로 부분집합 탐색</h2>
+<p>집합 {A, B, C}의 모든 부분집합을 어떻게 나열할까? <b>비트마스크</b>를 쓰면 됩니다!</p>
+<table class="trace"><thead><tr><th>mask (10진)</th><th>mask (2진)</th><th>비트2(C)</th><th>비트1(B)</th><th>비트0(A)</th><th>부분집합</th></tr></thead><tbody><tr><td>0</td><td>000</td><td>0</td><td>0</td><td>0</td><td>{ } (공집합)</td></tr><tr><td>1</td><td>001</td><td>0</td><td>0</td><td>1</td><td>{ A }</td></tr><tr><td>2</td><td>010</td><td>0</td><td>1</td><td>0</td><td>{ B }</td></tr><tr><td>3</td><td>011</td><td>0</td><td>1</td><td>1</td><td>{ A, B }</td></tr><tr><td>4</td><td>100</td><td>1</td><td>0</td><td>0</td><td>{ C }</td></tr><tr><td>5</td><td>101</td><td>1</td><td>0</td><td>1</td><td>{ A, C }</td></tr><tr><td>6</td><td>110</td><td>1</td><td>1</td><td>0</td><td>{ B, C }</td></tr><tr><td>7</td><td>111</td><td>1</td><td>1</td><td>1</td><td>{ A, B, C }</td></tr></tbody></table>
+<div style="margin:22px 0"></div>
+<div class="note-box"><span class="note-label">[심화] 비트마스크 부분집합</span>
+N개 원소의 부분집합 = 2ⁿ개<br>각 원소를 포함(1)/미포함(0)으로 표현<br><br>{A, B, C}: 3비트로 표현<br>000 = {} (공집합)<br>001 = {C}<br>010 = {B}<br>011 = {B, C}<br>100 = {A}<br>101 = {A, C}<br>110 = {A, B}<br>111 = {A, B, C}</div>
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span><span class="code-bar-file">subset_bitmask.c</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;stdio.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">main</span>(<span class="s-type">void</span>) {</span></div>
+<div class="code-line"><span class="ln">4</span><span class="lc">    <span class="s-type">char</span> items[] = {<span class="s-str">'A'</span>, <span class="s-str">'B'</span>, <span class="s-str">'C'</span>};</span></div>
+<div class="code-line"><span class="ln">5</span><span class="lc">    <span class="s-type">int</span> n = <span class="s-num">3</span>;</span></div>
+<div class="code-line"><span class="ln">6</span><span class="lc">    </span></div>
+<div class="code-line"><span class="ln">7</span><span class="lc">    <span class="s-cm">// 0부터 2^n - 1까지 모든 비트마스크</span></span></div>
+<div class="code-line"><span class="ln">8</span><span class="lc">    <span class="s-kw">for</span> (<span class="s-type">int</span> mask = <span class="s-num">0</span>; mask &lt; (<span class="s-num">1</span> &lt;&lt; n); mask++) {</span></div>
+<div class="code-line"><span class="ln">9</span><span class="lc">        <span class="s-fn">printf</span>(<span class="s-str">"{ "</span>);</span></div>
+<div class="code-line"><span class="ln">10</span><span class="lc">        <span class="s-kw">for</span> (<span class="s-type">int</span> i = <span class="s-num">0</span>; i &lt; n; i++) {</span></div>
+<div class="code-line"><span class="ln">11</span><span class="lc">            <span class="s-kw">if</span> (mask &amp; (<span class="s-num">1</span> &lt;&lt; i))  <span class="s-cm">// i번째 비트가 1이면 포함</span></span></div>
+<div class="code-line"><span class="ln">12</span><span class="lc">                <span class="s-fn">printf</span>(<span class="s-str">"%c "</span>, items[i]);</span></div>
+<div class="code-line"><span class="ln">13</span><span class="lc">        }</span></div>
+<div class="code-line"><span class="ln">14</span><span class="lc">        <span class="s-fn">printf</span>(<span class="s-str">"}\n"</span>);</span></div>
+<div class="code-line"><span class="ln">15</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">16</span><span class="lc">    <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">17</span><span class="lc">}</span></div>
+</div>
+</div>
+<div class="output-wrap"><div class="output-bar">실행 결과</div><div class="output-body">{ }
+{ A }
+{ B }
+{ A B }
+{ C }
+{ A C }
+{ B C }
+{ A B C }</div></div>
+<h2 class="section-title">[심화] 순열 완전 탐색</h2>
+<table class="trace"><thead><tr><th>호출</th><th>start</th><th>교환</th><th>결과 순열</th><th>원복</th></tr></thead><tbody><tr><td>permute(0)</td><td>0</td><td>swap(0,0)</td><td>→ permute(1)</td><td>—</td></tr><tr><td>permute(1)</td><td>1</td><td>swap(1,1)</td><td>→ permute(2)</td><td>—</td></tr><tr><td>permute(2)</td><td>2</td><td>완성!</td><td>1 2 3 출력</td><td>—</td></tr><tr><td>permute(1)</td><td>1</td><td>swap(1,2)</td><td>→ permute(2)</td><td>swap(1,2)</td></tr><tr><td>permute(2)</td><td>2</td><td>완성!</td><td>1 3 2 출력</td><td>—</td></tr><tr><td>permute(0)</td><td>0</td><td>swap(0,1)</td><td>→ permute(1)</td><td>swap(0,1)</td></tr><tr><td>permute(1)</td><td>1</td><td>swap(1,1)</td><td>→ permute(2)</td><td>—</td></tr><tr><td>permute(2)</td><td>2</td><td>완성!</td><td>2 1 3 출력</td><td>—</td></tr><tr><td>permute(1)</td><td>1</td><td>swap(1,2)</td><td>→ permute(2)</td><td>swap(1,2)</td></tr><tr><td>permute(2)</td><td>2</td><td>완성!</td><td>2 3 1 출력</td><td>—</td></tr></tbody></table>
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span><span class="code-bar-file">permutation.c</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;stdio.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc"><span class="s-type">void</span> <span class="s-fn">swap</span>(<span class="s-type">int</span> *a, <span class="s-type">int</span> *b) {</span></div>
+<div class="code-line"><span class="ln">4</span><span class="lc">    <span class="s-type">int</span> tmp = *a; *a = *b; *b = tmp;</span></div>
+<div class="code-line"><span class="ln">5</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">6</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">7</span><span class="lc"><span class="s-type">void</span> <span class="s-fn">permute</span>(<span class="s-type">int</span> arr[], <span class="s-type">int</span> start, <span class="s-type">int</span> end) {</span></div>
+<div class="code-line"><span class="ln">8</span><span class="lc">    <span class="s-kw">if</span> (start == end) {</span></div>
+<div class="code-line"><span class="ln">9</span><span class="lc">        <span class="s-cm">// 하나의 순열 완성!</span></span></div>
+<div class="code-line"><span class="ln">10</span><span class="lc">        <span class="s-kw">for</span> (<span class="s-type">int</span> i = <span class="s-num">0</span>; i &lt;= end; i++)</span></div>
+<div class="code-line"><span class="ln">11</span><span class="lc">            <span class="s-fn">printf</span>(<span class="s-str">"%d "</span>, arr[i]);</span></div>
+<div class="code-line"><span class="ln">12</span><span class="lc">        <span class="s-fn">printf</span>(<span class="s-str">"\n"</span>);</span></div>
+<div class="code-line"><span class="ln">13</span><span class="lc">        <span class="s-kw">return</span>;</span></div>
+<div class="code-line"><span class="ln">14</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">15</span><span class="lc">    <span class="s-kw">for</span> (<span class="s-type">int</span> i = start; i &lt;= end; i++) {</span></div>
+<div class="code-line"><span class="ln">16</span><span class="lc">        <span class="s-fn">swap</span>(&amp;arr[start], &amp;arr[i]);</span></div>
+<div class="code-line"><span class="ln">17</span><span class="lc">        <span class="s-fn">permute</span>(arr, start + <span class="s-num">1</span>, end);  <span class="s-cm">// 재귀!</span></span></div>
+<div class="code-line"><span class="ln">18</span><span class="lc">        <span class="s-fn">swap</span>(&amp;arr[start], &amp;arr[i]);     <span class="s-cm">// 원복</span></span></div>
+<div class="code-line"><span class="ln">19</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">20</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">21</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">22</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">main</span>(<span class="s-type">void</span>) {</span></div>
+<div class="code-line"><span class="ln">23</span><span class="lc">    <span class="s-type">int</span> arr[] = {<span class="s-num">1</span>, <span class="s-num">2</span>, <span class="s-num">3</span>};</span></div>
+<div class="code-line"><span class="ln">24</span><span class="lc">    <span class="s-fn">permute</span>(arr, <span class="s-num">0</span>, <span class="s-num">2</span>);  <span class="s-cm">// 3! = 6가지</span></span></div>
+<div class="code-line"><span class="ln">25</span><span class="lc">    <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">26</span><span class="lc">}</span></div>
+</div>
+</div>
+<div class="output-wrap"><div class="output-bar">실행 결과</div><div class="output-body">1 2 3
+1 3 2
+2 1 3
+2 3 1
+3 2 1
+3 1 2</div></div>
+<h2 class="section-title">[심화] KOI 실전: 완전 탐색 문제</h2>
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span><span class="code-bar-file">koi_brute.c</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc"><span class="s-cm">// KOI 유형: N개의 수에서 M개를 골라 합의 최대값</span></span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;stdio.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">4</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">main</span>(<span class="s-type">void</span>) {</span></div>
+<div class="code-line"><span class="ln">5</span><span class="lc">    <span class="s-type">int</span> arr[] = {<span class="s-num">3</span>, <span class="s-num">1</span>, <span class="s-num">4</span>, <span class="s-num">1</span>, <span class="s-num">5</span>, <span class="s-num">9</span>, <span class="s-num">2</span>, <span class="s-num">6</span>};</span></div>
+<div class="code-line"><span class="ln">6</span><span class="lc">    <span class="s-type">int</span> n = <span class="s-num">8</span>;</span></div>
+<div class="code-line"><span class="ln">7</span><span class="lc">    <span class="s-type">int</span> maxSum = <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">8</span><span class="lc">    </span></div>
+<div class="code-line"><span class="ln">9</span><span class="lc">    <span class="s-cm">// 3개를 고르는 모든 조합 (3중 for)</span></span></div>
+<div class="code-line"><span class="ln">10</span><span class="lc">    <span class="s-kw">for</span> (<span class="s-type">int</span> i = <span class="s-num">0</span>; i &lt; n; i++)</span></div>
+<div class="code-line"><span class="ln">11</span><span class="lc">        <span class="s-kw">for</span> (<span class="s-type">int</span> j = i + <span class="s-num">1</span>; j &lt; n; j++)</span></div>
+<div class="code-line"><span class="ln">12</span><span class="lc">            <span class="s-kw">for</span> (<span class="s-type">int</span> k = j + <span class="s-num">1</span>; k &lt; n; k++) {</span></div>
+<div class="code-line"><span class="ln">13</span><span class="lc">                <span class="s-type">int</span> sum = arr[i] + arr[j] + arr[k];</span></div>
+<div class="code-line"><span class="ln">14</span><span class="lc">                <span class="s-kw">if</span> (sum &gt; maxSum)</span></div>
+<div class="code-line"><span class="ln">15</span><span class="lc">                    maxSum = sum;</span></div>
+<div class="code-line"><span class="ln">16</span><span class="lc">            }</span></div>
+<div class="code-line"><span class="ln">17</span><span class="lc">    </span></div>
+<div class="code-line"><span class="ln">18</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"3개 합의 최대: %d\n"</span>, maxSum);  <span class="s-cm">// 9+6+5=20</span></span></div>
+<div class="code-line"><span class="ln">19</span><span class="lc">    <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">20</span><span class="lc">}</span></div>
+</div>
+</div>
+<div class="output-wrap"><div class="output-bar">실행 결과</div><div class="output-body">3개 합의 최대: 20</div></div>
+<table class="trace"><thead><tr><th>i</th><th>j</th><th>k</th><th>arr[i]+arr[j]+arr[k]</th><th>합</th><th>maxSum 갱신?</th></tr></thead><tbody><tr><td>0</td><td>1</td><td>2</td><td>3+1+4</td><td>8</td><td>✅ maxSum=8</td></tr><tr><td>0</td><td>1</td><td>5</td><td>3+1+9</td><td>13</td><td>✅ maxSum=13</td></tr><tr><td>0</td><td>4</td><td>5</td><td>3+5+9</td><td>17</td><td>✅ maxSum=17</td></tr><tr><td>0</td><td>5</td><td>7</td><td>3+9+6</td><td>18</td><td>✅ maxSum=18</td></tr><tr><td>2</td><td>4</td><td>5</td><td>4+5+9</td><td>18</td><td>❌ 같음</td></tr><tr><td>4</td><td>5</td><td>7</td><td>5+9+6</td><td>20</td><td>✅ maxSum=20</td></tr><tr><td>...</td><td>...</td><td>...</td><td>나머지 조합</td><td>≤20</td><td>❌ 갱신 없음</td></tr></tbody></table>
+<h2 class="section-title">[심화 내용] 백트래킹 — 똑똑한 완전 탐색</h2>
+<div class="debug-section"><div class="debug-bar">DEBUG LAB — 에러를 찾으시오</div><div class="debug-body">
+
+<p style="margin:14px 0 0; font-size:14px;"><b>에러:</b> </p>
+<p style="font-size:14px;"><b>수정:</b> </p>
+</div></div>
+<div style="margin:22px 0"></div>
+<div class="note-box"><span class="note-label">[심화 내용] 백트래킹 (Backtracking)</span>
+완전 탐색 + <b>가지치기(pruning)</b> = 백트래킹<br><br>모든 경우를 다 보지 않고, <b>유망하지 않은 경로</b>를 미리 포기!<br><br>예: N-Queen 문제<br>• 완전 탐색: N! 가지 모두 시도<br>• 백트래킹: 같은 열/대각선이면 즉시 건너뜀<br>• 8-Queen: 40,320 → 약 114가지만 탐색!</div>
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span><span class="code-bar-file">nqueen.c</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;stdio.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;stdlib.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">4</span><span class="lc"><span class="s-pp">#define</span> N <span class="s-num">8</span></span></div>
+<div class="code-line"><span class="ln">5</span><span class="lc"><span class="s-type">int</span> col[N];  <span class="s-cm">// col[i] = i행의 퀸 열 번호</span></span></div>
+<div class="code-line"><span class="ln">6</span><span class="lc"><span class="s-type">int</span> count = <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">7</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">8</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">promising</span>(<span class="s-type">int</span> row) {</span></div>
+<div class="code-line"><span class="ln">9</span><span class="lc">    <span class="s-kw">for</span> (<span class="s-type">int</span> i = <span class="s-num">0</span>; i &lt; row; i++) {</span></div>
+<div class="code-line"><span class="ln">10</span><span class="lc">        <span class="s-kw">if</span> (col[i] == col[row])              <span class="s-kw">return</span> <span class="s-num">0</span>; <span class="s-cm">// 같은 열</span></span></div>
+<div class="code-line"><span class="ln">11</span><span class="lc">        <span class="s-kw">if</span> (<span class="s-fn">abs</span>(col[i]-col[row]) == row-i)   <span class="s-kw">return</span> <span class="s-num">0</span>; <span class="s-cm">// 대각선</span></span></div>
+<div class="code-line"><span class="ln">12</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">13</span><span class="lc">    <span class="s-kw">return</span> <span class="s-num">1</span>;</span></div>
+<div class="code-line"><span class="ln">14</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">15</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">16</span><span class="lc"><span class="s-type">void</span> <span class="s-fn">solve</span>(<span class="s-type">int</span> row) {</span></div>
+<div class="code-line"><span class="ln">17</span><span class="lc">    <span class="s-kw">if</span> (row == N) { count++; <span class="s-kw">return</span>; }  <span class="s-cm">// 해 발견!</span></span></div>
+<div class="code-line"><span class="ln">18</span><span class="lc">    <span class="s-kw">for</span> (<span class="s-type">int</span> c = <span class="s-num">0</span>; c &lt; N; c++) {</span></div>
+<div class="code-line"><span class="ln">19</span><span class="lc">        col[row] = c;</span></div>
+<div class="code-line"><span class="ln">20</span><span class="lc">        <span class="s-kw">if</span> (<span class="s-fn">promising</span>(row))  <span class="s-cm">// 가지치기!</span></span></div>
+<div class="code-line"><span class="ln">21</span><span class="lc">            <span class="s-fn">solve</span>(row + <span class="s-num">1</span>);</span></div>
+<div class="code-line"><span class="ln">22</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">23</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">24</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">25</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">main</span>(<span class="s-type">void</span>) {</span></div>
+<div class="code-line"><span class="ln">26</span><span class="lc">    <span class="s-fn">solve</span>(<span class="s-num">0</span>);</span></div>
+<div class="code-line"><span class="ln">27</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"%d-Queen 해의 수: %d\n"</span>, N, count);  <span class="s-cm">// 92</span></span></div>
+<div class="code-line"><span class="ln">28</span><span class="lc">    <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">29</span><span class="lc">}</span></div>
+</div>
+</div>
+<div class="output-wrap"><div class="output-bar">실행 결과</div><div class="output-body">8-Queen 해의 수: 92</div></div>
+<table class="trace"><thead><tr><th>행</th><th>시도 열</th><th>같은 열?</th><th>대각선?</th><th>결과</th></tr></thead><tbody><tr><td>0행</td><td>0열</td><td>—</td><td>—</td><td>✅ 배치 (col[0]=0)</td></tr><tr><td>1행</td><td>0열</td><td>col[0]=0 충돌!</td><td>—</td><td>❌ 가지치기</td></tr><tr><td>1행</td><td>1열</td><td>OK</td><td>대각선 충돌!</td><td>❌ 가지치기</td></tr><tr><td>1행</td><td>2열</td><td>OK</td><td>OK</td><td>✅ 배치 (col[1]=2)</td></tr><tr><td>2행</td><td>0열</td><td>OK</td><td>대각선 충돌!</td><td>❌ 가지치기</td></tr><tr><td>2행</td><td>1열</td><td>OK</td><td>OK</td><td>✅ 배치 (col[2]=1)... 3행 실패 → 백트랙</td></tr><tr><td>2행</td><td>3열</td><td>OK</td><td>OK</td><td>✅ 배치 (col[2]=3)... 3행에서 col[3]=1 성공!</td></tr><tr><td>3행</td><td>1열</td><td>OK</td><td>OK</td><td>✅ 해 발견: {0,2,3,1}</td></tr></tbody></table>
+<h2 class="section-title">[심화 내용] 완전 탐색의 한계와 대안</h2>
+<div class="debug-section"><div class="debug-bar">DEBUG LAB — 에러를 찾으시오</div><div class="debug-body">
+
+<p style="margin:14px 0 0; font-size:14px;"><b>에러:</b> </p>
+<p style="font-size:14px;"><b>수정:</b> </p>
+</div></div>
+<table class="trace"><thead><tr><th>N</th><th>O(N)</th><th>O(N²)</th><th>O(2ⁿ)</th><th>O(N!)</th><th>완전 탐색 가능?</th></tr></thead><tbody><tr><td>5</td><td>5</td><td>25</td><td>32</td><td>120</td><td>✅ 모두 가능</td></tr><tr><td>10</td><td>10</td><td>100</td><td>1,024</td><td>3,628,800</td><td>✅ 가능 (순열도 OK)</td></tr><tr><td>15</td><td>15</td><td>225</td><td>32,768</td><td>1.3조</td><td>⚠️ 부분집합까지만</td></tr><tr><td>20</td><td>20</td><td>400</td><td>1,048,576</td><td>2.4×10¹⁸</td><td>⚠️ 비트마스크만 가능</td></tr><tr><td>25</td><td>25</td><td>625</td><td>33,554,432</td><td>—</td><td>❌ MitM 필요</td></tr><tr><td>30</td><td>30</td><td>900</td><td>10억</td><td>—</td><td>❌ 불가능</td></tr></tbody></table>
+<div class="debug-section"><div class="debug-bar">DEBUG LAB — 에러를 찾으시오</div><div class="debug-body">
+
+<p style="margin:14px 0 0; font-size:14px;"><b>에러:</b> </p>
+<p style="font-size:14px;"><b>수정:</b> </p>
+</div></div>
+<h2 class="section-title">활동: 완전 탐색 체험</h2>
+<div class="tip"><span class="tip-label">[활동] 종이 완전 탐색</span>
+숫자 카드 4장 {1, 2, 3, 4}를 사용해<br><br>1. 두 수의 합이 5인 모든 쌍을 찾으세요<br>2. 세 수의 합이 6인 모든 조합을 찾으세요<br>3. 모든 부분집합을 나열하세요 (2⁴=16개)<br><br>직접 손으로 하면 완전 탐색의 원리를 체감!</div>
+<!-- fact-bite -->
+<h2 class="section-title">OX 퀴즈</h2>
+<!-- ox -->
+<h2 class="section-title">연습문제</h2>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 1</span><p style="margin:0;font-size:14px">완전 탐색이란 무엇인지 한 문장으로 설명하세요.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 2</span><p style="margin:0;font-size:14px">3자리 비밀번호를 완전 탐색하면 최대 몇 번 시도해야 하나요?</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 3</span><p style="margin:0;font-size:14px">완전 탐색의 장점과 단점을 각각 하나씩 쓰세요.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 4</span><p style="margin:0;font-size:14px">배열 {5,3,8,1}에서 가장 큰 수를 완전 탐색으로 찾는 과정을 설명하세요.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 5</span><p style="margin:0;font-size:14px">2중 for문으로 모든 쌍을 탐색할 때 시간 복잡도는?</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 6</span><p style="margin:0;font-size:14px">배열 {1,3,5,7}에서 합이 8인 두 수의 쌍을 모두 찾으세요.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 7</span><p style="margin:0;font-size:14px">N=4일 때 모든 부분집합의 수는? (공집합 포함)</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 8</span><p style="margin:0;font-size:14px">N=3일 때 모든 순열의 수는?</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 9</span><p style="margin:0;font-size:14px">완전 탐색이 적합한 N의 범위는 보통 얼마 이하인가요?</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 10</span><p style="margin:0;font-size:14px">비트마스크 0b101은 집합 {A,B,C}에서 어떤 부분집합을 나타내나요?</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 11</span><p style="margin:0;font-size:14px">[심화] N=5일 때 비트마스크로 모든 부분집합을 나열하는 C 코드의 for문을 쓰세요.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 12</span><p style="margin:0;font-size:14px">[심화] 백트래킹이 완전 탐색보다 빠른 이유를 N-Queen으로 설명하세요.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 13</span><p style="margin:0;font-size:14px">[심화] 4개 원소의 모든 순열(4!=24개) 중 첫 5개를 나열하세요.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 14</span><p style="margin:0;font-size:14px">[심화 내용] 완전 탐색 O(2ⁿ)과 O(n!)의 차이를 N=10, N=15에서 비교하세요.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 15</span><p style="margin:0;font-size:14px">[심화 내용] 가지치기(pruning)란 무엇이고, 최악의 경우에도 효과가 있나요?</p></div>
+<h2 class="section-title">용어 정리</h2>
+<h2 class="section-title">[심화 내용] 완전 탐색의 최적화 기법</h2>
+<div class="note-box"><span class="note-label">[심화 내용] 가지치기 (Pruning)</span>
+완전 탐색은 모든 경우를 탐색하지만,<br><b>불필요한 경우를 미리 제거</b>하면 훨씬 빨라져요!<br><br><b>1. 조건 가지치기</b><br>현재까지의 부분해가 이미 조건을 위반하면 중단<br>예: 부분합이 목표를 초과하면 더 탐색할 필요 없음<br><br><b>2. 대칭 제거</b><br>대칭인 경우를 한 번만 탐색<br>예: N-Queen에서 첫 행은 절반만 시도<br><br><b>3. 상한/하한 (Bound)</b><br>현재까지의 최적해보다 나을 수 없으면 중단<br>= <b>분기한정법 (Branch and Bound)</b><br><br><b>4. 메모이제이션</b><br>같은 상태를 다시 방문하면 저장된 결과 재사용<br>= 완전탐색 → DP로 전환!</div>
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span><span class="code-bar-file">[C 코드] N-Queen (백트래킹 + 가지치기)</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;stdio.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;stdlib.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">4</span><span class="lc"><span class="s-type">int</span> N, count = <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">5</span><span class="lc"><span class="s-type">int</span> col[<span class="s-num">20</span>];</span></div>
+<div class="code-line"><span class="ln">6</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">7</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">is_safe</span>(<span class="s-type">int</span> row, <span class="s-type">int</span> c) {</span></div>
+<div class="code-line"><span class="ln">8</span><span class="lc">    <span class="s-kw">for</span> (<span class="s-type">int</span> i = <span class="s-num">0</span>; i &lt; row; i++) {</span></div>
+<div class="code-line"><span class="ln">9</span><span class="lc">        <span class="s-kw">if</span> (col[i] == c) <span class="s-kw">return</span> <span class="s-num">0</span>;           <span class="s-cm">// 같은 열</span></span></div>
+<div class="code-line"><span class="ln">10</span><span class="lc">        <span class="s-kw">if</span> (<span class="s-fn">abs</span>(col[i]-c) == <span class="s-fn">abs</span>(i-row)) <span class="s-kw">return</span> <span class="s-num">0</span>; <span class="s-cm">// 대각선</span></span></div>
+<div class="code-line"><span class="ln">11</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">12</span><span class="lc">    <span class="s-kw">return</span> <span class="s-num">1</span>;</span></div>
+<div class="code-line"><span class="ln">13</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">14</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">15</span><span class="lc"><span class="s-type">void</span> <span class="s-fn">solve</span>(<span class="s-type">int</span> row) {</span></div>
+<div class="code-line"><span class="ln">16</span><span class="lc">    <span class="s-kw">if</span> (row == N) { count++; <span class="s-kw">return</span>; }</span></div>
+<div class="code-line"><span class="ln">17</span><span class="lc">    <span class="s-kw">for</span> (<span class="s-type">int</span> c = <span class="s-num">0</span>; c &lt; N; c++) {</span></div>
+<div class="code-line"><span class="ln">18</span><span class="lc">        <span class="s-kw">if</span> (<span class="s-fn">is_safe</span>(row, c)) {  <span class="s-cm">// 가지치기!</span></span></div>
+<div class="code-line"><span class="ln">19</span><span class="lc">            col[row] = c;</span></div>
+<div class="code-line"><span class="ln">20</span><span class="lc">            <span class="s-fn">solve</span>(row + <span class="s-num">1</span>);</span></div>
+<div class="code-line"><span class="ln">21</span><span class="lc">        }</span></div>
+<div class="code-line"><span class="ln">22</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">23</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">24</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">25</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">main</span>() {</span></div>
+<div class="code-line"><span class="ln">26</span><span class="lc">    <span class="s-kw">for</span> (N = <span class="s-num">1</span>; N &lt;= <span class="s-num">12</span>; N++) {</span></div>
+<div class="code-line"><span class="ln">27</span><span class="lc">        count = <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">28</span><span class="lc">        <span class="s-fn">solve</span>(<span class="s-num">0</span>);</span></div>
+<div class="code-line"><span class="ln">29</span><span class="lc">        <span class="s-fn">printf</span>(<span class="s-str">"N=%2d: %d solutions\n"</span>, N, count);</span></div>
+<div class="code-line"><span class="ln">30</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">31</span><span class="lc">    <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">32</span><span class="lc">}</span></div>
+</div>
+</div>
+<div class="output-wrap"><div class="output-bar">실행 결과</div><div class="output-body">N= 1: 1 solutions
+N= 2: 0 solutions
+N= 3: 0 solutions
+N= 4: 2 solutions
+N= 5: 10 solutions
+N= 6: 4 solutions
+N= 7: 40 solutions
+N= 8: 92 solutions
+N= 9: 352 solutions
+N=10: 724 solutions
+N=11: 2680 solutions
+N=12: 14200 solutions</div></div>
+<h2 class="section-title">[심화 내용] 완전 탐색이 최선인 경우</h2>
+<div class="note-box"><span class="note-label">[심화 내용] 완전 탐색을 써야 하는 상황</span>
+<b>1. 입력이 작을 때</b><br>n <= 20이면 2^20 = 100만 → 1초 이내<br>n <= 10이면 10! = 360만 → 가능<br><br><b>2. 최적해를 보장해야 할 때</b><br>그리디는 최적을 보장 못 할 수 있음<br>DP가 안 되는 구조면 완전 탐색이 유일<br><br><b>3. 다른 방법의 검증용</b><br>작은 입력에서 완전 탐색 = 정답<br>이것과 비교해서 DP/그리디의 정확성 검증<br><br><b>대회 팁:</b><br>제한 시간 내에 완전 탐색이 되면 그냥 완전 탐색!<br>"가장 단순한 해가 가장 좋은 해" (KISS 원칙)</div>
+<!-- fact-bite -->
+<!-- fact-bite -->
+<h2 class="section-title">[심화] 비트마스크를 이용한 완전 탐색</h2>
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span><span class="code-bar-file">[C 코드] 비트마스크 부분집합 합</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;stdio.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc"><span class="s-cm">// 부분집합 합 문제: 합이 target인 부분집합이 있는가?</span></span></div>
+<div class="code-line"><span class="ln">4</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">subset_sum</span>(<span class="s-type">int</span> arr[], <span class="s-type">int</span> n, <span class="s-type">int</span> target) {</span></div>
+<div class="code-line"><span class="ln">5</span><span class="lc">    <span class="s-cm">// 모든 부분집합을 비트마스크로 순회</span></span></div>
+<div class="code-line"><span class="ln">6</span><span class="lc">    <span class="s-kw">for</span> (<span class="s-type">int</span> mask = <span class="s-num">0</span>; mask &lt; (<span class="s-num">1</span> &lt;&lt; n); mask++) {</span></div>
+<div class="code-line"><span class="ln">7</span><span class="lc">        <span class="s-type">int</span> sum = <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">8</span><span class="lc">        <span class="s-kw">for</span> (<span class="s-type">int</span> i = <span class="s-num">0</span>; i &lt; n; i++)</span></div>
+<div class="code-line"><span class="ln">9</span><span class="lc">            <span class="s-kw">if</span> (mask &amp; (<span class="s-num">1</span> &lt;&lt; i)) sum += arr[i];</span></div>
+<div class="code-line"><span class="ln">10</span><span class="lc">        <span class="s-kw">if</span> (sum == target) {</span></div>
+<div class="code-line"><span class="ln">11</span><span class="lc">            <span class="s-fn">printf</span>(<span class="s-str">"합이 %d인 부분집합: {"</span>, target);</span></div>
+<div class="code-line"><span class="ln">12</span><span class="lc">            <span class="s-type">int</span> first = <span class="s-num">1</span>;</span></div>
+<div class="code-line"><span class="ln">13</span><span class="lc">            <span class="s-kw">for</span> (<span class="s-type">int</span> i = <span class="s-num">0</span>; i &lt; n; i++) {</span></div>
+<div class="code-line"><span class="ln">14</span><span class="lc">                <span class="s-kw">if</span> (mask &amp; (<span class="s-num">1</span> &lt;&lt; i)) {</span></div>
+<div class="code-line"><span class="ln">15</span><span class="lc">                    <span class="s-kw">if</span> (!first) <span class="s-fn">printf</span>(<span class="s-str">","</span>);</span></div>
+<div class="code-line"><span class="ln">16</span><span class="lc">                    <span class="s-fn">printf</span>(<span class="s-str">"%d"</span>, arr[i]);</span></div>
+<div class="code-line"><span class="ln">17</span><span class="lc">                    first = <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">18</span><span class="lc">                }</span></div>
+<div class="code-line"><span class="ln">19</span><span class="lc">            }</span></div>
+<div class="code-line"><span class="ln">20</span><span class="lc">            <span class="s-fn">printf</span>(<span class="s-str">"}\n"</span>);</span></div>
+<div class="code-line"><span class="ln">21</span><span class="lc">            <span class="s-kw">return</span> <span class="s-num">1</span>;</span></div>
+<div class="code-line"><span class="ln">22</span><span class="lc">        }</span></div>
+<div class="code-line"><span class="ln">23</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">24</span><span class="lc">    <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">25</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">26</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">27</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">main</span>() {</span></div>
+<div class="code-line"><span class="ln">28</span><span class="lc">    <span class="s-type">int</span> arr[] = {<span class="s-num">3</span>, <span class="s-num">7</span>, <span class="s-num">1</span>, <span class="s-num">8</span>, <span class="s-num">4</span>};</span></div>
+<div class="code-line"><span class="ln">29</span><span class="lc">    <span class="s-fn">subset_sum</span>(arr, <span class="s-num">5</span>, <span class="s-num">12</span>);  <span class="s-cm">// 3+1+8=12</span></span></div>
+<div class="code-line"><span class="ln">30</span><span class="lc">    <span class="s-fn">subset_sum</span>(arr, <span class="s-num">5</span>, <span class="s-num">11</span>);  <span class="s-cm">// 7+4=11 or 3+8=11</span></span></div>
+<div class="code-line"><span class="ln">31</span><span class="lc">    <span class="s-fn">subset_sum</span>(arr, <span class="s-num">5</span>, <span class="s-num">25</span>);  <span class="s-cm">// 없음?</span></span></div>
+<div class="code-line"><span class="ln">32</span><span class="lc">    <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">33</span><span class="lc">}</span></div>
+</div>
+</div>
+<div class="output-wrap"><div class="output-bar">실행 결과</div><div class="output-body">합이 12인 부분집합: {3,1,8}
+합이 11인 부분집합: {3,8}</div></div>
+<div class="note-box"><span class="note-label">[심화] 비트마스크 완전 탐색 핵심</span>
+<b>n개 원소의 부분집합 = 2^n개</b><br><br>비트마스크 0~(2^n - 1)의 각 비트가<br>해당 원소를 선택(1)/미선택(0) 표현<br><br>mask = 0b10101 → {arr[0], arr[2], arr[4]} 선택<br><br><b>시간:</b> O(2^n * n)<br><b>한계:</b> n <= 20~25 정도까지만 실용적<br>n=20: 2^20 = 약 100만 (OK)<br>n=30: 2^30 = 약 10억 (느림)</div>
+<div class="note-box"><span class="note-label">[심화 내용] 대회에서 완전 탐색 판단 기준</span>
+<b>n의 범위로 판단:</b><br><br>n <= 10: O(n!) 가능 → 순열 완전 탐색<br>n <= 20: O(2^n) 가능 → 비트마스크 부분집합<br>n <= 25: O(2^(n/2)) 가능 → Meet in the Middle<br>n <= 100: O(n^3) 정도까지<br>n <= 1000: O(n^2)<br>n <= 10^5: O(n log n)<br>n <= 10^7: O(n)<br><br><b>시간 제한 1초 기준:</b><br>C/C++: ~10^8 연산/초<br>Python: ~10^6 연산/초 (100배 느림!)<br><br>이 표를 외우면 문제를 보자마자<br>"완전 탐색 가능/불가능"을 즉시 판단!</div>
+<!-- fact-bite -->
+<h2 class="section-title">[심화 내용] Meet in the Middle 기법</h2>
+<div class="note-box"><span class="note-label">[심화 내용] Meet in the Middle</span>
+O(2^n)을 O(2^(n/2))로 줄이는 기법!<br><br><b>원리:</b><br>1. 입력을 절반으로 나눔 (A 그룹, B 그룹)<br>2. A의 모든 부분집합 합 계산 (2^(n/2)개)<br>3. B의 모든 부분집합 합 계산 (2^(n/2)개)<br>4. 두 그룹에서 합이 target인 조합 찾기 (정렬+이진탐색)<br><br><b>예:</b> n=40일 때<br>완전 탐색: 2^40 = 약 10^12 → 불가능<br>MitM: 2^20 * 2 = 약 200만 → 가능!<br><br>대회에서 n이 20~40 사이면 MitM 의심!</div>
+
+<!-- fact-bite -->
+<div class="tip"><span class="tip-label">[활동] 완전 탐색 도전 문제</span>
+<b>1. 비밀번호 크래킹</b><br>4자리 숫자(0000~9999)를 전부 시도 → 10000번<br><br><b>2. 부분집합 합</b><br>{2, 5, 8, 12, 16}에서 합이 25인 부분집합 찾기<br>힌트: 비트마스크 0~31 순회<br><br><b>3. 순열 정렬</b><br>{3,1,2}의 모든 순열 중 정렬된 것 찾기<br><br><b>4. 두 수의 합</b><br>배열에서 합이 target인 두 수의 인덱스 찾기<br>O(n^2) 완전 탐색 → O(n) 해시맵으로 최적화 가능!<br><br>완전 탐색으로 먼저 풀고, 최적화 버전도 만들어 보세요!</div>
+<!-- fact-bite -->
+
+<table class="trace"><thead><tr><th>용어</th><th>설명</th></tr></thead><tbody><tr><td><code>완전 탐색</code></td><td>가능한 모든 경우를 빠짐없이 시도하는 알고리즘. Brute Force.</td></tr><tr><td><code>브루트 포스</code></td><td>Brute Force. '무차별 대입'. 완전 탐색의 영어 이름.</td></tr><tr><td><code>비트마스크</code></td><td>비트(0/1)로 집합의 포함 여부를 표현하는 기법. 부분집합 탐색에 사용.</td></tr><tr><td><code>부분집합</code></td><td>집합의 일부 원소로 이루어진 집합. N개 원소 → 2ⁿ개 부분집합.</td></tr><tr><td><code>순열</code></td><td>원소들의 순서 있는 배열. N개 원소 → N!개 순열.</td></tr><tr><td><code>백트래킹</code></td><td>완전 탐색 + 가지치기. 유망하지 않은 경로를 미리 포기.</td></tr><tr><td><code>가지치기</code></td><td>Pruning. 탐색 트리에서 불필요한 가지를 잘라내는 기법.</td></tr><tr><td><code>N-Queen</code></td><td>N×N 체스판에 N개의 퀸을 서로 공격 못하게 배치하는 문제.</td></tr><tr><td><code>경우의 수</code></td><td>가능한 결과의 총 개수. 완전 탐색의 시간을 결정.</td></tr><tr><td><code>가지치기(Pruning)</code></td><td>탐색 트리에서 불필요한 가지를 미리 잘라내는 최적화 기법.</td></tr><tr><td><code>분기한정법</code></td><td>Branch and Bound. 상한/하한을 이용한 가지치기. 최적화 문제에 사용.</td></tr><tr><td><code>N-Queen</code></td><td>N*N 체스판에 N개 퀸을 서로 공격하지 않게 놓는 문제. 백트래킹의 대표 예제.</td></tr><tr><td><code>KISS 원칙</code></td><td>Keep It Simple, Stupid. 단순한 해결책이 최선이라는 소프트웨어 원칙.</td></tr></tbody></table>
+<div class="warmup-box"><div class="warmup-title">이번 유닛 핵심 정리</div><div class="wq"><b>1.</b> 완전 탐색 = 모든 경우를 다 시도</div><div class="wq"><b>2.</b> 장점: 반드시 정답 / 단점: N 크면 느림</div><div class="wq"><b>3.</b> N≤20이면 비트마스크(2ⁿ), N≤10이면 순열(N!)</div><div class="wq"><b>4.</b> 2중 for = 모든 쌍 O(n²)</div><div class="wq"><b>5.</b> [심화] 비트마스크로 부분집합 탐색</div><div class="wq"><b>6.</b> [심화] 재귀로 순열 생성</div><div class="wq"><b>7.</b> [심화 내용] 백트래킹 = 완전 탐색 + 가지치기</div></div>
+<div class="tip"><span class="tip-label">이 유닛에서 연결된 축</span>
+<b>[컴퓨팅 사고력]</b> 경우의 수 → 완전 탐색의 기초<br><b>[C언어]</b> 다중 for문, 비트 연산, 재귀<br><b>[KOI]</b> N≤20이면 완전 탐색 우선 고려<br><b>[코딩기초]</b> 반복문 중첩, 배열 탐색<br><b>[디버깅]</b> 완전 탐색으로 다른 알고리즘의 정답 검증<br><b>[실생활]</b> 비밀번호 해킹, 자물쇠 열기</div>
+<h2 class="section-title">실전 활용 연습</h2>
+<p>지금까지 배운 개념을 활용한 다양한 실전 예제와 연습문제입니다.</p>
+
+<h2 class="section-title">실생활 연결</h2>
+<div class="tip"><span class="tip-label">[실생활] 이 개념은 어디에 쓰일까?</span>
+게임 개발, 앱 만들기, 웹사이트, 로봇 제어, AI 학습 등 모든 분야에서 사용돼요!</div>
+
+<h2 class="section-title">추가 연습문제</h2>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 20</span><p style="margin:0;font-size:14px">이번 유닛에서 배운 핵심 개념 3가지를 자신의 말로 설명해 보세요.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 21</span><p style="margin:0;font-size:14px">이번 유닛의 개념을 활용한 자신만의 문제를 1개 만들어 보세요.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 22</span><p style="margin:0;font-size:14px">이번 유닛의 개념이 C언어에서 어떻게 사용되는지 조사해 보세요.</p></div>
+<h2 class="section-title">[심화] 더 알아보기</h2>
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+
+<p>이번 유닛의 모든 개념을 완전히 이해했습니다. 다음 유닛에서 더 발전된 개념을 배워보세요!</p>
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<div class="note-box"><span class="note-label">[다음 유닛 미리보기]</span>
+모든 경우를 다 보는 건 확실하지만 느려요. 매 순간 <b>가장 좋아 보이는 것</b>만 골라가면? 이것이 <b>그리디(Greedy)</b> 알고리즘!</div>
+
+
+    <span class="page-num">2</span>
+  </div>
+</div>
+</body>
+</html>

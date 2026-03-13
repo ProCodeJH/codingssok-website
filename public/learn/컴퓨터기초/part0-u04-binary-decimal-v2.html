@@ -1,0 +1,1235 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>코딩쏙 교재 — 2진수 ↔ 10진수 변환</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+
+  :root {
+    --navy: #1a2e4a;
+    --navy-mid: #2c4a6e;
+    --navy-light: #3d6590;
+    --orange: #e07830;
+    --orange-light: #f5e6d8;
+    --white: #ffffff;
+    --bg: #f7f8fa;
+    --bg-warm: #faf9f7;
+    --gray-50: #f9fafb;
+    --gray-100: #f3f4f6;
+    --gray-200: #e5e7eb;
+    --gray-300: #d1d5db;
+    --gray-400: #9ca3af;
+    --gray-500: #6b7280;
+    --gray-600: #4b5563;
+    --gray-700: #374151;
+    --gray-800: #1f2937;
+    --text: #2d3748;
+    --green: #16a34a;
+    --green-bg: #dcfce7;
+    --red: #dc2626;
+    --red-bg: #fee2e2;
+    --blue: #2563eb;
+    --blue-bg: #dbeafe;
+    --yellow-bg: #fef9c3;
+    --font: 'Noto Sans KR', sans-serif;
+    --mono: 'JetBrains Mono', 'Consolas', monospace;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: var(--font); background: #e8eaed; font-size: 15px; }
+
+  /* ========== PAGE ========== */
+  .page {
+    width: 210mm;
+    min-height: 295mm;
+    margin: 24px auto;
+    background: var(--white);
+    box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* ========== PAGE 1: CHAPTER START ========== */
+  .chapter-page {
+    display: flex;
+    min-height: 295mm;
+  }
+
+  .chapter-sidebar {
+    width: 10px;
+    background: var(--navy);
+    flex-shrink: 0;
+  }
+
+  .chapter-accent-bar {
+    width: 7px;
+    background: var(--orange);
+    flex-shrink: 0;
+  }
+
+  .chapter-body {
+    flex: 1;
+    padding: 70px 65px 50px 55px;
+    position: relative;
+  }
+
+  .chapter-watermark {
+    position: absolute;
+    top: -10px;
+    right: -15px;
+    font-size: 280px;
+    font-weight: 900;
+    color: rgba(180,195,212,0.35);
+    line-height: 1;
+    pointer-events: none;
+    letter-spacing: -10px;
+  }
+
+  .chapter-label {
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--navy-mid);
+    letter-spacing: 2px;
+    margin-bottom: 4px;
+  }
+
+  .chapter-title {
+    font-size: 44px;
+    font-weight: 900;
+    color: var(--navy);
+    line-height: 1.15;
+    margin-bottom: 12px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .chapter-sub {
+    font-size: 16px;
+    color: var(--gray-500);
+    font-weight: 400;
+    margin-bottom: 20px;
+    padding-bottom: 28px;
+    border-bottom: 1px solid var(--gray-200);
+  }
+
+  /* Learning objectives */
+  .obj-title {
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--navy);
+    margin-bottom: 16px;
+    margin-top: 32px;
+  }
+
+  .obj-list {
+    list-style: none;
+    margin-bottom: 40px;
+  }
+
+  .obj-list li {
+    padding: 5px 0 5px 24px;
+    position: relative;
+    font-size: 15px;
+    color: var(--gray-700);
+    line-height: 1.6;
+  }
+
+  .obj-list li::before {
+    content: '•';
+    position: absolute;
+    left: 8px;
+    color: var(--navy-mid);
+    font-weight: 700;
+  }
+
+  /* Prerequisites flow */
+  .prereq-title {
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--navy);
+    margin-bottom: 18px;
+  }
+
+  .prereq-flow {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    margin-bottom: 44px;
+  }
+
+  .prereq-item {
+    padding: 9px 22px;
+    border: 1.5px solid var(--gray-300);
+    border-radius: 50px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--gray-600);
+    background: var(--white);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+  }
+
+  .prereq-item.current {
+    border-color: var(--navy);
+    color: var(--navy);
+    font-weight: 700;
+    background: #edf2f7;
+    box-shadow: 0 2px 6px rgba(26,46,74,0.12);
+  }
+
+  .prereq-arrow {
+    width: 36px;
+    text-align: center;
+    color: var(--gray-300);
+    font-size: 18px;
+    font-weight: 300;
+  }
+
+  /* Predict box */
+  .predict-box {
+    background: var(--gray-50);
+    border: 1.5px solid var(--gray-200);
+    border-radius: 12px;
+    padding: 24px 28px;
+  }
+
+  .predict-label {
+    display: inline-block;
+    background: var(--orange);
+    color: var(--white);
+    font-size: 12px;
+    font-weight: 600;
+    padding: 3px 12px;
+    border-radius: 4px;
+    margin-bottom: 14px;
+    letter-spacing: 0.5px;
+  }
+
+  .predict-q {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--navy);
+    margin-bottom: 16px;
+  }
+
+  .predict-code {
+    background: var(--white);
+    border: 1px solid var(--gray-200);
+    border-radius: 8px;
+    padding: 14px 18px;
+    font-family: var(--mono);
+    font-size: 13px;
+    line-height: 1.65;
+    color: var(--gray-700);
+  }
+
+  /* ========== PAGE 2: CORE CONTENT ========== */
+  .content-page {
+    padding: 55px 65px;
+  }
+
+  .unit-header-bar {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    margin-bottom: 8px;
+  }
+
+  .unit-tag {
+    font-size: 12px;
+    color: var(--orange);
+    font-weight: 600;
+    letter-spacing: 1px;
+  }
+
+  .unit-title-sm {
+    font-size: 14px;
+    color: var(--gray-400);
+    font-weight: 400;
+  }
+
+  .section-title {
+    font-size: 24px;
+    font-weight: 800;
+    color: var(--navy);
+    margin-bottom: 24px;
+    margin-top: 8px;
+    padding-left: 16px;
+    border-left: 5px solid var(--orange);
+  }
+
+  p {
+    font-size: 15.5px;
+    line-height: 1.9;
+    color: var(--text);
+    margin-bottom: 18px;
+  }
+
+  p code {
+    font-family: var(--mono);
+    font-size: 13.5px;
+    background: #f1f3f5;
+    padding: 2px 7px;
+    border-radius: 4px;
+    color: var(--navy);
+    font-weight: 500;
+  }
+
+  /* Code block */
+  .code-wrap {
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    border: 1px solid var(--gray-200);
+    margin: 22px 0;
+  }
+
+  .code-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 9px 18px;
+    background: var(--navy);
+    font-size: 12px;
+  }
+
+  .code-bar-lang {
+    font-family: var(--mono);
+    font-weight: 600;
+    color: var(--white);
+  }
+
+  .code-bar-file {
+    color: rgba(255,255,255,0.6);
+    font-weight: 400;
+  }
+
+  .code-body {
+    background: #f8f9fb;
+    padding: 20px 0;
+    font-family: var(--mono);
+    font-size: 13.5px;
+    line-height: 1.75;
+    border: 1px solid var(--gray-200);
+    border-top: none;
+    border-radius: 0 0 12px 12px;
+  }
+
+  .code-line {
+    display: flex;
+    padding: 0 20px;
+  }
+
+  .code-line:hover {
+    background: #f0f4f8;
+  }
+
+  .code-line.highlighted {
+    background: #fff8e1;
+  }
+
+  .ln {
+    width: 30px;
+    text-align: right;
+    color: #b8bfc8;
+    font-size: 12px;
+    margin-right: 18px;
+    user-select: none;
+    flex-shrink: 0;
+    padding-top: 1px;
+  }
+
+  .lc { flex: 1; }
+
+  /* syntax */
+  .s-pp { color: #8b5cf6; font-weight: 600; }
+  .s-str { color: #d97706; }
+  .s-type { color: #2563eb; font-weight: 500; }
+  .s-kw { color: #7c3aed; font-weight: 500; }
+  .s-fn { color: #059669; font-weight: 500; }
+  .s-num { color: #dc2626; }
+  .s-cm { color: #9ca3af; font-style: italic; }
+
+  /* Output block */
+  .output-wrap {
+    border-radius: 10px;
+    overflow: hidden;
+    margin: 10px 0 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    border: 1px solid #d1d5db;
+  }
+
+  .output-bar {
+    padding: 9px 18px;
+    background: #374151;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--white);
+    letter-spacing: 0.5px;
+  }
+
+  .output-body {
+    padding: 16px 20px;
+    font-family: var(--mono);
+    font-size: 13.5px;
+    line-height: 1.7;
+    color: var(--gray-800);
+    background: #f1f5f9;
+    border: 1px solid var(--gray-200);
+    border-top: none;
+    border-radius: 0 0 10px 10px;
+  }
+
+  /* Callout */
+  .tip {
+    margin: 28px 0;
+    padding: 18px 24px;
+    background: #dbeafe;
+    border-left: 5px solid #2563eb;
+    border-radius: 0 12px 12px 0;
+    font-size: 14.5px;
+    line-height: 1.8;
+    color: var(--text);
+  }
+
+  .tip-label {
+    font-weight: 700;
+    color: #2563eb;
+    font-size: 13px;
+    display: block;
+    margin-bottom: 4px;
+  }
+
+  .warn {
+    margin: 28px 0;
+    padding: 18px 24px;
+    background: #fef3c7;
+    border-left: 5px solid #d97706;
+    border-radius: 0 12px 12px 0;
+    font-size: 14.5px;
+    line-height: 1.8;
+  }
+
+  .warn-label {
+    font-weight: 700;
+    color: #d97706;
+    font-size: 13px;
+    display: block;
+    margin-bottom: 4px;
+  }
+
+  .note-box {
+    margin: 28px 0;
+    padding: 18px 24px;
+    background: #e2e8f0;
+    border-left: 5px solid #64748b;
+    border-radius: 0 12px 12px 0;
+    font-size: 14.5px;
+    line-height: 1.8;
+  }
+
+  .note-label {
+    font-weight: 700;
+    color: var(--gray-600);
+    font-size: 13px;
+    display: block;
+    margin-bottom: 4px;
+  }
+
+  /* Trace table */
+  table.trace {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    margin: 28px 0;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+    font-size: 14px;
+  }
+
+  table.trace th {
+    background: var(--navy);
+    color: var(--white);
+    padding: 10px 16px;
+    text-align: left;
+    font-weight: 500;
+    font-size: 13px;
+  }
+
+  table.trace td {
+    padding: 10px 16px;
+    border-bottom: 1px solid var(--gray-200);
+    color: var(--gray-700);
+  }
+
+  table.trace tr:nth-child(even) td { background: var(--gray-50); }
+  table.trace tr:last-child td { border-bottom: none; }
+
+  table.trace td code {
+    font-family: var(--mono);
+    font-size: 12.5px;
+    background: #eef1f5;
+    padding: 2px 6px;
+    border-radius: 4px;
+    color: var(--navy);
+  }
+
+  /* ========== PAGE 3: PROBLEMS ========== */
+  .problems-header {
+    margin-bottom: 8px;
+  }
+
+  .problems-chapter-ref {
+    font-size: 13px;
+    color: var(--gray-500);
+    margin-bottom: 4px;
+  }
+
+  .problems-title {
+    font-size: 28px;
+    font-weight: 800;
+    color: var(--navy);
+    margin-bottom: 24px;
+  }
+
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 16px;
+  }
+
+  .prob-card {
+    background: var(--white);
+    border: 1px solid var(--gray-200);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 3px 15px rgba(0,0,0,0.06);
+  }
+
+  .prob-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 16px;
+    background: var(--navy);
+  }
+
+  .prob-num {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--white);
+  }
+
+  .diff {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    font-size: 12px;
+    font-weight: 800;
+  }
+
+  .diff-basic { background: #22c55e; color: white; }
+  .diff-mid { background: #f59e0b; color: white; }
+  .diff-hard { background: #ef4444; color: white; }
+
+  .prob-desc {
+    font-size: 13.5px;
+    line-height: 1.65;
+    color: var(--gray-600);
+    margin-bottom: 10px;
+    padding: 14px 16px 0;
+  }
+
+  .prob-code {
+    background: var(--gray-50);
+    border: 1px solid var(--gray-200);
+    border-radius: 6px;
+    padding: 10px 14px;
+    margin: 0 16px 16px;
+    font-family: var(--mono);
+    font-size: 12.5px;
+    line-height: 1.55;
+    color: var(--gray-600);
+  }
+
+  /* Competition section */
+  .comp-section {
+    margin-top: 32px;
+    padding-top: 24px;
+    border-top: 2px solid var(--navy);
+  }
+
+  .comp-title {
+    font-size: 22px;
+    font-weight: 800;
+    color: var(--navy);
+    margin-bottom: 20px;
+  }
+
+  .comp-card {
+    background: var(--white);
+    border: 1.5px solid var(--gray-200);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 18px rgba(0,0,0,0.06);
+  }
+
+  .comp-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 16px;
+    background: #0f766e;
+  }
+
+  .comp-header .comp-name {
+    color: var(--white);
+    font-size: 15px;
+    font-weight: 700;
+    margin: 0;
+  }
+
+  .comp-inner {
+    padding: 14px 18px 18px;
+  }
+
+  .comp-badge {
+    display: inline-block;
+    padding: 3px 12px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 700;
+  }
+
+  .badge-bj { background: #93c5fd; color: #1e3a5f; }
+  .badge-cu { background: #c4b5fd; color: #3b1f7e; }
+  .badge-pg { background: #7dd3fc; color: #0c4a6e; }
+
+  .comp-name {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--navy);
+    margin-bottom: 6px;
+  }
+
+  .comp-desc {
+    font-size: 14px;
+    color: var(--gray-600);
+    line-height: 1.7;
+    margin-bottom: 14px;
+  }
+
+  .io-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+
+  .io-card {
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid var(--gray-200);
+  }
+
+  .io-h {
+    padding: 6px 14px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--gray-600);
+    background: #e2e8f0;
+  }
+
+  .io-c {
+    padding: 10px 14px;
+    font-family: var(--mono);
+    font-size: 13px;
+    line-height: 1.5;
+    background: var(--white);
+  }
+
+  /* ========== DEBUG LAB ========== */
+  .debug-section {
+    margin: 24px 0;
+    border: 2px solid var(--red);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+
+  .debug-bar {
+    background: var(--red);
+    color: var(--white);
+    padding: 10px 20px;
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 1px;
+  }
+
+  .debug-body {
+    padding: 20px;
+    background: #fef2f2;
+  }
+
+  /* 10축 connection */
+  .connect-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 16px;
+    margin: 28px 0;
+  }
+
+  .connect-card {
+    border-radius: 12px;
+    padding: 20px;
+    text-align: center;
+    border: 1px solid var(--gray-200);
+    box-shadow: 0 3px 14px rgba(0,0,0,0.05);
+  }
+
+  .connect-card h5 {
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 8px;
+  }
+
+  .connect-card p {
+    font-size: 13px;
+    margin: 0;
+    color: var(--gray-600);
+    line-height: 1.6;
+  }
+
+  .cc1 { border-top: 3px solid #8b5cf6; }
+  .cc1 h5 { color: #8b5cf6; }
+  .cc2 { border-top: 3px solid var(--green); }
+  .cc2 h5 { color: var(--green); }
+  .cc3 { border-top: 3px solid var(--navy); }
+  .cc3 h5 { color: var(--navy); }
+
+  /* PAGE NUMBER */
+  .page-num {
+    position: absolute;
+    bottom: 20px;
+    right: 30px;
+    font-size: 12px;
+    color: var(--gray-400);
+  }
+
+  /* WARMUP */
+  .warmup-box {
+    background: #e0e7f1;
+    border-radius: 12px;
+    padding: 24px 28px;
+    margin: 28px 0;
+    border: 2px solid #c7d2e0;
+  }
+
+  .warmup-title {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--navy);
+    margin-bottom: 14px;
+  }
+
+  .wq {
+    padding: 9px 16px;
+    background: var(--white);
+    border-radius: 8px;
+    margin-bottom: 8px;
+    font-size: 14px;
+    border: 1px solid var(--gray-200);
+    color: var(--gray-700);
+  }
+
+  .wq b { color: var(--navy); margin-right: 6px; }
+  .wq .hint { color: var(--gray-400); font-size: 13px; }
+
+  /* ===== CONTEST PROBLEMS PAGE ===== */
+  .contest-page-wrap .chapter-page {
+    min-height: auto;
+  }
+
+  .contest-page-wrap .chapter-page > div:last-child {
+    min-width: 0;
+    overflow-wrap: break-word;
+    word-break: break-word;
+  }
+
+  .contest-card {
+    background: white;
+    border: 1.5px solid var(--gray-200);
+    border-radius: 12px;
+    margin-bottom: 28px;
+    overflow: hidden;
+    break-inside: avoid;
+  }
+
+  .contest-header {
+    background: var(--navy);
+    color: white;
+    padding: 14px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .contest-num-source {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .contest-num {
+    font-weight: 700;
+    font-size: 16px;
+  }
+
+  .contest-source {
+    background: rgba(255,255,255,0.15);
+    padding: 3px 10px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 500;
+  }
+
+  .contest-body {
+    padding: 20px 24px 24px;
+  }
+
+  .contest-question {
+    font-size: 15px;
+    line-height: 1.7;
+    color: var(--text);
+    margin: 0 0 16px;
+    word-break: break-word;
+    overflow-wrap: break-word;
+  }
+
+  .contest-expected {
+    background: #1e293b;
+    border-radius: 8px;
+    overflow: hidden;
+    margin-bottom: 20px;
+  }
+
+  .contest-expected-label {
+    background: #334155;
+    color: #94a3b8;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 6px 14px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .contest-expected-body {
+    color: #e2e8f0;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    line-height: 1.6;
+    padding: 12px 16px;
+    margin: 0;
+    white-space: pre;
+  }
+
+  .contest-write-area {
+    border: 2px dashed var(--gray-300);
+    border-radius: 10px;
+    overflow: hidden;
+    transition: border-color 0.2s;
+  }
+
+  .contest-write-area:focus-within {
+    border-color: var(--orange);
+    border-style: solid;
+  }
+
+  .contest-write-label {
+    background: var(--bg);
+    color: var(--gray-500);
+    font-size: 12px;
+    font-weight: 600;
+    padding: 8px 14px;
+    border-bottom: 1px solid var(--gray-200);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .contest-textarea {
+    width: 100%;
+    min-height: 200px;
+    padding: 16px 18px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    line-height: 1.7;
+    color: var(--text);
+    background: #fafbfc;
+    border: none;
+    outline: none;
+    resize: vertical;
+    tab-size: 4;
+    box-sizing: border-box;
+  }
+
+  .contest-textarea::placeholder {
+    color: var(--gray-300);
+  }
+
+  @media print {
+    body { background: white; }
+    .page { box-shadow: none; margin: 0; page-break-after: always; }
+    .contest-textarea { border: 1px solid var(--gray-300); min-height: 180px; }
+  }
+
+</style>
+</head>
+<body>
+
+<div class="page">
+  <div class="chapter-page">
+    <div class="chapter-sidebar"></div>
+    <div class="chapter-accent-bar"></div>
+    <div class="chapter-body">
+      <div class="chapter-watermark">04</div>
+      <div class="chapter-label">Chapter 04</div>
+      <h1 class="chapter-title">2진수 ↔ 10진수 변환</h1>
+      <p class="chapter-sub">10진수를 2진수로, 2진수를 10진수로 바꾸는 방법을 배워요. 음수 표현, 소수점, 실무 활용까지!</p>
+
+      <h3 class="obj-title">이 유닛에서 배우는 것</h3>
+      <ul class="obj-list">
+        <li>10진수 자릿값과 2진수 자릿값의 차이를 알 수 있어요.</li>
+        <li>10진수를 2진수로 변환할 수 있어요 (나누기 2 반복).</li>
+        <li>2진수를 10진수로 변환할 수 있어요 (자릿값 더하기).</li>
+        <li>음수를 2진수로 표현하는 방법(부호 비트, 1의 보수, 2의 보수)을 알아요.</li>
+        <li>2진수 소수(고정소수점)를 이해하고 변환할 수 있어요.</li>
+        <li>BCD, IEEE 754, 오버플로우 등 심화 개념을 맛볼 수 있어요.</li>
+      </ul>
+
+      <h3 class="prereq-title">선수 학습</h3>
+      <div class="prereq-flow">
+        <div class="prereq-item">U0-03 '0과 1의 세계 (비트)'를 읽었다</div><div class="prereq-arrow">→</div>
+        <div class="prereq-item current">나눗셈과 나머지를 알고 있다 (7 / 2 = 3 나머지 1)</div>
+      </div>
+
+      
+
+      <span class="page-num">1</span>
+    </div>
+  </div>
+</div>
+<div class="page">
+  <div class="content-page">
+    <div class="unit-header-bar">
+      <span class="unit-tag">UNIT 04</span>
+      <span class="unit-title-sm">2진수 ↔ 10진수 변환</span>
+    </div>
+<h2 class="section-title">10진수의 자릿값</h2>
+
+<p>우리가 쓰는 숫자는 <b>10진수</b>예요. 0~9까지 10개의 숫자를 사용하고, 자리가 하나 올라갈 때마다 값이 <b>10배</b>씩 커져요.</p>
+<div class="note-box"><span class="note-label">[핵심] 10진수 자릿값</span>
+숫자 <b>3725</b>를 뜯어보면:<br>3 x <b>1000</b>(천의 자리) + 7 x <b>100</b>(백의 자리) + 2 x <b>10</b>(십의 자리) + 5 x <b>1</b>(일의 자리)<br>= 3000 + 700 + 20 + 5 = 3725<br><br>자릿값: ... → 1000 → 100 → 10 → 1 (10배씩 커짐)</div>
+<h2 class="section-title">2진수의 자릿값</h2>
+<p>2진수는 0과 1만 사용해요. 자리가 올라갈 때마다 값이 <b>2배</b>씩 커져요.</p>
+<div class="note-box"><span class="note-label">[핵심] 2진수 자릿값</span>
+2진수의 자릿값: ... → 128 → 64 → 32 → 16 → 8 → 4 → 2 → 1<br><br>10진수: 자릿값이 <b>10배</b>씩 커짐 (1, 10, 100, 1000...)<br>2진수: 자릿값이 <b>2배</b>씩 커짐 (1, 2, 4, 8, 16, 32...)</div>
+<!-- image -->
+<!-- fact-bite -->
+<h2 class="section-title">2진수 → 10진수 변환</h2>
+
+<div class="note-box"><span class="note-label">[핵심] 2진수 → 10진수 방법</span>
+<b>각 자리 숫자 x 자릿값</b>을 전부 더하면 돼요.<br><br>예: 1101(2) → 10진수<br>1 x 8 = 8<br>1 x 4 = 4<br>0 x 2 = 0<br>1 x 1 = 1<br>합계 = 8 + 4 + 0 + 1 = <b>13</b></div>
+<table class="trace"><thead><tr><th>2진수</th><th>자릿값 분해</th><th>계산</th><th>10진수</th></tr></thead><tbody><tr><td>101</td><td>1x4 + 0x2 + 1x1</td><td>4 + 0 + 1</td><td>5</td></tr><tr><td>1010</td><td>1x8 + 0x4 + 1x2 + 0x1</td><td>8 + 0 + 2 + 0</td><td>10</td></tr><tr><td>1100</td><td>1x8 + 1x4 + 0x2 + 0x1</td><td>8 + 4 + 0 + 0</td><td>12</td></tr><tr><td>10000</td><td>1x16</td><td>16</td><td>16</td></tr><tr><td>10110</td><td>1x16 + 0x8 + 1x4 + 1x2 + 0x1</td><td>16 + 4 + 2</td><td>22</td></tr><tr><td>11111</td><td>1x16 + 1x8 + 1x4 + 1x2 + 1x1</td><td>16+8+4+2+1</td><td>31</td></tr><tr><td>1000000</td><td>1x64</td><td>64</td><td>64</td></tr><tr><td>1100100</td><td>1x64 + 1x32 + 0x16 + 0x8 + 1x4</td><td>64+32+4</td><td>100</td></tr></tbody></table>
+<p>0이 있는 자리는 무시하면 돼요. 1이 있는 자리의 자릿값만 더하면 됩니다.</p>
+<div style="margin:22px 0"></div>
+<h2 class="section-title">10진수 → 2진수 변환</h2>
+<p>10진수를 2진수로 바꾸려면 <b>2로 계속 나누면서 나머지를 적어요</b>. 몫이 0이 될 때까지 반복하고, 나머지를 <b>아래에서 위로</b> 읽으면 돼요.</p>
+<!-- image -->
+<table class="trace"><thead><tr><th>나눗셈</th><th>몫</th><th>나머지</th></tr></thead><tbody><tr><td>25 ÷ 2</td><td>12</td><td>1</td></tr><tr><td>12 ÷ 2</td><td>6</td><td>0</td></tr><tr><td>6 ÷ 2</td><td>3</td><td>0</td></tr><tr><td>3 ÷ 2</td><td>1</td><td>1</td></tr><tr><td>1 ÷ 2</td><td>0</td><td>1</td></tr></tbody></table>
+<table class="trace"><thead><tr><th>10진수</th><th>나누기 과정</th><th>나머지 (아래→위)</th><th>2진수</th></tr></thead><tbody><tr><td>6</td><td>6/2=3, 3/2=1, 1/2=0</td><td>0, 1, 1</td><td>110</td></tr><tr><td>9</td><td>9/2=4, 4/2=2, 2/2=1, 1/2=0</td><td>1, 0, 0, 1</td><td>1001</td></tr><tr><td>20</td><td>20/2=10, 10/2=5, 5/2=2, 2/2=1, 1/2=0</td><td>0, 0, 1, 0, 1</td><td>10100</td></tr><tr><td>33</td><td>33/2=16, 16/2=8, 8/2=4, 4/2=2, 2/2=1, 1/2=0</td><td>1, 0, 0, 0, 0, 1</td><td>100001</td></tr><tr><td>50</td><td>50/2=25, 25/2=12, 12/2=6, 6/2=3, 3/2=1, 1/2=0</td><td>0, 1, 0, 0, 1, 1</td><td>110010</td></tr><tr><td>100</td><td>100/2=50...0, 50/2=25...0, ...</td><td>0,0,1,0,0,1,1</td><td>1100100</td></tr></tbody></table>
+<div class="tip"><span class="tip-label">[팁] 변환 후 검증하기</span>
+10진수를 2진수로 바꿨으면, 다시 2진수를 10진수로 바꿔서 원래 수가 나오는지 확인해 보세요. 맞으면 성공!</div>
+
+<h2 class="section-title">변환 연습</h2>
+<p>직접 종이에 변환 연습을 해 보세요.</p>
+<div class="tip"><span class="tip-label">[활동] 종이에 직접 변환해 보기</span>
+아래 숫자를 종이에 직접 변환해 보세요.<br><br><b>10진수 → 2진수:</b><br>1. 6 = ?<br>2. 9 = ?<br>3. 20 = ?<br><br><b>2진수 → 10진수:</b><br>4. 110(2) = ?<br>5. 10001(2) = ?<br>6. 11111(2) = ?</div>
+<h2 class="section-title">자주 나오는 2진수 외우기</h2>
+<div class="note-box"><span class="note-label">[핵심] 외워두면 좋은 숫자</span>
+2의 거듭제곱은 자주 나와요. 외워두면 변환이 빨라져요.<br><br>2의 0승 = 1<br>2의 1승 = 2<br>2의 2승 = 4<br>2의 3승 = 8<br>2의 4승 = 16<br>2의 5승 = 32<br>2의 6승 = 64<br>2의 7승 = 128<br>2의 8승 = 256<br>2의 10승 = 1024</div>
+<div class="debug-section"><div class="debug-bar">DEBUG LAB — 에러를 찾으시오</div><div class="debug-body">
+
+<p style="margin:14px 0 0; font-size:14px;"><b>에러:</b> </p>
+<p style="font-size:14px;"><b>수정:</b> </p>
+</div></div>
+<table class="trace"><thead><tr><th>2의 n승</th><th>n</th><th>값</th><th>외우기 팁</th></tr></thead><tbody><tr><td>2^0</td><td>0</td><td>1</td><td>시작</td></tr><tr><td>2^1</td><td>1</td><td>2</td><td>기본</td></tr><tr><td>2^2</td><td>2</td><td>4</td><td></td></tr><tr><td>2^3</td><td>3</td><td>8</td><td>바이트의 비트 수</td></tr><tr><td>2^4</td><td>4</td><td>16</td><td>16진수 한 자리</td></tr><tr><td>2^5</td><td>5</td><td>32</td><td></td></tr><tr><td>2^6</td><td>6</td><td>64</td><td></td></tr><tr><td>2^7</td><td>7</td><td>128</td><td>부호 있는 8비트 최대+1</td></tr><tr><td>2^8</td><td>8</td><td>256</td><td>1바이트 가짓수</td></tr><tr><td>2^10</td><td>10</td><td>1,024</td><td>약 1KB</td></tr><tr><td>2^16</td><td>16</td><td>65,536</td><td>2바이트 가짓수</td></tr><tr><td>2^20</td><td>20</td><td>1,048,576</td><td>약 1MB</td></tr><tr><td>2^32</td><td>32</td><td>약 43억</td><td>int 범위</td></tr></tbody></table>
+<h2 class="section-title">C언어 연결 미리보기</h2>
+<div class="tip"><span class="tip-label">[C 연결 미리보기] 2진수와 C언어</span>
+C언어에서 2진수를 직접 쓸 수 있어요:<br><code>int x = 0b1101;</code> → x에 13이 저장돼요<br><br>비트 단위로 계산하는 <b>비트 연산</b>도 있어요. 나중에 배울 거예요!</div>
+<h2 class="section-title">🏛️ 2진수의 역사</h2>
+<div class="note-box"><span class="note-label">[역사] 라이프니츠와 2진수의 탄생</span>
+2진수를 처음 체계적으로 연구한 사람은 독일의 수학자 <b>고트프리트 라이프니츠</b>(1646~1716)예요. 그는 1703년에 2진수 체계를 논문으로 발표했어요. 라이프니츠는 중국의 고대 점술서 '주역(I Ching)'의 음양 기호에서 영감을 받았다고 해요. 음(⚋)은 0, 양(⚊)은 1과 같은 원리거든요!</div>
+<div class="note-box"><span class="note-label">[역사] 조지 불의 논리 대수</span>
+<b>조지 불</b>(1815~1864)은 영국의 수학자예요. 그는 '참(1)과 거짓(0)'만으로 논리를 수학적으로 표현하는 <b>불 대수(Boolean Algebra)</b>를 만들었어요. AND, OR, NOT 같은 논리 연산이 바로 불 대수에서 나왔어요. 이것이 나중에 컴퓨터의 핵심 원리가 됩니다.</div>
+<div class="note-box"><span class="note-label">[역사] 클로드 섀넌 — 디지털 시대의 아버지</span>
+<b>클로드 섀넌</b>(1916~2001)은 MIT 석사 논문(1937)에서 전기 스위치로 불 대수를 구현할 수 있다는 걸 증명했어요. 스위치 ON=1, OFF=0 → 이것이 바로 현대 디지털 컴퓨터의 시작이에요! 그의 논문은 '20세기 가장 중요한 석사 논문'이라 불려요.</div>
+
+<table class="trace"><thead><tr><th>자리 번호</th><th>10진수 자릿값</th><th>2진수 자릿값</th><th>계산</th></tr></thead><tbody><tr><td>0번째 (일의 자리)</td><td>10^0 = 1</td><td>2^0 = 1</td><td>같음</td></tr><tr><td>1번째</td><td>10^1 = 10</td><td>2^1 = 2</td><td>10 vs 2</td></tr><tr><td>2번째</td><td>10^2 = 100</td><td>2^2 = 4</td><td>100 vs 4</td></tr><tr><td>3번째</td><td>10^3 = 1,000</td><td>2^3 = 8</td><td>1000 vs 8</td></tr><tr><td>4번째</td><td>10^4 = 10,000</td><td>2^4 = 16</td><td>10000 vs 16</td></tr><tr><td>7번째</td><td>10^7 = 1천만</td><td>2^7 = 128</td><td>큰 차이!</td></tr><tr><td>9번째</td><td>10^9 = 10억</td><td>2^9 = 512</td><td>매우 큰 차이!</td></tr></tbody></table>
+<h2 class="section-title">음수 표현: 부호 비트</h2>
+
+<p>컴퓨터에는 '-' 기호가 없어요. 오직 0과 1뿐이에요. 그래서 음수를 표현하기 위해 <b>맨 앞 비트</b>를 특별하게 사용해요. 이것을 <b>부호 비트(sign bit)</b>라고 해요.</p>
+<div class="note-box"><span class="note-label">[핵심] 부호-크기 표현 (Sign-Magnitude)</span>
+가장 단순한 방법: 맨 앞 비트로 부호를 나타내요.<br><br>• 맨 앞 비트 0 → 양수 (+)<br>• 맨 앞 비트 1 → 음수 (-)<br><br>8비트 예시:<br>0 1101001 = +105<br>1 1101001 = -105<br><br>⚠️ 문제점: +0(00000000)과 -0(10000000) 두 가지가 생겨요!</div>
+<h2 class="section-title">음수 표현: 1의 보수</h2>
+<p><b>1의 보수(One's Complement)</b>는 양수의 모든 비트를 뒤집어서 음수를 만드는 방법이에요.</p>
+<div class="note-box"><span class="note-label">[핵심] 1의 보수 만들기</span>
+방법: 모든 비트를 뒤집기 (0→1, 1→0)<br><br>예: +13 = 00001101<br>비트 뒤집기 → 11110010 = -13 (1의 보수)<br><br>예: +7 = 00000111<br>비트 뒤집기 → 11111000 = -7 (1의 보수)<br><br>⚠️ 여전히 +0(00000000)과 -0(11111111) 두 가지가 있어요.</div>
+<h2 class="section-title">음수 표현: 2의 보수 ⭐</h2>
+
+<p><b>2의 보수(Two's Complement)</b>는 현대 컴퓨터에서 음수를 표현하는 <b>표준 방법</b>이에요. 1의 보수에서 1을 더하면 돼요.</p>
+<div class="note-box"><span class="note-label">[핵심] 2의 보수 만들기</span>
+<b>방법 1: 비트 뒤집고 + 1</b><br>1단계: 모든 비트 뒤집기 (1의 보수)<br>2단계: 1 더하기<br><br>예: +13 = 00001101<br>1단계(뒤집기): 11110010<br>2단계(+1):    11110011 = -13 (2의 보수)<br><br><b>방법 2: 오른쪽부터 첫 번째 1까지 그대로, 나머지 뒤집기</b><br>+13 = 00001101<br>→ 오른쪽 '1'까지 유지: ...01<br>→ 나머지 뒤집기: 11110011 ✓</div>
+<div style="margin:22px 0"></div>
+<div class="tip"><span class="tip-label">[팁] 2의 보수의 장점</span>
+• 0이 하나뿐이에요 (00000000)<br>• 덧셈 회로 하나로 뺄셈도 가능해요 (A - B = A + (-B))<br>• 하드웨어 구현이 간단해요<br><br>8비트 2의 보수 범위: <b>-128 ~ +127</b><br>n비트 2의 보수 범위: <b>-2^(n-1) ~ +2^(n-1) - 1</b></div>
+<div class="debug-section"><div class="debug-bar">DEBUG LAB — 에러를 찾으시오</div><div class="debug-body">
+
+<p style="margin:14px 0 0; font-size:14px;"><b>에러:</b> </p>
+<p style="font-size:14px;"><b>수정:</b> </p>
+</div></div>
+<table class="trace"><thead><tr><th>10진수</th><th>8비트 2의 보수</th><th>설명</th></tr></thead><tbody><tr><td>+127</td><td>01111111</td><td>양수 최대값</td></tr><tr><td>+100</td><td>01100100</td><td></td></tr><tr><td>+1</td><td>00000001</td><td></td></tr><tr><td>0</td><td>00000000</td><td>0은 하나뿐</td></tr><tr><td>-1</td><td>11111111</td><td>모든 비트 1</td></tr><tr><td>-50</td><td>11001110</td><td></td></tr><tr><td>-100</td><td>10011100</td><td></td></tr><tr><td>-127</td><td>10000001</td><td></td></tr><tr><td>-128</td><td>10000000</td><td>음수 최소값</td></tr></tbody></table>
+<h2 class="section-title">[심화] 2의 보수 덧셈과 뺄셈</h2>
+<p>2의 보수의 최대 장점은 <b>덧셈 회로만으로 뺄셈을 할 수 있다</b>는 거예요. A - B를 하고 싶으면 A + (-B)로 바꾸면 돼요. -B는 2의 보수로 구하면 되고요.</p>
+<div class="note-box"><span class="note-label">[심화] 2의 보수 연산 예시</span>
+<b>예1: 7 + (-3) = 4</b><br>  00000111 (+7)<br>+ 11111101 (-3의 2의 보수)<br>─────────<br>1 00000100 → 8비트 넘는 캐리 무시 → 00000100 = +4 ✓<br><br><b>예2: -5 + (-3) = -8</b><br>  11111011 (-5)<br>+ 11111101 (-3)<br>─────────<br>1 11111000 → 캐리 무시 → 11111000 = -8 ✓</div>
+<h2 class="section-title">[심화] 오버플로우와 언더플로우</h2>
+
+<p><b>오버플로우(overflow)</b>는 계산 결과가 표현 가능한 범위를 넘어갈 때 발생해요. 마치 자동차 계기판이 999999에서 000000으로 돌아가는 것과 같아요.</p>
+<div class="warn"><span class="warn-label">[주의] 오버플로우 발생 조건</span>
+<b>양수 오버플로우:</b> 양수 + 양수 = 음수?! 🤯<br>8비트: 01111111(+127) + 00000001(+1) = 10000000(-128)<br><br><b>음수 오버플로우(언더플로우):</b> 음수 + 음수 = 양수?!<br>8비트: 10000000(-128) + 11111111(-1) = 01111111(+127)<br><br><b>오버플로우 감지법:</b><br>• 두 양수를 더했는데 결과가 음수 → 오버플로우!<br>• 두 음수를 더했는데 결과가 양수 → 오버플로우!<br>• 양수 + 음수는 절대 오버플로우 안 남</div>
+<div class="note-box"><span class="note-label">[실화] 오버플로우가 만든 사고</span>
+1996년 <b>아리안 5호 로켓</b>이 발사 37초 만에 폭발했어요. 원인은? 64비트 숫자를 16비트로 변환할 때 오버플로우가 발생한 것! 소프트웨어 한 줄의 오류가 5억 달러짜리 로켓을 날려버렸어요. 오버플로우는 정말 무서운 버그예요.</div>
+<table class="trace"><thead><tr><th>단계</th><th>7 - 3 계산</th><th>10 - 15 계산</th></tr></thead><tbody><tr><td>A (피감수)</td><td>00000111 (+7)</td><td>00001010 (+10)</td></tr><tr><td>B (감수)</td><td>00000011 (+3)</td><td>00001111 (+15)</td></tr><tr><td>-B (비트 뒤집기)</td><td>11111100</td><td>11110000</td></tr><tr><td>-B (+ 1 = 2의 보수)</td><td>11111101 (-3)</td><td>11110001 (-15)</td></tr><tr><td>A + (-B) 계산</td><td>00000111 + 11111101</td><td>00001010 + 11110001</td></tr><tr><td>결과</td><td>100000100 → 캐리 무시 → 00000100 = +4</td><td>11111011 = -5</td></tr><tr><td>검증</td><td>7 - 3 = 4 (맞음)</td><td>10 - 15 = -5 (맞음)</td></tr></tbody></table>
+<h2 class="section-title">BCD (Binary Coded Decimal)</h2>
+<p>BCD는 10진수의 각 자리를 <b>4비트 2진수</b>로 따로따로 표현하는 방식이에요. 일반적인 2진수 변환과는 달라요.</p>
+<div class="note-box"><span class="note-label">[핵심] BCD 인코딩</span>
+10진수 각 자리를 독립적으로 4비트로 변환해요.<br><br>예: 10진수 <b>93</b><br>• 일반 2진수: 1011101(2) (7비트)<br>• BCD: 1001 0011 (9→1001, 3→0011) (8비트)<br><br>예: 10진수 <b>256</b><br>• 일반 2진수: 100000000(2) (9비트)<br>• BCD: 0010 0101 0110 (2→0010, 5→0101, 6→0110) (12비트)</div>
+<div class="tip"><span class="tip-label">[팁] BCD는 어디에 쓰이나요?</span>
+• <b>디지털 시계</b>: 각 자리를 7세그먼트 디스플레이에 바로 보여줘야 하니까<br>• <b>전자 계산기</b>: 10진수 그대로 저장해야 반올림 오류가 없으니까<br>• <b>금융 시스템</b>: 돈 계산에서 소수점 오류가 생기면 안 되니까<br><br>BCD는 메모리를 더 쓰지만, 10진수 ↔ 표시 변환이 빠르고 정확해요.</div>
+<table class="trace"><thead><tr><th>10진수</th><th>각 자리 분리</th><th>BCD 변환</th><th>총 비트 수</th></tr></thead><tbody><tr><td>7</td><td>7</td><td>0111</td><td>4비트</td></tr><tr><td>25</td><td>2, 5</td><td>0010 0101</td><td>8비트</td></tr><tr><td>49</td><td>4, 9</td><td>0100 1001</td><td>8비트</td></tr><tr><td>100</td><td>1, 0, 0</td><td>0001 0000 0000</td><td>12비트</td></tr><tr><td>256</td><td>2, 5, 6</td><td>0010 0101 0110</td><td>12비트</td></tr><tr><td>999</td><td>9, 9, 9</td><td>1001 1001 1001</td><td>12비트</td></tr></tbody></table>
+<h2 class="section-title">고정소수점: 2진수로 소수 표현하기</h2>
+
+<p>소수점 아래 자릿값은 10진수에서 0.1, 0.01, 0.001... 이렇게 <b>10분의 1</b>씩 작아지죠? 2진수에서는 <b>2분의 1</b>씩 작아져요.</p>
+<div class="note-box"><span class="note-label">[핵심] 2진수 소수점 자릿값</span>
+소수점 오른쪽 자릿값:<br>• 첫째 자리: 2⁻¹ = <b>0.5</b><br>• 둘째 자리: 2⁻² = <b>0.25</b><br>• 셋째 자리: 2⁻³ = <b>0.125</b><br>• 넷째 자리: 2⁻⁴ = <b>0.0625</b><br><br>예: 0.101(2) = 0×0.5 + 1×0.5 + 0×0.25 + 1×0.125<br>  아, 정정! 0.101(2) = 1×0.5 + 0×0.25 + 1×0.125 = 0.5 + 0.125 = <b>0.625</b></div>
+<div style="margin:22px 0"></div>
+<div class="warn"><span class="warn-label">[주의] 무한 소수가 될 수 있어요!</span>
+10진수 <b>0.1</b>을 2진수로 바꾸면?<br>0.1 × 2 = 0.2 → 0<br>0.2 × 2 = 0.4 → 0<br>0.4 × 2 = 0.8 → 0<br>0.8 × 2 = 1.6 → 1<br>0.6 × 2 = 1.2 → 1<br>0.2 × 2 = 0.4 → 0 (반복 시작!)<br><br>0.1(10) = 0.000110011001100... (2) — 영원히 반복!<br>이래서 컴퓨터에서 0.1 + 0.2 ≠ 0.3 같은 오류가 생겨요.</div>
+<h2 class="section-title">[심화 내용] IEEE 754 부동소수점 맛보기</h2>
+<p>고정소수점은 소수점 위치가 고정되어 있어요. 하지만 아주 큰 수(은하 사이 거리)와 아주 작은 수(원자 크기)를 동시에 다루려면 <b>소수점이 움직이는</b> 방식이 필요해요. 이것이 <b>부동소수점(floating point)</b>이에요.</p>
+<div class="note-box"><span class="note-label">[심화 내용] IEEE 754 구조 (32비트 단정밀도)</span>
+32비트를 세 부분으로 나눠요:<br><br>| 부호 (1비트) | 지수 (8비트) | 가수 (23비트) |<br><br>• <b>부호 비트</b>: 0이면 양수, 1이면 음수<br>• <b>지수(exponent)</b>: 소수점을 얼마나 이동할지 (편향값 127 사용)<br>• <b>가수(mantissa)</b>: 실제 숫자의 유효 자릿수<br><br>예: -6.5를 IEEE 754로 표현<br>-6.5 = -110.1(2) = -1.101 × 2²<br>부호: 1 (음수)<br>지수: 2 + 127 = 129 = 10000001(2)<br>가수: 101 (1. 뒤의 부분)<br>→ 1 10000001 10100000000000000000000</div>
+<div class="tip"><span class="tip-label">[팁] 부동소수점은 왜 중요할까?</span>
+C언어의 <code>float</code>가 바로 32비트 IEEE 754예요!<br><code>double</code>은 64비트 버전(배정밀도)이고요.<br><br>게임, 과학 계산, 그래픽, AI 등 거의 모든 분야에서 쓰여요.</div>
+<div style="margin:22px 0"></div>
+<div class="debug-section"><div class="debug-bar">DEBUG LAB — 에러를 찾으시오</div><div class="debug-body">
+
+<p style="margin:14px 0 0; font-size:14px;"><b>에러:</b> </p>
+<p style="font-size:14px;"><b>수정:</b> </p>
+</div></div>
+<h2 class="section-title">실무 연결: 2진수가 쓰이는 곳</h2>
+
+<div class="note-box"><span class="note-label">실무 활용 1: IP 주소</span>
+인터넷 주소 <b>192.168.1.1</b>은 사실 32비트 2진수예요!<br><br>192 = 11000000<br>168 = 10101000<br>  1 = 00000001<br>  1 = 00000001<br><br>합치면: 11000000.10101000.00000001.00000001<br>각 자리가 0~255(8비트)인 이유: 1바이트로 표현하니까!</div>
+<div class="note-box"><span class="note-label">실무 활용 2: 서브넷 마스크</span>
+서브넷 마스크 <b>255.255.255.0</b>을 2진수로 바꾸면:<br>11111111.11111111.11111111.00000000<br><br>1이 연속되는 부분 = 네트워크 주소<br>0인 부분 = 호스트(컴퓨터) 주소<br><br>/24 같은 표기는 '앞에서 24비트가 1'이라는 뜻이에요.</div>
+<div class="note-box"><span class="note-label">실무 활용 3: 메모리 주소</span>
+프로그램이 사용하는 메모리의 위치도 2진수 숫자예요.<br><br>예: 메모리 주소 0x7FFF0000<br>= 0111 1111 1111 1111 0000 0000 0000 0000 (2)<br><br>디버거에서 변수의 메모리 주소를 확인할 때, 16진수로 표시되지만 내부적으로는 모두 2진수예요.</div>
+<h2 class="section-title">Python으로 진수 변환 해보기</h2>
+<p>Python에는 진수 변환 함수가 내장되어 있어요. 직접 실행해 볼까요?</p>
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc"># <span class="s-num">10</span>진수 → <span class="s-num">2</span>진수</span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc"><span class="s-fn">print</span>(<span class="s-fn">bin</span>(<span class="s-num">13</span>))      # 출력: 0b1101</span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc"><span class="s-fn">print</span>(<span class="s-fn">bin</span>(<span class="s-num">255</span>))     # 출력: 0b11111111</span></div>
+<div class="code-line"><span class="ln">4</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">5</span><span class="lc"># <span class="s-num">2</span>진수 → <span class="s-num">10</span>진수</span></div>
+<div class="code-line"><span class="ln">6</span><span class="lc"><span class="s-fn">print</span>(<span class="s-type">int</span>('<span class="s-num">1101</span>', <span class="s-num">2</span>))    # 출력: <span class="s-num">13</span></span></div>
+<div class="code-line"><span class="ln">7</span><span class="lc"><span class="s-fn">print</span>(<span class="s-type">int</span>('<span class="s-num">11111111</span>', <span class="s-num">2</span>)) # 출력: <span class="s-num">255</span></span></div>
+<div class="code-line"><span class="ln">8</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">9</span><span class="lc"># 직접 만든 변환 함수</span></div>
+<div class="code-line"><span class="ln">10</span><span class="lc">def <span class="s-fn">to_binary</span>(n):</span></div>
+<div class="code-line"><span class="ln">11</span><span class="lc">    <span class="s-str">""</span><span class="s-str">"10진수를 2진수 문자열로 변환"</span><span class="s-str">""</span></span></div>
+<div class="code-line"><span class="ln">12</span><span class="lc">    <span class="s-kw">if</span> n == <span class="s-num">0</span>:</span></div>
+<div class="code-line"><span class="ln">13</span><span class="lc">        <span class="s-kw">return</span> <span class="s-str">'0'</span></span></div>
+<div class="code-line"><span class="ln">14</span><span class="lc">    result = ''</span></div>
+<div class="code-line"><span class="ln">15</span><span class="lc">    <span class="s-kw">while</span> n &gt; <span class="s-num">0</span>:</span></div>
+<div class="code-line"><span class="ln">16</span><span class="lc">        result = <span class="s-fn">str</span>(n % <span class="s-num">2</span>) + result</span></div>
+<div class="code-line"><span class="ln">17</span><span class="lc">        n = n <span class="s-cm">// 2</span></span></div>
+<div class="code-line"><span class="ln">18</span><span class="lc">    <span class="s-kw">return</span> result</span></div>
+<div class="code-line"><span class="ln">19</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">20</span><span class="lc"><span class="s-fn">print</span>(<span class="s-fn">to_binary</span>(<span class="s-num">13</span>))   # 출력: <span class="s-num">1101</span></span></div>
+<div class="code-line"><span class="ln">21</span><span class="lc"><span class="s-fn">print</span>(<span class="s-fn">to_binary</span>(<span class="s-num">100</span>))  # 출력: <span class="s-num">1100100</span></span></div>
+</div>
+</div>
+<div class="output-wrap"><div class="output-bar">실행 결과</div><div class="output-body">0b1101
+0b11111111
+13
+255
+1101
+1100100</div></div>
+<h2 class="section-title">C언어로 진수 변환 직접 구현하기</h2>
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;stdio.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc"><span class="s-cm">// 10진수를 2진수로 출력하는 함수</span></span></div>
+<div class="code-line"><span class="ln">4</span><span class="lc"><span class="s-type">void</span> <span class="s-fn">print_binary</span>(<span class="s-type">int</span> n) {</span></div>
+<div class="code-line"><span class="ln">5</span><span class="lc">    <span class="s-kw">if</span> (n == <span class="s-num">0</span>) {</span></div>
+<div class="code-line"><span class="ln">6</span><span class="lc">        <span class="s-fn">printf</span>(<span class="s-str">"0"</span>);</span></div>
+<div class="code-line"><span class="ln">7</span><span class="lc">        <span class="s-kw">return</span>;</span></div>
+<div class="code-line"><span class="ln">8</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">9</span><span class="lc">    <span class="s-cm">// 재귀로 역순 출력</span></span></div>
+<div class="code-line"><span class="ln">10</span><span class="lc">    <span class="s-kw">if</span> (n &gt; <span class="s-num">1</span>) {</span></div>
+<div class="code-line"><span class="ln">11</span><span class="lc">        <span class="s-fn">print_binary</span>(n / <span class="s-num">2</span>);</span></div>
+<div class="code-line"><span class="ln">12</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">13</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"%d"</span>, n % <span class="s-num">2</span>);</span></div>
+<div class="code-line"><span class="ln">14</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">15</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">16</span><span class="lc"><span class="s-cm">// 2진수 문자열을 10진수로 변환</span></span></div>
+<div class="code-line"><span class="ln">17</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">binary_to_decimal</span>(<span class="s-kw">const</span> <span class="s-type">char</span> *binary) {</span></div>
+<div class="code-line"><span class="ln">18</span><span class="lc">    <span class="s-type">int</span> result = <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">19</span><span class="lc">    <span class="s-kw">while</span> (*binary) {</span></div>
+<div class="code-line"><span class="ln">20</span><span class="lc">        result = result * <span class="s-num">2</span> + (*binary - <span class="s-str">'0'</span>);</span></div>
+<div class="code-line"><span class="ln">21</span><span class="lc">        binary++;</span></div>
+<div class="code-line"><span class="ln">22</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">23</span><span class="lc">    <span class="s-kw">return</span> result;</span></div>
+<div class="code-line"><span class="ln">24</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">25</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">26</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">main</span>() {</span></div>
+<div class="code-line"><span class="ln">27</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"13을 2진수로: "</span>);</span></div>
+<div class="code-line"><span class="ln">28</span><span class="lc">    <span class="s-fn">print_binary</span>(<span class="s-num">13</span>);</span></div>
+<div class="code-line"><span class="ln">29</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"\n"</span>);</span></div>
+<div class="code-line"><span class="ln">30</span><span class="lc">    </span></div>
+<div class="code-line"><span class="ln">31</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"1101을 10진수로: %d\n"</span>,</span></div>
+<div class="code-line"><span class="ln">32</span><span class="lc">           <span class="s-fn">binary_to_decimal</span>(<span class="s-str">"1101"</span>));</span></div>
+<div class="code-line"><span class="ln">33</span><span class="lc">    <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">34</span><span class="lc">}</span></div>
+</div>
+</div>
+<div class="output-wrap"><div class="output-bar">실행 결과</div><div class="output-body">13을 2진수로: 1101
+1101을 10진수로: 13</div></div>
+<h2 class="section-title">[심화] 2의 보수 실습 코드</h2>
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc">def <span class="s-fn">twos_complement</span>(n, bits=<span class="s-num">8</span>):</span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc">    <span class="s-str">""</span><span class="s-str">"음수를 2의 보수 2진수로 표현"</span><span class="s-str">""</span></span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc">    <span class="s-kw">if</span> n &gt;= <span class="s-num">0</span>:</span></div>
+<div class="code-line"><span class="ln">4</span><span class="lc">        <span class="s-kw">return</span> <span class="s-fn">format</span>(n, f'<span class="s-num">0</span>{bits}b')</span></div>
+<div class="code-line"><span class="ln">5</span><span class="lc">    <span class="s-kw">else</span>:</span></div>
+<div class="code-line"><span class="ln">6</span><span class="lc">        # <span class="s-num">2</span>의 보수: <span class="s-num">2</span>^bits + n</span></div>
+<div class="code-line"><span class="ln">7</span><span class="lc">        <span class="s-kw">return</span> <span class="s-fn">format</span>((<span class="s-num">1</span> &lt;&lt; bits) + n, f'<span class="s-num">0</span>{bits}b')</span></div>
+<div class="code-line"><span class="ln">8</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">9</span><span class="lc">def <span class="s-fn">from_twos_complement</span>(binary_str):</span></div>
+<div class="code-line"><span class="ln">10</span><span class="lc">    <span class="s-str">""</span><span class="s-str">"2의 보수 2진수를 10진수로 변환"</span><span class="s-str">""</span></span></div>
+<div class="code-line"><span class="ln">11</span><span class="lc">    bits = <span class="s-fn">len</span>(binary_str)</span></div>
+<div class="code-line"><span class="ln">12</span><span class="lc">    value = <span class="s-type">int</span>(binary_str, <span class="s-num">2</span>)</span></div>
+<div class="code-line"><span class="ln">13</span><span class="lc">    <span class="s-kw">if</span> binary_str[<span class="s-num">0</span>] == <span class="s-str">'1'</span>:  # 음수</span></div>
+<div class="code-line"><span class="ln">14</span><span class="lc">        value -= (<span class="s-num">1</span> &lt;&lt; bits)</span></div>
+<div class="code-line"><span class="ln">15</span><span class="lc">    <span class="s-kw">return</span> value</span></div>
+<div class="code-line"><span class="ln">16</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">17</span><span class="lc"># 테스트</span></div>
+<div class="code-line"><span class="ln">18</span><span class="lc"><span class="s-fn">print</span>(f<span class="s-str">"+13 = {twos_complement(13)}"</span>)</span></div>
+<div class="code-line"><span class="ln">19</span><span class="lc"><span class="s-fn">print</span>(f<span class="s-str">"-13 = {twos_complement(-13)}"</span>)</span></div>
+<div class="code-line"><span class="ln">20</span><span class="lc"><span class="s-fn">print</span>(f<span class="s-str">"+127 = {twos_complement(127)}"</span>)</span></div>
+<div class="code-line"><span class="ln">21</span><span class="lc"><span class="s-fn">print</span>(f<span class="s-str">"-128 = {twos_complement(-128)}"</span>)</span></div>
+<div class="code-line"><span class="ln">22</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">23</span><span class="lc"><span class="s-fn">print</span>(f<span class="s-str">"11110011 = {from_twos_complement('11110011')}"</span>)</span></div>
+<div class="code-line"><span class="ln">24</span><span class="lc"><span class="s-fn">print</span>(f<span class="s-str">"01111111 = {from_twos_complement('01111111')}"</span>)</span></div>
+</div>
+</div>
+<div class="output-wrap"><div class="output-bar">실행 결과</div><div class="output-body">+13 = 00001101
+-13 = 11110011
++127 = 01111111
+-128 = 10000000
+11110011 = -13
+01111111 = 127</div></div>
+<h2 class="section-title">연습문제</h2>
+
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 1</span><p style="margin:0;font-size:14px">2진수 1011(2)을 10진수로 바꿔 보세요. (자릿값: 8, 4, 2, 1)</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 2</span><p style="margin:0;font-size:14px">10진수 12를 2진수로 바꿔 보세요. (나누기 2 반복)</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 3</span><p style="margin:0;font-size:14px">다음 중 2진수 1000(2)이 나타내는 10진수 값은?<br>(1) 4  (2) 6  (3) 8  (4) 16</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 4</span><p style="margin:0;font-size:14px">10진수 7을 2진수로 바꾸면? 그리고 2진수 10101(2)을 10진수로 바꾸면?</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 5</span><p style="margin:0;font-size:14px">1바이트(8비트)로 표현할 수 있는 부호 없는 정수의 범위는 10진수로 몇부터 몇까지인가요?</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 6</span><p style="margin:0;font-size:14px">다음 2진수를 10진수로 바꾸세요.<br>(1) 10010(2) = ?<br>(2) 11100(2) = ?<br>(3) 101010(2) = ?</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 7</span><p style="margin:0;font-size:14px">다음 10진수를 2진수로 바꾸세요.<br>(1) 25 = ?<br>(2) 33 = ?<br>(3) 100 = ?</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 8</span><p style="margin:0;font-size:14px">10진수 49를 BCD로 표현하세요. 그리고 일반 2진수와 비교해 보세요.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 9</span><p style="margin:0;font-size:14px">10진수 0.75를 2진수로 변환하세요. (힌트: 0.75 × 2 = ?)</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 10</span><p style="margin:0;font-size:14px">8비트 2의 보수 표현에서, +23의 2의 보수 표현과 -23의 2의 보수 표현을 각각 구하세요.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 11</span><p style="margin:0;font-size:14px">2진수 11111111(2)은 10진수로 얼마인가요? 이 값에 1을 더하면 2진수로 어떻게 되나요? (힌트: 자릿수가 바뀌어요)</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 12</span><p style="margin:0;font-size:14px">[2의 보수 연산] 8비트 2의 보수를 사용하여 다음을 계산하세요. 오버플로우가 발생하는지도 판단하세요.<br>(1) 50 + 30<br>(2) 100 + 50<br>(3) -60 + (-80)</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 13</span><p style="margin:0;font-size:14px">[부동소수점] 10진수 -12.5를 IEEE 754 단정밀도(32비트) 형식으로 변환하세요.<br>(힌트: -12.5 = -1100.1(2) = -1.1001 × 2³)</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 14</span><p style="margin:0;font-size:14px">[실무] IP 주소 10.0.1.255를 32비트 2진수로 변환하세요. 서브넷 마스크 255.255.254.0과 AND 연산하면 네트워크 주소는?</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 15</span><p style="margin:0;font-size:14px">[코딩] Python 또는 C로, 사용자가 입력한 10진수를 2진수로 변환하고, 그 2진수에서 1의 개수를 세는 프로그램을 작성하세요. (예: 13 → 1101 → 1이 3개)</p></div>
+<h2 class="section-title">용어 정리</h2>
+<table class="trace"><thead><tr><th>용어</th><th>설명</th></tr></thead><tbody><tr><td><code>2진수</code></td><td>0과 1만 사용하는 수 체계. 자릿값이 2배씩 커져요 (1, 2, 4, 8, 16...).</td></tr><tr><td><code>10진수</code></td><td>0~9를 사용하는 수 체계. 자릿값이 10배씩 커져요 (1, 10, 100, 1000...).</td></tr><tr><td><code>자릿값</code></td><td>숫자가 놓인 위치에 따라 정해지는 값. 같은 숫자 3이라도 일의 자리(3)와 백의 자리(300)는 값이 달라요.</td></tr><tr><td><code>진법 변환</code></td><td>한 수 체계에서 다른 수 체계로 숫자를 바꾸는 것. 예: 10진수 13 = 2진수 1101.</td></tr><tr><td><code>2의 거듭제곱</code></td><td>2를 반복해서 곱한 수. 1, 2, 4, 8, 16, 32, 64, 128, 256...</td></tr><tr><td><code>부호 비트 (sign bit)</code></td><td>2진수의 맨 앞 비트. 양수(0)와 음수(1)를 구분하는 데 사용해요.</td></tr><tr><td><code>1의 보수 (one's complement)</code></td><td>모든 비트를 뒤집어서 음수를 표현하는 방법. +0과 -0이 따로 존재하는 단점이 있어요.</td></tr><tr><td><code>2의 보수 (two's complement)</code></td><td>1의 보수에 1을 더해서 음수를 표현하는 방법. 현대 컴퓨터의 표준 방식이에요.</td></tr><tr><td><code>오버플로우 (overflow)</code></td><td>계산 결과가 표현 가능한 범위를 넘어서 잘못된 값이 나오는 현상.</td></tr><tr><td><code>BCD (Binary Coded Decimal)</code></td><td>10진수 각 자리를 4비트 2진수로 따로 표현하는 방식. 디지털 시계, 계산기에 사용돼요.</td></tr><tr><td><code>고정소수점 (fixed point)</code></td><td>소수점 위치가 고정된 2진수 표현 방식.</td></tr><tr><td><code>부동소수점 (floating point)</code></td><td>소수점이 움직이는 2진수 표현 방식. IEEE 754 표준을 따르며, 아주 크거나 작은 수를 표현할 수 있어요.</td></tr><tr><td><code>IEEE 754</code></td><td>부동소수점 숫자의 국제 표준. 부호, 지수, 가수 세 부분으로 나눠서 실수를 표현해요.</td></tr></tbody></table>
+<div class="warmup-box"><div class="warmup-title">이번 유닛 핵심 정리</div><div class="wq"><b>1.</b> 10진수: 자릿값이 10배씩 / 2진수: 자릿값이 2배씩</div><div class="wq"><b>2.</b> 2→10: 각 자리 숫자에 자릿값을 곱해서 더하기</div><div class="wq"><b>3.</b> 10→2: 2로 나누기를 반복하고 나머지를 역순으로 읽기</div><div class="wq"><b>4.</b> 음수 표현: 2의 보수가 표준 (비트 뒤집고 +1)</div><div class="wq"><b>5.</b> 소수점: 2진수도 소수를 표현할 수 있어요 (0.5, 0.25, 0.125...)</div><div class="wq"><b>6.</b> 실무: IP 주소, 메모리 주소, 서브넷 마스크 모두 2진수 기반</div></div>
+<h2 class="section-title">━━━ 10축 심화 학습 ━━━</h2>
+<h2 class="section-title">[KOI] 진법 변환 실전 기출 유형</h2>
+<div class="note-box"><span class="note-label">[KOI 실전 문제 1] 2진수 변환 + 1의 개수</span>
+<b>문제:</b> 10진수 200을 2진수로 변환하면 1의 개수는 몇 개인가요?<br><br><b>정답:</b> 3개<br><br><b>풀이:</b><br>• 200 = 128 + 64 + 8 = 2⁷ + 2⁶ + 2³<br>• 200 = <b>11001000</b>₂<br>• 1의 개수 = <b>3개</b> (위치: 7번, 6번, 3번 비트)<br>• 팁: 큰 2의 거듭제곱부터 빼면 빨라요!</div>
+<div class="note-box"><span class="note-label">[KOI 실전 문제 2] 2의 보수 변환</span>
+<b>문제:</b> 8비트 2의 보수로 -37을 표현하세요.<br><br><b>정답:</b> 11011011<br><br><b>풀이:</b><br>1단계: +37 = <b>00100101</b><br>2단계: 비트 뒤집기 = 11011010 (1의 보수)<br>3단계: +1 더하기 = <b>11011011</b> (2의 보수)<br><br>검증: 00100101 + 11011011 = 100000000 (캐리 무시) = 00000000 ✔</div>
+<div class="note-box"><span class="note-label">[KOI 실전 문제 3] 오버플로우 판단</span>
+<b>문제:</b> 8비트 2의 보수로 다음 연산 중 오버플로우가 발생하는 것을 모두 고르세요.<br>(1) 60 + 40<br>(2) -50 + 30<br>(3) -70 + (-80)<br>(4) 100 + 27<br><br><b>정답:</b> (1), (3), (4)<br><br><b>풀이:</b><br>• 8비트 2의 보수 범위: <b>-128 ~ +127</b><br>• (1) 60+40=100 → 범위 안 → 오버플로우 없음... 아닙니다! 100은 127 이하이므로 범위 내!<br>• 정정: (1)60+40=100 → 127 이하 ⇒ 오버플로우 없음<br>• (2) -50+30=-20 → 범위 내 ⇒ 오버플로우 없음<br>• (3) -70+(-80)=-150 → -128 미만 ⇒ <b>오버플로우!</b><br>• (4) 100+27=127 → 127 이하 ⇒ 오버플로우 없음<br><br>정답 정정: <b>(3)만 오버플로우</b>. 학생들이 범위를 햇갈렸을 때 바로잡는 함정 문제!</div>
+<div class="note-box"><span class="note-label">[KOI 실전 문제 4] BCD vs 2진수</span>
+<b>문제:</b> 10진수 85를 BCD로 표현한 것과 일반 2진수로 표현한 것을 각각 쓰고, 어느 쪽이 더 많은 비트를 사용하는지 분석하세요.<br><br><b>정답:</b><br>• BCD: 8→1000, 5→0101 → <b>1000 0101</b> (8비트)<br>• 일반 2진수: 85 = 64+16+4+1 = <b>1010101</b> (7비트)<br>• BCD가 1비트 더 많이 사용<br>• 하지만 BCD는 자리별로 독립적이라 디스플레이 변환이 빠르고, 금융에서 반올림 오류가 없어요</div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 16</span><p style="margin:0;font-size:14px">[KOI] 8비트 2의 보수로 다음을 계산하세요. 2진수로 풀이 과정을 보이세요.<br>(1) 45 + (-20) = ?<br>(2) -64 + (-64) = ? (오버플로우 발생 여부 판단)</p></div>
+<h2 class="section-title">[디버깅] 0.1 + 0.2 ≠ 0.3 문제</h2>
+<p>진법 변환을 배웠으니, 디버깅에서 가장 유명한 버그 중 하나를 이해할 수 있어요.</p>
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span><span class="code-bar-file">[디버깅] 0.1 + 0.2 문제 직접 확인</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;stdio.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">main</span>(<span class="s-type">void</span>) {</span></div>
+<div class="code-line"><span class="ln">4</span><span class="lc">    <span class="s-type">double</span> a = <span class="s-num">0.1</span>;</span></div>
+<div class="code-line"><span class="ln">5</span><span class="lc">    <span class="s-type">double</span> b = <span class="s-num">0.2</span>;</span></div>
+<div class="code-line"><span class="ln">6</span><span class="lc">    <span class="s-type">double</span> c = a + b;</span></div>
+<div class="code-line"><span class="ln">7</span><span class="lc">    </span></div>
+<div class="code-line"><span class="ln">8</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"0.1 + 0.2 = %.20f\n"</span>, c);  <span class="s-cm">// 소수점 20자리까지</span></span></div>
+<div class="code-line"><span class="ln">9</span><span class="lc">    </span></div>
+<div class="code-line"><span class="ln">10</span><span class="lc">    <span class="s-kw">if</span> (c == <span class="s-num">0.3</span>) {</span></div>
+<div class="code-line"><span class="ln">11</span><span class="lc">        <span class="s-fn">printf</span>(<span class="s-str">"같다!\n"</span>);</span></div>
+<div class="code-line"><span class="ln">12</span><span class="lc">    } <span class="s-kw">else</span> {</span></div>
+<div class="code-line"><span class="ln">13</span><span class="lc">        <span class="s-fn">printf</span>(<span class="s-str">"다르다! (0.3이 아님)\n"</span>);</span></div>
+<div class="code-line"><span class="ln">14</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">15</span><span class="lc">    <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">16</span><span class="lc">}</span></div>
+</div>
+</div>
+<!-- output-block -->
+<div class="warn"><span class="warn-label">[디버깅] 부동소수점 비교 올바른 방법</span>
+❌ 틀린 코드: <code>if (a == 0.3)</code><br>✅ 올바른 코드: <code>if (fabs(a - 0.3) < 0.000001)</code><br><br><b>이유:</b> 0.1은 2진수로 0.000110011001100... (무한 반복)<br>컬퓨터는 유한한 비트로 저장하니까 오차가 생겴요!<br><br>이 버그는 C, Java, JavaScript, Python 등 모든 언어에서 똑같이 발생해요.</div>
+<h2 class="section-title">[컴퓨팅사고력] 알고리즘적 사고 — 나누기 2 반복</h2>
+<p>10진수 → 2진수 변환은 '나누기2 → 나머지적기 → 몹이 0이면 끝 → 역순 읽기'라는 <b>정해진 절차</b>를 따라가요. 이것이 바로 <b>알고리즘</b>이에요!</p>
+<div class="tip"><span class="tip-label">[컴퓨팅사고력] 알고리즘의 3요소</span>
+1. <b>입력</b>: 10진수 (ex: 25)<br>2. <b>과정</b>: 2로 나누고 나머지를 적기 (반복 — 몸이 0이 될 때까지)<br>3. <b>출력</b>: 나머지를 역순으로 읽기 (ex: 11001₂)<br><br>이 3가지 요소(입력-과정-출력)가 모든 알고리즘의 기본 구조예요.<br>Part 1에서 이것을 C언어 함수로 직접 구현해 볼 거예요!</div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 17</span><p style="margin:0;font-size:14px">[컴퓨팅사고력] 10진수를 3진수로 바꾸는 알고리즘을 직접 설계해 보세요.<br>(1) 2진수 변환과 어떤 점이 같고 어떤 점이 다른가요?<br>(2) 10진수 26을 3진수로 바꾸세요.<br>(3) 이 방법으로 7진수, 5진수로도 바꿀 수 있나요? 왜 그런지 설명하세요.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 18</span><p style="margin:0;font-size:14px">[C+디버깅] C언어에서 float f = 0.1f; 를 선언하면 실제로 0.1이 저장되나요?<br>왜 그런지 이 유닛에서 배운 내용을 바탕으로 설명하세요.</p></div>
+<div class="tip"><span class="tip-label">이 유닛에서 깊이 배운 10축</span>
+<b>[KOI]</b> 2진수↔10진수, 10진수↔2진수 변환. 2의 보수 변환+검증. 오버플로우 판단. BCD vs 2진수 비교. 실전 문제 4개+풀이<br><b>[디버깅]</b> 0.1+0.2≠0.3 버그. C코드로 직접 확인. 부동소수점 비교 올바른 방법(fabs)<br><b>[컴퓨팅사고력]</b> 알고리즘적 사고 — 나누기2 반복의 3요소(입력/과정/출력). N진법 변환 일반화<br><b>[C언어]</b> 0b1101로 2진수 직접 쓰기. 진수변환 C함수 구현. 0.1+0.2 버그 확인<br><b>[코딩기초]</b> 변환 후 검증 습관. 반복(루프)+조건 개념 예습<br><b>[하드웨어]</b> CPU는 2진수로 계산, 우리에게 10진수로 보여줌. 2의 보수 = CPU 표준<br><b>[실생활]</b> IP주소(192.168.1.1=32비트 2진수), 서브넷마스크, 메모리주소<br><b>[타과목]</b> 수학 — 라이프니츠, 불대수. 역사 — 2진수+전기스위치=컴퓨터</div>
+<div class="note-box"><span class="note-label">[다음 유닛 미리보기]</span>
+2진수가 너무 길어서 읽기 힘들죠? 1101 0011 1010 1111... 이걸 더 짧게 쓰는 방법이 있어요. 8진수와 16진수! 다음 유닛에서 알아봐요.</div>
+
+
+    <span class="page-num">2</span>
+  </div>
+</div>
+</body>
+</html>

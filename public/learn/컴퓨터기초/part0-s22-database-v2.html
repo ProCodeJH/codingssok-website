@@ -1,0 +1,1816 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>코딩쏙 교재 — 데이터베이스 기초</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+
+  :root {
+    --navy: #1a2e4a;
+    --navy-mid: #2c4a6e;
+    --navy-light: #3d6590;
+    --orange: #e07830;
+    --orange-light: #f5e6d8;
+    --white: #ffffff;
+    --bg: #f7f8fa;
+    --bg-warm: #faf9f7;
+    --gray-50: #f9fafb;
+    --gray-100: #f3f4f6;
+    --gray-200: #e5e7eb;
+    --gray-300: #d1d5db;
+    --gray-400: #9ca3af;
+    --gray-500: #6b7280;
+    --gray-600: #4b5563;
+    --gray-700: #374151;
+    --gray-800: #1f2937;
+    --text: #2d3748;
+    --green: #16a34a;
+    --green-bg: #dcfce7;
+    --red: #dc2626;
+    --red-bg: #fee2e2;
+    --blue: #2563eb;
+    --blue-bg: #dbeafe;
+    --yellow-bg: #fef9c3;
+    --font: 'Noto Sans KR', sans-serif;
+    --mono: 'JetBrains Mono', 'Consolas', monospace;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: var(--font); background: #e8eaed; font-size: 15px; }
+
+  /* ========== PAGE ========== */
+  .page {
+    width: 210mm;
+    min-height: 295mm;
+    margin: 24px auto;
+    background: var(--white);
+    box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* ========== PAGE 1: CHAPTER START ========== */
+  .chapter-page {
+    display: flex;
+    min-height: 295mm;
+  }
+
+  .chapter-sidebar {
+    width: 10px;
+    background: var(--navy);
+    flex-shrink: 0;
+  }
+
+  .chapter-accent-bar {
+    width: 7px;
+    background: var(--orange);
+    flex-shrink: 0;
+  }
+
+  .chapter-body {
+    flex: 1;
+    padding: 70px 65px 50px 55px;
+    position: relative;
+  }
+
+  .chapter-watermark {
+    position: absolute;
+    top: -10px;
+    right: -15px;
+    font-size: 280px;
+    font-weight: 900;
+    color: rgba(180,195,212,0.35);
+    line-height: 1;
+    pointer-events: none;
+    letter-spacing: -10px;
+  }
+
+  .chapter-label {
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--navy-mid);
+    letter-spacing: 2px;
+    margin-bottom: 4px;
+  }
+
+  .chapter-title {
+    font-size: 44px;
+    font-weight: 900;
+    color: var(--navy);
+    line-height: 1.15;
+    margin-bottom: 12px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .chapter-sub {
+    font-size: 16px;
+    color: var(--gray-500);
+    font-weight: 400;
+    margin-bottom: 20px;
+    padding-bottom: 28px;
+    border-bottom: 1px solid var(--gray-200);
+  }
+
+  /* Learning objectives */
+  .obj-title {
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--navy);
+    margin-bottom: 16px;
+    margin-top: 32px;
+  }
+
+  .obj-list {
+    list-style: none;
+    margin-bottom: 40px;
+  }
+
+  .obj-list li {
+    padding: 5px 0 5px 24px;
+    position: relative;
+    font-size: 15px;
+    color: var(--gray-700);
+    line-height: 1.6;
+  }
+
+  .obj-list li::before {
+    content: '•';
+    position: absolute;
+    left: 8px;
+    color: var(--navy-mid);
+    font-weight: 700;
+  }
+
+  /* Prerequisites flow */
+  .prereq-title {
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--navy);
+    margin-bottom: 18px;
+  }
+
+  .prereq-flow {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    margin-bottom: 44px;
+  }
+
+  .prereq-item {
+    padding: 9px 22px;
+    border: 1.5px solid var(--gray-300);
+    border-radius: 50px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--gray-600);
+    background: var(--white);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+  }
+
+  .prereq-item.current {
+    border-color: var(--navy);
+    color: var(--navy);
+    font-weight: 700;
+    background: #edf2f7;
+    box-shadow: 0 2px 6px rgba(26,46,74,0.12);
+  }
+
+  .prereq-arrow {
+    width: 36px;
+    text-align: center;
+    color: var(--gray-300);
+    font-size: 18px;
+    font-weight: 300;
+  }
+
+  /* Predict box */
+  .predict-box {
+    background: var(--gray-50);
+    border: 1.5px solid var(--gray-200);
+    border-radius: 12px;
+    padding: 24px 28px;
+  }
+
+  .predict-label {
+    display: inline-block;
+    background: var(--orange);
+    color: var(--white);
+    font-size: 12px;
+    font-weight: 600;
+    padding: 3px 12px;
+    border-radius: 4px;
+    margin-bottom: 14px;
+    letter-spacing: 0.5px;
+  }
+
+  .predict-q {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--navy);
+    margin-bottom: 16px;
+  }
+
+  .predict-code {
+    background: var(--white);
+    border: 1px solid var(--gray-200);
+    border-radius: 8px;
+    padding: 14px 18px;
+    font-family: var(--mono);
+    font-size: 13px;
+    line-height: 1.65;
+    color: var(--gray-700);
+  }
+
+  /* ========== PAGE 2: CORE CONTENT ========== */
+  .content-page {
+    padding: 55px 65px;
+  }
+
+  .unit-header-bar {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    margin-bottom: 8px;
+  }
+
+  .unit-tag {
+    font-size: 12px;
+    color: var(--orange);
+    font-weight: 600;
+    letter-spacing: 1px;
+  }
+
+  .unit-title-sm {
+    font-size: 14px;
+    color: var(--gray-400);
+    font-weight: 400;
+  }
+
+  .section-title {
+    font-size: 24px;
+    font-weight: 800;
+    color: var(--navy);
+    margin-bottom: 24px;
+    margin-top: 8px;
+    padding-left: 16px;
+    border-left: 5px solid var(--orange);
+  }
+
+  p {
+    font-size: 15.5px;
+    line-height: 1.9;
+    color: var(--text);
+    margin-bottom: 18px;
+  }
+
+  p code {
+    font-family: var(--mono);
+    font-size: 13.5px;
+    background: #f1f3f5;
+    padding: 2px 7px;
+    border-radius: 4px;
+    color: var(--navy);
+    font-weight: 500;
+  }
+
+  /* Code block */
+  .code-wrap {
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    border: 1px solid var(--gray-200);
+    margin: 22px 0;
+  }
+
+  .code-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 9px 18px;
+    background: var(--navy);
+    font-size: 12px;
+  }
+
+  .code-bar-lang {
+    font-family: var(--mono);
+    font-weight: 600;
+    color: var(--white);
+  }
+
+  .code-bar-file {
+    color: rgba(255,255,255,0.6);
+    font-weight: 400;
+  }
+
+  .code-body {
+    background: #f8f9fb;
+    padding: 20px 0;
+    font-family: var(--mono);
+    font-size: 13.5px;
+    line-height: 1.75;
+    border: 1px solid var(--gray-200);
+    border-top: none;
+    border-radius: 0 0 12px 12px;
+  }
+
+  .code-line {
+    display: flex;
+    padding: 0 20px;
+  }
+
+  .code-line:hover {
+    background: #f0f4f8;
+  }
+
+  .code-line.highlighted {
+    background: #fff8e1;
+  }
+
+  .ln {
+    width: 30px;
+    text-align: right;
+    color: #b8bfc8;
+    font-size: 12px;
+    margin-right: 18px;
+    user-select: none;
+    flex-shrink: 0;
+    padding-top: 1px;
+  }
+
+  .lc { flex: 1; }
+
+  /* syntax */
+  .s-pp { color: #8b5cf6; font-weight: 600; }
+  .s-str { color: #d97706; }
+  .s-type { color: #2563eb; font-weight: 500; }
+  .s-kw { color: #7c3aed; font-weight: 500; }
+  .s-fn { color: #059669; font-weight: 500; }
+  .s-num { color: #dc2626; }
+  .s-cm { color: #9ca3af; font-style: italic; }
+
+  /* Output block */
+  .output-wrap {
+    border-radius: 10px;
+    overflow: hidden;
+    margin: 10px 0 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    border: 1px solid #d1d5db;
+  }
+
+  .output-bar {
+    padding: 9px 18px;
+    background: #374151;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--white);
+    letter-spacing: 0.5px;
+  }
+
+  .output-body {
+    padding: 16px 20px;
+    font-family: var(--mono);
+    font-size: 13.5px;
+    line-height: 1.7;
+    color: var(--gray-800);
+    background: #f1f5f9;
+    border: 1px solid var(--gray-200);
+    border-top: none;
+    border-radius: 0 0 10px 10px;
+  }
+
+  /* Callout */
+  .tip {
+    margin: 28px 0;
+    padding: 18px 24px;
+    background: #dbeafe;
+    border-left: 5px solid #2563eb;
+    border-radius: 0 12px 12px 0;
+    font-size: 14.5px;
+    line-height: 1.8;
+    color: var(--text);
+  }
+
+  .tip-label {
+    font-weight: 700;
+    color: #2563eb;
+    font-size: 13px;
+    display: block;
+    margin-bottom: 4px;
+  }
+
+  .warn {
+    margin: 28px 0;
+    padding: 18px 24px;
+    background: #fef3c7;
+    border-left: 5px solid #d97706;
+    border-radius: 0 12px 12px 0;
+    font-size: 14.5px;
+    line-height: 1.8;
+  }
+
+  .warn-label {
+    font-weight: 700;
+    color: #d97706;
+    font-size: 13px;
+    display: block;
+    margin-bottom: 4px;
+  }
+
+  .note-box {
+    margin: 28px 0;
+    padding: 18px 24px;
+    background: #e2e8f0;
+    border-left: 5px solid #64748b;
+    border-radius: 0 12px 12px 0;
+    font-size: 14.5px;
+    line-height: 1.8;
+  }
+
+  .note-label {
+    font-weight: 700;
+    color: var(--gray-600);
+    font-size: 13px;
+    display: block;
+    margin-bottom: 4px;
+  }
+
+  /* Trace table */
+  table.trace {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    margin: 28px 0;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+    font-size: 14px;
+  }
+
+  table.trace th {
+    background: var(--navy);
+    color: var(--white);
+    padding: 10px 16px;
+    text-align: left;
+    font-weight: 500;
+    font-size: 13px;
+  }
+
+  table.trace td {
+    padding: 10px 16px;
+    border-bottom: 1px solid var(--gray-200);
+    color: var(--gray-700);
+  }
+
+  table.trace tr:nth-child(even) td { background: var(--gray-50); }
+  table.trace tr:last-child td { border-bottom: none; }
+
+  table.trace td code {
+    font-family: var(--mono);
+    font-size: 12.5px;
+    background: #eef1f5;
+    padding: 2px 6px;
+    border-radius: 4px;
+    color: var(--navy);
+  }
+
+  /* ========== PAGE 3: PROBLEMS ========== */
+  .problems-header {
+    margin-bottom: 8px;
+  }
+
+  .problems-chapter-ref {
+    font-size: 13px;
+    color: var(--gray-500);
+    margin-bottom: 4px;
+  }
+
+  .problems-title {
+    font-size: 28px;
+    font-weight: 800;
+    color: var(--navy);
+    margin-bottom: 24px;
+  }
+
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 16px;
+  }
+
+  .prob-card {
+    background: var(--white);
+    border: 1px solid var(--gray-200);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 3px 15px rgba(0,0,0,0.06);
+  }
+
+  .prob-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 16px;
+    background: var(--navy);
+  }
+
+  .prob-num {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--white);
+  }
+
+  .diff {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    font-size: 12px;
+    font-weight: 800;
+  }
+
+  .diff-basic { background: #22c55e; color: white; }
+  .diff-mid { background: #f59e0b; color: white; }
+  .diff-hard { background: #ef4444; color: white; }
+
+  .prob-desc {
+    font-size: 13.5px;
+    line-height: 1.65;
+    color: var(--gray-600);
+    margin-bottom: 10px;
+    padding: 14px 16px 0;
+  }
+
+  .prob-code {
+    background: var(--gray-50);
+    border: 1px solid var(--gray-200);
+    border-radius: 6px;
+    padding: 10px 14px;
+    margin: 0 16px 16px;
+    font-family: var(--mono);
+    font-size: 12.5px;
+    line-height: 1.55;
+    color: var(--gray-600);
+  }
+
+  /* Competition section */
+  .comp-section {
+    margin-top: 32px;
+    padding-top: 24px;
+    border-top: 2px solid var(--navy);
+  }
+
+  .comp-title {
+    font-size: 22px;
+    font-weight: 800;
+    color: var(--navy);
+    margin-bottom: 20px;
+  }
+
+  .comp-card {
+    background: var(--white);
+    border: 1.5px solid var(--gray-200);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 18px rgba(0,0,0,0.06);
+  }
+
+  .comp-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 16px;
+    background: #0f766e;
+  }
+
+  .comp-header .comp-name {
+    color: var(--white);
+    font-size: 15px;
+    font-weight: 700;
+    margin: 0;
+  }
+
+  .comp-inner {
+    padding: 14px 18px 18px;
+  }
+
+  .comp-badge {
+    display: inline-block;
+    padding: 3px 12px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 700;
+  }
+
+  .badge-bj { background: #93c5fd; color: #1e3a5f; }
+  .badge-cu { background: #c4b5fd; color: #3b1f7e; }
+  .badge-pg { background: #7dd3fc; color: #0c4a6e; }
+
+  .comp-name {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--navy);
+    margin-bottom: 6px;
+  }
+
+  .comp-desc {
+    font-size: 14px;
+    color: var(--gray-600);
+    line-height: 1.7;
+    margin-bottom: 14px;
+  }
+
+  .io-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+
+  .io-card {
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid var(--gray-200);
+  }
+
+  .io-h {
+    padding: 6px 14px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--gray-600);
+    background: #e2e8f0;
+  }
+
+  .io-c {
+    padding: 10px 14px;
+    font-family: var(--mono);
+    font-size: 13px;
+    line-height: 1.5;
+    background: var(--white);
+  }
+
+  /* ========== DEBUG LAB ========== */
+  .debug-section {
+    margin: 24px 0;
+    border: 2px solid var(--red);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+
+  .debug-bar {
+    background: var(--red);
+    color: var(--white);
+    padding: 10px 20px;
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 1px;
+  }
+
+  .debug-body {
+    padding: 20px;
+    background: #fef2f2;
+  }
+
+  /* 10축 connection */
+  .connect-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 16px;
+    margin: 28px 0;
+  }
+
+  .connect-card {
+    border-radius: 12px;
+    padding: 20px;
+    text-align: center;
+    border: 1px solid var(--gray-200);
+    box-shadow: 0 3px 14px rgba(0,0,0,0.05);
+  }
+
+  .connect-card h5 {
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 8px;
+  }
+
+  .connect-card p {
+    font-size: 13px;
+    margin: 0;
+    color: var(--gray-600);
+    line-height: 1.6;
+  }
+
+  .cc1 { border-top: 3px solid #8b5cf6; }
+  .cc1 h5 { color: #8b5cf6; }
+  .cc2 { border-top: 3px solid var(--green); }
+  .cc2 h5 { color: var(--green); }
+  .cc3 { border-top: 3px solid var(--navy); }
+  .cc3 h5 { color: var(--navy); }
+
+  /* PAGE NUMBER */
+  .page-num {
+    position: absolute;
+    bottom: 20px;
+    right: 30px;
+    font-size: 12px;
+    color: var(--gray-400);
+  }
+
+  /* WARMUP */
+  .warmup-box {
+    background: #e0e7f1;
+    border-radius: 12px;
+    padding: 24px 28px;
+    margin: 28px 0;
+    border: 2px solid #c7d2e0;
+  }
+
+  .warmup-title {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--navy);
+    margin-bottom: 14px;
+  }
+
+  .wq {
+    padding: 9px 16px;
+    background: var(--white);
+    border-radius: 8px;
+    margin-bottom: 8px;
+    font-size: 14px;
+    border: 1px solid var(--gray-200);
+    color: var(--gray-700);
+  }
+
+  .wq b { color: var(--navy); margin-right: 6px; }
+  .wq .hint { color: var(--gray-400); font-size: 13px; }
+
+  /* ===== CONTEST PROBLEMS PAGE ===== */
+  .contest-page-wrap .chapter-page {
+    min-height: auto;
+  }
+
+  .contest-page-wrap .chapter-page > div:last-child {
+    min-width: 0;
+    overflow-wrap: break-word;
+    word-break: break-word;
+  }
+
+  .contest-card {
+    background: white;
+    border: 1.5px solid var(--gray-200);
+    border-radius: 12px;
+    margin-bottom: 28px;
+    overflow: hidden;
+    break-inside: avoid;
+  }
+
+  .contest-header {
+    background: var(--navy);
+    color: white;
+    padding: 14px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .contest-num-source {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .contest-num {
+    font-weight: 700;
+    font-size: 16px;
+  }
+
+  .contest-source {
+    background: rgba(255,255,255,0.15);
+    padding: 3px 10px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 500;
+  }
+
+  .contest-body {
+    padding: 20px 24px 24px;
+  }
+
+  .contest-question {
+    font-size: 15px;
+    line-height: 1.7;
+    color: var(--text);
+    margin: 0 0 16px;
+    word-break: break-word;
+    overflow-wrap: break-word;
+  }
+
+  .contest-expected {
+    background: #1e293b;
+    border-radius: 8px;
+    overflow: hidden;
+    margin-bottom: 20px;
+  }
+
+  .contest-expected-label {
+    background: #334155;
+    color: #94a3b8;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 6px 14px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .contest-expected-body {
+    color: #e2e8f0;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    line-height: 1.6;
+    padding: 12px 16px;
+    margin: 0;
+    white-space: pre;
+  }
+
+  .contest-write-area {
+    border: 2px dashed var(--gray-300);
+    border-radius: 10px;
+    overflow: hidden;
+    transition: border-color 0.2s;
+  }
+
+  .contest-write-area:focus-within {
+    border-color: var(--orange);
+    border-style: solid;
+  }
+
+  .contest-write-label {
+    background: var(--bg);
+    color: var(--gray-500);
+    font-size: 12px;
+    font-weight: 600;
+    padding: 8px 14px;
+    border-bottom: 1px solid var(--gray-200);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .contest-textarea {
+    width: 100%;
+    min-height: 200px;
+    padding: 16px 18px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    line-height: 1.7;
+    color: var(--text);
+    background: #fafbfc;
+    border: none;
+    outline: none;
+    resize: vertical;
+    tab-size: 4;
+    box-sizing: border-box;
+  }
+
+  .contest-textarea::placeholder {
+    color: var(--gray-300);
+  }
+
+  @media print {
+    body { background: white; }
+    .page { box-shadow: none; margin: 0; page-break-after: always; }
+    .contest-textarea { border: 1px solid var(--gray-300); min-height: 180px; }
+  }
+
+</style>
+</head>
+<body>
+
+<div class="page">
+  <div class="chapter-page">
+    <div class="chapter-sidebar"></div>
+    <div class="chapter-accent-bar"></div>
+    <div class="chapter-body">
+      <div class="chapter-watermark">S-22</div>
+      <div class="chapter-label">Chapter S-22</div>
+      <h1 class="chapter-title">데이터베이스 기초</h1>
+      <p class="chapter-sub"></p>
+
+      <h3 class="obj-title">이 유닛에서 배우는 것</h3>
+      <ul class="obj-list">
+        <li>데이터베이스의 개념을 이해하고 파일 저장과의 차이를 설명할 수 있어요.</li>
+        <li>관계형 데이터베이스의 테이블, 행, 열, 기본키 개념을 이해할 수 있어요.</li>
+        <li>SQL의 기본 명령어(SELECT, INSERT, UPDATE, DELETE)를 읽고 해석할 수 있어요.</li>
+        <li>외래키와 JOIN을 사용한 테이블 관계를 이해할 수 있어요.</li>
+        <li>정규화의 필요성과 기본 원리를 설명할 수 있어요.</li>
+        <li>트랜잭션과 ACID 속성의 개념을 이해할 수 있어요.</li>
+        <li>C 언어의 구조체 배열과 파일 I/O를 활용해 간이 데이터베이스를 구현할 수 있어요.</li>
+        <li>데이터베이스 관련 C 코드의 버그를 찾아 수정할 수 있어요.</li>
+      </ul>
+
+      <h3 class="prereq-title">선수 학습</h3>
+      <div class="prereq-flow">
+        <div class="prereq-item">S-18 '소프트웨어 개발 과정'을 이해한다</div><div class="prereq-arrow">→</div>
+        <div class="prereq-item">U0-40 'C 프로그램 뼈대'를 배웠다</div><div class="prereq-arrow">→</div>
+        <div class="prereq-item">U0-36 '스택과 큐'를 이해한다</div><div class="prereq-arrow">→</div>
+        <div class="prereq-item">배열과 구조체의 기본 개념을 알고 있다</div><div class="prereq-arrow">→</div>
+        <div class="prereq-item current">파일 입출력(fopen, fclose)의 개념을 알고 있다</div>
+      </div>
+
+      
+
+      <span class="page-num">1</span>
+    </div>
+  </div>
+</div>
+<div class="page">
+  <div class="content-page">
+    <div class="unit-header-bar">
+      <span class="unit-tag">UNIT S-22</span>
+      <span class="unit-title-sm">데이터베이스 기초</span>
+    </div>
+<h2 class="section-title">학교 성적표도 데이터베이스?</h2>
+
+<p>여러분의 학교에는 수백, 수천 명의 학생이 있어요. 각 학생마다 이름, 학번, 학년, 반, 여러 과목의 점수, 출석 기록 등 엄청나게 많은 데이터가 있죠. 이 데이터를 어떻게 정리하고 관리할까요?</p>
+<p>만약 이 모든 정보를 종이에 적는다면, 한 학생의 점수를 찾으려면 종이 더미를 뒤져야 하고, 점수를 수정하려면 지우고 다시 써야 해요. 전교생의 수학 평균을 구하려면 계산기를 두드리며 한참을 계산해야 하겠죠.</p>
+<p>바로 이런 문제를 해결하기 위해 <b>데이터베이스(Database)</b>가 탄생했어요. 데이터베이스는 데이터를 체계적으로 저장하고, 빠르게 찾고, 안전하게 관리하는 시스템이에요.</p>
+<div class="note-box"><span class="note-label"></span>
+<div style="font-weight:700;margin-bottom:6px;color:#1a2e4a">[생각해 보기] 데이터를 정리하는 방법</div>여러분이 반 친구 30명의 연락처를 관리한다고 생각해 보세요.<br><br>1. 노트에 적으면 어떤 점이 불편할까요?<br>2. 엑셀(스프레드시트)에 정리하면 어떤 점이 편할까요?<br>3. 만약 친구가 1만 명이라면 엑셀로도 충분할까요?<br>4. 여러 명이 동시에 같은 데이터를 수정해야 한다면?<br><br>이런 질문에 대한 답이 바로 데이터베이스가 필요한 이유예요!</div>
+<h2 class="section-title">데이터베이스란 무엇일까?</h2>
+<p><b>데이터베이스(Database, DB)</b>란 여러 사람이 공유해서 사용할 목적으로 체계적으로 관리되는 데이터의 모음이에요. 그냥 데이터를 모아 놓은 것이 아니라, 규칙에 따라 정리하고, 빠르게 검색하고, 안전하게 보관하는 시스템이에요.</p>
+<p>일상생활에서 데이터베이스의 예를 찾아볼까요? <b>도서관의 도서 목록</b>을 생각해 보세요. 책 제목, 저자, 출판사, 위치 등이 체계적으로 정리되어 있어서 원하는 책을 빠르게 찾을 수 있죠. <b>전화번호부</b>도 마찬가지예요. 이름 순서로 정리되어 있어서 원하는 사람의 번호를 쉽게 찾을 수 있어요.</p>
+
+<p>데이터베이스를 관리하는 소프트웨어를 <b>데이터베이스 관리 시스템(DBMS, Database Management System)</b>이라고 해요. MySQL, Oracle, SQLite 같은 프로그램이 DBMS예요. DBMS가 데이터의 저장, 검색, 수정, 삭제를 담당해요.</p>
+<div class="debug-section"><div class="debug-bar">DEBUG LAB — 에러를 찾으시오</div><div class="debug-body">
+
+<p style="margin:14px 0 0; font-size:14px;"><b>에러:</b> </p>
+<p style="font-size:14px;"><b>수정:</b> </p>
+</div></div>
+<table class="trace"><thead><tr><th>서비스</th><th>저장되는 데이터</th><th>주요 기능</th></tr></thead><tbody><tr><td>학교 성적 관리</td><td>학생 정보, 과목별 점수, 출석</td><td>성적 조회, 석차 계산, 성적표 출력</td></tr><tr><td>도서관 시스템</td><td>도서 정보, 회원 정보, 대출 기록</td><td>도서 검색, 대출/반납 관리</td></tr><tr><td>온라인 쇼핑몰</td><td>상품 정보, 회원 정보, 주문 기록</td><td>상품 검색, 주문 처리, 배송 추적</td></tr><tr><td>카카오톡</td><td>사용자 정보, 친구 목록, 메시지</td><td>메시지 전송, 검색, 읽음 확인</td></tr><tr><td>유튜브</td><td>영상 정보, 채널 정보, 댓글</td><td>영상 검색, 추천, 조회수 집계</td></tr><tr><td>게임 서버</td><td>캐릭터 정보, 아이템, 랭킹</td><td>로그인, 아이템 거래, 순위 계산</td></tr></tbody></table>
+<h2 class="section-title">관계형 데이터베이스 (RDBMS)</h2>
+<p>데이터베이스에도 여러 종류가 있는데, 가장 많이 사용되는 것이 <b>관계형 데이터베이스(RDBMS, Relational Database Management System)</b>예요. 관계형 데이터베이스는 데이터를 <b>표(테이블)</b> 형태로 저장해요.</p>
+<p>관계형 데이터베이스의 핵심 용어를 알아볼게요. 엑셀을 생각하면 이해하기 쉬워요.</p>
+<div style="margin:22px 0"></div>
+<table class="trace"><thead><tr><th>학번(PK)</th><th>이름</th><th>학년</th><th>반</th><th>전화번호</th></tr></thead><tbody><tr><td>2024001</td><td>김민수</td><td>1</td><td>3</td><td>010-1234-5678</td></tr><tr><td>2024002</td><td>이서연</td><td>1</td><td>3</td><td>010-2345-6789</td></tr><tr><td>2024003</td><td>박지훈</td><td>2</td><td>1</td><td>010-3456-7890</td></tr><tr><td>2024004</td><td>최유진</td><td>2</td><td>2</td><td>010-4567-8901</td></tr><tr><td>2024005</td><td>정하늘</td><td>3</td><td>1</td><td>010-5678-9012</td></tr></tbody></table>
+<p>위 테이블에서 <b>학번</b>이 기본키(PK, Primary Key)예요. 학번은 학생마다 고유한 값이라서 절대 겹치지 않거든요. 이름은 동명이인이 있을 수 있으니 기본키로 사용하기 어려워요.</p>
+<table class="trace"><thead><tr><th>과목코드(PK)</th><th>과목명</th><th>담당교사</th><th>학점</th></tr></thead><tbody><tr><td>KOR101</td><td>국어</td><td>김선생</td><td>3</td></tr><tr><td>MAT101</td><td>수학</td><td>이선생</td><td>4</td></tr><tr><td>ENG101</td><td>영어</td><td>박선생</td><td>3</td></tr><tr><td>SCI101</td><td>과학</td><td>최선생</td><td>3</td></tr><tr><td>SOC101</td><td>사회</td><td>정선생</td><td>2</td></tr></tbody></table>
+<table class="trace"><thead><tr><th>성적번호(PK)</th><th>학번(FK)</th><th>과목코드(FK)</th><th>점수</th><th>등급</th></tr></thead><tbody><tr><td>1</td><td>2024001</td><td>KOR101</td><td>85</td><td>B</td></tr><tr><td>2</td><td>2024001</td><td>MAT101</td><td>92</td><td>A</td></tr><tr><td>3</td><td>2024002</td><td>KOR101</td><td>78</td><td>C</td></tr><tr><td>4</td><td>2024002</td><td>MAT101</td><td>88</td><td>B</td></tr><tr><td>5</td><td>2024003</td><td>ENG101</td><td>95</td><td>A</td></tr><tr><td>6</td><td>2024003</td><td>SCI101</td><td>73</td><td>C</td></tr></tbody></table>
+<p>성적 테이블에서 <b>학번</b>과 <b>과목코드</b>는 외래키(FK, Foreign Key)예요. 학생 테이블과 과목 테이블의 기본키를 참조하고 있죠. 이렇게 테이블끼리 연결하는 것이 '관계형'이라는 이름의 이유예요.</p>
+<div class="note-box"><span class="note-label"></span>
+<div style="font-weight:700;margin-bottom:6px;color:#1a2e4a">[비유] 기본키는 주민등록번호</div>기본키(Primary Key)는 각 행을 유일하게 구별하는 값이에요.<br><br>- 학생 테이블에서 '학번'이 기본키 -- 같은 학번을 가진 학생은 없어요<br>- 과목 테이블에서 '과목코드'가 기본키 -- 같은 코드를 가진 과목은 없어요<br><br>기본키의 규칙:<br>1. <b>유일성</b>: 같은 값이 두 번 나오면 안 돼요<br>2. <b>NOT NULL</b>: 비어 있으면 안 돼요 (값이 반드시 있어야 해요)<br>3. <b>변경 불가</b>: 한 번 정하면 바꾸지 않는 게 좋아요</div>
+<h2 class="section-title">SQL 기초 -- 데이터베이스에게 말하는 언어</h2>
+<p>데이터베이스에 데이터를 저장하고, 찾고, 수정하고, 삭제하려면 데이터베이스에게 명령을 내려야 해요. 이때 사용하는 언어가 바로 <b>SQL(Structured Query Language, 구조화 질의 언어)</b>이에요.</p>
+<p>SQL은 영어 문장처럼 읽히도록 설계되었어요. 예를 들어 "학생 테이블에서 이름을 가져와" 라고 말하고 싶으면, SQL로 <code>SELECT name FROM students</code>라고 쓰면 돼요. 꽤 직관적이죠?</p>
+
+<h2 class="section-title">SELECT -- 데이터 조회하기</h2>
+<p><b>SELECT</b>는 테이블에서 원하는 데이터를 가져오는 명령이에요. 가장 기본이면서 가장 많이 쓰이는 SQL 명령이에요.</p>
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span><span class="code-bar-file">SELECT 기본 문법</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc">-- 특정 열만 가져오기</span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc">SELECT name, grade FROM students;</span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">4</span><span class="lc">-- 모든 열 가져오기 (* = 전부)</span></div>
+<div class="code-line"><span class="ln">5</span><span class="lc">SELECT * FROM students;</span></div>
+<div class="code-line"><span class="ln">6</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">7</span><span class="lc">-- 중복 없이 가져오기</span></div>
+<div class="code-line"><span class="ln">8</span><span class="lc">SELECT DISTINCT grade FROM students;</span></div>
+</div>
+</div>
+<table class="trace"><thead><tr><th>이름</th><th>학년</th></tr></thead><tbody><tr><td>김민수</td><td>1</td></tr><tr><td>이서연</td><td>1</td></tr><tr><td>박지훈</td><td>2</td></tr><tr><td>최유진</td><td>2</td></tr><tr><td>정하늘</td><td>3</td></tr></tbody></table>
+<table class="trace"><thead><tr><th>학년</th></tr></thead><tbody><tr><td>1</td></tr><tr><td>2</td></tr><tr><td>3</td></tr></tbody></table>
+<h2 class="section-title">WHERE -- 조건으로 필터링하기</h2>
+<p><b>WHERE</b>는 조건에 맞는 행만 골라내는 명령이에요. C 언어의 if 문과 비슷한 역할이에요.</p>
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span><span class="code-bar-file">WHERE 사용 예시</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc">-- <span class="s-num">2</span>학년 학생만 조회</span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc">SELECT * FROM students WHERE grade = <span class="s-num">2</span>;</span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">4</span><span class="lc">-- 점수가 <span class="s-num">80</span> 이상인 성적만 조회</span></div>
+<div class="code-line"><span class="ln">5</span><span class="lc">SELECT * FROM grades WHERE score &gt;= <span class="s-num">80</span>;</span></div>
+<div class="code-line"><span class="ln">6</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">7</span><span class="lc">-- <span class="s-num">1</span>학년이면서 <span class="s-num">3</span>반인 학생</span></div>
+<div class="code-line"><span class="ln">8</span><span class="lc">SELECT * FROM students WHERE grade = <span class="s-num">1</span> AND class = <span class="s-num">3</span>;</span></div>
+<div class="code-line"><span class="ln">9</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">10</span><span class="lc">-- <span class="s-num">1</span>학년 또는 <span class="s-num">3</span>학년인 학생</span></div>
+<div class="code-line"><span class="ln">11</span><span class="lc">SELECT * FROM students WHERE grade = <span class="s-num">1</span> OR grade = <span class="s-num">3</span>;</span></div>
+</div>
+</div>
+<table class="trace"><thead><tr><th>학번</th><th>이름</th><th>학년</th><th>반</th><th>전화번호</th></tr></thead><tbody><tr><td>2024003</td><td>박지훈</td><td>2</td><td>1</td><td>010-3456-7890</td></tr><tr><td>2024004</td><td>최유진</td><td>2</td><td>2</td><td>010-4567-8901</td></tr></tbody></table>
+<table class="trace"><thead><tr><th>성적번호</th><th>학번</th><th>과목코드</th><th>점수</th><th>등급</th></tr></thead><tbody><tr><td>1</td><td>2024001</td><td>KOR101</td><td>85</td><td>B</td></tr><tr><td>2</td><td>2024001</td><td>MAT101</td><td>92</td><td>A</td></tr><tr><td>4</td><td>2024002</td><td>MAT101</td><td>88</td><td>B</td></tr><tr><td>5</td><td>2024003</td><td>ENG101</td><td>95</td><td>A</td></tr></tbody></table>
+<table class="trace"><thead><tr><th>연산자</th><th>의미</th><th>SQL 예시</th><th>C 언어 비교</th></tr></thead><tbody><tr><td>=</td><td>같다</td><td>WHERE grade = 1</td><td>if (grade == 1)</td></tr><tr><td>!=  또는  <></td><td>같지 않다</td><td>WHERE grade != 1</td><td>if (grade != 1)</td></tr><tr><td>></td><td>초과</td><td>WHERE score > 90</td><td>if (score > 90)</td></tr><tr><td>>=</td><td>이상</td><td>WHERE score >= 90</td><td>if (score >= 90)</td></tr><tr><td><</td><td>미만</td><td>WHERE score < 60</td><td>if (score < 60)</td></tr><tr><td><=</td><td>이하</td><td>WHERE score <= 60</td><td>if (score <= 60)</td></tr><tr><td>AND</td><td>그리고</td><td>WHERE grade = 1 AND class = 3</td><td>if (grade == 1 && class == 3)</td></tr><tr><td>OR</td><td>또는</td><td>WHERE grade = 1 OR grade = 3</td><td>if (grade == 1 || grade == 3)</td></tr><tr><td>BETWEEN</td><td>범위</td><td>WHERE score BETWEEN 80 AND 90</td><td>if (score >= 80 && score <= 90)</td></tr><tr><td>LIKE</td><td>패턴 매칭</td><td>WHERE name LIKE '김%'</td><td>(strncmp 비슷)</td></tr></tbody></table>
+<h2 class="section-title">INSERT, UPDATE, DELETE -- 데이터 추가, 수정, 삭제</h2>
+<p>데이터를 조회하는 것 외에도, 새로운 데이터를 추가하거나 기존 데이터를 수정하거나 삭제해야 할 때가 있어요. 이 세 가지 명령을 알아볼게요.</p>
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span><span class="code-bar-file">INSERT -- 새로운 데이터 추가</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc">-- 새 학생 추가</span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc">INSERT INTO <span class="s-fn">students</span>(student_id, name, grade, class, phone)</span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc"><span class="s-fn">VALUES</span>('<span class="s-num">2024006</span>', '한소희', <span class="s-num">1</span>, <span class="s-num">2</span>, '<span class="s-num">010</span>-<span class="s-num">6789</span>-<span class="s-num">0123</span>');</span></div>
+</div>
+</div>
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span><span class="code-bar-file">UPDATE -- 기존 데이터 수정</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc">-- 김민수의 반을 <span class="s-num">3</span>반에서 <span class="s-num">2</span>반으로 변경</span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc">UPDATE students</span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc">SET class = <span class="s-num">2</span></span></div>
+<div class="code-line"><span class="ln">4</span><span class="lc">WHERE student_id = '<span class="s-num">2024001</span>';</span></div>
+<div class="code-line"><span class="ln">5</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">6</span><span class="lc">-- 주의: WHERE를 빼면 모든 학생의 반이 바뀌어요!</span></div>
+</div>
+</div>
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span><span class="code-bar-file">DELETE -- 데이터 삭제</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc">-- 학번이 <span class="s-num">2024006</span>인 학생 삭제</span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc">DELETE FROM students</span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc">WHERE student_id = '<span class="s-num">2024006</span>';</span></div>
+<div class="code-line"><span class="ln">4</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">5</span><span class="lc">-- 주의: WHERE를 빼면 모든 데이터가 삭제돼요!</span></div>
+</div>
+</div>
+<div class="note-box"><span class="note-label"></span>
+<div style="font-weight:700;margin-bottom:6px;color:#1a2e4a">[주의] UPDATE와 DELETE에서 WHERE를 잊으면?</div>UPDATE와 DELETE를 사용할 때 WHERE 조건을 빼먹으면 큰일 나요!<br><br><code>UPDATE students SET grade = 1;</code><br>-- 모든 학생의 학년이 1학년으로 바뀌어요!<br><br><code>DELETE FROM students;</code><br>-- 모든 학생 데이터가 삭제돼요!<br><br>실제 회사에서 이런 실수로 데이터가 날아간 사고가 정말 있었어요. WHERE 조건을 반드시 확인하세요!</div>
+<div style="margin:22px 0"></div>
+<p>이 4가지 기본 연산을 <b>CRUD</b>라고 불러요. 거의 모든 프로그램(게임, 쇼핑몰, SNS 등)이 내부적으로 CRUD 연산을 사용하고 있어요.</p>
+<h2 class="section-title">ORDER BY -- 정렬하기</h2>
+<p><b>ORDER BY</b>는 결과를 특정 열 기준으로 정렬하는 명령이에요. <b>ASC</b>는 오름차순(작은 것부터), <b>DESC</b>는 내림차순(큰 것부터)이에요.</p>
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span><span class="code-bar-file">ORDER BY 사용 예시</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc">-- 점수 높은 순으로 정렬 (내림차순)</span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc">SELECT * FROM grades ORDER BY score DESC;</span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">4</span><span class="lc">-- 이름 가나다순 정렬 (오름차순)</span></div>
+<div class="code-line"><span class="ln">5</span><span class="lc">SELECT * FROM students ORDER BY name ASC;</span></div>
+<div class="code-line"><span class="ln">6</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">7</span><span class="lc">-- 학년별로 정렬하고, 같은 학년이면 이름순</span></div>
+<div class="code-line"><span class="ln">8</span><span class="lc">SELECT * FROM students ORDER BY grade ASC, name ASC;</span></div>
+</div>
+</div>
+<table class="trace"><thead><tr><th>성적번호</th><th>학번</th><th>과목코드</th><th>점수</th><th>등급</th></tr></thead><tbody><tr><td>5</td><td>2024003</td><td>ENG101</td><td>95</td><td>A</td></tr><tr><td>2</td><td>2024001</td><td>MAT101</td><td>92</td><td>A</td></tr><tr><td>4</td><td>2024002</td><td>MAT101</td><td>88</td><td>B</td></tr><tr><td>1</td><td>2024001</td><td>KOR101</td><td>85</td><td>B</td></tr><tr><td>3</td><td>2024002</td><td>KOR101</td><td>78</td><td>C</td></tr><tr><td>6</td><td>2024003</td><td>SCI101</td><td>73</td><td>C</td></tr></tbody></table>
+<h2 class="section-title">테이블 관계와 외래키 (Foreign Key)</h2>
+<p>관계형 데이터베이스의 핵심은 테이블끼리 <b>관계(Relationship)</b>를 맺을 수 있다는 거예요. 이 관계를 만들어 주는 것이 <b>외래키(Foreign Key, FK)</b>예요.</p>
+<p>테이블 간의 관계에는 세 가지 유형이 있어요.</p>
+<table class="trace"><thead><tr><th>관계 유형</th><th>의미</th><th>예시</th><th>설명</th></tr></thead><tbody><tr><td>1:1 (일대일)</td><td>하나가 하나와 연결</td><td>학생 - 사물함</td><td>한 학생은 사물함 하나, 사물함 하나는 학생 하나</td></tr><tr><td>1:N (일대다)</td><td>하나가 여러 개와 연결</td><td>반 - 학생</td><td>한 반에 학생 여러 명, 학생 하나는 반 하나에 소속</td></tr><tr><td>N:M (다대다)</td><td>여러 개가 여러 개와 연결</td><td>학생 - 과목</td><td>한 학생이 여러 과목 수강, 한 과목에 여러 학생</td></tr></tbody></table>
+<table class="trace"><thead><tr><th>학번(PK)</th><th>이름</th><th>--></th><th>성적번호(PK)</th><th>학번(FK)</th><th>과목</th><th>점수</th></tr></thead><tbody><tr><td>2024001</td><td>김민수</td><td>--></td><td>1</td><td>2024001</td><td>국어</td><td>85</td></tr><tr><td></td><td></td><td>--></td><td>2</td><td>2024001</td><td>수학</td><td>92</td></tr><tr><td>2024002</td><td>이서연</td><td>--></td><td>3</td><td>2024002</td><td>국어</td><td>78</td></tr><tr><td></td><td></td><td>--></td><td>4</td><td>2024002</td><td>수학</td><td>88</td></tr></tbody></table>
+<p>김민수(2024001) 한 명이 국어와 수학, 두 개의 성적을 가지고 있어요. 이것이 1:N(일대다) 관계예요. 학생 한 명(1)이 여러 성적(N)과 연결되는 거죠.</p>
+<h2 class="section-title">JOIN -- 두 테이블 합치기</h2>
+<p><b>JOIN</b>은 두 개의 테이블을 합쳐서 하나의 결과로 보여주는 명령이에요. 학생 테이블에는 이름이 있고, 성적 테이블에는 점수가 있는데, '이름과 점수를 함께' 보고 싶을 때 JOIN을 사용해요.</p>
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span><span class="code-bar-file">JOIN 사용 예시</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc">-- 학생 이름과 점수를 함께 보기</span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc">SELECT students.name, subjects.subject_name, grades.score</span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc">FROM grades</span></div>
+<div class="code-line"><span class="ln">4</span><span class="lc">JOIN students ON grades.student_id = students.student_id</span></div>
+<div class="code-line"><span class="ln">5</span><span class="lc">JOIN subjects ON grades.subject_code = subjects.subject_code;</span></div>
+</div>
+</div>
+<div style="margin:22px 0"></div>
+<table class="trace"><thead><tr><th>이름</th><th>과목명</th><th>점수</th></tr></thead><tbody><tr><td>김민수</td><td>국어</td><td>85</td></tr><tr><td>김민수</td><td>수학</td><td>92</td></tr><tr><td>이서연</td><td>국어</td><td>78</td></tr><tr><td>이서연</td><td>수학</td><td>88</td></tr><tr><td>박지훈</td><td>영어</td><td>95</td></tr><tr><td>박지훈</td><td>과학</td><td>73</td></tr></tbody></table>
+
+<h2 class="section-title">정규화 기초 -- 데이터 중복 줄이기</h2>
+<p><b>정규화(Normalization)</b>란 데이터의 중복을 최소화하도록 테이블을 설계하는 방법이에요. 같은 정보를 여러 곳에 적어 놓으면, 수정할 때 모두 다 고쳐야 하니까 불편하고 실수할 수 있거든요.</p>
+<div class="note-box"><span class="note-label"></span>
+<div style="font-weight:700;margin-bottom:6px;color:#1a2e4a">[비유] 정규화는 정리 정돈</div>여러분의 방에 같은 교과서가 3권씩 있다고 생각해 보세요.<br><br>- 교과서가 개정되면 3권 모두 바꿔야 해요 (수정 번거로움)<br>- 2권만 바꾸고 1권을 잊으면 서로 다른 내용이 돼요 (데이터 불일치)<br>- 같은 책이 3권이나 있으니 공간 낭비예요 (저장 공간 낭비)<br><br>교과서를 1권만 두면 이런 문제가 다 해결되죠? 이것이 정규화의 원리예요!</div>
+<div class="debug-section"><div class="debug-bar">DEBUG LAB — 에러를 찾으시오</div><div class="debug-body">
+
+<p style="margin:14px 0 0; font-size:14px;"><b>에러:</b> </p>
+<p style="font-size:14px;"><b>수정:</b> </p>
+</div></div>
+<table class="trace"><thead><tr><th>학번</th><th>이름</th><th>학년</th><th>과목</th><th>담당교사</th><th>점수</th></tr></thead><tbody><tr><td>2024001</td><td>김민수</td><td>1</td><td>국어</td><td>김선생</td><td>85</td></tr><tr><td>2024001</td><td>김민수</td><td>1</td><td>수학</td><td>이선생</td><td>92</td></tr><tr><td>2024002</td><td>이서연</td><td>1</td><td>국어</td><td>김선생</td><td>78</td></tr><tr><td>2024002</td><td>이서연</td><td>1</td><td>수학</td><td>이선생</td><td>88</td></tr></tbody></table>
+<p>위 테이블을 보세요. '김민수, 1학년'이 두 번 반복되고, '국어, 김선생'도 두 번 반복돼요. 만약 김선생이 박선생으로 바뀌면 두 곳을 다 고쳐야 해요. 하나만 고치면 데이터가 꼬이겠죠?</p>
+<p>정규화 후에는 학생 테이블, 과목 테이블, 성적 테이블로 나누면 돼요. 앞에서 본 세 개의 테이블이 바로 정규화된 결과예요!</p>
+<h2 class="section-title">트랜잭션 -- 은행 이체는 반드시 둘 다 성공해야!</h2>
+<p><b>트랜잭션(Transaction)</b>이란 여러 개의 작업을 하나의 묶음으로 처리하는 것을 말해요. 묶음 안의 작업이 모두 성공하면 완료(Commit)하고, 하나라도 실패하면 전부 취소(Rollback)해요.</p>
+<div class="note-box"><span class="note-label"></span>
+<div style="font-weight:700;margin-bottom:6px;color:#1a2e4a">[비유] 은행 계좌 이체</div>여러분이 친구에게 10,000원을 이체한다고 해 보세요. 이 작업은 두 단계예요.<br><br>1단계: 내 계좌에서 10,000원을 빼기<br>2단계: 친구 계좌에 10,000원을 넣기<br><br>만약 1단계만 성공하고 2단계가 실패하면? 내 돈은 빠졌는데 친구는 못 받은 거예요! 10,000원이 사라진 거죠!<br><br>트랜잭션은 이런 일이 생기지 않게, 두 단계를 하나로 묶어서 '둘 다 성공 아니면 둘 다 취소'로 처리해요.</div>
+<div style="margin:22px 0"></div>
+<p>트랜잭션은 <b>ACID</b>라는 4가지 속성을 만족해야 해요.</p>
+<table class="trace"><thead><tr><th>속성</th><th>영어</th><th>의미</th><th>비유</th></tr></thead><tbody><tr><td>원자성</td><td>Atomicity</td><td>모두 성공 아니면 모두 취소</td><td>레고 세트 -- 부품이 하나라도 빠지면 조립 불가</td></tr><tr><td>일관성</td><td>Consistency</td><td>실행 전후 데이터가 올바른 상태</td><td>이체 전후 전체 금액의 합은 같아야 함</td></tr><tr><td>격리성</td><td>Isolation</td><td>동시에 실행해도 서로 영향 없음</td><td>시험 볼 때 옆 사람 답안을 보면 안 됨</td></tr><tr><td>지속성</td><td>Durability</td><td>완료된 결과는 영구 저장</td><td>저장 버튼 누르면 컴퓨터가 꺼져도 데이터 보존</td></tr></tbody></table>
+<h2 class="section-title">NoSQL -- 관계형이 아닌 데이터베이스</h2>
+<p>관계형 데이터베이스(SQL)는 오랫동안 가장 많이 사용되어 왔지만, 최근에는 <b>NoSQL</b>이라는 새로운 유형의 데이터베이스도 많이 사용되고 있어요. NoSQL은 'Not Only SQL'의 약자로, 테이블 형태가 아닌 다양한 형태로 데이터를 저장해요.</p>
+<div class="debug-section"><div class="debug-bar">DEBUG LAB — 에러를 찾으시오</div><div class="debug-body">
+
+<p style="margin:14px 0 0; font-size:14px;"><b>에러:</b> </p>
+<p style="font-size:14px;"><b>수정:</b> </p>
+</div></div>
+<table class="trace"><thead><tr><th>유형</th><th>저장 방식</th><th>비유</th><th>대표 DB</th><th>사용 예</th></tr></thead><tbody><tr><td>키-값 (Key-Value)</td><td>이름표(키)와 값의 쌍</td><td>사물함 번호와 내용물</td><td>Redis</td><td>로그인 세션, 캐시</td></tr><tr><td>문서 (Document)</td><td>JSON 형태의 문서</td><td>서류 파일 보관함</td><td>MongoDB</td><td>블로그, 쇼핑몰 상품</td></tr><tr><td>열 기반 (Column)</td><td>열 단위로 데이터 저장</td><td>도서관 카드 목록</td><td>Cassandra</td><td>대규모 로그 데이터</td></tr><tr><td>그래프 (Graph)</td><td>점(노드)과 선(관계)으로 저장</td><td>친구 관계 지도</td><td>Neo4j</td><td>SNS 친구 추천</td></tr></tbody></table>
+
+<h2 class="section-title">데이터베이스 설계 과정</h2>
+<p>데이터베이스를 만들려면 어떤 순서로 해야 할까요? 실제 데이터베이스를 설계하는 과정을 단계별로 알아볼게요.</p>
+<div style="margin:22px 0"></div>
+<p>이 과정은 소프트웨어 개발 생명주기(SDLC)와 비슷하죠? 바로 코드를 작성하기 전에 먼저 설계를 하는 것이 중요한 것처럼, 데이터베이스도 바로 테이블을 만들기 전에 먼저 어떤 테이블이 필요하고 어떤 관계가 있는지 설계해야 해요.</p>
+<h2 class="section-title">C 언어와 데이터베이스</h2>
+<p>C 언어에는 데이터베이스 기능이 내장되어 있지 않지만, C 언어의 기능을 활용하면 간이 데이터베이스를 만들 수 있어요. 구조체 배열은 메모리 속의 테이블이고, 파일 I/O를 사용하면 데이터를 영구적으로 저장할 수 있어요.</p>
+<div class="debug-section"><div class="debug-bar">DEBUG LAB — 에러를 찾으시오</div><div class="debug-body">
+
+<p style="margin:14px 0 0; font-size:14px;"><b>에러:</b> </p>
+<p style="font-size:14px;"><b>수정:</b> </p>
+</div></div>
+<table class="trace"><thead><tr><th>작업</th><th>C 코드 (구조체 배열)</th><th>SQL 코드</th></tr></thead><tbody><tr><td>테이블 생성</td><td>struct Student students[100];</td><td>CREATE TABLE students (...);</td></tr><tr><td>데이터 추가</td><td>students[count++] = new_student;</td><td>INSERT INTO students VALUES (...);</td></tr><tr><td>데이터 조회</td><td>for문으로 순회하며 출력</td><td>SELECT * FROM students;</td></tr><tr><td>조건 검색</td><td>if (students[i].grade == 1)</td><td>SELECT * FROM students WHERE grade = 1;</td></tr><tr><td>데이터 수정</td><td>students[i].grade = 2;</td><td>UPDATE students SET grade = 2 WHERE ...;</td></tr><tr><td>데이터 삭제</td><td>배열에서 제거 (뒤의 요소를 앞으로 이동)</td><td>DELETE FROM students WHERE ...;</td></tr><tr><td>정렬</td><td>직접 정렬 함수 구현 (버블정렬 등)</td><td>SELECT * FROM students ORDER BY name;</td></tr></tbody></table>
+<h2 class="section-title">[C 코드 1] 구조체 배열로 학생 데이터 관리</h2>
+<p>C 언어의 구조체 배열을 사용해서 학생 데이터를 추가하고, 전체 목록을 출력하고, 이름으로 검색하는 프로그램을 만들어 볼게요. 이것이 메모리 속의 간이 데이터베이스예요.</p>
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span><span class="code-bar-file">구조체 배열로 학생 관리 (CRUD 중 Create, Read)</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;stdio.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;string.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">4</span><span class="lc"><span class="s-pp">#define</span> MAX_STUDENTS <span class="s-num">100</span></span></div>
+<div class="code-line"><span class="ln">5</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">6</span><span class="lc"><span class="s-kw">typedef</span> <span class="s-kw">struct</span> {</span></div>
+<div class="code-line"><span class="ln">7</span><span class="lc">    <span class="s-type">int</span> id;</span></div>
+<div class="code-line"><span class="ln">8</span><span class="lc">    <span class="s-type">char</span> name[<span class="s-num">20</span>];</span></div>
+<div class="code-line"><span class="ln">9</span><span class="lc">    <span class="s-type">int</span> grade;</span></div>
+<div class="code-line"><span class="ln">10</span><span class="lc">    <span class="s-type">int</span> class_num;</span></div>
+<div class="code-line"><span class="ln">11</span><span class="lc">    <span class="s-type">int</span> score;</span></div>
+<div class="code-line"><span class="ln">12</span><span class="lc">} Student;</span></div>
+<div class="code-line"><span class="ln">13</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">14</span><span class="lc">Student db[MAX_STUDENTS];  <span class="s-cm">/* 구조체 배열 = 간이 테이블 */</span></span></div>
+<div class="code-line"><span class="ln">15</span><span class="lc"><span class="s-type">int</span> count = <span class="s-num">0</span>;             <span class="s-cm">/* 현재 저장된 학생 수 */</span></span></div>
+<div class="code-line"><span class="ln">16</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">17</span><span class="lc"><span class="s-cm">/* INSERT: 학생 추가 */</span></span></div>
+<div class="code-line"><span class="ln">18</span><span class="lc"><span class="s-type">void</span> <span class="s-fn">add_student</span>(<span class="s-type">int</span> id, <span class="s-kw">const</span> <span class="s-type">char</span> *name, <span class="s-type">int</span> grade,</span></div>
+<div class="code-line"><span class="ln">19</span><span class="lc">                 <span class="s-type">int</span> cls, <span class="s-type">int</span> score) {</span></div>
+<div class="code-line"><span class="ln">20</span><span class="lc">    <span class="s-kw">if</span> (count &gt;= MAX_STUDENTS) {</span></div>
+<div class="code-line"><span class="ln">21</span><span class="lc">        <span class="s-fn">printf</span>(<span class="s-str">"데이터베이스가 가득 찼어요!\n"</span>);</span></div>
+<div class="code-line"><span class="ln">22</span><span class="lc">        <span class="s-kw">return</span>;</span></div>
+<div class="code-line"><span class="ln">23</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">24</span><span class="lc">    db[count].id = id;</span></div>
+<div class="code-line"><span class="ln">25</span><span class="lc">    <span class="s-fn">strcpy</span>(db[count].name, name);</span></div>
+<div class="code-line"><span class="ln">26</span><span class="lc">    db[count].grade = grade;</span></div>
+<div class="code-line"><span class="ln">27</span><span class="lc">    db[count].class_num = cls;</span></div>
+<div class="code-line"><span class="ln">28</span><span class="lc">    db[count].score = score;</span></div>
+<div class="code-line"><span class="ln">29</span><span class="lc">    count++;</span></div>
+<div class="code-line"><span class="ln">30</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">31</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">32</span><span class="lc"><span class="s-cm">/* SELECT *: 전체 목록 출력 */</span></span></div>
+<div class="code-line"><span class="ln">33</span><span class="lc"><span class="s-type">void</span> <span class="s-fn">print_all</span>(<span class="s-type">void</span>) {</span></div>
+<div class="code-line"><span class="ln">34</span><span class="lc">    <span class="s-type">int</span> i;</span></div>
+<div class="code-line"><span class="ln">35</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"%-8s %-10s %-4s %-4s %-6s\n"</span>,</span></div>
+<div class="code-line"><span class="ln">36</span><span class="lc">           <span class="s-str">"학번"</span>, <span class="s-str">"이름"</span>, <span class="s-str">"학년"</span>, <span class="s-str">"반"</span>, <span class="s-str">"점수"</span>);</span></div>
+<div class="code-line"><span class="ln">37</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"--------------------------------------\n"</span>);</span></div>
+<div class="code-line"><span class="ln">38</span><span class="lc">    <span class="s-kw">for</span> (i = <span class="s-num">0</span>; i &lt; count; i++) {</span></div>
+<div class="code-line"><span class="ln">39</span><span class="lc">        <span class="s-fn">printf</span>(<span class="s-str">"%-8d %-10s %-4d %-4d %-6d\n"</span>,</span></div>
+<div class="code-line"><span class="ln">40</span><span class="lc">               db[i].id, db[i].name, db[i].grade,</span></div>
+<div class="code-line"><span class="ln">41</span><span class="lc">               db[i].class_num, db[i].score);</span></div>
+<div class="code-line"><span class="ln">42</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">43</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">44</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">45</span><span class="lc"><span class="s-cm">/* SELECT WHERE name: 이름으로 검색 */</span></span></div>
+<div class="code-line"><span class="ln">46</span><span class="lc"><span class="s-type">void</span> <span class="s-fn">search_by_name</span>(<span class="s-kw">const</span> <span class="s-type">char</span> *name) {</span></div>
+<div class="code-line"><span class="ln">47</span><span class="lc">    <span class="s-type">int</span> i;</span></div>
+<div class="code-line"><span class="ln">48</span><span class="lc">    <span class="s-type">int</span> found = <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">49</span><span class="lc">    <span class="s-kw">for</span> (i = <span class="s-num">0</span>; i &lt; count; i++) {</span></div>
+<div class="code-line"><span class="ln">50</span><span class="lc">        <span class="s-kw">if</span> (<span class="s-fn">strcmp</span>(db[i].name, name) == <span class="s-num">0</span>) {</span></div>
+<div class="code-line"><span class="ln">51</span><span class="lc">            <span class="s-fn">printf</span>(<span class="s-str">"찾았어요! 학번:%d 이름:%s 학년:%d 반:%d 점수:%d\n"</span>,</span></div>
+<div class="code-line"><span class="ln">52</span><span class="lc">                   db[i].id, db[i].name, db[i].grade,</span></div>
+<div class="code-line"><span class="ln">53</span><span class="lc">                   db[i].class_num, db[i].score);</span></div>
+<div class="code-line"><span class="ln">54</span><span class="lc">            found = <span class="s-num">1</span>;</span></div>
+<div class="code-line"><span class="ln">55</span><span class="lc">        }</span></div>
+<div class="code-line"><span class="ln">56</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">57</span><span class="lc">    <span class="s-kw">if</span> (!found) {</span></div>
+<div class="code-line"><span class="ln">58</span><span class="lc">        <span class="s-fn">printf</span>(<span class="s-str">"'%s' 학생을 찾을 수 없어요.\n"</span>, name);</span></div>
+<div class="code-line"><span class="ln">59</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">60</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">61</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">62</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">main</span>(<span class="s-type">void</span>) {</span></div>
+<div class="code-line"><span class="ln">63</span><span class="lc">    <span class="s-cm">/* INSERT INTO students VALUES ... */</span></span></div>
+<div class="code-line"><span class="ln">64</span><span class="lc">    <span class="s-fn">add_student</span>(<span class="s-num">2024001</span>, <span class="s-str">"김민수"</span>, <span class="s-num">1</span>, <span class="s-num">3</span>, <span class="s-num">85</span>);</span></div>
+<div class="code-line"><span class="ln">65</span><span class="lc">    <span class="s-fn">add_student</span>(<span class="s-num">2024002</span>, <span class="s-str">"이서연"</span>, <span class="s-num">1</span>, <span class="s-num">3</span>, <span class="s-num">92</span>);</span></div>
+<div class="code-line"><span class="ln">66</span><span class="lc">    <span class="s-fn">add_student</span>(<span class="s-num">2024003</span>, <span class="s-str">"박지훈"</span>, <span class="s-num">2</span>, <span class="s-num">1</span>, <span class="s-num">78</span>);</span></div>
+<div class="code-line"><span class="ln">67</span><span class="lc">    <span class="s-fn">add_student</span>(<span class="s-num">2024004</span>, <span class="s-str">"최유진"</span>, <span class="s-num">2</span>, <span class="s-num">2</span>, <span class="s-num">95</span>);</span></div>
+<div class="code-line"><span class="ln">68</span><span class="lc">    <span class="s-fn">add_student</span>(<span class="s-num">2024005</span>, <span class="s-str">"정하늘"</span>, <span class="s-num">3</span>, <span class="s-num">1</span>, <span class="s-num">88</span>);</span></div>
+<div class="code-line"><span class="ln">69</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">70</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"=== 전체 학생 목록 ===\n"</span>);</span></div>
+<div class="code-line"><span class="ln">71</span><span class="lc">    <span class="s-fn">print_all</span>();</span></div>
+<div class="code-line"><span class="ln">72</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">73</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"\n=== 이름 검색: 박지훈 ===\n"</span>);</span></div>
+<div class="code-line"><span class="ln">74</span><span class="lc">    <span class="s-fn">search_by_name</span>(<span class="s-str">"박지훈"</span>);</span></div>
+<div class="code-line"><span class="ln">75</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">76</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"\n=== 이름 검색: 홍길동 ===\n"</span>);</span></div>
+<div class="code-line"><span class="ln">77</span><span class="lc">    <span class="s-fn">search_by_name</span>(<span class="s-str">"홍길동"</span>);</span></div>
+<div class="code-line"><span class="ln">78</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">79</span><span class="lc">    <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">80</span><span class="lc">}</span></div>
+</div>
+</div>
+<div class="output-wrap"><div class="output-bar">실행 결과</div><div class="output-body">=== 전체 학생 목록 ===
+학번     이름       학년 반   점수
+--------------------------------------
+2024001  김민수     1    3    85
+2024002  이서연     1    3    92
+2024003  박지훈     2    1    78
+2024004  최유진     2    2    95
+2024005  정하늘     3    1    88
+
+=== 이름 검색: 박지훈 ===
+찾았어요! 학번:2024003 이름:박지훈 학년:2 반:1 점수:78
+
+=== 이름 검색: 홍길동 ===
+'홍길동' 학생을 찾을 수 없어요.</div></div>
+<p>이 프로그램에서 <code>db[MAX_STUDENTS]</code> 배열이 데이터베이스 테이블 역할을 해요. <code>add_student</code>은 SQL의 INSERT, <code>print_all</code>은 SELECT *, <code>search_by_name</code>은 SELECT WHERE에 해당해요.</p>
+<h2 class="section-title">[C 코드 2] 파일 I/O로 데이터 저장/불러오기</h2>
+<p>구조체 배열은 프로그램이 종료되면 데이터가 사라져요. 데이터를 영구적으로 보관하려면 파일에 저장해야 해요. 이것이 간이 데이터베이스의 '지속성(Durability)'이에요.</p>
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span><span class="code-bar-file">파일에 데이터 저장하고 불러오기</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;stdio.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;string.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">4</span><span class="lc"><span class="s-pp">#define</span> MAX <span class="s-num">100</span></span></div>
+<div class="code-line"><span class="ln">5</span><span class="lc"><span class="s-pp">#define</span> FILENAME <span class="s-str">"students.dat"</span></span></div>
+<div class="code-line"><span class="ln">6</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">7</span><span class="lc"><span class="s-kw">typedef</span> <span class="s-kw">struct</span> {</span></div>
+<div class="code-line"><span class="ln">8</span><span class="lc">    <span class="s-type">int</span> id;</span></div>
+<div class="code-line"><span class="ln">9</span><span class="lc">    <span class="s-type">char</span> name[<span class="s-num">20</span>];</span></div>
+<div class="code-line"><span class="ln">10</span><span class="lc">    <span class="s-type">int</span> grade;</span></div>
+<div class="code-line"><span class="ln">11</span><span class="lc">    <span class="s-type">int</span> score;</span></div>
+<div class="code-line"><span class="ln">12</span><span class="lc">} Student;</span></div>
+<div class="code-line"><span class="ln">13</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">14</span><span class="lc">Student db[MAX];</span></div>
+<div class="code-line"><span class="ln">15</span><span class="lc"><span class="s-type">int</span> count = <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">16</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">17</span><span class="lc"><span class="s-cm">/* 파일에 저장 (COMMIT과 비슷) */</span></span></div>
+<div class="code-line"><span class="ln">18</span><span class="lc"><span class="s-type">void</span> <span class="s-fn">save_to_file</span>(<span class="s-type">void</span>) {</span></div>
+<div class="code-line"><span class="ln">19</span><span class="lc">    <span class="s-type">FILE</span> *fp = <span class="s-fn">fopen</span>(FILENAME, <span class="s-str">"wb"</span>);</span></div>
+<div class="code-line"><span class="ln">20</span><span class="lc">    <span class="s-kw">if</span> (fp == <span class="s-kw">NULL</span>) {</span></div>
+<div class="code-line"><span class="ln">21</span><span class="lc">        <span class="s-fn">printf</span>(<span class="s-str">"파일 저장 실패!\n"</span>);</span></div>
+<div class="code-line"><span class="ln">22</span><span class="lc">        <span class="s-kw">return</span>;</span></div>
+<div class="code-line"><span class="ln">23</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">24</span><span class="lc">    <span class="s-fn">fwrite</span>(&amp;count, <span class="s-kw">sizeof</span>(<span class="s-type">int</span>), <span class="s-num">1</span>, fp);</span></div>
+<div class="code-line"><span class="ln">25</span><span class="lc">    <span class="s-fn">fwrite</span>(db, <span class="s-kw">sizeof</span>(Student), count, fp);</span></div>
+<div class="code-line"><span class="ln">26</span><span class="lc">    <span class="s-fn">fclose</span>(fp);</span></div>
+<div class="code-line"><span class="ln">27</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"%d명의 데이터를 저장했어요.\n"</span>, count);</span></div>
+<div class="code-line"><span class="ln">28</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">29</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">30</span><span class="lc"><span class="s-cm">/* 파일에서 불러오기 */</span></span></div>
+<div class="code-line"><span class="ln">31</span><span class="lc"><span class="s-type">void</span> <span class="s-fn">load_from_file</span>(<span class="s-type">void</span>) {</span></div>
+<div class="code-line"><span class="ln">32</span><span class="lc">    <span class="s-type">FILE</span> *fp = <span class="s-fn">fopen</span>(FILENAME, <span class="s-str">"rb"</span>);</span></div>
+<div class="code-line"><span class="ln">33</span><span class="lc">    <span class="s-kw">if</span> (fp == <span class="s-kw">NULL</span>) {</span></div>
+<div class="code-line"><span class="ln">34</span><span class="lc">        <span class="s-fn">printf</span>(<span class="s-str">"저장된 파일이 없어요. 새로 시작해요.\n"</span>);</span></div>
+<div class="code-line"><span class="ln">35</span><span class="lc">        count = <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">36</span><span class="lc">        <span class="s-kw">return</span>;</span></div>
+<div class="code-line"><span class="ln">37</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">38</span><span class="lc">    <span class="s-fn">fread</span>(&amp;count, <span class="s-kw">sizeof</span>(<span class="s-type">int</span>), <span class="s-num">1</span>, fp);</span></div>
+<div class="code-line"><span class="ln">39</span><span class="lc">    <span class="s-fn">fread</span>(db, <span class="s-kw">sizeof</span>(Student), count, fp);</span></div>
+<div class="code-line"><span class="ln">40</span><span class="lc">    <span class="s-fn">fclose</span>(fp);</span></div>
+<div class="code-line"><span class="ln">41</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"%d명의 데이터를 불러왔어요.\n"</span>, count);</span></div>
+<div class="code-line"><span class="ln">42</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">43</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">44</span><span class="lc"><span class="s-type">void</span> <span class="s-fn">add_student</span>(<span class="s-type">int</span> id, <span class="s-kw">const</span> <span class="s-type">char</span> *name,</span></div>
+<div class="code-line"><span class="ln">45</span><span class="lc">                 <span class="s-type">int</span> grade, <span class="s-type">int</span> score) {</span></div>
+<div class="code-line"><span class="ln">46</span><span class="lc">    <span class="s-kw">if</span> (count &gt;= MAX) <span class="s-kw">return</span>;</span></div>
+<div class="code-line"><span class="ln">47</span><span class="lc">    db[count].id = id;</span></div>
+<div class="code-line"><span class="ln">48</span><span class="lc">    <span class="s-fn">strcpy</span>(db[count].name, name);</span></div>
+<div class="code-line"><span class="ln">49</span><span class="lc">    db[count].grade = grade;</span></div>
+<div class="code-line"><span class="ln">50</span><span class="lc">    db[count].score = score;</span></div>
+<div class="code-line"><span class="ln">51</span><span class="lc">    count++;</span></div>
+<div class="code-line"><span class="ln">52</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">53</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">54</span><span class="lc"><span class="s-type">void</span> <span class="s-fn">print_all</span>(<span class="s-type">void</span>) {</span></div>
+<div class="code-line"><span class="ln">55</span><span class="lc">    <span class="s-type">int</span> i;</span></div>
+<div class="code-line"><span class="ln">56</span><span class="lc">    <span class="s-kw">for</span> (i = <span class="s-num">0</span>; i &lt; count; i++) {</span></div>
+<div class="code-line"><span class="ln">57</span><span class="lc">        <span class="s-fn">printf</span>(<span class="s-str">"%d | %s | %d학년 | %d점\n"</span>,</span></div>
+<div class="code-line"><span class="ln">58</span><span class="lc">               db[i].id, db[i].name,</span></div>
+<div class="code-line"><span class="ln">59</span><span class="lc">               db[i].grade, db[i].score);</span></div>
+<div class="code-line"><span class="ln">60</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">61</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">62</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">63</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">main</span>(<span class="s-type">void</span>) {</span></div>
+<div class="code-line"><span class="ln">64</span><span class="lc">    <span class="s-cm">/* 파일에서 기존 데이터 불러오기 */</span></span></div>
+<div class="code-line"><span class="ln">65</span><span class="lc">    <span class="s-fn">load_from_file</span>();</span></div>
+<div class="code-line"><span class="ln">66</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">67</span><span class="lc">    <span class="s-cm">/* 새 학생 추가 */</span></span></div>
+<div class="code-line"><span class="ln">68</span><span class="lc">    <span class="s-fn">add_student</span>(<span class="s-num">2024006</span>, <span class="s-str">"한소희"</span>, <span class="s-num">1</span>, <span class="s-num">90</span>);</span></div>
+<div class="code-line"><span class="ln">69</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">70</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"=== 전체 목록 ===\n"</span>);</span></div>
+<div class="code-line"><span class="ln">71</span><span class="lc">    <span class="s-fn">print_all</span>();</span></div>
+<div class="code-line"><span class="ln">72</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">73</span><span class="lc">    <span class="s-cm">/* 파일에 저장 */</span></span></div>
+<div class="code-line"><span class="ln">74</span><span class="lc">    <span class="s-fn">save_to_file</span>();</span></div>
+<div class="code-line"><span class="ln">75</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">76</span><span class="lc">    <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">77</span><span class="lc">}</span></div>
+</div>
+</div>
+<div class="output-wrap"><div class="output-bar">실행 결과</div><div class="output-body">저장된 파일이 없어요. 새로 시작해요.
+=== 전체 목록 ===
+2024006 | 한소희 | 1학년 | 90점
+1명의 데이터를 저장했어요.</div></div>
+<p><code>fwrite</code>로 구조체 배열 전체를 이진 파일에 저장하고, <code>fread</code>로 다시 불러와요. 프로그램을 다시 실행해도 데이터가 남아 있어요. 이것이 파일 기반 간이 데이터베이스예요.</p>
+<h2 class="section-title">[C 코드 3] 간단한 SQL 파서</h2>
+<p>이번에는 아주 간단한 SQL 명령을 해석하는 프로그램을 만들어 볼게요. 문자열을 분석해서 'SELECT name FROM students WHERE score > 80' 같은 명령을 처리해요.</p>
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span><span class="code-bar-file">간단한 SQL SELECT 파서</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;stdio.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;string.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;stdlib.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">4</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">5</span><span class="lc"><span class="s-pp">#define</span> MAX <span class="s-num">100</span></span></div>
+<div class="code-line"><span class="ln">6</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">7</span><span class="lc"><span class="s-kw">typedef</span> <span class="s-kw">struct</span> {</span></div>
+<div class="code-line"><span class="ln">8</span><span class="lc">    <span class="s-type">char</span> name[<span class="s-num">20</span>];</span></div>
+<div class="code-line"><span class="ln">9</span><span class="lc">    <span class="s-type">int</span> grade;</span></div>
+<div class="code-line"><span class="ln">10</span><span class="lc">    <span class="s-type">int</span> score;</span></div>
+<div class="code-line"><span class="ln">11</span><span class="lc">} Student;</span></div>
+<div class="code-line"><span class="ln">12</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">13</span><span class="lc">Student db[MAX];</span></div>
+<div class="code-line"><span class="ln">14</span><span class="lc"><span class="s-type">int</span> count = <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">15</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">16</span><span class="lc"><span class="s-type">void</span> <span class="s-fn">add</span>(<span class="s-kw">const</span> <span class="s-type">char</span> *name, <span class="s-type">int</span> grade, <span class="s-type">int</span> score) {</span></div>
+<div class="code-line"><span class="ln">17</span><span class="lc">    <span class="s-fn">strcpy</span>(db[count].name, name);</span></div>
+<div class="code-line"><span class="ln">18</span><span class="lc">    db[count].grade = grade;</span></div>
+<div class="code-line"><span class="ln">19</span><span class="lc">    db[count].score = score;</span></div>
+<div class="code-line"><span class="ln">20</span><span class="lc">    count++;</span></div>
+<div class="code-line"><span class="ln">21</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">22</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">23</span><span class="lc"><span class="s-cm">/* 간단한 SQL 처리: SELECT name FROM students WHERE score &gt; N */</span></span></div>
+<div class="code-line"><span class="ln">24</span><span class="lc"><span class="s-type">void</span> <span class="s-fn">execute_query</span>(<span class="s-kw">const</span> <span class="s-type">char</span> *field, <span class="s-kw">const</span> <span class="s-type">char</span> *cond_field,</span></div>
+<div class="code-line"><span class="ln">25</span><span class="lc">                   <span class="s-type">char</span> op, <span class="s-type">int</span> value) {</span></div>
+<div class="code-line"><span class="ln">26</span><span class="lc">    <span class="s-type">int</span> i;</span></div>
+<div class="code-line"><span class="ln">27</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"--- 쿼리 결과 ---\n"</span>);</span></div>
+<div class="code-line"><span class="ln">28</span><span class="lc">    <span class="s-kw">for</span> (i = <span class="s-num">0</span>; i &lt; count; i++) {</span></div>
+<div class="code-line"><span class="ln">29</span><span class="lc">        <span class="s-type">int</span> cond_val = <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">30</span><span class="lc">        <span class="s-type">int</span> match = <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">31</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">32</span><span class="lc">        <span class="s-cm">/* 조건 필드 값 가져오기 */</span></span></div>
+<div class="code-line"><span class="ln">33</span><span class="lc">        <span class="s-kw">if</span> (<span class="s-fn">strcmp</span>(cond_field, <span class="s-str">"score"</span>) == <span class="s-num">0</span>)</span></div>
+<div class="code-line"><span class="ln">34</span><span class="lc">            cond_val = db[i].score;</span></div>
+<div class="code-line"><span class="ln">35</span><span class="lc">        <span class="s-kw">else</span> <span class="s-kw">if</span> (<span class="s-fn">strcmp</span>(cond_field, <span class="s-str">"grade"</span>) == <span class="s-num">0</span>)</span></div>
+<div class="code-line"><span class="ln">36</span><span class="lc">            cond_val = db[i].grade;</span></div>
+<div class="code-line"><span class="ln">37</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">38</span><span class="lc">        <span class="s-cm">/* 비교 연산 */</span></span></div>
+<div class="code-line"><span class="ln">39</span><span class="lc">        <span class="s-kw">if</span> (op == '&gt;' &amp;&amp; cond_val &gt; value) match = <span class="s-num">1</span>;</span></div>
+<div class="code-line"><span class="ln">40</span><span class="lc">        <span class="s-kw">if</span> (op == '&lt;' &amp;&amp; cond_val &lt; value) match = <span class="s-num">1</span>;</span></div>
+<div class="code-line"><span class="ln">41</span><span class="lc">        <span class="s-kw">if</span> (op == <span class="s-str">'='</span> &amp;&amp; cond_val == value) match = <span class="s-num">1</span>;</span></div>
+<div class="code-line"><span class="ln">42</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">43</span><span class="lc">        <span class="s-cm">/* 결과 출력 */</span></span></div>
+<div class="code-line"><span class="ln">44</span><span class="lc">        <span class="s-kw">if</span> (match) {</span></div>
+<div class="code-line"><span class="ln">45</span><span class="lc">            <span class="s-kw">if</span> (<span class="s-fn">strcmp</span>(field, <span class="s-str">"name"</span>) == <span class="s-num">0</span>)</span></div>
+<div class="code-line"><span class="ln">46</span><span class="lc">                <span class="s-fn">printf</span>(<span class="s-str">"%s\n"</span>, db[i].name);</span></div>
+<div class="code-line"><span class="ln">47</span><span class="lc">            <span class="s-kw">else</span> <span class="s-kw">if</span> (<span class="s-fn">strcmp</span>(field, <span class="s-str">"score"</span>) == <span class="s-num">0</span>)</span></div>
+<div class="code-line"><span class="ln">48</span><span class="lc">                <span class="s-fn">printf</span>(<span class="s-str">"%d\n"</span>, db[i].score);</span></div>
+<div class="code-line"><span class="ln">49</span><span class="lc">            <span class="s-kw">else</span> <span class="s-kw">if</span> (<span class="s-fn">strcmp</span>(field, <span class="s-str">"*"</span>) == <span class="s-num">0</span>)</span></div>
+<div class="code-line"><span class="ln">50</span><span class="lc">                <span class="s-fn">printf</span>(<span class="s-str">"%s | %d학년 | %d점\n"</span>,</span></div>
+<div class="code-line"><span class="ln">51</span><span class="lc">                       db[i].name, db[i].grade,</span></div>
+<div class="code-line"><span class="ln">52</span><span class="lc">                       db[i].score);</span></div>
+<div class="code-line"><span class="ln">53</span><span class="lc">        }</span></div>
+<div class="code-line"><span class="ln">54</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">55</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">56</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">57</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">main</span>(<span class="s-type">void</span>) {</span></div>
+<div class="code-line"><span class="ln">58</span><span class="lc">    <span class="s-fn">add</span>(<span class="s-str">"김민수"</span>, <span class="s-num">1</span>, <span class="s-num">85</span>);</span></div>
+<div class="code-line"><span class="ln">59</span><span class="lc">    <span class="s-fn">add</span>(<span class="s-str">"이서연"</span>, <span class="s-num">1</span>, <span class="s-num">92</span>);</span></div>
+<div class="code-line"><span class="ln">60</span><span class="lc">    <span class="s-fn">add</span>(<span class="s-str">"박지훈"</span>, <span class="s-num">2</span>, <span class="s-num">78</span>);</span></div>
+<div class="code-line"><span class="ln">61</span><span class="lc">    <span class="s-fn">add</span>(<span class="s-str">"최유진"</span>, <span class="s-num">2</span>, <span class="s-num">95</span>);</span></div>
+<div class="code-line"><span class="ln">62</span><span class="lc">    <span class="s-fn">add</span>(<span class="s-str">"정하늘"</span>, <span class="s-num">3</span>, <span class="s-num">88</span>);</span></div>
+<div class="code-line"><span class="ln">63</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">64</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"SELECT name WHERE score &gt; 80:\n"</span>);</span></div>
+<div class="code-line"><span class="ln">65</span><span class="lc">    <span class="s-fn">execute_query</span>(<span class="s-str">"name"</span>, <span class="s-str">"score"</span>, '&gt;', <span class="s-num">80</span>);</span></div>
+<div class="code-line"><span class="ln">66</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">67</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"\nSELECT * WHERE grade = 2:\n"</span>);</span></div>
+<div class="code-line"><span class="ln">68</span><span class="lc">    <span class="s-fn">execute_query</span>(<span class="s-str">"*"</span>, <span class="s-str">"grade"</span>, <span class="s-str">'='</span>, <span class="s-num">2</span>);</span></div>
+<div class="code-line"><span class="ln">69</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">70</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"\nSELECT name WHERE score &lt; 85:\n"</span>);</span></div>
+<div class="code-line"><span class="ln">71</span><span class="lc">    <span class="s-fn">execute_query</span>(<span class="s-str">"name"</span>, <span class="s-str">"score"</span>, '&lt;', <span class="s-num">85</span>);</span></div>
+<div class="code-line"><span class="ln">72</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">73</span><span class="lc">    <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">74</span><span class="lc">}</span></div>
+</div>
+</div>
+<div class="output-wrap"><div class="output-bar">실행 결과</div><div class="output-body">SELECT name WHERE score > 80:
+--- 쿼리 결과 ---
+김민수
+이서연
+최유진
+정하늘
+
+SELECT * WHERE grade = 2:
+--- 쿼리 결과 ---
+박지훈 | 2학년 | 78점
+최유진 | 2학년 | 95점
+
+SELECT name WHERE score < 85:
+--- 쿼리 결과 ---
+박지훈</div></div>
+<p>이 프로그램은 SQL의 SELECT, WHERE 기능을 C로 구현한 거예요. 실제 DBMS는 이보다 훨씬 복잡하지만, 기본 원리는 같아요. 조건에 맞는 데이터를 찾아서 원하는 필드만 출력하는 거죠.</p>
+<h2 class="section-title">[C 코드 4] 정렬과 검색 기능이 있는 미니 DB</h2>
+<p>마지막으로 정렬(ORDER BY)과 이진 검색 기능까지 포함한 미니 데이터베이스를 만들어 볼게요.</p>
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span><span class="code-bar-file">정렬 + 이진 검색이 있는 미니 DB</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;stdio.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;string.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">4</span><span class="lc"><span class="s-pp">#define</span> MAX <span class="s-num">100</span></span></div>
+<div class="code-line"><span class="ln">5</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">6</span><span class="lc"><span class="s-kw">typedef</span> <span class="s-kw">struct</span> {</span></div>
+<div class="code-line"><span class="ln">7</span><span class="lc">    <span class="s-type">int</span> id;</span></div>
+<div class="code-line"><span class="ln">8</span><span class="lc">    <span class="s-type">char</span> name[<span class="s-num">20</span>];</span></div>
+<div class="code-line"><span class="ln">9</span><span class="lc">    <span class="s-type">int</span> score;</span></div>
+<div class="code-line"><span class="ln">10</span><span class="lc">} Student;</span></div>
+<div class="code-line"><span class="ln">11</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">12</span><span class="lc">Student db[MAX];</span></div>
+<div class="code-line"><span class="ln">13</span><span class="lc"><span class="s-type">int</span> count = <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">14</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">15</span><span class="lc"><span class="s-type">void</span> <span class="s-fn">add</span>(<span class="s-type">int</span> id, <span class="s-kw">const</span> <span class="s-type">char</span> *name, <span class="s-type">int</span> score) {</span></div>
+<div class="code-line"><span class="ln">16</span><span class="lc">    db[count].id = id;</span></div>
+<div class="code-line"><span class="ln">17</span><span class="lc">    <span class="s-fn">strcpy</span>(db[count].name, name);</span></div>
+<div class="code-line"><span class="ln">18</span><span class="lc">    db[count].score = score;</span></div>
+<div class="code-line"><span class="ln">19</span><span class="lc">    count++;</span></div>
+<div class="code-line"><span class="ln">20</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">21</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">22</span><span class="lc"><span class="s-cm">/* ORDER BY score DESC: 점수 내림차순 정렬 (버블 정렬) */</span></span></div>
+<div class="code-line"><span class="ln">23</span><span class="lc"><span class="s-type">void</span> <span class="s-fn">sort_by_score_desc</span>(<span class="s-type">void</span>) {</span></div>
+<div class="code-line"><span class="ln">24</span><span class="lc">    <span class="s-type">int</span> i, j;</span></div>
+<div class="code-line"><span class="ln">25</span><span class="lc">    Student temp;</span></div>
+<div class="code-line"><span class="ln">26</span><span class="lc">    <span class="s-kw">for</span> (i = <span class="s-num">0</span>; i &lt; count - <span class="s-num">1</span>; i++) {</span></div>
+<div class="code-line"><span class="ln">27</span><span class="lc">        <span class="s-kw">for</span> (j = <span class="s-num">0</span>; j &lt; count - <span class="s-num">1</span> - i; j++) {</span></div>
+<div class="code-line"><span class="ln">28</span><span class="lc">            <span class="s-kw">if</span> (db[j].score &lt; db[j + <span class="s-num">1</span>].score) {</span></div>
+<div class="code-line"><span class="ln">29</span><span class="lc">                temp = db[j];</span></div>
+<div class="code-line"><span class="ln">30</span><span class="lc">                db[j] = db[j + <span class="s-num">1</span>];</span></div>
+<div class="code-line"><span class="ln">31</span><span class="lc">                db[j + <span class="s-num">1</span>] = temp;</span></div>
+<div class="code-line"><span class="ln">32</span><span class="lc">            }</span></div>
+<div class="code-line"><span class="ln">33</span><span class="lc">        }</span></div>
+<div class="code-line"><span class="ln">34</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">35</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">36</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">37</span><span class="lc"><span class="s-cm">/* ORDER BY id ASC: 학번 오름차순 정렬 */</span></span></div>
+<div class="code-line"><span class="ln">38</span><span class="lc"><span class="s-type">void</span> <span class="s-fn">sort_by_id_asc</span>(<span class="s-type">void</span>) {</span></div>
+<div class="code-line"><span class="ln">39</span><span class="lc">    <span class="s-type">int</span> i, j;</span></div>
+<div class="code-line"><span class="ln">40</span><span class="lc">    Student temp;</span></div>
+<div class="code-line"><span class="ln">41</span><span class="lc">    <span class="s-kw">for</span> (i = <span class="s-num">0</span>; i &lt; count - <span class="s-num">1</span>; i++) {</span></div>
+<div class="code-line"><span class="ln">42</span><span class="lc">        <span class="s-kw">for</span> (j = <span class="s-num">0</span>; j &lt; count - <span class="s-num">1</span> - i; j++) {</span></div>
+<div class="code-line"><span class="ln">43</span><span class="lc">            <span class="s-kw">if</span> (db[j].id &gt; db[j + <span class="s-num">1</span>].id) {</span></div>
+<div class="code-line"><span class="ln">44</span><span class="lc">                temp = db[j];</span></div>
+<div class="code-line"><span class="ln">45</span><span class="lc">                db[j] = db[j + <span class="s-num">1</span>];</span></div>
+<div class="code-line"><span class="ln">46</span><span class="lc">                db[j + <span class="s-num">1</span>] = temp;</span></div>
+<div class="code-line"><span class="ln">47</span><span class="lc">            }</span></div>
+<div class="code-line"><span class="ln">48</span><span class="lc">        }</span></div>
+<div class="code-line"><span class="ln">49</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">50</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">51</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">52</span><span class="lc"><span class="s-cm">/* 이진 검색으로 학번 찾기 (정렬 필수!) */</span></span></div>
+<div class="code-line"><span class="ln">53</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">binary_search_id</span>(<span class="s-type">int</span> target_id) {</span></div>
+<div class="code-line"><span class="ln">54</span><span class="lc">    <span class="s-type">int</span> low = <span class="s-num">0</span>, high = count - <span class="s-num">1</span>;</span></div>
+<div class="code-line"><span class="ln">55</span><span class="lc">    <span class="s-kw">while</span> (low &lt;= high) {</span></div>
+<div class="code-line"><span class="ln">56</span><span class="lc">        <span class="s-type">int</span> mid = (low + high) / <span class="s-num">2</span>;</span></div>
+<div class="code-line"><span class="ln">57</span><span class="lc">        <span class="s-kw">if</span> (db[mid].id == target_id)</span></div>
+<div class="code-line"><span class="ln">58</span><span class="lc">            <span class="s-kw">return</span> mid;</span></div>
+<div class="code-line"><span class="ln">59</span><span class="lc">        <span class="s-kw">else</span> <span class="s-kw">if</span> (db[mid].id &lt; target_id)</span></div>
+<div class="code-line"><span class="ln">60</span><span class="lc">            low = mid + <span class="s-num">1</span>;</span></div>
+<div class="code-line"><span class="ln">61</span><span class="lc">        <span class="s-kw">else</span></span></div>
+<div class="code-line"><span class="ln">62</span><span class="lc">            high = mid - <span class="s-num">1</span>;</span></div>
+<div class="code-line"><span class="ln">63</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">64</span><span class="lc">    <span class="s-kw">return</span> -<span class="s-num">1</span>;  <span class="s-cm">/* 못 찾음 */</span></span></div>
+<div class="code-line"><span class="ln">65</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">66</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">67</span><span class="lc"><span class="s-type">void</span> <span class="s-fn">print_all</span>(<span class="s-type">void</span>) {</span></div>
+<div class="code-line"><span class="ln">68</span><span class="lc">    <span class="s-type">int</span> i;</span></div>
+<div class="code-line"><span class="ln">69</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"%-8s %-10s %-6s\n"</span>, <span class="s-str">"학번"</span>, <span class="s-str">"이름"</span>, <span class="s-str">"점수"</span>);</span></div>
+<div class="code-line"><span class="ln">70</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"------------------------\n"</span>);</span></div>
+<div class="code-line"><span class="ln">71</span><span class="lc">    <span class="s-kw">for</span> (i = <span class="s-num">0</span>; i &lt; count; i++) {</span></div>
+<div class="code-line"><span class="ln">72</span><span class="lc">        <span class="s-fn">printf</span>(<span class="s-str">"%-8d %-10s %-6d\n"</span>,</span></div>
+<div class="code-line"><span class="ln">73</span><span class="lc">               db[i].id, db[i].name, db[i].score);</span></div>
+<div class="code-line"><span class="ln">74</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">75</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">76</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">77</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">main</span>(<span class="s-type">void</span>) {</span></div>
+<div class="code-line"><span class="ln">78</span><span class="lc">    <span class="s-type">int</span> idx;</span></div>
+<div class="code-line"><span class="ln">79</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">80</span><span class="lc">    <span class="s-fn">add</span>(<span class="s-num">2024003</span>, <span class="s-str">"박지훈"</span>, <span class="s-num">78</span>);</span></div>
+<div class="code-line"><span class="ln">81</span><span class="lc">    <span class="s-fn">add</span>(<span class="s-num">2024001</span>, <span class="s-str">"김민수"</span>, <span class="s-num">85</span>);</span></div>
+<div class="code-line"><span class="ln">82</span><span class="lc">    <span class="s-fn">add</span>(<span class="s-num">2024005</span>, <span class="s-str">"정하늘"</span>, <span class="s-num">88</span>);</span></div>
+<div class="code-line"><span class="ln">83</span><span class="lc">    <span class="s-fn">add</span>(<span class="s-num">2024002</span>, <span class="s-str">"이서연"</span>, <span class="s-num">92</span>);</span></div>
+<div class="code-line"><span class="ln">84</span><span class="lc">    <span class="s-fn">add</span>(<span class="s-num">2024004</span>, <span class="s-str">"최유진"</span>, <span class="s-num">95</span>);</span></div>
+<div class="code-line"><span class="ln">85</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">86</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"=== ORDER BY score DESC ===\n"</span>);</span></div>
+<div class="code-line"><span class="ln">87</span><span class="lc">    <span class="s-fn">sort_by_score_desc</span>();</span></div>
+<div class="code-line"><span class="ln">88</span><span class="lc">    <span class="s-fn">print_all</span>();</span></div>
+<div class="code-line"><span class="ln">89</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">90</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"\n=== ORDER BY id ASC ===\n"</span>);</span></div>
+<div class="code-line"><span class="ln">91</span><span class="lc">    <span class="s-fn">sort_by_id_asc</span>();</span></div>
+<div class="code-line"><span class="ln">92</span><span class="lc">    <span class="s-fn">print_all</span>();</span></div>
+<div class="code-line"><span class="ln">93</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">94</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"\n=== 학번 2024003 검색 (이진 검색) ===\n"</span>);</span></div>
+<div class="code-line"><span class="ln">95</span><span class="lc">    idx = <span class="s-fn">binary_search_id</span>(<span class="s-num">2024003</span>);</span></div>
+<div class="code-line"><span class="ln">96</span><span class="lc">    <span class="s-kw">if</span> (idx &gt;= <span class="s-num">0</span>) {</span></div>
+<div class="code-line"><span class="ln">97</span><span class="lc">        <span class="s-fn">printf</span>(<span class="s-str">"찾았어요! %s, %d점\n"</span>,</span></div>
+<div class="code-line"><span class="ln">98</span><span class="lc">               db[idx].name, db[idx].score);</span></div>
+<div class="code-line"><span class="ln">99</span><span class="lc">    } <span class="s-kw">else</span> {</span></div>
+<div class="code-line"><span class="ln">100</span><span class="lc">        <span class="s-fn">printf</span>(<span class="s-str">"찾을 수 없어요.\n"</span>);</span></div>
+<div class="code-line"><span class="ln">101</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">102</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">103</span><span class="lc">    <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">104</span><span class="lc">}</span></div>
+</div>
+</div>
+<div class="output-wrap"><div class="output-bar">실행 결과</div><div class="output-body">=== ORDER BY score DESC ===
+학번     이름       점수
+------------------------
+2024004  최유진     95
+2024002  이서연     92
+2024005  정하늘     88
+2024001  김민수     85
+2024003  박지훈     78
+
+=== ORDER BY id ASC ===
+학번     이름       점수
+------------------------
+2024001  김민수     85
+2024002  이서연     92
+2024003  박지훈     78
+2024004  최유진     95
+2024005  정하늘     88
+
+=== 학번 2024003 검색 (이진 검색) ===
+찾았어요! 박지훈, 78점</div></div>
+<p>이 프로그램은 SQL의 ORDER BY와 인덱스 검색을 C로 구현한 거예요. 실제 데이터베이스도 내부적으로 정렬과 이진 검색(B-Tree)을 사용해서 빠르게 데이터를 찾아요.</p>
+<h2 class="section-title">[디버깅 1] 파일 읽기 오류</h2>
+<p>다음 코드에서 버그를 찾아보세요. 파일에서 학생 데이터를 불러오는 코드인데, 문제가 있어요.</p>
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span><span class="code-bar-file">버그가 있는 코드 -- 파일 읽기</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;stdio.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc"><span class="s-kw">typedef</span> <span class="s-kw">struct</span> {</span></div>
+<div class="code-line"><span class="ln">4</span><span class="lc">    <span class="s-type">int</span> id;</span></div>
+<div class="code-line"><span class="ln">5</span><span class="lc">    <span class="s-type">char</span> name[<span class="s-num">20</span>];</span></div>
+<div class="code-line"><span class="ln">6</span><span class="lc">    <span class="s-type">int</span> score;</span></div>
+<div class="code-line"><span class="ln">7</span><span class="lc">} Student;</span></div>
+<div class="code-line"><span class="ln">8</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">9</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">main</span>(<span class="s-type">void</span>) {</span></div>
+<div class="code-line"><span class="ln">10</span><span class="lc">    <span class="s-type">FILE</span> *fp;</span></div>
+<div class="code-line"><span class="ln">11</span><span class="lc">    Student s;</span></div>
+<div class="code-line"><span class="ln">12</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">13</span><span class="lc">    fp = <span class="s-fn">fopen</span>(<span class="s-str">"students.dat"</span>, <span class="s-str">"rb"</span>);</span></div>
+<div class="code-line"><span class="ln">14</span><span class="lc">    <span class="s-cm">/* 버그: fp가 NULL인지 확인하지 않음! */</span></span></div>
+<div class="code-line"><span class="ln">15</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">16</span><span class="lc">    <span class="s-fn">fread</span>(&amp;s, <span class="s-kw">sizeof</span>(Student), <span class="s-num">1</span>, fp);</span></div>
+<div class="code-line"><span class="ln">17</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"%d %s %d\n"</span>, s.id, s.name, s.score);</span></div>
+<div class="code-line"><span class="ln">18</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">19</span><span class="lc">    <span class="s-fn">fclose</span>(fp);</span></div>
+<div class="code-line"><span class="ln">20</span><span class="lc">    <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">21</span><span class="lc">}</span></div>
+</div>
+</div>
+<div class="note-box"><span class="note-label"></span>
+<div style="font-weight:700;margin-bottom:6px;color:#1a2e4a">[버그 분석]</div><b>문제:</b> 파일이 존재하지 않으면 fopen은 NULL을 반환해요. NULL인 fp에 fread를 호출하면 프로그램이 비정상 종료(Segmentation Fault)돼요.<br><br><b>원인:</b> fopen의 반환값을 확인하지 않았어요. 파일이 없는 경우를 처리하지 않은 거예요.<br><br><b>수정:</b><br><code>fp = fopen("students.dat", "rb");</code><br><code>if (fp == NULL) {</code><br><code>    printf("파일을 열 수 없어요!\n");</code><br><code>    return 1;</code><br><code>}</code><br><br>파일 I/O에서는 반드시 NULL 체크를 해야 해요!</div>
+<h2 class="section-title">[디버깅 2] 구조체 배열 범위 초과</h2>
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span><span class="code-bar-file">버그가 있는 코드 -- 배열 범위 초과</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;stdio.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;string.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">4</span><span class="lc"><span class="s-pp">#define</span> MAX <span class="s-num">3</span>  <span class="s-cm">/* 최대 3명 */</span></span></div>
+<div class="code-line"><span class="ln">5</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">6</span><span class="lc"><span class="s-kw">typedef</span> <span class="s-kw">struct</span> {</span></div>
+<div class="code-line"><span class="ln">7</span><span class="lc">    <span class="s-type">char</span> name[<span class="s-num">20</span>];</span></div>
+<div class="code-line"><span class="ln">8</span><span class="lc">    <span class="s-type">int</span> score;</span></div>
+<div class="code-line"><span class="ln">9</span><span class="lc">} Student;</span></div>
+<div class="code-line"><span class="ln">10</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">11</span><span class="lc">Student db[MAX];</span></div>
+<div class="code-line"><span class="ln">12</span><span class="lc"><span class="s-type">int</span> count = <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">13</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">14</span><span class="lc"><span class="s-type">void</span> <span class="s-fn">add</span>(<span class="s-kw">const</span> <span class="s-type">char</span> *name, <span class="s-type">int</span> score) {</span></div>
+<div class="code-line"><span class="ln">15</span><span class="lc">    <span class="s-fn">strcpy</span>(db[count].name, name);  <span class="s-cm">/* 버그! */</span></span></div>
+<div class="code-line"><span class="ln">16</span><span class="lc">    db[count].score = score;</span></div>
+<div class="code-line"><span class="ln">17</span><span class="lc">    count++;</span></div>
+<div class="code-line"><span class="ln">18</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">19</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">20</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">main</span>(<span class="s-type">void</span>) {</span></div>
+<div class="code-line"><span class="ln">21</span><span class="lc">    <span class="s-fn">add</span>(<span class="s-str">"김민수"</span>, <span class="s-num">85</span>);</span></div>
+<div class="code-line"><span class="ln">22</span><span class="lc">    <span class="s-fn">add</span>(<span class="s-str">"이서연"</span>, <span class="s-num">92</span>);</span></div>
+<div class="code-line"><span class="ln">23</span><span class="lc">    <span class="s-fn">add</span>(<span class="s-str">"박지훈"</span>, <span class="s-num">78</span>);</span></div>
+<div class="code-line"><span class="ln">24</span><span class="lc">    <span class="s-fn">add</span>(<span class="s-str">"최유진"</span>, <span class="s-num">95</span>);  <span class="s-cm">/* 4번째: 범위 초과! */</span></span></div>
+<div class="code-line"><span class="ln">25</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">26</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"count = %d\n"</span>, count);</span></div>
+<div class="code-line"><span class="ln">27</span><span class="lc">    <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">28</span><span class="lc">}</span></div>
+</div>
+</div>
+<div class="note-box"><span class="note-label"></span>
+<div style="font-weight:700;margin-bottom:6px;color:#1a2e4a">[버그 분석]</div><b>문제:</b> 배열 크기가 MAX(3)인데 4번째 학생을 추가하면 db[3]에 접근해요. 배열 범위를 벗어난 접근이라 다른 메모리를 덮어쓰게 돼요.<br><br><b>원인:</b> add 함수에서 count가 MAX 이상인지 확인하지 않았어요.<br><br><b>수정:</b> add 함수 시작 부분에 범위 체크를 추가해요.<br><code>void add(const char *name, int score) {</code><br><code>    if (count >= MAX) {</code><br><code>        printf("데이터베이스가 가득 찼어요!\n");</code><br><code>        return;</code><br><code>    }</code><br><code>    strcpy(db[count].name, name);</code><br><code>    db[count].score = score;</code><br><code>    count++;</code><br><code>}</code></div>
+<h2 class="section-title">[디버깅 3] 검색 조건 오류</h2>
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span><span class="code-bar-file">버그가 있는 코드 -- 문자열 비교 실수</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;stdio.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;string.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">4</span><span class="lc"><span class="s-kw">typedef</span> <span class="s-kw">struct</span> {</span></div>
+<div class="code-line"><span class="ln">5</span><span class="lc">    <span class="s-type">char</span> name[<span class="s-num">20</span>];</span></div>
+<div class="code-line"><span class="ln">6</span><span class="lc">    <span class="s-type">int</span> score;</span></div>
+<div class="code-line"><span class="ln">7</span><span class="lc">} Student;</span></div>
+<div class="code-line"><span class="ln">8</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">9</span><span class="lc">Student db[<span class="s-num">5</span>];</span></div>
+<div class="code-line"><span class="ln">10</span><span class="lc"><span class="s-type">int</span> count = <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">11</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">12</span><span class="lc"><span class="s-type">void</span> <span class="s-fn">add</span>(<span class="s-kw">const</span> <span class="s-type">char</span> *name, <span class="s-type">int</span> score) {</span></div>
+<div class="code-line"><span class="ln">13</span><span class="lc">    <span class="s-fn">strcpy</span>(db[count].name, name);</span></div>
+<div class="code-line"><span class="ln">14</span><span class="lc">    db[count].score = score;</span></div>
+<div class="code-line"><span class="ln">15</span><span class="lc">    count++;</span></div>
+<div class="code-line"><span class="ln">16</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">17</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">18</span><span class="lc"><span class="s-type">void</span> <span class="s-fn">search</span>(<span class="s-kw">const</span> <span class="s-type">char</span> *name) {</span></div>
+<div class="code-line"><span class="ln">19</span><span class="lc">    <span class="s-type">int</span> i;</span></div>
+<div class="code-line"><span class="ln">20</span><span class="lc">    <span class="s-kw">for</span> (i = <span class="s-num">0</span>; i &lt; count; i++) {</span></div>
+<div class="code-line"><span class="ln">21</span><span class="lc">        <span class="s-kw">if</span> (db[i].name == name) {  <span class="s-cm">/* 버그! */</span></span></div>
+<div class="code-line"><span class="ln">22</span><span class="lc">            <span class="s-fn">printf</span>(<span class="s-str">"찾았어요! %s: %d점\n"</span>,</span></div>
+<div class="code-line"><span class="ln">23</span><span class="lc">                   db[i].name, db[i].score);</span></div>
+<div class="code-line"><span class="ln">24</span><span class="lc">            <span class="s-kw">return</span>;</span></div>
+<div class="code-line"><span class="ln">25</span><span class="lc">        }</span></div>
+<div class="code-line"><span class="ln">26</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">27</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"'%s'을(를) 찾을 수 없어요.\n"</span>, name);</span></div>
+<div class="code-line"><span class="ln">28</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">29</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">30</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">main</span>(<span class="s-type">void</span>) {</span></div>
+<div class="code-line"><span class="ln">31</span><span class="lc">    <span class="s-fn">add</span>(<span class="s-str">"김민수"</span>, <span class="s-num">85</span>);</span></div>
+<div class="code-line"><span class="ln">32</span><span class="lc">    <span class="s-fn">add</span>(<span class="s-str">"이서연"</span>, <span class="s-num">92</span>);</span></div>
+<div class="code-line"><span class="ln">33</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">34</span><span class="lc">    <span class="s-fn">search</span>(<span class="s-str">"김민수"</span>);  <span class="s-cm">/* 항상 "찾을 수 없어요" 출력 */</span></span></div>
+<div class="code-line"><span class="ln">35</span><span class="lc">    <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">36</span><span class="lc">}</span></div>
+</div>
+</div>
+<div class="output-wrap"><div class="output-bar">실행 결과</div><div class="output-body">'김민수'을(를) 찾을 수 없어요.</div></div>
+<div class="note-box"><span class="note-label"></span>
+<div style="font-weight:700;margin-bottom:6px;color:#1a2e4a">[버그 분석]</div><b>문제:</b> 분명 '김민수'를 추가했는데 검색하면 찾을 수 없다고 나와요.<br><br><b>원인:</b> <code>db[i].name == name</code>은 문자열의 <b>내용</b>을 비교하는 게 아니라 <b>주소</b>를 비교해요! C 언어에서 == 연산자로 문자열을 비교하면 두 문자열이 메모리의 같은 위치에 있는지를 확인하는 거예요.<br><br><b>수정:</b> 문자열 비교는 반드시 <code>strcmp</code> 함수를 사용해야 해요.<br><code>if (strcmp(db[i].name, name) == 0)</code><br><br>strcmp는 두 문자열이 같으면 0을 반환해요. C 언어에서 가장 흔한 실수 중 하나예요!</div>
+<h2 class="section-title">데이터베이스의 역사</h2>
+<div class="note-box"><span class="note-label"></span>
+<div style="font-weight:700;margin-bottom:6px;color:#1a2e4a">[역사] 최초의 데이터베이스 IMS (1966년)</div>1960년대, NASA의 아폴로 우주 프로그램에서 엄청난 양의 부품 데이터를 관리해야 했어요. IBM은 이를 위해 <b>IMS(Information Management System)</b>라는 최초의 상용 데이터베이스를 만들었어요 (1966년). IMS는 데이터를 나무(트리) 구조로 저장하는 <b>계층형 데이터베이스</b>였어요. 달에 사람을 보내기 위해 데이터베이스 기술이 발전한 거예요!</div>
+<div class="note-box"><span class="note-label"></span>
+<div style="font-weight:700;margin-bottom:6px;color:#1a2e4a">[역사] 관계형 모델의 탄생 -- 에드거 코드 (1970년)</div>1970년, IBM 연구원 <b>에드거 F. 코드(Edgar F. Codd)</b>가 논문 한 편을 발표했어요. '대규모 공유 데이터 뱅크를 위한 관계형 모델'이라는 제목의 이 논문에서, 데이터를 <b>표(테이블)</b> 형태로 저장하고 수학적 관계로 연결하는 방법을 제안했어요. 이것이 오늘날 우리가 사용하는 <b>관계형 데이터베이스(RDBMS)</b>의 시작이에요. 코드 박사는 이 공로로 1981년 튜링상을 받았어요.</div>
+<div class="note-box"><span class="note-label"></span>
+<div style="font-weight:700;margin-bottom:6px;color:#1a2e4a">[역사] SQL의 탄생 (1974년)</div>코드의 관계형 모델을 실제로 사용하려면 명령어가 필요했어요. 1974년, IBM의 레이 보이스(Ray Boyce)와 도널드 챔벌린(Donald Chamberlin)이 <b>SEQUEL</b>이라는 언어를 만들었어요. 이것이 나중에 이름이 바뀌어서 <b>SQL(Structured Query Language)</b>이 되었어요. SQL은 영어 문장처럼 읽히도록 설계되어서 프로그래머가 아닌 사람도 쉽게 배울 수 있어요.</div>
+<div class="note-box"><span class="note-label"></span>
+<div style="font-weight:700;margin-bottom:6px;color:#1a2e4a">[역사] MySQL과 오픈소스 DB (1995년)</div>1995년, 스웨덴의 <b>미카엘 비데니우스(Michael Widenius)</b>와 데이비드 액스마크(David Axmark)가 <b>MySQL</b>을 만들었어요. MySQL의 'My'는 비데니우스의 딸 이름이에요. MySQL은 무료 오픈소스여서 폭발적으로 인기를 얻었고, 지금도 전 세계에서 가장 많이 사용되는 데이터베이스 중 하나예요. 구글, 페이스북, 유튜브 등이 MySQL을 사용했어요.</div>
+<div class="note-box"><span class="note-label"></span>
+<div style="font-weight:700;margin-bottom:6px;color:#1a2e4a">[역사] NoSQL 시대의 개막 (2009년)</div>2000년대 후반, 페이스북, 트위터, 구글 같은 서비스에서 하루에 수십억 건의 데이터가 쏟아졌어요. 기존 관계형 데이터베이스로는 이 엄청난 양을 처리하기 어려웠죠. 2009년, <b>NoSQL</b>이라는 용어가 공식적으로 사용되기 시작했고, MongoDB, Cassandra, Redis 같은 비관계형 데이터베이스가 등장했어요. 지금은 SQL과 NoSQL을 용도에 맞게 함께 사용하는 시대예요.</div>
+<h2 class="section-title">KOI 도전 문제</h2>
+<div class="note-box"><span class="note-label"></span>
+<div style="font-weight:700;margin-bottom:6px;color:#1a2e4a">[KOI 유형 1] SQL 결과 예측</div>다음 테이블과 SQL 쿼리가 있어요.<br><br><b>students 테이블:</b><br>| id | name | grade | score |<br>| 1 | 김민수 | 1 | 85 |<br>| 2 | 이서연 | 2 | 92 |<br>| 3 | 박지훈 | 1 | 78 |<br>| 4 | 최유진 | 2 | 95 |<br>| 5 | 정하늘 | 1 | 88 |<br><br><b>쿼리:</b> SELECT name, score FROM students WHERE grade = 1 AND score >= 85 ORDER BY score DESC;<br><br><b>정답:</b><br>| name | score |<br>| 정하늘 | 88 |<br>| 김민수 | 85 |<br><br>1학년(grade=1)이면서 점수가 85 이상인 학생을 찾고, 점수 높은 순으로 정렬한 결과예요. 박지훈(78점)은 85 미만이라 제외돼요.</div>
+<div class="note-box"><span class="note-label"></span>
+<div style="font-weight:700;margin-bottom:6px;color:#1a2e4a">[KOI 유형 2] 기본키와 외래키 파악</div>다음 두 테이블을 보고 질문에 답하세요.<br><br><b>도서 테이블 (books):</b><br>| book_id | title | author |<br>| B001 | 해리포터 | J.K.롤링 |<br>| B002 | 반지의제왕 | J.R.R.톨킨 |<br><br><b>대출 테이블 (loans):</b><br>| loan_id | book_id | student_name | date |<br>| 1 | B001 | 김민수 | 2024-03-01 |<br>| 2 | B002 | 이서연 | 2024-03-02 |<br>| 3 | B001 | 박지훈 | 2024-03-03 |<br><br>(a) books 테이블의 기본키는? -- <b>book_id</b><br>(b) loans 테이블의 기본키는? -- <b>loan_id</b><br>(c) loans 테이블의 외래키는? -- <b>book_id</b> (books 테이블의 기본키를 참조)<br>(d) books와 loans의 관계는? -- <b>1:N</b> (한 책이 여러 번 대출될 수 있음)</div>
+<div class="note-box"><span class="note-label"></span>
+<div style="font-weight:700;margin-bottom:6px;color:#1a2e4a">[KOI 유형 3] C 코드로 SQL 연산 구현</div>다음 C 코드는 학생 배열에서 특정 조건의 학생을 찾는 함수예요. 이 함수가 수행하는 SQL 쿼리를 쓰세요.<br><br><code>int find(Student db[], int n, int min_score) {</code><br><code>    int i, cnt = 0;</code><br><code>    for (i = 0; i < n; i++) {</code><br><code>        if (db[i].score >= min_score) {</code><br><code>            printf("%s\n", db[i].name);</code><br><code>            cnt++;</code><br><code>        }</code><br><code>    }</code><br><code>    return cnt;</code><br><code>}</code><br><br><b>정답:</b> <code>SELECT name FROM students WHERE score >= min_score;</code><br>그리고 반환값 cnt는 SQL의 <code>SELECT COUNT(*) FROM students WHERE score >= min_score;</code>에 해당해요.</div>
+<h2 class="section-title">용어 사전</h2>
+<table class="trace"><thead><tr><th>용어</th><th>설명</th></tr></thead><tbody><tr><td><code>데이터베이스 (Database, DB)</code></td><td>여러 사람이 공유하여 사용할 목적으로 체계적으로 관리되는 데이터의 모음이에요.</td></tr><tr><td><code>DBMS (Database Management System)</code></td><td>데이터베이스를 관리하는 소프트웨어예요. MySQL, Oracle, SQLite 등이 있어요.</td></tr><tr><td><code>테이블 (Table)</code></td><td>관계형 데이터베이스에서 데이터를 저장하는 표 형태의 구조예요. 행(Row)과 열(Column)로 구성돼요.</td></tr><tr><td><code>기본키 (Primary Key, PK)</code></td><td>테이블에서 각 행을 유일하게 구별하는 값이에요. 중복되지 않고 비어 있을 수 없어요.</td></tr><tr><td><code>외래키 (Foreign Key, FK)</code></td><td>다른 테이블의 기본키를 참조하는 열이에요. 테이블 간의 관계를 만들어요.</td></tr><tr><td><code>SQL (Structured Query Language)</code></td><td>데이터베이스에 명령을 내리는 언어예요. SELECT, INSERT, UPDATE, DELETE 등의 명령이 있어요.</td></tr><tr><td><code>트랜잭션 (Transaction)</code></td><td>여러 작업을 하나의 묶음으로 처리하는 것이에요. 모두 성공하면 COMMIT, 하나라도 실패하면 ROLLBACK해요.</td></tr><tr><td><code>정규화 (Normalization)</code></td><td>데이터의 중복을 줄이기 위해 테이블을 나누는 설계 방법이에요. 데이터 불일치를 방지해요.</td></tr></tbody></table>
+<h2 class="section-title">한눈에 보기</h2>
+<div class="warmup-box"><div class="warmup-title">데이터베이스 기초 -- 한눈에 보기</div><div class="wq"><b>1.</b> 데이터베이스는 데이터를 체계적으로 저장하고, 빠르게 검색하고, 안전하게 관리하는 시스템이에요.</div><div class="wq"><b>2.</b> 관계형 데이터베이스(RDBMS)는 데이터를 표(테이블) 형태로 저장해요. 행(Row)=레코드, 열(Column)=필드예요.</div><div class="wq"><b>3.</b> 기본키(PK)는 각 행을 유일하게 구별하는 값이에요. 외래키(FK)는 테이블을 연결하는 다리예요.</div><div class="wq"><b>4.</b> SQL은 데이터베이스에 명령을 내리는 언어예요. CRUD: Create(INSERT), Read(SELECT), Update(UPDATE), Delete(DELETE).</div><div class="wq"><b>5.</b> WHERE로 조건 필터링, ORDER BY로 정렬, JOIN으로 테이블 합치기를 해요.</div><div class="wq"><b>6.</b> 정규화는 데이터 중복을 줄이기 위해 테이블을 나누는 방법이에요. 같은 정보는 한 곳에만 저장해요.</div><div class="wq"><b>7.</b> 트랜잭션은 여러 작업을 하나로 묶어요. ACID(원자성, 일관성, 격리성, 지속성)를 만족해야 해요.</div><div class="wq"><b>8.</b> NoSQL은 테이블이 아닌 다양한 형태(키-값, 문서, 그래프)로 데이터를 저장하는 데이터베이스예요.</div><div class="wq"><b>9.</b> C 구조체 배열은 메모리 속 간이 테이블이에요. 파일 I/O를 추가하면 간이 데이터베이스가 돼요.</div><div class="wq"><b>10.</b> 관계형 모델은 1970년 코드(Codd)가 제안했고, SQL은 1974년에 탄생했어요. 1995년 MySQL, 2009년 NoSQL 시대가 열렸어요.</div></div>
+<h2 class="section-title">10축 평가</h2>
+<div class="note-box"><span class="note-label"></span>
+<div style="font-weight:700;margin-bottom:6px;color:#1a2e4a">[10축 매핑] 이 단원에서 기른 능력</div>1. <b>컴퓨팅 사고력</b> -- 데이터를 테이블로 구조화하고, 정규화를 통해 중복을 제거하는 체계적 사고를 키웠어요.<br>2. <b>문제 해결력</b> -- SQL 쿼리로 원하는 데이터를 정확히 찾아내고, 트랜잭션으로 안전하게 처리하는 능력을 배웠어요.<br>3. <b>논리적 추론</b> -- WHERE 조건절의 AND/OR 논리, JOIN 조건, 정규화 판단 등 논리적 분석을 연습했어요.<br>4. <b>수학적 사고</b> -- 집합 관계(1:1, 1:N, N:M), 기본키의 유일성 조건, 정렬 알고리즘 등 수학적 개념을 활용했어요.<br>5. <b>코딩 능력</b> -- 구조체 배열로 테이블을 구현하고, 파일 I/O로 영구 저장하고, SQL 파서를 작성하는 C 코드를 배웠어요.<br>6. <b>디버깅 능력</b> -- 파일 NULL 체크 누락, 배열 범위 초과, 문자열 비교 오류(== vs strcmp) 등 실전 버그를 분석했어요.<br>7. <b>의사소통</b> -- 도서관 목록, 은행 이체 등 일상 비유로 데이터베이스 개념을 설명할 수 있게 되었어요.<br>8. <b>창의성</b> -- C 언어로 간이 SQL 파서와 미니 DB를 직접 설계하고 구현하는 창의적 과정을 경험했어요.<br>9. <b>정보 윤리</b> -- 개인 정보(전화번호, 성적) 관리의 중요성과 데이터 무결성의 가치를 이해했어요.<br>10. <b>융합 능력</b> -- 구조체(C 문법), 정렬 알고리즘(U0-35), 이진 검색, 파일 I/O 등 이전 지식을 데이터베이스와 통합했어요.</div>
+
+    <span class="page-num">2</span>
+  </div>
+</div>
+<div class="page">
+  <div class="chapter-page">
+    <div class="chapter-sidebar"></div>
+    <div class="chapter-accent-bar"></div>
+    <div style="flex:1; min-width:0; padding:50px 50px 40px 45px; position:relative;">
+      <div class="problems-chapter-ref">Chapter S-22: 데이터베이스 기초</div>
+      <h2 class="problems-title">연습 문제 (Practice Problems)</h2>
+
+        <div class="prob-card">
+          <div class="prob-header">
+            <span class="prob-num">1. 다음 빈칸에 알맞은 데이터베이스 용어를 쓰세요.(1) 데이터를 표 형태로 저장하는 데이터베이스를 ( &nbsp; &nbsp; ) 데이터베이스라고 해요.(2) 테이블에서 가로줄 한 줄(한 사람의 데이터)을 ( &nbsp; &nbsp; ) 또는 레코드라고 해요.(3) 테이블에서 세로줄 한 줄(데이터 항목)을 ( &nbsp; &nbsp; ) 또는 필드라고 해요.(4) 각 행을 유일하게 구별하는 값을 ( &nbsp; &nbsp; )라고 해요.(5) 데이터를 추가, 조회, 수정, 삭제하는 4가지 기본 연산을 ( &nbsp; &nbsp; )라고 해요.</span>
+            <span class="diff diff-basic">하</span>
+          </div>
+          <p class="prob-desc">다음 빈칸에 알맞은 데이터베이스 용어를 쓰세요.<br><br>(1) 데이터를 표 형태로 저장하는 데이터베이스를 ( &nbsp; &nbsp; ) 데이터베이스라고 해요.<br><br>(2) 테이블에서 가로줄 한 줄(한 사람의 데이터)을 ( &nbsp; &nbsp; ) 또는 레코드라고 해요.<br><br>(3) 테이블에서 세로줄 한 줄(데이터 항목)을 ( &nbsp; &nbsp; ) 또는 필드라고 해요.<br><br>(4) 각 행을 유일하게 구별하는 값을 ( &nbsp; &nbsp; )라고 해요.<br><br>(5) 데이터를 추가, 조회, 수정, 삭제하는 4가지 기본 연산을 ( &nbsp; &nbsp; )라고 해요.</p>
+          
+          <div class="contest-write-area" style="margin-top:12px;">
+            <div class="contest-write-label">코드 작성</div>
+            <textarea class="contest-textarea" rows="8" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+          </div>
+        </div>
+        <div class="prob-card">
+          <div class="prob-header">
+            <span class="prob-num">2. 다음 SQL 명령이 CRUD 중 어디에 해당하는지 쓰세요.(1) SELECT * FROM students; -- ( &nbsp; &nbsp; )(2) INSERT INTO students VALUES (1, '김민수', 85); -- ( &nbsp; &nbsp; )(3) DELETE FROM students WHERE id = 1; -- ( &nbsp; &nbsp; )(4) UPDATE students SET score = 90 WHERE id = 1; -- ( &nbsp; &nbsp; )</span>
+            <span class="diff diff-basic">하</span>
+          </div>
+          <p class="prob-desc">다음 SQL 명령이 CRUD 중 어디에 해당하는지 쓰세요.<br><br>(1) SELECT * FROM students; -- ( &nbsp; &nbsp; )<br><br>(2) INSERT INTO students VALUES (1, '김민수', 85); -- ( &nbsp; &nbsp; )<br><br>(3) DELETE FROM students WHERE id = 1; -- ( &nbsp; &nbsp; )<br><br>(4) UPDATE students SET score = 90 WHERE id = 1; -- ( &nbsp; &nbsp; )</p>
+          
+          <div class="contest-write-area" style="margin-top:12px;">
+            <div class="contest-write-label">코드 작성</div>
+            <textarea class="contest-textarea" rows="8" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+          </div>
+        </div>
+        <div class="prob-card">
+          <div class="prob-header">
+            <span class="prob-num">3. 다음 students 테이블에서 각 SQL 쿼리의 결과를 쓰세요.| id | name | grade | score || 1 | 김민수 | 1 | 85 || 2 | 이서연 | 2 | 92 || 3 | 박지훈 | 1 | 78 || 4 | 최유진 | 2 | 95 |(1) SELECT name FROM students WHERE grade = 2;(2) SELECT COUNT(*) FROM students WHERE score >= 90;(3) SELECT name, score FROM students ORDER BY score ASC;</span>
+            <span class="diff diff-basic">하</span>
+          </div>
+          <p class="prob-desc">다음 students 테이블에서 각 SQL 쿼리의 결과를 쓰세요.<br><br>| id | name | grade | score |<br>| 1 | 김민수 | 1 | 85 |<br>| 2 | 이서연 | 2 | 92 |<br>| 3 | 박지훈 | 1 | 78 |<br>| 4 | 최유진 | 2 | 95 |<br><br>(1) SELECT name FROM students WHERE grade = 2;<br><br>(2) SELECT COUNT(*) FROM students WHERE score >= 90;<br><br>(3) SELECT name, score FROM students ORDER BY score ASC;</p>
+          
+          <div class="contest-write-area" style="margin-top:12px;">
+            <div class="contest-write-label">코드 작성</div>
+            <textarea class="contest-textarea" rows="8" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+          </div>
+        </div>
+        <div class="prob-card">
+          <div class="prob-header">
+            <span class="prob-num">4. 다음은 정규화 전 테이블이에요. 이 테이블에서 발생할 수 있는 문제점 2가지를 설명하고, 어떻게 정규화하면 좋을지 테이블 구조를 제안하세요.| 학번 | 이름 | 과목 | 담당교사 | 점수 || 1 | 김민수 | 국어 | 김선생 | 85 || 1 | 김민수 | 수학 | 이선생 | 92 || 2 | 이서연 | 국어 | 김선생 | 78 || 2 | 이서연 | 수학 | 이선생 | 88 |(1) 데이터 중복 문제 2가지를 쓰세요.(2) 이 테이블을 2~3개의 테이블로 나누세요. (테이블 이름과 포함할 열을 쓰세요)</span>
+            <span class="diff diff-mid">중</span>
+          </div>
+          <p class="prob-desc">다음은 정규화 전 테이블이에요. 이 테이블에서 발생할 수 있는 문제점 2가지를 설명하고, 어떻게 정규화하면 좋을지 테이블 구조를 제안하세요.<br><br>| 학번 | 이름 | 과목 | 담당교사 | 점수 |<br>| 1 | 김민수 | 국어 | 김선생 | 85 |<br>| 1 | 김민수 | 수학 | 이선생 | 92 |<br>| 2 | 이서연 | 국어 | 김선생 | 78 |<br>| 2 | 이서연 | 수학 | 이선생 | 88 |<br><br>(1) 데이터 중복 문제 2가지를 쓰세요.<br><br>(2) 이 테이블을 2~3개의 테이블로 나누세요. (테이블 이름과 포함할 열을 쓰세요)</p>
+          
+          <div class="contest-write-area" style="margin-top:12px;">
+            <div class="contest-write-label">코드 작성</div>
+            <textarea class="contest-textarea" rows="8" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+          </div>
+        </div>
+        <div class="prob-card">
+          <div class="prob-header">
+            <span class="prob-num">5. 은행 이체 트랜잭션에서 다음 상황이 발생하면 어떻게 처리해야 하는지 설명하세요.A 계좌 잔액: 50,000원B 계좌 잔액: 30,000원A에서 B로 20,000원 이체(1) 모든 단계가 성공하면 A와 B의 잔액은 각각 얼마인가요?(2) 1단계(A에서 출금)는 성공했는데 2단계(B에 입금)가 실패하면 어떻게 해야 하나요?(3) 이 과정에서 ACID의 어떤 속성이 적용되는지 설명하세요.</span>
+            <span class="diff diff-mid">중</span>
+          </div>
+          <p class="prob-desc">은행 이체 트랜잭션에서 다음 상황이 발생하면 어떻게 처리해야 하는지 설명하세요.<br><br>A 계좌 잔액: 50,000원<br>B 계좌 잔액: 30,000원<br>A에서 B로 20,000원 이체<br><br>(1) 모든 단계가 성공하면 A와 B의 잔액은 각각 얼마인가요?<br><br>(2) 1단계(A에서 출금)는 성공했는데 2단계(B에 입금)가 실패하면 어떻게 해야 하나요?<br><br>(3) 이 과정에서 ACID의 어떤 속성이 적용되는지 설명하세요.</p>
+          
+          <div class="contest-write-area" style="margin-top:12px;">
+            <div class="contest-write-label">코드 작성</div>
+            <textarea class="contest-textarea" rows="8" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+          </div>
+        </div>
+        <div class="prob-card">
+          <div class="prob-header">
+            <span class="prob-num">6. 다음 C 코드를 보고 질문에 답하세요.typedef struct {&nbsp;&nbsp;int id;&nbsp;&nbsp;char name[20];&nbsp;&nbsp;int score;} Student;Student db[100];int count = 0;(1) 이 C 코드에서 Student 구조체의 각 필드는 SQL 테이블의 무엇에 해당하나요?(2) db[100] 배열은 SQL의 무엇에 해당하나요?(3) 이 방식의 한계점을 데이터베이스와 비교해서 2가지 쓰세요.</span>
+            <span class="diff diff-mid">중</span>
+          </div>
+          <p class="prob-desc">다음 C 코드를 보고 질문에 답하세요.<br><br><code>typedef struct {<br>&nbsp;&nbsp;int id;<br>&nbsp;&nbsp;char name[20];<br>&nbsp;&nbsp;int score;<br>} Student;<br><br>Student db[100];<br>int count = 0;</code><br><br>(1) 이 C 코드에서 Student 구조체의 각 필드는 SQL 테이블의 무엇에 해당하나요?<br><br>(2) db[100] 배열은 SQL의 무엇에 해당하나요?<br><br>(3) 이 방식의 한계점을 데이터베이스와 비교해서 2가지 쓰세요.</p>
+          
+          <div class="contest-write-area" style="margin-top:12px;">
+            <div class="contest-write-label">코드 작성</div>
+            <textarea class="contest-textarea" rows="8" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+          </div>
+        </div>
+        <div class="prob-card">
+          <div class="prob-header">
+            <span class="prob-num">7. 다음 C 함수는 구조체 배열에서 특정 학년의 학생 중 최고 점수를 찾아요. 이 함수에 해당하는 SQL 쿼리를 작성하고, 함수의 버그를 찾아 수정하세요.int find_max_score(Student db[], int n, int target_grade) {&nbsp;&nbsp;int max = 0;  /* 버그? */&nbsp;&nbsp;int i;&nbsp;&nbsp;for (i = 0; i &nbsp;&nbsp;&nbsp;&nbsp;if (db[i].grade = target_grade) {  /* 버그? */&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if (db[i].score > max) {&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;max = db[i].score;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;&nbsp;}&nbsp;&nbsp;return max;}(1) 이 함수에 해당하는 SQL 쿼리를 쓰세요.(2) 버그 3개를 모두 찾아서 설명하고 수정하세요.</span>
+            <span class="diff diff-hard">상</span>
+          </div>
+          <p class="prob-desc">다음 C 함수는 구조체 배열에서 특정 학년의 학생 중 최고 점수를 찾아요. 이 함수에 해당하는 SQL 쿼리를 작성하고, 함수의 버그를 찾아 수정하세요.<br><br><code>int find_max_score(Student db[], int n, int target_grade) {<br>&nbsp;&nbsp;int max = 0;  /* 버그? */<br>&nbsp;&nbsp;int i;<br>&nbsp;&nbsp;for (i = 0; i <= n; i++) {  /* 버그? */<br>&nbsp;&nbsp;&nbsp;&nbsp;if (db[i].grade = target_grade) {  /* 버그? */<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if (db[i].score > max) {<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;max = db[i].score;<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<br>&nbsp;&nbsp;&nbsp;&nbsp;}<br>&nbsp;&nbsp;}<br>&nbsp;&nbsp;return max;<br>}</code><br><br>(1) 이 함수에 해당하는 SQL 쿼리를 쓰세요.<br><br>(2) 버그 3개를 모두 찾아서 설명하고 수정하세요.</p>
+          
+          <div class="contest-write-area" style="margin-top:12px;">
+            <div class="contest-write-label">코드 작성</div>
+            <textarea class="contest-textarea" rows="8" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+          </div>
+        </div>
+        <div class="prob-card">
+          <div class="prob-header">
+            <span class="prob-num">8. 학교 도서관 관리 프로그램을 설계하려고 해요. 다음 질문에 답하세요.(1) 필요한 테이블 3개의 이름과 각 테이블에 포함할 열(필드)을 설계하세요. (기본키와 외래키를 표시하세요)(2) '김민수 학생이 빌린 책의 제목을 모두 조회'하는 SQL 쿼리를 작성하세요. (JOIN을 사용하세요)(3) 대출과 반납을 하나의 트랜잭션으로 처리해야 하는 이유를 ACID 속성과 연결해서 설명하세요.(4) 이 프로그램을 C 구조체 배열로 구현한다면, 어떤 구조체가 필요하고 어떤 한계가 있을지 설명하세요.</span>
+            <span class="diff diff-hard">상</span>
+          </div>
+          <p class="prob-desc">학교 도서관 관리 프로그램을 설계하려고 해요. 다음 질문에 답하세요.<br><br>(1) 필요한 테이블 3개의 이름과 각 테이블에 포함할 열(필드)을 설계하세요. (기본키와 외래키를 표시하세요)<br><br>(2) '김민수 학생이 빌린 책의 제목을 모두 조회'하는 SQL 쿼리를 작성하세요. (JOIN을 사용하세요)<br><br>(3) 대출과 반납을 하나의 트랜잭션으로 처리해야 하는 이유를 ACID 속성과 연결해서 설명하세요.<br><br>(4) 이 프로그램을 C 구조체 배열로 구현한다면, 어떤 구조체가 필요하고 어떤 한계가 있을지 설명하세요.</p>
+          
+          <div class="contest-write-area" style="margin-top:12px;">
+            <div class="contest-write-label">코드 작성</div>
+            <textarea class="contest-textarea" rows="8" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+          </div>
+        </div>
+      <span class="page-num">3</span>
+    </div>
+  </div>
+</div>
+</body>
+</html>

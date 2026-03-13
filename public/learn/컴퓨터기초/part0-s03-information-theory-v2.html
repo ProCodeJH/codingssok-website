@@ -1,0 +1,1380 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>코딩쏙 교재 — 정보 이론 — 데이터는 얼마나 줄일 수 있을까?</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+
+  :root {
+    --navy: #1a2e4a;
+    --navy-mid: #2c4a6e;
+    --navy-light: #3d6590;
+    --orange: #e07830;
+    --orange-light: #f5e6d8;
+    --white: #ffffff;
+    --bg: #f7f8fa;
+    --bg-warm: #faf9f7;
+    --gray-50: #f9fafb;
+    --gray-100: #f3f4f6;
+    --gray-200: #e5e7eb;
+    --gray-300: #d1d5db;
+    --gray-400: #9ca3af;
+    --gray-500: #6b7280;
+    --gray-600: #4b5563;
+    --gray-700: #374151;
+    --gray-800: #1f2937;
+    --text: #2d3748;
+    --green: #16a34a;
+    --green-bg: #dcfce7;
+    --red: #dc2626;
+    --red-bg: #fee2e2;
+    --blue: #2563eb;
+    --blue-bg: #dbeafe;
+    --yellow-bg: #fef9c3;
+    --font: 'Noto Sans KR', sans-serif;
+    --mono: 'JetBrains Mono', 'Consolas', monospace;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: var(--font); background: #e8eaed; font-size: 15px; }
+
+  /* ========== PAGE ========== */
+  .page {
+    width: 210mm;
+    min-height: 295mm;
+    margin: 24px auto;
+    background: var(--white);
+    box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* ========== PAGE 1: CHAPTER START ========== */
+  .chapter-page {
+    display: flex;
+    min-height: 295mm;
+  }
+
+  .chapter-sidebar {
+    width: 10px;
+    background: var(--navy);
+    flex-shrink: 0;
+  }
+
+  .chapter-accent-bar {
+    width: 7px;
+    background: var(--orange);
+    flex-shrink: 0;
+  }
+
+  .chapter-body {
+    flex: 1;
+    padding: 70px 65px 50px 55px;
+    position: relative;
+  }
+
+  .chapter-watermark {
+    position: absolute;
+    top: -10px;
+    right: -15px;
+    font-size: 280px;
+    font-weight: 900;
+    color: rgba(180,195,212,0.35);
+    line-height: 1;
+    pointer-events: none;
+    letter-spacing: -10px;
+  }
+
+  .chapter-label {
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--navy-mid);
+    letter-spacing: 2px;
+    margin-bottom: 4px;
+  }
+
+  .chapter-title {
+    font-size: 44px;
+    font-weight: 900;
+    color: var(--navy);
+    line-height: 1.15;
+    margin-bottom: 12px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .chapter-sub {
+    font-size: 16px;
+    color: var(--gray-500);
+    font-weight: 400;
+    margin-bottom: 20px;
+    padding-bottom: 28px;
+    border-bottom: 1px solid var(--gray-200);
+  }
+
+  /* Learning objectives */
+  .obj-title {
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--navy);
+    margin-bottom: 16px;
+    margin-top: 32px;
+  }
+
+  .obj-list {
+    list-style: none;
+    margin-bottom: 40px;
+  }
+
+  .obj-list li {
+    padding: 5px 0 5px 24px;
+    position: relative;
+    font-size: 15px;
+    color: var(--gray-700);
+    line-height: 1.6;
+  }
+
+  .obj-list li::before {
+    content: '•';
+    position: absolute;
+    left: 8px;
+    color: var(--navy-mid);
+    font-weight: 700;
+  }
+
+  /* Prerequisites flow */
+  .prereq-title {
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--navy);
+    margin-bottom: 18px;
+  }
+
+  .prereq-flow {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    margin-bottom: 44px;
+  }
+
+  .prereq-item {
+    padding: 9px 22px;
+    border: 1.5px solid var(--gray-300);
+    border-radius: 50px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--gray-600);
+    background: var(--white);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+  }
+
+  .prereq-item.current {
+    border-color: var(--navy);
+    color: var(--navy);
+    font-weight: 700;
+    background: #edf2f7;
+    box-shadow: 0 2px 6px rgba(26,46,74,0.12);
+  }
+
+  .prereq-arrow {
+    width: 36px;
+    text-align: center;
+    color: var(--gray-300);
+    font-size: 18px;
+    font-weight: 300;
+  }
+
+  /* Predict box */
+  .predict-box {
+    background: var(--gray-50);
+    border: 1.5px solid var(--gray-200);
+    border-radius: 12px;
+    padding: 24px 28px;
+  }
+
+  .predict-label {
+    display: inline-block;
+    background: var(--orange);
+    color: var(--white);
+    font-size: 12px;
+    font-weight: 600;
+    padding: 3px 12px;
+    border-radius: 4px;
+    margin-bottom: 14px;
+    letter-spacing: 0.5px;
+  }
+
+  .predict-q {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--navy);
+    margin-bottom: 16px;
+  }
+
+  .predict-code {
+    background: var(--white);
+    border: 1px solid var(--gray-200);
+    border-radius: 8px;
+    padding: 14px 18px;
+    font-family: var(--mono);
+    font-size: 13px;
+    line-height: 1.65;
+    color: var(--gray-700);
+  }
+
+  /* ========== PAGE 2: CORE CONTENT ========== */
+  .content-page {
+    padding: 55px 65px;
+  }
+
+  .unit-header-bar {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    margin-bottom: 8px;
+  }
+
+  .unit-tag {
+    font-size: 12px;
+    color: var(--orange);
+    font-weight: 600;
+    letter-spacing: 1px;
+  }
+
+  .unit-title-sm {
+    font-size: 14px;
+    color: var(--gray-400);
+    font-weight: 400;
+  }
+
+  .section-title {
+    font-size: 24px;
+    font-weight: 800;
+    color: var(--navy);
+    margin-bottom: 24px;
+    margin-top: 8px;
+    padding-left: 16px;
+    border-left: 5px solid var(--orange);
+  }
+
+  p {
+    font-size: 15.5px;
+    line-height: 1.9;
+    color: var(--text);
+    margin-bottom: 18px;
+  }
+
+  p code {
+    font-family: var(--mono);
+    font-size: 13.5px;
+    background: #f1f3f5;
+    padding: 2px 7px;
+    border-radius: 4px;
+    color: var(--navy);
+    font-weight: 500;
+  }
+
+  /* Code block */
+  .code-wrap {
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    border: 1px solid var(--gray-200);
+    margin: 22px 0;
+  }
+
+  .code-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 9px 18px;
+    background: var(--navy);
+    font-size: 12px;
+  }
+
+  .code-bar-lang {
+    font-family: var(--mono);
+    font-weight: 600;
+    color: var(--white);
+  }
+
+  .code-bar-file {
+    color: rgba(255,255,255,0.6);
+    font-weight: 400;
+  }
+
+  .code-body {
+    background: #f8f9fb;
+    padding: 20px 0;
+    font-family: var(--mono);
+    font-size: 13.5px;
+    line-height: 1.75;
+    border: 1px solid var(--gray-200);
+    border-top: none;
+    border-radius: 0 0 12px 12px;
+  }
+
+  .code-line {
+    display: flex;
+    padding: 0 20px;
+  }
+
+  .code-line:hover {
+    background: #f0f4f8;
+  }
+
+  .code-line.highlighted {
+    background: #fff8e1;
+  }
+
+  .ln {
+    width: 30px;
+    text-align: right;
+    color: #b8bfc8;
+    font-size: 12px;
+    margin-right: 18px;
+    user-select: none;
+    flex-shrink: 0;
+    padding-top: 1px;
+  }
+
+  .lc { flex: 1; }
+
+  /* syntax */
+  .s-pp { color: #8b5cf6; font-weight: 600; }
+  .s-str { color: #d97706; }
+  .s-type { color: #2563eb; font-weight: 500; }
+  .s-kw { color: #7c3aed; font-weight: 500; }
+  .s-fn { color: #059669; font-weight: 500; }
+  .s-num { color: #dc2626; }
+  .s-cm { color: #9ca3af; font-style: italic; }
+
+  /* Output block */
+  .output-wrap {
+    border-radius: 10px;
+    overflow: hidden;
+    margin: 10px 0 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    border: 1px solid #d1d5db;
+  }
+
+  .output-bar {
+    padding: 9px 18px;
+    background: #374151;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--white);
+    letter-spacing: 0.5px;
+  }
+
+  .output-body {
+    padding: 16px 20px;
+    font-family: var(--mono);
+    font-size: 13.5px;
+    line-height: 1.7;
+    color: var(--gray-800);
+    background: #f1f5f9;
+    border: 1px solid var(--gray-200);
+    border-top: none;
+    border-radius: 0 0 10px 10px;
+  }
+
+  /* Callout */
+  .tip {
+    margin: 28px 0;
+    padding: 18px 24px;
+    background: #dbeafe;
+    border-left: 5px solid #2563eb;
+    border-radius: 0 12px 12px 0;
+    font-size: 14.5px;
+    line-height: 1.8;
+    color: var(--text);
+  }
+
+  .tip-label {
+    font-weight: 700;
+    color: #2563eb;
+    font-size: 13px;
+    display: block;
+    margin-bottom: 4px;
+  }
+
+  .warn {
+    margin: 28px 0;
+    padding: 18px 24px;
+    background: #fef3c7;
+    border-left: 5px solid #d97706;
+    border-radius: 0 12px 12px 0;
+    font-size: 14.5px;
+    line-height: 1.8;
+  }
+
+  .warn-label {
+    font-weight: 700;
+    color: #d97706;
+    font-size: 13px;
+    display: block;
+    margin-bottom: 4px;
+  }
+
+  .note-box {
+    margin: 28px 0;
+    padding: 18px 24px;
+    background: #e2e8f0;
+    border-left: 5px solid #64748b;
+    border-radius: 0 12px 12px 0;
+    font-size: 14.5px;
+    line-height: 1.8;
+  }
+
+  .note-label {
+    font-weight: 700;
+    color: var(--gray-600);
+    font-size: 13px;
+    display: block;
+    margin-bottom: 4px;
+  }
+
+  /* Trace table */
+  table.trace {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    margin: 28px 0;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+    font-size: 14px;
+  }
+
+  table.trace th {
+    background: var(--navy);
+    color: var(--white);
+    padding: 10px 16px;
+    text-align: left;
+    font-weight: 500;
+    font-size: 13px;
+  }
+
+  table.trace td {
+    padding: 10px 16px;
+    border-bottom: 1px solid var(--gray-200);
+    color: var(--gray-700);
+  }
+
+  table.trace tr:nth-child(even) td { background: var(--gray-50); }
+  table.trace tr:last-child td { border-bottom: none; }
+
+  table.trace td code {
+    font-family: var(--mono);
+    font-size: 12.5px;
+    background: #eef1f5;
+    padding: 2px 6px;
+    border-radius: 4px;
+    color: var(--navy);
+  }
+
+  /* ========== PAGE 3: PROBLEMS ========== */
+  .problems-header {
+    margin-bottom: 8px;
+  }
+
+  .problems-chapter-ref {
+    font-size: 13px;
+    color: var(--gray-500);
+    margin-bottom: 4px;
+  }
+
+  .problems-title {
+    font-size: 28px;
+    font-weight: 800;
+    color: var(--navy);
+    margin-bottom: 24px;
+  }
+
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 16px;
+  }
+
+  .prob-card {
+    background: var(--white);
+    border: 1px solid var(--gray-200);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 3px 15px rgba(0,0,0,0.06);
+  }
+
+  .prob-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 16px;
+    background: var(--navy);
+  }
+
+  .prob-num {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--white);
+  }
+
+  .diff {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    font-size: 12px;
+    font-weight: 800;
+  }
+
+  .diff-basic { background: #22c55e; color: white; }
+  .diff-mid { background: #f59e0b; color: white; }
+  .diff-hard { background: #ef4444; color: white; }
+
+  .prob-desc {
+    font-size: 13.5px;
+    line-height: 1.65;
+    color: var(--gray-600);
+    margin-bottom: 10px;
+    padding: 14px 16px 0;
+  }
+
+  .prob-code {
+    background: var(--gray-50);
+    border: 1px solid var(--gray-200);
+    border-radius: 6px;
+    padding: 10px 14px;
+    margin: 0 16px 16px;
+    font-family: var(--mono);
+    font-size: 12.5px;
+    line-height: 1.55;
+    color: var(--gray-600);
+  }
+
+  /* Competition section */
+  .comp-section {
+    margin-top: 32px;
+    padding-top: 24px;
+    border-top: 2px solid var(--navy);
+  }
+
+  .comp-title {
+    font-size: 22px;
+    font-weight: 800;
+    color: var(--navy);
+    margin-bottom: 20px;
+  }
+
+  .comp-card {
+    background: var(--white);
+    border: 1.5px solid var(--gray-200);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 18px rgba(0,0,0,0.06);
+  }
+
+  .comp-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 16px;
+    background: #0f766e;
+  }
+
+  .comp-header .comp-name {
+    color: var(--white);
+    font-size: 15px;
+    font-weight: 700;
+    margin: 0;
+  }
+
+  .comp-inner {
+    padding: 14px 18px 18px;
+  }
+
+  .comp-badge {
+    display: inline-block;
+    padding: 3px 12px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 700;
+  }
+
+  .badge-bj { background: #93c5fd; color: #1e3a5f; }
+  .badge-cu { background: #c4b5fd; color: #3b1f7e; }
+  .badge-pg { background: #7dd3fc; color: #0c4a6e; }
+
+  .comp-name {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--navy);
+    margin-bottom: 6px;
+  }
+
+  .comp-desc {
+    font-size: 14px;
+    color: var(--gray-600);
+    line-height: 1.7;
+    margin-bottom: 14px;
+  }
+
+  .io-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+
+  .io-card {
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid var(--gray-200);
+  }
+
+  .io-h {
+    padding: 6px 14px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--gray-600);
+    background: #e2e8f0;
+  }
+
+  .io-c {
+    padding: 10px 14px;
+    font-family: var(--mono);
+    font-size: 13px;
+    line-height: 1.5;
+    background: var(--white);
+  }
+
+  /* ========== DEBUG LAB ========== */
+  .debug-section {
+    margin: 24px 0;
+    border: 2px solid var(--red);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+
+  .debug-bar {
+    background: var(--red);
+    color: var(--white);
+    padding: 10px 20px;
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 1px;
+  }
+
+  .debug-body {
+    padding: 20px;
+    background: #fef2f2;
+  }
+
+  /* 10축 connection */
+  .connect-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 16px;
+    margin: 28px 0;
+  }
+
+  .connect-card {
+    border-radius: 12px;
+    padding: 20px;
+    text-align: center;
+    border: 1px solid var(--gray-200);
+    box-shadow: 0 3px 14px rgba(0,0,0,0.05);
+  }
+
+  .connect-card h5 {
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 8px;
+  }
+
+  .connect-card p {
+    font-size: 13px;
+    margin: 0;
+    color: var(--gray-600);
+    line-height: 1.6;
+  }
+
+  .cc1 { border-top: 3px solid #8b5cf6; }
+  .cc1 h5 { color: #8b5cf6; }
+  .cc2 { border-top: 3px solid var(--green); }
+  .cc2 h5 { color: var(--green); }
+  .cc3 { border-top: 3px solid var(--navy); }
+  .cc3 h5 { color: var(--navy); }
+
+  /* PAGE NUMBER */
+  .page-num {
+    position: absolute;
+    bottom: 20px;
+    right: 30px;
+    font-size: 12px;
+    color: var(--gray-400);
+  }
+
+  /* WARMUP */
+  .warmup-box {
+    background: #e0e7f1;
+    border-radius: 12px;
+    padding: 24px 28px;
+    margin: 28px 0;
+    border: 2px solid #c7d2e0;
+  }
+
+  .warmup-title {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--navy);
+    margin-bottom: 14px;
+  }
+
+  .wq {
+    padding: 9px 16px;
+    background: var(--white);
+    border-radius: 8px;
+    margin-bottom: 8px;
+    font-size: 14px;
+    border: 1px solid var(--gray-200);
+    color: var(--gray-700);
+  }
+
+  .wq b { color: var(--navy); margin-right: 6px; }
+  .wq .hint { color: var(--gray-400); font-size: 13px; }
+
+  /* ===== CONTEST PROBLEMS PAGE ===== */
+  .contest-page-wrap .chapter-page {
+    min-height: auto;
+  }
+
+  .contest-page-wrap .chapter-page > div:last-child {
+    min-width: 0;
+    overflow-wrap: break-word;
+    word-break: break-word;
+  }
+
+  .contest-card {
+    background: white;
+    border: 1.5px solid var(--gray-200);
+    border-radius: 12px;
+    margin-bottom: 28px;
+    overflow: hidden;
+    break-inside: avoid;
+  }
+
+  .contest-header {
+    background: var(--navy);
+    color: white;
+    padding: 14px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .contest-num-source {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .contest-num {
+    font-weight: 700;
+    font-size: 16px;
+  }
+
+  .contest-source {
+    background: rgba(255,255,255,0.15);
+    padding: 3px 10px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 500;
+  }
+
+  .contest-body {
+    padding: 20px 24px 24px;
+  }
+
+  .contest-question {
+    font-size: 15px;
+    line-height: 1.7;
+    color: var(--text);
+    margin: 0 0 16px;
+    word-break: break-word;
+    overflow-wrap: break-word;
+  }
+
+  .contest-expected {
+    background: #1e293b;
+    border-radius: 8px;
+    overflow: hidden;
+    margin-bottom: 20px;
+  }
+
+  .contest-expected-label {
+    background: #334155;
+    color: #94a3b8;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 6px 14px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .contest-expected-body {
+    color: #e2e8f0;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    line-height: 1.6;
+    padding: 12px 16px;
+    margin: 0;
+    white-space: pre;
+  }
+
+  .contest-write-area {
+    border: 2px dashed var(--gray-300);
+    border-radius: 10px;
+    overflow: hidden;
+    transition: border-color 0.2s;
+  }
+
+  .contest-write-area:focus-within {
+    border-color: var(--orange);
+    border-style: solid;
+  }
+
+  .contest-write-label {
+    background: var(--bg);
+    color: var(--gray-500);
+    font-size: 12px;
+    font-weight: 600;
+    padding: 8px 14px;
+    border-bottom: 1px solid var(--gray-200);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .contest-textarea {
+    width: 100%;
+    min-height: 200px;
+    padding: 16px 18px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    line-height: 1.7;
+    color: var(--text);
+    background: #fafbfc;
+    border: none;
+    outline: none;
+    resize: vertical;
+    tab-size: 4;
+    box-sizing: border-box;
+  }
+
+  .contest-textarea::placeholder {
+    color: var(--gray-300);
+  }
+
+  @media print {
+    body { background: white; }
+    .page { box-shadow: none; margin: 0; page-break-after: always; }
+    .contest-textarea { border: 1px solid var(--gray-300); min-height: 180px; }
+  }
+
+</style>
+</head>
+<body>
+
+<div class="page">
+  <div class="chapter-page">
+    <div class="chapter-sidebar"></div>
+    <div class="chapter-accent-bar"></div>
+    <div class="chapter-body">
+      <div class="chapter-watermark">S-03</div>
+      <div class="chapter-label">Chapter S-03</div>
+      <h1 class="chapter-title">정보 이론</h1>
+      <p class="chapter-sub">정보의 양을 측정하는 방법과, 데이터를 줄이는 압축의 원리를 배워요. 허프만 코딩으로 직접 압축도 해 봐요!</p>
+
+      <h3 class="obj-title">이 유닛에서 배우는 것</h3>
+      <ul class="obj-list">
+        <li>'정보량'이 뭔지 알고, 확률이 낮을수록 정보가 많다는 걸 이해해요.</li>
+        <li>비트(bit)가 정보의 단위라는 걸 알아요.</li>
+        <li>엔트로피가 뭔지 직관적으로 이해해요.</li>
+        <li>고정 길이 코드와 가변 길이 코드의 차이를 알아요.</li>
+        <li>허프만 코딩으로 직접 압축 코드를 만들 수 있어요.</li>
+        <li>[심화] 접두어 코드의 조건과 압축 한계를 이해해요.</li>
+      </ul>
+
+      <h3 class="prereq-title">선수 학습</h3>
+      <div class="prereq-flow">
+        <div class="prereq-item">U0-03 '0과 1의 세계 (비트)'를 배웠다</div><div class="prereq-arrow">→</div>
+        <div class="prereq-item">U0-04 '2진수 ↔ 10진수 변환'을 배웠다</div><div class="prereq-arrow">→</div>
+        <div class="prereq-item current">확률의 기본 개념 (일어날 가능성)</div>
+      </div>
+
+      
+
+      <span class="page-num">1</span>
+    </div>
+  </div>
+</div>
+<div class="page">
+  <div class="content-page">
+    <div class="unit-header-bar">
+      <span class="unit-tag">UNIT S-03</span>
+      <span class="unit-title-sm">정보 이론</span>
+    </div>
+<h2 class="section-title">정보란 뭘까?</h2>
+
+<p>'내일 해가 뜬다'는 당연한 말이에요. 새로운 정보가 거의 없어요. 하지만 '내일 서울에 눈이 3미터 쌓인다'는 엄청 놀라운 소식이에요. 일어날 확률이 낮은 일일수록, 그 일이 실제로 일어났을 때 전달되는 <b>정보의 양이 많아요</b>.</p>
+<div class="note-box"><span class="note-label">[핵심] 정보량의 직관</span>
+<b>확률이 낮은 사건</b> = 놀라운 소식 = <b>정보가 많다</b><br><b>확률이 높은 사건</b> = 당연한 소식 = <b>정보가 적다</b><br><br>예시:<br>• 동전 앞면 (확률 50%) → 약간 놀라움 → 정보 보통<br>• 주사위 1 (확률 약 17%) → 꽤 놀라움 → 정보 많음<br>• 로또 1등 (확률 0.000012%) → 엄청 놀라움 → 정보 아주 많음</div>
+<h2 class="section-title">정보의 단위 — 비트</h2>
+<p>정보의 양을 숫자로 표현할 수 있을까요? 네! 단위는 우리가 잘 아는 <b>비트(bit)</b>예요.</p>
+<div class="note-box"><span class="note-label">[핵심] 1비트 = 예/아니오 1번</span>
+<b>1비트</b> = 두 가지 중 하나를 알려주는 정보량<br><br>동전 던지기: 앞 또는 뒤 → 결과를 알려면 <b>1비트</b><br>4지선다 문제: 정답을 알려면 <b>2비트</b> (00, 01, 10, 11)<br>8가지 중 하나: <b>3비트</b> (000 ~ 111)<br><br><b>공식: n가지 중 하나 → log₂(n) 비트</b><br><br>2가지 → log₂(2) = 1비트<br>4가지 → log₂(4) = 2비트<br>8가지 → log₂(8) = 3비트<br>256가지 → log₂(256) = 8비트 = 1바이트</div>
+<div class="tip"><span class="tip-label">[팁] log₂를 쉽게 계산하는 법</span>
+log₂(n) = '2를 몇 번 곱해야 n이 되나?'<br><br>2¹ = 2 → log₂(2) = 1<br>2² = 4 → log₂(4) = 2<br>2³ = 8 → log₂(8) = 3<br>2⁴ = 16 → log₂(16) = 4<br>2¹⁰ = 1024 → log₂(1024) = 10<br><br>2의 거듭제곱이 아닌 수:<br>log₂(6) ≈ 2.58 → 6가지를 구별하려면 약 2.58비트 필요<br>(실제로는 3비트를 써야 해요. 비트는 정수니까요)</div>
+<table class="trace"><thead><tr><th>경우의 수 (n)</th><th>log₂(n)</th><th>필요한 비트 수 (올림)</th><th>표현 가능 범위</th></tr></thead><tbody><tr><td>2 (동전)</td><td>1.00</td><td>1비트</td><td>0~1</td></tr><tr><td>4 (4지선다)</td><td>2.00</td><td>2비트</td><td>0~3</td></tr><tr><td>6 (주사위)</td><td>2.58</td><td>3비트</td><td>0~7 (2개 남음)</td></tr><tr><td>8</td><td>3.00</td><td>3비트</td><td>0~7</td></tr><tr><td>10 (십진 숫자)</td><td>3.32</td><td>4비트</td><td>0~15 (6개 남음)</td></tr><tr><td>16</td><td>4.00</td><td>4비트</td><td>0~15</td></tr><tr><td>26 (알파벳)</td><td>4.70</td><td>5비트</td><td>0~31 (6개 남음)</td></tr><tr><td>128 (ASCII)</td><td>7.00</td><td>7비트</td><td>0~127</td></tr><tr><td>256 (바이트)</td><td>8.00</td><td>8비트</td><td>0~255</td></tr></tbody></table>
+<h2 class="section-title">스무고개로 이해하는 정보</h2>
+
+<p>스무고개에서 질문 하나의 답은 '예' 또는 '아니오' → <b>1비트</b>예요. 가능한 답이 1024개면 최소 10번(10비트)이면 찾을 수 있어요. 매 질문으로 가능성을 절반씩 줄이면 되니까요.</p>
+<div class="note-box"><span class="note-label">[예시] 1~16 중 숫자 맞히기</span>
+상대가 1~16 중 하나를 골랐어요. 최소 몇 번 물어야 할까요?<br><br>질문 1: '8보다 크니?' → 절반 제거 (16→8개)<br>질문 2: '12보다 크니?' 또는 '4보다 크니?' → (8→4개)<br>질문 3: → (4→2개)<br>질문 4: → (2→1개) → 정답!<br><br>16가지 → <b>4번</b> = log₂(16) = 4비트<br><br>매번 가능성을 정확히 반으로 나누는 게 <b>최적의 전략</b>이에요.<br>이것이 이진 탐색(Binary Search)의 원리이기도 해요!</div>
+<h2 class="section-title">확률과 정보량</h2>
+<p>모든 경우가 동일한 확률이 아닐 때는 어떨까요? 확률에 따라 정보량이 달라져요.</p>
+<div class="note-box"><span class="note-label">[핵심] 정보량 공식</span>
+사건의 확률이 P일 때, 정보량 I는:<br><br><b>I = log₂(1/P) 비트</b><br><br>예시:<br>• 동전 앞면 (P=1/2): I = log₂(2) = <b>1비트</b><br>• 주사위 1 (P=1/6): I = log₂(6) ≈ <b>2.58비트</b><br>• 52장 카드에서 스페이드A (P=1/52): I = log₂(52) ≈ <b>5.7비트</b><br><br>확률이 낮을수록 → 1/P가 커지고 → 정보량이 커져요.</div>
+<table class="trace"><thead><tr><th>사건</th><th>확률 P</th><th>1/P</th><th>정보량 (비트)</th></tr></thead><tbody><tr><td>확실한 일 (해가 뜸)</td><td>1</td><td>1</td><td>0</td></tr><tr><td>동전 앞면</td><td>1/2</td><td>2</td><td>1</td></tr><tr><td>주사위 1</td><td>1/6</td><td>6</td><td>2.58</td></tr><tr><td>트럼프 카드 1장</td><td>1/52</td><td>52</td><td>5.7</td></tr><tr><td>로또 1등</td><td>1/8,145,060</td><td>8백만</td><td>약 23</td></tr></tbody></table>
+<table class="trace"><thead><tr><th>사건</th><th>확률 P</th><th>1/P 계산</th><th>log₂(1/P)</th><th>정보량(비트)</th></tr></thead><tbody><tr><td>내일 해가 뜸</td><td>1.0</td><td>1/1.0 = 1</td><td>log₂(1) = 0</td><td>0</td></tr><tr><td>동전 앞면</td><td>0.5</td><td>1/0.5 = 2</td><td>log₂(2) = 1</td><td>1</td></tr><tr><td>주사위 3</td><td>0.167</td><td>1/0.167 ≈ 6</td><td>log₂(6) ≈ 2.58</td><td>2.58</td></tr><tr><td>4지선다 정답</td><td>0.25</td><td>1/0.25 = 4</td><td>log₂(4) = 2</td><td>2</td></tr><tr><td>한 달 중 특정 날짜</td><td>1/30 ≈ 0.033</td><td>30</td><td>log₂(30) ≈ 4.91</td><td>4.91</td></tr><tr><td>트럼프 카드 1장</td><td>1/52 ≈ 0.019</td><td>52</td><td>log₂(52) ≈ 5.7</td><td>5.7</td></tr><tr><td>생일이 같은 사람</td><td>1/365 ≈ 0.0027</td><td>365</td><td>log₂(365) ≈ 8.51</td><td>8.51</td></tr><tr><td>로또 1등</td><td>≈ 0.00000012</td><td>≈ 8,145,060</td><td>log₂(8145060) ≈ 22.96</td><td>22.96</td></tr></tbody></table>
+<div style="margin:22px 0"><div style="display:flex;align-items:flex-start;gap:14px;margin-bottom:8px">
+<div style="width:32px;height:32px;background:#1a2e4a;color:white;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;flex-shrink:0">1</div>
+<div><div style="font-size:15px;font-weight:700;color:#1a2e4a;margin-bottom:2px">1단계: 확률 확인</div><div style="font-size:14px;color:#6b7280;line-height:1.6">주사위의 각 면이 나올 확률 P = 1/6 ≈ 0.167</div></div></div><div style="display:flex;align-items:flex-start;gap:14px;margin-bottom:8px">
+<div style="width:32px;height:32px;background:#1a2e4a;color:white;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;flex-shrink:0">2</div>
+<div><div style="font-size:15px;font-weight:700;color:#1a2e4a;margin-bottom:2px">2단계: 역수 구하기</div><div style="font-size:14px;color:#6b7280;line-height:1.6">1/P = 1/(1/6) = 6</div></div></div><div style="display:flex;align-items:flex-start;gap:14px;margin-bottom:8px">
+<div style="width:32px;height:32px;background:#1a2e4a;color:white;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;flex-shrink:0">3</div>
+<div><div style="font-size:15px;font-weight:700;color:#1a2e4a;margin-bottom:2px">3단계: log₂ 적용</div><div style="font-size:14px;color:#6b7280;line-height:1.6">log₂(6)을 구해야 합니다. 2^2 = 4, 2^3 = 8이므로 2와 3 사이의 값입니다.</div></div></div><div style="display:flex;align-items:flex-start;gap:14px;margin-bottom:8px">
+<div style="width:32px;height:32px;background:#1a2e4a;color:white;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;flex-shrink:0">4</div>
+<div><div style="font-size:15px;font-weight:700;color:#1a2e4a;margin-bottom:2px">4단계: 계산 결과</div><div style="font-size:14px;color:#6b7280;line-height:1.6">log₂(6) ≈ 2.585비트. 주사위 한 면의 정보량은 약 2.58비트입니다.</div></div></div><div style="display:flex;align-items:flex-start;gap:14px;margin-bottom:8px">
+<div style="width:32px;height:32px;background:#1a2e4a;color:white;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;flex-shrink:0">5</div>
+<div><div style="font-size:15px;font-weight:700;color:#1a2e4a;margin-bottom:2px">5단계: 의미 해석</div><div style="font-size:14px;color:#6b7280;line-height:1.6">동전(1비트)보다 크고, 8가지(3비트)보다 작습니다. 질문 약 2.6번에 해당하는 정보량이에요.</div></div></div></div>
+<h2 class="section-title">엔트로피 — 평균 정보량</h2>
+
+<p>여러 사건이 있을 때, 각 사건의 정보량에 확률을 곱해서 평균을 내면 <b>엔트로피(Entropy)</b>가 돼요. '이 시스템이 평균적으로 얼마나 많은 정보를 전달하는가'를 나타내요.</p>
+<div class="note-box"><span class="note-label">[핵심] 엔트로피란?</span>
+<b>엔트로피 H</b> = 모든 사건의 (확률 x 정보량)을 합한 것<br><br><b>예: 공정한 동전</b><br>앞면: P=0.5, 정보량=1비트<br>뒷면: P=0.5, 정보량=1비트<br>H = 0.5×1 + 0.5×1 = <b>1비트</b><br><br><b>예: 편향된 동전 (앞면 90%)</b><br>앞면: P=0.9, 정보량 = log₂(1/0.9) ≈ 0.15비트<br>뒷면: P=0.1, 정보량 = log₂(1/0.1) ≈ 3.32비트<br>H = 0.9×0.15 + 0.1×3.32 ≈ <b>0.47비트</b><br><br>편향된 동전은 결과를 거의 예측할 수 있어서 엔트로피가 낮아요.</div>
+<div class="tip"><span class="tip-label">[팁] 엔트로피의 의미</span>
+<b>엔트로피가 높다</b> = 결과를 예측하기 어렵다 = 불확실하다<br><b>엔트로피가 낮다</b> = 결과를 예측하기 쉽다 = 거의 확실하다<br><b>엔트로피가 0</b> = 결과가 100% 확정 = 정보 없음<br><br>동전: H=1비트 (최대 불확실)<br>편향 동전: H≈0.47비트 (좀 예측 가능)<br>양면 같은 동전: H=0비트 (완전 확실, 던질 필요 없음)</div>
+<table class="trace"><thead><tr><th>분포</th><th>사건 1 (확률)</th><th>사건 2 (확률)</th><th>각 정보량</th><th>엔트로피 H</th></tr></thead><tbody><tr><td>공정한 동전</td><td>앞면 (0.5)</td><td>뒷면 (0.5)</td><td>1비트, 1비트</td><td>0.5x1 + 0.5x1 = 1.00비트</td></tr><tr><td>약간 편향</td><td>앞면 (0.7)</td><td>뒷면 (0.3)</td><td>0.51비트, 1.74비트</td><td>0.36+0.52 = 0.88비트</td></tr><tr><td>많이 편향</td><td>앞면 (0.9)</td><td>뒷면 (0.1)</td><td>0.15비트, 3.32비트</td><td>0.14+0.33 = 0.47비트</td></tr><tr><td>극도로 편향</td><td>앞면 (0.99)</td><td>뒷면 (0.01)</td><td>0.01비트, 6.64비트</td><td>0.01+0.07 = 0.08비트</td></tr><tr><td>확정 (편향 끝)</td><td>앞면 (1.0)</td><td>뒷면 (0.0)</td><td>0비트, -</td><td>0.00비트</td></tr></tbody></table>
+<div style="margin:22px 0"><div style="display:flex;align-items:flex-start;gap:14px;margin-bottom:8px">
+<div style="width:32px;height:32px;background:#1a2e4a;color:white;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;flex-shrink:0">1</div>
+<div><div style="font-size:15px;font-weight:700;color:#1a2e4a;margin-bottom:2px">1단계: 각 사건의 확률 정리</div><div style="font-size:14px;color:#6b7280;line-height:1.6">앞면 P(H) = 0.7, 뒷면 P(T) = 0.3</div></div></div><div style="display:flex;align-items:flex-start;gap:14px;margin-bottom:8px">
+<div style="width:32px;height:32px;background:#1a2e4a;color:white;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;flex-shrink:0">2</div>
+<div><div style="font-size:15px;font-weight:700;color:#1a2e4a;margin-bottom:2px">2단계: 각 사건의 정보량 계산</div><div style="font-size:14px;color:#6b7280;line-height:1.6">I(H) = log₂(1/0.7) = log₂(1.429) ≈ 0.515비트, I(T) = log₂(1/0.3) = log₂(3.333) ≈ 1.737비트</div></div></div><div style="display:flex;align-items:flex-start;gap:14px;margin-bottom:8px">
+<div style="width:32px;height:32px;background:#1a2e4a;color:white;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;flex-shrink:0">3</div>
+<div><div style="font-size:15px;font-weight:700;color:#1a2e4a;margin-bottom:2px">3단계: 확률 x 정보량 곱하기</div><div style="font-size:14px;color:#6b7280;line-height:1.6">앞면 기여: 0.7 x 0.515 = 0.360, 뒷면 기여: 0.3 x 1.737 = 0.521</div></div></div><div style="display:flex;align-items:flex-start;gap:14px;margin-bottom:8px">
+<div style="width:32px;height:32px;background:#1a2e4a;color:white;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;flex-shrink:0">4</div>
+<div><div style="font-size:15px;font-weight:700;color:#1a2e4a;margin-bottom:2px">4단계: 모두 더하기</div><div style="font-size:14px;color:#6b7280;line-height:1.6">H = 0.360 + 0.521 = 0.881비트</div></div></div><div style="display:flex;align-items:flex-start;gap:14px;margin-bottom:8px">
+<div style="width:32px;height:32px;background:#1a2e4a;color:white;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;flex-shrink:0">5</div>
+<div><div style="font-size:15px;font-weight:700;color:#1a2e4a;margin-bottom:2px">5단계: 의미 해석</div><div style="font-size:14px;color:#6b7280;line-height:1.6">공정한 동전(1비트)보다 낮습니다. 앞면이 자주 나와서 예측하기 쉽기 때문이에요.</div></div></div></div>
+<div class="debug-section"><div class="debug-bar">DEBUG LAB — 에러를 찾으시오</div><div class="debug-body">
+
+<p style="margin:14px 0 0; font-size:14px;"><b>에러:</b> </p>
+<p style="font-size:14px;"><b>수정:</b> </p>
+</div></div>
+<h2 class="section-title">엔트로피가 압축의 한계</h2>
+<p>엔트로피는 데이터 압축에서 아주 중요한 의미가 있어요. <b>엔트로피 = 데이터를 줄일 수 있는 이론적 한계</b>거든요.</p>
+<div class="note-box"><span class="note-label">[핵심] 샤넌의 소스 코딩 정리</span>
+클로드 섀넌이 증명한 정리:<br><br><b>'데이터를 엔트로피보다 더 작게 압축할 수는 없다'</b><br><br>예: 편향 동전의 엔트로피 = 0.47비트<br>→ 동전을 100번 던진 결과를 저장하려면<br>→ 최소 47비트가 필요 (100비트가 아니라!)<br><br>90%가 앞면이니까 패턴이 있고, 패턴이 있으면 줄일 수 있어요.<br>하지만 47비트 이하로는 절대 줄일 수 없어요. 이게 물리적 한계예요.</div>
+<div style="margin:22px 0"><div style="display:flex;align-items:flex-start;gap:14px;margin-bottom:8px">
+<div style="width:32px;height:32px;background:#1a2e4a;color:white;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;flex-shrink:0">1</div>
+<div><div style="font-size:15px;font-weight:700;color:#1a2e4a;margin-bottom:2px">1. 정보원 (Source)</div><div style="font-size:14px;color:#6b7280;line-height:1.6">메시지를 생성합니다. 예: 사람이 말을 하거나, 컴퓨터가 파일을 전송합니다.</div></div></div><div style="display:flex;align-items:flex-start;gap:14px;margin-bottom:8px">
+<div style="width:32px;height:32px;background:#1a2e4a;color:white;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;flex-shrink:0">2</div>
+<div><div style="font-size:15px;font-weight:700;color:#1a2e4a;margin-bottom:2px">2. 송신기 (Transmitter)</div><div style="font-size:14px;color:#6b7280;line-height:1.6">메시지를 신호로 변환합니다. 예: 문자를 비트로 인코딩합니다. 여기서 압축이 일어나요.</div></div></div><div style="display:flex;align-items:flex-start;gap:14px;margin-bottom:8px">
+<div style="width:32px;height:32px;background:#1a2e4a;color:white;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;flex-shrink:0">3</div>
+<div><div style="font-size:15px;font-weight:700;color:#1a2e4a;margin-bottom:2px">3. 채널 (Channel)</div><div style="font-size:14px;color:#6b7280;line-height:1.6">신호가 전달되는 통로입니다. 예: 전선, 광케이블, 무선 전파. 여기서 잡음이 끼어요.</div></div></div><div style="display:flex;align-items:flex-start;gap:14px;margin-bottom:8px">
+<div style="width:32px;height:32px;background:#1a2e4a;color:white;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;flex-shrink:0">4</div>
+<div><div style="font-size:15px;font-weight:700;color:#1a2e4a;margin-bottom:2px">4. 수신기 (Receiver)</div><div style="font-size:14px;color:#6b7280;line-height:1.6">받은 신호를 원래 메시지로 복원합니다. 디코딩과 오류 정정이 여기서 일어나요.</div></div></div><div style="display:flex;align-items:flex-start;gap:14px;margin-bottom:8px">
+<div style="width:32px;height:32px;background:#1a2e4a;color:white;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;flex-shrink:0">5</div>
+<div><div style="font-size:15px;font-weight:700;color:#1a2e4a;margin-bottom:2px">5. 목적지 (Destination)</div><div style="font-size:14px;color:#6b7280;line-height:1.6">최종적으로 메시지를 받는 곳입니다. 예: 상대방의 귀, 화면에 표시되는 파일.</div></div></div></div>
+<table class="trace"><thead><tr><th>채널</th><th>대역폭</th><th>채널 용량(대략)</th><th>1GB 전송 시간</th></tr></thead><tbody><tr><td>전화 모뎀 (1990년대)</td><td>56kHz</td><td>56 Kbps</td><td>약 40시간</td></tr><tr><td>ADSL</td><td>1MHz</td><td>8 Mbps</td><td>약 17분</td></tr><tr><td>LTE (4G)</td><td>20MHz</td><td>100 Mbps</td><td>약 80초</td></tr><tr><td>5G mmWave</td><td>400MHz</td><td>1~10 Gbps</td><td>1~8초</td></tr><tr><td>광케이블</td><td>수THz</td><td>100 Gbps 이상</td><td>0.08초 이하</td></tr><tr><td>USB 3.0</td><td>-</td><td>5 Gbps</td><td>약 1.6초</td></tr></tbody></table>
+<h2 class="section-title">고정 길이 코드 vs 가변 길이 코드</h2>
+
+<div class="note-box"><span class="note-label">[핵심] 고정 길이 vs 가변 길이</span>
+<b>고정 길이 코드</b>: 모든 문자에 같은 비트 수<br>예: ASCII — 모든 문자가 7비트 (A=1000001, B=1000010)<br>장점: 단순함. 단점: 비효율적.<br><br><b>가변 길이 코드</b>: 자주 나오는 문자는 짧게, 드문 문자는 길게<br>예: 모스 부호 — E는 · (짧음), Q는 --·- (김)<br>장점: 효율적. 단점: 복잡함.<br><br>일상에서도 같은 원리: 자주 쓰는 '가'는 1글자, 드문 '뷁'도 1글자지만,<br>자판 위치를 보면 자주 쓰는 키가 편한 곳에 있죠!</div>
+<div class="note-box"><span class="note-label">[예시] 고정 vs 가변의 차이</span>
+문자 4개: A(빈도 50%), B(25%), C(15%), D(10%)<br><br><b>고정 길이 (2비트씩):</b><br>A=00, B=01, C=10, D=11<br>평균: 2비트/문자<br><br><b>가변 길이:</b><br>A=0 (1비트), B=10 (2비트), C=110 (3비트), D=111 (3비트)<br>평균: 0.5×1 + 0.25×2 + 0.15×3 + 0.10×3<br>= 0.5 + 0.5 + 0.45 + 0.3 = <b>1.75비트/문자</b><br><br>가변 길이가 <b>12.5% 절약</b>! 데이터가 클수록 차이가 커져요.</div>
+<div class="debug-section"><div class="debug-bar">DEBUG LAB — 에러를 찾으시오</div><div class="debug-body">
+
+<p style="margin:14px 0 0; font-size:14px;"><b>에러:</b> </p>
+<p style="font-size:14px;"><b>수정:</b> </p>
+</div></div>
+<table class="trace"><thead><tr><th>문자</th><th>빈도(회)</th><th>ASCII 코드</th><th>ASCII 비트</th><th>허프만 코드</th><th>허프만 비트</th><th>절약 비트</th></tr></thead><tbody><tr><td>E</td><td>120</td><td>1000101 (7비트)</td><td>840</td><td>10 (2비트)</td><td>240</td><td>600</td></tr><tr><td>T</td><td>90</td><td>1010100 (7비트)</td><td>630</td><td>110 (3비트)</td><td>270</td><td>360</td></tr><tr><td>A</td><td>80</td><td>1000001 (7비트)</td><td>560</td><td>111 (3비트)</td><td>240</td><td>320</td></tr><tr><td>O</td><td>70</td><td>1001111 (7비트)</td><td>490</td><td>010 (3비트)</td><td>210</td><td>280</td></tr><tr><td>N</td><td>60</td><td>1001110 (7비트)</td><td>420</td><td>011 (3비트)</td><td>180</td><td>240</td></tr><tr><td>Z</td><td>5</td><td>1011010 (7비트)</td><td>35</td><td>000001 (6비트)</td><td>30</td><td>5</td></tr><tr><td>Q</td><td>2</td><td>1010001 (7비트)</td><td>14</td><td>0000001 (7비트)</td><td>14</td><td>0</td></tr></tbody></table>
+<h2 class="section-title">접두어 코드 — 헷갈리지 않는 규칙</h2>
+<p>가변 길이 코드에는 중요한 규칙이 있어요. 어떤 코드가 다른 코드의 앞부분이면 안 돼요. 이걸 <b>접두어 코드(Prefix Code)</b>라고 해요.</p>
+<div class="warn"><span class="warn-label">[주의] 접두어 조건을 어기면?</span>
+<b>나쁜 코드:</b> A=0, B=01, C=1<br>'01'이 들어오면? A(0)+C(1)인지 B(01)인지 구별 불가!<br><br><b>좋은 코드 (접두어 코드):</b> A=0, B=10, C=11<br>A의 코드(0)는 다른 코드의 앞부분이 아니에요.<br>B(10)도, C(11)도 마찬가지.<br><br>'01011' → 0 | 10 | 11 → A B C ← 유일하게 해석돼요!<br><br><b>규칙:</b> 어떤 코드도 다른 코드의 시작 부분이 되면 안 돼요.</div>
+<h2 class="section-title">허프만 코딩 — 최적의 압축 코드 만들기</h2>
+
+<p><b>허프만 코딩(Huffman Coding)</b>은 1952년 MIT 학생 데이비드 허프만이 과제로 만든 알고리즘이에요. 빈도가 높은 문자에 짧은 코드를, 빈도가 낮은 문자에 긴 코드를 자동으로 배정해요.</p>
+<div class="note-box"><span class="note-label">[핵심] 허프만 코딩 방법</span>
+<b>단계:</b><br>1. 모든 문자를 빈도순으로 나열해요.<br>2. 빈도가 가장 낮은 2개를 골라요.<br>3. 두 개를 하나로 합쳐요 (빈도 합산).<br>4. 합친 노드에서 왼쪽=0, 오른쪽=1을 붙여요.<br>5. 노드가 1개 남을 때까지 2~4를 반복해요.<br>6. 루트에서 각 문자까지의 경로가 코드예요.</div>
+<div style="margin:22px 0"><div style="display:flex;align-items:flex-start;gap:14px;margin-bottom:8px">
+<div style="width:32px;height:32px;background:#1a2e4a;color:white;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;flex-shrink:0">1</div>
+<div><div style="font-size:15px;font-weight:700;color:#1a2e4a;margin-bottom:2px">1단계: 정렬</div><div style="font-size:14px;color:#6b7280;line-height:1.6">F(5), E(9), C(12), B(13), D(16), A(45)</div></div></div><div style="display:flex;align-items:flex-start;gap:14px;margin-bottom:8px">
+<div style="width:32px;height:32px;background:#1a2e4a;color:white;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;flex-shrink:0">2</div>
+<div><div style="font-size:15px;font-weight:700;color:#1a2e4a;margin-bottom:2px">2단계: 가장 작은 2개 합치기</div><div style="font-size:14px;color:#6b7280;line-height:1.6">F(5) + E(9) → [FE](14)</div></div></div><div style="display:flex;align-items:flex-start;gap:14px;margin-bottom:8px">
+<div style="width:32px;height:32px;background:#1a2e4a;color:white;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;flex-shrink:0">3</div>
+<div><div style="font-size:15px;font-weight:700;color:#1a2e4a;margin-bottom:2px">3단계: 다시 정렬 후 합치기</div><div style="font-size:14px;color:#6b7280;line-height:1.6">C(12) + B(13) → [CB](25)</div></div></div><div style="display:flex;align-items:flex-start;gap:14px;margin-bottom:8px">
+<div style="width:32px;height:32px;background:#1a2e4a;color:white;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;flex-shrink:0">4</div>
+<div><div style="font-size:15px;font-weight:700;color:#1a2e4a;margin-bottom:2px">4단계: 계속 합치기</div><div style="font-size:14px;color:#6b7280;line-height:1.6">[FE](14) + D(16) → [FED](30)</div></div></div><div style="display:flex;align-items:flex-start;gap:14px;margin-bottom:8px">
+<div style="width:32px;height:32px;background:#1a2e4a;color:white;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;flex-shrink:0">5</div>
+<div><div style="font-size:15px;font-weight:700;color:#1a2e4a;margin-bottom:2px">5단계: 계속 합치기</div><div style="font-size:14px;color:#6b7280;line-height:1.6">[CB](25) + [FED](30) → [CBFED](55)</div></div></div><div style="display:flex;align-items:flex-start;gap:14px;margin-bottom:8px">
+<div style="width:32px;height:32px;background:#1a2e4a;color:white;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;flex-shrink:0">6</div>
+<div><div style="font-size:15px;font-weight:700;color:#1a2e4a;margin-bottom:2px">6단계: 마지막 합치기</div><div style="font-size:14px;color:#6b7280;line-height:1.6">A(45) + [CBFED](55) → [전체](100)</div></div></div></div>
+<table class="trace"><thead><tr><th>문자</th><th>빈도</th><th>코드</th><th>비트 수</th></tr></thead><tbody><tr><td>A</td><td>45</td><td>0</td><td>1</td></tr><tr><td>B</td><td>13</td><td>101</td><td>3</td></tr><tr><td>C</td><td>12</td><td>100</td><td>3</td></tr><tr><td>D</td><td>16</td><td>111</td><td>3</td></tr><tr><td>E</td><td>9</td><td>1101</td><td>4</td></tr><tr><td>F</td><td>5</td><td>1100</td><td>4</td></tr></tbody></table>
+<div style="margin:22px 0"><div style="display:flex;align-items:flex-start;gap:14px;margin-bottom:8px">
+<div style="width:32px;height:32px;background:#1a2e4a;color:white;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;flex-shrink:0">1</div>
+<div><div style="font-size:15px;font-weight:700;color:#1a2e4a;margin-bottom:2px">초기 상태</div><div style="font-size:14px;color:#6b7280;line-height:1.6">각 문자를 독립 노드로 만듭니다: F(5), E(9), C(12), B(13), D(16), A(45)</div></div></div><div style="display:flex;align-items:flex-start;gap:14px;margin-bottom:8px">
+<div style="width:32px;height:32px;background:#1a2e4a;color:white;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;flex-shrink:0">2</div>
+<div><div style="font-size:15px;font-weight:700;color:#1a2e4a;margin-bottom:2px">합치기 1회</div><div style="font-size:14px;color:#6b7280;line-height:1.6">가장 작은 F(5)와 E(9)를 합침 → 새 노드 [FE](14). 왼쪽(F)=0, 오른쪽(E)=1</div></div></div><div style="display:flex;align-items:flex-start;gap:14px;margin-bottom:8px">
+<div style="width:32px;height:32px;background:#1a2e4a;color:white;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;flex-shrink:0">3</div>
+<div><div style="font-size:15px;font-weight:700;color:#1a2e4a;margin-bottom:2px">합치기 2회</div><div style="font-size:14px;color:#6b7280;line-height:1.6">가장 작은 C(12)와 B(13)를 합침 → 새 노드 [CB](25). 왼쪽(C)=0, 오른쪽(B)=1</div></div></div><div style="display:flex;align-items:flex-start;gap:14px;margin-bottom:8px">
+<div style="width:32px;height:32px;background:#1a2e4a;color:white;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;flex-shrink:0">4</div>
+<div><div style="font-size:15px;font-weight:700;color:#1a2e4a;margin-bottom:2px">합치기 3회</div><div style="font-size:14px;color:#6b7280;line-height:1.6">가장 작은 [FE](14)와 D(16)을 합침 → 새 노드 [FED](30). 왼쪽([FE])=0, 오른쪽(D)=1</div></div></div><div style="display:flex;align-items:flex-start;gap:14px;margin-bottom:8px">
+<div style="width:32px;height:32px;background:#1a2e4a;color:white;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;flex-shrink:0">5</div>
+<div><div style="font-size:15px;font-weight:700;color:#1a2e4a;margin-bottom:2px">합치기 4회</div><div style="font-size:14px;color:#6b7280;line-height:1.6">[CB](25)와 [FED](30)을 합침 → 새 노드 [CBFED](55). 왼쪽([CB])=0, 오른쪽([FED])=1</div></div></div><div style="display:flex;align-items:flex-start;gap:14px;margin-bottom:8px">
+<div style="width:32px;height:32px;background:#1a2e4a;color:white;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;flex-shrink:0">6</div>
+<div><div style="font-size:15px;font-weight:700;color:#1a2e4a;margin-bottom:2px">합치기 5회 (완성)</div><div style="font-size:14px;color:#6b7280;line-height:1.6">A(45)와 [CBFED](55)를 합침 → 루트(100). 왼쪽(A)=0, 오른쪽([CBFED])=1</div></div></div><div style="display:flex;align-items:flex-start;gap:14px;margin-bottom:8px">
+<div style="width:32px;height:32px;background:#1a2e4a;color:white;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;flex-shrink:0">7</div>
+<div><div style="font-size:15px;font-weight:700;color:#1a2e4a;margin-bottom:2px">코드 읽기</div><div style="font-size:14px;color:#6b7280;line-height:1.6">루트에서 각 문자까지 경로를 따라가며 코드를 읽습니다. A=0, C=100, B=101, F=1100, E=1101, D=111</div></div></div></div>
+<div class="debug-section"><div class="debug-bar">DEBUG LAB — 에러를 찾으시오</div><div class="debug-body">
+
+<p style="margin:14px 0 0; font-size:14px;"><b>에러:</b> </p>
+<p style="font-size:14px;"><b>수정:</b> </p>
+</div></div>
+<div class="note-box"><span class="note-label">평균 코드 길이 계산</span>
+평균 = (45×1 + 13×3 + 12×3 + 16×3 + 9×4 + 5×4) / 100<br>= (45 + 39 + 36 + 48 + 36 + 20) / 100<br>= 224 / 100 = <b>2.24 비트/문자</b><br><br>고정 길이라면 6개 문자 → 3비트/문자 필요<br>허프만 코딩으로 <b>25% 절약</b>!<br><br>이 데이터의 엔트로피 ≈ 2.15비트이므로, 허프만 코딩은 이론적 한계에 매우 가까워요.</div>
+<h2 class="section-title">허프만 코딩 직접 해 보기</h2>
+<div class="tip"><span class="tip-label">[활동] 직접 허프만 트리 그리기</span>
+문자 4개: X(40), Y(30), Z(20), W(10)<br><br>종이에 직접 해 보세요:<br>1. W(10)과 Z(20) 합치기 → [WZ](30)<br>2. Y(30)과 [WZ](30) 합치기 → [YWZ](60)<br>3. X(40)과 [YWZ](60) 합치기 → [전체](100)<br><br>결과:<br>X = 0 (1비트)<br>Y = 10 (2비트)<br>Z = 110 (3비트)<br>W = 111 (3비트)<br><br>평균: 0.4×1 + 0.3×2 + 0.2×3 + 0.1×3 = 1.9비트/문자</div>
+<h2 class="section-title">실생활 속 압축</h2>
+<div class="note-box"><span class="note-label">무손실 압축 vs 손실 압축</span>
+<b>무손실 압축</b>: 원본 100% 복원 가능<br>• ZIP, 7z, RAR — 파일 압축<br>• PNG, GIF — 이미지<br>• FLAC — 음악<br>• 허프만 코딩이 핵심 기술!<br><br><b>손실 압축</b>: 사람이 못 느끼는 부분 삭제 (복원 불가)<br>• JPEG — 사진 (눈이 잘 못 느끼는 색 정보 삭제)<br>• MP3, AAC — 음악 (귀가 못 듣는 소리 삭제)<br>• H.264, H.265 — 영상<br><br>텍스트/코드 → 반드시 무손실<br>사진/음악/영상 → 보통 손실 (파일 크기 대폭 축소)</div>
+<div class="debug-section"><div class="debug-bar">DEBUG LAB — 에러를 찾으시오</div><div class="debug-body">
+
+<p style="margin:14px 0 0; font-size:14px;"><b>에러:</b> </p>
+<p style="font-size:14px;"><b>수정:</b> </p>
+</div></div>
+<table class="trace"><thead><tr><th>원본</th><th>무손실 압축</th><th>손실 압축</th></tr></thead><tbody><tr><td>사진 10MB</td><td>PNG: 7MB (30%↓)</td><td>JPEG: 1MB (90%↓)</td></tr><tr><td>음악 50MB</td><td>FLAC: 30MB (40%↓)</td><td>MP3: 5MB (90%↓)</td></tr><tr><td>텍스트 1MB</td><td>ZIP: 0.3MB (70%↓)</td><td>사용 안 함</td></tr><tr><td>영상 1GB</td><td>사용 드묾</td><td>H.264: 100MB (90%↓)</td></tr></tbody></table>
+<div class="tip"><span class="tip-label">[팁] 왜 ZIP으로 JPEG를 압축하면 줄어들지 않을까?</span>
+JPEG는 이미 손실 압축이 적용된 상태예요. 남은 데이터에는 패턴(중복)이 거의 없어요. ZIP은 패턴을 찾아서 줄이는 건데, 패턴이 없으면 줄일 게 없어요!<br><br>반대로 텍스트 파일은 같은 단어가 반복되니까 ZIP으로 70% 이상 줄어드는 거예요.</div>
+<h2 class="section-title">RLE — 가장 간단한 압축</h2>
+<p>허프만 코딩 말고도 간단한 압축 방법이 있어요. <b>RLE(Run-Length Encoding)</b>는 같은 값이 연속되면 '값+반복횟수'로 바꿔요.</p>
+<div class="note-box"><span class="note-label">[핵심] RLE 압축</span>
+<b>원본:</b> AAAAABBBCCDDDDDDDD<br><b>RLE:</b> A5B3C2D8<br><br>18글자 → 8글자로 줄었어요!<br><br>BMP 이미지에서 하늘(같은 파란색이 쭉 이어짐)을 저장할 때 효과적이에요.<br><br><b>단점:</b> 반복이 없으면 오히려 커질 수 있어요.<br>원본: ABCDEF → RLE: A1B1C1D1E1F1 (오히려 2배!)</div>
+<table class="trace"><thead><tr><th>원본 문자열</th><th>원본 길이</th><th>RLE 결과</th><th>RLE 길이</th><th>압축률</th></tr></thead><tbody><tr><td>AAAAABBBCCDDDDDDDD</td><td>18</td><td>A5B3C2D8</td><td>8</td><td>44% (56% 절약)</td></tr><tr><td>AAAAAAAAAA</td><td>10</td><td>A10</td><td>3</td><td>30% (70% 절약)</td></tr><tr><td>AAABBBCCC</td><td>9</td><td>A3B3C3</td><td>6</td><td>67% (33% 절약)</td></tr><tr><td>AABBCC</td><td>6</td><td>A2B2C2</td><td>6</td><td>100% (절약 없음)</td></tr><tr><td>ABCDEF</td><td>6</td><td>A1B1C1D1E1F1</td><td>12</td><td>200% (오히려 2배)</td></tr><tr><td>AAABCDDDD</td><td>9</td><td>A3B1C1D4</td><td>8</td><td>89% (11% 절약)</td></tr><tr><td>WWWWWWWWWWWWWWWWWWWW</td><td>20</td><td>W20</td><td>3</td><td>15% (85% 절약)</td></tr></tbody></table>
+<div style="margin:22px 0"><div style="display:flex;align-items:flex-start;gap:14px;margin-bottom:8px">
+<div style="width:32px;height:32px;background:#1a2e4a;color:white;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;flex-shrink:0">1</div>
+<div><div style="font-size:15px;font-weight:700;color:#1a2e4a;margin-bottom:2px">1단계: 첫 문자 확인</div><div style="font-size:14px;color:#6b7280;line-height:1.6">현재 문자 = 'A', 카운트 = 1. 다음 문자도 'A'이므로 계속 셉니다.</div></div></div><div style="display:flex;align-items:flex-start;gap:14px;margin-bottom:8px">
+<div style="width:32px;height:32px;background:#1a2e4a;color:white;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;flex-shrink:0">2</div>
+<div><div style="font-size:15px;font-weight:700;color:#1a2e4a;margin-bottom:2px">2단계: 연속 구간 끝까지 세기</div><div style="font-size:14px;color:#6b7280;line-height:1.6">'A'가 5번 연속 → 'A5'를 출력합니다. 포인터를 6번째 문자로 이동합니다.</div></div></div><div style="display:flex;align-items:flex-start;gap:14px;margin-bottom:8px">
+<div style="width:32px;height:32px;background:#1a2e4a;color:white;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;flex-shrink:0">3</div>
+<div><div style="font-size:15px;font-weight:700;color:#1a2e4a;margin-bottom:2px">3단계: 다음 구간 처리</div><div style="font-size:14px;color:#6b7280;line-height:1.6">현재 문자 = 'B', 3번 연속 → 'B3'을 출력합니다.</div></div></div><div style="display:flex;align-items:flex-start;gap:14px;margin-bottom:8px">
+<div style="width:32px;height:32px;background:#1a2e4a;color:white;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;flex-shrink:0">4</div>
+<div><div style="font-size:15px;font-weight:700;color:#1a2e4a;margin-bottom:2px">4단계: 계속 진행</div><div style="font-size:14px;color:#6b7280;line-height:1.6">현재 문자 = 'C', 2번 연속 → 'C2'를 출력합니다.</div></div></div><div style="display:flex;align-items:flex-start;gap:14px;margin-bottom:8px">
+<div style="width:32px;height:32px;background:#1a2e4a;color:white;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;flex-shrink:0">5</div>
+<div><div style="font-size:15px;font-weight:700;color:#1a2e4a;margin-bottom:2px">5단계: 마지막 구간</div><div style="font-size:14px;color:#6b7280;line-height:1.6">현재 문자 = 'D', 8번 연속 → 'D8'을 출력합니다.</div></div></div><div style="display:flex;align-items:flex-start;gap:14px;margin-bottom:8px">
+<div style="width:32px;height:32px;background:#1a2e4a;color:white;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;flex-shrink:0">6</div>
+<div><div style="font-size:15px;font-weight:700;color:#1a2e4a;margin-bottom:2px">6단계: 완료</div><div style="font-size:14px;color:#6b7280;line-height:1.6">최종 결과: A5B3C2D8 (18글자 → 8글자, 56% 절약)</div></div></div></div>
+<table class="trace"><thead><tr><th>입력 데이터</th><th>원본 비트 (ASCII)</th><th>RLE 결과 비트</th><th>허프만 결과 비트</th><th>더 효율적인 방식</th></tr></thead><tbody><tr><td>AAAAAAAAAA (반복 많음)</td><td>80</td><td>24 (A10)</td><td>10 (A=0, 10회)</td><td>허프만</td></tr><tr><td>AAAAABBBCC (반복 중간)</td><td>80</td><td>48 (A5B3C2)</td><td>29</td><td>허프만</td></tr><tr><td>ABCABCABC (반복 없음, 패턴 있음)</td><td>72</td><td>144 (오히려 증가)</td><td>약 40</td><td>허프만</td></tr><tr><td>ABCDEFGHIJ (반복 없음)</td><td>80</td><td>160 (2배 증가)</td><td>약 75</td><td>허프만</td></tr><tr><td>픽셀: 0000001111 (이미지)</td><td>80</td><td>24 (06 14)</td><td>약 10</td><td>허프만</td></tr></tbody></table>
+<h2 class="section-title">C언어로 RLE 압축 구현하기</h2>
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span><span class="code-bar-file">RLE 압축 프로그램</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;stdio.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;string.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">4</span><span class="lc"><span class="s-type">void</span> <span class="s-fn">rle_encode</span>(<span class="s-kw">const</span> <span class="s-type">char</span> *input) {</span></div>
+<div class="code-line"><span class="ln">5</span><span class="lc">    <span class="s-type">int</span> len = <span class="s-fn">strlen</span>(input);</span></div>
+<div class="code-line"><span class="ln">6</span><span class="lc">    <span class="s-type">int</span> i = <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">7</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">8</span><span class="lc">    <span class="s-kw">while</span> (i &lt; len) {</span></div>
+<div class="code-line"><span class="ln">9</span><span class="lc">        <span class="s-type">char</span> ch = input[i];</span></div>
+<div class="code-line"><span class="ln">10</span><span class="lc">        <span class="s-type">int</span> count = <span class="s-num">1</span>;</span></div>
+<div class="code-line"><span class="ln">11</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">12</span><span class="lc">        <span class="s-cm">// 같은 문자가 연속되는 동안 세기</span></span></div>
+<div class="code-line"><span class="ln">13</span><span class="lc">        <span class="s-kw">while</span> (i + count &lt; len &amp;&amp;</span></div>
+<div class="code-line"><span class="ln">14</span><span class="lc">               input[i + count] == ch) {</span></div>
+<div class="code-line"><span class="ln">15</span><span class="lc">            count++;</span></div>
+<div class="code-line"><span class="ln">16</span><span class="lc">        }</span></div>
+<div class="code-line"><span class="ln">17</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">18</span><span class="lc">        <span class="s-fn">printf</span>(<span class="s-str">"%c%d"</span>, ch, count);</span></div>
+<div class="code-line"><span class="ln">19</span><span class="lc">        i += count;</span></div>
+<div class="code-line"><span class="ln">20</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">21</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"\n"</span>);</span></div>
+<div class="code-line"><span class="ln">22</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">23</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">24</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">main</span>(<span class="s-type">void</span>) {</span></div>
+<div class="code-line"><span class="ln">25</span><span class="lc">    <span class="s-type">char</span> data[] = <span class="s-str">"AAAAABBBCCDDDDDDDD"</span>;</span></div>
+<div class="code-line"><span class="ln">26</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"원본: %s (%d글자)\n"</span>, data,</span></div>
+<div class="code-line"><span class="ln">27</span><span class="lc">           (<span class="s-type">int</span>)<span class="s-fn">strlen</span>(data));</span></div>
+<div class="code-line"><span class="ln">28</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"RLE:  "</span>);</span></div>
+<div class="code-line"><span class="ln">29</span><span class="lc">    <span class="s-fn">rle_encode</span>(data);</span></div>
+<div class="code-line"><span class="ln">30</span><span class="lc">    <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">31</span><span class="lc">}</span></div>
+</div>
+</div>
+<div class="output-wrap"><div class="output-bar">실행 결과</div><div class="output-body">원본: AAAAABBBCCDDDDDDDD (18글자)
+RLE:  A5B3C2D8</div></div>
+<h2 class="section-title">Python으로 허프만 코딩 구현</h2>
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span><span class="code-bar-file">허프만 코딩 시뮬레이션</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc">import heapq</span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc">from collections import Counter</span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">4</span><span class="lc">def <span class="s-fn">huffman_coding</span>(text):</span></div>
+<div class="code-line"><span class="ln">5</span><span class="lc">    # <span class="s-num">1</span>. 빈도 세기</span></div>
+<div class="code-line"><span class="ln">6</span><span class="lc">    freq = <span class="s-fn">Counter</span>(text)</span></div>
+<div class="code-line"><span class="ln">7</span><span class="lc">    # <span class="s-num">2</span>. 힙(우선순위 큐)에 넣기</span></div>
+<div class="code-line"><span class="ln">8</span><span class="lc">    heap = [[count, [<span class="s-type">char</span>, <span class="s-str">""</span>]] <span class="s-kw">for</span> <span class="s-type">char</span>, count in freq.<span class="s-fn">items</span>()]</span></div>
+<div class="code-line"><span class="ln">9</span><span class="lc">    heapq.<span class="s-fn">heapify</span>(heap)</span></div>
+<div class="code-line"><span class="ln">10</span><span class="lc">    # <span class="s-num">3</span>. 트리 만들기</span></div>
+<div class="code-line"><span class="ln">11</span><span class="lc">    <span class="s-kw">while</span> <span class="s-fn">len</span>(heap) &gt; <span class="s-num">1</span>:</span></div>
+<div class="code-line"><span class="ln">12</span><span class="lc">        lo = heapq.<span class="s-fn">heappop</span>(heap)</span></div>
+<div class="code-line"><span class="ln">13</span><span class="lc">        hi = heapq.<span class="s-fn">heappop</span>(heap)</span></div>
+<div class="code-line"><span class="ln">14</span><span class="lc">        <span class="s-kw">for</span> pair in lo[<span class="s-num">1</span>:]:</span></div>
+<div class="code-line"><span class="ln">15</span><span class="lc">            pair[<span class="s-num">1</span>] = <span class="s-str">'0'</span> + pair[<span class="s-num">1</span>]</span></div>
+<div class="code-line"><span class="ln">16</span><span class="lc">        <span class="s-kw">for</span> pair in hi[<span class="s-num">1</span>:]:</span></div>
+<div class="code-line"><span class="ln">17</span><span class="lc">            pair[<span class="s-num">1</span>] = <span class="s-str">'1'</span> + pair[<span class="s-num">1</span>]</span></div>
+<div class="code-line"><span class="ln">18</span><span class="lc">        heapq.<span class="s-fn">heappush</span>(heap, [lo[<span class="s-num">0</span>] + hi[<span class="s-num">0</span>]] + lo[<span class="s-num">1</span>:] + hi[<span class="s-num">1</span>:])</span></div>
+<div class="code-line"><span class="ln">19</span><span class="lc">    # <span class="s-num">4</span>. 결과 출력</span></div>
+<div class="code-line"><span class="ln">20</span><span class="lc">    result = <span class="s-fn">sorted</span>(heap[<span class="s-num">0</span>][<span class="s-num">1</span>:], key=lambda p: (<span class="s-fn">len</span>(p[<span class="s-num">1</span>]), p))</span></div>
+<div class="code-line"><span class="ln">21</span><span class="lc">    <span class="s-fn">print</span>(f<span class="s-str">"원본: {len(text) * 8}비트 (ASCII)"</span>)</span></div>
+<div class="code-line"><span class="ln">22</span><span class="lc">    total = <span class="s-num">0</span></span></div>
+<div class="code-line"><span class="ln">23</span><span class="lc">    <span class="s-kw">for</span> <span class="s-type">char</span>, code in result:</span></div>
+<div class="code-line"><span class="ln">24</span><span class="lc">        count = freq[<span class="s-type">char</span>]</span></div>
+<div class="code-line"><span class="ln">25</span><span class="lc">        total += count * <span class="s-fn">len</span>(code)</span></div>
+<div class="code-line"><span class="ln">26</span><span class="lc">        <span class="s-fn">print</span>(f<span class="s-str">"  '{char}': {code} ({len(code)}비트, {count}회)"</span>)</span></div>
+<div class="code-line"><span class="ln">27</span><span class="lc">    <span class="s-fn">print</span>(f<span class="s-str">"압축: {total}비트"</span>)</span></div>
+<div class="code-line"><span class="ln">28</span><span class="lc">    <span class="s-fn">print</span>(f<span class="s-str">"절약: {100 - total * 100 // (len(text) * 8)}%"</span>)</span></div>
+<div class="code-line"><span class="ln">29</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">30</span><span class="lc"><span class="s-fn">huffman_coding</span>(<span class="s-str">"AAAAABBBCCDDDDDDDD"</span>)</span></div>
+</div>
+</div>
+<div class="output-wrap"><div class="output-bar">실행 결과</div><div class="output-body">원본: 144비트 (ASCII)
+  'D': 0 (1비트, 8회)
+  'A': 10 (2비트, 5회)
+  'B': 110 (3비트, 3회)
+  'C': 111 (3비트, 2회)
+압축: 29비트
+절약: 80%</div></div>
+<h2 class="section-title">역사 — 정보 이론의 탄생</h2>
+<div class="note-box"><span class="note-label">[역사] 클로드 섀넌 — 정보 이론의 아버지</span>
+<b>클로드 섀넌</b>(1916~2001)은 1948년에 '통신의 수학적 이론'이라는 논문을 발표했어요. 이 논문에서 '정보를 수학적으로 측정할 수 있다'는 혁명적인 아이디어를 제시했어요. '비트'라는 단위도 이 논문에서 처음 사용됐어요. 전화, 인터넷, Wi-Fi, 블루투스 등 모든 통신 기술의 이론적 기반이 이 논문 한 편이에요.</div>
+<div class="note-box"><span class="note-label">[역사] 데이비드 허프만 — 과제가 세상을 바꾸다</span>
+<b>데이비드 허프만</b>(1925~1999)은 MIT 대학원생일 때, 교수가 낸 과제를 풀다가 허프만 코딩을 발명했어요(1952). 교수는 '최적 코드를 찾으라'는 과제를 냈는데, 허프만은 수학적으로 증명된 최적 알고리즘을 만들어 버렸어요. ZIP, PNG, JPEG, MP3 등 거의 모든 압축 형식의 내부에 허프만 코딩이 들어 있어요.</div>
+<h2 class="section-title">[디버깅] 압축 관련 흔한 실수</h2>
+<div class="warn"><span class="warn-label">[디버깅] 압축 관련 흔한 오해</span>
+<b>오해 1:</b> '압축하면 항상 작아진다'<br>→ 틀려요! 이미 압축된 파일이나 랜덤 데이터는 더 커질 수 있어요.<br><br><b>오해 2:</b> 'ZIP을 2번 압축하면 2배 줄어든다'<br>→ 틀려요! 1번 압축 후 패턴이 거의 없어서 2번째는 효과 없어요.<br><br><b>오해 3:</b> '손실 압축은 나쁜 거다'<br>→ 아니에요! JPEG 사진이 원본의 1/10 크기인데 눈으로 차이를 못 느끼면 그게 더 좋은 거예요.<br><br><b>오해 4:</b> '코드 파일을 손실 압축해도 된다'<br>→ 절대 안 돼요! 1비트만 바뀌어도 프로그램이 완전히 망가져요.</div>
+<h2 class="section-title">━━━ 10축 심화 학습 ━━━</h2>
+<h2 class="section-title">[KOI] 정보 이론 실전 기출 유형</h2>
+<div class="note-box"><span class="note-label">[KOI 실전 문제 1] 최소 비트 수</span>
+<b>문제:</b> 학교에 학생이 850명 있다. 각 학생에게 고유한 이진 코드를 부여하려면 최소 몇 비트가 필요한가?<br><br><b>풀이:</b><br>2⁹ = 512 < 850<br>2¹⁰ = 1024 > 850<br><br>답: <b>10비트</b> (log₂850 ≈ 9.73, 올림하면 10)</div>
+<div class="note-box"><span class="note-label">[KOI 실전 문제 2] 허프만 코딩</span>
+<b>문제:</b> 문자 A(50%), B(25%), C(15%), D(10%)에 대해 허프만 코드를 구성하고, 평균 코드 길이를 구하시오.<br><br><b>풀이:</b><br>1. D(10)+C(15) → [DC](25)<br>2. B(25)+[DC](25) → [BDC](50)<br>3. A(50)+[BDC](50) → [전체](100)<br><br>A=0, B=10, C=111, D=110<br>평균 = 0.5×1 + 0.25×2 + 0.15×3 + 0.10×3<br>= 0.5 + 0.5 + 0.45 + 0.3 = <b>1.75비트</b><br>(고정 2비트보다 12.5% 절약)</div>
+<div class="note-box"><span class="note-label">[KOI 실전 문제 3] RLE 압축률</span>
+<b>문제:</b> 문자열 'AAABBBBBCCDDDDDDDDDDD'를 RLE 압축하면?<br>원본 대비 압축률은?<br><br><b>풀이:</b><br>원본: 21글자<br>RLE: A3B5C2D11 → 8글자 (D가 11이라 2자리)<br><br>압축률: 8/21 ≈ 38% (62% 절약)</div>
+<h2 class="section-title">[컴퓨팅사고력] 최적화의 원리</h2>
+<div class="tip"><span class="tip-label">[컴퓨팅사고력] 탐욕법과 허프만 코딩</span>
+허프만 코딩은 <b>탐욕법(Greedy)</b>의 대표적 예시예요.<br><br>매번 '가장 빈도가 낮은 2개'를 고르는 단순한 규칙만 반복하면,<br>결과적으로 전체 최적의 코드가 만들어져요!<br><br>탐욕법이 항상 최적은 아니지만(U0-30에서 배웠죠?),<br>허프만 코딩에서는 수학적으로 증명된 최적이에요.<br><br>이것이 알고리즘의 아름다움이에요: 단순한 규칙 → 최적의 결과</div>
+<div class="tip"><span class="tip-label">[수학연결] 로그와 정보 이론</span>
+정보량 공식 I = log₂(1/P)에서 log₂가 나와요.<br><br>중학교 수학에서 배우는 거듭제곱의 역연산이 로그예요.<br>2³ = 8 ↔ log₂(8) = 3<br><br>이 간단한 관계가 정보 이론, 압축, 암호, 통신의 기초가 돼요.<br>'수학이 어디에 쓰이냐고?' → 바로 여기에!</div>
+
+<h2 class="section-title">용어 정리</h2>
+<table class="trace"><thead><tr><th>용어</th><th>설명</th></tr></thead><tbody><tr><td><code>정보량 (Information)</code></td><td>사건이 전달하는 놀라움의 정도. 확률이 낮을수록 정보량이 커요. 단위는 비트.</td></tr><tr><td><code>엔트로피 (Entropy)</code></td><td>평균 정보량. 시스템의 불확실성을 나타내요. 엔트로피가 높을수록 예측하기 어려워요.</td></tr><tr><td><code>허프만 코딩 (Huffman Coding)</code></td><td>빈도에 따라 가변 길이 코드를 배정하는 최적 압축 알고리즘.</td></tr><tr><td><code>접두어 코드 (Prefix Code)</code></td><td>어떤 코드도 다른 코드의 앞부분이 되지 않는 코드. 구분 기호 없이도 해석 가능해요.</td></tr><tr><td><code>RLE (Run-Length Encoding)</code></td><td>연속 반복을 '값+횟수'로 바꾸는 간단한 압축 방법.</td></tr><tr><td><code>무손실 압축</code></td><td>원본을 100% 복원할 수 있는 압축. ZIP, PNG 등.</td></tr><tr><td><code>손실 압축</code></td><td>사람이 인지하기 어려운 부분을 삭제하는 압축. JPEG, MP3 등.</td></tr><tr><td><code>샤넌의 소스 코딩 정리</code></td><td>데이터를 엔트로피보다 더 작게 압축할 수 없다는 이론적 한계.</td></tr></tbody></table>
+<div class="warmup-box"><div class="warmup-title">이번 유닛 핵심 정리</div><div class="wq"><b>1.</b> 정보량 = 놀라움의 정도. 확률이 낮을수록 정보가 많다</div><div class="wq"><b>2.</b> 1비트 = '예/아니오' 하나. n가지 중 하나 → log₂(n) 비트</div><div class="wq"><b>3.</b> 엔트로피 = 평균 정보량 = 압축의 이론적 한계</div><div class="wq"><b>4.</b> 허프만 코딩: 자주 나오는 건 짧게, 드문 건 길게 → 최적 압축</div><div class="wq"><b>5.</b> 접두어 코드: 코드끼리 헷갈리지 않는 규칙</div><div class="wq"><b>6.</b> 무손실(ZIP/PNG) vs 손실(JPEG/MP3) 압축</div></div>
+<div class="tip"><span class="tip-label">이 유닛에서 연결된 축</span>
+<b>[수학연결]</b> 로그(log₂), 확률, 기댓값 — 정보 이론의 수학적 기초. 중학교 수학과 직접 연결돼요.<br><b>[C언어]</b> RLE 압축 구현, 문자 빈도 세기. 배열+반복문 실전 활용.<br><b>[컴퓨팅사고력]</b> 탐욕법(Greedy)의 대표 사례가 허프만 코딩. 단순한 규칙으로 최적 결과 달성.<br><b>[KOI]</b> 최소 비트 수 계산, 허프만 코딩 트리 구성은 정보올림피아드 필기 출제 범위.<br><b>[디버깅]</b> 이미 압축된 파일 재압축, 손실 압축으로 코드 저장 등 흔한 실수 방지.<br><b>[실생활]</b> ZIP, JPEG, MP3, 유튜브 영상 등 매일 쓰는 기술의 원리가 정보 이론.</div>
+<div class="note-box"><span class="note-label">[실생활] 정보 이론이 쓰이는 곳</span>
+유튜브 1분 영상 원본은 약 10GB지만, H.264 압축으로 약 20MB로 줄여요. 500배 압축! 압축 없이는 인터넷 영상이 불가능해요. 카카오톡 사진도 전송 전에 JPEG 압축을 거쳐요. 게임 설치 파일도 ZIP 계열 압축으로 배포돼요. 정보 이론은 디지털 세상 전체의 기반이에요.</div>
+<div class="note-box"><span class="note-label">[다음 유닛 미리보기]</span>
+데이터를 줄이는 건 배웠는데, 보내는 도중에 데이터가 깨지면 어떡하죠? 전선에 잡음이 끼면 0이 1로 바뀔 수 있어요. 다음 유닛에서는 오류를 <b>자동으로 감지</b>하고 심지어 <b>자동으로 고치는</b> 방법을 배워요. 패리티 비트와 해밍 코드!</div>
+
+
+    <span class="page-num">2</span>
+  </div>
+</div>
+<div class="page">
+  <div class="chapter-page">
+    <div class="chapter-sidebar"></div>
+    <div class="chapter-accent-bar"></div>
+    <div style="flex:1; min-width:0; padding:50px 50px 40px 45px; position:relative;">
+      <div class="problems-chapter-ref">Chapter S-03: 정보 이론</div>
+      <h2 class="problems-title">연습 문제 (Practice Problems)</h2>
+
+        <div class="prob-card">
+          <div class="prob-header">
+            <span class="prob-num">1. 8가지 중 하나를 구별하려면 최소 몇 비트가 필요한가요?
+32가지라면? 100가지라면?</span>
+            <span class="diff diff-basic">하</span>
+          </div>
+          <p class="prob-desc">8가지 중 하나를 구별하려면 최소 몇 비트가 필요한가요?<br>32가지라면? 100가지라면?</p>
+          
+          <div class="contest-write-area" style="margin-top:12px;">
+            <div class="contest-write-label">코드 작성</div>
+            <textarea class="contest-textarea" rows="8" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+          </div>
+        </div>
+        <div class="prob-card">
+          <div class="prob-header">
+            <span class="prob-num">2. 다음 문자열을 RLE로 압축하세요.
+(1) AAAAAAA
+(2) AABBBCCCC
+(3) ABCABC</span>
+            <span class="diff diff-basic">하</span>
+          </div>
+          <p class="prob-desc">다음 문자열을 RLE로 압축하세요.<br>(1) AAAAAAA<br>(2) AABBBCCCC<br>(3) ABCABC</p>
+          
+          <div class="contest-write-area" style="margin-top:12px;">
+            <div class="contest-write-label">코드 작성</div>
+            <textarea class="contest-textarea" rows="8" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+          </div>
+        </div>
+        <div class="prob-card">
+          <div class="prob-header">
+            <span class="prob-num">3. 공정한 주사위를 던져서 나온 눈의 정보량은 몇 비트인가요?
+(힌트: 6가지 중 하나, log₂(6) ≈ ?)</span>
+            <span class="diff diff-basic">하</span>
+          </div>
+          <p class="prob-desc">공정한 주사위를 던져서 나온 눈의 정보량은 몇 비트인가요?<br>(힌트: 6가지 중 하나, log₂(6) ≈ ?)</p>
+          
+          <div class="contest-write-area" style="margin-top:12px;">
+            <div class="contest-write-label">코드 작성</div>
+            <textarea class="contest-textarea" rows="8" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+          </div>
+        </div>
+        <div class="prob-card">
+          <div class="prob-header">
+            <span class="prob-num">4. 문자 3개의 빈도가 A(60%), B(30%), C(10%)입니다.
+허프만 트리를 직접 그리고, 각 문자의 코드를 구하세요.
+평균 코드 길이도 계산하세요.</span>
+            <span class="diff diff-mid">중</span>
+          </div>
+          <p class="prob-desc">문자 3개의 빈도가 A(60%), B(30%), C(10%)입니다.<br>허프만 트리를 직접 그리고, 각 문자의 코드를 구하세요.<br>평균 코드 길이도 계산하세요.</p>
+          
+          <div class="contest-write-area" style="margin-top:12px;">
+            <div class="contest-write-label">코드 작성</div>
+            <textarea class="contest-textarea" rows="8" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+          </div>
+        </div>
+        <div class="prob-card">
+          <div class="prob-header">
+            <span class="prob-num">5. 고정 길이 코드 vs 허프만 코드의 비트 수를 비교하세요.
+문자: P(40%), Q(30%), R(20%), S(10%)
+1000글자 문서를 저장할 때, 각 방식으로 몇 비트가 필요한가요?</span>
+            <span class="diff diff-mid">중</span>
+          </div>
+          <p class="prob-desc">고정 길이 코드 vs 허프만 코드의 비트 수를 비교하세요.<br>문자: P(40%), Q(30%), R(20%), S(10%)<br>1000글자 문서를 저장할 때, 각 방식으로 몇 비트가 필요한가요?</p>
+          
+          <div class="contest-write-area" style="margin-top:12px;">
+            <div class="contest-write-label">코드 작성</div>
+            <textarea class="contest-textarea" rows="8" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+          </div>
+        </div>
+        <div class="prob-card">
+          <div class="prob-header">
+            <span class="prob-num">6. 다음 접두어 코드가 올바른지 판별하세요.
+(1) A=0, B=01, C=10
+(2) A=0, B=10, C=110, D=111
+(3) A=1, B=01, C=001, D=000
+올바르지 않다면 이유를 설명하세요.</span>
+            <span class="diff diff-mid">중</span>
+          </div>
+          <p class="prob-desc">다음 접두어 코드가 올바른지 판별하세요.<br>(1) A=0, B=01, C=10<br>(2) A=0, B=10, C=110, D=111<br>(3) A=1, B=01, C=001, D=000<br>올바르지 않다면 이유를 설명하세요.</p>
+          
+          <div class="contest-write-area" style="margin-top:12px;">
+            <div class="contest-write-label">코드 작성</div>
+            <textarea class="contest-textarea" rows="8" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+          </div>
+        </div>
+        <div class="prob-card">
+          <div class="prob-header">
+            <span class="prob-num">7. [엔트로피] 동전이 앞면 70%, 뒷면 30%로 편향되어 있다.
+이 동전의 엔트로피를 구하세요.
+(힌트: H = 0.7 × log₂(1/0.7) + 0.3 × log₂(1/0.3))</span>
+            <span class="diff diff-hard">상</span>
+          </div>
+          <p class="prob-desc">[엔트로피] 동전이 앞면 70%, 뒷면 30%로 편향되어 있다.<br>이 동전의 엔트로피를 구하세요.<br>(힌트: H = 0.7 × log₂(1/0.7) + 0.3 × log₂(1/0.3))</p>
+          
+          <div class="contest-write-area" style="margin-top:12px;">
+            <div class="contest-write-label">코드 작성</div>
+            <textarea class="contest-textarea" rows="8" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+          </div>
+        </div>
+        <div class="prob-card">
+          <div class="prob-header">
+            <span class="prob-num">8. [코딩] C언어로 문자열의 각 문자 빈도를 세는 프로그램을 작성하세요.
+입력: "AABBBCCCCDDDDD"
+출력: A:2 B:3 C:4 D:5</span>
+            <span class="diff diff-hard">상</span>
+          </div>
+          <p class="prob-desc">[코딩] C언어로 문자열의 각 문자 빈도를 세는 프로그램을 작성하세요.<br>입력: "AABBBCCCCDDDDD"<br>출력: A:2 B:3 C:4 D:5</p>
+          
+          <div class="contest-write-area" style="margin-top:12px;">
+            <div class="contest-write-label">코드 작성</div>
+            <textarea class="contest-textarea" rows="8" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+          </div>
+        </div>
+      <span class="page-num">3</span>
+    </div>
+  </div>
+</div>
+</body>
+</html>

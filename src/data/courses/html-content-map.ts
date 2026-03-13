@@ -6,23 +6,23 @@
  * C언어 (courseId=4): part1-u01 ~ part7-u18
  */
 
-// part0: 컴퓨터 기초 유닛 파일명
+// part0: 컴퓨터 기초 유닛 파일명 (v2 버전)
 const PART0_FILES: Record<number, string> = {
-  1:'part0-u01-computer-intro-pdf.html',2:'part0-u02-hardware-pdf.html',3:'part0-u03-bits-pdf.html',
-  4:'part0-u04-binary-decimal-pdf.html',5:'part0-u05-octal-hex-pdf.html',6:'part0-u06-ascii-pdf.html',
-  7:'part0-u07-files-folders-pdf.html',8:'part0-u08-terminal-pdf.html',9:'part0-u09-true-false-pdf.html',
-  10:'part0-u10-and-pdf.html',11:'part0-u11-or-pdf.html',12:'part0-u12-not-pdf.html',
-  13:'part0-u13-logic-combo-pdf.html',14:'part0-u14-comparison-pdf.html',15:'part0-u15-logic-puzzle-pdf.html',
-  16:'part0-u16-variable-pdf.html',17:'part0-u17-division-remainder-pdf.html',18:'part0-u18-pattern-generalize-pdf.html',
-  19:'part0-u19-coordinates-pdf.html',20:'part0-u20-counting-cases-pdf.html',21:'part0-u21-prime-pdf.html',
-  22:'part0-u22-gcd-lcm-pdf.html',23:'part0-u23-decomposition-pdf.html',24:'part0-u24-pattern-recognition-pdf.html',
-  25:'part0-u25-abstraction-pdf.html',26:'part0-u26-algorithm-design-pdf.html',27:'part0-u27-flowchart-pdf.html',
-  28:'part0-u28-pseudocode-pdf.html',29:'part0-u29-brute-force-pdf.html',30:'part0-u30-greedy-pdf.html',
-  31:'part0-u31-simulation-pdf.html',32:'part0-u32-sets-pdf.html',33:'part0-u33-permutation-combination-pdf.html',
-  34:'part0-u34-recursion-pdf.html',35:'part0-u35-graph-pdf.html',36:'part0-u36-stack-queue-pdf.html',
-  37:'part0-u37-programming-language-pdf.html',38:'part0-u38-why-c-pdf.html',39:'part0-u39-setup-pdf.html',
-  40:'part0-u40-c-skeleton-pdf.html',41:'part0-u41-compile-pdf.html',42:'part0-u42-comments-indent-pdf.html',
-  43:'part0-u43-flowchart-project-pdf.html',44:'part0-u44-comprehensive-quiz-pdf.html',
+  1:'part0-u01-computer-intro-v2.html',2:'part0-u02-hardware-v2.html',3:'part0-u03-bits-v2.html',
+  4:'part0-u04-binary-decimal-v2.html',5:'part0-u05-octal-hex-v2.html',6:'part0-u06-ascii-v2.html',
+  7:'part0-u07-files-folders-v2.html',8:'part0-u08-terminal-v2.html',9:'part0-u09-true-false-v2.html',
+  10:'part0-u10-and-v2.html',11:'part0-u11-or-v2.html',12:'part0-u12-not-v2.html',
+  13:'part0-u13-logic-combo-v2.html',14:'part0-u14-comparison-v2.html',15:'part0-u15-logic-puzzle-v2.html',
+  16:'part0-u16-variable-v2.html',17:'part0-u17-division-remainder-v2.html',18:'part0-u18-pattern-generalize-v2.html',
+  19:'part0-u19-coordinates-v2.html',20:'part0-u20-counting-cases-v2.html',21:'part0-u21-prime-v2.html',
+  22:'part0-u22-gcd-lcm-v2.html',23:'part0-u23-decomposition-v2.html',24:'part0-u24-pattern-recognition-v2.html',
+  25:'part0-u25-abstraction-v2.html',26:'part0-u26-algorithm-design-v2.html',27:'part0-u27-flowchart-v2.html',
+  28:'part0-u28-pseudocode-v2.html',29:'part0-u29-brute-force-v2.html',30:'part0-u30-greedy-v2.html',
+  31:'part0-u31-simulation-v2.html',32:'part0-u32-sets-v2.html',33:'part0-u33-permutation-combination-v2.html',
+  34:'part0-u34-recursion-v2.html',35:'part0-u35-graph-v2.html',36:'part0-u36-stack-queue-v2.html',
+  37:'part0-u37-programming-language-v2.html',38:'part0-u38-why-c-v2.html',39:'part0-u39-setup-v2.html',
+  40:'part0-u40-c-skeleton-v2.html',41:'part0-u41-compile-v2.html',42:'part0-u42-comments-indent-v2.html',
+  43:'part0-u43-flowchart-project-v2.html',44:'part0-u44-comprehensive-quiz-v2.html',
 };
 
 // C언어: part1~7 유닛 파일명 (유닛 번호는 파트 내에서 리셋)
@@ -74,7 +74,7 @@ export function getHtmlContentPath(courseId: string, unitIndex: number): string 
   if (courseId === '8') {
     // 컴퓨터 기초: unitIndex 1-based → part0 파일
     const file = PART0_FILES[unitIndex];
-    return file ? `/learn/C언어/${file}` : null;
+    return file ? `/learn/컴퓨터기초/${file}` : null;
   }
   if (courseId === '4') {
     // C언어: unitIndex는 전체 유닛 순서 (1-based)

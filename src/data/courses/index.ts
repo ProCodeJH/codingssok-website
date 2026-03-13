@@ -5,6 +5,7 @@
 
 import type { Course, Chapter } from './types';
 import { PYTHON_BASICS } from './python-basics';
+import { COMPUTER_BASICS } from './computer-basics';
 
 // ── 빈 챕터 (준비 중 코스용) ──
 const EMPTY_CHAPTERS: Chapter[] = [
@@ -91,10 +92,10 @@ export const COURSES: Course[] = [
         gradient: 'linear-gradient(135deg, #ec4899, #60a5fa)',
         cardImage: '/images/courses/computer-basics.jpg',
         description: '컴퓨터의 기본 구성 요소, 운영체제, 파일 관리, 인터넷 활용 등 컴퓨터 기초 지식을 배웁니다.',
-        totalUnits: 0,
+        totalUnits: 67,
         totalProblems: 0,
-        estimatedHours: 0,
-        chapters: EMPTY_CHAPTERS,
+        estimatedHours: 40,
+        chapters: COMPUTER_BASICS,
     },
     {
         id: '1',

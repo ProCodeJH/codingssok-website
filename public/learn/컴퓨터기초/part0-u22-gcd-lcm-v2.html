@@ -1,0 +1,1307 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>코딩쏙 교재 — 최대공약수(GCD)와 최소공배수(LCM)</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+
+  :root {
+    --navy: #1a2e4a;
+    --navy-mid: #2c4a6e;
+    --navy-light: #3d6590;
+    --orange: #e07830;
+    --orange-light: #f5e6d8;
+    --white: #ffffff;
+    --bg: #f7f8fa;
+    --bg-warm: #faf9f7;
+    --gray-50: #f9fafb;
+    --gray-100: #f3f4f6;
+    --gray-200: #e5e7eb;
+    --gray-300: #d1d5db;
+    --gray-400: #9ca3af;
+    --gray-500: #6b7280;
+    --gray-600: #4b5563;
+    --gray-700: #374151;
+    --gray-800: #1f2937;
+    --text: #2d3748;
+    --green: #16a34a;
+    --green-bg: #dcfce7;
+    --red: #dc2626;
+    --red-bg: #fee2e2;
+    --blue: #2563eb;
+    --blue-bg: #dbeafe;
+    --yellow-bg: #fef9c3;
+    --font: 'Noto Sans KR', sans-serif;
+    --mono: 'JetBrains Mono', 'Consolas', monospace;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: var(--font); background: #e8eaed; font-size: 15px; }
+
+  /* ========== PAGE ========== */
+  .page {
+    width: 210mm;
+    min-height: 295mm;
+    margin: 24px auto;
+    background: var(--white);
+    box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* ========== PAGE 1: CHAPTER START ========== */
+  .chapter-page {
+    display: flex;
+    min-height: 295mm;
+  }
+
+  .chapter-sidebar {
+    width: 10px;
+    background: var(--navy);
+    flex-shrink: 0;
+  }
+
+  .chapter-accent-bar {
+    width: 7px;
+    background: var(--orange);
+    flex-shrink: 0;
+  }
+
+  .chapter-body {
+    flex: 1;
+    padding: 70px 65px 50px 55px;
+    position: relative;
+  }
+
+  .chapter-watermark {
+    position: absolute;
+    top: -10px;
+    right: -15px;
+    font-size: 280px;
+    font-weight: 900;
+    color: rgba(180,195,212,0.35);
+    line-height: 1;
+    pointer-events: none;
+    letter-spacing: -10px;
+  }
+
+  .chapter-label {
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--navy-mid);
+    letter-spacing: 2px;
+    margin-bottom: 4px;
+  }
+
+  .chapter-title {
+    font-size: 44px;
+    font-weight: 900;
+    color: var(--navy);
+    line-height: 1.15;
+    margin-bottom: 12px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .chapter-sub {
+    font-size: 16px;
+    color: var(--gray-500);
+    font-weight: 400;
+    margin-bottom: 20px;
+    padding-bottom: 28px;
+    border-bottom: 1px solid var(--gray-200);
+  }
+
+  /* Learning objectives */
+  .obj-title {
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--navy);
+    margin-bottom: 16px;
+    margin-top: 32px;
+  }
+
+  .obj-list {
+    list-style: none;
+    margin-bottom: 40px;
+  }
+
+  .obj-list li {
+    padding: 5px 0 5px 24px;
+    position: relative;
+    font-size: 15px;
+    color: var(--gray-700);
+    line-height: 1.6;
+  }
+
+  .obj-list li::before {
+    content: '•';
+    position: absolute;
+    left: 8px;
+    color: var(--navy-mid);
+    font-weight: 700;
+  }
+
+  /* Prerequisites flow */
+  .prereq-title {
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--navy);
+    margin-bottom: 18px;
+  }
+
+  .prereq-flow {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    margin-bottom: 44px;
+  }
+
+  .prereq-item {
+    padding: 9px 22px;
+    border: 1.5px solid var(--gray-300);
+    border-radius: 50px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--gray-600);
+    background: var(--white);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+  }
+
+  .prereq-item.current {
+    border-color: var(--navy);
+    color: var(--navy);
+    font-weight: 700;
+    background: #edf2f7;
+    box-shadow: 0 2px 6px rgba(26,46,74,0.12);
+  }
+
+  .prereq-arrow {
+    width: 36px;
+    text-align: center;
+    color: var(--gray-300);
+    font-size: 18px;
+    font-weight: 300;
+  }
+
+  /* Predict box */
+  .predict-box {
+    background: var(--gray-50);
+    border: 1.5px solid var(--gray-200);
+    border-radius: 12px;
+    padding: 24px 28px;
+  }
+
+  .predict-label {
+    display: inline-block;
+    background: var(--orange);
+    color: var(--white);
+    font-size: 12px;
+    font-weight: 600;
+    padding: 3px 12px;
+    border-radius: 4px;
+    margin-bottom: 14px;
+    letter-spacing: 0.5px;
+  }
+
+  .predict-q {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--navy);
+    margin-bottom: 16px;
+  }
+
+  .predict-code {
+    background: var(--white);
+    border: 1px solid var(--gray-200);
+    border-radius: 8px;
+    padding: 14px 18px;
+    font-family: var(--mono);
+    font-size: 13px;
+    line-height: 1.65;
+    color: var(--gray-700);
+  }
+
+  /* ========== PAGE 2: CORE CONTENT ========== */
+  .content-page {
+    padding: 55px 65px;
+  }
+
+  .unit-header-bar {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    margin-bottom: 8px;
+  }
+
+  .unit-tag {
+    font-size: 12px;
+    color: var(--orange);
+    font-weight: 600;
+    letter-spacing: 1px;
+  }
+
+  .unit-title-sm {
+    font-size: 14px;
+    color: var(--gray-400);
+    font-weight: 400;
+  }
+
+  .section-title {
+    font-size: 24px;
+    font-weight: 800;
+    color: var(--navy);
+    margin-bottom: 24px;
+    margin-top: 8px;
+    padding-left: 16px;
+    border-left: 5px solid var(--orange);
+  }
+
+  p {
+    font-size: 15.5px;
+    line-height: 1.9;
+    color: var(--text);
+    margin-bottom: 18px;
+  }
+
+  p code {
+    font-family: var(--mono);
+    font-size: 13.5px;
+    background: #f1f3f5;
+    padding: 2px 7px;
+    border-radius: 4px;
+    color: var(--navy);
+    font-weight: 500;
+  }
+
+  /* Code block */
+  .code-wrap {
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    border: 1px solid var(--gray-200);
+    margin: 22px 0;
+  }
+
+  .code-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 9px 18px;
+    background: var(--navy);
+    font-size: 12px;
+  }
+
+  .code-bar-lang {
+    font-family: var(--mono);
+    font-weight: 600;
+    color: var(--white);
+  }
+
+  .code-bar-file {
+    color: rgba(255,255,255,0.6);
+    font-weight: 400;
+  }
+
+  .code-body {
+    background: #f8f9fb;
+    padding: 20px 0;
+    font-family: var(--mono);
+    font-size: 13.5px;
+    line-height: 1.75;
+    border: 1px solid var(--gray-200);
+    border-top: none;
+    border-radius: 0 0 12px 12px;
+  }
+
+  .code-line {
+    display: flex;
+    padding: 0 20px;
+  }
+
+  .code-line:hover {
+    background: #f0f4f8;
+  }
+
+  .code-line.highlighted {
+    background: #fff8e1;
+  }
+
+  .ln {
+    width: 30px;
+    text-align: right;
+    color: #b8bfc8;
+    font-size: 12px;
+    margin-right: 18px;
+    user-select: none;
+    flex-shrink: 0;
+    padding-top: 1px;
+  }
+
+  .lc { flex: 1; }
+
+  /* syntax */
+  .s-pp { color: #8b5cf6; font-weight: 600; }
+  .s-str { color: #d97706; }
+  .s-type { color: #2563eb; font-weight: 500; }
+  .s-kw { color: #7c3aed; font-weight: 500; }
+  .s-fn { color: #059669; font-weight: 500; }
+  .s-num { color: #dc2626; }
+  .s-cm { color: #9ca3af; font-style: italic; }
+
+  /* Output block */
+  .output-wrap {
+    border-radius: 10px;
+    overflow: hidden;
+    margin: 10px 0 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    border: 1px solid #d1d5db;
+  }
+
+  .output-bar {
+    padding: 9px 18px;
+    background: #374151;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--white);
+    letter-spacing: 0.5px;
+  }
+
+  .output-body {
+    padding: 16px 20px;
+    font-family: var(--mono);
+    font-size: 13.5px;
+    line-height: 1.7;
+    color: var(--gray-800);
+    background: #f1f5f9;
+    border: 1px solid var(--gray-200);
+    border-top: none;
+    border-radius: 0 0 10px 10px;
+  }
+
+  /* Callout */
+  .tip {
+    margin: 28px 0;
+    padding: 18px 24px;
+    background: #dbeafe;
+    border-left: 5px solid #2563eb;
+    border-radius: 0 12px 12px 0;
+    font-size: 14.5px;
+    line-height: 1.8;
+    color: var(--text);
+  }
+
+  .tip-label {
+    font-weight: 700;
+    color: #2563eb;
+    font-size: 13px;
+    display: block;
+    margin-bottom: 4px;
+  }
+
+  .warn {
+    margin: 28px 0;
+    padding: 18px 24px;
+    background: #fef3c7;
+    border-left: 5px solid #d97706;
+    border-radius: 0 12px 12px 0;
+    font-size: 14.5px;
+    line-height: 1.8;
+  }
+
+  .warn-label {
+    font-weight: 700;
+    color: #d97706;
+    font-size: 13px;
+    display: block;
+    margin-bottom: 4px;
+  }
+
+  .note-box {
+    margin: 28px 0;
+    padding: 18px 24px;
+    background: #e2e8f0;
+    border-left: 5px solid #64748b;
+    border-radius: 0 12px 12px 0;
+    font-size: 14.5px;
+    line-height: 1.8;
+  }
+
+  .note-label {
+    font-weight: 700;
+    color: var(--gray-600);
+    font-size: 13px;
+    display: block;
+    margin-bottom: 4px;
+  }
+
+  /* Trace table */
+  table.trace {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    margin: 28px 0;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+    font-size: 14px;
+  }
+
+  table.trace th {
+    background: var(--navy);
+    color: var(--white);
+    padding: 10px 16px;
+    text-align: left;
+    font-weight: 500;
+    font-size: 13px;
+  }
+
+  table.trace td {
+    padding: 10px 16px;
+    border-bottom: 1px solid var(--gray-200);
+    color: var(--gray-700);
+  }
+
+  table.trace tr:nth-child(even) td { background: var(--gray-50); }
+  table.trace tr:last-child td { border-bottom: none; }
+
+  table.trace td code {
+    font-family: var(--mono);
+    font-size: 12.5px;
+    background: #eef1f5;
+    padding: 2px 6px;
+    border-radius: 4px;
+    color: var(--navy);
+  }
+
+  /* ========== PAGE 3: PROBLEMS ========== */
+  .problems-header {
+    margin-bottom: 8px;
+  }
+
+  .problems-chapter-ref {
+    font-size: 13px;
+    color: var(--gray-500);
+    margin-bottom: 4px;
+  }
+
+  .problems-title {
+    font-size: 28px;
+    font-weight: 800;
+    color: var(--navy);
+    margin-bottom: 24px;
+  }
+
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 16px;
+  }
+
+  .prob-card {
+    background: var(--white);
+    border: 1px solid var(--gray-200);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 3px 15px rgba(0,0,0,0.06);
+  }
+
+  .prob-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 16px;
+    background: var(--navy);
+  }
+
+  .prob-num {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--white);
+  }
+
+  .diff {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    font-size: 12px;
+    font-weight: 800;
+  }
+
+  .diff-basic { background: #22c55e; color: white; }
+  .diff-mid { background: #f59e0b; color: white; }
+  .diff-hard { background: #ef4444; color: white; }
+
+  .prob-desc {
+    font-size: 13.5px;
+    line-height: 1.65;
+    color: var(--gray-600);
+    margin-bottom: 10px;
+    padding: 14px 16px 0;
+  }
+
+  .prob-code {
+    background: var(--gray-50);
+    border: 1px solid var(--gray-200);
+    border-radius: 6px;
+    padding: 10px 14px;
+    margin: 0 16px 16px;
+    font-family: var(--mono);
+    font-size: 12.5px;
+    line-height: 1.55;
+    color: var(--gray-600);
+  }
+
+  /* Competition section */
+  .comp-section {
+    margin-top: 32px;
+    padding-top: 24px;
+    border-top: 2px solid var(--navy);
+  }
+
+  .comp-title {
+    font-size: 22px;
+    font-weight: 800;
+    color: var(--navy);
+    margin-bottom: 20px;
+  }
+
+  .comp-card {
+    background: var(--white);
+    border: 1.5px solid var(--gray-200);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 18px rgba(0,0,0,0.06);
+  }
+
+  .comp-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 16px;
+    background: #0f766e;
+  }
+
+  .comp-header .comp-name {
+    color: var(--white);
+    font-size: 15px;
+    font-weight: 700;
+    margin: 0;
+  }
+
+  .comp-inner {
+    padding: 14px 18px 18px;
+  }
+
+  .comp-badge {
+    display: inline-block;
+    padding: 3px 12px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 700;
+  }
+
+  .badge-bj { background: #93c5fd; color: #1e3a5f; }
+  .badge-cu { background: #c4b5fd; color: #3b1f7e; }
+  .badge-pg { background: #7dd3fc; color: #0c4a6e; }
+
+  .comp-name {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--navy);
+    margin-bottom: 6px;
+  }
+
+  .comp-desc {
+    font-size: 14px;
+    color: var(--gray-600);
+    line-height: 1.7;
+    margin-bottom: 14px;
+  }
+
+  .io-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+
+  .io-card {
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid var(--gray-200);
+  }
+
+  .io-h {
+    padding: 6px 14px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--gray-600);
+    background: #e2e8f0;
+  }
+
+  .io-c {
+    padding: 10px 14px;
+    font-family: var(--mono);
+    font-size: 13px;
+    line-height: 1.5;
+    background: var(--white);
+  }
+
+  /* ========== DEBUG LAB ========== */
+  .debug-section {
+    margin: 24px 0;
+    border: 2px solid var(--red);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+
+  .debug-bar {
+    background: var(--red);
+    color: var(--white);
+    padding: 10px 20px;
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 1px;
+  }
+
+  .debug-body {
+    padding: 20px;
+    background: #fef2f2;
+  }
+
+  /* 10축 connection */
+  .connect-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 16px;
+    margin: 28px 0;
+  }
+
+  .connect-card {
+    border-radius: 12px;
+    padding: 20px;
+    text-align: center;
+    border: 1px solid var(--gray-200);
+    box-shadow: 0 3px 14px rgba(0,0,0,0.05);
+  }
+
+  .connect-card h5 {
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 8px;
+  }
+
+  .connect-card p {
+    font-size: 13px;
+    margin: 0;
+    color: var(--gray-600);
+    line-height: 1.6;
+  }
+
+  .cc1 { border-top: 3px solid #8b5cf6; }
+  .cc1 h5 { color: #8b5cf6; }
+  .cc2 { border-top: 3px solid var(--green); }
+  .cc2 h5 { color: var(--green); }
+  .cc3 { border-top: 3px solid var(--navy); }
+  .cc3 h5 { color: var(--navy); }
+
+  /* PAGE NUMBER */
+  .page-num {
+    position: absolute;
+    bottom: 20px;
+    right: 30px;
+    font-size: 12px;
+    color: var(--gray-400);
+  }
+
+  /* WARMUP */
+  .warmup-box {
+    background: #e0e7f1;
+    border-radius: 12px;
+    padding: 24px 28px;
+    margin: 28px 0;
+    border: 2px solid #c7d2e0;
+  }
+
+  .warmup-title {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--navy);
+    margin-bottom: 14px;
+  }
+
+  .wq {
+    padding: 9px 16px;
+    background: var(--white);
+    border-radius: 8px;
+    margin-bottom: 8px;
+    font-size: 14px;
+    border: 1px solid var(--gray-200);
+    color: var(--gray-700);
+  }
+
+  .wq b { color: var(--navy); margin-right: 6px; }
+  .wq .hint { color: var(--gray-400); font-size: 13px; }
+
+  /* ===== CONTEST PROBLEMS PAGE ===== */
+  .contest-page-wrap .chapter-page {
+    min-height: auto;
+  }
+
+  .contest-page-wrap .chapter-page > div:last-child {
+    min-width: 0;
+    overflow-wrap: break-word;
+    word-break: break-word;
+  }
+
+  .contest-card {
+    background: white;
+    border: 1.5px solid var(--gray-200);
+    border-radius: 12px;
+    margin-bottom: 28px;
+    overflow: hidden;
+    break-inside: avoid;
+  }
+
+  .contest-header {
+    background: var(--navy);
+    color: white;
+    padding: 14px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .contest-num-source {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .contest-num {
+    font-weight: 700;
+    font-size: 16px;
+  }
+
+  .contest-source {
+    background: rgba(255,255,255,0.15);
+    padding: 3px 10px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 500;
+  }
+
+  .contest-body {
+    padding: 20px 24px 24px;
+  }
+
+  .contest-question {
+    font-size: 15px;
+    line-height: 1.7;
+    color: var(--text);
+    margin: 0 0 16px;
+    word-break: break-word;
+    overflow-wrap: break-word;
+  }
+
+  .contest-expected {
+    background: #1e293b;
+    border-radius: 8px;
+    overflow: hidden;
+    margin-bottom: 20px;
+  }
+
+  .contest-expected-label {
+    background: #334155;
+    color: #94a3b8;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 6px 14px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .contest-expected-body {
+    color: #e2e8f0;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    line-height: 1.6;
+    padding: 12px 16px;
+    margin: 0;
+    white-space: pre;
+  }
+
+  .contest-write-area {
+    border: 2px dashed var(--gray-300);
+    border-radius: 10px;
+    overflow: hidden;
+    transition: border-color 0.2s;
+  }
+
+  .contest-write-area:focus-within {
+    border-color: var(--orange);
+    border-style: solid;
+  }
+
+  .contest-write-label {
+    background: var(--bg);
+    color: var(--gray-500);
+    font-size: 12px;
+    font-weight: 600;
+    padding: 8px 14px;
+    border-bottom: 1px solid var(--gray-200);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .contest-textarea {
+    width: 100%;
+    min-height: 200px;
+    padding: 16px 18px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    line-height: 1.7;
+    color: var(--text);
+    background: #fafbfc;
+    border: none;
+    outline: none;
+    resize: vertical;
+    tab-size: 4;
+    box-sizing: border-box;
+  }
+
+  .contest-textarea::placeholder {
+    color: var(--gray-300);
+  }
+
+  @media print {
+    body { background: white; }
+    .page { box-shadow: none; margin: 0; page-break-after: always; }
+    .contest-textarea { border: 1px solid var(--gray-300); min-height: 180px; }
+  }
+
+</style>
+</head>
+<body>
+
+<div class="page">
+  <div class="chapter-page">
+    <div class="chapter-sidebar"></div>
+    <div class="chapter-accent-bar"></div>
+    <div class="chapter-body">
+      <div class="chapter-watermark">22</div>
+      <div class="chapter-label">Chapter 22</div>
+      <h1 class="chapter-title">최대공약수(GCD)와 최소공배수(LCM)</h1>
+      <p class="chapter-sub">약수와 배수를 복습하고, 유클리드 호제법으로 GCD를 구하고, GCD로 LCM을 계산해요.</p>
+
+      <h3 class="obj-title">이 유닛에서 배우는 것</h3>
+      <ul class="obj-list">
+        <li>최대공약수(GCD)가 무엇인지 설명할 수 있어요.</li>
+        <li>최소공배수(LCM)가 무엇인지 설명할 수 있어요.</li>
+        <li>GCD와 LCM의 관계를 이해해요.</li>
+        <li>유클리드 호제법으로 GCD를 구할 수 있어요.</li>
+        <li>[심화] C 코드로 GCD/LCM을 구현할 수 있어요.</li>
+        <li>[심화] 서로소와 기약분수의 관계를 이해해요.</li>
+        <li>[심화 내용] 확장 유클리드 알고리즘을 이해해요.</li>
+        <li>[심화 내용] 모듈러 역원과 RSA의 연결을 알아요.</li>
+        <li>[심화 내용] GCD의 시간 복잡도를 분석할 수 있어요.</li>
+        <li>[심화 내용] 다항식의 GCD를 이해해요.</li>
+      </ul>
+
+      <h3 class="prereq-title">선수 학습</h3>
+      <div class="prereq-flow">
+        <div class="prereq-item">나눗셈과 나머지 (U18~U19)</div><div class="prereq-arrow">→</div>
+        <div class="prereq-item">소수와 약수 개념 (U21)</div><div class="prereq-arrow">→</div>
+        <div class="prereq-item current">반복과 조건 판단</div>
+      </div>
+
+      
+
+      <span class="page-num">1</span>
+    </div>
+  </div>
+</div>
+<div class="page">
+  <div class="content-page">
+    <div class="unit-header-bar">
+      <span class="unit-tag">UNIT 22</span>
+      <span class="unit-title-sm">최대공약수(GCD)와 최소공배수(LCM)</span>
+    </div>
+<h2 class="section-title">약수 복습 — 누가 나를 나눌 수 있을까?</h2>
+
+<p><b>약수</b>란 어떤 수를 나머지 없이 나눌 수 있는 수예요. 12의 약수는 1, 2, 3, 4, 6, 12이고, 18의 약수는 1, 2, 3, 6, 9, 18이에요.</p>
+<div class="note-box"><span class="note-label">[핵심] 약수, 공약수, 최대공약수</span>
+<b>약수</b>: N을 나머지 없이 나누는 수<br>12의 약수: {1, 2, 3, 4, 6, 12}<br>18의 약수: {1, 2, 3, 6, 9, 18}<br><br><b>공약수</b>: 두 수의 공통된 약수<br>12와 18의 공약수: {1, 2, 3, 6}<br><br><b>최대공약수(GCD)</b>: 공약수 중 가장 큰 수<br>GCD(12, 18) = <b>6</b></div>
+<!-- image -->
+<div style="margin:22px 0"></div>
+<table class="trace"><thead><tr><th>나누는 수</th><th>12 ÷ 나누는 수</th><th>나머지</th><th>12의 약수?</th><th>18 ÷ 나누는 수</th><th>나머지</th><th>18의 약수?</th></tr></thead><tbody><tr><td>1</td><td>12</td><td>0</td><td>O</td><td>18</td><td>0</td><td>O</td></tr><tr><td>2</td><td>6</td><td>0</td><td>O</td><td>9</td><td>0</td><td>O</td></tr><tr><td>3</td><td>4</td><td>0</td><td>O</td><td>6</td><td>0</td><td>O</td></tr><tr><td>4</td><td>3</td><td>0</td><td>O</td><td>4</td><td>2</td><td>X</td></tr><tr><td>5</td><td>2</td><td>2</td><td>X</td><td>3</td><td>3</td><td>X</td></tr><tr><td>6</td><td>2</td><td>0</td><td>O</td><td>3</td><td>0</td><td>O</td></tr></tbody></table>
+<h2 class="section-title">배수 복습 — 나의 곱셈 가족</h2>
+<p><b>배수</b>란 어떤 수에 자연수를 곱한 수예요. 4의 배수는 4, 8, 12, 16, 20, ...이고, 6의 배수는 6, 12, 18, 24, 30, ...이에요.</p>
+<table class="trace"><thead><tr><th>곱하는 수</th><th>4의 배수</th><th>6의 배수</th><th>공배수?</th></tr></thead><tbody><tr><td>1</td><td>4</td><td>6</td><td></td></tr><tr><td>2</td><td>8</td><td>12</td><td></td></tr><tr><td>3</td><td>12</td><td>18</td><td>12 = 공배수!</td></tr><tr><td>4</td><td>16</td><td>24</td><td></td></tr><tr><td>5</td><td>20</td><td>30</td><td></td></tr><tr><td>6</td><td>24</td><td>36</td><td>24 = 공배수!</td></tr><tr><td>7</td><td>28</td><td>42</td><td></td></tr><tr><td>8</td><td>32</td><td>48</td><td></td></tr><tr><td>9</td><td>36</td><td>54</td><td>36 = 공배수!</td></tr></tbody></table>
+<div class="note-box"><span class="note-label">[핵심] 배수, 공배수, 최소공배수</span>
+<b>배수</b>: N에 자연수를 곱한 수 (N, 2N, 3N, ...)<br>4의 배수: 4, 8, <b>12</b>, 16, 20, <b>24</b>, 28, 32, <b>36</b>, ...<br>6의 배수: 6, <b>12</b>, 18, <b>24</b>, 30, <b>36</b>, ...<br><br><b>공배수</b>: 두 수의 공통된 배수<br>4와 6의 공배수: 12, 24, 36, ...<br><br><b>최소공배수(LCM)</b>: 공배수 중 가장 작은 수<br>LCM(4, 6) = <b>12</b></div>
+<div class="tip"><span class="tip-label">[기억법] GCD는 Greatest, LCM은 Least</span>
+<b>GCD</b> = Greatest Common <b>D</b>ivisor = 최대공약수 (가장 <b>큰</b> 공통 약수)<br><b>LCM</b> = <b>L</b>east Common Multiple = 최소공배수 (가장 <b>작은</b> 공통 배수)<br><br>약수 → '큰' 것 (Greatest)<br>배수 → '작은' 것 (Least)</div>
+<div class="debug-section"><div class="debug-bar">DEBUG LAB — 에러를 찾으시오</div><div class="debug-body">
+
+<p style="margin:14px 0 0; font-size:14px;"><b>에러:</b> </p>
+<p style="font-size:14px;"><b>수정:</b> </p>
+</div></div>
+<div class="debug-section"><div class="debug-bar">DEBUG LAB — 에러를 찾으시오</div><div class="debug-body">
+
+<p style="margin:14px 0 0; font-size:14px;"><b>에러:</b> </p>
+<p style="font-size:14px;"><b>수정:</b> </p>
+</div></div>
+<h2 class="section-title">유클리드 호제법 — 나머지로 GCD 구하기!</h2>
+
+<p>유클리드 호제법(互除法)의 원리는 간단해요: <b>GCD(a, b) = GCD(b, a % b)</b>. 큰 수를 작은 수로 나눈 나머지를 이용해서 GCD를 구하면, 약수를 일일이 찾지 않아도 돼요!</p>
+<div class="note-box"><span class="note-label">[핵심] 유클리드 호제법</span>
+<b>GCD(a, b) = GCD(b, a % b)</b><br><br>나머지가 0이 되면 그때의 나누는 수가 GCD!<br><br>GCD(48, 18)<br>= GCD(18, 48%18) = GCD(18, 12)<br>= GCD(12, 18%12) = GCD(12, 6)<br>= GCD(6, 12%6) = GCD(6, <b>0</b>)<br>= <b>6</b> ← 나머지가 0! 여기서 끝!</div>
+<div style="margin:22px 0"></div>
+<table class="trace"><thead><tr><th>단계</th><th>a</th><th>b</th><th>a ÷ b</th><th>나머지(a % b)</th><th>다음 호출</th></tr></thead><tbody><tr><td>1</td><td>48</td><td>18</td><td>2</td><td>12</td><td>GCD(18, 12)</td></tr><tr><td>2</td><td>18</td><td>12</td><td>1</td><td>6</td><td>GCD(12, 6)</td></tr><tr><td>3</td><td>12</td><td>6</td><td>2</td><td>0</td><td>끝!</td></tr></tbody></table>
+<!-- image -->
+<table class="trace"><thead><tr><th>단계</th><th>a</th><th>b</th><th>a ÷ b</th><th>나머지(a % b)</th><th>다음 호출</th></tr></thead><tbody><tr><td>1</td><td>56</td><td>24</td><td>2</td><td>8</td><td>GCD(24, 8)</td></tr><tr><td>2</td><td>24</td><td>8</td><td>3</td><td>0</td><td>끝!</td></tr></tbody></table>
+<table class="trace"><thead><tr><th>단계</th><th>a</th><th>b</th><th>a ÷ b</th><th>나머지(a % b)</th><th>다음 호출</th></tr></thead><tbody><tr><td>1</td><td>84</td><td>36</td><td>2</td><td>12</td><td>GCD(36, 12)</td></tr><tr><td>2</td><td>36</td><td>12</td><td>3</td><td>0</td><td>끝!</td></tr></tbody></table>
+<div class="note-box"><span class="note-label">[예시] GCD(252, 105) 구하기</span>
+252 ÷ 105 = 2 나머지 42 → GCD(105, 42)<br>105 ÷ 42 = 2 나머지 21 → GCD(42, 21)<br>42 ÷ 21 = 2 나머지 <b>0</b> → 끝!<br><br><b>GCD(252, 105) = 21</b></div>
+<table class="trace"><thead><tr><th>단계</th><th>a</th><th>b</th><th>a ÷ b</th><th>나머지(a % b)</th><th>다음 호출</th></tr></thead><tbody><tr><td>1</td><td>252</td><td>105</td><td>2</td><td>42</td><td>GCD(105, 42)</td></tr><tr><td>2</td><td>105</td><td>42</td><td>2</td><td>21</td><td>GCD(42, 21)</td></tr><tr><td>3</td><td>42</td><td>21</td><td>2</td><td>0</td><td>끝!</td></tr></tbody></table>
+<h2 class="section-title">LCM 구하기 — GCD만 알면 바로 계산!</h2>
+<p>최소공배수(LCM)를 구하는 공식은 놀라울 정도로 간단해요. <b>두 수의 곱을 GCD로 나누면</b> 끝이에요!</p>
+<div class="note-box"><span class="note-label">[핵심] LCM 공식</span>
+<b>LCM(A, B) = A × B ÷ GCD(A, B)</b><br><br>또는: A × B = GCD(A, B) × LCM(A, B)<br><br>예: LCM(12, 18) = 12 × 18 ÷ 6 = 216 ÷ 6 = <b>36</b><br>예: LCM(252, 105) = 252 × 105 ÷ 21 = 26460 ÷ 21 = <b>1260</b></div>
+<div style="margin:22px 0"></div>
+<table class="trace"><thead><tr><th>두 수</th><th>A × B</th><th>GCD(A, B)</th><th>A × B ÷ GCD</th><th>LCM</th></tr></thead><tbody><tr><td>12, 18</td><td>216</td><td>6</td><td>216 ÷ 6</td><td>36</td></tr><tr><td>8, 12</td><td>96</td><td>4</td><td>96 ÷ 4</td><td>24</td></tr><tr><td>15, 20</td><td>300</td><td>5</td><td>300 ÷ 5</td><td>60</td></tr><tr><td>7, 13</td><td>91</td><td>1 (서로소)</td><td>91 ÷ 1</td><td>91</td></tr></tbody></table>
+<table class="trace"><thead><tr><th>단계</th><th>계산 대상</th><th>GCD 구하기</th><th>LCM 공식 적용</th><th>결과</th></tr></thead><tbody><tr><td>1</td><td>LCM(8, 12)</td><td>GCD(8,12)=4</td><td>8×12÷4 = 96÷4</td><td>24</td></tr><tr><td>2</td><td>LCM(24, 18)</td><td>GCD(24,18)=6</td><td>24×18÷6 = 432÷6</td><td>72</td></tr></tbody></table>
+<!-- image -->
+<!-- fact-bite -->
+<h2 class="section-title">C 언어와 연결 — GCD 코드 두 가지</h2>
+<div class="debug-section"><div class="debug-bar">DEBUG LAB — 에러를 찾으시오</div><div class="debug-body">
+
+<p style="margin:14px 0 0; font-size:14px;"><b>에러:</b> </p>
+<p style="font-size:14px;"><b>수정:</b> </p>
+</div></div>
+<div class="note-box"><span class="note-label">[C 미리보기] 재귀함수로 GCD</span>
+int gcd(int a, int b) {<br>&nbsp;&nbsp;if (b == 0) return a;<br>&nbsp;&nbsp;return gcd(b, a % b);<br>}<br><br>딱 3줄! 유클리드 호제법을 그대로 코드로 옮긴 거예요.<br>b가 0이면 a가 GCD, 아니면 gcd(b, a%b)로 재귀 호출!</div>
+<div class="note-box"><span class="note-label">[C 미리보기] while문으로 GCD</span>
+int gcd(int a, int b) {<br>&nbsp;&nbsp;while (b != 0) {<br>&nbsp;&nbsp;&nbsp;&nbsp;int temp = b;<br>&nbsp;&nbsp;&nbsp;&nbsp;b = a % b;<br>&nbsp;&nbsp;&nbsp;&nbsp;a = temp;<br>&nbsp;&nbsp;}<br>&nbsp;&nbsp;return a;<br>}<br><br>재귀 대신 반복문으로도 같은 결과! 어떤 방법이든 OK.</div>
+
+<h2 class="section-title">KOI 연결 — GCD/LCM 필수!</h2>
+<div class="tip"><span class="tip-label">[KOI] GCD/LCM 출제 패턴</span>
+KOI에서 GCD/LCM은 필수 출제 주제예요!<br><br>자주 나오는 유형:<br>• 두 수의 GCD 또는 LCM 구하기<br>• 분수의 약분 (GCD로 나누기)<br>• 여러 수의 GCD/LCM 구하기 → 순서대로 쌍으로 계산<br>• 직사각형 타일 깔기 문제 (GCD 활용)<br>• 톱니바퀴 회전 문제 (LCM 활용)<br><br>유클리드 호제법 코드는 반드시 외워두세요!</div>
+<h2 class="section-title">연습문제</h2>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 1</span><p style="margin:0;font-size:14px">24의 약수를 모두 적어 보세요.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 2</span><p style="margin:0;font-size:14px">GCD(24, 36)을 구하세요. (약수를 나열하는 방법 사용)</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 3</span><p style="margin:0;font-size:14px">유클리드 호제법으로 GCD(48, 30)을 구하세요. 과정을 적어 보세요.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 4</span><p style="margin:0;font-size:14px">LCM(12, 18)을 구하세요. (공식: A×B÷GCD)</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 5</span><p style="margin:0;font-size:14px">O/X: GCD(15, 25) = 5이다.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 6</span><p style="margin:0;font-size:14px">유클리드 호제법으로 GCD(91, 35)를 구하세요.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 7</span><p style="margin:0;font-size:14px">LCM(8, 12, 18)을 구하세요. (힌트: 먼저 LCM(8,12)를 구한 후, 그 결과와 18의 LCM을 구하세요)</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 8</span><p style="margin:0;font-size:14px">가로 24cm, 세로 18cm인 직사각형을 같은 크기의 정사각형으로 빈틈없이 채우려면, 정사각형의 한 변의 최대 길이는?</p></div>
+<h2 class="section-title">용어 정리</h2>
+<h2 class="section-title">[심화] C로 GCD/LCM 구현</h2>
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span><span class="code-bar-file">[C 코드] GCD/LCM 4가지 방법</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;stdio.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc"><span class="s-cm">// 방법 1: 브루트포스 O(min(a,b))</span></span></div>
+<div class="code-line"><span class="ln">4</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">gcd_brute</span>(<span class="s-type">int</span> a, <span class="s-type">int</span> b) {</span></div>
+<div class="code-line"><span class="ln">5</span><span class="lc">    <span class="s-type">int</span> g = <span class="s-num">1</span>;</span></div>
+<div class="code-line"><span class="ln">6</span><span class="lc">    <span class="s-kw">for</span> (<span class="s-type">int</span> i = <span class="s-num">2</span>; i &lt;= a &amp;&amp; i &lt;= b; i++)</span></div>
+<div class="code-line"><span class="ln">7</span><span class="lc">        <span class="s-kw">if</span> (a % i == <span class="s-num">0</span> &amp;&amp; b % i == <span class="s-num">0</span>) g = i;</span></div>
+<div class="code-line"><span class="ln">8</span><span class="lc">    <span class="s-kw">return</span> g;</span></div>
+<div class="code-line"><span class="ln">9</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">10</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">11</span><span class="lc"><span class="s-cm">// 방법 2: 유클리드 호제법 (반복) O(log(min(a,b)))</span></span></div>
+<div class="code-line"><span class="ln">12</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">gcd_iter</span>(<span class="s-type">int</span> a, <span class="s-type">int</span> b) {</span></div>
+<div class="code-line"><span class="ln">13</span><span class="lc">    <span class="s-kw">while</span> (b != <span class="s-num">0</span>) {</span></div>
+<div class="code-line"><span class="ln">14</span><span class="lc">        <span class="s-type">int</span> t = b;</span></div>
+<div class="code-line"><span class="ln">15</span><span class="lc">        b = a % b;</span></div>
+<div class="code-line"><span class="ln">16</span><span class="lc">        a = t;</span></div>
+<div class="code-line"><span class="ln">17</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">18</span><span class="lc">    <span class="s-kw">return</span> a;</span></div>
+<div class="code-line"><span class="ln">19</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">20</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">21</span><span class="lc"><span class="s-cm">// 방법 3: 유클리드 호제법 (재귀)</span></span></div>
+<div class="code-line"><span class="ln">22</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">gcd_rec</span>(<span class="s-type">int</span> a, <span class="s-type">int</span> b) {</span></div>
+<div class="code-line"><span class="ln">23</span><span class="lc">    <span class="s-kw">return</span> b == <span class="s-num">0</span> ? a : <span class="s-fn">gcd_rec</span>(b, a % b);</span></div>
+<div class="code-line"><span class="ln">24</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">25</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">26</span><span class="lc"><span class="s-cm">// LCM = a * b / GCD</span></span></div>
+<div class="code-line"><span class="ln">27</span><span class="lc"><span class="s-type">long</span> <span class="s-type">long</span> <span class="s-fn">lcm</span>(<span class="s-type">int</span> a, <span class="s-type">int</span> b) {</span></div>
+<div class="code-line"><span class="ln">28</span><span class="lc">    <span class="s-kw">return</span> (<span class="s-type">long</span> <span class="s-type">long</span>)a / <span class="s-fn">gcd_iter</span>(a, b) * b;</span></div>
+<div class="code-line"><span class="ln">29</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">30</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">31</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">main</span>() {</span></div>
+<div class="code-line"><span class="ln">32</span><span class="lc">    <span class="s-type">int</span> pairs[][<span class="s-num">2</span>] = {{<span class="s-num">12</span>,<span class="s-num">18</span>},{<span class="s-num">48</span>,<span class="s-num">36</span>},{<span class="s-num">100</span>,<span class="s-num">75</span>},{<span class="s-num">17</span>,<span class="s-num">13</span>},{<span class="s-num">360</span>,<span class="s-num">240</span>}};</span></div>
+<div class="code-line"><span class="ln">33</span><span class="lc">    <span class="s-kw">for</span> (<span class="s-type">int</span> i = <span class="s-num">0</span>; i &lt; <span class="s-num">5</span>; i++) {</span></div>
+<div class="code-line"><span class="ln">34</span><span class="lc">        <span class="s-type">int</span> a = pairs[i][<span class="s-num">0</span>], b = pairs[i][<span class="s-num">1</span>];</span></div>
+<div class="code-line"><span class="ln">35</span><span class="lc">        <span class="s-fn">printf</span>(<span class="s-str">"GCD(%d,%d) = %d, LCM = %lld\n"</span>,</span></div>
+<div class="code-line"><span class="ln">36</span><span class="lc">               a, b, <span class="s-fn">gcd_iter</span>(a,b), <span class="s-fn">lcm</span>(a,b));</span></div>
+<div class="code-line"><span class="ln">37</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">38</span><span class="lc">    <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">39</span><span class="lc">}</span></div>
+</div>
+</div>
+<div class="output-wrap"><div class="output-bar">실행 결과</div><div class="output-body">GCD(12,18) = 6, LCM = 36
+GCD(48,36) = 12, LCM = 144
+GCD(100,75) = 25, LCM = 300
+GCD(17,13) = 1, LCM = 221
+GCD(360,240) = 120, LCM = 720</div></div>
+<h2 class="section-title">[심화 내용] 유클리드 호제법의 시간 복잡도</h2>
+<div class="note-box"><span class="note-label">[심화 내용] 유클리드 알고리즘 분석</span>
+<b>시간 복잡도:</b> O(log(min(a, b)))<br><br><b>증명 핵심:</b><br>a mod b < a/2 (나머지는 항상 피제수의 절반 미만)<br>따라서 2단계마다 수가 최소 절반으로 줄어듦<br>최대 단계 수 = 2 * log2(min(a,b))<br><br><b>최악의 경우:</b> 연속 피보나치 수!<br>GCD(F(n+1), F(n)) — 매 단계 나머지 = 이전 피보나치<br>GCD(89, 55) -> GCD(55, 34) -> GCD(34, 21) -> ...<br><br><b>라메의 정리 (1844):</b><br>유클리드 알고리즘의 단계 수 <= 5 * (십진 자릿수)<br>10자리 수도 최대 50단계면 끝!<br><br>2300년 전 알고리즘이 여전히 최적이라는 게 놀라워요!</div>
+<h2 class="section-title">[심화 내용] 확장 유클리드 알고리즘</h2>
+<div class="note-box"><span class="note-label">[심화 내용] 확장 유클리드 알고리즘 (Extended GCD)</span>
+<b>베주의 항등식:</b><br>GCD(a, b) = a*x + b*y를 만족하는 정수 x, y가 존재!<br><br>예: GCD(12, 8) = 4<br>4 = 12*1 + 8*(-1)  (x=1, y=-1)<br><br><b>확장 유클리드 알고리즘:</b><br>GCD를 구하면서 동시에 x, y도 계산<br><br><b>용도:</b><br>1. <b>모듈러 역원</b> 계산<br>   a*x ≡ 1 (mod m)인 x 찾기<br>   -> GCD(a, m) = 1이면 x 존재!<br><br>2. <b>RSA 키 생성</b><br>   d = e^(-1) mod phi(n)<br>   확장 유클리드로 d를 계산!<br><br>3. <b>디오판토스 방정식</b><br>   ax + by = c의 정수해 찾기</div>
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span><span class="code-bar-file">[C 코드] 확장 유클리드</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;stdio.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc"><span class="s-cm">// ax + by = gcd(a,b)를 만족하는 x, y를 찾는다</span></span></div>
+<div class="code-line"><span class="ln">4</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">ext_gcd</span>(<span class="s-type">int</span> a, <span class="s-type">int</span> b, <span class="s-type">int</span> *x, <span class="s-type">int</span> *y) {</span></div>
+<div class="code-line"><span class="ln">5</span><span class="lc">    <span class="s-kw">if</span> (b == <span class="s-num">0</span>) {</span></div>
+<div class="code-line"><span class="ln">6</span><span class="lc">        *x = <span class="s-num">1</span>; *y = <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">7</span><span class="lc">        <span class="s-kw">return</span> a;</span></div>
+<div class="code-line"><span class="ln">8</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">9</span><span class="lc">    <span class="s-type">int</span> x1, y1;</span></div>
+<div class="code-line"><span class="ln">10</span><span class="lc">    <span class="s-type">int</span> g = <span class="s-fn">ext_gcd</span>(b, a % b, &amp;x1, &amp;y1);</span></div>
+<div class="code-line"><span class="ln">11</span><span class="lc">    *x = y1;</span></div>
+<div class="code-line"><span class="ln">12</span><span class="lc">    *y = x1 - (a / b) * y1;</span></div>
+<div class="code-line"><span class="ln">13</span><span class="lc">    <span class="s-kw">return</span> g;</span></div>
+<div class="code-line"><span class="ln">14</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">15</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">16</span><span class="lc"><span class="s-cm">// 모듈러 역원: a*x ≡ 1 (mod m)</span></span></div>
+<div class="code-line"><span class="ln">17</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">mod_inverse</span>(<span class="s-type">int</span> a, <span class="s-type">int</span> m) {</span></div>
+<div class="code-line"><span class="ln">18</span><span class="lc">    <span class="s-type">int</span> x, y;</span></div>
+<div class="code-line"><span class="ln">19</span><span class="lc">    <span class="s-type">int</span> g = <span class="s-fn">ext_gcd</span>(a, m, &amp;x, &amp;y);</span></div>
+<div class="code-line"><span class="ln">20</span><span class="lc">    <span class="s-kw">if</span> (g != <span class="s-num">1</span>) <span class="s-kw">return</span> -<span class="s-num">1</span>;  <span class="s-cm">// 역원 없음</span></span></div>
+<div class="code-line"><span class="ln">21</span><span class="lc">    <span class="s-kw">return</span> (x % m + m) % m;</span></div>
+<div class="code-line"><span class="ln">22</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">23</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">24</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">main</span>() {</span></div>
+<div class="code-line"><span class="ln">25</span><span class="lc">    <span class="s-type">int</span> x, y;</span></div>
+<div class="code-line"><span class="ln">26</span><span class="lc">    <span class="s-type">int</span> g = <span class="s-fn">ext_gcd</span>(<span class="s-num">12</span>, <span class="s-num">8</span>, &amp;x, &amp;y);</span></div>
+<div class="code-line"><span class="ln">27</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"GCD(12,8) = %d = 12*(%d) + 8*(%d)\n"</span>, g, x, y);</span></div>
+<div class="code-line"><span class="ln">28</span><span class="lc">    </span></div>
+<div class="code-line"><span class="ln">29</span><span class="lc">    <span class="s-cm">// 모듈러 역원</span></span></div>
+<div class="code-line"><span class="ln">30</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"3^(-1) mod 7 = %d\n"</span>, <span class="s-fn">mod_inverse</span>(<span class="s-num">3</span>, <span class="s-num">7</span>));  <span class="s-cm">// 5</span></span></div>
+<div class="code-line"><span class="ln">31</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"검증: 3*5 mod 7 = %d\n"</span>, (<span class="s-num">3</span>*<span class="s-num">5</span>) % <span class="s-num">7</span>);  <span class="s-cm">// 1</span></span></div>
+<div class="code-line"><span class="ln">32</span><span class="lc">    <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">33</span><span class="lc">}</span></div>
+</div>
+</div>
+<div class="output-wrap"><div class="output-bar">실행 결과</div><div class="output-body">GCD(12,8) = 4 = 12*(1) + 8*(-1)
+3^(-1) mod 7 = 5
+검증: 3*5 mod 7 = 1</div></div>
+<h2 class="section-title">[심화 내용] GCD의 성질과 응용</h2>
+<div class="note-box"><span class="note-label">[심화 내용] GCD의 수학적 성질</span>
+<b>기본 성질:</b><br>GCD(a, 0) = a<br>GCD(a, a) = a<br>GCD(a, b) = GCD(b, a) (교환법칙)<br>GCD(a, b) = GCD(a-b, b) (뺄셈 버전)<br>GCD(a, b) = GCD(a mod b, b) (유클리드)<br><br><b>분배 성질:</b><br>GCD(ka, kb) = k * GCD(a, b)<br>GCD(a, b) * LCM(a, b) = a * b<br><br><b>서로소:</b><br>GCD(a, b) = 1이면 a와 b는 서로소<br>서로소이면 ax + by = 1인 정수 x, y 존재<br><br><b>3개 이상의 GCD:</b><br>GCD(a, b, c) = GCD(GCD(a, b), c)</div>
+<h2 class="section-title">[심화] GCD/LCM 실전 활용</h2>
+<div style="margin:22px 0"></div>
+<table class="trace"><thead><tr><th>가로(cm)</th><th>세로(cm)</th><th>GCD(가로,세로)</th><th>타일 한 변</th><th>필요한 타일 수</th></tr></thead><tbody><tr><td>12</td><td>8</td><td>4</td><td>4cm</td><td>3×2 = 6개</td></tr><tr><td>24</td><td>18</td><td>6</td><td>6cm</td><td>4×3 = 12개</td></tr><tr><td>30</td><td>20</td><td>10</td><td>10cm</td><td>3×2 = 6개</td></tr><tr><td>15</td><td>9</td><td>3</td><td>3cm</td><td>5×3 = 15개</td></tr><tr><td>35</td><td>14</td><td>7</td><td>7cm</td><td>5×2 = 10개</td></tr></tbody></table>
+<div class="note-box"><span class="note-label">[심화] 실전 활용 사례</span>
+<b>1. 기약분수 만들기</b><br>12/18 -> GCD(12,18)=6 -> 2/3<br><br><b>2. 톱니바퀴 문제</b><br>12톱니와 18톱니가 처음 위치로 돌아오려면?<br>LCM(12,18) = 36 회전<br><br><b>3. 타일 깔기</b><br>12m x 18m 방에 가장 큰 정사각형 타일?<br>GCD(12,18) = 6m 타일!<br><br><b>4. 버스 동시 출발</b><br>A버스 15분 간격, B버스 20분 간격<br>동시 출발 간격 = LCM(15,20) = 60분</div>
+<!-- fact-bite -->
+<!-- fact-bite -->
+<h2 class="section-title">[심화] GCD/LCM 실전 문제 유형</h2>
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span><span class="code-bar-file">[C 코드] N개 수의 GCD/LCM</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;stdio.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">gcd</span>(<span class="s-type">int</span> a, <span class="s-type">int</span> b) { <span class="s-kw">return</span> b == <span class="s-num">0</span> ? a : <span class="s-fn">gcd</span>(b, a % b); }</span></div>
+<div class="code-line"><span class="ln">4</span><span class="lc"><span class="s-type">long</span> <span class="s-type">long</span> <span class="s-fn">lcm</span>(<span class="s-type">int</span> a, <span class="s-type">int</span> b) { <span class="s-kw">return</span> (<span class="s-type">long</span> <span class="s-type">long</span>)a / <span class="s-fn">gcd</span>(a, b) * b; }</span></div>
+<div class="code-line"><span class="ln">5</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">6</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">main</span>() {</span></div>
+<div class="code-line"><span class="ln">7</span><span class="lc">    <span class="s-type">int</span> arr[] = {<span class="s-num">12</span>, <span class="s-num">18</span>, <span class="s-num">24</span>, <span class="s-num">36</span>};</span></div>
+<div class="code-line"><span class="ln">8</span><span class="lc">    <span class="s-type">int</span> n = <span class="s-num">4</span>;</span></div>
+<div class="code-line"><span class="ln">9</span><span class="lc">    </span></div>
+<div class="code-line"><span class="ln">10</span><span class="lc">    <span class="s-cm">// N개의 GCD</span></span></div>
+<div class="code-line"><span class="ln">11</span><span class="lc">    <span class="s-type">int</span> g = arr[<span class="s-num">0</span>];</span></div>
+<div class="code-line"><span class="ln">12</span><span class="lc">    <span class="s-kw">for</span> (<span class="s-type">int</span> i = <span class="s-num">1</span>; i &lt; n; i++) g = <span class="s-fn">gcd</span>(g, arr[i]);</span></div>
+<div class="code-line"><span class="ln">13</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"GCD(%d,%d,%d,%d) = %d\n"</span>, arr[<span class="s-num">0</span>],arr[<span class="s-num">1</span>],arr[<span class="s-num">2</span>],arr[<span class="s-num">3</span>], g);</span></div>
+<div class="code-line"><span class="ln">14</span><span class="lc">    </span></div>
+<div class="code-line"><span class="ln">15</span><span class="lc">    <span class="s-cm">// N개의 LCM</span></span></div>
+<div class="code-line"><span class="ln">16</span><span class="lc">    <span class="s-type">long</span> <span class="s-type">long</span> l = arr[<span class="s-num">0</span>];</span></div>
+<div class="code-line"><span class="ln">17</span><span class="lc">    <span class="s-kw">for</span> (<span class="s-type">int</span> i = <span class="s-num">1</span>; i &lt; n; i++) l = <span class="s-fn">lcm</span>(l, arr[i]);</span></div>
+<div class="code-line"><span class="ln">18</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"LCM(%d,%d,%d,%d) = %lld\n"</span>, arr[<span class="s-num">0</span>],arr[<span class="s-num">1</span>],arr[<span class="s-num">2</span>],arr[<span class="s-num">3</span>], l);</span></div>
+<div class="code-line"><span class="ln">19</span><span class="lc">    </span></div>
+<div class="code-line"><span class="ln">20</span><span class="lc">    <span class="s-cm">// 기약분수 만들기</span></span></div>
+<div class="code-line"><span class="ln">21</span><span class="lc">    <span class="s-type">int</span> num = <span class="s-num">48</span>, den = <span class="s-num">72</span>;</span></div>
+<div class="code-line"><span class="ln">22</span><span class="lc">    <span class="s-type">int</span> g2 = <span class="s-fn">gcd</span>(num, den);</span></div>
+<div class="code-line"><span class="ln">23</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"%d/%d = %d/%d (기약분수)\n"</span>, num, den, num/g2, den/g2);</span></div>
+<div class="code-line"><span class="ln">24</span><span class="lc">    </span></div>
+<div class="code-line"><span class="ln">25</span><span class="lc">    <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">26</span><span class="lc">}</span></div>
+</div>
+</div>
+<div class="output-wrap"><div class="output-bar">실행 결과</div><div class="output-body">GCD(12,18,24,36) = 6
+LCM(12,18,24,36) = 72
+48/72 = 2/3 (기약분수)</div></div>
+<h2 class="section-title">[심화 내용] GCD와 선형 대수</h2>
+<div class="note-box"><span class="note-label">[심화 내용] GCD의 격자(Lattice) 해석</span>
+2차원 격자에서 GCD(a,b)의 기하학적 의미:<br><br>원점 (0,0)에서 점 (a,b)까지 직선을 그으면<br>직선이 지나는 격자점의 수 = GCD(a,b) - 1<br><br>예: (12, 8) 직선<br>GCD(12,8) = 4<br>격자점: (3,2), (6,4), (9,6) = 3개 = 4-1<br><br>이것이 유클리드 알고리즘의 <b>기하학적 해석</b>!<br><br>또한 GCD(a,b) = 직사각형 a*b를 정사각형으로 채울 때<br>가장 큰 정사각형의 변의 길이<br><br>12*8 직사각형 -> 8*8 + 4*8 -> 4*4 + 4*4 = GCD=4</div>
+<div class="note-box"><span class="note-label">[심화 내용] 면접 문제</span>
+<b>Q1.</b> GCD(0, 0)은?<br>A: 정의에 따라 0. (0은 모든 수의 배수이므로)<br><br><b>Q2.</b> GCD를 재귀 없이 구현하세요.<br>A: while (b) { int t=b; b=a%b; a=t; } return a;<br><br><b>Q3.</b> GCD(2^a - 1, 2^b - 1) = ?<br>A: 2^GCD(a,b) - 1. 메르센 수의 GCD도 메르센 수!<br><br><b>Q4.</b> LCM을 구할 때 a*b/GCD 대신 a/GCD*b로 쓰는 이유?<br>A: a*b에서 오버플로우 방지! 먼저 나누면 안전.<br><br><b>Q5.</b> 유클리드 알고리즘이 반드시 종료하는 이유?<br>A: b가 매 단계 감소(나머지 < 제수). 0 이상 정수이므로 반드시 0에 도달.</div>
+<h2 class="section-title">[심화 내용] 다항식의 GCD</h2>
+<div class="note-box"><span class="note-label">[심화 내용] 다항식에도 GCD가 있다!</span>
+정수뿐 아니라 다항식에도 유클리드 알고리즘 적용 가능!<br><br>GCD(x^2-1, x^2-2x+1)<br>= GCD(x^2-1, x^2-2x+1)<br><br>x^2-1 = (x+1)(x-1)<br>x^2-2x+1 = (x-1)^2<br><br>공통 인수: (x-1)<br>GCD = x-1<br><br>이 개념은:<br>- 심볼릭 수학 소프트웨어 (Mathematica, SymPy)<br>- 오류 정정 코드 (Reed-Solomon)<br>- 암호학 (타원곡선)에서 사용</div>
+<h2 class="section-title">[심화] GCD/LCM 활용 문제 모음</h2>
+<div class="note-box"><span class="note-label">[심화] GCD/LCM 패턴 문제</span>
+<b>문제 1: 직사각형을 정사각형으로 채우기</b><br>12cm x 8cm 직사각형을 가장 큰 정사각형 타일로 채우려면?<br>타일 크기 = GCD(12,8) = 4cm<br>필요한 타일 수 = (12/4) * (8/4) = 6개<br><br><b>문제 2: 전구가 동시에 켜지는 시점</b><br>빨간 전구: 3초마다, 파란 전구: 5초마다, 초록 전구: 7초마다<br>동시에 켜지는 주기 = LCM(3,5,7) = 105초<br><br><b>문제 3: 분수의 덧셈</b><br>1/12 + 5/18 = ?<br>통분: LCM(12,18) = 36<br>= 3/36 + 10/36 = 13/36<br><br><b>문제 4: 계단 문제</b><br>높이 120cm, 한 계단 높이의 가능한 값?<br>120의 약수: 1,2,3,4,5,6,8,10,12,15,20,24,30,40,60,120<br>약수 = 분해와 GCD의 연결!</div>
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span><span class="code-bar-file">[C 코드] 유클리드 호제법 과정 추적</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;stdio.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">gcd_trace</span>(<span class="s-type">int</span> a, <span class="s-type">int</span> b) {</span></div>
+<div class="code-line"><span class="ln">4</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"GCD(%d, %d) 계산 과정:\n"</span>, a, b);</span></div>
+<div class="code-line"><span class="ln">5</span><span class="lc">    <span class="s-type">int</span> step = <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">6</span><span class="lc">    <span class="s-kw">while</span> (b != <span class="s-num">0</span>) {</span></div>
+<div class="code-line"><span class="ln">7</span><span class="lc">        step++;</span></div>
+<div class="code-line"><span class="ln">8</span><span class="lc">        <span class="s-fn">printf</span>(<span class="s-str">"  %d단계: GCD(%d, %d) -&gt; %d %% %d = %d\n"</span>,</span></div>
+<div class="code-line"><span class="ln">9</span><span class="lc">               step, a, b, a, b, a % b);</span></div>
+<div class="code-line"><span class="ln">10</span><span class="lc">        <span class="s-type">int</span> t = b;</span></div>
+<div class="code-line"><span class="ln">11</span><span class="lc">        b = a % b;</span></div>
+<div class="code-line"><span class="ln">12</span><span class="lc">        a = t;</span></div>
+<div class="code-line"><span class="ln">13</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">14</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"  결과: %d (%d단계)\n\n"</span>, a, step);</span></div>
+<div class="code-line"><span class="ln">15</span><span class="lc">    <span class="s-kw">return</span> a;</span></div>
+<div class="code-line"><span class="ln">16</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">17</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">18</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">main</span>() {</span></div>
+<div class="code-line"><span class="ln">19</span><span class="lc">    <span class="s-fn">gcd_trace</span>(<span class="s-num">48</span>, <span class="s-num">18</span>);</span></div>
+<div class="code-line"><span class="ln">20</span><span class="lc">    <span class="s-fn">gcd_trace</span>(<span class="s-num">100</span>, <span class="s-num">75</span>);</span></div>
+<div class="code-line"><span class="ln">21</span><span class="lc">    <span class="s-fn">gcd_trace</span>(<span class="s-num">89</span>, <span class="s-num">55</span>);  <span class="s-cm">// 피보나치! 최악의 경우</span></span></div>
+<div class="code-line"><span class="ln">22</span><span class="lc">    <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">23</span><span class="lc">}</span></div>
+</div>
+</div>
+<div class="output-wrap"><div class="output-bar">실행 결과</div><div class="output-body">GCD(48, 18) 계산 과정:
+  1단계: GCD(48, 18) -> 48 % 18 = 12
+  2단계: GCD(18, 12) -> 18 % 12 = 6
+  3단계: GCD(12, 6) -> 12 % 6 = 0
+  결과: 6 (3단계)
+
+GCD(100, 75) 계산 과정:
+  1단계: GCD(100, 75) -> 100 % 75 = 25
+  2단계: GCD(75, 25) -> 75 % 25 = 0
+  결과: 25 (2단계)
+
+GCD(89, 55) 계산 과정:
+  1단계: GCD(89, 55) -> 89 % 55 = 34
+  2단계: GCD(55, 34) -> 55 % 34 = 21
+  3단계: GCD(34, 21) -> 34 % 21 = 13
+  4단계: GCD(21, 13) -> 21 % 13 = 8
+  5단계: GCD(13, 8) -> 13 % 8 = 5
+  6단계: GCD(8, 5) -> 8 % 5 = 3
+  7단계: GCD(5, 3) -> 5 % 3 = 2
+  8단계: GCD(3, 2) -> 3 % 2 = 1
+  9단계: GCD(2, 1) -> 2 % 1 = 0
+  결과: 1 (9단계)</div></div>
+<h2 class="section-title">[심화 내용] 이진 GCD (Stein 알고리즘)</h2>
+<div class="note-box"><span class="note-label">[심화 내용] 이진 GCD 알고리즘</span>
+나머지 연산(%) 없이 비트 연산만으로 GCD를 구하는 방법!<br><br><b>규칙:</b><br>1. 둘 다 짝수: GCD(a,b) = 2 * GCD(a/2, b/2)<br>2. a만 짝수: GCD(a,b) = GCD(a/2, b)<br>3. b만 짝수: GCD(a,b) = GCD(a, b/2)<br>4. 둘 다 홀수: GCD(a,b) = GCD(|a-b|/2, min(a,b))<br><br><b>장점:</b><br>- 나눗셈(느림) 대신 시프트+뺄셈(빠름) 사용<br>- 임베디드 시스템, 빅넘 연산에서 유리<br>- GMP(GNU 다정밀 산술 라이브러리)에서 실제 사용<br><br><b>시간 복잡도:</b> O(log(a*b)) = O(log a + log b)</div>
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span><span class="code-bar-file">[C 코드] 이진 GCD</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;stdio.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">binary_gcd</span>(<span class="s-type">int</span> a, <span class="s-type">int</span> b) {</span></div>
+<div class="code-line"><span class="ln">4</span><span class="lc">    <span class="s-kw">if</span> (a == <span class="s-num">0</span>) <span class="s-kw">return</span> b;</span></div>
+<div class="code-line"><span class="ln">5</span><span class="lc">    <span class="s-kw">if</span> (b == <span class="s-num">0</span>) <span class="s-kw">return</span> a;</span></div>
+<div class="code-line"><span class="ln">6</span><span class="lc">    </span></div>
+<div class="code-line"><span class="ln">7</span><span class="lc">    <span class="s-type">int</span> shift = <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">8</span><span class="lc">    <span class="s-kw">while</span> (((a | b) &amp; <span class="s-num">1</span>) == <span class="s-num">0</span>) { <span class="s-cm">// 둘 다 짝수</span></span></div>
+<div class="code-line"><span class="ln">9</span><span class="lc">        a &gt;&gt;= <span class="s-num">1</span>; b &gt;&gt;= <span class="s-num">1</span>; shift++;</span></div>
+<div class="code-line"><span class="ln">10</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">11</span><span class="lc">    <span class="s-kw">while</span> ((a &amp; <span class="s-num">1</span>) == <span class="s-num">0</span>) a &gt;&gt;= <span class="s-num">1</span>; <span class="s-cm">// a를 홀수로</span></span></div>
+<div class="code-line"><span class="ln">12</span><span class="lc">    </span></div>
+<div class="code-line"><span class="ln">13</span><span class="lc">    <span class="s-kw">do</span> {</span></div>
+<div class="code-line"><span class="ln">14</span><span class="lc">        <span class="s-kw">while</span> ((b &amp; <span class="s-num">1</span>) == <span class="s-num">0</span>) b &gt;&gt;= <span class="s-num">1</span>; <span class="s-cm">// b를 홀수로</span></span></div>
+<div class="code-line"><span class="ln">15</span><span class="lc">        <span class="s-kw">if</span> (a &gt; b) { <span class="s-type">int</span> t = a; a = b; b = t; }</span></div>
+<div class="code-line"><span class="ln">16</span><span class="lc">        b -= a;</span></div>
+<div class="code-line"><span class="ln">17</span><span class="lc">    } <span class="s-kw">while</span> (b != <span class="s-num">0</span>);</span></div>
+<div class="code-line"><span class="ln">18</span><span class="lc">    </span></div>
+<div class="code-line"><span class="ln">19</span><span class="lc">    <span class="s-kw">return</span> a &lt;&lt; shift;</span></div>
+<div class="code-line"><span class="ln">20</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">21</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">22</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">main</span>() {</span></div>
+<div class="code-line"><span class="ln">23</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"binary_gcd(48, 18) = %d\n"</span>, <span class="s-fn">binary_gcd</span>(<span class="s-num">48</span>, <span class="s-num">18</span>));</span></div>
+<div class="code-line"><span class="ln">24</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"binary_gcd(100, 75) = %d\n"</span>, <span class="s-fn">binary_gcd</span>(<span class="s-num">100</span>, <span class="s-num">75</span>));</span></div>
+<div class="code-line"><span class="ln">25</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"binary_gcd(1071, 462) = %d\n"</span>, <span class="s-fn">binary_gcd</span>(<span class="s-num">1071</span>, <span class="s-num">462</span>));</span></div>
+<div class="code-line"><span class="ln">26</span><span class="lc">    <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">27</span><span class="lc">}</span></div>
+</div>
+</div>
+<div class="output-wrap"><div class="output-bar">실행 결과</div><div class="output-body">binary_gcd(48, 18) = 6
+binary_gcd(100, 75) = 25
+binary_gcd(1071, 462) = 21</div></div>
+
+<!-- fact-bite -->
+<div class="tip"><span class="tip-label">[활동] GCD 카드 게임</span>
+<b>준비:</b> 1~50 숫자 카드<br><b>규칙:</b><br>1. 카드 2장을 뽑아요<br>2. 유클리드 호제법으로 GCD를 구해요<br>3. GCD가 1이면(서로소) 1점, 아니면 GCD만큼 점수!<br>4. 10라운드 후 점수 합산<br><br>실력이 늘면 3장, 4장으로 확장!</div>
+<table class="trace"><thead><tr><th>용어</th><th>설명</th></tr></thead><tbody><tr><td><code>약수(Divisor)</code></td><td>어떤 수를 나머지 없이 나눌 수 있는 수. 예: 12의 약수는 1, 2, 3, 4, 6, 12.</td></tr><tr><td><code>공약수(Common Divisor)</code></td><td>두 수가 공통으로 가지는 약수. 예: 12와 18의 공약수는 1, 2, 3, 6.</td></tr><tr><td><code>최대공약수(GCD)</code></td><td>Greatest Common Divisor. 공약수 중 가장 큰 수.</td></tr><tr><td><code>배수(Multiple)</code></td><td>어떤 수에 자연수를 곱한 수. 예: 4의 배수는 4, 8, 12, 16, ...</td></tr><tr><td><code>공배수(Common Multiple)</code></td><td>두 수가 공통으로 가지는 배수. 예: 4와 6의 공배수는 12, 24, 36, ...</td></tr><tr><td><code>최소공배수(LCM)</code></td><td>Least Common Multiple. 공배수 중 가장 작은 수.</td></tr><tr><td><code>유클리드 호제법</code></td><td>GCD(a,b) = GCD(b, a%b)를 반복하여 GCD를 구하는 효율적 알고리즘.</td></tr><tr><td><code>재귀(Recursion)</code></td><td>함수가 자기 자신을 호출하는 프로그래밍 기법. 유클리드 호제법이 대표적 예시.</td></tr><tr><td><code>유클리드 호제법</code></td><td>GCD를 구하는 알고리즘. a mod b를 반복. 기원전 300년, 가장 오래된 알고리즘.</td></tr><tr><td><code>확장 유클리드</code></td><td>GCD와 함께 ax+by=GCD를 만족하는 x,y를 구하는 알고리즘.</td></tr><tr><td><code>베주의 항등식</code></td><td>GCD(a,b) = ax + by를 만족하는 정수 x,y가 반드시 존재한다는 정리.</td></tr><tr><td><code>모듈러 역원</code></td><td>a*x ≡ 1 (mod m)인 x. 확장 유클리드로 계산. RSA 핵심.</td></tr><tr><td><code>서로소</code></td><td>GCD(a,b)=1인 관계. 공통 약수가 1뿐.</td></tr><tr><td><code>라메의 정리</code></td><td>유클리드 알고리즘 단계 수 <= 5*(자릿수). 효율성 증명.</td></tr><tr><td><code>디오판토스 방정식</code></td><td>정수해만 구하는 방정식. ax+by=c 형태.</td></tr></tbody></table>
+<div class="warmup-box"><div class="warmup-title">이번 유닛 핵심 정리</div><div class="wq"><b>1.</b> GCD = 두 수의 최대공약수, LCM = 최소공배수</div><div class="wq"><b>2.</b> GCD * LCM = a * b (항상 성립!)</div><div class="wq"><b>3.</b> 유클리드 호제법: GCD(a,b) = GCD(b, a%b)</div><div class="wq"><b>4.</b> [심화] C로 GCD 3줄: b==0 ? a : gcd(b, a%b)</div><div class="wq"><b>5.</b> [심화] 기약분수 = 분자분모를 GCD로 나누기</div><div class="wq"><b>6.</b> [심화 내용] 확장 유클리드: ax+by=GCD 의 x,y도 구함</div><div class="wq"><b>7.</b> [심화 내용] 모듈러 역원: RSA 키 생성의 핵심 도구</div><div class="wq"><b>8.</b> [심화 내용] 최악 = 피보나치 수, 그래도 O(log n)</div></div>
+<div class="tip"><span class="tip-label">이 유닛에서 연결된 축</span>
+<b>[C언어]</b> 재귀함수, while 반복문으로 GCD 구현<br><b>[컴퓨팅 사고력]</b> 유클리드 호제법 — 복잡한 문제를 단순한 반복으로 풀기<br><b>[KOI]</b> GCD/LCM 문제 필수 출제, 분수 약분, 타일 깔기 등<br><b>[알고리즘]</b> 유클리드 호제법 — 2300년 역사의 알고리즘!</div>
+<div class="note-box"><span class="note-label">[실생활] GCD와 LCM이 쓰이는 곳</span>
+• <b>분수 약분</b>: 6/18 → GCD(6,18)=6으로 나누면 1/3<br>• <b>톱니바퀴</b>: 이빨 12개, 18개짜리 톱니가 다시 처음 위치로 돌아오려면? LCM(12,18)=36번 이빨이 맞물려야!<br>• <b>타일 깔기</b>: 가로 세로 크기가 다른 바닥에 정사각형 타일을 깔 때 GCD 사용<br>• <b>음악</b>: 박자 맞추기에도 LCM이 숨어 있어요!</div>
+<h2 class="section-title">실전 활용 연습</h2>
+<p>지금까지 배운 개념을 활용한 다양한 실전 예제와 연습문제입니다.</p>
+
+<h2 class="section-title">실생활 연결</h2>
+<div class="tip"><span class="tip-label">[실생활] 이 개념은 어디에 쓰일까?</span>
+게임 개발, 앱 만들기, 웹사이트, 로봇 제어, AI 학습 등 모든 분야에서 사용돼요!</div>
+
+<h2 class="section-title">추가 연습문제</h2>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 20</span><p style="margin:0;font-size:14px">이번 유닛에서 배운 핵심 개념 3가지를 자신의 말로 설명해 보세요.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 21</span><p style="margin:0;font-size:14px">이번 유닛의 개념을 활용한 자신만의 문제를 1개 만들어 보세요.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 22</span><p style="margin:0;font-size:14px">이번 유닛의 개념이 C언어에서 어떻게 사용되는지 조사해 보세요.</p></div>
+<h2 class="section-title">[심화] 더 알아보기</h2>
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+
+<p>이번 유닛의 모든 개념을 완전히 이해했습니다. 다음 유닛에서 더 발전된 개념을 배워보세요!</p>
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<div class="note-box"><span class="note-label">[다음 유닛 미리보기]</span>
+경우의 수, 소수, GCD/LCM까지 수학적 사고력의 기초를 쌓았어요! 다음 챕터에서는 드디어 <b>C 프로그래밍</b>의 세계로 들어갈 준비를 해요!</div>
+
+
+    <span class="page-num">2</span>
+  </div>
+</div>
+</body>
+</html>

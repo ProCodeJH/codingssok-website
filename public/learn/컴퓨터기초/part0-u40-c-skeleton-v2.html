@@ -1,0 +1,1332 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>코딩쏙 교재 — 코드의 구조 — C 프로그램 뼈대</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+
+  :root {
+    --navy: #1a2e4a;
+    --navy-mid: #2c4a6e;
+    --navy-light: #3d6590;
+    --orange: #e07830;
+    --orange-light: #f5e6d8;
+    --white: #ffffff;
+    --bg: #f7f8fa;
+    --bg-warm: #faf9f7;
+    --gray-50: #f9fafb;
+    --gray-100: #f3f4f6;
+    --gray-200: #e5e7eb;
+    --gray-300: #d1d5db;
+    --gray-400: #9ca3af;
+    --gray-500: #6b7280;
+    --gray-600: #4b5563;
+    --gray-700: #374151;
+    --gray-800: #1f2937;
+    --text: #2d3748;
+    --green: #16a34a;
+    --green-bg: #dcfce7;
+    --red: #dc2626;
+    --red-bg: #fee2e2;
+    --blue: #2563eb;
+    --blue-bg: #dbeafe;
+    --yellow-bg: #fef9c3;
+    --font: 'Noto Sans KR', sans-serif;
+    --mono: 'JetBrains Mono', 'Consolas', monospace;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: var(--font); background: #e8eaed; font-size: 15px; }
+
+  /* ========== PAGE ========== */
+  .page {
+    width: 210mm;
+    min-height: 295mm;
+    margin: 24px auto;
+    background: var(--white);
+    box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* ========== PAGE 1: CHAPTER START ========== */
+  .chapter-page {
+    display: flex;
+    min-height: 295mm;
+  }
+
+  .chapter-sidebar {
+    width: 10px;
+    background: var(--navy);
+    flex-shrink: 0;
+  }
+
+  .chapter-accent-bar {
+    width: 7px;
+    background: var(--orange);
+    flex-shrink: 0;
+  }
+
+  .chapter-body {
+    flex: 1;
+    padding: 70px 65px 50px 55px;
+    position: relative;
+  }
+
+  .chapter-watermark {
+    position: absolute;
+    top: -10px;
+    right: -15px;
+    font-size: 280px;
+    font-weight: 900;
+    color: rgba(180,195,212,0.35);
+    line-height: 1;
+    pointer-events: none;
+    letter-spacing: -10px;
+  }
+
+  .chapter-label {
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--navy-mid);
+    letter-spacing: 2px;
+    margin-bottom: 4px;
+  }
+
+  .chapter-title {
+    font-size: 44px;
+    font-weight: 900;
+    color: var(--navy);
+    line-height: 1.15;
+    margin-bottom: 12px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .chapter-sub {
+    font-size: 16px;
+    color: var(--gray-500);
+    font-weight: 400;
+    margin-bottom: 20px;
+    padding-bottom: 28px;
+    border-bottom: 1px solid var(--gray-200);
+  }
+
+  /* Learning objectives */
+  .obj-title {
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--navy);
+    margin-bottom: 16px;
+    margin-top: 32px;
+  }
+
+  .obj-list {
+    list-style: none;
+    margin-bottom: 40px;
+  }
+
+  .obj-list li {
+    padding: 5px 0 5px 24px;
+    position: relative;
+    font-size: 15px;
+    color: var(--gray-700);
+    line-height: 1.6;
+  }
+
+  .obj-list li::before {
+    content: '•';
+    position: absolute;
+    left: 8px;
+    color: var(--navy-mid);
+    font-weight: 700;
+  }
+
+  /* Prerequisites flow */
+  .prereq-title {
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--navy);
+    margin-bottom: 18px;
+  }
+
+  .prereq-flow {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    margin-bottom: 44px;
+  }
+
+  .prereq-item {
+    padding: 9px 22px;
+    border: 1.5px solid var(--gray-300);
+    border-radius: 50px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--gray-600);
+    background: var(--white);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+  }
+
+  .prereq-item.current {
+    border-color: var(--navy);
+    color: var(--navy);
+    font-weight: 700;
+    background: #edf2f7;
+    box-shadow: 0 2px 6px rgba(26,46,74,0.12);
+  }
+
+  .prereq-arrow {
+    width: 36px;
+    text-align: center;
+    color: var(--gray-300);
+    font-size: 18px;
+    font-weight: 300;
+  }
+
+  /* Predict box */
+  .predict-box {
+    background: var(--gray-50);
+    border: 1.5px solid var(--gray-200);
+    border-radius: 12px;
+    padding: 24px 28px;
+  }
+
+  .predict-label {
+    display: inline-block;
+    background: var(--orange);
+    color: var(--white);
+    font-size: 12px;
+    font-weight: 600;
+    padding: 3px 12px;
+    border-radius: 4px;
+    margin-bottom: 14px;
+    letter-spacing: 0.5px;
+  }
+
+  .predict-q {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--navy);
+    margin-bottom: 16px;
+  }
+
+  .predict-code {
+    background: var(--white);
+    border: 1px solid var(--gray-200);
+    border-radius: 8px;
+    padding: 14px 18px;
+    font-family: var(--mono);
+    font-size: 13px;
+    line-height: 1.65;
+    color: var(--gray-700);
+  }
+
+  /* ========== PAGE 2: CORE CONTENT ========== */
+  .content-page {
+    padding: 55px 65px;
+  }
+
+  .unit-header-bar {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    margin-bottom: 8px;
+  }
+
+  .unit-tag {
+    font-size: 12px;
+    color: var(--orange);
+    font-weight: 600;
+    letter-spacing: 1px;
+  }
+
+  .unit-title-sm {
+    font-size: 14px;
+    color: var(--gray-400);
+    font-weight: 400;
+  }
+
+  .section-title {
+    font-size: 24px;
+    font-weight: 800;
+    color: var(--navy);
+    margin-bottom: 24px;
+    margin-top: 8px;
+    padding-left: 16px;
+    border-left: 5px solid var(--orange);
+  }
+
+  p {
+    font-size: 15.5px;
+    line-height: 1.9;
+    color: var(--text);
+    margin-bottom: 18px;
+  }
+
+  p code {
+    font-family: var(--mono);
+    font-size: 13.5px;
+    background: #f1f3f5;
+    padding: 2px 7px;
+    border-radius: 4px;
+    color: var(--navy);
+    font-weight: 500;
+  }
+
+  /* Code block */
+  .code-wrap {
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    border: 1px solid var(--gray-200);
+    margin: 22px 0;
+  }
+
+  .code-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 9px 18px;
+    background: var(--navy);
+    font-size: 12px;
+  }
+
+  .code-bar-lang {
+    font-family: var(--mono);
+    font-weight: 600;
+    color: var(--white);
+  }
+
+  .code-bar-file {
+    color: rgba(255,255,255,0.6);
+    font-weight: 400;
+  }
+
+  .code-body {
+    background: #f8f9fb;
+    padding: 20px 0;
+    font-family: var(--mono);
+    font-size: 13.5px;
+    line-height: 1.75;
+    border: 1px solid var(--gray-200);
+    border-top: none;
+    border-radius: 0 0 12px 12px;
+  }
+
+  .code-line {
+    display: flex;
+    padding: 0 20px;
+  }
+
+  .code-line:hover {
+    background: #f0f4f8;
+  }
+
+  .code-line.highlighted {
+    background: #fff8e1;
+  }
+
+  .ln {
+    width: 30px;
+    text-align: right;
+    color: #b8bfc8;
+    font-size: 12px;
+    margin-right: 18px;
+    user-select: none;
+    flex-shrink: 0;
+    padding-top: 1px;
+  }
+
+  .lc { flex: 1; }
+
+  /* syntax */
+  .s-pp { color: #8b5cf6; font-weight: 600; }
+  .s-str { color: #d97706; }
+  .s-type { color: #2563eb; font-weight: 500; }
+  .s-kw { color: #7c3aed; font-weight: 500; }
+  .s-fn { color: #059669; font-weight: 500; }
+  .s-num { color: #dc2626; }
+  .s-cm { color: #9ca3af; font-style: italic; }
+
+  /* Output block */
+  .output-wrap {
+    border-radius: 10px;
+    overflow: hidden;
+    margin: 10px 0 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    border: 1px solid #d1d5db;
+  }
+
+  .output-bar {
+    padding: 9px 18px;
+    background: #374151;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--white);
+    letter-spacing: 0.5px;
+  }
+
+  .output-body {
+    padding: 16px 20px;
+    font-family: var(--mono);
+    font-size: 13.5px;
+    line-height: 1.7;
+    color: var(--gray-800);
+    background: #f1f5f9;
+    border: 1px solid var(--gray-200);
+    border-top: none;
+    border-radius: 0 0 10px 10px;
+  }
+
+  /* Callout */
+  .tip {
+    margin: 28px 0;
+    padding: 18px 24px;
+    background: #dbeafe;
+    border-left: 5px solid #2563eb;
+    border-radius: 0 12px 12px 0;
+    font-size: 14.5px;
+    line-height: 1.8;
+    color: var(--text);
+  }
+
+  .tip-label {
+    font-weight: 700;
+    color: #2563eb;
+    font-size: 13px;
+    display: block;
+    margin-bottom: 4px;
+  }
+
+  .warn {
+    margin: 28px 0;
+    padding: 18px 24px;
+    background: #fef3c7;
+    border-left: 5px solid #d97706;
+    border-radius: 0 12px 12px 0;
+    font-size: 14.5px;
+    line-height: 1.8;
+  }
+
+  .warn-label {
+    font-weight: 700;
+    color: #d97706;
+    font-size: 13px;
+    display: block;
+    margin-bottom: 4px;
+  }
+
+  .note-box {
+    margin: 28px 0;
+    padding: 18px 24px;
+    background: #e2e8f0;
+    border-left: 5px solid #64748b;
+    border-radius: 0 12px 12px 0;
+    font-size: 14.5px;
+    line-height: 1.8;
+  }
+
+  .note-label {
+    font-weight: 700;
+    color: var(--gray-600);
+    font-size: 13px;
+    display: block;
+    margin-bottom: 4px;
+  }
+
+  /* Trace table */
+  table.trace {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    margin: 28px 0;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+    font-size: 14px;
+  }
+
+  table.trace th {
+    background: var(--navy);
+    color: var(--white);
+    padding: 10px 16px;
+    text-align: left;
+    font-weight: 500;
+    font-size: 13px;
+  }
+
+  table.trace td {
+    padding: 10px 16px;
+    border-bottom: 1px solid var(--gray-200);
+    color: var(--gray-700);
+  }
+
+  table.trace tr:nth-child(even) td { background: var(--gray-50); }
+  table.trace tr:last-child td { border-bottom: none; }
+
+  table.trace td code {
+    font-family: var(--mono);
+    font-size: 12.5px;
+    background: #eef1f5;
+    padding: 2px 6px;
+    border-radius: 4px;
+    color: var(--navy);
+  }
+
+  /* ========== PAGE 3: PROBLEMS ========== */
+  .problems-header {
+    margin-bottom: 8px;
+  }
+
+  .problems-chapter-ref {
+    font-size: 13px;
+    color: var(--gray-500);
+    margin-bottom: 4px;
+  }
+
+  .problems-title {
+    font-size: 28px;
+    font-weight: 800;
+    color: var(--navy);
+    margin-bottom: 24px;
+  }
+
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 16px;
+  }
+
+  .prob-card {
+    background: var(--white);
+    border: 1px solid var(--gray-200);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 3px 15px rgba(0,0,0,0.06);
+  }
+
+  .prob-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 16px;
+    background: var(--navy);
+  }
+
+  .prob-num {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--white);
+  }
+
+  .diff {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    font-size: 12px;
+    font-weight: 800;
+  }
+
+  .diff-basic { background: #22c55e; color: white; }
+  .diff-mid { background: #f59e0b; color: white; }
+  .diff-hard { background: #ef4444; color: white; }
+
+  .prob-desc {
+    font-size: 13.5px;
+    line-height: 1.65;
+    color: var(--gray-600);
+    margin-bottom: 10px;
+    padding: 14px 16px 0;
+  }
+
+  .prob-code {
+    background: var(--gray-50);
+    border: 1px solid var(--gray-200);
+    border-radius: 6px;
+    padding: 10px 14px;
+    margin: 0 16px 16px;
+    font-family: var(--mono);
+    font-size: 12.5px;
+    line-height: 1.55;
+    color: var(--gray-600);
+  }
+
+  /* Competition section */
+  .comp-section {
+    margin-top: 32px;
+    padding-top: 24px;
+    border-top: 2px solid var(--navy);
+  }
+
+  .comp-title {
+    font-size: 22px;
+    font-weight: 800;
+    color: var(--navy);
+    margin-bottom: 20px;
+  }
+
+  .comp-card {
+    background: var(--white);
+    border: 1.5px solid var(--gray-200);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 18px rgba(0,0,0,0.06);
+  }
+
+  .comp-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 16px;
+    background: #0f766e;
+  }
+
+  .comp-header .comp-name {
+    color: var(--white);
+    font-size: 15px;
+    font-weight: 700;
+    margin: 0;
+  }
+
+  .comp-inner {
+    padding: 14px 18px 18px;
+  }
+
+  .comp-badge {
+    display: inline-block;
+    padding: 3px 12px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 700;
+  }
+
+  .badge-bj { background: #93c5fd; color: #1e3a5f; }
+  .badge-cu { background: #c4b5fd; color: #3b1f7e; }
+  .badge-pg { background: #7dd3fc; color: #0c4a6e; }
+
+  .comp-name {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--navy);
+    margin-bottom: 6px;
+  }
+
+  .comp-desc {
+    font-size: 14px;
+    color: var(--gray-600);
+    line-height: 1.7;
+    margin-bottom: 14px;
+  }
+
+  .io-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+
+  .io-card {
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid var(--gray-200);
+  }
+
+  .io-h {
+    padding: 6px 14px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--gray-600);
+    background: #e2e8f0;
+  }
+
+  .io-c {
+    padding: 10px 14px;
+    font-family: var(--mono);
+    font-size: 13px;
+    line-height: 1.5;
+    background: var(--white);
+  }
+
+  /* ========== DEBUG LAB ========== */
+  .debug-section {
+    margin: 24px 0;
+    border: 2px solid var(--red);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+
+  .debug-bar {
+    background: var(--red);
+    color: var(--white);
+    padding: 10px 20px;
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 1px;
+  }
+
+  .debug-body {
+    padding: 20px;
+    background: #fef2f2;
+  }
+
+  /* 10축 connection */
+  .connect-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 16px;
+    margin: 28px 0;
+  }
+
+  .connect-card {
+    border-radius: 12px;
+    padding: 20px;
+    text-align: center;
+    border: 1px solid var(--gray-200);
+    box-shadow: 0 3px 14px rgba(0,0,0,0.05);
+  }
+
+  .connect-card h5 {
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 8px;
+  }
+
+  .connect-card p {
+    font-size: 13px;
+    margin: 0;
+    color: var(--gray-600);
+    line-height: 1.6;
+  }
+
+  .cc1 { border-top: 3px solid #8b5cf6; }
+  .cc1 h5 { color: #8b5cf6; }
+  .cc2 { border-top: 3px solid var(--green); }
+  .cc2 h5 { color: var(--green); }
+  .cc3 { border-top: 3px solid var(--navy); }
+  .cc3 h5 { color: var(--navy); }
+
+  /* PAGE NUMBER */
+  .page-num {
+    position: absolute;
+    bottom: 20px;
+    right: 30px;
+    font-size: 12px;
+    color: var(--gray-400);
+  }
+
+  /* WARMUP */
+  .warmup-box {
+    background: #e0e7f1;
+    border-radius: 12px;
+    padding: 24px 28px;
+    margin: 28px 0;
+    border: 2px solid #c7d2e0;
+  }
+
+  .warmup-title {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--navy);
+    margin-bottom: 14px;
+  }
+
+  .wq {
+    padding: 9px 16px;
+    background: var(--white);
+    border-radius: 8px;
+    margin-bottom: 8px;
+    font-size: 14px;
+    border: 1px solid var(--gray-200);
+    color: var(--gray-700);
+  }
+
+  .wq b { color: var(--navy); margin-right: 6px; }
+  .wq .hint { color: var(--gray-400); font-size: 13px; }
+
+  /* ===== CONTEST PROBLEMS PAGE ===== */
+  .contest-page-wrap .chapter-page {
+    min-height: auto;
+  }
+
+  .contest-page-wrap .chapter-page > div:last-child {
+    min-width: 0;
+    overflow-wrap: break-word;
+    word-break: break-word;
+  }
+
+  .contest-card {
+    background: white;
+    border: 1.5px solid var(--gray-200);
+    border-radius: 12px;
+    margin-bottom: 28px;
+    overflow: hidden;
+    break-inside: avoid;
+  }
+
+  .contest-header {
+    background: var(--navy);
+    color: white;
+    padding: 14px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .contest-num-source {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .contest-num {
+    font-weight: 700;
+    font-size: 16px;
+  }
+
+  .contest-source {
+    background: rgba(255,255,255,0.15);
+    padding: 3px 10px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 500;
+  }
+
+  .contest-body {
+    padding: 20px 24px 24px;
+  }
+
+  .contest-question {
+    font-size: 15px;
+    line-height: 1.7;
+    color: var(--text);
+    margin: 0 0 16px;
+    word-break: break-word;
+    overflow-wrap: break-word;
+  }
+
+  .contest-expected {
+    background: #1e293b;
+    border-radius: 8px;
+    overflow: hidden;
+    margin-bottom: 20px;
+  }
+
+  .contest-expected-label {
+    background: #334155;
+    color: #94a3b8;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 6px 14px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .contest-expected-body {
+    color: #e2e8f0;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    line-height: 1.6;
+    padding: 12px 16px;
+    margin: 0;
+    white-space: pre;
+  }
+
+  .contest-write-area {
+    border: 2px dashed var(--gray-300);
+    border-radius: 10px;
+    overflow: hidden;
+    transition: border-color 0.2s;
+  }
+
+  .contest-write-area:focus-within {
+    border-color: var(--orange);
+    border-style: solid;
+  }
+
+  .contest-write-label {
+    background: var(--bg);
+    color: var(--gray-500);
+    font-size: 12px;
+    font-weight: 600;
+    padding: 8px 14px;
+    border-bottom: 1px solid var(--gray-200);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .contest-textarea {
+    width: 100%;
+    min-height: 200px;
+    padding: 16px 18px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    line-height: 1.7;
+    color: var(--text);
+    background: #fafbfc;
+    border: none;
+    outline: none;
+    resize: vertical;
+    tab-size: 4;
+    box-sizing: border-box;
+  }
+
+  .contest-textarea::placeholder {
+    color: var(--gray-300);
+  }
+
+  @media print {
+    body { background: white; }
+    .page { box-shadow: none; margin: 0; page-break-after: always; }
+    .contest-textarea { border: 1px solid var(--gray-300); min-height: 180px; }
+  }
+
+</style>
+</head>
+<body>
+
+<div class="page">
+  <div class="chapter-page">
+    <div class="chapter-sidebar"></div>
+    <div class="chapter-accent-bar"></div>
+    <div class="chapter-body">
+      <div class="chapter-watermark">40</div>
+      <div class="chapter-label">Chapter 40</div>
+      <h1 class="chapter-title">코드의 구조</h1>
+      <p class="chapter-sub">C 프로그램의 기본 구조를 배우고, 각 줄이 무슨 뜻인지 알아봐요.</p>
+
+      <h3 class="obj-title">이 유닛에서 배우는 것</h3>
+      <ul class="obj-list">
+        <li>#include <stdio.h>가 무슨 뜻인지 설명할 수 있어요.</li>
+        <li>int main(void) { }이 프로그램 시작점임을 알아요.</li>
+        <li>return 0;의 역할을 이해해요.</li>
+        <li>세미콜론(;)과 중괄호({ })의 역할을 알아요.</li>
+        <li>빈 C 프로그램 뼈대를 외우고 타이핑할 수 있어요.</li>
+      </ul>
+
+      <h3 class="prereq-title">선수 학습</h3>
+      <div class="prereq-flow">
+        <div class="prereq-item">VS Code와 gcc가 설치되어 있다</div><div class="prereq-arrow">→</div>
+        <div class="prereq-item current">프로그래밍 언어가 무엇인지 안다</div>
+      </div>
+
+      
+
+      <span class="page-num">1</span>
+    </div>
+  </div>
+</div>
+<div class="page">
+  <div class="content-page">
+    <div class="unit-header-bar">
+      <span class="unit-tag">UNIT 40</span>
+      <span class="unit-title-sm">코드의 구조</span>
+    </div>
+<h2 class="section-title">C 프로그램의 뼈대</h2>
+
+<p>가장 간단한 C 프로그램을 봐요. 이 프로그램은 아무것도 안 하지만, <b>모든 C 프로그램의 기본 형태</b>예요.</p>
+<div class="note-box"><span class="note-label">[핵심] C 프로그램 기본 뼈대</span>
+<code>#include &lt;stdio.h&gt;</code><br><br><code>int main(void) {</code><br><code>    return 0;</code><br><code>}</code></div>
+<!-- image -->
+<table class="trace"><thead><tr><th>줄 번호</th><th>코드</th><th>역할</th><th>비유</th></tr></thead><tbody><tr><td>1</td><td>#include <stdio.h></td><td>도구 가져오기</td><td>요리 전 칼·도마 준비</td></tr><tr><td>2</td><td>(빈 줄)</td><td>가독성 구분</td><td>문단 나누기</td></tr><tr><td>3</td><td>int main(void) {</td><td>프로그램 시작점</td><td>공연 시작 신호</td></tr><tr><td>4</td><td>    return 0;</td><td>정상 종료 신호</td><td>시험 끝 손 들기</td></tr><tr><td>5</td><td>}</td><td>코드 블록 닫기</td><td>상자 뚜껑 닫기</td></tr></tbody></table>
+<div style="margin:22px 0"></div>
+<h2 class="section-title">#lu <.> — 도구 가져오기</h2>
+<p><b>#include &lt;stdio.h&gt;</b>는 '도구를 가져와!'라는 뜻이에요. <b>stdio.h</b>는 Standard Input Output의 약자로, 화면에 글자를 출력하거나 키보드 입력을 받는 도구가 들어있어요. 요리를 시작하기 전에 도구함에서 칼, 도마, 냄비를 꺼내오는 것과 같아요.</p>
+
+<div style="margin:22px 0"></div>
+<h2 class="section-title"> (v)   — 시작점</h2>
+<p><b>int main(void) { }</b>는 프로그램의 <b>시작점</b>이에요. 컴퓨터는 프로그램을 실행할 때 항상 main 함수부터 시작해요. 연극에서 '공연 시작!'이라는 신호와 같아요. main이 없으면 컴퓨터는 어디서부터 시작해야 할지 몰라요.</p>
+<table class="trace"><thead><tr><th>구성 요소</th><th>코드</th><th>의미</th><th>필수 여부</th></tr></thead><tbody><tr><td>반환 타입</td><td>int</td><td>정수를 돌려준다는 뜻</td><td>필수</td></tr><tr><td>함수 이름</td><td>main</td><td>프로그램 시작점 이름</td><td>필수 (소문자만)</td></tr><tr><td>매개변수</td><td>(void)</td><td>입력 없음</td><td>필수 (void 또는 argc/argv)</td></tr><tr><td>여는 중괄호</td><td>{</td><td>함수 본문 시작</td><td>필수</td></tr><tr><td>종료 명령</td><td>return 0;</td><td>정상 종료 신호</td><td>권장</td></tr><tr><td>닫는 중괄호</td><td>}</td><td>함수 본문 끝</td><td>필수</td></tr></tbody></table>
+<h2 class="section-title">u 0; — 프로그램 끝</h2>
+<p><b>return 0;</b>은 '프로그램이 잘 끝났어요!'라는 신호예요. 0은 '문제없이 성공했다'는 뜻이에요. 시험을 다 보고 '다 풀었습니다!' 하고 손을 드는 것과 같아요.</p>
+<table class="trace"><thead><tr><th>return 값</th><th>의미</th><th>운영체제 해석</th><th>예시 상황</th></tr></thead><tbody><tr><td>0</td><td>정상 종료</td><td>성공 (EXIT_SUCCESS)</td><td>프로그램이 할 일을 다 했을 때</td></tr><tr><td>1</td><td>일반 오류</td><td>실패</td><td>파일을 찾지 못했을 때</td></tr><tr><td>2</td><td>사용법 오류</td><td>실패</td><td>잘못된 명령어를 입력했을 때</td></tr><tr><td>-1</td><td>심각한 오류</td><td>실패</td><td>메모리가 부족할 때</td></tr></tbody></table>
+<h2 class="section-title">세미콜론(;) — 문장 끝 마침표</h2>
+<p>한국어 문장 끝에 마침표(.)를 찍듯이, C언어 문장 끝에는 <b>세미콜론(;)</b>을 찍어요. 세미콜론을 빠뜨리면 컴퓨터가 '문장이 아직 안 끝났나?'하고 혼란스러워해요.</p>
+<div class="debug-section"><div class="debug-bar">DEBUG LAB — 에러를 찾으시오</div><div class="debug-body">
+
+<p style="margin:14px 0 0; font-size:14px;"><b>에러:</b> </p>
+<p style="font-size:14px;"><b>수정:</b> </p>
+</div></div>
+<!-- image -->
+
+<h2 class="section-title">중괄호   — 코드 묶음 상자</h2>
+<p><b>중괄호 { }</b>는 '이 안에 있는 코드가 한 묶음이야!'라는 뜻이에요. 선물 상자에 물건을 넣듯이, 중괄호 안에 코드를 넣어요. 여는 중괄호 {로 시작하고, 닫는 중괄호 }로 끝내요.</p>
+<!-- image -->
+<table class="trace"><thead><tr><th>기호</th><th>이름</th><th>역할</th><th>빠뜨리면?</th></tr></thead><tbody><tr><td>;</td><td>세미콜론</td><td>문장 끝 표시</td><td>컴파일 에러 발생</td></tr><tr><td>{</td><td>여는 중괄호</td><td>코드 블록 시작</td><td>컴파일 에러 발생</td></tr><tr><td>}</td><td>닫는 중괄호</td><td>코드 블록 끝</td><td>컴파일 에러 발생</td></tr><tr><td>()</td><td>소괄호</td><td>함수 매개변수 감싸기</td><td>컴파일 에러 발생</td></tr><tr><td><></td><td>꺾쇠괄호</td><td>시스템 헤더 파일 감싸기</td><td>헤더 파일 못 찾음</td></tr><tr><td>""</td><td>큰따옴표</td><td>사용자 헤더 또는 문자열</td><td>컴파일 에러 발생</td></tr></tbody></table>
+<div class="tip"><span class="tip-label">[활동] 빈 뼈대 10번 타이핑하기</span>
+VS Code를 열고, 다음 코드를 <b>직접 10번</b> 타이핑해 보세요. 복사-붙여넣기 금지!<br><br><code>#include &lt;stdio.h&gt;</code><br><code></code><br><code>int main(void) {</code><br><code>    return 0;</code><br><code>}</code><br><br>10번 치면 손가락이 기억해요. 머리로 외우는 것보다 손으로 외우는 게 더 오래 남아요!</div>
+<div class="warn"><span class="warn-label">[주의] 자주 하는 실수</span>
+• <b>stdio.h</b>를 <b>studio.h</b>로 쓰기 — std<b>io</b>가 맞아요!<br>• <b>main</b>을 <b>Main</b>이나 <b>MAIN</b>으로 쓰기 — 소문자 main이 맞아요!<br>• <b>세미콜론(;)</b> 빠뜨리기 — return 0 뒤에 꼭!<br>• <b>중괄호</b> 짝 안 맞추기 — {를 열면 반드시 }로 닫아야 해요!</div>
+<table class="trace"><thead><tr><th>실수 유형</th><th>틀린 코드</th><th>올바른 코드</th><th>에러 메시지</th></tr></thead><tbody><tr><td>철자 오류</td><td>#include <studio.h></td><td>#include <stdio.h></td><td>No such file: studio.h</td></tr><tr><td>대소문자</td><td>int Main(void)</td><td>int main(void)</td><td>undefined reference to main</td></tr><tr><td>세미콜론 누락</td><td>return 0</td><td>return 0;</td><td>expected ';' before '}'</td></tr><tr><td>중괄호 누락</td><td>int main(void) return 0;</td><td>int main(void) { return 0; }</td><td>expected '{' before 'return'</td></tr><tr><td>꺾쇠 대신 괄호</td><td>#include (stdio.h)</td><td>#include <stdio.h></td><td>expected '<' or '"'</td></tr></tbody></table>
+<div class="debug-section"><div class="debug-bar">DEBUG LAB — 에러를 찾으시오</div><div class="debug-body">
+
+<p style="margin:14px 0 0; font-size:14px;"><b>에러:</b> </p>
+<p style="font-size:14px;"><b>수정:</b> </p>
+</div></div>
+
+<h2 class="section-title">연습문제</h2>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 1</span><p style="margin:0;font-size:14px">(O/X) #include <stdio.h>는 도구를 가져오는 명령이다.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 2</span><p style="margin:0;font-size:14px">(O/X) C 프로그램은 main 함수에서 시작한다.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 3</span><p style="margin:0;font-size:14px">C언어에서 문장 끝에 찍는 기호는?<br>(1) 마침표(.) (2) 세미콜론(;) (3) 콜론(:) (4) 쉼표(,)</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 4</span><p style="margin:0;font-size:14px">다음 코드에서 틀린 부분을 찾아보세요:<br><code>#include &lt;studio.h&gt;</code><br><code>int Main(void) {</code><br><code>    return 0</code><br><code>}</code></p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 5</span><p style="margin:0;font-size:14px">return 0;에서 0은 무슨 뜻인가요?</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 6</span><p style="margin:0;font-size:14px">C 프로그램 뼈대의 각 줄을 요리에 비유해서 설명해 보세요.</p></div>
+<h2 class="section-title">용어 정리</h2>
+<h2 class="section-title">[심화] C 프로그램 구조 심층 분석</h2>
+<div class="note-box"><span class="note-label">[심화] C 프로그램의 5대 구성 요소</span>
+<b>1. 전처리기 지시문 (#include, #define)</b><br>컴파일 전에 텍스트 치환<br>#include <stdio.h> → stdio.h 내용 삽입<br>#define PI 3.14159 → PI를 값으로 치환<br><br><b>2. 전역 선언/정의</b><br>함수 외부의 변수, 상수, 타입 정의<br>프로그램 전체에서 접근 가능<br><br><b>3. 함수 선언 (프로토타입)</b><br>int add(int a, int b); ← 세미콜론!<br>컴파일러에게 "이런 함수가 있을 거야" 알림<br><br><b>4. main 함수</b><br>프로그램의 시작점 (entry point)<br>OS가 프로그램 실행 시 가장 먼저 호출<br><br><b>5. 사용자 정의 함수</b><br>재사용 가능한 코드 블록<br>main 위 또는 아래에 작성</div>
+<div style="margin:22px 0"></div>
+<table class="trace"><thead><tr><th>구성 요소</th><th>작성 위치</th><th>예시 코드</th><th>역할</th></tr></thead><tbody><tr><td>전처리기 지시문</td><td>파일 맨 위</td><td>#include <stdio.h></td><td>도구 가져오기</td></tr><tr><td>전역 선언</td><td>#include 아래</td><td>int count = 0;</td><td>모든 함수에서 쓸 변수</td></tr><tr><td>함수 프로토타입</td><td>main 위</td><td>int add(int, int);</td><td>함수 존재를 미리 알림</td></tr><tr><td>main 함수</td><td>파일 중간</td><td>int main(void) { }</td><td>프로그램 시작점</td></tr><tr><td>사용자 함수</td><td>main 아래</td><td>int add(int a, int b) { }</td><td>기능 구현</td></tr></tbody></table>
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span><span class="code-bar-file">[C 코드] 완전한 C 프로그램 구조</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc"><span class="s-cm">// ====== 1. 전처리기 지시문 ======</span></span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;stdio.h&gt;</span>    <span class="s-cm">// 표준 입출력</span></span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;stdlib.h&gt;</span>   <span class="s-cm">// 표준 라이브러리 (exit, malloc)</span></span></div>
+<div class="code-line"><span class="ln">4</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;string.h&gt;</span>   <span class="s-cm">// 문자열 처리</span></span></div>
+<div class="code-line"><span class="ln">5</span><span class="lc"><span class="s-pp">#define</span> MAX_SIZE <span class="s-num">100</span>  <span class="s-cm">// 매크로 상수</span></span></div>
+<div class="code-line"><span class="ln">6</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">7</span><span class="lc"><span class="s-cm">// ====== 2. 전역 변수 ======</span></span></div>
+<div class="code-line"><span class="ln">8</span><span class="lc"><span class="s-type">int</span> global_count = <span class="s-num">0</span>;  <span class="s-cm">// 모든 함수에서 접근 가능</span></span></div>
+<div class="code-line"><span class="ln">9</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">10</span><span class="lc"><span class="s-cm">// ====== 3. 함수 프로토타입 (선언) ======</span></span></div>
+<div class="code-line"><span class="ln">11</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">add</span>(<span class="s-type">int</span> a, <span class="s-type">int</span> b);</span></div>
+<div class="code-line"><span class="ln">12</span><span class="lc"><span class="s-type">void</span> <span class="s-fn">greet</span>(<span class="s-kw">const</span> <span class="s-type">char</span> *name);</span></div>
+<div class="code-line"><span class="ln">13</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">14</span><span class="lc"><span class="s-cm">// ====== 4. main 함수 ======</span></span></div>
+<div class="code-line"><span class="ln">15</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">main</span>() {</span></div>
+<div class="code-line"><span class="ln">16</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"=== 프로그램 시작 ===\n"</span>);</span></div>
+<div class="code-line"><span class="ln">17</span><span class="lc">    </span></div>
+<div class="code-line"><span class="ln">18</span><span class="lc">    <span class="s-fn">greet</span>(<span class="s-str">"자현"</span>);</span></div>
+<div class="code-line"><span class="ln">19</span><span class="lc">    <span class="s-type">int</span> result = <span class="s-fn">add</span>(<span class="s-num">10</span>, <span class="s-num">20</span>);</span></div>
+<div class="code-line"><span class="ln">20</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"10 + 20 = %d\n"</span>, result);</span></div>
+<div class="code-line"><span class="ln">21</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"호출 횟수: %d\n"</span>, global_count);</span></div>
+<div class="code-line"><span class="ln">22</span><span class="lc">    </span></div>
+<div class="code-line"><span class="ln">23</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"=== 프로그램 종료 ===\n"</span>);</span></div>
+<div class="code-line"><span class="ln">24</span><span class="lc">    <span class="s-kw">return</span> <span class="s-num">0</span>;  <span class="s-cm">// 정상 종료</span></span></div>
+<div class="code-line"><span class="ln">25</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">26</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">27</span><span class="lc"><span class="s-cm">// ====== 5. 함수 정의 ======</span></span></div>
+<div class="code-line"><span class="ln">28</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">add</span>(<span class="s-type">int</span> a, <span class="s-type">int</span> b) {</span></div>
+<div class="code-line"><span class="ln">29</span><span class="lc">    global_count++;</span></div>
+<div class="code-line"><span class="ln">30</span><span class="lc">    <span class="s-kw">return</span> a + b;</span></div>
+<div class="code-line"><span class="ln">31</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">32</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">33</span><span class="lc"><span class="s-type">void</span> <span class="s-fn">greet</span>(<span class="s-kw">const</span> <span class="s-type">char</span> *name) {</span></div>
+<div class="code-line"><span class="ln">34</span><span class="lc">    global_count++;</span></div>
+<div class="code-line"><span class="ln">35</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"안녕하세요, %s님!\n"</span>, name);</span></div>
+<div class="code-line"><span class="ln">36</span><span class="lc">}</span></div>
+</div>
+</div>
+<div class="output-wrap"><div class="output-bar">실행 결과</div><div class="output-body">=== 프로그램 시작 ===
+안녕하세요, 자현님!
+10 + 20 = 30
+호출 횟수: 2
+=== 프로그램 종료 ===</div></div>
+<h2 class="section-title">[심화 내용] 실행 파일의 구조</h2>
+<div class="note-box"><span class="note-label">[심화 내용] ELF/PE 실행 파일 구조</span>
+C 코드가 컴파일되면 실행 파일이 생성돼요.<br><br><b>Linux: ELF (Executable and Linkable Format)</b><br><b>Windows: PE (Portable Executable)</b><br><br><b>주요 섹션:</b><br>1. <b>.text</b> — 기계어 코드 (실행할 명령어)<br>2. <b>.data</b> — 초기화된 전역 변수<br>3. <b>.bss</b> — 초기화되지 않은 전역 변수<br>4. <b>.rodata</b> — 읽기 전용 데이터 (문자열 리터럴)<br>5. <b>심볼 테이블</b> — 함수/변수 이름↔주소 매핑<br><br>int x = 10;      → .data 섹션<br>int y;            → .bss 섹션<br>"Hello"           → .rodata 섹션<br>main() { ... }    → .text 섹션<br><br>objdump -d main → 기계어 코드 확인!</div>
+<div class="debug-section"><div class="debug-bar">DEBUG LAB — 에러를 찾으시오</div><div class="debug-body">
+
+<p style="margin:14px 0 0; font-size:14px;"><b>에러:</b> </p>
+<p style="font-size:14px;"><b>수정:</b> </p>
+</div></div>
+<h2 class="section-title">[심화 내용] 메모리 레이아웃</h2>
+<div class="note-box"><span class="note-label">[심화 내용] 프로그램의 메모리 구조</span>
+<b>C 프로그램의 메모리 영역 (높은 주소 → 낮은 주소):</b><br><br>┌─────────────────┐ 높은 주소<br>│ 커널 영역         │ (OS 전용)<br>├─────────────────┤<br>│ 스택 (Stack) ↓   │ 지역변수, 함수 호출<br>│                   │ 자동 할당/해제<br>│   (빈 공간)       │<br>│ 힙 (Heap)  ↑     │ malloc/free<br>│                   │ 수동 관리<br>├─────────────────┤<br>│ BSS              │ 초기화 안 된 전역<br>│ Data             │ 초기화된 전역<br>│ Text (Code)      │ 기계어 코드<br>└─────────────────┘ 낮은 주소<br><br>스택은 위에서 아래로 자라고<br>힙은 아래에서 위로 자란다!</div>
+<table class="trace"><thead><tr><th>C 코드</th><th>변수 종류</th><th>저장 영역</th><th>생존 기간</th></tr></thead><tbody><tr><td>int global = 42;</td><td>초기화된 전역</td><td>.data 섹션</td><td>프로그램 전체</td></tr><tr><td>int uninit;</td><td>초기화 안 된 전역</td><td>.bss 섹션</td><td>프로그램 전체</td></tr><tr><td>const char *s = "Hi";</td><td>문자열 리터럴</td><td>.rodata 섹션</td><td>프로그램 전체</td></tr><tr><td>int local = 10;</td><td>지역 변수</td><td>스택(Stack)</td><td>함수 실행 중만</td></tr><tr><td>int *p = malloc(4);</td><td>동적 할당</td><td>힙(Heap)</td><td>free 호출 때까지</td></tr><tr><td>int main() { ... }</td><td>함수 코드</td><td>.text 섹션</td><td>프로그램 전체</td></tr></tbody></table>
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span><span class="code-bar-file">[C 코드] 메모리 영역 확인</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;stdio.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;stdlib.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">4</span><span class="lc"><span class="s-type">int</span> global_init = <span class="s-num">42</span>;       <span class="s-cm">// Data 섹션</span></span></div>
+<div class="code-line"><span class="ln">5</span><span class="lc"><span class="s-type">int</span> global_uninit;           <span class="s-cm">// BSS 섹션</span></span></div>
+<div class="code-line"><span class="ln">6</span><span class="lc"><span class="s-kw">const</span> <span class="s-type">char</span> *str = <span class="s-str">"Hello"</span>;  <span class="s-cm">// rodata 섹션</span></span></div>
+<div class="code-line"><span class="ln">7</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">8</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">main</span>() {</span></div>
+<div class="code-line"><span class="ln">9</span><span class="lc">    <span class="s-type">int</span> local = <span class="s-num">10</span>;          <span class="s-cm">// 스택</span></span></div>
+<div class="code-line"><span class="ln">10</span><span class="lc">    <span class="s-type">int</span> *heap = <span class="s-fn">malloc</span>(<span class="s-kw">sizeof</span>(<span class="s-type">int</span>)); <span class="s-cm">// 힙</span></span></div>
+<div class="code-line"><span class="ln">11</span><span class="lc">    *heap = <span class="s-num">99</span>;</span></div>
+<div class="code-line"><span class="ln">12</span><span class="lc">    </span></div>
+<div class="code-line"><span class="ln">13</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"=== 메모리 영역 주소 ===\n"</span>);</span></div>
+<div class="code-line"><span class="ln">14</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"Text  (main): %p\n"</span>, (<span class="s-type">void</span>*)main);</span></div>
+<div class="code-line"><span class="ln">15</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"Data  (전역): %p\n"</span>, (<span class="s-type">void</span>*)&amp;global_init);</span></div>
+<div class="code-line"><span class="ln">16</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"BSS   (전역): %p\n"</span>, (<span class="s-type">void</span>*)&amp;global_uninit);</span></div>
+<div class="code-line"><span class="ln">17</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"Heap  (동적): %p\n"</span>, (<span class="s-type">void</span>*)heap);</span></div>
+<div class="code-line"><span class="ln">18</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"Stack (지역): %p\n"</span>, (<span class="s-type">void</span>*)&amp;local);</span></div>
+<div class="code-line"><span class="ln">19</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"\n스택이 힙보다 높은 주소!\n"</span>);</span></div>
+<div class="code-line"><span class="ln">20</span><span class="lc">    </span></div>
+<div class="code-line"><span class="ln">21</span><span class="lc">    <span class="s-fn">free</span>(heap);</span></div>
+<div class="code-line"><span class="ln">22</span><span class="lc">    <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">23</span><span class="lc">}</span></div>
+</div>
+</div>
+<div class="output-wrap"><div class="output-bar">실행 결과</div><div class="output-body">=== 메모리 영역 주소 ===
+Text  (main): 0x401136
+Data  (전역): 0x404030
+BSS   (전역): 0x404038
+Heap  (동적): 0x1234560
+Stack (지역): 0x7ffd8a3e4c4c
+
+스택이 힙보다 높은 주소!</div></div>
+<h2 class="section-title">[심화] 전처리기 심층</h2>
+<div class="note-box"><span class="note-label">[심화] 전처리기 지시문 총정리</span>
+<b>#include</b> — 파일 포함<br><stdio.h> = 시스템 헤더 (표준 경로)<br>"myfile.h" = 사용자 헤더 (현재 디렉토리)<br><br><b>#define</b> — 매크로 정의<br>#define PI 3.14159<br>#define MAX(a,b) ((a)>(b)?(a):(b))<br>⚠️ 괄호 꼭 넣기! MAX(1+2, 3) 오류 방지<br><br><b>#ifdef / #ifndef / #endif</b> — 조건부 컴파일<br>#ifndef UTILS_H   ← 헤더 가드!<br>#define UTILS_H<br>... 내용 ...<br>#endif<br><br><b>#pragma</b> — 컴파일러 지시<br>#pragma once ← 한 번만 포함 (현대적)<br>#pragma pack(1) ← 구조체 패딩 제거</div>
+<div class="debug-section"><div class="debug-bar">DEBUG LAB — 에러를 찾으시오</div><div class="debug-body">
+
+<p style="margin:14px 0 0; font-size:14px;"><b>에러:</b> </p>
+<p style="font-size:14px;"><b>수정:</b> </p>
+</div></div>
+<div style="margin:22px 0"></div>
+<!-- fact-bite -->
+<!-- fact-bite -->
+
+<h2 class="section-title">[심화 내용] 링커와 심볼 해석</h2>
+<div class="note-box"><span class="note-label">[심화 내용] 링커가 하는 일</span>
+<b>링커 (Linker)</b>: 여러 오브젝트 파일을 하나로 합치는 도구<br><br><b>1. 심볼 해석 (Symbol Resolution)</b><br>printf()를 호출하면 → libc에서 printf 주소 찾기<br>add()를 호출하면 → utils.o에서 add 주소 찾기<br><br><b>2. 재배치 (Relocation)</b><br>각 오브젝트 파일의 주소를 최종 위치로 조정<br>main.o의 코드 뒤에 utils.o 코드 배치<br><br><b>3. 정적 vs 동적 링킹</b><br>정적: 라이브러리 코드를 실행 파일에 복사<br>  장점: 독립 실행, 단점: 파일 크기 큼<br>동적: 실행 시 공유 라이브러리(.so/.dll) 로드<br>  장점: 파일 작음, 단점: 라이브러리 필요<br><br>gcc -static main.c → 정적 링킹<br>gcc main.c → 기본 동적 링킹</div>
+<div class="debug-section"><div class="debug-bar">DEBUG LAB — 에러를 찾으시오</div><div class="debug-body">
+
+<p style="margin:14px 0 0; font-size:14px;"><b>에러:</b> </p>
+<p style="font-size:14px;"><b>수정:</b> </p>
+</div></div>
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span><span class="code-bar-file">[C 코드] 여러 파일 프로젝트와 링킹</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc"><span class="s-cm">// math_utils.h</span></span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc"><span class="s-pp">#ifndef</span> MATH_UTILS_H</span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc"><span class="s-pp">#define</span> MATH_UTILS_H</span></div>
+<div class="code-line"><span class="ln">4</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">factorial</span>(<span class="s-type">int</span> n);</span></div>
+<div class="code-line"><span class="ln">5</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">fibonacci</span>(<span class="s-type">int</span> n);</span></div>
+<div class="code-line"><span class="ln">6</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">is_prime</span>(<span class="s-type">int</span> n);</span></div>
+<div class="code-line"><span class="ln">7</span><span class="lc"><span class="s-pp">#endif</span></span></div>
+<div class="code-line"><span class="ln">8</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">9</span><span class="lc"><span class="s-cm">// math_utils.c</span></span></div>
+<div class="code-line"><span class="ln">10</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">"math_utils.h"</span></span></div>
+<div class="code-line"><span class="ln">11</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">factorial</span>(<span class="s-type">int</span> n) { <span class="s-kw">return</span> (n&lt;=<span class="s-num">1</span>)?<span class="s-num">1</span>:n*<span class="s-fn">factorial</span>(n-<span class="s-num">1</span>); }</span></div>
+<div class="code-line"><span class="ln">12</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">fibonacci</span>(<span class="s-type">int</span> n) {</span></div>
+<div class="code-line"><span class="ln">13</span><span class="lc">    <span class="s-kw">if</span> (n&lt;=<span class="s-num">1</span>) <span class="s-kw">return</span> n;</span></div>
+<div class="code-line"><span class="ln">14</span><span class="lc">    <span class="s-type">int</span> a=<span class="s-num">0</span>,b=<span class="s-num">1</span>;</span></div>
+<div class="code-line"><span class="ln">15</span><span class="lc">    <span class="s-kw">for</span>(<span class="s-type">int</span> i=<span class="s-num">2</span>;i&lt;=n;i++){<span class="s-type">int</span> c=a+b;a=b;b=c;}</span></div>
+<div class="code-line"><span class="ln">16</span><span class="lc">    <span class="s-kw">return</span> b;</span></div>
+<div class="code-line"><span class="ln">17</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">18</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">is_prime</span>(<span class="s-type">int</span> n) {</span></div>
+<div class="code-line"><span class="ln">19</span><span class="lc">    <span class="s-kw">if</span>(n&lt;<span class="s-num">2</span>) <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">20</span><span class="lc">    <span class="s-kw">for</span>(<span class="s-type">int</span> i=<span class="s-num">2</span>;i*i&lt;=n;i++) <span class="s-kw">if</span>(n%i==<span class="s-num">0</span>) <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">21</span><span class="lc">    <span class="s-kw">return</span> <span class="s-num">1</span>;</span></div>
+<div class="code-line"><span class="ln">22</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">23</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">24</span><span class="lc"><span class="s-cm">// main.c</span></span></div>
+<div class="code-line"><span class="ln">25</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;stdio.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">26</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">"math_utils.h"</span></span></div>
+<div class="code-line"><span class="ln">27</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">main</span>() {</span></div>
+<div class="code-line"><span class="ln">28</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"5! = %d\n"</span>, <span class="s-fn">factorial</span>(<span class="s-num">5</span>));</span></div>
+<div class="code-line"><span class="ln">29</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"fib(10) = %d\n"</span>, <span class="s-fn">fibonacci</span>(<span class="s-num">10</span>));</span></div>
+<div class="code-line"><span class="ln">30</span><span class="lc">    <span class="s-kw">for</span>(<span class="s-type">int</span> i=<span class="s-num">2</span>;i&lt;=<span class="s-num">20</span>;i++)</span></div>
+<div class="code-line"><span class="ln">31</span><span class="lc">        <span class="s-kw">if</span>(<span class="s-fn">is_prime</span>(i)) <span class="s-fn">printf</span>(<span class="s-str">"%d "</span>,i);</span></div>
+<div class="code-line"><span class="ln">32</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"\n"</span>);</span></div>
+<div class="code-line"><span class="ln">33</span><span class="lc">    <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">34</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">35</span><span class="lc"><span class="s-cm">// 컴파일: gcc main.c math_utils.c -o main</span></span></div>
+</div>
+</div>
+<div class="output-wrap"><div class="output-bar">실행 결과</div><div class="output-body">5! = 120
+fib(10) = 55
+2 3 5 7 11 13 17 19</div></div>
+<h2 class="section-title">[심화] main 함수의 매개변수</h2>
+<div class="note-box"><span class="note-label">[심화] argc와 argv</span>
+main 함수는 두 가지 형태가 가능:<br><br><b>형태 1:</b> int main(void)<br>매개변수 없음. 가장 간단.<br><br><b>형태 2:</b> int main(int argc, char *argv[])<br>argc = 인자 개수 (Argument Count)<br>argv = 인자 문자열 배열 (Argument Vector)<br><br>./main hello world 실행하면:<br>argc = 3<br>argv[0] = "./main"<br>argv[1] = "hello"<br>argv[2] = "world"<br><br><b>활용:</b><br>- 파일 이름을 인자로 받기<br>- 옵션(-v, --help) 처리<br>- 배치 처리 자동화</div>
+<table class="trace"><thead><tr><th>실행 명령어</th><th>argc 값</th><th>argv[0]</th><th>argv[1]</th><th>argv[2]</th></tr></thead><tbody><tr><td>./main</td><td>1</td><td>"./main"</td><td>(없음)</td><td>(없음)</td></tr><tr><td>./main hello</td><td>2</td><td>"./main"</td><td>"hello"</td><td>(없음)</td></tr><tr><td>./main hello world</td><td>3</td><td>"./main"</td><td>"hello"</td><td>"world"</td></tr><tr><td>./main --help</td><td>2</td><td>"./main"</td><td>"--help"</td><td>(없음)</td></tr><tr><td>./main -n 5</td><td>3</td><td>"./main"</td><td>"-n"</td><td>"5"</td></tr></tbody></table>
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span><span class="code-bar-file">[C 코드] 명령줄 인자 처리</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;stdio.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;string.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">4</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">main</span>(<span class="s-type">int</span> argc, <span class="s-type">char</span> *argv[]) {</span></div>
+<div class="code-line"><span class="ln">5</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"프로그램: %s\n"</span>, argv[<span class="s-num">0</span>]);</span></div>
+<div class="code-line"><span class="ln">6</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"인자 수: %d\n\n"</span>, argc-<span class="s-num">1</span>);</span></div>
+<div class="code-line"><span class="ln">7</span><span class="lc">    </span></div>
+<div class="code-line"><span class="ln">8</span><span class="lc">    <span class="s-kw">if</span> (argc &lt; <span class="s-num">2</span>) {</span></div>
+<div class="code-line"><span class="ln">9</span><span class="lc">        <span class="s-fn">printf</span>(<span class="s-str">"사용법: %s [옵션] [인자]\n"</span>, argv[<span class="s-num">0</span>]);</span></div>
+<div class="code-line"><span class="ln">10</span><span class="lc">        <span class="s-fn">printf</span>(<span class="s-str">"옵션:\n"</span>);</span></div>
+<div class="code-line"><span class="ln">11</span><span class="lc">        <span class="s-fn">printf</span>(<span class="s-str">"  --help    도움말\n"</span>);</span></div>
+<div class="code-line"><span class="ln">12</span><span class="lc">        <span class="s-fn">printf</span>(<span class="s-str">"  --greet   인사\n"</span>);</span></div>
+<div class="code-line"><span class="ln">13</span><span class="lc">        <span class="s-kw">return</span> <span class="s-num">1</span>;</span></div>
+<div class="code-line"><span class="ln">14</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">15</span><span class="lc">    </span></div>
+<div class="code-line"><span class="ln">16</span><span class="lc">    <span class="s-kw">for</span> (<span class="s-type">int</span> i = <span class="s-num">1</span>; i &lt; argc; i++) {</span></div>
+<div class="code-line"><span class="ln">17</span><span class="lc">        <span class="s-kw">if</span> (<span class="s-fn">strcmp</span>(argv[i], <span class="s-str">"--help"</span>) == <span class="s-num">0</span>)</span></div>
+<div class="code-line"><span class="ln">18</span><span class="lc">            <span class="s-fn">printf</span>(<span class="s-str">"이것은 도움말입니다.\n"</span>);</span></div>
+<div class="code-line"><span class="ln">19</span><span class="lc">        <span class="s-kw">else</span> <span class="s-kw">if</span> (<span class="s-fn">strcmp</span>(argv[i], <span class="s-str">"--greet"</span>) == <span class="s-num">0</span> &amp;&amp; i+<span class="s-num">1</span> &lt; argc)</span></div>
+<div class="code-line"><span class="ln">20</span><span class="lc">            <span class="s-fn">printf</span>(<span class="s-str">"안녕하세요, %s님!\n"</span>, argv[++i]);</span></div>
+<div class="code-line"><span class="ln">21</span><span class="lc">        <span class="s-kw">else</span></span></div>
+<div class="code-line"><span class="ln">22</span><span class="lc">            <span class="s-fn">printf</span>(<span class="s-str">"인자 %d: %s\n"</span>, i, argv[i]);</span></div>
+<div class="code-line"><span class="ln">23</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">24</span><span class="lc">    <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">25</span><span class="lc">}</span></div>
+</div>
+</div>
+<div class="output-wrap"><div class="output-bar">실행 결과</div><div class="output-body">프로그램: ./main
+인자 수: 2
+
+안녕하세요, 자현님!</div></div>
+<div class="tip"><span class="tip-label">[활동] C 프로그램 골격 연습</span>
+<b>1. 빈 골격 작성</b><br>#include, main, return 0 만으로 프로그램 작성<br>컴파일+실행이 되면 성공!<br><br><b>2. 함수 분리</b><br>main에서 계산 코드를 별도 함수로 분리<br>프로토타입을 main 위에 선언<br><br><b>3. 여러 파일</b><br>main.c + utils.c + utils.h로 분리<br>gcc main.c utils.c -o main 컴파일<br><br><b>4. 매크로 사용</b><br>#define으로 상수 정의<br>매크로 함수 MAX(a,b) 만들어 보기<br><br><b>5. 헤더 가드</b><br>#ifndef / #define / #endif 패턴 적용</div>
+<h2 class="section-title">[심화 내용] C 런타임과 _start</h2>
+<div class="note-box"><span class="note-label">[심화 내용] main() 전에 일어나는 일</span>
+main()이 "진짜" 시작점이 아니에요!<br><br><b>실제 실행 순서:</b><br>1. OS가 프로그램 로드<br>2. <b>_start</b> 호출 (C 런타임 진입점)<br>3. 스택 초기화<br>4. argc, argv 준비<br>5. 전역 변수 초기화 (.data, .bss)<br>6. atexit 핸들러 등록<br>7. <b>main(argc, argv)</b> 호출!<br>8. main 반환 후<br>9. atexit 핸들러 실행<br>10. exit() 시스템 콜 → OS에 종료 코드 전달<br><br>C 런타임(CRT)이 이 모든 작업을 해줘요!<br>crt0.o, crti.o, crtn.o 파일이 링킹됨</div>
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span><span class="code-bar-file">[C 코드] atexit — 프로그램 종료 시 자동 실행</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;stdio.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;stdlib.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">4</span><span class="lc"><span class="s-type">void</span> <span class="s-fn">cleanup1</span>() { <span class="s-fn">printf</span>(<span class="s-str">"정리 작업 1 완료\n"</span>); }</span></div>
+<div class="code-line"><span class="ln">5</span><span class="lc"><span class="s-type">void</span> <span class="s-fn">cleanup2</span>() { <span class="s-fn">printf</span>(<span class="s-str">"정리 작업 2 완료\n"</span>); }</span></div>
+<div class="code-line"><span class="ln">6</span><span class="lc"><span class="s-type">void</span> <span class="s-fn">goodbye</span>()  { <span class="s-fn">printf</span>(<span class="s-str">"프로그램 종료!\n"</span>); }</span></div>
+<div class="code-line"><span class="ln">7</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">8</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">main</span>() {</span></div>
+<div class="code-line"><span class="ln">9</span><span class="lc">    <span class="s-cm">// atexit: 등록 역순으로 실행 (LIFO)</span></span></div>
+<div class="code-line"><span class="ln">10</span><span class="lc">    <span class="s-fn">atexit</span>(goodbye);</span></div>
+<div class="code-line"><span class="ln">11</span><span class="lc">    <span class="s-fn">atexit</span>(cleanup2);</span></div>
+<div class="code-line"><span class="ln">12</span><span class="lc">    <span class="s-fn">atexit</span>(cleanup1);</span></div>
+<div class="code-line"><span class="ln">13</span><span class="lc">    </span></div>
+<div class="code-line"><span class="ln">14</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"프로그램 시작!\n"</span>);</span></div>
+<div class="code-line"><span class="ln">15</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"작업 중...\n"</span>);</span></div>
+<div class="code-line"><span class="ln">16</span><span class="lc">    </span></div>
+<div class="code-line"><span class="ln">17</span><span class="lc">    <span class="s-cm">// return 0 후 atexit 핸들러 자동 실행!</span></span></div>
+<div class="code-line"><span class="ln">18</span><span class="lc">    <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">19</span><span class="lc">}</span></div>
+</div>
+</div>
+<div class="output-wrap"><div class="output-bar">실행 결과</div><div class="output-body">프로그램 시작!
+작업 중...
+정리 작업 1 완료
+정리 작업 2 완료
+프로그램 종료!</div></div>
+<h2 class="section-title">[심화] static과 extern 키워드</h2>
+<div class="note-box"><span class="note-label">[심화] 변수/함수의 가시성 제어</span>
+<b>static (정적):</b><br>1. 전역에 사용: 이 파일에서만 접근 가능<br>   static int count = 0; // 다른 파일에서 안 보임<br><br>2. 함수 안에 사용: 함수 호출 간 값 유지<br>   void f() { static int n=0; n++; printf("%d\n",n); }<br>   f(); f(); f(); → 1, 2, 3<br><br><b>extern (외부):</b><br>다른 파일에 정의된 변수/함수를 가져옴<br>extern int global_count; // "어딘가에 있을 거야"<br><br><b>조합:</b><br>- 아무것도 안 붙인 전역 = 공개<br>- static 전역 = 파일 내부 전용 (캡슐화!)<br>- extern = 다른 파일에서 가져오기<br><br>static을 적극 사용하면 이름 충돌 방지!</div>
+<div class="debug-section"><div class="debug-bar">DEBUG LAB — 에러를 찾으시오</div><div class="debug-body">
+
+<p style="margin:14px 0 0; font-size:14px;"><b>에러:</b> </p>
+<p style="font-size:14px;"><b>수정:</b> </p>
+</div></div>
+<div class="note-box"><span class="note-label">[심화 내용] 면접 문제</span>
+<b>Q1.</b> main의 반환값 0은 무슨 의미?<br>A: EXIT_SUCCESS. OS에게 정상 종료를 알림. 셸에서 $?로 확인 가능.<br><br><b>Q2.</b> static 전역 변수 vs 일반 전역 변수?<br>A: static은 해당 파일(.c)에서만 접근. 일반은 extern으로 다른 파일에서도 접근 가능.<br><br><b>Q3.</b> 함수 프로토타입이 필요한 이유?<br>A: 컴파일러가 함수 호출 시 매개변수 타입/개수를 검증. 없으면 implicit declaration 경고.<br><br><b>Q4.</b> #include <stdio.h>와 #include "stdio.h"의 차이?<br>A: <>는 시스템 헤더 경로 검색. ""는 현재 디렉토리 먼저, 없으면 시스템 경로.</div>
+
+<h2 class="section-title">[심화] 표준 라이브러리 헤더 총정리</h2>
+<div class="note-box"><span class="note-label">[심화] 자주 쓰는 C 표준 헤더</span>
+<b>stdio.h</b> — 입출력<br>printf, scanf, fopen, fclose, fprintf<br><br><b>stdlib.h</b> — 유틸리티<br>malloc, free, atoi, rand, exit, qsort<br><br><b>string.h</b> — 문자열<br>strlen, strcpy, strcmp, strcat, memcpy<br><br><b>math.h</b> — 수학<br>sqrt, pow, sin, cos, log, ceil, floor<br>컴파일: gcc main.c -lm (링크 필요!)<br><br><b>ctype.h</b> — 문자 분류<br>isalpha, isdigit, toupper, tolower<br><br><b>stdbool.h</b> — 불리언 (C99+)<br>bool, true, false<br><br><b>stdint.h</b> — 고정 크기 정수 (C99+)<br>int8_t, int32_t, uint64_t<br><br><b>time.h</b> — 시간<br>time, clock, difftime<br><br><b>assert.h</b> — 디버깅 단언<br>assert(x > 0); // 거짓이면 프로그램 중단</div>
+<table class="trace"><thead><tr><th>헤더 파일</th><th>분류</th><th>핵심 함수</th><th>사용 예시</th></tr></thead><tbody><tr><td>stdio.h</td><td>입출력</td><td>printf, scanf</td><td>printf("Hello");</td></tr><tr><td>stdlib.h</td><td>유틸리티</td><td>malloc, free, atoi</td><td>int *p = malloc(4);</td></tr><tr><td>string.h</td><td>문자열</td><td>strlen, strcmp</td><td>int len = strlen(s);</td></tr><tr><td>math.h</td><td>수학</td><td>sqrt, pow</td><td>double r = sqrt(25);</td></tr><tr><td>ctype.h</td><td>문자 분류</td><td>isdigit, toupper</td><td>char c = toupper('a');</td></tr><tr><td>time.h</td><td>시간</td><td>time, clock</td><td>time_t t = time(NULL);</td></tr><tr><td>stdbool.h</td><td>불리언</td><td>bool, true, false</td><td>bool ok = true;</td></tr><tr><td>assert.h</td><td>디버깅</td><td>assert</td><td>assert(x > 0);</td></tr></tbody></table>
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span><span class="code-bar-file">[C 코드] 표준 라이브러리 활용 종합</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;stdio.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;stdlib.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;string.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">4</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;ctype.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">5</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;math.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">6</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;time.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">7</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">8</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">main</span>() {</span></div>
+<div class="code-line"><span class="ln">9</span><span class="lc">    <span class="s-cm">// string.h</span></span></div>
+<div class="code-line"><span class="ln">10</span><span class="lc">    <span class="s-type">char</span> s[] = <span class="s-str">"Hello, C!"</span>;</span></div>
+<div class="code-line"><span class="ln">11</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"문자열: %s (길이: %zu)\n"</span>, s, <span class="s-fn">strlen</span>(s));</span></div>
+<div class="code-line"><span class="ln">12</span><span class="lc">    </span></div>
+<div class="code-line"><span class="ln">13</span><span class="lc">    <span class="s-cm">// ctype.h</span></span></div>
+<div class="code-line"><span class="ln">14</span><span class="lc">    <span class="s-type">char</span> ch = <span class="s-str">'a'</span>;</span></div>
+<div class="code-line"><span class="ln">15</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"'%c' 대문자: '%c'\n"</span>, ch, <span class="s-fn">toupper</span>(ch));</span></div>
+<div class="code-line"><span class="ln">16</span><span class="lc">    </span></div>
+<div class="code-line"><span class="ln">17</span><span class="lc">    <span class="s-cm">// math.h</span></span></div>
+<div class="code-line"><span class="ln">18</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"sqrt(144) = %.0f\n"</span>, <span class="s-fn">sqrt</span>(<span class="s-num">144</span>));</span></div>
+<div class="code-line"><span class="ln">19</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"pow(2,10) = %.0f\n"</span>, <span class="s-fn">pow</span>(<span class="s-num">2</span>, <span class="s-num">10</span>));</span></div>
+<div class="code-line"><span class="ln">20</span><span class="lc">    </span></div>
+<div class="code-line"><span class="ln">21</span><span class="lc">    <span class="s-cm">// stdlib.h</span></span></div>
+<div class="code-line"><span class="ln">22</span><span class="lc">    <span class="s-fn">srand</span>(<span class="s-fn">time</span>(<span class="s-kw">NULL</span>));</span></div>
+<div class="code-line"><span class="ln">23</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"랜덤(1~6): %d\n"</span>, <span class="s-fn">rand</span>() % <span class="s-num">6</span> + <span class="s-num">1</span>);</span></div>
+<div class="code-line"><span class="ln">24</span><span class="lc">    </span></div>
+<div class="code-line"><span class="ln">25</span><span class="lc">    <span class="s-cm">// stdlib.h - 문자열→숫자</span></span></div>
+<div class="code-line"><span class="ln">26</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"atoi(\"42\") = %d\n"</span>, <span class="s-fn">atoi</span>(<span class="s-str">"42"</span>));</span></div>
+<div class="code-line"><span class="ln">27</span><span class="lc">    </span></div>
+<div class="code-line"><span class="ln">28</span><span class="lc">    <span class="s-cm">// time.h</span></span></div>
+<div class="code-line"><span class="ln">29</span><span class="lc">    time_t now = <span class="s-fn">time</span>(<span class="s-kw">NULL</span>);</span></div>
+<div class="code-line"><span class="ln">30</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"현재 시간: %s"</span>, <span class="s-fn">ctime</span>(&amp;now));</span></div>
+<div class="code-line"><span class="ln">31</span><span class="lc">    </span></div>
+<div class="code-line"><span class="ln">32</span><span class="lc">    <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">33</span><span class="lc">}</span></div>
+</div>
+</div>
+<div class="output-wrap"><div class="output-bar">실행 결과</div><div class="output-body">문자열: Hello, C! (길이: 9)
+'a' 대문자: 'A'
+sqrt(144) = 12
+pow(2,10) = 1024
+랜덤(1~6): 4
+atoi("42") = 42
+현재 시간: Mon Mar  3 14:30:00 2026</div></div>
+
+<!-- fact-bite -->
+<div class="tip"><span class="tip-label">[활동] C 골격 마스터 체크리스트</span>
+□ #include로 헤더 포함할 수 있다<br>□ #define으로 매크로 상수 정의할 수 있다<br>□ 함수 프로토타입을 main 위에 선언할 수 있다<br>□ main 함수의 반환값 의미를 안다 (0=성공)<br>□ argc/argv로 명령줄 인자를 받을 수 있다<br>□ 여러 .c 파일을 함께 컴파일할 수 있다<br>□ 헤더 가드(#ifndef)를 작성할 수 있다<br>□ static/extern 키워드의 차이를 안다<br><br>전부 체크했으면 C 골격 마스터! 🎉</div>
+<!-- fact-bite -->
+<table class="trace"><thead><tr><th>용어</th><th>설명</th></tr></thead><tbody><tr><td><code>#include</code></td><td>외부 도구(헤더 파일)를 프로그램에 포함시키는 명령. '이 도구를 가져와!'라는 뜻.</td></tr><tr><td><code>stdio.h</code></td><td>Standard Input Output의 약자. 화면 출력(printf)과 키보드 입력(scanf) 도구가 들어있는 파일.</td></tr><tr><td><code>main 함수</code></td><td>C 프로그램의 시작점. 컴퓨터는 항상 main부터 실행을 시작해요.</td></tr><tr><td><code>return 0</code></td><td>프로그램이 정상적으로 끝났음을 알리는 명령. 0 = 성공.</td></tr><tr><td><code>세미콜론(;)</code></td><td>C언어에서 한 문장의 끝을 표시하는 기호. 한국어의 마침표와 같은 역할.</td></tr><tr><td><code>중괄호({ })</code></td><td>코드 블록을 묶는 기호. { }로 열고 닫으며, 그 안의 코드가 하나의 묶음.</td></tr><tr><td><code>전처리기</code></td><td>컴파일 전에 #include, #define 등을 처리하는 단계. 텍스트 치환.</td></tr><tr><td><code>프로토타입</code></td><td>함수의 반환형, 이름, 매개변수를 미리 선언. 컴파일러에게 정보 제공.</td></tr><tr><td><code>ELF</code></td><td>Executable and Linkable Format. Linux/Unix 실행 파일 형식.</td></tr><tr><td><code>.text 섹션</code></td><td>실행 파일에서 기계어 코드가 저장되는 영역.</td></tr><tr><td><code>.data 섹션</code></td><td>초기화된 전역 변수가 저장되는 영역.</td></tr><tr><td><code>.bss 섹션</code></td><td>초기화되지 않은 전역 변수 영역. 0으로 초기화됨.</td></tr><tr><td><code>헤더 가드</code></td><td>#ifndef/#define/#endif로 헤더 파일 중복 포함 방지.</td></tr><tr><td><code>스택/힙</code></td><td>스택: 자동 메모리(지역변수). 힙: 수동 메모리(malloc/free).</td></tr></tbody></table>
+<div class="warmup-box"><div class="warmup-title">이번 유닛 핵심 정리</div><div class="wq"><b>1.</b> #include <stdio.h>로 도구를 가져오고</div><div class="wq"><b>2.</b> int main(void) { }이 프로그램의 시작점이고</div><div class="wq"><b>3.</b> return 0;으로 프로그램 끝을 알리고</div><div class="wq"><b>4.</b> 문장 끝에 세미콜론(;), 코드 묶음은 중괄호({ })</div></div>
+<h2 class="section-title">실전 활용 연습</h2>
+<p>지금까지 배운 개념을 활용한 다양한 실전 예제와 연습문제입니다.</p>
+
+<h2 class="section-title">실생활 연결</h2>
+<div class="tip"><span class="tip-label">[실생활] 이 개념은 어디에 쓰일까?</span>
+게임 개발, 앱 만들기, 웹사이트, 로봇 제어, AI 학습 등 모든 분야에서 사용돼요!</div>
+
+<h2 class="section-title">추가 연습문제</h2>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 20</span><p style="margin:0;font-size:14px">이번 유닛에서 배운 핵심 개념 3가지를 자신의 말로 설명해 보세요.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 21</span><p style="margin:0;font-size:14px">이번 유닛의 개념을 활용한 자신만의 문제를 1개 만들어 보세요.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 22</span><p style="margin:0;font-size:14px">이번 유닛의 개념이 C언어에서 어떻게 사용되는지 조사해 보세요.</p></div>
+<h2 class="section-title">[심화] 더 알아보기</h2>
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+
+<p>이번 유닛의 모든 개념을 완전히 이해했습니다. 다음 유닛에서 더 발전된 개념을 배워보세요!</p>
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<!-- fact-bite -->
+<div class="tip"><span class="tip-label">이 유닛에서 연결된 축</span>
+<b>[C언어]</b> C 프로그램의 기본 뼈대 구조를 완벽히 이해했어요<br><b>[디버깅]</b> 자주 하는 실수(stdio→studio, main→Main, 세미콜론 빠짐)를 미리 알아요<br><b>[컴퓨팅 사고력]</b> 구조화 — 프로그램도 정해진 구조가 있어요<br><b>[KOI]</b> C/C++ 코드 작성의 기본이에요</div>
+<div class="note-box"><span class="note-label">[다음 유닛 미리보기]</span>
+뼈대는 배웠는데, 이 코드를 어떻게 실행하죠? 다음 유닛에서 '컴파일'이란 무엇인지 배워봐요!</div>
+
+    <span class="page-num">2</span>
+  </div>
+</div>
+</body>
+</html>

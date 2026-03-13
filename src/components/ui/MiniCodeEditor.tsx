@@ -57,6 +57,20 @@ const SHORTCUTS = [
     { key: "Alt+↑↓", desc: "줄 이동" },
 ];
 
+/* ── 입력 함수 감지 패턴 ── */
+const INPUT_PATTERNS: Record<string, RegExp> = {
+    c: /\b(scanf|gets|fgets|getchar|fscanf)\s*\(/,
+    cpp: /\b(cin\s*>>|getline\s*\(|scanf|gets|getchar)/,
+    python: /\binput\s*\(/,
+    javascript: /\bprompt\s*\(/,
+    java: /\b(Scanner|BufferedReader|readLine)\b/,
+};
+
+function codeNeedsInput(code: string, lang: string): boolean {
+    const pat = INPUT_PATTERNS[lang];
+    return pat ? pat.test(code) : false;
+}
+
 interface Props {
     contextLabel?: string;
     onCodeRun?: () => void;
@@ -67,7 +81,7 @@ export default function MiniCodeEditor({ contextLabel, onCodeRun }: Props) {
     const [code, setCode] = useState(LANG_OPTIONS[0].default);
     const [stdin, setStdin] = useState("");
     const [output, setOutput] = useState("");
-    const [status, setStatus] = useState<"idle" | "running" | "success" | "error">("idle");
+    const [status, setStatus] = useState<"idle" | "running" | "success" | "error" | "waiting_input">("idle");
     const [execTime, setExecTime] = useState<number | null>(null);
     const [showStdin, setShowStdin] = useState(false);
     const [expanded, setExpanded] = useState(false);
@@ -76,6 +90,9 @@ export default function MiniCodeEditor({ contextLabel, onCodeRun }: Props) {
     const [terminalH, setTerminalH] = useState(expanded ? 180 : 140);
     const [compileCount, setCompileCount] = useState(0);
     const [successCount, setSuccessCount] = useState(0);
+    const [stdinLines, setStdinLines] = useState<string[]>([]);
+    const [currentInput, setCurrentInput] = useState("");
+    const stdinInputRef = useRef<HTMLInputElement>(null);
     const editorRef = useRef<unknown>(null);
     const containerRef = useRef<HTMLDivElement>(null);
 
@@ -115,14 +132,15 @@ export default function MiniCodeEditor({ contextLabel, onCodeRun }: Props) {
         setOutput(""); setStatus("idle");
     };
 
-    const runCode = useCallback(async () => {
-        setStatus("running"); setOutput(""); setExecTime(null);
+    // 실제 컴파일 실행 (stdin 확정 후)
+    const executeWithStdin = useCallback(async (finalStdin: string) => {
+        setStatus("running"); setExecTime(null);
         const t0 = performance.now();
         try {
             const res = await fetch("/api/compile", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ code, language: lang, stdin }),
+                body: JSON.stringify({ code, language: lang, stdin: finalStdin }),
             });
             const data = await res.json();
             const ms = Math.round(performance.now() - t0);
@@ -131,10 +149,10 @@ export default function MiniCodeEditor({ contextLabel, onCodeRun }: Props) {
             setCompileCount(cc);
             localStorage.setItem("cs-cc", String(cc));
             if (!data.success) {
-                setOutput(data.stderr || data.error || "오류 발생");
+                setOutput(prev => prev + (data.stderr || data.error || "오류 발생"));
                 setStatus("error");
             } else {
-                setOutput(data.stdout || "(출력 없음)");
+                setOutput(prev => prev + (data.stdout || "(출력 없음)"));
                 setStatus("success");
                 const sc = successCount + 1;
                 setSuccessCount(sc);
@@ -142,11 +160,47 @@ export default function MiniCodeEditor({ contextLabel, onCodeRun }: Props) {
                 onCodeRun?.();
             }
         } catch {
-            setOutput("서버 연결 실패");
+            setOutput(prev => prev + "서버 연결 실패");
             setStatus("error");
             setExecTime(Math.round(performance.now() - t0));
         }
-    }, [code, lang, stdin, onCodeRun, compileCount, successCount]);
+    }, [code, lang, onCodeRun, compileCount, successCount]);
+
+    // 실행 버튼: 입력 필요 시 대기, 아니면 바로 실행
+    const runCode = useCallback(async () => {
+        setOutput(""); setExecTime(null); setStdinLines([]); setCurrentInput("");
+        if (codeNeedsInput(code, lang) && !stdin) {
+            // 입력이 필요한데 사전 입력(stdin)이 없는 경우 → 인터랙티브 모드
+            setStatus("waiting_input");
+            setTerminalH(h => Math.max(h, 180));
+            setTimeout(() => stdinInputRef.current?.focus(), 100);
+        } else {
+            // 입력 불필요 또는 사전 입력 있음 → 바로 실행
+            executeWithStdin(stdin);
+        }
+    }, [code, lang, stdin, executeWithStdin]);
+
+    // 인터랙티브 입력 제출 (Ctrl+Enter 또는 전송 버튼)
+    const submitInteractiveInput = useCallback(() => {
+        const allLines = [...stdinLines, ...(currentInput ? [currentInput] : [])];
+        const finalStdin = allLines.join("\n");
+        setStdin(finalStdin);
+        setOutput(prev => prev + "\n");
+        executeWithStdin(finalStdin);
+    }, [stdinLines, currentInput, executeWithStdin]);
+
+    // Enter키로 줄 추가
+    const handleInputKeyDown = useCallback((e: React.KeyboardEvent<HTMLInputElement>) => {
+        if (e.key === "Enter" && (e.ctrlKey || e.metaKey)) {
+            e.preventDefault();
+            submitInteractiveInput();
+        } else if (e.key === "Enter") {
+            e.preventDefault();
+            setStdinLines(prev => [...prev, currentInput]);
+            setOutput(prev => prev + currentInput + "\n");
+            setCurrentInput("");
+        }
+    }, [currentInput, submitInteractiveInput]);
 
     const insertSnippet = (snippetCode: string) => {
         setCode(snippetCode);
@@ -164,7 +218,7 @@ export default function MiniCodeEditor({ contextLabel, onCodeRun }: Props) {
     };
 
     const langSnippets = useMemo(() => SNIPPETS[lang] || [], [lang]);
-    const statusDot = status === "success" ? "#5efc8e" : status === "error" ? "#ff6b6b" : status === "running" ? "#fbbf24" : "#475569";
+    const statusDot = status === "success" ? "#5efc8e" : status === "error" ? "#ff6b6b" : status === "running" ? "#fbbf24" : status === "waiting_input" ? "#7daaff" : "#475569";
 
     // Monaco 커스텀 테마 등록
     const handleEditorMount = useCallback((editor: unknown, monaco: { editor: { defineTheme: (name: string, theme: unknown) => void } }) => {
@@ -294,14 +348,16 @@ export default function MiniCodeEditor({ contextLabel, onCodeRun }: Props) {
             }}>
                 <div style={{ display: "flex", gap: 4, alignItems: "center" }}>
                     {/* 실행 */}
-                    <button onClick={runCode} disabled={status === "running"} style={{
+                    <button onClick={runCode} disabled={status === "running" || status === "waiting_input"} style={{
                         padding: "4px 14px", borderRadius: 6, border: "none", cursor: "pointer",
-                        background: status === "running" ? "#475569" : "linear-gradient(135deg, #16a34a, #22c55e)",
+                        background: (status === "running" || status === "waiting_input") ? "#475569" : "linear-gradient(135deg, #16a34a, #22c55e)",
                         color: "#fff", fontSize: 11, fontWeight: 700,
                         display: "flex", alignItems: "center", gap: 4, transition: "all 0.15s",
                     }}>
                         {status === "running" ? (
                             <><span style={{ animation: "spin 1s linear infinite", display: "inline-block" }}>⟳</span> 빌드 중</>
+                        ) : status === "waiting_input" ? (
+                            <>⌨ 입력 대기</>
                         ) : (
                             <>▶ 실행 <span style={{ fontSize: 9, opacity: 0.7 }}>(F5)</span></>
                         )}
@@ -535,10 +591,10 @@ export default function MiniCodeEditor({ contextLabel, onCodeRun }: Props) {
                         {status !== "idle" && (
                             <span style={{
                                 fontSize: 9, fontWeight: 700, padding: "1px 6px", borderRadius: 4,
-                                background: status === "success" ? "#5efc8e15" : status === "error" ? "#ff6b6b15" : "#fbbf2415",
-                                color: status === "success" ? "#5efc8e" : status === "error" ? "#ff6b6b" : "#fbbf24",
+                                background: status === "success" ? "#5efc8e15" : status === "error" ? "#ff6b6b15" : status === "waiting_input" ? "#7daaff15" : "#fbbf2415",
+                                color: status === "success" ? "#5efc8e" : status === "error" ? "#ff6b6b" : status === "waiting_input" ? "#7daaff" : "#fbbf24",
                             }}>
-                                {status === "success" ? "SUCCESS" : status === "error" ? "ERROR" : "RUNNING"}
+                                {status === "success" ? "SUCCESS" : status === "error" ? "ERROR" : status === "waiting_input" ? "INPUT" : "RUNNING"}
                             </span>
                         )}
                     </div>
@@ -553,21 +609,65 @@ export default function MiniCodeEditor({ contextLabel, onCodeRun }: Props) {
                 </div>
 
                 {/* 출력 본문 */}
-                <pre style={{
-                    margin: 0, padding: "10px 12px", flex: 1,
-                    fontSize: 12, lineHeight: 1.6,
-                    fontFamily: "'JetBrains Mono','Fira Code','Consolas',monospace",
-                    color: status === "error" ? "#ff8888" : "#e2e8f0",
-                    whiteSpace: "pre-wrap", wordBreak: "break-all",
-                }}>
-                    {status === "running" ? (
-                        <span style={{ color: "#fbbf24" }}>⟳ 컴파일 중...</span>
-                    ) : output ? (
-                        <>{status !== "error" && <span style={{ color: "#5efc8e" }}>$ </span>}{output}</>
-                    ) : (
-                        <span style={{ color: "#334155" }}>코드를 실행하세요 (F5)</span>
+                <div style={{ flex: 1, padding: "10px 12px", overflowY: "auto" }} className="hide-sb">
+                    <pre style={{
+                        margin: 0, fontSize: 12, lineHeight: 1.6,
+                        fontFamily: "'JetBrains Mono','Fira Code','Consolas',monospace",
+                        color: status === "error" ? "#ff8888" : "#e2e8f0",
+                        whiteSpace: "pre-wrap", wordBreak: "break-all",
+                    }}>
+                        {status === "running" ? (
+                            <span style={{ color: "#fbbf24" }}>⟳ 컴파일 중...</span>
+                        ) : status === "waiting_input" ? (
+                            <>
+                                <span style={{ color: "#7daaff" }}>프로그램이 입력을 기다리고 있습니다...</span>{"\n"}
+                                {stdinLines.map((line, i) => (
+                                    <span key={i}><span style={{ color: "#fbbf24" }}>&gt; </span>{line}{"\n"}</span>
+                                ))}
+                            </>
+                        ) : output ? (
+                            <>{status !== "error" && <span style={{ color: "#5efc8e" }}>$ </span>}{output}</>
+                        ) : (
+                            <span style={{ color: "#334155" }}>코드를 실행하세요 (F5)</span>
+                        )}
+                    </pre>
+
+                    {/* 인터랙티브 입력 영역 */}
+                    {status === "waiting_input" && (
+                        <div style={{ display: "flex", alignItems: "center", gap: 6, marginTop: 4 }}>
+                            <span style={{ color: "#fbbf24", fontSize: 12, fontFamily: "'JetBrains Mono', monospace", flexShrink: 0 }}>&gt;</span>
+                            <input
+                                ref={stdinInputRef}
+                                value={currentInput}
+                                onChange={e => setCurrentInput(e.target.value)}
+                                onKeyDown={handleInputKeyDown}
+                                placeholder="입력값 입력 후 Enter (완료: Ctrl+Enter)"
+                                autoFocus
+                                style={{
+                                    flex: 1, padding: "4px 8px", fontSize: 12,
+                                    fontFamily: "'JetBrains Mono','Fira Code','Consolas',monospace",
+                                    background: "#0d0d1a", color: "#e2e8f0",
+                                    border: "1px solid #334155", borderRadius: 4, outline: "none",
+                                    caretColor: "#7daaff",
+                                }}
+                            />
+                            <button
+                                onClick={submitInteractiveInput}
+                                style={{
+                                    padding: "4px 10px", borderRadius: 4, border: "none",
+                                    background: "linear-gradient(135deg, #16a34a, #22c55e)",
+                                    color: "#fff", fontSize: 10, fontWeight: 700,
+                                    cursor: "pointer", flexShrink: 0,
+                                    display: "flex", alignItems: "center", gap: 3,
+                                }}
+                                title="Ctrl+Enter"
+                            >
+                                <span className="material-symbols-outlined" style={{ fontSize: 12 }}>send</span>
+                                전송
+                            </button>
+                        </div>
                     )}
-                </pre>
+                </div>
             </div>
 
             {/* ═══ 상태바 ═══ */}
@@ -581,9 +681,10 @@ export default function MiniCodeEditor({ contextLabel, onCodeRun }: Props) {
                     <span style={{ display: "flex", alignItems: "center", gap: 3 }}>
                         <div style={{
                             width: 5, height: 5, borderRadius: "50%",
-                            background: status === "running" ? "#fbbf24" : status === "error" ? "#ff6b6b" : "#5efc8e",
+                            background: status === "running" ? "#fbbf24" : status === "error" ? "#ff6b6b" : status === "waiting_input" ? "#7daaff" : "#5efc8e",
+                            animation: status === "waiting_input" ? "pulse 1.5s infinite" : undefined,
                         }} />
-                        {status === "running" ? "빌드 중" : "준비"}
+                        {status === "running" ? "빌드 중" : status === "waiting_input" ? "입력 대기" : "준비"}
                     </span>
                 </div>
                 <div style={{ display: "flex", gap: 10, alignItems: "center" }}>

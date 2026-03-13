@@ -134,10 +134,13 @@ export default function CompilerPage() {
 
   const [running,setRunning]=useState(false);
   const [output,setOutput]=useState("");
-  const [outStatus,setOutStatus]=useState<"idle"|"success"|"error">("idle");
+  const [outStatus,setOutStatus]=useState<"idle"|"success"|"error"|"waiting_input">("idle");
   const [execTime,setExecTime]=useState<number|null>(null);
   const [stdin,setStdin]=useState("");
   const [showStdin,setShowStdin]=useState(false);
+  const [stdinLines,setStdinLines]=useState<string[]>([]);
+  const [currentInput,setCurrentInput]=useState("");
+  const stdinInputRef=useRef<HTMLInputElement>(null);
 
   const [actPanel,setActPanel]=useState<ActPanel>("files");
   const [showRight,setShowRight]=useState(true);
@@ -171,20 +174,47 @@ export default function CompilerPage() {
   const closeTab=(id:string)=>{const idx=tabs.findIndex(t=>t.id===id);setTabs(p=>p.filter(t=>t.id!==id));if(activeTabId===id){const next=tabs[idx-1]||tabs[idx+1];if(next)setActiveTabId(next.id);}};
   const switchLang=(l:string)=>{const cfg=LANG_CFG[l];if(!cfg)return;setTabs(p=>p.map(t=>t.id===activeTabId?{...t,lang:l,name:`main${cfg.ext}`,content:cfg.defaultCode,modified:false}:t));setOutput("");setOutStatus("idle");};
 
-  const runCode=useCallback(async()=>{
-    if(!activeTab)return;setRunning(true);setOutput("");setOutStatus("idle");setExecTime(null);setShowTerminal(true);
+  // 입력 함수 감지
+  const INPUT_PATS:Record<string,RegExp>={c:/\b(scanf|gets|fgets|getchar|fscanf)\s*\(/,cpp:/\b(cin\s*>>|getline\s*\(|scanf|gets|getchar)/,python:/\binput\s*\(/,javascript:/\bprompt\s*\(/,java:/\b(Scanner|BufferedReader|readLine)\b/};
+  const needsInput=(code:string,l:string)=>{const p=INPUT_PATS[l];return p?p.test(code):false;};
+
+  // 실제 컴파일 실행
+  const executeCompile=useCallback(async(finalStdin:string)=>{
+    if(!activeTab)return;setRunning(true);setExecTime(null);
     const t0=performance.now();let res="",stat="success";
     try{
-      const r=await fetch("/api/compile",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({code:activeTab.content,language:activeTab.lang,stdin})});
+      const r=await fetch("/api/compile",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({code:activeTab.content,language:activeTab.lang,stdin:finalStdin})});
       const d=await r.json();
       if(!d.success){res=d.stderr||d.error||"오류 발생";stat="error";}
       else{res=d.stdout||"(출력 없음)";stat="success";}
     }catch{res="서버 연결 실패";stat="error";}
-    setExecTime(Math.round(performance.now()-t0));setOutStatus(stat==="success"?"success":"error");setOutput(res);setRunning(false);setCompileCount(p=>p+1);
+    setExecTime(Math.round(performance.now()-t0));setOutStatus(stat==="success"?"success":"error");setOutput(p=>p+res);setRunning(false);setCompileCount(p=>p+1);
     addNotif(stat==="success"?"success":"error",stat==="success"?`실행 완료 (${Math.round(performance.now()-t0)}ms)`:`오류 발생`);
     if(stat==="success"){const ps=Array.from({length:10},(_,i)=>({id:Date.now()+i,x:50+Math.random()*60,y:50+Math.random()*40,color:["#4ade80","#6d9fff","#22d3ee","#fbbf24"][i%4]}));setParticles(ps);setTimeout(()=>setParticles([]),900);}
     if(userId){try{await supabase.from("code_submissions").insert({user_id:userId,language:activeTab.lang,code:activeTab.content,output:res,status:stat});fetchHist();if(stat==="success"){await awardXP(userId,XP_REWARDS.code_submit,"코드 실행","terminal");setXpMsg(`+${XP_REWARDS.code_submit} XP`);setTimeout(()=>setXpMsg(""),3000);trackMission("code_run");checkAchievementBadges({completedUnits:0,codeRuns:compileCount+1,quizStreak:0});}}catch(e){if(process.env.NODE_ENV==="development")console.error("[Compiler] save:",e);}}
-  },[activeTab,stdin,userId,supabase,fetchHist]);
+  },[activeTab,userId,supabase,fetchHist,compileCount]);
+
+  const runCode=useCallback(async()=>{
+    if(!activeTab)return;setOutput("");setStdinLines([]);setCurrentInput("");setShowTerminal(true);
+    if(needsInput(activeTab.content,activeTab.lang)&&!stdin){
+      setOutStatus("waiting_input");
+      setTimeout(()=>stdinInputRef.current?.focus(),100);
+    }else{
+      executeCompile(stdin);
+    }
+  },[activeTab,stdin,executeCompile]);
+
+  const submitInteractiveInput=useCallback(()=>{
+    const all=[...stdinLines,...(currentInput?[currentInput]:[])];
+    const final=all.join("\n");
+    setStdin(final);setOutput(p=>p+"\n");
+    executeCompile(final);
+  },[stdinLines,currentInput,executeCompile]);
+
+  const handleStdinKeyDown=useCallback((e:React.KeyboardEvent<HTMLInputElement>)=>{
+    if(e.key==="Enter"&&(e.ctrlKey||e.metaKey)){e.preventDefault();submitInteractiveInput();}
+    else if(e.key==="Enter"){e.preventDefault();setStdinLines(p=>[...p,currentInput]);setOutput(p=>p+currentInput+"\n");setCurrentInput("");}
+  },[currentInput,submitInteractiveInput]);
 
   const handleMount=(editorInstance:editor.IStandaloneCodeEditor,monaco:typeof import("monaco-editor"))=>{
     editorRef.current=editorInstance;
@@ -370,8 +400,8 @@ export default function CompilerPage() {
         {/* ── Main ── */}
         <div className="cs-main">
           <div className="cs-toolbar">
-            <motion.button className="cs-tool-btn primary" onClick={runCode} disabled={running} whileTap={{scale:0.95}}>
-              {running?<><motion.span animate={{rotate:360}} transition={{duration:1,repeat:Infinity,ease:"linear"}}><MI icon="sync" s={12} c="#fff"/></motion.span>빌드 중</>:<><MI icon="play_arrow" s={13} c="#fff"/> Run (F5)</>}
+            <motion.button className="cs-tool-btn primary" onClick={runCode} disabled={running||outStatus==="waiting_input"} whileTap={{scale:0.95}}>
+              {running?<><motion.span animate={{rotate:360}} transition={{duration:1,repeat:Infinity,ease:"linear"}}><MI icon="sync" s={12} c="#fff"/></motion.span>빌드 중</>:outStatus==="waiting_input"?<><MI icon="keyboard" s={13} c="#fff"/> 입력 대기</>:<><MI icon="play_arrow" s={13} c="#fff"/> Run (F5)</>}
             </motion.button>
             <div className="cs-tool-sep"/>
             <button className="cs-tool-btn" onClick={newFile}><MI icon="note_add" s={12}/> 새 파일</button>
@@ -418,13 +448,25 @@ export default function CompilerPage() {
               <div className="cs-terminal-header">
                 <div className="cs-terminal-tab active"><MI icon="terminal" s={11}/> 터미널</div>
                 <div style={{flex:1}}/>
-                <AnimatePresence>{outStatus!=="idle"&&(<motion.span initial={{opacity:0,scale:0.5}} animate={{opacity:1,scale:1}} exit={{opacity:0}} style={{fontSize:9,fontWeight:800,padding:"2px 8px",borderRadius:12,background:outStatus==="success"?"rgba(74,222,128,0.08)":"rgba(248,113,113,0.08)",color:outStatus==="success"?"var(--cs-green)":"var(--cs-red)",display:"flex",alignItems:"center",gap:3}}><span className="cs-status-dot" style={{background:outStatus==="success"?"var(--cs-green)":"var(--cs-red)"}}/>{outStatus==="success"?"SUCCESS":"ERROR"}</motion.span>)}</AnimatePresence>
+                <AnimatePresence>{outStatus!=="idle"&&(<motion.span initial={{opacity:0,scale:0.5}} animate={{opacity:1,scale:1}} exit={{opacity:0}} style={{fontSize:9,fontWeight:800,padding:"2px 8px",borderRadius:12,background:outStatus==="success"?"rgba(74,222,128,0.08)":outStatus==="waiting_input"?"rgba(125,170,255,0.08)":"rgba(248,113,113,0.08)",color:outStatus==="success"?"var(--cs-green)":outStatus==="waiting_input"?"var(--cs-accent)":"var(--cs-red)",display:"flex",alignItems:"center",gap:3}}><span className="cs-status-dot" style={{background:outStatus==="success"?"var(--cs-green)":outStatus==="waiting_input"?"var(--cs-accent)":"var(--cs-red)"}}/>{outStatus==="success"?"SUCCESS":outStatus==="waiting_input"?"INPUT":"ERROR"}</motion.span>)}</AnimatePresence>
                 <button className="cs-titlebar-btn" onClick={()=>{setOutput("");setOutStatus("idle");}}><MI icon="delete" s={12}/></button>
                 <button className="cs-titlebar-btn" onClick={()=>setShowTerminal(false)}><MI icon="close" s={12}/></button>
               </div>
               <div className="cs-terminal-body" style={{position:"relative"}}>
                 <div className="cs-holo-scan"/>
                 {running?(<div style={{display:"flex",alignItems:"center",gap:6}}><motion.div animate={{rotate:360}} transition={{duration:1,repeat:Infinity,ease:"linear"}} style={{width:10,height:10,border:"2px solid #222",borderTopColor:"var(--cs-accent)",borderRadius:"50%"}}/><span className="cs-terminal-line info">컴파일 중...</span></div>)
+                :outStatus==="waiting_input"?(<>
+                  <div className="cs-terminal-line" style={{color:"var(--cs-accent)"}}>프로그램이 입력을 기다리고 있습니다...</div>
+                  {stdinLines.map((line,i)=>(<div key={i} className="cs-terminal-line"><span style={{color:"#fbbf24"}}>&gt; </span>{line}</div>))}
+                  <div style={{display:"flex",alignItems:"center",gap:6,marginTop:6}}>
+                    <span style={{color:"#fbbf24",fontFamily:"'JetBrains Mono',monospace",fontSize:12}}>&gt;</span>
+                    <input ref={stdinInputRef} value={currentInput} onChange={e=>setCurrentInput(e.target.value)} onKeyDown={handleStdinKeyDown} placeholder="입력값 입력 후 Enter (완료: Ctrl+Enter)" autoFocus
+                      style={{flex:1,padding:"4px 8px",fontSize:12,fontFamily:"'JetBrains Mono',monospace",background:"#0a0a0a",color:"#c8c8c8",border:"1px solid #222",borderRadius:4,outline:"none",caretColor:"var(--cs-accent)"}}/>
+                    <button onClick={submitInteractiveInput} style={{padding:"4px 10px",borderRadius:4,border:"none",background:"var(--cs-accent)",color:"#fff",fontSize:10,fontWeight:700,cursor:"pointer",display:"flex",alignItems:"center",gap:3}}>
+                      <MI icon="send" s={12} c="#fff"/>전송
+                    </button>
+                  </div>
+                </>)
                 :output?(<pre style={{margin:0,whiteSpace:"pre-wrap",wordBreak:"break-all"}}><span className="cs-terminal-prompt">{outStatus==="success"?"$ ":"stderr: "}</span><span className={`cs-terminal-line ${outStatus==="error"?"error":""}`}>{output}</span></pre>)
                 :(<div className="cs-terminal-line" style={{color:"#555"}}><span className="cs-terminal-prompt">$ </span>코드를 실행하세요 (F5)</div>)}
               </div>

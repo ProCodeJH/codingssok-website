@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useRef } from "react";
 import { motion, useInView } from "framer-motion";
 import Image from "next/image";
 
@@ -16,42 +16,10 @@ const FEATURES = [
     { icon: "emoji_events", title: "대회·자격증 대비", desc: "정보올림피아드, COS-Pro 등 목표에 맞는 특화 프로그램을 운영합니다." },
 ];
 
-const INTERESTS = ["Python", "C/C++", "피지컬컴퓨팅", "사고력수학", "자격증"];
 
 export default function Contact() {
     const ref = useRef<HTMLElement>(null);
     const isInView = useInView(ref, { once: true, margin: "-60px" });
-    const [selected, setSelected] = useState<string[]>([]);
-    const [name, setName] = useState("");
-    const [phone, setPhone] = useState("");
-    const [grade, setGrade] = useState("");
-    const [submitted, setSubmitted] = useState(false);
-
-    const toggleInterest = (interest: string) => {
-        setSelected(prev =>
-            prev.includes(interest)
-                ? prev.filter(i => i !== interest)
-                : [...prev, interest]
-        );
-    };
-
-    const handleSubmit = (e: React.FormEvent) => {
-        e.preventDefault();
-        if (!name.trim() || !phone.trim()) {
-            alert("이름과 연락처를 입력해 주세요.");
-            return;
-        }
-        // Show confirmation
-        setSubmitted(true);
-        // Open KakaoTalk channel chat for follow-up
-        const msg = `[상담 신청]\n이름: ${name}\n연락처: ${phone}\n학년: ${grade || '미선택'}\n관심과목: ${selected.join(', ') || '미선택'}`;
-        window.open(`https://pf.kakao.com/_tNeen/chat`, '_blank');
-        // Reset after delay
-        setTimeout(() => {
-            setSubmitted(false);
-            setName(""); setPhone(""); setGrade(""); setSelected([]);
-        }, 3000);
-    };
 
     return (
         <section ref={ref} id="contact" className="ct-section">
@@ -138,78 +106,16 @@ export default function Contact() {
                         <div className="ct-slab">
                             <div className="ct-secure-badge">
                                 <span className="ct-secure-dot" />
-                                <span>안전한 정보 접수</span>
+                                <span>상담 문의</span>
                             </div>
 
                             <div className="ct-form-header">
                                 <h3 className="ct-form-title">상담 신청</h3>
-                                <p className="ct-form-sub">아래 정보를 입력하시면 빠르게 연락드리겠습니다.</p>
+                                <p className="ct-form-sub">편하신 방법으로 문의해 주세요.</p>
                             </div>
 
-                            <form className="ct-form" onSubmit={handleSubmit}>
-                                <div className="ct-form-grid">
-                                    <div className="ct-field group">
-                                        <label className="ct-label">이름</label>
-                                        <div className="ct-slot">
-                                            <input type="text" placeholder="이름" className="ct-input" value={name} onChange={e => setName(e.target.value)} required />
-                                        </div>
-                                    </div>
-                                    <div className="ct-field group">
-                                        <label className="ct-label">연락처</label>
-                                        <div className="ct-slot">
-                                            <input type="tel" placeholder="010-0000-0000" className="ct-input" value={phone} onChange={e => setPhone(e.target.value)} required />
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div className="ct-field group">
-                                    <label className="ct-label">학년</label>
-                                    <div className="ct-slot ct-select-wrap">
-                                        <select className="ct-input ct-select" value={grade} onChange={e => setGrade(e.target.value)}>
-                                            <option disabled value="">학년 선택</option>
-                                            <option>초등학생 (1~3학년)</option>
-                                            <option>초등학생 (4~6학년)</option>
-                                            <option>중학생</option>
-                                            <option>고등학생</option>
-                                            <option>성인</option>
-                                        </select>
-                                        <span className="material-symbols-outlined ct-select-arrow">expand_more</span>
-                                    </div>
-                                </div>
-
-                                <div className="ct-field">
-                                    <label className="ct-label">관심 과목</label>
-                                    <div className="ct-chips">
-                                        {INTERESTS.map(int => (
-                                            <button
-                                                key={int}
-                                                type="button"
-                                                className={`ct-chip ${selected.includes(int) ? "ct-chip-active" : ""}`}
-                                                onClick={() => toggleInterest(int)}
-                                            >
-                                                {int}
-                                            </button>
-                                        ))}
-                                    </div>
-                                </div>
-
-                                <button type="submit" className="ct-submit group" disabled={submitted}>
-                                    <div className="ct-submit-bg" />
-                                    <div className="ct-submit-shine" />
-                                    <span className="ct-submit-text">
-                                        {submitted ? "신청 완료! ✓" : "상담 신청하기"}
-                                        {!submitted && <span className="material-symbols-outlined ct-submit-icon">send</span>}
-                                    </span>
-                                </button>
-
-                                {/* Divider */}
-                                <div style={{ display: "flex", alignItems: "center", gap: 12, margin: "16px 0 8px" }}>
-                                    <div style={{ flex: 1, height: 1, background: "rgba(0,0,0,0.08)" }} />
-                                    <span style={{ fontSize: 12, color: "#94a3b8", fontWeight: 500 }}>또는</span>
-                                    <div style={{ flex: 1, height: 1, background: "rgba(0,0,0,0.08)" }} />
-                                </div>
-
-                                {/* KakaoTalk Channel Chat Button */}
+                            <div className="ct-form" style={{ gap: 16 }}>
+                                {/* 카카오톡 상담 */}
                                 <a
                                     href="https://pf.kakao.com/_tNeen/chat"
                                     target="_blank"
@@ -221,7 +127,23 @@ export default function Contact() {
                                     </svg>
                                     카카오톡으로 상담하기
                                 </a>
-                            </form>
+
+                                {/* 구분선 */}
+                                <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                                    <div style={{ flex: 1, height: 1, background: "rgba(0,0,0,0.08)" }} />
+                                    <span style={{ fontSize: 12, color: "#94a3b8", fontWeight: 500 }}>또는</span>
+                                    <div style={{ flex: 1, height: 1, background: "rgba(0,0,0,0.08)" }} />
+                                </div>
+
+                                {/* 전화 상담 */}
+                                <a
+                                    href="tel:010-7566-7229"
+                                    className="ct-phone-btn"
+                                >
+                                    <span className="material-symbols-outlined" style={{ fontSize: 20 }}>call</span>
+                                    010-7566-7229 전화 상담
+                                </a>
+                            </div>
                         </div>
                     </motion.div>
                 </div>
@@ -344,6 +266,11 @@ export default function Contact() {
 .ct-kakao-btn { display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%; padding: 16px; border-radius: 16px; background: #FEE500; color: #3A1D1D; font-size: 15px; font-weight: 700; text-decoration: none; transition: all 0.3s; border: none; cursor: pointer; }
 .ct-kakao-btn:hover { background: #F5DB00; transform: translateY(-2px); box-shadow: 0 8px 24px rgba(254,229,0,0.4); }
 .ct-kakao-btn:active { transform: translateY(0); }
+
+/* Phone Button */
+.ct-phone-btn { display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%; padding: 16px; border-radius: 16px; background: linear-gradient(135deg, #3b82f6, #2563eb); color: #fff; font-size: 15px; font-weight: 700; text-decoration: none; transition: all 0.3s; border: none; cursor: pointer; }
+.ct-phone-btn:hover { background: linear-gradient(135deg, #2563eb, #1d4ed8); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(37,99,235,0.4); }
+.ct-phone-btn:active { transform: translateY(0); }
 /* Keyframes */
 @keyframes ctFloat { 0%, 100% { transform: translateY(0) rotate(0); } 50% { transform: translateY(-15px) rotate(0.5deg); } }
 @keyframes ctShard { 0%, 100% { transform: translateY(0) scale(1); } 50% { transform: translateY(-20px) scale(1.05); } }

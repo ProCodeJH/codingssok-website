@@ -611,8 +611,9 @@ export default function CourseDetailPage() {
                         </div>
 
                         {/* Content */}
-                        <div ref={contentRef} className="hide-sb" style={{ flex: 1, overflowY: "auto", padding: "32px 40px 120px" }}>
+                        <div ref={contentRef} className="hide-sb" style={{ flex: 1, overflowY: "auto", padding: activePage.content?.includes("<iframe") ? "16px 12px 120px" : "32px 40px 120px" }}>
                             {/* Page header */}
+                            {!activePage.content?.includes("<iframe") && (
                             <div style={{ marginBottom: 28, paddingBottom: 20, borderBottom: "1px solid #f1f5f9" }}>
                                 <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 6 }}>
                                     <span style={{ fontSize: 10, fontWeight: 800, color: "#94a3b8", letterSpacing: 1.5 }}>UNIT {selectedUnit.unitNumber} · PAGE {activePage.id}</span>
@@ -620,10 +621,11 @@ export default function CourseDetailPage() {
                                 </div>
                                 <h1 style={{ fontSize: 24, fontWeight: 900, color: "#0f172a", margin: 0, lineHeight: 1.3, letterSpacing: -0.5 }}>{activePage.title}</h1>
                             </div>
+                            )}
 
                             {/* HTML content — ref 기반 렌더링으로 형광펜 보존 */}
                             {activePage.content && (
-                                <div ref={htmlContentRef} style={{ maxWidth: 800, margin: "0 auto", fontSize: 14, lineHeight: 1.9, color: "#334155", marginBottom: activePage.quiz || (activePage.problems && activePage.problems.length > 0) ? 32 : 0 }} />
+                                <div ref={htmlContentRef} style={{ maxWidth: "100%", margin: "0 auto", fontSize: 14, lineHeight: 1.9, color: "#334155", marginBottom: activePage.quiz || (activePage.problems && activePage.problems.length > 0) ? 32 : 0 }} />
                             )}
 
                             {/* Quiz */}

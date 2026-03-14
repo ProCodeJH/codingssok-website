@@ -1,0 +1,1436 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>코딩쏙 교재 — 선형 탐색 vs 이진 탐색</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+
+  :root {
+    --navy: #1a2e4a;
+    --navy-mid: #2c4a6e;
+    --navy-light: #3d6590;
+    --orange: #e07830;
+    --orange-light: #f5e6d8;
+    --white: #ffffff;
+    --bg: #f7f8fa;
+    --bg-warm: #faf9f7;
+    --gray-50: #f9fafb;
+    --gray-100: #f3f4f6;
+    --gray-200: #e5e7eb;
+    --gray-300: #d1d5db;
+    --gray-400: #9ca3af;
+    --gray-500: #6b7280;
+    --gray-600: #4b5563;
+    --gray-700: #374151;
+    --gray-800: #1f2937;
+    --text: #2d3748;
+    --green: #16a34a;
+    --green-bg: #dcfce7;
+    --red: #dc2626;
+    --red-bg: #fee2e2;
+    --blue: #2563eb;
+    --blue-bg: #dbeafe;
+    --yellow-bg: #fef9c3;
+    --font: 'Noto Sans KR', sans-serif;
+    --mono: 'JetBrains Mono', 'Consolas', monospace;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: var(--font); background: #e8eaed; font-size: 15px; }
+
+  /* ========== PAGE ========== */
+  .page {
+    width: 210mm;
+    min-height: 295mm;
+    margin: 24px auto;
+    background: var(--white);
+    box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* ========== PAGE 1: CHAPTER START ========== */
+  .chapter-page {
+    display: flex;
+    min-height: 295mm;
+  }
+
+  .chapter-sidebar {
+    width: 10px;
+    background: var(--navy);
+    flex-shrink: 0;
+  }
+
+  .chapter-accent-bar {
+    width: 7px;
+    background: var(--orange);
+    flex-shrink: 0;
+  }
+
+  .chapter-body {
+    flex: 1;
+    padding: 70px 65px 50px 55px;
+    position: relative;
+  }
+
+  .chapter-watermark {
+    position: absolute;
+    top: -10px;
+    right: -15px;
+    font-size: 280px;
+    font-weight: 900;
+    color: rgba(180,195,212,0.35);
+    line-height: 1;
+    pointer-events: none;
+    letter-spacing: -10px;
+  }
+
+  .chapter-label {
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--navy-mid);
+    letter-spacing: 2px;
+    margin-bottom: 4px;
+  }
+
+  .chapter-title {
+    font-size: 44px;
+    font-weight: 900;
+    color: var(--navy);
+    line-height: 1.15;
+    margin-bottom: 12px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .chapter-sub {
+    font-size: 16px;
+    color: var(--gray-500);
+    font-weight: 400;
+    margin-bottom: 20px;
+    padding-bottom: 28px;
+    border-bottom: 1px solid var(--gray-200);
+  }
+
+  /* Learning objectives */
+  .obj-title {
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--navy);
+    margin-bottom: 16px;
+    margin-top: 32px;
+  }
+
+  .obj-list {
+    list-style: none;
+    margin-bottom: 40px;
+  }
+
+  .obj-list li {
+    padding: 5px 0 5px 24px;
+    position: relative;
+    font-size: 15px;
+    color: var(--gray-700);
+    line-height: 1.6;
+  }
+
+  .obj-list li::before {
+    content: '•';
+    position: absolute;
+    left: 8px;
+    color: var(--navy-mid);
+    font-weight: 700;
+  }
+
+  /* Prerequisites flow */
+  .prereq-title {
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--navy);
+    margin-bottom: 18px;
+  }
+
+  .prereq-flow {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    margin-bottom: 44px;
+  }
+
+  .prereq-item {
+    padding: 9px 22px;
+    border: 1.5px solid var(--gray-300);
+    border-radius: 50px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--gray-600);
+    background: var(--white);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+  }
+
+  .prereq-item.current {
+    border-color: var(--navy);
+    color: var(--navy);
+    font-weight: 700;
+    background: #edf2f7;
+    box-shadow: 0 2px 6px rgba(26,46,74,0.12);
+  }
+
+  .prereq-arrow {
+    width: 36px;
+    text-align: center;
+    color: var(--gray-300);
+    font-size: 18px;
+    font-weight: 300;
+  }
+
+  /* Predict box */
+  .predict-box {
+    background: var(--gray-50);
+    border: 1.5px solid var(--gray-200);
+    border-radius: 12px;
+    padding: 24px 28px;
+  }
+
+  .predict-label {
+    display: inline-block;
+    background: var(--orange);
+    color: var(--white);
+    font-size: 12px;
+    font-weight: 600;
+    padding: 3px 12px;
+    border-radius: 4px;
+    margin-bottom: 14px;
+    letter-spacing: 0.5px;
+  }
+
+  .predict-q {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--navy);
+    margin-bottom: 16px;
+  }
+
+  .predict-code {
+    background: var(--white);
+    border: 1px solid var(--gray-200);
+    border-radius: 8px;
+    padding: 14px 18px;
+    font-family: var(--mono);
+    font-size: 13px;
+    line-height: 1.65;
+    color: var(--gray-700);
+  }
+
+  /* ========== PAGE 2: CORE CONTENT ========== */
+  .content-page {
+    padding: 55px 65px;
+  }
+
+  .unit-header-bar {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    margin-bottom: 8px;
+  }
+
+  .unit-tag {
+    font-size: 12px;
+    color: var(--orange);
+    font-weight: 600;
+    letter-spacing: 1px;
+  }
+
+  .unit-title-sm {
+    font-size: 14px;
+    color: var(--gray-400);
+    font-weight: 400;
+  }
+
+  .section-title {
+    font-size: 24px;
+    font-weight: 800;
+    color: var(--navy);
+    margin-bottom: 24px;
+    margin-top: 8px;
+    padding-left: 16px;
+    border-left: 5px solid var(--orange);
+  }
+
+  p {
+    font-size: 15.5px;
+    line-height: 1.9;
+    color: var(--text);
+    margin-bottom: 18px;
+  }
+
+  p code {
+    font-family: var(--mono);
+    font-size: 13.5px;
+    background: #f1f3f5;
+    padding: 2px 7px;
+    border-radius: 4px;
+    color: var(--navy);
+    font-weight: 500;
+  }
+
+  /* Code block */
+  .code-wrap {
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    border: 1px solid var(--gray-200);
+    margin: 22px 0;
+  }
+
+  .code-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 9px 18px;
+    background: var(--navy);
+    font-size: 12px;
+  }
+
+  .code-bar-lang {
+    font-family: var(--mono);
+    font-weight: 600;
+    color: var(--white);
+  }
+
+  .code-bar-file {
+    color: rgba(255,255,255,0.6);
+    font-weight: 400;
+  }
+
+  .code-body {
+    background: #f8f9fb;
+    padding: 20px 0;
+    font-family: var(--mono);
+    font-size: 13.5px;
+    line-height: 1.75;
+    border: 1px solid var(--gray-200);
+    border-top: none;
+    border-radius: 0 0 12px 12px;
+  }
+
+  .code-line {
+    display: flex;
+    padding: 0 20px;
+  }
+
+  .code-line:hover {
+    background: #f0f4f8;
+  }
+
+  .code-line.highlighted {
+    background: #fff8e1;
+  }
+
+  .ln {
+    width: 30px;
+    text-align: right;
+    color: #b8bfc8;
+    font-size: 12px;
+    margin-right: 18px;
+    user-select: none;
+    flex-shrink: 0;
+    padding-top: 1px;
+  }
+
+  .lc { flex: 1; }
+
+  /* syntax */
+  .s-pp { color: #8b5cf6; font-weight: 600; }
+  .s-str { color: #d97706; }
+  .s-type { color: #2563eb; font-weight: 500; }
+  .s-kw { color: #7c3aed; font-weight: 500; }
+  .s-fn { color: #059669; font-weight: 500; }
+  .s-num { color: #dc2626; }
+  .s-cm { color: #9ca3af; font-style: italic; }
+
+  /* Output block */
+  .output-wrap {
+    border-radius: 10px;
+    overflow: hidden;
+    margin: 10px 0 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    border: 1px solid #d1d5db;
+  }
+
+  .output-bar {
+    padding: 9px 18px;
+    background: #374151;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--white);
+    letter-spacing: 0.5px;
+  }
+
+  .output-body {
+    padding: 16px 20px;
+    font-family: var(--mono);
+    font-size: 13.5px;
+    line-height: 1.7;
+    color: var(--gray-800);
+    background: #f1f5f9;
+    border: 1px solid var(--gray-200);
+    border-top: none;
+    border-radius: 0 0 10px 10px;
+  }
+
+  /* Callout */
+  .tip {
+    margin: 28px 0;
+    padding: 18px 24px;
+    background: #dbeafe;
+    border-left: 5px solid #2563eb;
+    border-radius: 0 12px 12px 0;
+    font-size: 14.5px;
+    line-height: 1.8;
+    color: var(--text);
+  }
+
+  .tip-label {
+    font-weight: 700;
+    color: #2563eb;
+    font-size: 13px;
+    display: block;
+    margin-bottom: 4px;
+  }
+
+  .warn {
+    margin: 28px 0;
+    padding: 18px 24px;
+    background: #fef3c7;
+    border-left: 5px solid #d97706;
+    border-radius: 0 12px 12px 0;
+    font-size: 14.5px;
+    line-height: 1.8;
+  }
+
+  .warn-label {
+    font-weight: 700;
+    color: #d97706;
+    font-size: 13px;
+    display: block;
+    margin-bottom: 4px;
+  }
+
+  .note-box {
+    margin: 28px 0;
+    padding: 18px 24px;
+    background: #e2e8f0;
+    border-left: 5px solid #64748b;
+    border-radius: 0 12px 12px 0;
+    font-size: 14.5px;
+    line-height: 1.8;
+  }
+
+  .note-label {
+    font-weight: 700;
+    color: var(--gray-600);
+    font-size: 13px;
+    display: block;
+    margin-bottom: 4px;
+  }
+
+  /* Trace table */
+  table.trace {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    margin: 28px 0;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+    font-size: 14px;
+  }
+
+  table.trace th {
+    background: var(--navy);
+    color: var(--white);
+    padding: 10px 16px;
+    text-align: left;
+    font-weight: 500;
+    font-size: 13px;
+  }
+
+  table.trace td {
+    padding: 10px 16px;
+    border-bottom: 1px solid var(--gray-200);
+    color: var(--gray-700);
+  }
+
+  table.trace tr:nth-child(even) td { background: var(--gray-50); }
+  table.trace tr:last-child td { border-bottom: none; }
+
+  table.trace td code {
+    font-family: var(--mono);
+    font-size: 12.5px;
+    background: #eef1f5;
+    padding: 2px 6px;
+    border-radius: 4px;
+    color: var(--navy);
+  }
+
+  /* ========== PAGE 3: PROBLEMS ========== */
+  .problems-header {
+    margin-bottom: 8px;
+  }
+
+  .problems-chapter-ref {
+    font-size: 13px;
+    color: var(--gray-500);
+    margin-bottom: 4px;
+  }
+
+  .problems-title {
+    font-size: 28px;
+    font-weight: 800;
+    color: var(--navy);
+    margin-bottom: 24px;
+  }
+
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 16px;
+  }
+
+  .prob-card {
+    background: var(--white);
+    border: 1px solid var(--gray-200);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 3px 15px rgba(0,0,0,0.06);
+  }
+
+  .prob-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 16px;
+    background: var(--navy);
+  }
+
+  .prob-num {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--white);
+  }
+
+  .diff {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    font-size: 12px;
+    font-weight: 800;
+  }
+
+  .diff-basic { background: #22c55e; color: white; }
+  .diff-mid { background: #f59e0b; color: white; }
+  .diff-hard { background: #ef4444; color: white; }
+
+  .prob-desc {
+    font-size: 13.5px;
+    line-height: 1.65;
+    color: var(--gray-600);
+    margin-bottom: 10px;
+    padding: 14px 16px 0;
+  }
+
+  .prob-code {
+    background: var(--gray-50);
+    border: 1px solid var(--gray-200);
+    border-radius: 6px;
+    padding: 10px 14px;
+    margin: 0 16px 16px;
+    font-family: var(--mono);
+    font-size: 12.5px;
+    line-height: 1.55;
+    color: var(--gray-600);
+  }
+
+  /* Competition section */
+  .comp-section {
+    margin-top: 32px;
+    padding-top: 24px;
+    border-top: 2px solid var(--navy);
+  }
+
+  .comp-title {
+    font-size: 22px;
+    font-weight: 800;
+    color: var(--navy);
+    margin-bottom: 20px;
+  }
+
+  .comp-card {
+    background: var(--white);
+    border: 1.5px solid var(--gray-200);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 18px rgba(0,0,0,0.06);
+  }
+
+  .comp-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 16px;
+    background: #0f766e;
+  }
+
+  .comp-header .comp-name {
+    color: var(--white);
+    font-size: 15px;
+    font-weight: 700;
+    margin: 0;
+  }
+
+  .comp-inner {
+    padding: 14px 18px 18px;
+  }
+
+  .comp-badge {
+    display: inline-block;
+    padding: 3px 12px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 700;
+  }
+
+  .badge-bj { background: #93c5fd; color: #1e3a5f; }
+  .badge-cu { background: #c4b5fd; color: #3b1f7e; }
+  .badge-pg { background: #7dd3fc; color: #0c4a6e; }
+
+  .comp-name {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--navy);
+    margin-bottom: 6px;
+  }
+
+  .comp-desc {
+    font-size: 14px;
+    color: var(--gray-600);
+    line-height: 1.7;
+    margin-bottom: 14px;
+  }
+
+  .io-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+
+  .io-card {
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid var(--gray-200);
+  }
+
+  .io-h {
+    padding: 6px 14px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--gray-600);
+    background: #e2e8f0;
+  }
+
+  .io-c {
+    padding: 10px 14px;
+    font-family: var(--mono);
+    font-size: 13px;
+    line-height: 1.5;
+    background: var(--white);
+  }
+
+  /* ========== DEBUG LAB ========== */
+  .debug-section {
+    margin: 24px 0;
+    border: 2px solid var(--red);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+
+  .debug-bar {
+    background: var(--red);
+    color: var(--white);
+    padding: 10px 20px;
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 1px;
+  }
+
+  .debug-body {
+    padding: 20px;
+    background: #fef2f2;
+  }
+
+  /* 10축 connection */
+  .connect-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 16px;
+    margin: 28px 0;
+  }
+
+  .connect-card {
+    border-radius: 12px;
+    padding: 20px;
+    text-align: center;
+    border: 1px solid var(--gray-200);
+    box-shadow: 0 3px 14px rgba(0,0,0,0.05);
+  }
+
+  .connect-card h5 {
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 8px;
+  }
+
+  .connect-card p {
+    font-size: 13px;
+    margin: 0;
+    color: var(--gray-600);
+    line-height: 1.6;
+  }
+
+  .cc1 { border-top: 3px solid #8b5cf6; }
+  .cc1 h5 { color: #8b5cf6; }
+  .cc2 { border-top: 3px solid var(--green); }
+  .cc2 h5 { color: var(--green); }
+  .cc3 { border-top: 3px solid var(--navy); }
+  .cc3 h5 { color: var(--navy); }
+
+  /* PAGE NUMBER */
+  .page-num {
+    position: absolute;
+    bottom: 20px;
+    right: 30px;
+    font-size: 12px;
+    color: var(--gray-400);
+  }
+
+  /* WARMUP */
+  .warmup-box {
+    background: #e0e7f1;
+    border-radius: 12px;
+    padding: 24px 28px;
+    margin: 28px 0;
+    border: 2px solid #c7d2e0;
+  }
+
+  .warmup-title {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--navy);
+    margin-bottom: 14px;
+  }
+
+  .wq {
+    padding: 9px 16px;
+    background: var(--white);
+    border-radius: 8px;
+    margin-bottom: 8px;
+    font-size: 14px;
+    border: 1px solid var(--gray-200);
+    color: var(--gray-700);
+  }
+
+  .wq b { color: var(--navy); margin-right: 6px; }
+  .wq .hint { color: var(--gray-400); font-size: 13px; }
+
+  /* ===== CONTEST PROBLEMS PAGE ===== */
+  .contest-page-wrap .chapter-page {
+    min-height: auto;
+  }
+
+  .contest-page-wrap .chapter-page > div:last-child {
+    min-width: 0;
+    overflow-wrap: break-word;
+    word-break: break-word;
+  }
+
+  .contest-card {
+    background: white;
+    border: 1.5px solid var(--gray-200);
+    border-radius: 12px;
+    margin-bottom: 28px;
+    overflow: hidden;
+    break-inside: avoid;
+  }
+
+  .contest-header {
+    background: var(--navy);
+    color: white;
+    padding: 14px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .contest-num-source {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .contest-num {
+    font-weight: 700;
+    font-size: 16px;
+  }
+
+  .contest-source {
+    background: rgba(255,255,255,0.15);
+    padding: 3px 10px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 500;
+  }
+
+  .contest-body {
+    padding: 20px 24px 24px;
+  }
+
+  .contest-question {
+    font-size: 15px;
+    line-height: 1.7;
+    color: var(--text);
+    margin: 0 0 16px;
+    word-break: break-word;
+    overflow-wrap: break-word;
+  }
+
+  .contest-expected {
+    background: #1e293b;
+    border-radius: 8px;
+    overflow: hidden;
+    margin-bottom: 20px;
+  }
+
+  .contest-expected-label {
+    background: #334155;
+    color: #94a3b8;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 6px 14px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .contest-expected-body {
+    color: #e2e8f0;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    line-height: 1.6;
+    padding: 12px 16px;
+    margin: 0;
+    white-space: pre;
+  }
+
+  .contest-write-area {
+    border: 2px dashed var(--gray-300);
+    border-radius: 10px;
+    overflow: hidden;
+    transition: border-color 0.2s;
+  }
+
+  .contest-write-area:focus-within {
+    border-color: var(--orange);
+    border-style: solid;
+  }
+
+  .contest-write-label {
+    background: var(--bg);
+    color: var(--gray-500);
+    font-size: 12px;
+    font-weight: 600;
+    padding: 8px 14px;
+    border-bottom: 1px solid var(--gray-200);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .contest-textarea {
+    width: 100%;
+    min-height: 200px;
+    padding: 16px 18px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    line-height: 1.7;
+    color: var(--text);
+    background: #fafbfc;
+    border: none;
+    outline: none;
+    resize: vertical;
+    tab-size: 4;
+    box-sizing: border-box;
+  }
+
+  .contest-textarea::placeholder {
+    color: var(--gray-300);
+  }
+
+  @media print {
+    body { background: white; }
+    .page { box-shadow: none; margin: 0; page-break-after: always; }
+    .contest-textarea { border: 1px solid var(--gray-300); min-height: 180px; }
+  }
+
+</style>
+</head>
+<body>
+
+<div class="page">
+  <div class="chapter-page">
+    <div class="chapter-sidebar"></div>
+    <div class="chapter-accent-bar"></div>
+    <div class="chapter-body">
+      <div class="chapter-watermark">10</div>
+      <div class="chapter-label">Chapter 10</div>
+      <h1 class="chapter-title">선형 탐색 vs 이진 탐색</h1>
+      <p class="chapter-sub">순차적으로 찾는 선형 탐색과 반씩 줄여가는 이진 탐색을 비교하고 구현합니다.</p>
+
+      <h3 class="obj-title">이 유닛에서 배우는 것</h3>
+      <ul class="obj-list">
+        <li>선형 탐색의 원리를 이해하고 O(n)으로 구현합니다.</li>
+        <li>이진 탐색의 원리를 이해하고 O(log n)으로 구현합니다.</li>
+        <li>이진 탐색의 전제조건(정렬된 배열)을 이해합니다.</li>
+        <li>선형 탐색과 이진 탐색의 비교 횟수를 실측하여 성능 차이를 확인합니다.</li>
+      </ul>
+
+      <h3 class="prereq-title">선수 학습</h3>
+      <div class="prereq-flow">
+        <div class="prereq-item current">L12-U09</div>
+      </div>
+
+      <div class="predict-box">
+        <div class="predict-label">예측해 봅시다</div>
+        <div class="predict-q">이 코드의 출력 결과는 무엇입니까?</div>
+        
+      </div>
+
+      <span class="page-num">1</span>
+    </div>
+  </div>
+</div>
+<div class="page">
+  <div class="content-page">
+    <div class="unit-header-bar">
+      <span class="unit-tag">UNIT 10</span>
+      <span class="unit-title-sm">선형 탐색 vs 이진 탐색</span>
+    </div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 1</span><p style="margin:0;font-size:14px">전화번호부에서 '김철수'를 찾을 때, 첫 페이지부터 한 명씩 확인하는 방법과 중간 페이지를 펴서 찾는 방법 중 어느 쪽이 빠릅니까?</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 2</span><p style="margin:0;font-size:14px">1부터 100까지의 숫자 중 하나를 맞추는 게임에서, '위/아래'를 알려준다면 최대 몇 번 만에 맞출 수 있습니까?</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 3</span><p style="margin:0;font-size:14px">이진 탐색을 사용하려면 배열이 어떤 상태여야 합니까?</p></div>
+<h2 class="section-title">예측</h2>
+<h2 class="section-title">이야기</h2>
+<p>undefined</p>
+<h2 class="section-title">핵심 개념</h2>
+<div class="note-box"><span class="note-label"></span>
+<div style="font-weight:700;margin-bottom:6px;color:#1a2e4a">선형 탐색 (Linear Search)</div>배열의 처음부터 끝까지 순서대로 하나씩 비교하여 원하는 값을 찾는 알고리즘입니다.<br>시간 복잡도: O(n) — 최악의 경우 배열 전체를 탐색합니다.<br>장점: 정렬되지 않은 배열에서도 사용할 수 있습니다.<br>단점: 데이터가 많으면 탐색 시간이 급격히 증가합니다.</div>
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;stdio.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc"><span class="s-cm">/* 선형 탐색: 배열에서 target을 찾아 인덱스 반환, 없으면 -1 */</span></span></div>
+<div class="code-line"><span class="ln">4</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">linear_search</span>(<span class="s-type">int</span> arr[], <span class="s-type">int</span> n, <span class="s-type">int</span> target) {</span></div>
+<div class="code-line"><span class="ln">5</span><span class="lc">    <span class="s-kw">for</span> (<span class="s-type">int</span> i = <span class="s-num">0</span>; i &lt; n; i++) {</span></div>
+<div class="code-line"><span class="ln">6</span><span class="lc">        <span class="s-kw">if</span> (arr[i] == target) {</span></div>
+<div class="code-line"><span class="ln">7</span><span class="lc">            <span class="s-kw">return</span> i;    <span class="s-cm">/* 찾으면 인덱스 반환 */</span></span></div>
+<div class="code-line"><span class="ln">8</span><span class="lc">        }</span></div>
+<div class="code-line"><span class="ln">9</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">10</span><span class="lc">    <span class="s-kw">return</span> -<span class="s-num">1</span>;           <span class="s-cm">/* 못 찾으면 -1 반환 */</span></span></div>
+<div class="code-line"><span class="ln">11</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">12</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">13</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">main</span>(<span class="s-type">void</span>) {</span></div>
+<div class="code-line"><span class="ln">14</span><span class="lc">    <span class="s-type">int</span> data[] = {<span class="s-num">4</span>, <span class="s-num">2</span>, <span class="s-num">7</span>, <span class="s-num">1</span>, <span class="s-num">9</span>, <span class="s-num">3</span>, <span class="s-num">8</span>, <span class="s-num">5</span>};</span></div>
+<div class="code-line"><span class="ln">15</span><span class="lc">    <span class="s-type">int</span> n = <span class="s-kw">sizeof</span>(data) / <span class="s-kw">sizeof</span>(data[<span class="s-num">0</span>]);</span></div>
+<div class="code-line"><span class="ln">16</span><span class="lc">    <span class="s-type">int</span> target = <span class="s-num">9</span>;</span></div>
+<div class="code-line"><span class="ln">17</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">18</span><span class="lc">    <span class="s-type">int</span> idx = <span class="s-fn">linear_search</span>(data, n, target);</span></div>
+<div class="code-line"><span class="ln">19</span><span class="lc">    <span class="s-kw">if</span> (idx != -<span class="s-num">1</span>) {</span></div>
+<div class="code-line"><span class="ln">20</span><span class="lc">        <span class="s-fn">printf</span>(<span class="s-str">"%d은(는) 인덱스 %d에 있습니다.\n"</span>, target, idx);</span></div>
+<div class="code-line"><span class="ln">21</span><span class="lc">    } <span class="s-kw">else</span> {</span></div>
+<div class="code-line"><span class="ln">22</span><span class="lc">        <span class="s-fn">printf</span>(<span class="s-str">"%d을(를) 찾을 수 없습니다.\n"</span>, target);</span></div>
+<div class="code-line"><span class="ln">23</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">24</span><span class="lc">    <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">25</span><span class="lc">}</span></div>
+</div>
+</div>
+<div class="note-box"><span class="note-label"></span>
+<div style="font-weight:700;margin-bottom:6px;color:#1a2e4a">이진 탐색 (Binary Search)</div>정렬된 배열에서 중간값과 비교하여 탐색 범위를 절반씩 줄여가는 알고리즘입니다.<br>시간 복잡도: O(log n) — 매 단계마다 탐색 범위가 절반으로 줄어듭니다.<br>전제조건: 배열이 반드시 정렬되어 있어야 합니다.<br>n=1,000,000일 때 최대 약 20번의 비교로 값을 찾을 수 있습니다.</div>
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;stdio.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc"><span class="s-cm">/* 이진 탐색 (while 루프 버전): 정렬된 배열에서 target 검색 */</span></span></div>
+<div class="code-line"><span class="ln">4</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">binary_search</span>(<span class="s-type">int</span> arr[], <span class="s-type">int</span> n, <span class="s-type">int</span> target) {</span></div>
+<div class="code-line"><span class="ln">5</span><span class="lc">    <span class="s-type">int</span> left = <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">6</span><span class="lc">    <span class="s-type">int</span> right = n - <span class="s-num">1</span>;</span></div>
+<div class="code-line"><span class="ln">7</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">8</span><span class="lc">    <span class="s-kw">while</span> (left &lt;= right) {</span></div>
+<div class="code-line"><span class="ln">9</span><span class="lc">        <span class="s-type">int</span> mid = left + (right - left) / <span class="s-num">2</span>;  <span class="s-cm">/* 오버플로 방지 */</span></span></div>
+<div class="code-line"><span class="ln">10</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">11</span><span class="lc">        <span class="s-kw">if</span> (arr[mid] == target) {</span></div>
+<div class="code-line"><span class="ln">12</span><span class="lc">            <span class="s-kw">return</span> mid;              <span class="s-cm">/* 찾음 */</span></span></div>
+<div class="code-line"><span class="ln">13</span><span class="lc">        } <span class="s-kw">else</span> <span class="s-kw">if</span> (arr[mid] &lt; target) {</span></div>
+<div class="code-line"><span class="ln">14</span><span class="lc">            left = mid + <span class="s-num">1</span>;          <span class="s-cm">/* 오른쪽 절반 탐색 */</span></span></div>
+<div class="code-line"><span class="ln">15</span><span class="lc">        } <span class="s-kw">else</span> {</span></div>
+<div class="code-line"><span class="ln">16</span><span class="lc">            right = mid - <span class="s-num">1</span>;         <span class="s-cm">/* 왼쪽 절반 탐색 */</span></span></div>
+<div class="code-line"><span class="ln">17</span><span class="lc">        }</span></div>
+<div class="code-line"><span class="ln">18</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">19</span><span class="lc">    <span class="s-kw">return</span> -<span class="s-num">1</span>;                       <span class="s-cm">/* 못 찾음 */</span></span></div>
+<div class="code-line"><span class="ln">20</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">21</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">22</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">main</span>(<span class="s-type">void</span>) {</span></div>
+<div class="code-line"><span class="ln">23</span><span class="lc">    <span class="s-type">int</span> data[] = {<span class="s-num">2</span>, <span class="s-num">5</span>, <span class="s-num">8</span>, <span class="s-num">12</span>, <span class="s-num">16</span>, <span class="s-num">23</span>, <span class="s-num">38</span>, <span class="s-num">56</span>, <span class="s-num">72</span>, <span class="s-num">91</span>};</span></div>
+<div class="code-line"><span class="ln">24</span><span class="lc">    <span class="s-type">int</span> n = <span class="s-kw">sizeof</span>(data) / <span class="s-kw">sizeof</span>(data[<span class="s-num">0</span>]);</span></div>
+<div class="code-line"><span class="ln">25</span><span class="lc">    <span class="s-type">int</span> target = <span class="s-num">23</span>;</span></div>
+<div class="code-line"><span class="ln">26</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">27</span><span class="lc">    <span class="s-type">int</span> idx = <span class="s-fn">binary_search</span>(data, n, target);</span></div>
+<div class="code-line"><span class="ln">28</span><span class="lc">    <span class="s-kw">if</span> (idx != -<span class="s-num">1</span>) {</span></div>
+<div class="code-line"><span class="ln">29</span><span class="lc">        <span class="s-fn">printf</span>(<span class="s-str">"%d은(는) 인덱스 %d에 있습니다.\n"</span>, target, idx);</span></div>
+<div class="code-line"><span class="ln">30</span><span class="lc">    } <span class="s-kw">else</span> {</span></div>
+<div class="code-line"><span class="ln">31</span><span class="lc">        <span class="s-fn">printf</span>(<span class="s-str">"%d을(를) 찾을 수 없습니다.\n"</span>, target);</span></div>
+<div class="code-line"><span class="ln">32</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">33</span><span class="lc">    <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">34</span><span class="lc">}</span></div>
+</div>
+</div>
+<div class="note-box"><span class="note-label"></span>
+<div style="font-weight:700;margin-bottom:6px;color:#1a2e4a">이진 탐색 동작 추적 (Trace Table)</div>배열: [2, 5, 8, 12, 16, 23, 38, 56, 72, 91]  target = 23<br><br>단계 | left | right | mid | arr[mid] | 비교 결과<br>-----|------|-------|-----|----------|----------<br>  1  |  0   |   9   |  4  |    16    | 16 < 23 → left = 5<br>  2  |  5   |   9   |  7  |    56    | 56 > 23 → right = 6<br>  3  |  5   |   6   |  5  |    23    | 23 == 23 → 찾음!<br><br>3번의 비교만으로 10개 원소에서 값을 찾았습니다.<br>선형 탐색이었다면 6번 비교가 필요했습니다.</div>
+<div class="debug-section"><div class="debug-bar">DEBUG LAB — 에러를 찾으시오</div><div class="debug-body">
+
+<p style="margin:14px 0 0; font-size:14px;"><b>에러:</b> </p>
+<p style="font-size:14px;"><b>수정:</b> </p>
+</div></div>
+<p>undefined</p>
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;stdio.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc"><span class="s-type">int</span> linear_count;   <span class="s-cm">/* 선형 탐색 비교 횟수 */</span></span></div>
+<div class="code-line"><span class="ln">4</span><span class="lc"><span class="s-type">int</span> binary_count;   <span class="s-cm">/* 이진 탐색 비교 횟수 */</span></span></div>
+<div class="code-line"><span class="ln">5</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">6</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">linear_search_count</span>(<span class="s-type">int</span> arr[], <span class="s-type">int</span> n, <span class="s-type">int</span> target) {</span></div>
+<div class="code-line"><span class="ln">7</span><span class="lc">    linear_count = <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">8</span><span class="lc">    <span class="s-kw">for</span> (<span class="s-type">int</span> i = <span class="s-num">0</span>; i &lt; n; i++) {</span></div>
+<div class="code-line"><span class="ln">9</span><span class="lc">        linear_count++;</span></div>
+<div class="code-line"><span class="ln">10</span><span class="lc">        <span class="s-kw">if</span> (arr[i] == target) <span class="s-kw">return</span> i;</span></div>
+<div class="code-line"><span class="ln">11</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">12</span><span class="lc">    <span class="s-kw">return</span> -<span class="s-num">1</span>;</span></div>
+<div class="code-line"><span class="ln">13</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">14</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">15</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">binary_search_count</span>(<span class="s-type">int</span> arr[], <span class="s-type">int</span> n, <span class="s-type">int</span> target) {</span></div>
+<div class="code-line"><span class="ln">16</span><span class="lc">    binary_count = <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">17</span><span class="lc">    <span class="s-type">int</span> left = <span class="s-num">0</span>, right = n - <span class="s-num">1</span>;</span></div>
+<div class="code-line"><span class="ln">18</span><span class="lc">    <span class="s-kw">while</span> (left &lt;= right) {</span></div>
+<div class="code-line"><span class="ln">19</span><span class="lc">        binary_count++;</span></div>
+<div class="code-line"><span class="ln">20</span><span class="lc">        <span class="s-type">int</span> mid = left + (right - left) / <span class="s-num">2</span>;</span></div>
+<div class="code-line"><span class="ln">21</span><span class="lc">        <span class="s-kw">if</span> (arr[mid] == target) <span class="s-kw">return</span> mid;</span></div>
+<div class="code-line"><span class="ln">22</span><span class="lc">        <span class="s-kw">else</span> <span class="s-kw">if</span> (arr[mid] &lt; target) left = mid + <span class="s-num">1</span>;</span></div>
+<div class="code-line"><span class="ln">23</span><span class="lc">        <span class="s-kw">else</span> right = mid - <span class="s-num">1</span>;</span></div>
+<div class="code-line"><span class="ln">24</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">25</span><span class="lc">    <span class="s-kw">return</span> -<span class="s-num">1</span>;</span></div>
+<div class="code-line"><span class="ln">26</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">27</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">28</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">main</span>(<span class="s-type">void</span>) {</span></div>
+<div class="code-line"><span class="ln">29</span><span class="lc">    <span class="s-type">int</span> data[<span class="s-num">1000</span>];</span></div>
+<div class="code-line"><span class="ln">30</span><span class="lc">    <span class="s-kw">for</span> (<span class="s-type">int</span> i = <span class="s-num">0</span>; i &lt; <span class="s-num">1000</span>; i++) {</span></div>
+<div class="code-line"><span class="ln">31</span><span class="lc">        data[i] = i * <span class="s-num">2</span>;    <span class="s-cm">/* 0, 2, 4, ..., 1998 (정렬된 배열) */</span></span></div>
+<div class="code-line"><span class="ln">32</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">33</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">34</span><span class="lc">    <span class="s-type">int</span> target = <span class="s-num">1234</span>;</span></div>
+<div class="code-line"><span class="ln">35</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">36</span><span class="lc">    <span class="s-fn">linear_search_count</span>(data, <span class="s-num">1000</span>, target);</span></div>
+<div class="code-line"><span class="ln">37</span><span class="lc">    <span class="s-fn">binary_search_count</span>(data, <span class="s-num">1000</span>, target);</span></div>
+<div class="code-line"><span class="ln">38</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">39</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"target = %d\n"</span>, target);</span></div>
+<div class="code-line"><span class="ln">40</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"선형 탐색 비교 횟수: %d\n"</span>, linear_count);</span></div>
+<div class="code-line"><span class="ln">41</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"이진 탐색 비교 횟수: %d\n"</span>, binary_count);</span></div>
+<div class="code-line"><span class="ln">42</span><span class="lc">    <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">43</span><span class="lc">}</span></div>
+</div>
+</div>
+<div class="note-box"><span class="note-label"></span>
+<div style="font-weight:700;margin-bottom:6px;color:#1a2e4a">bsearch() 표준 라이브러리 함수</div>C 표준 라이브러리 <stdlib.h>에는 이진 탐색 함수 bsearch()가 포함되어 있습니다.<br><br>원형: void *bsearch(const void *key, const void *base, size_t nmemb, size_t size, int (*compar)(const void *, const void *));<br><br>매개변수:<br>  key    — 찾을 값의 포인터<br>  base   — 정렬된 배열의 시작 주소<br>  nmemb  — 배열의 원소 개수<br>  size   — 각 원소의 크기 (바이트)<br>  compar — 비교 함수 (qsort와 동일한 형식)<br><br>반환값: 찾은 원소의 포인터 (못 찾으면 NULL)</div>
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;stdio.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;stdlib.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">4</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">compare</span>(<span class="s-kw">const</span> <span class="s-type">void</span> *a, <span class="s-kw">const</span> <span class="s-type">void</span> *b) {</span></div>
+<div class="code-line"><span class="ln">5</span><span class="lc">    <span class="s-kw">return</span> (*(<span class="s-type">int</span> *)a - *(<span class="s-type">int</span> *)b);</span></div>
+<div class="code-line"><span class="ln">6</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">7</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">8</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">main</span>(<span class="s-type">void</span>) {</span></div>
+<div class="code-line"><span class="ln">9</span><span class="lc">    <span class="s-type">int</span> data[] = {<span class="s-num">2</span>, <span class="s-num">5</span>, <span class="s-num">8</span>, <span class="s-num">12</span>, <span class="s-num">16</span>, <span class="s-num">23</span>, <span class="s-num">38</span>, <span class="s-num">56</span>, <span class="s-num">72</span>, <span class="s-num">91</span>};</span></div>
+<div class="code-line"><span class="ln">10</span><span class="lc">    <span class="s-type">int</span> n = <span class="s-kw">sizeof</span>(data) / <span class="s-kw">sizeof</span>(data[<span class="s-num">0</span>]);</span></div>
+<div class="code-line"><span class="ln">11</span><span class="lc">    <span class="s-type">int</span> key = <span class="s-num">23</span>;</span></div>
+<div class="code-line"><span class="ln">12</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">13</span><span class="lc">    <span class="s-type">int</span> *result = (<span class="s-type">int</span> *)<span class="s-fn">bsearch</span>(&amp;key, data, n, <span class="s-kw">sizeof</span>(<span class="s-type">int</span>), compare);</span></div>
+<div class="code-line"><span class="ln">14</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">15</span><span class="lc">    <span class="s-kw">if</span> (result != <span class="s-kw">NULL</span>) {</span></div>
+<div class="code-line"><span class="ln">16</span><span class="lc">        <span class="s-fn">printf</span>(<span class="s-str">"%d을(를) 찾았습니다. (인덱스: %ld)\n"</span>, key, result - data);</span></div>
+<div class="code-line"><span class="ln">17</span><span class="lc">    } <span class="s-kw">else</span> {</span></div>
+<div class="code-line"><span class="ln">18</span><span class="lc">        <span class="s-fn">printf</span>(<span class="s-str">"%d을(를) 찾을 수 없습니다.\n"</span>, key);</span></div>
+<div class="code-line"><span class="ln">19</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">20</span><span class="lc">    <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">21</span><span class="lc">}</span></div>
+</div>
+</div>
+<div class="note-box"><span class="note-label"></span>
+<div style="font-weight:700;margin-bottom:6px;color:#1a2e4a">lower_bound / upper_bound 개념</div>이진 탐색을 확장하면 '값이 처음 나타나는 위치'와 '값보다 큰 첫 위치'를 찾을 수 있습니다.<br><br>lower_bound: target 이상인 첫 번째 위치<br>  — 정렬된 배열에 target을 삽입할 수 있는 가장 왼쪽 위치<br><br>upper_bound: target 초과인 첫 번째 위치<br>  — 정렬된 배열에 target을 삽입할 수 있는 가장 오른쪽 위치<br><br>예시: 배열 [1, 2, 2, 2, 3, 5], target = 2<br>  lower_bound = 인덱스 1 (첫 번째 2의 위치)<br>  upper_bound = 인덱스 4 (2보다 큰 첫 원소 3의 위치)<br>  2의 개수 = upper_bound - lower_bound = 4 - 1 = 3개</div>
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;stdio.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc"><span class="s-cm">/* target 이상인 첫 번째 인덱스 반환 */</span></span></div>
+<div class="code-line"><span class="ln">4</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">lower_bound</span>(<span class="s-type">int</span> arr[], <span class="s-type">int</span> n, <span class="s-type">int</span> target) {</span></div>
+<div class="code-line"><span class="ln">5</span><span class="lc">    <span class="s-type">int</span> left = <span class="s-num">0</span>, right = n;</span></div>
+<div class="code-line"><span class="ln">6</span><span class="lc">    <span class="s-kw">while</span> (left &lt; right) {</span></div>
+<div class="code-line"><span class="ln">7</span><span class="lc">        <span class="s-type">int</span> mid = left + (right - left) / <span class="s-num">2</span>;</span></div>
+<div class="code-line"><span class="ln">8</span><span class="lc">        <span class="s-kw">if</span> (arr[mid] &lt; target) {</span></div>
+<div class="code-line"><span class="ln">9</span><span class="lc">            left = mid + <span class="s-num">1</span>;</span></div>
+<div class="code-line"><span class="ln">10</span><span class="lc">        } <span class="s-kw">else</span> {</span></div>
+<div class="code-line"><span class="ln">11</span><span class="lc">            right = mid;</span></div>
+<div class="code-line"><span class="ln">12</span><span class="lc">        }</span></div>
+<div class="code-line"><span class="ln">13</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">14</span><span class="lc">    <span class="s-kw">return</span> left;</span></div>
+<div class="code-line"><span class="ln">15</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">16</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">17</span><span class="lc"><span class="s-cm">/* target 초과인 첫 번째 인덱스 반환 */</span></span></div>
+<div class="code-line"><span class="ln">18</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">upper_bound</span>(<span class="s-type">int</span> arr[], <span class="s-type">int</span> n, <span class="s-type">int</span> target) {</span></div>
+<div class="code-line"><span class="ln">19</span><span class="lc">    <span class="s-type">int</span> left = <span class="s-num">0</span>, right = n;</span></div>
+<div class="code-line"><span class="ln">20</span><span class="lc">    <span class="s-kw">while</span> (left &lt; right) {</span></div>
+<div class="code-line"><span class="ln">21</span><span class="lc">        <span class="s-type">int</span> mid = left + (right - left) / <span class="s-num">2</span>;</span></div>
+<div class="code-line"><span class="ln">22</span><span class="lc">        <span class="s-kw">if</span> (arr[mid] &lt;= target) {</span></div>
+<div class="code-line"><span class="ln">23</span><span class="lc">            left = mid + <span class="s-num">1</span>;</span></div>
+<div class="code-line"><span class="ln">24</span><span class="lc">        } <span class="s-kw">else</span> {</span></div>
+<div class="code-line"><span class="ln">25</span><span class="lc">            right = mid;</span></div>
+<div class="code-line"><span class="ln">26</span><span class="lc">        }</span></div>
+<div class="code-line"><span class="ln">27</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">28</span><span class="lc">    <span class="s-kw">return</span> left;</span></div>
+<div class="code-line"><span class="ln">29</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">30</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">31</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">main</span>(<span class="s-type">void</span>) {</span></div>
+<div class="code-line"><span class="ln">32</span><span class="lc">    <span class="s-type">int</span> data[] = {<span class="s-num">1</span>, <span class="s-num">2</span>, <span class="s-num">2</span>, <span class="s-num">2</span>, <span class="s-num">3</span>, <span class="s-num">5</span>};</span></div>
+<div class="code-line"><span class="ln">33</span><span class="lc">    <span class="s-type">int</span> n = <span class="s-kw">sizeof</span>(data) / <span class="s-kw">sizeof</span>(data[<span class="s-num">0</span>]);</span></div>
+<div class="code-line"><span class="ln">34</span><span class="lc">    <span class="s-type">int</span> target = <span class="s-num">2</span>;</span></div>
+<div class="code-line"><span class="ln">35</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">36</span><span class="lc">    <span class="s-type">int</span> lb = <span class="s-fn">lower_bound</span>(data, n, target);</span></div>
+<div class="code-line"><span class="ln">37</span><span class="lc">    <span class="s-type">int</span> ub = <span class="s-fn">upper_bound</span>(data, n, target);</span></div>
+<div class="code-line"><span class="ln">38</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">39</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"lower_bound(%d) = %d\n"</span>, target, lb);</span></div>
+<div class="code-line"><span class="ln">40</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"upper_bound(%d) = %d\n"</span>, target, ub);</span></div>
+<div class="code-line"><span class="ln">41</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"%d의 개수 = %d\n"</span>, target, ub - lb);</span></div>
+<div class="code-line"><span class="ln">42</span><span class="lc">    <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">43</span><span class="lc">}</span></div>
+</div>
+</div>
+<h2 class="section-title">에러 체험</h2>
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc"><span class="s-cm">// 에러 1: mid 계산 시 오버플로</span></span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc"><span class="s-type">int</span> mid = (left + right) / <span class="s-num">2</span>;           <span class="s-cm">// left + right가 INT_MAX 초과 가능!</span></span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc"><span class="s-cm">// 수정: int mid = left + (right - left) / 2;  // 오버플로 방지</span></span></div>
+<div class="code-line"><span class="ln">4</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">5</span><span class="lc"><span class="s-cm">// 에러 2: left/right 업데이트 실수 → 무한 루프</span></span></div>
+<div class="code-line"><span class="ln">6</span><span class="lc"><span class="s-kw">while</span> (left &lt;= right) {</span></div>
+<div class="code-line"><span class="ln">7</span><span class="lc">    <span class="s-type">int</span> mid = left + (right - left) / <span class="s-num">2</span>;</span></div>
+<div class="code-line"><span class="ln">8</span><span class="lc">    <span class="s-kw">if</span> (arr[mid] &lt; target)</span></div>
+<div class="code-line"><span class="ln">9</span><span class="lc">        left = mid;       <span class="s-cm">// 실수! mid가 변하지 않아 무한 루프</span></span></div>
+<div class="code-line"><span class="ln">10</span><span class="lc">    <span class="s-kw">else</span></span></div>
+<div class="code-line"><span class="ln">11</span><span class="lc">        right = mid;      <span class="s-cm">// 실수! mid가 변하지 않아 무한 루프</span></span></div>
+<div class="code-line"><span class="ln">12</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">13</span><span class="lc"><span class="s-cm">// 수정: left = mid + 1; / right = mid - 1;</span></span></div>
+<div class="code-line"><span class="ln">14</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">15</span><span class="lc"><span class="s-cm">// 에러 3: 정렬되지 않은 배열에 이진 탐색 적용</span></span></div>
+<div class="code-line"><span class="ln">16</span><span class="lc"><span class="s-type">int</span> unsorted[] = {<span class="s-num">5</span>, <span class="s-num">2</span>, <span class="s-num">8</span>, <span class="s-num">1</span>, <span class="s-num">9</span>};</span></div>
+<div class="code-line"><span class="ln">17</span><span class="lc"><span class="s-type">int</span> idx = <span class="s-fn">binary_search</span>(unsorted, <span class="s-num">5</span>, <span class="s-num">8</span>);  <span class="s-cm">// 잘못된 결과!</span></span></div>
+<div class="code-line"><span class="ln">18</span><span class="lc"><span class="s-cm">// 수정: 이진 탐색 전에 반드시 qsort 등으로 정렬할 것</span></span></div>
+</div>
+</div>
+<h2 class="section-title">설명하기</h2>
+<table class="trace"><thead><tr><th style="width:40px">줄</th><th style="width:220px">코드</th><th>역할</th></tr></thead><tbody></tbody></table>
+<h2 class="section-title">예제</h2>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 1</span><p style="margin:0;font-size:14px">정수 배열과 찾을 값을 입력받아 선형 탐색으로 위치를 출력하는 프로그램을 작성하십시오. 값이 없으면 -1을 출력합니다.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 2</span><p style="margin:0;font-size:14px">정렬된 정수 배열과 찾을 값을 입력받아 이진 탐색(while 루프)으로 위치를 출력하는 프로그램을 작성하십시오.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 3</span><p style="margin:0;font-size:14px">정수 N개를 입력받아 오름차순 정렬한 후, 특정 값을 이진 탐색으로 찾는 프로그램을 작성하십시오.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 4</span><p style="margin:0;font-size:14px">선형 탐색과 이진 탐색으로 같은 값을 찾으면서 각각의 비교 횟수를 출력하는 프로그램을 작성하십시오.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 5</span><p style="margin:0;font-size:14px">정렬된 배열에서 특정 값이 몇 개 있는지 lower_bound와 upper_bound를 이용하여 구하는 프로그램을 작성하십시오.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 6</span><p style="margin:0;font-size:14px">bsearch() 표준 라이브러리 함수를 사용하여 정렬된 문자열 배열에서 특정 문자열을 찾는 프로그램을 작성하십시오.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 7</span><p style="margin:0;font-size:14px">재귀 함수로 이진 탐색을 구현하고, 반복문 버전과 비교 횟수가 동일한지 확인하는 프로그램을 작성하십시오.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 8</span><p style="margin:0;font-size:14px">정렬된 배열에서 target 이상인 첫 번째 값과 target 이하인 마지막 값을 이진 탐색으로 찾는 프로그램을 작성하십시오.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 9</span><p style="margin:0;font-size:14px">1부터 N까지의 정수 중 제곱이 M 이하인 가장 큰 정수를 이진 탐색으로 구하는 프로그램을 작성하십시오.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 10</span><p style="margin:0;font-size:14px">N개의 정수를 입력받아 정렬한 후, Q개의 질의에 대해 각 값의 존재 여부를 이진 탐색으로 답하는 프로그램을 작성하십시오.</p></div>
+<h2 class="section-title">대회 기출</h2>
+<h2 class="section-title">요약</h2>
+<div class="warmup-box"><div class="warmup-title">핵심 정리</div><div class="wq"><b>1.</b> 선형 탐색: 처음부터 끝까지 순서대로 비교 — O(n), 정렬 불필요</div><div class="wq"><b>2.</b> 이진 탐색: 중간값 비교로 범위를 절반씩 축소 — O(log n), 정렬 필수</div><div class="wq"><b>3.</b> mid 계산: mid = left + (right - left) / 2 (오버플로 방지)</div><div class="wq"><b>4.</b> 이진 탐색 종료 조건: left <= right (등호 포함 필수)</div><div class="wq"><b>5.</b> left/right 업데이트: left = mid + 1, right = mid - 1 (무한 루프 방지)</div><div class="wq"><b>6.</b> lower_bound: target 이상인 첫 위치 / upper_bound: target 초과인 첫 위치</div><div class="wq"><b>7.</b> bsearch(): C 표준 라이브러리의 이진 탐색 함수 (stdlib.h)</div><div class="wq"><b>8.</b> n=1,000,000일 때 선형 1,000,000번 vs 이진 약 20번</div></div>
+<h2 class="section-title">다음 유닛으로</h2>
+<div class="note-box"><span class="note-label"></span>
+<div style="font-weight:700;margin-bottom:6px;color:#1a2e4a">다음: Big-O 표기법</div>선형 탐색과 이진 탐색의 성능 차이를 통해 시간 복잡도의 중요성을 체감했습니다. 다음 유닛에서는 알고리즘의 효율성을 수학적으로 표현하는 Big-O 표기법을 학습합니다.</div>
+
+    <span class="page-num">2</span>
+  </div>
+</div>
+<div class="page">
+  <div class="content-page">
+    <div class="unit-header-bar">
+      <span class="unit-tag">UNIT 10</span>
+      <span class="unit-title-sm">3과목 연결</span>
+    </div>
+<h2 class="section-title">10축 매핑</h2>
+<div class="note-box"><span class="note-label"></span>
+<div style="font-weight:700;margin-bottom:6px;color:#1a2e4a">이 유닛에서 키운 역량</div>C언어 ★★★★☆ — 선형 탐색과 이진 탐색을 함수로 구현하고 bsearch() 표준 함수를 활용했습니다.<br>컴퓨팅사고력 ★★★★★ — O(n)과 O(log n)의 차이를 실측 비교하고, lower_bound/upper_bound 개념을 이해했습니다.<br>디버깅 ★★★★☆ — mid 오버플로, 무한 루프, 비정렬 배열 적용 등 이진 탐색 특유의 오류를 경험했습니다.<br>KOI ★★★★★ — 이진 탐색은 대회에서 매우 빈번하게 출제되며, 매개변수 탐색 등 응용 범위가 넓습니다.</div>
+
+    <span class="page-num">3</span>
+  </div>
+</div>
+<div class="page contest-page-wrap">
+  <div class="chapter-page">
+    <div class="chapter-sidebar"></div>
+    <div class="chapter-accent-bar"></div>
+    <div style="flex:1; min-width:0; padding:50px 50px 40px 45px; position:relative;">
+      <div class="problems-chapter-ref">Chapter 10: 선형 탐색 vs 이진 탐색</div>
+      <h2 class="problems-title">대회 문제 (Online Judge)</h2>
+      <p style="font-size:14px; color:#6b7280; margin:-8px 0 24px;">실제 온라인 저지에 출제된 문제입니다. 아래에 코드를 작성한 뒤, 사이트에 제출하여 채점하십시오.</p>
+
+        <div class="contest-card">
+          <div class="contest-header">
+            <div class="contest-num-source">
+              <span class="contest-num">1번</span>
+              <span class="contest-source">백준 2751</span>
+            </div>
+            <span class="diff diff-mid">대회</span>
+          </div>
+          <div class="contest-body">
+            <p class="contest-question">N개의 수를 O(n log n)으로 정렬하십시오.</p>
+            
+            <div class="contest-write-area">
+              <div class="contest-write-label">코드 작성</div>
+              <textarea class="contest-textarea" rows="12" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="contest-card">
+          <div class="contest-header">
+            <div class="contest-num-source">
+              <span class="contest-num">2번</span>
+              <span class="contest-source">백준 11004</span>
+            </div>
+            <span class="diff diff-mid">대회</span>
+          </div>
+          <div class="contest-body">
+            <p class="contest-question">N개의 수에서 K번째 수를 찾으십시오.</p>
+            
+            <div class="contest-write-area">
+              <div class="contest-write-label">코드 작성</div>
+              <textarea class="contest-textarea" rows="12" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="contest-card">
+          <div class="contest-header">
+            <div class="contest-num-source">
+              <span class="contest-num">3번</span>
+              <span class="contest-source">백준 18870</span>
+            </div>
+            <span class="diff diff-mid">대회</span>
+          </div>
+          <div class="contest-body">
+            <p class="contest-question">좌표를 압축하십시오.</p>
+            
+            <div class="contest-write-area">
+              <div class="contest-write-label">코드 작성</div>
+              <textarea class="contest-textarea" rows="12" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="contest-card">
+          <div class="contest-header">
+            <div class="contest-num-source">
+              <span class="contest-num">4번</span>
+              <span class="contest-source">백준 1654</span>
+            </div>
+            <span class="diff diff-mid">대회</span>
+          </div>
+          <div class="contest-body">
+            <p class="contest-question">랜선을 N개 이상 만들 수 있는 최대 길이를 구하십시오.</p>
+            
+            <div class="contest-write-area">
+              <div class="contest-write-label">코드 작성</div>
+              <textarea class="contest-textarea" rows="12" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="contest-card">
+          <div class="contest-header">
+            <div class="contest-num-source">
+              <span class="contest-num">5번</span>
+              <span class="contest-source">백준 2805</span>
+            </div>
+            <span class="diff diff-mid">대회</span>
+          </div>
+          <div class="contest-body">
+            <p class="contest-question">나무를 M미터 이상 가져갈 수 있는 최대 높이를 구하십시오.</p>
+            
+            <div class="contest-write-area">
+              <div class="contest-write-label">코드 작성</div>
+              <textarea class="contest-textarea" rows="12" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="contest-card">
+          <div class="contest-header">
+            <div class="contest-num-source">
+              <span class="contest-num">6번</span>
+              <span class="contest-source">백준 2110</span>
+            </div>
+            <span class="diff diff-mid">대회</span>
+          </div>
+          <div class="contest-body">
+            <p class="contest-question">공유기 사이 최소 거리의 최댓값을 구하십시오.</p>
+            
+            <div class="contest-write-area">
+              <div class="contest-write-label">코드 작성</div>
+              <textarea class="contest-textarea" rows="12" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="contest-card">
+          <div class="contest-header">
+            <div class="contest-num-source">
+              <span class="contest-num">7번</span>
+              <span class="contest-source">백준 1300</span>
+            </div>
+            <span class="diff diff-mid">대회</span>
+          </div>
+          <div class="contest-body">
+            <p class="contest-question">N*N 배열에서 K번째 수를 구하십시오.</p>
+            
+            <div class="contest-write-area">
+              <div class="contest-write-label">코드 작성</div>
+              <textarea class="contest-textarea" rows="12" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="contest-card">
+          <div class="contest-header">
+            <div class="contest-num-source">
+              <span class="contest-num">8번</span>
+              <span class="contest-source">백준 2470</span>
+            </div>
+            <span class="diff diff-mid">대회</span>
+          </div>
+          <div class="contest-body">
+            <p class="contest-question">합이 0에 가장 가까운 두 용액을 찾으십시오.</p>
+            
+            <div class="contest-write-area">
+              <div class="contest-write-label">코드 작성</div>
+              <textarea class="contest-textarea" rows="12" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="contest-card">
+          <div class="contest-header">
+            <div class="contest-num-source">
+              <span class="contest-num">9번</span>
+              <span class="contest-source">백준 1253</span>
+            </div>
+            <span class="diff diff-mid">대회</span>
+          </div>
+          <div class="contest-body">
+            <p class="contest-question">좋은 수의 개수를 구하십시오.</p>
+            
+            <div class="contest-write-area">
+              <div class="contest-write-label">코드 작성</div>
+              <textarea class="contest-textarea" rows="12" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="contest-card">
+          <div class="contest-header">
+            <div class="contest-num-source">
+              <span class="contest-num">10번</span>
+              <span class="contest-source">백준 2143</span>
+            </div>
+            <span class="diff diff-mid">대회</span>
+          </div>
+          <div class="contest-body">
+            <p class="contest-question">두 배열의 부분합 쌍 중 합이 T가 되는 개수를 구하십시오.</p>
+            
+            <div class="contest-write-area">
+              <div class="contest-write-label">코드 작성</div>
+              <textarea class="contest-textarea" rows="12" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+            </div>
+          </div>
+        </div>
+      <span class="page-num">4</span>
+    </div>
+  </div>
+</div>
+</body>
+</html>

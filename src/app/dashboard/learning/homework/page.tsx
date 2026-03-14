@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback, useMemo } from "react";
+import { useState, useEffect, useCallback, useMemo, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "@/contexts/AuthContext";
 import { createClient } from "@/lib/supabase";
@@ -14,6 +14,8 @@ interface Homework {
     assigned_to: string | null;
     is_active: boolean;
     created_at: string;
+    html_url: string | null;
+    homework_type: string | null;
 }
 
 interface Submission {
@@ -52,6 +54,9 @@ export default function HomeworkPage() {
     const [submitContent, setSubmitContent] = useState("");
     const [submitting, setSubmitting] = useState(false);
     const [submitMsg, setSubmitMsg] = useState<{ ok: boolean; text: string } | null>(null);
+    const [htmlHwOpen, setHtmlHwOpen] = useState<string | null>(null);
+    const [htmlProgress, setHtmlProgress] = useState<{ answered: number; total: number } | null>(null);
+    const iframeRef = useRef<HTMLIFrameElement>(null);
 
     const fetchData = useCallback(async () => {
         if (!user) return;
@@ -59,7 +64,7 @@ export default function HomeworkPage() {
         try {
             const [rHw, rSub] = await Promise.all([
                 supabase.from("homework")
-                    .select("id,title,description,due_date,course_id,assigned_to,is_active,created_at")
+                    .select("id,title,description,due_date,course_id,assigned_to,is_active,created_at,html_url,homework_type")
                     .eq("is_active", true)
                     .or(`assigned_to.eq.${user.id},assigned_to.is.null`)
                     .order("created_at", { ascending: false })
@@ -94,6 +99,34 @@ export default function HomeworkPage() {
         return () => { supabase.removeChannel(ch); };
     }, [user, supabase]);
 
+    // Listen for messages from HTML homework iframe
+    useEffect(() => {
+        const handler = (e: MessageEvent) => {
+            if (!e.data || typeof e.data.type !== 'string') return;
+
+            if (e.data.type === 'hw-progress') {
+                setHtmlProgress({ answered: e.data.answered, total: e.data.total });
+            }
+
+            if (e.data.type === 'hw-submit' && htmlHwOpen) {
+                const content = JSON.stringify({
+                    answers: e.data.answers,
+                    answered: e.data.answered,
+                    total: e.data.total,
+                    studentName: e.data.studentName,
+                    submittedAt: new Date().toISOString(),
+                });
+                handleHtmlSubmit(htmlHwOpen, content);
+            }
+
+            if (e.data.type === 'hw-close') {
+                // Student closed the result modal - we can optionally close the iframe
+            }
+        };
+        window.addEventListener('message', handler);
+        return () => window.removeEventListener('message', handler);
+    }, [htmlHwOpen]);
+
     const handleSubmit = async (hwId: string) => {
         if (!user || !submitContent.trim()) return;
         setSubmitting(true);
@@ -120,6 +153,32 @@ export default function HomeworkPage() {
             setSubmitMsg({ ok: false, text: `오류: ${err instanceof Error ? err.message : String(err)}` });
         } finally {
             setSubmitting(false);
+        }
+    };
+
+    const handleHtmlSubmit = async (hwId: string, content: string) => {
+        if (!user) return;
+        try {
+            const { error } = await supabase.from("homework_submissions").insert({
+                homework_id: hwId,
+                user_id: user.id,
+                content: content,
+            });
+            if (error) {
+                if (error.code === "23505") {
+                    await supabase.from("homework_submissions")
+                        .update({ content: content })
+                        .eq("homework_id", hwId)
+                        .eq("user_id", user.id);
+                } else {
+                    throw error;
+                }
+            }
+            setHtmlHwOpen(null);
+            setHtmlProgress(null);
+            fetchData();
+        } catch (err) {
+            if (process.env.NODE_ENV === 'development') console.error("HTML 숙제 제출 실패:", err);
         }
     };
 
@@ -179,7 +238,15 @@ export default function HomeworkPage() {
                                             }}
                                         >
                                             <div
-                                                onClick={() => { setActiveHwId(isExpanded ? null : hw.id); setSubmitContent(""); setSubmitMsg(null); }}
+                                                onClick={() => {
+                                                    if (hw.homework_type === 'html' && hw.html_url) {
+                                                        setHtmlHwOpen(hw.id);
+                                                    } else {
+                                                        setActiveHwId(isExpanded ? null : hw.id);
+                                                        setSubmitContent("");
+                                                        setSubmitMsg(null);
+                                                    }
+                                                }}
                                                 style={{ padding: "16px 20px", cursor: "pointer" }}
                                             >
                                                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 8 }}>
@@ -212,6 +279,26 @@ export default function HomeworkPage() {
                                                     </span>
                                                 </div>
                                             </div>
+
+                                            {/* HTML 숙제: 열기 버튼 */}
+                                            {hw.homework_type === 'html' && hw.html_url && !isExpanded && (
+                                                <div style={{ padding: "0 20px 16px" }}>
+                                                    <motion.button
+                                                        whileHover={{ scale: 1.01 }}
+                                                        whileTap={{ scale: 0.98 }}
+                                                        onClick={(e) => { e.stopPropagation(); setHtmlHwOpen(hw.id); }}
+                                                        style={{
+                                                            width: "100%", padding: "14px 20px", borderRadius: 12, border: "none",
+                                                            background: "linear-gradient(135deg, #2563eb, #7c3aed)",
+                                                            color: "#fff", fontSize: 14, fontWeight: 700, cursor: "pointer",
+                                                            display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
+                                                        }}
+                                                    >
+                                                        <span className="material-symbols-outlined" style={{ fontSize: 20 }}>play_arrow</span>
+                                                        숙제 풀기
+                                                    </motion.button>
+                                                </div>
+                                            )}
 
                                             {/* 제출 폼 */}
                                             <AnimatePresence>
@@ -344,6 +431,83 @@ export default function HomeworkPage() {
                     )}
                 </div>
             )}
+
+            {/* HTML 숙제 전체화면 오버레이 */}
+            <AnimatePresence>
+                {htmlHwOpen && (() => {
+                    const hw = homeworkList.find(h => h.id === htmlHwOpen);
+                    if (!hw?.html_url) return null;
+                    return (
+                        <motion.div
+                            key="html-overlay"
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            style={{
+                                position: "fixed", inset: 0, zIndex: 9999,
+                                background: "rgba(0,0,0,0.85)",
+                                display: "flex", flexDirection: "column",
+                            }}
+                        >
+                            {/* 상단 바 */}
+                            <div style={{
+                                display: "flex", alignItems: "center", justifyContent: "space-between",
+                                padding: "12px 24px", background: "#0f172a",
+                                borderBottom: "1px solid rgba(255,255,255,0.1)",
+                            }}>
+                                <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                                    <span style={{ fontSize: 15, fontWeight: 700, color: "#fff" }}>{hw.title}</span>
+                                    {hw.due_date && (
+                                        <span style={{ fontSize: 12, color: "rgba(255,255,255,0.4)" }}>
+                                            마감: {hw.due_date}
+                                        </span>
+                                    )}
+                                    {htmlProgress && (
+                                        <span style={{
+                                            fontSize: 12, fontWeight: 700,
+                                            padding: "4px 12px", borderRadius: 20,
+                                            background: htmlProgress.answered === htmlProgress.total
+                                                ? "rgba(34,197,94,0.2)" : "rgba(59,130,246,0.2)",
+                                            color: htmlProgress.answered === htmlProgress.total
+                                                ? "#4ade80" : "#60a5fa",
+                                        }}>
+                                            {htmlProgress.answered} / {htmlProgress.total} 완료
+                                        </span>
+                                    )}
+                                </div>
+                                <button
+                                    onClick={() => { setHtmlHwOpen(null); setHtmlProgress(null); }}
+                                    style={{
+                                        padding: "8px 16px", borderRadius: 8, border: "1px solid rgba(255,255,255,0.2)",
+                                        background: "transparent", color: "#fff", fontSize: 13, fontWeight: 600,
+                                        cursor: "pointer", display: "flex", alignItems: "center", gap: 6,
+                                    }}
+                                >
+                                    <span className="material-symbols-outlined" style={{ fontSize: 18 }}>close</span>
+                                    닫기
+                                </button>
+                            </div>
+                            {/* iframe */}
+                            <iframe
+                                ref={iframeRef}
+                                src={hw.html_url}
+                                style={{ flex: 1, border: "none", width: "100%", background: "#000" }}
+                                title={hw.title}
+                                onLoad={() => {
+                                    if (iframeRef.current?.contentWindow && user) {
+                                        setTimeout(() => {
+                                            iframeRef.current?.contentWindow?.postMessage({
+                                                type: 'hw-init',
+                                                studentName: user.name || user.email || '',
+                                            }, '*');
+                                        }, 500);
+                                    }
+                                }}
+                            />
+                        </motion.div>
+                    );
+                })()}
+            </AnimatePresence>
         </div>
     );
 }

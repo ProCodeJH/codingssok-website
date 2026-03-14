@@ -1,0 +1,2126 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>코딩쏙 교재 — 미로 탈출 (BFS)</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+
+  :root {
+    --navy: #1a2e4a;
+    --navy-mid: #2c4a6e;
+    --navy-light: #3d6590;
+    --orange: #e07830;
+    --orange-light: #f5e6d8;
+    --white: #ffffff;
+    --bg: #f7f8fa;
+    --bg-warm: #faf9f7;
+    --gray-50: #f9fafb;
+    --gray-100: #f3f4f6;
+    --gray-200: #e5e7eb;
+    --gray-300: #d1d5db;
+    --gray-400: #9ca3af;
+    --gray-500: #6b7280;
+    --gray-600: #4b5563;
+    --gray-700: #374151;
+    --gray-800: #1f2937;
+    --text: #2d3748;
+    --green: #16a34a;
+    --green-bg: #dcfce7;
+    --red: #dc2626;
+    --red-bg: #fee2e2;
+    --blue: #2563eb;
+    --blue-bg: #dbeafe;
+    --yellow-bg: #fef9c3;
+    --font: 'Noto Sans KR', sans-serif;
+    --mono: 'JetBrains Mono', 'Consolas', monospace;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: var(--font); background: #e8eaed; font-size: 15px; }
+
+  /* ========== PAGE ========== */
+  .page {
+    width: 210mm;
+    min-height: 295mm;
+    margin: 24px auto;
+    background: var(--white);
+    box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* ========== PAGE 1: CHAPTER START ========== */
+  .chapter-page {
+    display: flex;
+    min-height: 295mm;
+  }
+
+  .chapter-sidebar {
+    width: 10px;
+    background: var(--navy);
+    flex-shrink: 0;
+  }
+
+  .chapter-accent-bar {
+    width: 7px;
+    background: var(--orange);
+    flex-shrink: 0;
+  }
+
+  .chapter-body {
+    flex: 1;
+    padding: 70px 65px 50px 55px;
+    position: relative;
+  }
+
+  .chapter-watermark {
+    position: absolute;
+    top: -10px;
+    right: -15px;
+    font-size: 280px;
+    font-weight: 900;
+    color: rgba(180,195,212,0.35);
+    line-height: 1;
+    pointer-events: none;
+    letter-spacing: -10px;
+  }
+
+  .chapter-label {
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--navy-mid);
+    letter-spacing: 2px;
+    margin-bottom: 4px;
+  }
+
+  .chapter-title {
+    font-size: 44px;
+    font-weight: 900;
+    color: var(--navy);
+    line-height: 1.15;
+    margin-bottom: 12px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .chapter-sub {
+    font-size: 16px;
+    color: var(--gray-500);
+    font-weight: 400;
+    margin-bottom: 20px;
+    padding-bottom: 28px;
+    border-bottom: 1px solid var(--gray-200);
+  }
+
+  /* Learning objectives */
+  .obj-title {
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--navy);
+    margin-bottom: 16px;
+    margin-top: 32px;
+  }
+
+  .obj-list {
+    list-style: none;
+    margin-bottom: 40px;
+  }
+
+  .obj-list li {
+    padding: 5px 0 5px 24px;
+    position: relative;
+    font-size: 15px;
+    color: var(--gray-700);
+    line-height: 1.6;
+  }
+
+  .obj-list li::before {
+    content: '•';
+    position: absolute;
+    left: 8px;
+    color: var(--navy-mid);
+    font-weight: 700;
+  }
+
+  /* Prerequisites flow */
+  .prereq-title {
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--navy);
+    margin-bottom: 18px;
+  }
+
+  .prereq-flow {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    margin-bottom: 44px;
+  }
+
+  .prereq-item {
+    padding: 9px 22px;
+    border: 1.5px solid var(--gray-300);
+    border-radius: 50px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--gray-600);
+    background: var(--white);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+  }
+
+  .prereq-item.current {
+    border-color: var(--navy);
+    color: var(--navy);
+    font-weight: 700;
+    background: #edf2f7;
+    box-shadow: 0 2px 6px rgba(26,46,74,0.12);
+  }
+
+  .prereq-arrow {
+    width: 36px;
+    text-align: center;
+    color: var(--gray-300);
+    font-size: 18px;
+    font-weight: 300;
+  }
+
+  /* Predict box */
+  .predict-box {
+    background: var(--gray-50);
+    border: 1.5px solid var(--gray-200);
+    border-radius: 12px;
+    padding: 24px 28px;
+  }
+
+  .predict-label {
+    display: inline-block;
+    background: var(--orange);
+    color: var(--white);
+    font-size: 12px;
+    font-weight: 600;
+    padding: 3px 12px;
+    border-radius: 4px;
+    margin-bottom: 14px;
+    letter-spacing: 0.5px;
+  }
+
+  .predict-q {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--navy);
+    margin-bottom: 16px;
+  }
+
+  .predict-code {
+    background: var(--white);
+    border: 1px solid var(--gray-200);
+    border-radius: 8px;
+    padding: 14px 18px;
+    font-family: var(--mono);
+    font-size: 13px;
+    line-height: 1.65;
+    color: var(--gray-700);
+  }
+
+  /* ========== PAGE 2: CORE CONTENT ========== */
+  .content-page {
+    padding: 55px 65px;
+  }
+
+  .unit-header-bar {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    margin-bottom: 8px;
+  }
+
+  .unit-tag {
+    font-size: 12px;
+    color: var(--orange);
+    font-weight: 600;
+    letter-spacing: 1px;
+  }
+
+  .unit-title-sm {
+    font-size: 14px;
+    color: var(--gray-400);
+    font-weight: 400;
+  }
+
+  .section-title {
+    font-size: 24px;
+    font-weight: 800;
+    color: var(--navy);
+    margin-bottom: 24px;
+    margin-top: 8px;
+    padding-left: 16px;
+    border-left: 5px solid var(--orange);
+  }
+
+  p {
+    font-size: 15.5px;
+    line-height: 1.9;
+    color: var(--text);
+    margin-bottom: 18px;
+  }
+
+  p code {
+    font-family: var(--mono);
+    font-size: 13.5px;
+    background: #f1f3f5;
+    padding: 2px 7px;
+    border-radius: 4px;
+    color: var(--navy);
+    font-weight: 500;
+  }
+
+  /* Code block */
+  .code-wrap {
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    border: 1px solid var(--gray-200);
+    margin: 22px 0;
+  }
+
+  .code-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 9px 18px;
+    background: var(--navy);
+    font-size: 12px;
+  }
+
+  .code-bar-lang {
+    font-family: var(--mono);
+    font-weight: 600;
+    color: var(--white);
+  }
+
+  .code-bar-file {
+    color: rgba(255,255,255,0.6);
+    font-weight: 400;
+  }
+
+  .code-body {
+    background: #f8f9fb;
+    padding: 20px 0;
+    font-family: var(--mono);
+    font-size: 13.5px;
+    line-height: 1.75;
+    border: 1px solid var(--gray-200);
+    border-top: none;
+    border-radius: 0 0 12px 12px;
+  }
+
+  .code-line {
+    display: flex;
+    padding: 0 20px;
+  }
+
+  .code-line:hover {
+    background: #f0f4f8;
+  }
+
+  .code-line.highlighted {
+    background: #fff8e1;
+  }
+
+  .ln {
+    width: 30px;
+    text-align: right;
+    color: #b8bfc8;
+    font-size: 12px;
+    margin-right: 18px;
+    user-select: none;
+    flex-shrink: 0;
+    padding-top: 1px;
+  }
+
+  .lc { flex: 1; }
+
+  /* syntax */
+  .s-pp { color: #8b5cf6; font-weight: 600; }
+  .s-str { color: #d97706; }
+  .s-type { color: #2563eb; font-weight: 500; }
+  .s-kw { color: #7c3aed; font-weight: 500; }
+  .s-fn { color: #059669; font-weight: 500; }
+  .s-num { color: #dc2626; }
+  .s-cm { color: #9ca3af; font-style: italic; }
+
+  /* Output block */
+  .output-wrap {
+    border-radius: 10px;
+    overflow: hidden;
+    margin: 10px 0 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    border: 1px solid #d1d5db;
+  }
+
+  .output-bar {
+    padding: 9px 18px;
+    background: #374151;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--white);
+    letter-spacing: 0.5px;
+  }
+
+  .output-body {
+    padding: 16px 20px;
+    font-family: var(--mono);
+    font-size: 13.5px;
+    line-height: 1.7;
+    color: var(--gray-800);
+    background: #f1f5f9;
+    border: 1px solid var(--gray-200);
+    border-top: none;
+    border-radius: 0 0 10px 10px;
+  }
+
+  /* Callout */
+  .tip {
+    margin: 28px 0;
+    padding: 18px 24px;
+    background: #dbeafe;
+    border-left: 5px solid #2563eb;
+    border-radius: 0 12px 12px 0;
+    font-size: 14.5px;
+    line-height: 1.8;
+    color: var(--text);
+  }
+
+  .tip-label {
+    font-weight: 700;
+    color: #2563eb;
+    font-size: 13px;
+    display: block;
+    margin-bottom: 4px;
+  }
+
+  .warn {
+    margin: 28px 0;
+    padding: 18px 24px;
+    background: #fef3c7;
+    border-left: 5px solid #d97706;
+    border-radius: 0 12px 12px 0;
+    font-size: 14.5px;
+    line-height: 1.8;
+  }
+
+  .warn-label {
+    font-weight: 700;
+    color: #d97706;
+    font-size: 13px;
+    display: block;
+    margin-bottom: 4px;
+  }
+
+  .note-box {
+    margin: 28px 0;
+    padding: 18px 24px;
+    background: #e2e8f0;
+    border-left: 5px solid #64748b;
+    border-radius: 0 12px 12px 0;
+    font-size: 14.5px;
+    line-height: 1.8;
+  }
+
+  .note-label {
+    font-weight: 700;
+    color: var(--gray-600);
+    font-size: 13px;
+    display: block;
+    margin-bottom: 4px;
+  }
+
+  /* Trace table */
+  table.trace {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    margin: 28px 0;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+    font-size: 14px;
+  }
+
+  table.trace th {
+    background: var(--navy);
+    color: var(--white);
+    padding: 10px 16px;
+    text-align: left;
+    font-weight: 500;
+    font-size: 13px;
+  }
+
+  table.trace td {
+    padding: 10px 16px;
+    border-bottom: 1px solid var(--gray-200);
+    color: var(--gray-700);
+  }
+
+  table.trace tr:nth-child(even) td { background: var(--gray-50); }
+  table.trace tr:last-child td { border-bottom: none; }
+
+  table.trace td code {
+    font-family: var(--mono);
+    font-size: 12.5px;
+    background: #eef1f5;
+    padding: 2px 6px;
+    border-radius: 4px;
+    color: var(--navy);
+  }
+
+  /* ========== PAGE 3: PROBLEMS ========== */
+  .problems-header {
+    margin-bottom: 8px;
+  }
+
+  .problems-chapter-ref {
+    font-size: 13px;
+    color: var(--gray-500);
+    margin-bottom: 4px;
+  }
+
+  .problems-title {
+    font-size: 28px;
+    font-weight: 800;
+    color: var(--navy);
+    margin-bottom: 24px;
+  }
+
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 16px;
+  }
+
+  .prob-card {
+    background: var(--white);
+    border: 1px solid var(--gray-200);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 3px 15px rgba(0,0,0,0.06);
+  }
+
+  .prob-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 16px;
+    background: var(--navy);
+  }
+
+  .prob-num {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--white);
+  }
+
+  .diff {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    font-size: 12px;
+    font-weight: 800;
+  }
+
+  .diff-basic { background: #22c55e; color: white; }
+  .diff-mid { background: #f59e0b; color: white; }
+  .diff-hard { background: #ef4444; color: white; }
+
+  .prob-desc {
+    font-size: 13.5px;
+    line-height: 1.65;
+    color: var(--gray-600);
+    margin-bottom: 10px;
+    padding: 14px 16px 0;
+  }
+
+  .prob-code {
+    background: var(--gray-50);
+    border: 1px solid var(--gray-200);
+    border-radius: 6px;
+    padding: 10px 14px;
+    margin: 0 16px 16px;
+    font-family: var(--mono);
+    font-size: 12.5px;
+    line-height: 1.55;
+    color: var(--gray-600);
+  }
+
+  /* Competition section */
+  .comp-section {
+    margin-top: 32px;
+    padding-top: 24px;
+    border-top: 2px solid var(--navy);
+  }
+
+  .comp-title {
+    font-size: 22px;
+    font-weight: 800;
+    color: var(--navy);
+    margin-bottom: 20px;
+  }
+
+  .comp-card {
+    background: var(--white);
+    border: 1.5px solid var(--gray-200);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 18px rgba(0,0,0,0.06);
+  }
+
+  .comp-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 16px;
+    background: #0f766e;
+  }
+
+  .comp-header .comp-name {
+    color: var(--white);
+    font-size: 15px;
+    font-weight: 700;
+    margin: 0;
+  }
+
+  .comp-inner {
+    padding: 14px 18px 18px;
+  }
+
+  .comp-badge {
+    display: inline-block;
+    padding: 3px 12px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 700;
+  }
+
+  .badge-bj { background: #93c5fd; color: #1e3a5f; }
+  .badge-cu { background: #c4b5fd; color: #3b1f7e; }
+  .badge-pg { background: #7dd3fc; color: #0c4a6e; }
+
+  .comp-name {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--navy);
+    margin-bottom: 6px;
+  }
+
+  .comp-desc {
+    font-size: 14px;
+    color: var(--gray-600);
+    line-height: 1.7;
+    margin-bottom: 14px;
+  }
+
+  .io-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+
+  .io-card {
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid var(--gray-200);
+  }
+
+  .io-h {
+    padding: 6px 14px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--gray-600);
+    background: #e2e8f0;
+  }
+
+  .io-c {
+    padding: 10px 14px;
+    font-family: var(--mono);
+    font-size: 13px;
+    line-height: 1.5;
+    background: var(--white);
+  }
+
+  /* ========== DEBUG LAB ========== */
+  .debug-section {
+    margin: 24px 0;
+    border: 2px solid var(--red);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+
+  .debug-bar {
+    background: var(--red);
+    color: var(--white);
+    padding: 10px 20px;
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 1px;
+  }
+
+  .debug-body {
+    padding: 20px;
+    background: #fef2f2;
+  }
+
+  /* 10축 connection */
+  .connect-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 16px;
+    margin: 28px 0;
+  }
+
+  .connect-card {
+    border-radius: 12px;
+    padding: 20px;
+    text-align: center;
+    border: 1px solid var(--gray-200);
+    box-shadow: 0 3px 14px rgba(0,0,0,0.05);
+  }
+
+  .connect-card h5 {
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 8px;
+  }
+
+  .connect-card p {
+    font-size: 13px;
+    margin: 0;
+    color: var(--gray-600);
+    line-height: 1.6;
+  }
+
+  .cc1 { border-top: 3px solid #8b5cf6; }
+  .cc1 h5 { color: #8b5cf6; }
+  .cc2 { border-top: 3px solid var(--green); }
+  .cc2 h5 { color: var(--green); }
+  .cc3 { border-top: 3px solid var(--navy); }
+  .cc3 h5 { color: var(--navy); }
+
+  /* PAGE NUMBER */
+  .page-num {
+    position: absolute;
+    bottom: 20px;
+    right: 30px;
+    font-size: 12px;
+    color: var(--gray-400);
+  }
+
+  /* WARMUP */
+  .warmup-box {
+    background: #e0e7f1;
+    border-radius: 12px;
+    padding: 24px 28px;
+    margin: 28px 0;
+    border: 2px solid #c7d2e0;
+  }
+
+  .warmup-title {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--navy);
+    margin-bottom: 14px;
+  }
+
+  .wq {
+    padding: 9px 16px;
+    background: var(--white);
+    border-radius: 8px;
+    margin-bottom: 8px;
+    font-size: 14px;
+    border: 1px solid var(--gray-200);
+    color: var(--gray-700);
+  }
+
+  .wq b { color: var(--navy); margin-right: 6px; }
+  .wq .hint { color: var(--gray-400); font-size: 13px; }
+
+  /* ===== CONTEST PROBLEMS PAGE ===== */
+  .contest-page-wrap .chapter-page {
+    min-height: auto;
+  }
+
+  .contest-page-wrap .chapter-page > div:last-child {
+    min-width: 0;
+    overflow-wrap: break-word;
+    word-break: break-word;
+  }
+
+  .contest-card {
+    background: white;
+    border: 1.5px solid var(--gray-200);
+    border-radius: 12px;
+    margin-bottom: 28px;
+    overflow: hidden;
+    break-inside: avoid;
+  }
+
+  .contest-header {
+    background: var(--navy);
+    color: white;
+    padding: 14px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .contest-num-source {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .contest-num {
+    font-weight: 700;
+    font-size: 16px;
+  }
+
+  .contest-source {
+    background: rgba(255,255,255,0.15);
+    padding: 3px 10px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 500;
+  }
+
+  .contest-body {
+    padding: 20px 24px 24px;
+  }
+
+  .contest-question {
+    font-size: 15px;
+    line-height: 1.7;
+    color: var(--text);
+    margin: 0 0 16px;
+    word-break: break-word;
+    overflow-wrap: break-word;
+  }
+
+  .contest-expected {
+    background: #1e293b;
+    border-radius: 8px;
+    overflow: hidden;
+    margin-bottom: 20px;
+  }
+
+  .contest-expected-label {
+    background: #334155;
+    color: #94a3b8;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 6px 14px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .contest-expected-body {
+    color: #e2e8f0;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    line-height: 1.6;
+    padding: 12px 16px;
+    margin: 0;
+    white-space: pre;
+  }
+
+  .contest-write-area {
+    border: 2px dashed var(--gray-300);
+    border-radius: 10px;
+    overflow: hidden;
+    transition: border-color 0.2s;
+  }
+
+  .contest-write-area:focus-within {
+    border-color: var(--orange);
+    border-style: solid;
+  }
+
+  .contest-write-label {
+    background: var(--bg);
+    color: var(--gray-500);
+    font-size: 12px;
+    font-weight: 600;
+    padding: 8px 14px;
+    border-bottom: 1px solid var(--gray-200);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .contest-textarea {
+    width: 100%;
+    min-height: 200px;
+    padding: 16px 18px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    line-height: 1.7;
+    color: var(--text);
+    background: #fafbfc;
+    border: none;
+    outline: none;
+    resize: vertical;
+    tab-size: 4;
+    box-sizing: border-box;
+  }
+
+  .contest-textarea::placeholder {
+    color: var(--gray-300);
+  }
+
+  @media print {
+    body { background: white; }
+    .page { box-shadow: none; margin: 0; page-break-after: always; }
+    .contest-textarea { border: 1px solid var(--gray-300); min-height: 180px; }
+  }
+
+</style>
+</head>
+<body>
+
+<div class="page">
+  <div class="chapter-page">
+    <div class="chapter-sidebar"></div>
+    <div class="chapter-accent-bar"></div>
+    <div class="chapter-body">
+      <div class="chapter-watermark">12</div>
+      <div class="chapter-label">Chapter 12</div>
+      <h1 class="chapter-title">미로 탈출 (BFS)</h1>
+      <p class="chapter-sub">BFS를 활용하여 2D 격자 미로에서 최단 경로를 찾고, 경로를 역추적하여 시각화하며, DFS와 비교하는 프로젝트입니다.</p>
+
+      <h3 class="obj-title">이 유닛에서 배우는 것</h3>
+      <ul class="obj-list">
+        <li>2D 격자 미로를 배열로 표현하고 BFS로 최단 경로의 길이를 구할 수 있습니다.</li>
+        <li>부모 좌표 배열을 이용하여 경로를 역추적하고 실제 이동 경로를 출력할 수 있습니다.</li>
+        <li>파일에서 미로 데이터를 읽어 다양한 크기의 미로를 처리할 수 있습니다.</li>
+        <li>DFS와 BFS의 탐색 결과를 비교하고 각각의 장단점을 설명할 수 있습니다.</li>
+      </ul>
+
+      <h3 class="prereq-title">선수 학습</h3>
+      <div class="prereq-flow">
+        <div class="prereq-item current">L15-U11</div>
+      </div>
+
+      <div class="predict-box">
+        <div class="predict-label">예측해 봅시다</div>
+        <div class="predict-q">다음 5x5 미로에서 S(시작)에서 E(끝)까지 BFS로 탐색할 때, 최단 경로의 길이(이동 횟수)를 예측하십시오.
+
+S 0 1 0 0
+0 0 1 0 1
+1 0 0 0 0
+0 1 1 0 1
+0 0 0 0 E
+
+(0=통로, 1=벽, S=(0,0), E=(4,4))</div>
+        
+      </div>
+
+      <span class="page-num">1</span>
+    </div>
+  </div>
+</div>
+<div class="page">
+  <div class="content-page">
+    <div class="unit-header-bar">
+      <span class="unit-tag">UNIT 12</span>
+      <span class="unit-title-sm">미로 탈출 (BFS)</span>
+    </div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 1</span><p style="margin:0;font-size:14px">2D 격자에서 현재 위치 (r, c)의 상하좌우 이웃 좌표 4개를 나열하십시오.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 2</span><p style="margin:0;font-size:14px">BFS에서 큐를 사용하는 이유는 무엇입니까? DFS와 어떤 차이가 있습니까?</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 3</span><p style="margin:0;font-size:14px">5x5 격자에서 (0,0)부터 (4,4)까지 벽이 없다면 BFS로 구한 최단 거리는 얼마입니까?</p></div>
+<h2 class="section-title">예측</h2>
+<p>undefined</p>
+<h2 class="section-title">이야기</h2>
+<p>undefined</p>
+<h2 class="section-title">핵심 개념</h2>
+<div class="note-box"><span class="note-label"></span>
+<div style="font-weight:700;margin-bottom:6px;color:#1a2e4a">미로 탈출 프로젝트 (Maze Escape with BFS)</div>BFS를 활용하여 2D 격자 미로에서 최단 경로를 찾는 프로젝트입니다.<br><br>버전 1: 기본 -- 2D 격자 미로에서 BFS로 최단 경로 길이 구하기<br>버전 2: 확장 -- 경로 역추적으로 실제 경로 출력 + 미로 시각화<br>버전 3: 완성 -- 파일에서 미로 읽기 + DFS/BFS 비교 + 여러 미로 지원</div>
+<div class="debug-section"><div class="debug-bar">DEBUG LAB — 에러를 찾으시오</div><div class="debug-body">
+
+<p style="margin:14px 0 0; font-size:14px;"><b>에러:</b> </p>
+<p style="font-size:14px;"><b>수정:</b> </p>
+</div></div>
+<h2 class="section-title">버전 1: 기본 -- BFS로 최단 경로 길이 구하기</h2>
+<p>undefined</p>
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;stdio.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;string.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">4</span><span class="lc"><span class="s-pp">#define</span> ROWS <span class="s-num">7</span></span></div>
+<div class="code-line"><span class="ln">5</span><span class="lc"><span class="s-pp">#define</span> COLS <span class="s-num">7</span></span></div>
+<div class="code-line"><span class="ln">6</span><span class="lc"><span class="s-pp">#define</span> <span class="s-fn">MAX_Q</span>(ROWS * COLS)</span></div>
+<div class="code-line"><span class="ln">7</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">8</span><span class="lc"><span class="s-cm">/* === 미로 정의 === */</span></span></div>
+<div class="code-line"><span class="ln">9</span><span class="lc"><span class="s-cm">/* 0 = 통로, 1 = 벽 */</span></span></div>
+<div class="code-line"><span class="ln">10</span><span class="lc"><span class="s-type">int</span> maze[ROWS][COLS] = {</span></div>
+<div class="code-line"><span class="ln">11</span><span class="lc">    {<span class="s-num">0</span>, <span class="s-num">0</span>, <span class="s-num">1</span>, <span class="s-num">0</span>, <span class="s-num">0</span>, <span class="s-num">0</span>, <span class="s-num">0</span>},</span></div>
+<div class="code-line"><span class="ln">12</span><span class="lc">    {<span class="s-num">0</span>, <span class="s-num">0</span>, <span class="s-num">1</span>, <span class="s-num">0</span>, <span class="s-num">1</span>, <span class="s-num">1</span>, <span class="s-num">0</span>},</span></div>
+<div class="code-line"><span class="ln">13</span><span class="lc">    {<span class="s-num">0</span>, <span class="s-num">0</span>, <span class="s-num">0</span>, <span class="s-num">0</span>, <span class="s-num">0</span>, <span class="s-num">1</span>, <span class="s-num">0</span>},</span></div>
+<div class="code-line"><span class="ln">14</span><span class="lc">    {<span class="s-num">1</span>, <span class="s-num">1</span>, <span class="s-num">0</span>, <span class="s-num">1</span>, <span class="s-num">0</span>, <span class="s-num">0</span>, <span class="s-num">0</span>},</span></div>
+<div class="code-line"><span class="ln">15</span><span class="lc">    {<span class="s-num">0</span>, <span class="s-num">0</span>, <span class="s-num">0</span>, <span class="s-num">1</span>, <span class="s-num">0</span>, <span class="s-num">1</span>, <span class="s-num">1</span>},</span></div>
+<div class="code-line"><span class="ln">16</span><span class="lc">    {<span class="s-num">0</span>, <span class="s-num">1</span>, <span class="s-num">0</span>, <span class="s-num">0</span>, <span class="s-num">0</span>, <span class="s-num">0</span>, <span class="s-num">0</span>},</span></div>
+<div class="code-line"><span class="ln">17</span><span class="lc">    {<span class="s-num">0</span>, <span class="s-num">1</span>, <span class="s-num">1</span>, <span class="s-num">1</span>, <span class="s-num">1</span>, <span class="s-num">0</span>, <span class="s-num">0</span>}</span></div>
+<div class="code-line"><span class="ln">18</span><span class="lc">};</span></div>
+<div class="code-line"><span class="ln">19</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">20</span><span class="lc"><span class="s-cm">/* === BFS 자료구조 === */</span></span></div>
+<div class="code-line"><span class="ln">21</span><span class="lc"><span class="s-kw">typedef</span> <span class="s-kw">struct</span> {</span></div>
+<div class="code-line"><span class="ln">22</span><span class="lc">    <span class="s-type">int</span> r, c;</span></div>
+<div class="code-line"><span class="ln">23</span><span class="lc">} Pos;</span></div>
+<div class="code-line"><span class="ln">24</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">25</span><span class="lc">Pos queue[MAX_Q];</span></div>
+<div class="code-line"><span class="ln">26</span><span class="lc"><span class="s-type">int</span> front = <span class="s-num">0</span>, rear = <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">27</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">28</span><span class="lc"><span class="s-type">void</span> <span class="s-fn">enqueue</span>(<span class="s-type">int</span> r, <span class="s-type">int</span> c) {</span></div>
+<div class="code-line"><span class="ln">29</span><span class="lc">    queue[rear].r = r;</span></div>
+<div class="code-line"><span class="ln">30</span><span class="lc">    queue[rear].c = c;</span></div>
+<div class="code-line"><span class="ln">31</span><span class="lc">    rear++;</span></div>
+<div class="code-line"><span class="ln">32</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">33</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">34</span><span class="lc">Pos <span class="s-fn">dequeue</span>(<span class="s-type">void</span>) {</span></div>
+<div class="code-line"><span class="ln">35</span><span class="lc">    <span class="s-kw">return</span> queue[front++];</span></div>
+<div class="code-line"><span class="ln">36</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">37</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">38</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">isEmpty</span>(<span class="s-type">void</span>) {</span></div>
+<div class="code-line"><span class="ln">39</span><span class="lc">    <span class="s-kw">return</span> front == rear;</span></div>
+<div class="code-line"><span class="ln">40</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">41</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">42</span><span class="lc"><span class="s-cm">/* === 방향 배열 (상, 하, 좌, 우) === */</span></span></div>
+<div class="code-line"><span class="ln">43</span><span class="lc"><span class="s-type">int</span> dx[<span class="s-num">4</span>] = {-<span class="s-num">1</span>, <span class="s-num">1</span>, <span class="s-num">0</span>, <span class="s-num">0</span>};</span></div>
+<div class="code-line"><span class="ln">44</span><span class="lc"><span class="s-type">int</span> dy[<span class="s-num">4</span>] = {<span class="s-num">0</span>, <span class="s-num">0</span>, -<span class="s-num">1</span>, <span class="s-num">1</span>};</span></div>
+<div class="code-line"><span class="ln">45</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">46</span><span class="lc"><span class="s-cm">/* === 방문 및 거리 배열 === */</span></span></div>
+<div class="code-line"><span class="ln">47</span><span class="lc"><span class="s-type">int</span> visited[ROWS][COLS];</span></div>
+<div class="code-line"><span class="ln">48</span><span class="lc"><span class="s-type">int</span> dist[ROWS][COLS];</span></div>
+<div class="code-line"><span class="ln">49</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">50</span><span class="lc"><span class="s-cm">/* === BFS 탐색 === */</span></span></div>
+<div class="code-line"><span class="ln">51</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">bfs</span>(<span class="s-type">int</span> sr, <span class="s-type">int</span> sc, <span class="s-type">int</span> er, <span class="s-type">int</span> ec) {</span></div>
+<div class="code-line"><span class="ln">52</span><span class="lc">    <span class="s-fn">memset</span>(visited, <span class="s-num">0</span>, <span class="s-kw">sizeof</span>(visited));</span></div>
+<div class="code-line"><span class="ln">53</span><span class="lc">    <span class="s-fn">memset</span>(dist, -<span class="s-num">1</span>, <span class="s-kw">sizeof</span>(dist));</span></div>
+<div class="code-line"><span class="ln">54</span><span class="lc">    front = rear = <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">55</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">56</span><span class="lc">    visited[sr][sc] = <span class="s-num">1</span>;</span></div>
+<div class="code-line"><span class="ln">57</span><span class="lc">    dist[sr][sc] = <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">58</span><span class="lc">    <span class="s-fn">enqueue</span>(sr, sc);</span></div>
+<div class="code-line"><span class="ln">59</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">60</span><span class="lc">    <span class="s-kw">while</span> (!<span class="s-fn">isEmpty</span>()) {</span></div>
+<div class="code-line"><span class="ln">61</span><span class="lc">        Pos cur = <span class="s-fn">dequeue</span>();</span></div>
+<div class="code-line"><span class="ln">62</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">63</span><span class="lc">        <span class="s-cm">/* 도착점에 도달하면 거리 반환 */</span></span></div>
+<div class="code-line"><span class="ln">64</span><span class="lc">        <span class="s-kw">if</span> (cur.r == er &amp;&amp; cur.c == ec) {</span></div>
+<div class="code-line"><span class="ln">65</span><span class="lc">            <span class="s-kw">return</span> dist[er][ec];</span></div>
+<div class="code-line"><span class="ln">66</span><span class="lc">        }</span></div>
+<div class="code-line"><span class="ln">67</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">68</span><span class="lc">        <span class="s-cm">/* 4방향 탐색 */</span></span></div>
+<div class="code-line"><span class="ln">69</span><span class="lc">        <span class="s-kw">for</span> (<span class="s-type">int</span> d = <span class="s-num">0</span>; d &lt; <span class="s-num">4</span>; d++) {</span></div>
+<div class="code-line"><span class="ln">70</span><span class="lc">            <span class="s-type">int</span> nr = cur.r + dx[d];</span></div>
+<div class="code-line"><span class="ln">71</span><span class="lc">            <span class="s-type">int</span> nc = cur.c + dy[d];</span></div>
+<div class="code-line"><span class="ln">72</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">73</span><span class="lc">            <span class="s-cm">/* 경계 검사 */</span></span></div>
+<div class="code-line"><span class="ln">74</span><span class="lc">            <span class="s-kw">if</span> (nr &lt; <span class="s-num">0</span> || nr &gt;= ROWS || nc &lt; <span class="s-num">0</span> || nc &gt;= COLS)</span></div>
+<div class="code-line"><span class="ln">75</span><span class="lc">                <span class="s-kw">continue</span>;</span></div>
+<div class="code-line"><span class="ln">76</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">77</span><span class="lc">            <span class="s-cm">/* 벽이 아니고 미방문인 경우 */</span></span></div>
+<div class="code-line"><span class="ln">78</span><span class="lc">            <span class="s-kw">if</span> (maze[nr][nc] == <span class="s-num">0</span> &amp;&amp; !visited[nr][nc]) {</span></div>
+<div class="code-line"><span class="ln">79</span><span class="lc">                visited[nr][nc] = <span class="s-num">1</span>;</span></div>
+<div class="code-line"><span class="ln">80</span><span class="lc">                dist[nr][nc] = dist[cur.r][cur.c] + <span class="s-num">1</span>;</span></div>
+<div class="code-line"><span class="ln">81</span><span class="lc">                <span class="s-fn">enqueue</span>(nr, nc);</span></div>
+<div class="code-line"><span class="ln">82</span><span class="lc">            }</span></div>
+<div class="code-line"><span class="ln">83</span><span class="lc">        }</span></div>
+<div class="code-line"><span class="ln">84</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">85</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">86</span><span class="lc">    <span class="s-kw">return</span> -<span class="s-num">1</span>;  <span class="s-cm">/* 도달 불가 */</span></span></div>
+<div class="code-line"><span class="ln">87</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">88</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">89</span><span class="lc"><span class="s-cm">/* === 미로 출력 === */</span></span></div>
+<div class="code-line"><span class="ln">90</span><span class="lc"><span class="s-type">void</span> <span class="s-fn">printMaze</span>(<span class="s-type">void</span>) {</span></div>
+<div class="code-line"><span class="ln">91</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"미로 (0=통로, 1=벽):\n"</span>);</span></div>
+<div class="code-line"><span class="ln">92</span><span class="lc">    <span class="s-kw">for</span> (<span class="s-type">int</span> i = <span class="s-num">0</span>; i &lt; ROWS; i++) {</span></div>
+<div class="code-line"><span class="ln">93</span><span class="lc">        <span class="s-kw">for</span> (<span class="s-type">int</span> j = <span class="s-num">0</span>; j &lt; COLS; j++) {</span></div>
+<div class="code-line"><span class="ln">94</span><span class="lc">            <span class="s-kw">if</span> (i == <span class="s-num">0</span> &amp;&amp; j == <span class="s-num">0</span>)</span></div>
+<div class="code-line"><span class="ln">95</span><span class="lc">                <span class="s-fn">printf</span>(<span class="s-str">" S"</span>);</span></div>
+<div class="code-line"><span class="ln">96</span><span class="lc">            <span class="s-kw">else</span> <span class="s-kw">if</span> (i == ROWS - <span class="s-num">1</span> &amp;&amp; j == COLS - <span class="s-num">1</span>)</span></div>
+<div class="code-line"><span class="ln">97</span><span class="lc">                <span class="s-fn">printf</span>(<span class="s-str">" E"</span>);</span></div>
+<div class="code-line"><span class="ln">98</span><span class="lc">            <span class="s-kw">else</span> <span class="s-kw">if</span> (maze[i][j] == <span class="s-num">1</span>)</span></div>
+<div class="code-line"><span class="ln">99</span><span class="lc">                <span class="s-fn">printf</span>(<span class="s-str">" #"</span>);</span></div>
+<div class="code-line"><span class="ln">100</span><span class="lc">            <span class="s-kw">else</span></span></div>
+<div class="code-line"><span class="ln">101</span><span class="lc">                <span class="s-fn">printf</span>(<span class="s-str">" ."</span>);</span></div>
+<div class="code-line"><span class="ln">102</span><span class="lc">        }</span></div>
+<div class="code-line"><span class="ln">103</span><span class="lc">        <span class="s-fn">printf</span>(<span class="s-str">"\n"</span>);</span></div>
+<div class="code-line"><span class="ln">104</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">105</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">106</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">107</span><span class="lc"><span class="s-cm">/* === 거리 맵 출력 === */</span></span></div>
+<div class="code-line"><span class="ln">108</span><span class="lc"><span class="s-type">void</span> <span class="s-fn">printDistMap</span>(<span class="s-type">void</span>) {</span></div>
+<div class="code-line"><span class="ln">109</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"\n거리 맵 (시작점부터의 최단 거리):\n"</span>);</span></div>
+<div class="code-line"><span class="ln">110</span><span class="lc">    <span class="s-kw">for</span> (<span class="s-type">int</span> i = <span class="s-num">0</span>; i &lt; ROWS; i++) {</span></div>
+<div class="code-line"><span class="ln">111</span><span class="lc">        <span class="s-kw">for</span> (<span class="s-type">int</span> j = <span class="s-num">0</span>; j &lt; COLS; j++) {</span></div>
+<div class="code-line"><span class="ln">112</span><span class="lc">            <span class="s-kw">if</span> (dist[i][j] == -<span class="s-num">1</span>)</span></div>
+<div class="code-line"><span class="ln">113</span><span class="lc">                <span class="s-fn">printf</span>(<span class="s-str">" --"</span>);</span></div>
+<div class="code-line"><span class="ln">114</span><span class="lc">            <span class="s-kw">else</span></span></div>
+<div class="code-line"><span class="ln">115</span><span class="lc">                <span class="s-fn">printf</span>(<span class="s-str">"%3d"</span>, dist[i][j]);</span></div>
+<div class="code-line"><span class="ln">116</span><span class="lc">        }</span></div>
+<div class="code-line"><span class="ln">117</span><span class="lc">        <span class="s-fn">printf</span>(<span class="s-str">"\n"</span>);</span></div>
+<div class="code-line"><span class="ln">118</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">119</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">120</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">121</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">main</span>(<span class="s-type">void</span>) {</span></div>
+<div class="code-line"><span class="ln">122</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"=== 미로 탈출 v1 ===\n\n"</span>);</span></div>
+<div class="code-line"><span class="ln">123</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">124</span><span class="lc">    <span class="s-fn">printMaze</span>();</span></div>
+<div class="code-line"><span class="ln">125</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">126</span><span class="lc">    <span class="s-type">int</span> result = <span class="s-fn">bfs</span>(<span class="s-num">0</span>, <span class="s-num">0</span>, ROWS - <span class="s-num">1</span>, COLS - <span class="s-num">1</span>);</span></div>
+<div class="code-line"><span class="ln">127</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">128</span><span class="lc">    <span class="s-kw">if</span> (result == -<span class="s-num">1</span>) {</span></div>
+<div class="code-line"><span class="ln">129</span><span class="lc">        <span class="s-fn">printf</span>(<span class="s-str">"\n도착점까지 경로가 존재하지 않습니다.\n"</span>);</span></div>
+<div class="code-line"><span class="ln">130</span><span class="lc">    } <span class="s-kw">else</span> {</span></div>
+<div class="code-line"><span class="ln">131</span><span class="lc">        <span class="s-fn">printf</span>(<span class="s-str">"\n최단 경로 길이: %d\n"</span>, result);</span></div>
+<div class="code-line"><span class="ln">132</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">133</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">134</span><span class="lc">    <span class="s-fn">printDistMap</span>();</span></div>
+<div class="code-line"><span class="ln">135</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">136</span><span class="lc">    <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">137</span><span class="lc">}</span></div>
+</div>
+</div>
+<div class="note-box"><span class="note-label"></span>
+<div style="font-weight:700;margin-bottom:6px;color:#1a2e4a">BFS 탐색 순서와 최단 경로 보장</div>BFS는 시작점에서 거리 1인 칸을 모두 방문한 뒤, 거리 2인 칸을 방문하는 식으로<br>레이어(층) 단위로 확장합니다.<br><br>거리 0: S (시작점)<br>거리 1: S의 상하좌우 이웃 중 통로<br>거리 2: 거리 1 칸들의 이웃 중 미방문 통로<br>거리 3: ...<br><br>따라서 어떤 칸에 처음 도달한 순간의 거리가 곧 최단 거리입니다.<br>이것이 BFS가 최단 경로를 보장하는 핵심 원리입니다.<br><br>시간 복잡도: O(ROWS x COLS) -- 모든 칸을 최대 한 번 방문<br>공간 복잡도: O(ROWS x COLS) -- 큐, 방문 배열, 거리 배열</div>
+<h2 class="section-title">버전 2: 확장 -- 경로 역추적 + 미로 시각화</h2>
+<p>undefined</p>
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;stdio.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;string.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">4</span><span class="lc"><span class="s-pp">#define</span> ROWS <span class="s-num">7</span></span></div>
+<div class="code-line"><span class="ln">5</span><span class="lc"><span class="s-pp">#define</span> COLS <span class="s-num">7</span></span></div>
+<div class="code-line"><span class="ln">6</span><span class="lc"><span class="s-pp">#define</span> <span class="s-fn">MAX_Q</span>(ROWS * COLS)</span></div>
+<div class="code-line"><span class="ln">7</span><span class="lc"><span class="s-pp">#define</span> <span class="s-fn">MAX_PATH</span>(ROWS * COLS)</span></div>
+<div class="code-line"><span class="ln">8</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">9</span><span class="lc"><span class="s-type">int</span> maze[ROWS][COLS] = {</span></div>
+<div class="code-line"><span class="ln">10</span><span class="lc">    {<span class="s-num">0</span>, <span class="s-num">0</span>, <span class="s-num">1</span>, <span class="s-num">0</span>, <span class="s-num">0</span>, <span class="s-num">0</span>, <span class="s-num">0</span>},</span></div>
+<div class="code-line"><span class="ln">11</span><span class="lc">    {<span class="s-num">0</span>, <span class="s-num">0</span>, <span class="s-num">1</span>, <span class="s-num">0</span>, <span class="s-num">1</span>, <span class="s-num">1</span>, <span class="s-num">0</span>},</span></div>
+<div class="code-line"><span class="ln">12</span><span class="lc">    {<span class="s-num">0</span>, <span class="s-num">0</span>, <span class="s-num">0</span>, <span class="s-num">0</span>, <span class="s-num">0</span>, <span class="s-num">1</span>, <span class="s-num">0</span>},</span></div>
+<div class="code-line"><span class="ln">13</span><span class="lc">    {<span class="s-num">1</span>, <span class="s-num">1</span>, <span class="s-num">0</span>, <span class="s-num">1</span>, <span class="s-num">0</span>, <span class="s-num">0</span>, <span class="s-num">0</span>},</span></div>
+<div class="code-line"><span class="ln">14</span><span class="lc">    {<span class="s-num">0</span>, <span class="s-num">0</span>, <span class="s-num">0</span>, <span class="s-num">1</span>, <span class="s-num">0</span>, <span class="s-num">1</span>, <span class="s-num">1</span>},</span></div>
+<div class="code-line"><span class="ln">15</span><span class="lc">    {<span class="s-num">0</span>, <span class="s-num">1</span>, <span class="s-num">0</span>, <span class="s-num">0</span>, <span class="s-num">0</span>, <span class="s-num">0</span>, <span class="s-num">0</span>},</span></div>
+<div class="code-line"><span class="ln">16</span><span class="lc">    {<span class="s-num">0</span>, <span class="s-num">1</span>, <span class="s-num">1</span>, <span class="s-num">1</span>, <span class="s-num">1</span>, <span class="s-num">0</span>, <span class="s-num">0</span>}</span></div>
+<div class="code-line"><span class="ln">17</span><span class="lc">};</span></div>
+<div class="code-line"><span class="ln">18</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">19</span><span class="lc"><span class="s-kw">typedef</span> <span class="s-kw">struct</span> {</span></div>
+<div class="code-line"><span class="ln">20</span><span class="lc">    <span class="s-type">int</span> r, c;</span></div>
+<div class="code-line"><span class="ln">21</span><span class="lc">} Pos;</span></div>
+<div class="code-line"><span class="ln">22</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">23</span><span class="lc"><span class="s-cm">/* === BFS 큐 === */</span></span></div>
+<div class="code-line"><span class="ln">24</span><span class="lc">Pos queue[MAX_Q];</span></div>
+<div class="code-line"><span class="ln">25</span><span class="lc"><span class="s-type">int</span> front = <span class="s-num">0</span>, rear = <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">26</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">27</span><span class="lc"><span class="s-type">void</span> <span class="s-fn">enqueue</span>(<span class="s-type">int</span> r, <span class="s-type">int</span> c) {</span></div>
+<div class="code-line"><span class="ln">28</span><span class="lc">    queue[rear].r = r;</span></div>
+<div class="code-line"><span class="ln">29</span><span class="lc">    queue[rear].c = c;</span></div>
+<div class="code-line"><span class="ln">30</span><span class="lc">    rear++;</span></div>
+<div class="code-line"><span class="ln">31</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">32</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">33</span><span class="lc">Pos <span class="s-fn">dequeue</span>(<span class="s-type">void</span>) {</span></div>
+<div class="code-line"><span class="ln">34</span><span class="lc">    <span class="s-kw">return</span> queue[front++];</span></div>
+<div class="code-line"><span class="ln">35</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">36</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">37</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">isEmpty</span>(<span class="s-type">void</span>) {</span></div>
+<div class="code-line"><span class="ln">38</span><span class="lc">    <span class="s-kw">return</span> front == rear;</span></div>
+<div class="code-line"><span class="ln">39</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">40</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">41</span><span class="lc"><span class="s-cm">/* === 방향 배열 === */</span></span></div>
+<div class="code-line"><span class="ln">42</span><span class="lc"><span class="s-type">int</span> dx[<span class="s-num">4</span>] = {-<span class="s-num">1</span>, <span class="s-num">1</span>, <span class="s-num">0</span>, <span class="s-num">0</span>};</span></div>
+<div class="code-line"><span class="ln">43</span><span class="lc"><span class="s-type">int</span> dy[<span class="s-num">4</span>] = {<span class="s-num">0</span>, <span class="s-num">0</span>, -<span class="s-num">1</span>, <span class="s-num">1</span>};</span></div>
+<div class="code-line"><span class="ln">44</span><span class="lc"><span class="s-kw">const</span> <span class="s-type">char</span> *dirName[<span class="s-num">4</span>] = {<span class="s-str">"상"</span>, <span class="s-str">"하"</span>, <span class="s-str">"좌"</span>, <span class="s-str">"우"</span>};</span></div>
+<div class="code-line"><span class="ln">45</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">46</span><span class="lc"><span class="s-cm">/* === 탐색 배열 === */</span></span></div>
+<div class="code-line"><span class="ln">47</span><span class="lc"><span class="s-type">int</span> visited[ROWS][COLS];</span></div>
+<div class="code-line"><span class="ln">48</span><span class="lc"><span class="s-type">int</span> dist[ROWS][COLS];</span></div>
+<div class="code-line"><span class="ln">49</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">50</span><span class="lc"><span class="s-cm">/* === 부모 좌표 (경로 역추적용) === */</span></span></div>
+<div class="code-line"><span class="ln">51</span><span class="lc"><span class="s-type">int</span> parentR[ROWS][COLS];</span></div>
+<div class="code-line"><span class="ln">52</span><span class="lc"><span class="s-type">int</span> parentC[ROWS][COLS];</span></div>
+<div class="code-line"><span class="ln">53</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">54</span><span class="lc"><span class="s-cm">/* === 경로 저장 === */</span></span></div>
+<div class="code-line"><span class="ln">55</span><span class="lc">Pos path[MAX_PATH];</span></div>
+<div class="code-line"><span class="ln">56</span><span class="lc"><span class="s-type">int</span> pathLen = <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">57</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">58</span><span class="lc"><span class="s-cm">/* === BFS 탐색 === */</span></span></div>
+<div class="code-line"><span class="ln">59</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">bfs</span>(<span class="s-type">int</span> sr, <span class="s-type">int</span> sc, <span class="s-type">int</span> er, <span class="s-type">int</span> ec) {</span></div>
+<div class="code-line"><span class="ln">60</span><span class="lc">    <span class="s-fn">memset</span>(visited, <span class="s-num">0</span>, <span class="s-kw">sizeof</span>(visited));</span></div>
+<div class="code-line"><span class="ln">61</span><span class="lc">    <span class="s-fn">memset</span>(dist, -<span class="s-num">1</span>, <span class="s-kw">sizeof</span>(dist));</span></div>
+<div class="code-line"><span class="ln">62</span><span class="lc">    <span class="s-fn">memset</span>(parentR, -<span class="s-num">1</span>, <span class="s-kw">sizeof</span>(parentR));</span></div>
+<div class="code-line"><span class="ln">63</span><span class="lc">    <span class="s-fn">memset</span>(parentC, -<span class="s-num">1</span>, <span class="s-kw">sizeof</span>(parentC));</span></div>
+<div class="code-line"><span class="ln">64</span><span class="lc">    front = rear = <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">65</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">66</span><span class="lc">    visited[sr][sc] = <span class="s-num">1</span>;</span></div>
+<div class="code-line"><span class="ln">67</span><span class="lc">    dist[sr][sc] = <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">68</span><span class="lc">    <span class="s-fn">enqueue</span>(sr, sc);</span></div>
+<div class="code-line"><span class="ln">69</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">70</span><span class="lc">    <span class="s-kw">while</span> (!<span class="s-fn">isEmpty</span>()) {</span></div>
+<div class="code-line"><span class="ln">71</span><span class="lc">        Pos cur = <span class="s-fn">dequeue</span>();</span></div>
+<div class="code-line"><span class="ln">72</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">73</span><span class="lc">        <span class="s-kw">if</span> (cur.r == er &amp;&amp; cur.c == ec) {</span></div>
+<div class="code-line"><span class="ln">74</span><span class="lc">            <span class="s-kw">return</span> dist[er][ec];</span></div>
+<div class="code-line"><span class="ln">75</span><span class="lc">        }</span></div>
+<div class="code-line"><span class="ln">76</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">77</span><span class="lc">        <span class="s-kw">for</span> (<span class="s-type">int</span> d = <span class="s-num">0</span>; d &lt; <span class="s-num">4</span>; d++) {</span></div>
+<div class="code-line"><span class="ln">78</span><span class="lc">            <span class="s-type">int</span> nr = cur.r + dx[d];</span></div>
+<div class="code-line"><span class="ln">79</span><span class="lc">            <span class="s-type">int</span> nc = cur.c + dy[d];</span></div>
+<div class="code-line"><span class="ln">80</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">81</span><span class="lc">            <span class="s-kw">if</span> (nr &lt; <span class="s-num">0</span> || nr &gt;= ROWS || nc &lt; <span class="s-num">0</span> || nc &gt;= COLS)</span></div>
+<div class="code-line"><span class="ln">82</span><span class="lc">                <span class="s-kw">continue</span>;</span></div>
+<div class="code-line"><span class="ln">83</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">84</span><span class="lc">            <span class="s-kw">if</span> (maze[nr][nc] == <span class="s-num">0</span> &amp;&amp; !visited[nr][nc]) {</span></div>
+<div class="code-line"><span class="ln">85</span><span class="lc">                visited[nr][nc] = <span class="s-num">1</span>;</span></div>
+<div class="code-line"><span class="ln">86</span><span class="lc">                dist[nr][nc] = dist[cur.r][cur.c] + <span class="s-num">1</span>;</span></div>
+<div class="code-line"><span class="ln">87</span><span class="lc">                parentR[nr][nc] = cur.r;</span></div>
+<div class="code-line"><span class="ln">88</span><span class="lc">                parentC[nr][nc] = cur.c;</span></div>
+<div class="code-line"><span class="ln">89</span><span class="lc">                <span class="s-fn">enqueue</span>(nr, nc);</span></div>
+<div class="code-line"><span class="ln">90</span><span class="lc">            }</span></div>
+<div class="code-line"><span class="ln">91</span><span class="lc">        }</span></div>
+<div class="code-line"><span class="ln">92</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">93</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">94</span><span class="lc">    <span class="s-kw">return</span> -<span class="s-num">1</span>;</span></div>
+<div class="code-line"><span class="ln">95</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">96</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">97</span><span class="lc"><span class="s-cm">/* === 경로 역추적 === */</span></span></div>
+<div class="code-line"><span class="ln">98</span><span class="lc"><span class="s-type">void</span> <span class="s-fn">tracePath</span>(<span class="s-type">int</span> sr, <span class="s-type">int</span> sc, <span class="s-type">int</span> er, <span class="s-type">int</span> ec) {</span></div>
+<div class="code-line"><span class="ln">99</span><span class="lc">    pathLen = <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">100</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">101</span><span class="lc">    <span class="s-type">int</span> r = er, c = ec;</span></div>
+<div class="code-line"><span class="ln">102</span><span class="lc">    <span class="s-kw">while</span> (r != sr || c != sc) {</span></div>
+<div class="code-line"><span class="ln">103</span><span class="lc">        path[pathLen].r = r;</span></div>
+<div class="code-line"><span class="ln">104</span><span class="lc">        path[pathLen].c = c;</span></div>
+<div class="code-line"><span class="ln">105</span><span class="lc">        pathLen++;</span></div>
+<div class="code-line"><span class="ln">106</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">107</span><span class="lc">        <span class="s-type">int</span> pr = parentR[r][c];</span></div>
+<div class="code-line"><span class="ln">108</span><span class="lc">        <span class="s-type">int</span> pc = parentC[r][c];</span></div>
+<div class="code-line"><span class="ln">109</span><span class="lc">        r = pr;</span></div>
+<div class="code-line"><span class="ln">110</span><span class="lc">        c = pc;</span></div>
+<div class="code-line"><span class="ln">111</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">112</span><span class="lc">    path[pathLen].r = sr;</span></div>
+<div class="code-line"><span class="ln">113</span><span class="lc">    path[pathLen].c = sc;</span></div>
+<div class="code-line"><span class="ln">114</span><span class="lc">    pathLen++;</span></div>
+<div class="code-line"><span class="ln">115</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">116</span><span class="lc">    <span class="s-cm">/* 경로를 뒤집기 (시작 -&gt; 도착 순서로) */</span></span></div>
+<div class="code-line"><span class="ln">117</span><span class="lc">    <span class="s-kw">for</span> (<span class="s-type">int</span> i = <span class="s-num">0</span>; i &lt; pathLen / <span class="s-num">2</span>; i++) {</span></div>
+<div class="code-line"><span class="ln">118</span><span class="lc">        Pos temp = path[i];</span></div>
+<div class="code-line"><span class="ln">119</span><span class="lc">        path[i] = path[pathLen - <span class="s-num">1</span> - i];</span></div>
+<div class="code-line"><span class="ln">120</span><span class="lc">        path[pathLen - <span class="s-num">1</span> - i] = temp;</span></div>
+<div class="code-line"><span class="ln">121</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">122</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">123</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">124</span><span class="lc"><span class="s-cm">/* === 경로 출력 === */</span></span></div>
+<div class="code-line"><span class="ln">125</span><span class="lc"><span class="s-type">void</span> <span class="s-fn">printPath</span>(<span class="s-type">void</span>) {</span></div>
+<div class="code-line"><span class="ln">126</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"\n경로 (총 %d칸 이동):\n"</span>, pathLen - <span class="s-num">1</span>);</span></div>
+<div class="code-line"><span class="ln">127</span><span class="lc">    <span class="s-kw">for</span> (<span class="s-type">int</span> i = <span class="s-num">0</span>; i &lt; pathLen; i++) {</span></div>
+<div class="code-line"><span class="ln">128</span><span class="lc">        <span class="s-fn">printf</span>(<span class="s-str">"(%d,%d)"</span>, path[i].r, path[i].c);</span></div>
+<div class="code-line"><span class="ln">129</span><span class="lc">        <span class="s-kw">if</span> (i &lt; pathLen - <span class="s-num">1</span>) {</span></div>
+<div class="code-line"><span class="ln">130</span><span class="lc">            <span class="s-cm">/* 이동 방향 표시 */</span></span></div>
+<div class="code-line"><span class="ln">131</span><span class="lc">            <span class="s-type">int</span> dr = path[i + <span class="s-num">1</span>].r - path[i].r;</span></div>
+<div class="code-line"><span class="ln">132</span><span class="lc">            <span class="s-type">int</span> dc = path[i + <span class="s-num">1</span>].c - path[i].c;</span></div>
+<div class="code-line"><span class="ln">133</span><span class="lc">            <span class="s-kw">for</span> (<span class="s-type">int</span> d = <span class="s-num">0</span>; d &lt; <span class="s-num">4</span>; d++) {</span></div>
+<div class="code-line"><span class="ln">134</span><span class="lc">                <span class="s-kw">if</span> (dx[d] == dr &amp;&amp; dy[d] == dc) {</span></div>
+<div class="code-line"><span class="ln">135</span><span class="lc">                    <span class="s-fn">printf</span>(<span class="s-str">" -[%s]-&gt; "</span>, dirName[d]);</span></div>
+<div class="code-line"><span class="ln">136</span><span class="lc">                    <span class="s-kw">break</span>;</span></div>
+<div class="code-line"><span class="ln">137</span><span class="lc">                }</span></div>
+<div class="code-line"><span class="ln">138</span><span class="lc">            }</span></div>
+<div class="code-line"><span class="ln">139</span><span class="lc">        }</span></div>
+<div class="code-line"><span class="ln">140</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">141</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"\n"</span>);</span></div>
+<div class="code-line"><span class="ln">142</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">143</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">144</span><span class="lc"><span class="s-cm">/* === 미로 시각화 (경로 표시) === */</span></span></div>
+<div class="code-line"><span class="ln">145</span><span class="lc"><span class="s-type">void</span> <span class="s-fn">printMazeWithPath</span>(<span class="s-type">void</span>) {</span></div>
+<div class="code-line"><span class="ln">146</span><span class="lc">    <span class="s-cm">/* 경로 위치를 표시할 배열 */</span></span></div>
+<div class="code-line"><span class="ln">147</span><span class="lc">    <span class="s-type">int</span> onPath[ROWS][COLS];</span></div>
+<div class="code-line"><span class="ln">148</span><span class="lc">    <span class="s-fn">memset</span>(onPath, <span class="s-num">0</span>, <span class="s-kw">sizeof</span>(onPath));</span></div>
+<div class="code-line"><span class="ln">149</span><span class="lc">    <span class="s-kw">for</span> (<span class="s-type">int</span> i = <span class="s-num">0</span>; i &lt; pathLen; i++) {</span></div>
+<div class="code-line"><span class="ln">150</span><span class="lc">        onPath[path[i].r][path[i].c] = <span class="s-num">1</span>;</span></div>
+<div class="code-line"><span class="ln">151</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">152</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">153</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"\n미로 시각화 (S=시작, E=도착, *=경로, #=벽, .=통로):\n"</span>);</span></div>
+<div class="code-line"><span class="ln">154</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"  "</span>);</span></div>
+<div class="code-line"><span class="ln">155</span><span class="lc">    <span class="s-kw">for</span> (<span class="s-type">int</span> j = <span class="s-num">0</span>; j &lt; COLS; j++)</span></div>
+<div class="code-line"><span class="ln">156</span><span class="lc">        <span class="s-fn">printf</span>(<span class="s-str">"%2d"</span>, j);</span></div>
+<div class="code-line"><span class="ln">157</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"\n"</span>);</span></div>
+<div class="code-line"><span class="ln">158</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">159</span><span class="lc">    <span class="s-kw">for</span> (<span class="s-type">int</span> i = <span class="s-num">0</span>; i &lt; ROWS; i++) {</span></div>
+<div class="code-line"><span class="ln">160</span><span class="lc">        <span class="s-fn">printf</span>(<span class="s-str">"%d "</span>, i);</span></div>
+<div class="code-line"><span class="ln">161</span><span class="lc">        <span class="s-kw">for</span> (<span class="s-type">int</span> j = <span class="s-num">0</span>; j &lt; COLS; j++) {</span></div>
+<div class="code-line"><span class="ln">162</span><span class="lc">            <span class="s-kw">if</span> (i == <span class="s-num">0</span> &amp;&amp; j == <span class="s-num">0</span>)</span></div>
+<div class="code-line"><span class="ln">163</span><span class="lc">                <span class="s-fn">printf</span>(<span class="s-str">" S"</span>);</span></div>
+<div class="code-line"><span class="ln">164</span><span class="lc">            <span class="s-kw">else</span> <span class="s-kw">if</span> (i == ROWS - <span class="s-num">1</span> &amp;&amp; j == COLS - <span class="s-num">1</span>)</span></div>
+<div class="code-line"><span class="ln">165</span><span class="lc">                <span class="s-fn">printf</span>(<span class="s-str">" E"</span>);</span></div>
+<div class="code-line"><span class="ln">166</span><span class="lc">            <span class="s-kw">else</span> <span class="s-kw">if</span> (onPath[i][j])</span></div>
+<div class="code-line"><span class="ln">167</span><span class="lc">                <span class="s-fn">printf</span>(<span class="s-str">" *"</span>);</span></div>
+<div class="code-line"><span class="ln">168</span><span class="lc">            <span class="s-kw">else</span> <span class="s-kw">if</span> (maze[i][j] == <span class="s-num">1</span>)</span></div>
+<div class="code-line"><span class="ln">169</span><span class="lc">                <span class="s-fn">printf</span>(<span class="s-str">" #"</span>);</span></div>
+<div class="code-line"><span class="ln">170</span><span class="lc">            <span class="s-kw">else</span> <span class="s-kw">if</span> (visited[i][j])</span></div>
+<div class="code-line"><span class="ln">171</span><span class="lc">                <span class="s-fn">printf</span>(<span class="s-str">" ,"</span>);</span></div>
+<div class="code-line"><span class="ln">172</span><span class="lc">            <span class="s-kw">else</span></span></div>
+<div class="code-line"><span class="ln">173</span><span class="lc">                <span class="s-fn">printf</span>(<span class="s-str">" ."</span>);</span></div>
+<div class="code-line"><span class="ln">174</span><span class="lc">        }</span></div>
+<div class="code-line"><span class="ln">175</span><span class="lc">        <span class="s-fn">printf</span>(<span class="s-str">"\n"</span>);</span></div>
+<div class="code-line"><span class="ln">176</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">177</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">178</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"\n범례: S=시작, E=도착, *=최단경로, #=벽, ,=방문함, .=미방문\n"</span>);</span></div>
+<div class="code-line"><span class="ln">179</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">180</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">181</span><span class="lc"><span class="s-cm">/* === 거리 맵 출력 === */</span></span></div>
+<div class="code-line"><span class="ln">182</span><span class="lc"><span class="s-type">void</span> <span class="s-fn">printDistMap</span>(<span class="s-type">void</span>) {</span></div>
+<div class="code-line"><span class="ln">183</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"\n거리 맵:\n"</span>);</span></div>
+<div class="code-line"><span class="ln">184</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"  "</span>);</span></div>
+<div class="code-line"><span class="ln">185</span><span class="lc">    <span class="s-kw">for</span> (<span class="s-type">int</span> j = <span class="s-num">0</span>; j &lt; COLS; j++)</span></div>
+<div class="code-line"><span class="ln">186</span><span class="lc">        <span class="s-fn">printf</span>(<span class="s-str">"%3d"</span>, j);</span></div>
+<div class="code-line"><span class="ln">187</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"\n"</span>);</span></div>
+<div class="code-line"><span class="ln">188</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">189</span><span class="lc">    <span class="s-kw">for</span> (<span class="s-type">int</span> i = <span class="s-num">0</span>; i &lt; ROWS; i++) {</span></div>
+<div class="code-line"><span class="ln">190</span><span class="lc">        <span class="s-fn">printf</span>(<span class="s-str">"%d "</span>, i);</span></div>
+<div class="code-line"><span class="ln">191</span><span class="lc">        <span class="s-kw">for</span> (<span class="s-type">int</span> j = <span class="s-num">0</span>; j &lt; COLS; j++) {</span></div>
+<div class="code-line"><span class="ln">192</span><span class="lc">            <span class="s-kw">if</span> (dist[i][j] == -<span class="s-num">1</span>)</span></div>
+<div class="code-line"><span class="ln">193</span><span class="lc">                <span class="s-fn">printf</span>(<span class="s-str">" --"</span>);</span></div>
+<div class="code-line"><span class="ln">194</span><span class="lc">            <span class="s-kw">else</span></span></div>
+<div class="code-line"><span class="ln">195</span><span class="lc">                <span class="s-fn">printf</span>(<span class="s-str">"%3d"</span>, dist[i][j]);</span></div>
+<div class="code-line"><span class="ln">196</span><span class="lc">        }</span></div>
+<div class="code-line"><span class="ln">197</span><span class="lc">        <span class="s-fn">printf</span>(<span class="s-str">"\n"</span>);</span></div>
+<div class="code-line"><span class="ln">198</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">199</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">200</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">201</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">main</span>(<span class="s-type">void</span>) {</span></div>
+<div class="code-line"><span class="ln">202</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"=== 미로 탈출 v2 ===\n"</span>);</span></div>
+<div class="code-line"><span class="ln">203</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">204</span><span class="lc">    <span class="s-type">int</span> sr = <span class="s-num">0</span>, sc = <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">205</span><span class="lc">    <span class="s-type">int</span> er = ROWS - <span class="s-num">1</span>, ec = COLS - <span class="s-num">1</span>;</span></div>
+<div class="code-line"><span class="ln">206</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">207</span><span class="lc">    <span class="s-type">int</span> result = <span class="s-fn">bfs</span>(sr, sc, er, ec);</span></div>
+<div class="code-line"><span class="ln">208</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">209</span><span class="lc">    <span class="s-kw">if</span> (result == -<span class="s-num">1</span>) {</span></div>
+<div class="code-line"><span class="ln">210</span><span class="lc">        <span class="s-fn">printf</span>(<span class="s-str">"\n도착점까지 경로가 존재하지 않습니다.\n"</span>);</span></div>
+<div class="code-line"><span class="ln">211</span><span class="lc">    } <span class="s-kw">else</span> {</span></div>
+<div class="code-line"><span class="ln">212</span><span class="lc">        <span class="s-fn">printf</span>(<span class="s-str">"\n최단 경로 길이: %d\n"</span>, result);</span></div>
+<div class="code-line"><span class="ln">213</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">214</span><span class="lc">        <span class="s-fn">tracePath</span>(sr, sc, er, ec);</span></div>
+<div class="code-line"><span class="ln">215</span><span class="lc">        <span class="s-fn">printPath</span>();</span></div>
+<div class="code-line"><span class="ln">216</span><span class="lc">        <span class="s-fn">printMazeWithPath</span>();</span></div>
+<div class="code-line"><span class="ln">217</span><span class="lc">        <span class="s-fn">printDistMap</span>();</span></div>
+<div class="code-line"><span class="ln">218</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">219</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">220</span><span class="lc">    <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">221</span><span class="lc">}</span></div>
+</div>
+</div>
+<div class="debug-section"><div class="debug-bar">DEBUG LAB — 에러를 찾으시오</div><div class="debug-body">
+
+<p style="margin:14px 0 0; font-size:14px;"><b>에러:</b> </p>
+<p style="font-size:14px;"><b>수정:</b> </p>
+</div></div>
+<h2 class="section-title">버전 3: 완성 -- 파일 읽기 + DFS/BFS 비교 + 여러 미로</h2>
+<p>undefined</p>
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;stdio.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;stdlib.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;string.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">4</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">5</span><span class="lc"><span class="s-pp">#define</span> MAX_SIZE <span class="s-num">50</span></span></div>
+<div class="code-line"><span class="ln">6</span><span class="lc"><span class="s-pp">#define</span> <span class="s-fn">MAX_Q</span>(MAX_SIZE * MAX_SIZE)</span></div>
+<div class="code-line"><span class="ln">7</span><span class="lc"><span class="s-pp">#define</span> <span class="s-fn">MAX_PATH</span>(MAX_SIZE * MAX_SIZE)</span></div>
+<div class="code-line"><span class="ln">8</span><span class="lc"><span class="s-pp">#define</span> MAX_MAZES <span class="s-num">5</span></span></div>
+<div class="code-line"><span class="ln">9</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">10</span><span class="lc"><span class="s-cm">/* === 미로 데이터 === */</span></span></div>
+<div class="code-line"><span class="ln">11</span><span class="lc"><span class="s-type">int</span> maze[MAX_SIZE][MAX_SIZE];</span></div>
+<div class="code-line"><span class="ln">12</span><span class="lc"><span class="s-type">int</span> rows, cols;</span></div>
+<div class="code-line"><span class="ln">13</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">14</span><span class="lc"><span class="s-cm">/* === BFS 자료구조 === */</span></span></div>
+<div class="code-line"><span class="ln">15</span><span class="lc"><span class="s-kw">typedef</span> <span class="s-kw">struct</span> {</span></div>
+<div class="code-line"><span class="ln">16</span><span class="lc">    <span class="s-type">int</span> r, c;</span></div>
+<div class="code-line"><span class="ln">17</span><span class="lc">} Pos;</span></div>
+<div class="code-line"><span class="ln">18</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">19</span><span class="lc">Pos bfsQueue[MAX_Q];</span></div>
+<div class="code-line"><span class="ln">20</span><span class="lc"><span class="s-type">int</span> bfsFront, bfsRear;</span></div>
+<div class="code-line"><span class="ln">21</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">22</span><span class="lc"><span class="s-type">void</span> <span class="s-fn">bfsEnqueue</span>(<span class="s-type">int</span> r, <span class="s-type">int</span> c) {</span></div>
+<div class="code-line"><span class="ln">23</span><span class="lc">    bfsQueue[bfsRear].r = r;</span></div>
+<div class="code-line"><span class="ln">24</span><span class="lc">    bfsQueue[bfsRear].c = c;</span></div>
+<div class="code-line"><span class="ln">25</span><span class="lc">    bfsRear++;</span></div>
+<div class="code-line"><span class="ln">26</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">27</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">28</span><span class="lc">Pos <span class="s-fn">bfsDequeue</span>(<span class="s-type">void</span>) {</span></div>
+<div class="code-line"><span class="ln">29</span><span class="lc">    <span class="s-kw">return</span> bfsQueue[bfsFront++];</span></div>
+<div class="code-line"><span class="ln">30</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">31</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">32</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">bfsIsEmpty</span>(<span class="s-type">void</span>) {</span></div>
+<div class="code-line"><span class="ln">33</span><span class="lc">    <span class="s-kw">return</span> bfsFront == bfsRear;</span></div>
+<div class="code-line"><span class="ln">34</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">35</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">36</span><span class="lc"><span class="s-cm">/* === DFS 스택 === */</span></span></div>
+<div class="code-line"><span class="ln">37</span><span class="lc">Pos dfsStack[MAX_Q];</span></div>
+<div class="code-line"><span class="ln">38</span><span class="lc"><span class="s-type">int</span> dfsTop;</span></div>
+<div class="code-line"><span class="ln">39</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">40</span><span class="lc"><span class="s-type">void</span> <span class="s-fn">dfsPush</span>(<span class="s-type">int</span> r, <span class="s-type">int</span> c) {</span></div>
+<div class="code-line"><span class="ln">41</span><span class="lc">    dfsStack[dfsTop].r = r;</span></div>
+<div class="code-line"><span class="ln">42</span><span class="lc">    dfsStack[dfsTop].c = c;</span></div>
+<div class="code-line"><span class="ln">43</span><span class="lc">    dfsTop++;</span></div>
+<div class="code-line"><span class="ln">44</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">45</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">46</span><span class="lc">Pos <span class="s-fn">dfsPop</span>(<span class="s-type">void</span>) {</span></div>
+<div class="code-line"><span class="ln">47</span><span class="lc">    dfsTop--;</span></div>
+<div class="code-line"><span class="ln">48</span><span class="lc">    <span class="s-kw">return</span> dfsStack[dfsTop];</span></div>
+<div class="code-line"><span class="ln">49</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">50</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">51</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">dfsIsEmpty</span>(<span class="s-type">void</span>) {</span></div>
+<div class="code-line"><span class="ln">52</span><span class="lc">    <span class="s-kw">return</span> dfsTop == <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">53</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">54</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">55</span><span class="lc"><span class="s-cm">/* === 방향 배열 === */</span></span></div>
+<div class="code-line"><span class="ln">56</span><span class="lc"><span class="s-type">int</span> dx[<span class="s-num">4</span>] = {-<span class="s-num">1</span>, <span class="s-num">1</span>, <span class="s-num">0</span>, <span class="s-num">0</span>};</span></div>
+<div class="code-line"><span class="ln">57</span><span class="lc"><span class="s-type">int</span> dy[<span class="s-num">4</span>] = {<span class="s-num">0</span>, <span class="s-num">0</span>, -<span class="s-num">1</span>, <span class="s-num">1</span>};</span></div>
+<div class="code-line"><span class="ln">58</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">59</span><span class="lc"><span class="s-cm">/* === 탐색 배열 === */</span></span></div>
+<div class="code-line"><span class="ln">60</span><span class="lc"><span class="s-type">int</span> visited[MAX_SIZE][MAX_SIZE];</span></div>
+<div class="code-line"><span class="ln">61</span><span class="lc"><span class="s-type">int</span> dist[MAX_SIZE][MAX_SIZE];</span></div>
+<div class="code-line"><span class="ln">62</span><span class="lc"><span class="s-type">int</span> parentR[MAX_SIZE][MAX_SIZE];</span></div>
+<div class="code-line"><span class="ln">63</span><span class="lc"><span class="s-type">int</span> parentC[MAX_SIZE][MAX_SIZE];</span></div>
+<div class="code-line"><span class="ln">64</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">65</span><span class="lc"><span class="s-cm">/* === 경로 === */</span></span></div>
+<div class="code-line"><span class="ln">66</span><span class="lc">Pos path[MAX_PATH];</span></div>
+<div class="code-line"><span class="ln">67</span><span class="lc"><span class="s-type">int</span> pathLen;</span></div>
+<div class="code-line"><span class="ln">68</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">69</span><span class="lc"><span class="s-cm">/* === 통계 === */</span></span></div>
+<div class="code-line"><span class="ln">70</span><span class="lc"><span class="s-type">int</span> bfsVisitCount;</span></div>
+<div class="code-line"><span class="ln">71</span><span class="lc"><span class="s-type">int</span> dfsVisitCount;</span></div>
+<div class="code-line"><span class="ln">72</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">73</span><span class="lc"><span class="s-cm">/* === 파일에서 미로 읽기 === */</span></span></div>
+<div class="code-line"><span class="ln">74</span><span class="lc">/*</span></div>
+<div class="code-line"><span class="ln">75</span><span class="lc">  파일 형식:</span></div>
+<div class="code-line"><span class="ln">76</span><span class="lc">  첫 줄: rows cols</span></div>
+<div class="code-line"><span class="ln">77</span><span class="lc">  이후 rows줄: cols개의 <span class="s-num">0</span>/<span class="s-num">1</span> (공백 구분)</span></div>
+<div class="code-line"><span class="ln">78</span><span class="lc">*/</span></div>
+<div class="code-line"><span class="ln">79</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">loadMaze</span>(<span class="s-kw">const</span> <span class="s-type">char</span> *filename) {</span></div>
+<div class="code-line"><span class="ln">80</span><span class="lc">    <span class="s-type">FILE</span> *fp = <span class="s-fn">fopen</span>(filename, <span class="s-str">"r"</span>);</span></div>
+<div class="code-line"><span class="ln">81</span><span class="lc">    <span class="s-kw">if</span> (fp == <span class="s-kw">NULL</span>) {</span></div>
+<div class="code-line"><span class="ln">82</span><span class="lc">        <span class="s-fn">printf</span>(<span class="s-str">"파일을 열 수 없습니다: %s\n"</span>, filename);</span></div>
+<div class="code-line"><span class="ln">83</span><span class="lc">        <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">84</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">85</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">86</span><span class="lc">    <span class="s-kw">if</span> (<span class="s-fn">fscanf</span>(fp, <span class="s-str">"%d %d"</span>, &amp;rows, &amp;cols) != <span class="s-num">2</span>) {</span></div>
+<div class="code-line"><span class="ln">87</span><span class="lc">        <span class="s-fn">printf</span>(<span class="s-str">"미로 크기를 읽을 수 없습니다.\n"</span>);</span></div>
+<div class="code-line"><span class="ln">88</span><span class="lc">        <span class="s-fn">fclose</span>(fp);</span></div>
+<div class="code-line"><span class="ln">89</span><span class="lc">        <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">90</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">91</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">92</span><span class="lc">    <span class="s-kw">if</span> (rows &lt;= <span class="s-num">0</span> || rows &gt; MAX_SIZE ||</span></div>
+<div class="code-line"><span class="ln">93</span><span class="lc">        cols &lt;= <span class="s-num">0</span> || cols &gt; MAX_SIZE) {</span></div>
+<div class="code-line"><span class="ln">94</span><span class="lc">        <span class="s-fn">printf</span>(<span class="s-str">"미로 크기가 범위를 벗어납니다 (최대 %dx%d).\n"</span>,</span></div>
+<div class="code-line"><span class="ln">95</span><span class="lc">               MAX_SIZE, MAX_SIZE);</span></div>
+<div class="code-line"><span class="ln">96</span><span class="lc">        <span class="s-fn">fclose</span>(fp);</span></div>
+<div class="code-line"><span class="ln">97</span><span class="lc">        <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">98</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">99</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">100</span><span class="lc">    <span class="s-kw">for</span> (<span class="s-type">int</span> i = <span class="s-num">0</span>; i &lt; rows; i++) {</span></div>
+<div class="code-line"><span class="ln">101</span><span class="lc">        <span class="s-kw">for</span> (<span class="s-type">int</span> j = <span class="s-num">0</span>; j &lt; cols; j++) {</span></div>
+<div class="code-line"><span class="ln">102</span><span class="lc">            <span class="s-kw">if</span> (<span class="s-fn">fscanf</span>(fp, <span class="s-str">"%d"</span>, &amp;maze[i][j]) != <span class="s-num">1</span>) {</span></div>
+<div class="code-line"><span class="ln">103</span><span class="lc">                <span class="s-fn">printf</span>(<span class="s-str">"미로 데이터를 읽는 중 오류 발생\n"</span>);</span></div>
+<div class="code-line"><span class="ln">104</span><span class="lc">                <span class="s-fn">fclose</span>(fp);</span></div>
+<div class="code-line"><span class="ln">105</span><span class="lc">                <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">106</span><span class="lc">            }</span></div>
+<div class="code-line"><span class="ln">107</span><span class="lc">        }</span></div>
+<div class="code-line"><span class="ln">108</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">109</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">110</span><span class="lc">    <span class="s-fn">fclose</span>(fp);</span></div>
+<div class="code-line"><span class="ln">111</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"%dx%d 미로를 %s에서 불러왔습니다.\n"</span>,</span></div>
+<div class="code-line"><span class="ln">112</span><span class="lc">           rows, cols, filename);</span></div>
+<div class="code-line"><span class="ln">113</span><span class="lc">    <span class="s-kw">return</span> <span class="s-num">1</span>;</span></div>
+<div class="code-line"><span class="ln">114</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">115</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">116</span><span class="lc"><span class="s-cm">/* === 내장 미로 생성 === */</span></span></div>
+<div class="code-line"><span class="ln">117</span><span class="lc"><span class="s-type">void</span> <span class="s-fn">loadBuiltinMaze</span>(<span class="s-type">int</span> id) {</span></div>
+<div class="code-line"><span class="ln">118</span><span class="lc">    <span class="s-kw">if</span> (id == <span class="s-num">1</span>) {</span></div>
+<div class="code-line"><span class="ln">119</span><span class="lc">        rows = <span class="s-num">7</span>; cols = <span class="s-num">7</span>;</span></div>
+<div class="code-line"><span class="ln">120</span><span class="lc">        <span class="s-type">int</span> m[<span class="s-num">7</span>][<span class="s-num">7</span>] = {</span></div>
+<div class="code-line"><span class="ln">121</span><span class="lc">            {<span class="s-num">0</span>,<span class="s-num">0</span>,<span class="s-num">1</span>,<span class="s-num">0</span>,<span class="s-num">0</span>,<span class="s-num">0</span>,<span class="s-num">0</span>},</span></div>
+<div class="code-line"><span class="ln">122</span><span class="lc">            {<span class="s-num">0</span>,<span class="s-num">0</span>,<span class="s-num">1</span>,<span class="s-num">0</span>,<span class="s-num">1</span>,<span class="s-num">1</span>,<span class="s-num">0</span>},</span></div>
+<div class="code-line"><span class="ln">123</span><span class="lc">            {<span class="s-num">0</span>,<span class="s-num">0</span>,<span class="s-num">0</span>,<span class="s-num">0</span>,<span class="s-num">0</span>,<span class="s-num">1</span>,<span class="s-num">0</span>},</span></div>
+<div class="code-line"><span class="ln">124</span><span class="lc">            {<span class="s-num">1</span>,<span class="s-num">1</span>,<span class="s-num">0</span>,<span class="s-num">1</span>,<span class="s-num">0</span>,<span class="s-num">0</span>,<span class="s-num">0</span>},</span></div>
+<div class="code-line"><span class="ln">125</span><span class="lc">            {<span class="s-num">0</span>,<span class="s-num">0</span>,<span class="s-num">0</span>,<span class="s-num">1</span>,<span class="s-num">0</span>,<span class="s-num">1</span>,<span class="s-num">1</span>},</span></div>
+<div class="code-line"><span class="ln">126</span><span class="lc">            {<span class="s-num">0</span>,<span class="s-num">1</span>,<span class="s-num">0</span>,<span class="s-num">0</span>,<span class="s-num">0</span>,<span class="s-num">0</span>,<span class="s-num">0</span>},</span></div>
+<div class="code-line"><span class="ln">127</span><span class="lc">            {<span class="s-num">0</span>,<span class="s-num">1</span>,<span class="s-num">1</span>,<span class="s-num">1</span>,<span class="s-num">1</span>,<span class="s-num">0</span>,<span class="s-num">0</span>}</span></div>
+<div class="code-line"><span class="ln">128</span><span class="lc">        };</span></div>
+<div class="code-line"><span class="ln">129</span><span class="lc">        <span class="s-fn">memcpy</span>(maze, m, <span class="s-kw">sizeof</span>(m));</span></div>
+<div class="code-line"><span class="ln">130</span><span class="lc">    } <span class="s-kw">else</span> <span class="s-kw">if</span> (id == <span class="s-num">2</span>) {</span></div>
+<div class="code-line"><span class="ln">131</span><span class="lc">        rows = <span class="s-num">5</span>; cols = <span class="s-num">8</span>;</span></div>
+<div class="code-line"><span class="ln">132</span><span class="lc">        <span class="s-type">int</span> m[<span class="s-num">5</span>][<span class="s-num">8</span>] = {</span></div>
+<div class="code-line"><span class="ln">133</span><span class="lc">            {<span class="s-num">0</span>,<span class="s-num">0</span>,<span class="s-num">0</span>,<span class="s-num">1</span>,<span class="s-num">0</span>,<span class="s-num">0</span>,<span class="s-num">0</span>,<span class="s-num">0</span>},</span></div>
+<div class="code-line"><span class="ln">134</span><span class="lc">            {<span class="s-num">1</span>,<span class="s-num">1</span>,<span class="s-num">0</span>,<span class="s-num">1</span>,<span class="s-num">0</span>,<span class="s-num">1</span>,<span class="s-num">1</span>,<span class="s-num">0</span>},</span></div>
+<div class="code-line"><span class="ln">135</span><span class="lc">            {<span class="s-num">0</span>,<span class="s-num">0</span>,<span class="s-num">0</span>,<span class="s-num">0</span>,<span class="s-num">0</span>,<span class="s-num">0</span>,<span class="s-num">1</span>,<span class="s-num">0</span>},</span></div>
+<div class="code-line"><span class="ln">136</span><span class="lc">            {<span class="s-num">0</span>,<span class="s-num">1</span>,<span class="s-num">1</span>,<span class="s-num">1</span>,<span class="s-num">1</span>,<span class="s-num">0</span>,<span class="s-num">0</span>,<span class="s-num">0</span>},</span></div>
+<div class="code-line"><span class="ln">137</span><span class="lc">            {<span class="s-num">0</span>,<span class="s-num">0</span>,<span class="s-num">0</span>,<span class="s-num">0</span>,<span class="s-num">1</span>,<span class="s-num">0</span>,<span class="s-num">1</span>,<span class="s-num">0</span>}</span></div>
+<div class="code-line"><span class="ln">138</span><span class="lc">        };</span></div>
+<div class="code-line"><span class="ln">139</span><span class="lc">        <span class="s-kw">for</span> (<span class="s-type">int</span> i = <span class="s-num">0</span>; i &lt; rows; i++)</span></div>
+<div class="code-line"><span class="ln">140</span><span class="lc">            <span class="s-kw">for</span> (<span class="s-type">int</span> j = <span class="s-num">0</span>; j &lt; cols; j++)</span></div>
+<div class="code-line"><span class="ln">141</span><span class="lc">                maze[i][j] = m[i][j];</span></div>
+<div class="code-line"><span class="ln">142</span><span class="lc">    } <span class="s-kw">else</span> {</span></div>
+<div class="code-line"><span class="ln">143</span><span class="lc">        rows = <span class="s-num">10</span>; cols = <span class="s-num">10</span>;</span></div>
+<div class="code-line"><span class="ln">144</span><span class="lc">        <span class="s-type">int</span> m[<span class="s-num">10</span>][<span class="s-num">10</span>] = {</span></div>
+<div class="code-line"><span class="ln">145</span><span class="lc">            {<span class="s-num">0</span>,<span class="s-num">1</span>,<span class="s-num">0</span>,<span class="s-num">0</span>,<span class="s-num">0</span>,<span class="s-num">0</span>,<span class="s-num">1</span>,<span class="s-num">0</span>,<span class="s-num">0</span>,<span class="s-num">0</span>},</span></div>
+<div class="code-line"><span class="ln">146</span><span class="lc">            {<span class="s-num">0</span>,<span class="s-num">1</span>,<span class="s-num">0</span>,<span class="s-num">1</span>,<span class="s-num">1</span>,<span class="s-num">0</span>,<span class="s-num">1</span>,<span class="s-num">0</span>,<span class="s-num">1</span>,<span class="s-num">0</span>},</span></div>
+<div class="code-line"><span class="ln">147</span><span class="lc">            {<span class="s-num">0</span>,<span class="s-num">0</span>,<span class="s-num">0</span>,<span class="s-num">1</span>,<span class="s-num">0</span>,<span class="s-num">0</span>,<span class="s-num">0</span>,<span class="s-num">0</span>,<span class="s-num">1</span>,<span class="s-num">0</span>},</span></div>
+<div class="code-line"><span class="ln">148</span><span class="lc">            {<span class="s-num">0</span>,<span class="s-num">1</span>,<span class="s-num">1</span>,<span class="s-num">1</span>,<span class="s-num">0</span>,<span class="s-num">1</span>,<span class="s-num">1</span>,<span class="s-num">0</span>,<span class="s-num">0</span>,<span class="s-num">0</span>},</span></div>
+<div class="code-line"><span class="ln">149</span><span class="lc">            {<span class="s-num">0</span>,<span class="s-num">0</span>,<span class="s-num">0</span>,<span class="s-num">0</span>,<span class="s-num">0</span>,<span class="s-num">1</span>,<span class="s-num">0</span>,<span class="s-num">0</span>,<span class="s-num">1</span>,<span class="s-num">0</span>},</span></div>
+<div class="code-line"><span class="ln">150</span><span class="lc">            {<span class="s-num">1</span>,<span class="s-num">1</span>,<span class="s-num">1</span>,<span class="s-num">0</span>,<span class="s-num">1</span>,<span class="s-num">1</span>,<span class="s-num">0</span>,<span class="s-num">1</span>,<span class="s-num">1</span>,<span class="s-num">0</span>},</span></div>
+<div class="code-line"><span class="ln">151</span><span class="lc">            {<span class="s-num">0</span>,<span class="s-num">0</span>,<span class="s-num">0</span>,<span class="s-num">0</span>,<span class="s-num">0</span>,<span class="s-num">0</span>,<span class="s-num">0</span>,<span class="s-num">0</span>,<span class="s-num">0</span>,<span class="s-num">0</span>},</span></div>
+<div class="code-line"><span class="ln">152</span><span class="lc">            {<span class="s-num">0</span>,<span class="s-num">1</span>,<span class="s-num">1</span>,<span class="s-num">1</span>,<span class="s-num">1</span>,<span class="s-num">0</span>,<span class="s-num">1</span>,<span class="s-num">1</span>,<span class="s-num">0</span>,<span class="s-num">1</span>},</span></div>
+<div class="code-line"><span class="ln">153</span><span class="lc">            {<span class="s-num">0</span>,<span class="s-num">0</span>,<span class="s-num">0</span>,<span class="s-num">0</span>,<span class="s-num">1</span>,<span class="s-num">0</span>,<span class="s-num">0</span>,<span class="s-num">0</span>,<span class="s-num">0</span>,<span class="s-num">0</span>},</span></div>
+<div class="code-line"><span class="ln">154</span><span class="lc">            {<span class="s-num">1</span>,<span class="s-num">1</span>,<span class="s-num">1</span>,<span class="s-num">0</span>,<span class="s-num">0</span>,<span class="s-num">0</span>,<span class="s-num">1</span>,<span class="s-num">1</span>,<span class="s-num">0</span>,<span class="s-num">0</span>}</span></div>
+<div class="code-line"><span class="ln">155</span><span class="lc">        };</span></div>
+<div class="code-line"><span class="ln">156</span><span class="lc">        <span class="s-kw">for</span> (<span class="s-type">int</span> i = <span class="s-num">0</span>; i &lt; rows; i++)</span></div>
+<div class="code-line"><span class="ln">157</span><span class="lc">            <span class="s-kw">for</span> (<span class="s-type">int</span> j = <span class="s-num">0</span>; j &lt; cols; j++)</span></div>
+<div class="code-line"><span class="ln">158</span><span class="lc">                maze[i][j] = m[i][j];</span></div>
+<div class="code-line"><span class="ln">159</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">160</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"내장 미로 #%d (%dx%d) 불러옴\n"</span>, id, rows, cols);</span></div>
+<div class="code-line"><span class="ln">161</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">162</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">163</span><span class="lc"><span class="s-cm">/* === BFS 탐색 === */</span></span></div>
+<div class="code-line"><span class="ln">164</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">solveBFS</span>(<span class="s-type">int</span> sr, <span class="s-type">int</span> sc, <span class="s-type">int</span> er, <span class="s-type">int</span> ec) {</span></div>
+<div class="code-line"><span class="ln">165</span><span class="lc">    <span class="s-fn">memset</span>(visited, <span class="s-num">0</span>, <span class="s-kw">sizeof</span>(visited));</span></div>
+<div class="code-line"><span class="ln">166</span><span class="lc">    <span class="s-fn">memset</span>(dist, -<span class="s-num">1</span>, <span class="s-kw">sizeof</span>(dist));</span></div>
+<div class="code-line"><span class="ln">167</span><span class="lc">    <span class="s-fn">memset</span>(parentR, -<span class="s-num">1</span>, <span class="s-kw">sizeof</span>(parentR));</span></div>
+<div class="code-line"><span class="ln">168</span><span class="lc">    <span class="s-fn">memset</span>(parentC, -<span class="s-num">1</span>, <span class="s-kw">sizeof</span>(parentC));</span></div>
+<div class="code-line"><span class="ln">169</span><span class="lc">    bfsFront = bfsRear = <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">170</span><span class="lc">    bfsVisitCount = <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">171</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">172</span><span class="lc">    visited[sr][sc] = <span class="s-num">1</span>;</span></div>
+<div class="code-line"><span class="ln">173</span><span class="lc">    dist[sr][sc] = <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">174</span><span class="lc">    <span class="s-fn">bfsEnqueue</span>(sr, sc);</span></div>
+<div class="code-line"><span class="ln">175</span><span class="lc">    bfsVisitCount++;</span></div>
+<div class="code-line"><span class="ln">176</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">177</span><span class="lc">    <span class="s-kw">while</span> (!<span class="s-fn">bfsIsEmpty</span>()) {</span></div>
+<div class="code-line"><span class="ln">178</span><span class="lc">        Pos cur = <span class="s-fn">bfsDequeue</span>();</span></div>
+<div class="code-line"><span class="ln">179</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">180</span><span class="lc">        <span class="s-kw">if</span> (cur.r == er &amp;&amp; cur.c == ec) {</span></div>
+<div class="code-line"><span class="ln">181</span><span class="lc">            <span class="s-kw">return</span> dist[er][ec];</span></div>
+<div class="code-line"><span class="ln">182</span><span class="lc">        }</span></div>
+<div class="code-line"><span class="ln">183</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">184</span><span class="lc">        <span class="s-kw">for</span> (<span class="s-type">int</span> d = <span class="s-num">0</span>; d &lt; <span class="s-num">4</span>; d++) {</span></div>
+<div class="code-line"><span class="ln">185</span><span class="lc">            <span class="s-type">int</span> nr = cur.r + dx[d];</span></div>
+<div class="code-line"><span class="ln">186</span><span class="lc">            <span class="s-type">int</span> nc = cur.c + dy[d];</span></div>
+<div class="code-line"><span class="ln">187</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">188</span><span class="lc">            <span class="s-kw">if</span> (nr &lt; <span class="s-num">0</span> || nr &gt;= rows || nc &lt; <span class="s-num">0</span> || nc &gt;= cols)</span></div>
+<div class="code-line"><span class="ln">189</span><span class="lc">                <span class="s-kw">continue</span>;</span></div>
+<div class="code-line"><span class="ln">190</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">191</span><span class="lc">            <span class="s-kw">if</span> (maze[nr][nc] == <span class="s-num">0</span> &amp;&amp; !visited[nr][nc]) {</span></div>
+<div class="code-line"><span class="ln">192</span><span class="lc">                visited[nr][nc] = <span class="s-num">1</span>;</span></div>
+<div class="code-line"><span class="ln">193</span><span class="lc">                dist[nr][nc] = dist[cur.r][cur.c] + <span class="s-num">1</span>;</span></div>
+<div class="code-line"><span class="ln">194</span><span class="lc">                parentR[nr][nc] = cur.r;</span></div>
+<div class="code-line"><span class="ln">195</span><span class="lc">                parentC[nr][nc] = cur.c;</span></div>
+<div class="code-line"><span class="ln">196</span><span class="lc">                <span class="s-fn">bfsEnqueue</span>(nr, nc);</span></div>
+<div class="code-line"><span class="ln">197</span><span class="lc">                bfsVisitCount++;</span></div>
+<div class="code-line"><span class="ln">198</span><span class="lc">            }</span></div>
+<div class="code-line"><span class="ln">199</span><span class="lc">        }</span></div>
+<div class="code-line"><span class="ln">200</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">201</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">202</span><span class="lc">    <span class="s-kw">return</span> -<span class="s-num">1</span>;</span></div>
+<div class="code-line"><span class="ln">203</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">204</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">205</span><span class="lc"><span class="s-cm">/* === DFS 탐색 (스택 기반) === */</span></span></div>
+<div class="code-line"><span class="ln">206</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">solveDFS</span>(<span class="s-type">int</span> sr, <span class="s-type">int</span> sc, <span class="s-type">int</span> er, <span class="s-type">int</span> ec) {</span></div>
+<div class="code-line"><span class="ln">207</span><span class="lc">    <span class="s-type">int</span> dfsVisited[MAX_SIZE][MAX_SIZE];</span></div>
+<div class="code-line"><span class="ln">208</span><span class="lc">    <span class="s-type">int</span> dfsDist[MAX_SIZE][MAX_SIZE];</span></div>
+<div class="code-line"><span class="ln">209</span><span class="lc">    <span class="s-fn">memset</span>(dfsVisited, <span class="s-num">0</span>, <span class="s-kw">sizeof</span>(dfsVisited));</span></div>
+<div class="code-line"><span class="ln">210</span><span class="lc">    <span class="s-fn">memset</span>(dfsDist, -<span class="s-num">1</span>, <span class="s-kw">sizeof</span>(dfsDist));</span></div>
+<div class="code-line"><span class="ln">211</span><span class="lc">    dfsTop = <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">212</span><span class="lc">    dfsVisitCount = <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">213</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">214</span><span class="lc">    <span class="s-fn">dfsPush</span>(sr, sc);</span></div>
+<div class="code-line"><span class="ln">215</span><span class="lc">    dfsVisited[sr][sc] = <span class="s-num">1</span>;</span></div>
+<div class="code-line"><span class="ln">216</span><span class="lc">    dfsDist[sr][sc] = <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">217</span><span class="lc">    dfsVisitCount++;</span></div>
+<div class="code-line"><span class="ln">218</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">219</span><span class="lc">    <span class="s-type">int</span> found = -<span class="s-num">1</span>;</span></div>
+<div class="code-line"><span class="ln">220</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">221</span><span class="lc">    <span class="s-kw">while</span> (!<span class="s-fn">dfsIsEmpty</span>()) {</span></div>
+<div class="code-line"><span class="ln">222</span><span class="lc">        Pos cur = <span class="s-fn">dfsPop</span>();</span></div>
+<div class="code-line"><span class="ln">223</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">224</span><span class="lc">        <span class="s-kw">if</span> (cur.r == er &amp;&amp; cur.c == ec) {</span></div>
+<div class="code-line"><span class="ln">225</span><span class="lc">            found = dfsDist[er][ec];</span></div>
+<div class="code-line"><span class="ln">226</span><span class="lc">            <span class="s-kw">break</span>;</span></div>
+<div class="code-line"><span class="ln">227</span><span class="lc">        }</span></div>
+<div class="code-line"><span class="ln">228</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">229</span><span class="lc">        <span class="s-kw">for</span> (<span class="s-type">int</span> d = <span class="s-num">0</span>; d &lt; <span class="s-num">4</span>; d++) {</span></div>
+<div class="code-line"><span class="ln">230</span><span class="lc">            <span class="s-type">int</span> nr = cur.r + dx[d];</span></div>
+<div class="code-line"><span class="ln">231</span><span class="lc">            <span class="s-type">int</span> nc = cur.c + dy[d];</span></div>
+<div class="code-line"><span class="ln">232</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">233</span><span class="lc">            <span class="s-kw">if</span> (nr &lt; <span class="s-num">0</span> || nr &gt;= rows || nc &lt; <span class="s-num">0</span> || nc &gt;= cols)</span></div>
+<div class="code-line"><span class="ln">234</span><span class="lc">                <span class="s-kw">continue</span>;</span></div>
+<div class="code-line"><span class="ln">235</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">236</span><span class="lc">            <span class="s-kw">if</span> (maze[nr][nc] == <span class="s-num">0</span> &amp;&amp; !dfsVisited[nr][nc]) {</span></div>
+<div class="code-line"><span class="ln">237</span><span class="lc">                dfsVisited[nr][nc] = <span class="s-num">1</span>;</span></div>
+<div class="code-line"><span class="ln">238</span><span class="lc">                dfsDist[nr][nc] = dfsDist[cur.r][cur.c] + <span class="s-num">1</span>;</span></div>
+<div class="code-line"><span class="ln">239</span><span class="lc">                <span class="s-fn">dfsPush</span>(nr, nc);</span></div>
+<div class="code-line"><span class="ln">240</span><span class="lc">                dfsVisitCount++;</span></div>
+<div class="code-line"><span class="ln">241</span><span class="lc">            }</span></div>
+<div class="code-line"><span class="ln">242</span><span class="lc">        }</span></div>
+<div class="code-line"><span class="ln">243</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">244</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">245</span><span class="lc">    <span class="s-kw">return</span> found;</span></div>
+<div class="code-line"><span class="ln">246</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">247</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">248</span><span class="lc"><span class="s-cm">/* === 경로 역추적 === */</span></span></div>
+<div class="code-line"><span class="ln">249</span><span class="lc"><span class="s-type">void</span> <span class="s-fn">tracePath</span>(<span class="s-type">int</span> sr, <span class="s-type">int</span> sc, <span class="s-type">int</span> er, <span class="s-type">int</span> ec) {</span></div>
+<div class="code-line"><span class="ln">250</span><span class="lc">    pathLen = <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">251</span><span class="lc">    <span class="s-type">int</span> r = er, c = ec;</span></div>
+<div class="code-line"><span class="ln">252</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">253</span><span class="lc">    <span class="s-kw">while</span> (r != sr || c != sc) {</span></div>
+<div class="code-line"><span class="ln">254</span><span class="lc">        path[pathLen].r = r;</span></div>
+<div class="code-line"><span class="ln">255</span><span class="lc">        path[pathLen].c = c;</span></div>
+<div class="code-line"><span class="ln">256</span><span class="lc">        pathLen++;</span></div>
+<div class="code-line"><span class="ln">257</span><span class="lc">        <span class="s-type">int</span> pr = parentR[r][c];</span></div>
+<div class="code-line"><span class="ln">258</span><span class="lc">        <span class="s-type">int</span> pc = parentC[r][c];</span></div>
+<div class="code-line"><span class="ln">259</span><span class="lc">        r = pr;</span></div>
+<div class="code-line"><span class="ln">260</span><span class="lc">        c = pc;</span></div>
+<div class="code-line"><span class="ln">261</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">262</span><span class="lc">    path[pathLen].r = sr;</span></div>
+<div class="code-line"><span class="ln">263</span><span class="lc">    path[pathLen].c = sc;</span></div>
+<div class="code-line"><span class="ln">264</span><span class="lc">    pathLen++;</span></div>
+<div class="code-line"><span class="ln">265</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">266</span><span class="lc">    <span class="s-cm">/* 뒤집기 */</span></span></div>
+<div class="code-line"><span class="ln">267</span><span class="lc">    <span class="s-kw">for</span> (<span class="s-type">int</span> i = <span class="s-num">0</span>; i &lt; pathLen / <span class="s-num">2</span>; i++) {</span></div>
+<div class="code-line"><span class="ln">268</span><span class="lc">        Pos temp = path[i];</span></div>
+<div class="code-line"><span class="ln">269</span><span class="lc">        path[i] = path[pathLen - <span class="s-num">1</span> - i];</span></div>
+<div class="code-line"><span class="ln">270</span><span class="lc">        path[pathLen - <span class="s-num">1</span> - i] = temp;</span></div>
+<div class="code-line"><span class="ln">271</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">272</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">273</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">274</span><span class="lc"><span class="s-cm">/* === 미로 시각화 === */</span></span></div>
+<div class="code-line"><span class="ln">275</span><span class="lc"><span class="s-type">void</span> <span class="s-fn">printMazeWithPath</span>(<span class="s-kw">const</span> <span class="s-type">char</span> *title) {</span></div>
+<div class="code-line"><span class="ln">276</span><span class="lc">    <span class="s-type">int</span> onPath[MAX_SIZE][MAX_SIZE];</span></div>
+<div class="code-line"><span class="ln">277</span><span class="lc">    <span class="s-fn">memset</span>(onPath, <span class="s-num">0</span>, <span class="s-kw">sizeof</span>(onPath));</span></div>
+<div class="code-line"><span class="ln">278</span><span class="lc">    <span class="s-kw">for</span> (<span class="s-type">int</span> i = <span class="s-num">0</span>; i &lt; pathLen; i++) {</span></div>
+<div class="code-line"><span class="ln">279</span><span class="lc">        onPath[path[i].r][path[i].c] = <span class="s-num">1</span>;</span></div>
+<div class="code-line"><span class="ln">280</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">281</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">282</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"\n%s:\n"</span>, title);</span></div>
+<div class="code-line"><span class="ln">283</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"   "</span>);</span></div>
+<div class="code-line"><span class="ln">284</span><span class="lc">    <span class="s-kw">for</span> (<span class="s-type">int</span> j = <span class="s-num">0</span>; j &lt; cols; j++)</span></div>
+<div class="code-line"><span class="ln">285</span><span class="lc">        <span class="s-fn">printf</span>(<span class="s-str">"%2d"</span>, j);</span></div>
+<div class="code-line"><span class="ln">286</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"\n"</span>);</span></div>
+<div class="code-line"><span class="ln">287</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">288</span><span class="lc">    <span class="s-kw">for</span> (<span class="s-type">int</span> i = <span class="s-num">0</span>; i &lt; rows; i++) {</span></div>
+<div class="code-line"><span class="ln">289</span><span class="lc">        <span class="s-fn">printf</span>(<span class="s-str">"%2d "</span>, i);</span></div>
+<div class="code-line"><span class="ln">290</span><span class="lc">        <span class="s-kw">for</span> (<span class="s-type">int</span> j = <span class="s-num">0</span>; j &lt; cols; j++) {</span></div>
+<div class="code-line"><span class="ln">291</span><span class="lc">            <span class="s-kw">if</span> (i == <span class="s-num">0</span> &amp;&amp; j == <span class="s-num">0</span>)</span></div>
+<div class="code-line"><span class="ln">292</span><span class="lc">                <span class="s-fn">printf</span>(<span class="s-str">" S"</span>);</span></div>
+<div class="code-line"><span class="ln">293</span><span class="lc">            <span class="s-kw">else</span> <span class="s-kw">if</span> (i == rows - <span class="s-num">1</span> &amp;&amp; j == cols - <span class="s-num">1</span>)</span></div>
+<div class="code-line"><span class="ln">294</span><span class="lc">                <span class="s-fn">printf</span>(<span class="s-str">" E"</span>);</span></div>
+<div class="code-line"><span class="ln">295</span><span class="lc">            <span class="s-kw">else</span> <span class="s-kw">if</span> (onPath[i][j])</span></div>
+<div class="code-line"><span class="ln">296</span><span class="lc">                <span class="s-fn">printf</span>(<span class="s-str">" *"</span>);</span></div>
+<div class="code-line"><span class="ln">297</span><span class="lc">            <span class="s-kw">else</span> <span class="s-kw">if</span> (maze[i][j] == <span class="s-num">1</span>)</span></div>
+<div class="code-line"><span class="ln">298</span><span class="lc">                <span class="s-fn">printf</span>(<span class="s-str">" #"</span>);</span></div>
+<div class="code-line"><span class="ln">299</span><span class="lc">            <span class="s-kw">else</span> <span class="s-kw">if</span> (visited[i][j])</span></div>
+<div class="code-line"><span class="ln">300</span><span class="lc">                <span class="s-fn">printf</span>(<span class="s-str">" ,"</span>);</span></div>
+<div class="code-line"><span class="ln">301</span><span class="lc">            <span class="s-kw">else</span></span></div>
+<div class="code-line"><span class="ln">302</span><span class="lc">                <span class="s-fn">printf</span>(<span class="s-str">" ."</span>);</span></div>
+<div class="code-line"><span class="ln">303</span><span class="lc">        }</span></div>
+<div class="code-line"><span class="ln">304</span><span class="lc">        <span class="s-fn">printf</span>(<span class="s-str">"\n"</span>);</span></div>
+<div class="code-line"><span class="ln">305</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">306</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">307</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">308</span><span class="lc"><span class="s-cm">/* === 경로 상세 출력 === */</span></span></div>
+<div class="code-line"><span class="ln">309</span><span class="lc"><span class="s-type">void</span> <span class="s-fn">printPathDetail</span>(<span class="s-type">void</span>) {</span></div>
+<div class="code-line"><span class="ln">310</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"\n경로 상세 (%d칸 이동):\n"</span>, pathLen - <span class="s-num">1</span>);</span></div>
+<div class="code-line"><span class="ln">311</span><span class="lc">    <span class="s-kw">for</span> (<span class="s-type">int</span> i = <span class="s-num">0</span>; i &lt; pathLen; i++) {</span></div>
+<div class="code-line"><span class="ln">312</span><span class="lc">        <span class="s-fn">printf</span>(<span class="s-str">"  [%d] (%d, %d)"</span>, i, path[i].r, path[i].c);</span></div>
+<div class="code-line"><span class="ln">313</span><span class="lc">        <span class="s-kw">if</span> (i &lt; pathLen - <span class="s-num">1</span>) {</span></div>
+<div class="code-line"><span class="ln">314</span><span class="lc">            <span class="s-type">int</span> dr = path[i + <span class="s-num">1</span>].r - path[i].r;</span></div>
+<div class="code-line"><span class="ln">315</span><span class="lc">            <span class="s-type">int</span> dc = path[i + <span class="s-num">1</span>].c - path[i].c;</span></div>
+<div class="code-line"><span class="ln">316</span><span class="lc">            <span class="s-kw">if</span> (dr == -<span class="s-num">1</span>) <span class="s-fn">printf</span>(<span class="s-str">" -&gt; 상"</span>);</span></div>
+<div class="code-line"><span class="ln">317</span><span class="lc">            <span class="s-kw">else</span> <span class="s-kw">if</span> (dr == <span class="s-num">1</span>)  <span class="s-fn">printf</span>(<span class="s-str">" -&gt; 하"</span>);</span></div>
+<div class="code-line"><span class="ln">318</span><span class="lc">            <span class="s-kw">else</span> <span class="s-kw">if</span> (dc == -<span class="s-num">1</span>) <span class="s-fn">printf</span>(<span class="s-str">" -&gt; 좌"</span>);</span></div>
+<div class="code-line"><span class="ln">319</span><span class="lc">            <span class="s-kw">else</span> <span class="s-kw">if</span> (dc == <span class="s-num">1</span>)  <span class="s-fn">printf</span>(<span class="s-str">" -&gt; 우"</span>);</span></div>
+<div class="code-line"><span class="ln">320</span><span class="lc">        }</span></div>
+<div class="code-line"><span class="ln">321</span><span class="lc">        <span class="s-fn">printf</span>(<span class="s-str">"\n"</span>);</span></div>
+<div class="code-line"><span class="ln">322</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">323</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">324</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">325</span><span class="lc"><span class="s-cm">/* === DFS vs BFS 비교 출력 === */</span></span></div>
+<div class="code-line"><span class="ln">326</span><span class="lc"><span class="s-type">void</span> <span class="s-fn">compareSearch</span>(<span class="s-type">int</span> sr, <span class="s-type">int</span> sc, <span class="s-type">int</span> er, <span class="s-type">int</span> ec) {</span></div>
+<div class="code-line"><span class="ln">327</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"\n=== DFS vs BFS 비교 ===\n"</span>);</span></div>
+<div class="code-line"><span class="ln">328</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">329</span><span class="lc">    <span class="s-type">int</span> bfsResult = <span class="s-fn">solveBFS</span>(sr, sc, er, ec);</span></div>
+<div class="code-line"><span class="ln">330</span><span class="lc">    <span class="s-type">int</span> bfsVis = bfsVisitCount;</span></div>
+<div class="code-line"><span class="ln">331</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">332</span><span class="lc">    <span class="s-type">int</span> dfsResult = <span class="s-fn">solveDFS</span>(sr, sc, er, ec);</span></div>
+<div class="code-line"><span class="ln">333</span><span class="lc">    <span class="s-type">int</span> dfsVis = dfsVisitCount;</span></div>
+<div class="code-line"><span class="ln">334</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">335</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"\n%-20s %10s %10s\n"</span>, <span class="s-str">"항목"</span>, <span class="s-str">"BFS"</span>, <span class="s-str">"DFS"</span>);</span></div>
+<div class="code-line"><span class="ln">336</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"--------------------------------------------\n"</span>);</span></div>
+<div class="code-line"><span class="ln">337</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">338</span><span class="lc">    <span class="s-kw">if</span> (bfsResult == -<span class="s-num">1</span>)</span></div>
+<div class="code-line"><span class="ln">339</span><span class="lc">        <span class="s-fn">printf</span>(<span class="s-str">"%-20s %10s"</span>, <span class="s-str">"경로 길이"</span>, <span class="s-str">"없음"</span>);</span></div>
+<div class="code-line"><span class="ln">340</span><span class="lc">    <span class="s-kw">else</span></span></div>
+<div class="code-line"><span class="ln">341</span><span class="lc">        <span class="s-fn">printf</span>(<span class="s-str">"%-20s %10d"</span>, <span class="s-str">"경로 길이"</span>, bfsResult);</span></div>
+<div class="code-line"><span class="ln">342</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">343</span><span class="lc">    <span class="s-kw">if</span> (dfsResult == -<span class="s-num">1</span>)</span></div>
+<div class="code-line"><span class="ln">344</span><span class="lc">        <span class="s-fn">printf</span>(<span class="s-str">" %10s\n"</span>, <span class="s-str">"없음"</span>);</span></div>
+<div class="code-line"><span class="ln">345</span><span class="lc">    <span class="s-kw">else</span></span></div>
+<div class="code-line"><span class="ln">346</span><span class="lc">        <span class="s-fn">printf</span>(<span class="s-str">" %10d\n"</span>, dfsResult);</span></div>
+<div class="code-line"><span class="ln">347</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">348</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"%-20s %10d %10d\n"</span>, <span class="s-str">"방문 칸 수"</span>, bfsVis, dfsVis);</span></div>
+<div class="code-line"><span class="ln">349</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">350</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"%-20s %10s %10s\n"</span>, <span class="s-str">"최단 보장"</span>,</span></div>
+<div class="code-line"><span class="ln">351</span><span class="lc">           <span class="s-str">"보장"</span>, <span class="s-str">"미보장"</span>);</span></div>
+<div class="code-line"><span class="ln">352</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"%-20s %10s %10s\n"</span>, <span class="s-str">"자료구조"</span>,</span></div>
+<div class="code-line"><span class="ln">353</span><span class="lc">           <span class="s-str">"큐"</span>, <span class="s-str">"스택"</span>);</span></div>
+<div class="code-line"><span class="ln">354</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"%-20s %10s %10s\n"</span>, <span class="s-str">"탐색 방식"</span>,</span></div>
+<div class="code-line"><span class="ln">355</span><span class="lc">           <span class="s-str">"레이어별"</span>, <span class="s-str">"깊이 우선"</span>);</span></div>
+<div class="code-line"><span class="ln">356</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"--------------------------------------------\n"</span>);</span></div>
+<div class="code-line"><span class="ln">357</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">358</span><span class="lc">    <span class="s-kw">if</span> (bfsResult != -<span class="s-num">1</span> &amp;&amp; dfsResult != -<span class="s-num">1</span> &amp;&amp;</span></div>
+<div class="code-line"><span class="ln">359</span><span class="lc">        bfsResult &lt; dfsResult) {</span></div>
+<div class="code-line"><span class="ln">360</span><span class="lc">        <span class="s-fn">printf</span>(<span class="s-str">"DFS가 찾은 경로(%d)는 BFS의 최단 경로(%d)보다 깁니다.\n"</span>,</span></div>
+<div class="code-line"><span class="ln">361</span><span class="lc">               dfsResult, bfsResult);</span></div>
+<div class="code-line"><span class="ln">362</span><span class="lc">        <span class="s-fn">printf</span>(<span class="s-str">"BFS만이 최단 경로를 보장합니다.\n"</span>);</span></div>
+<div class="code-line"><span class="ln">363</span><span class="lc">    } <span class="s-kw">else</span> <span class="s-kw">if</span> (bfsResult != -<span class="s-num">1</span> &amp;&amp; dfsResult != -<span class="s-num">1</span> &amp;&amp;</span></div>
+<div class="code-line"><span class="ln">364</span><span class="lc">               bfsResult == dfsResult) {</span></div>
+<div class="code-line"><span class="ln">365</span><span class="lc">        <span class="s-fn">printf</span>(<span class="s-str">"이 미로에서는 DFS도 최단 경로를 찾았습니다.\n"</span>);</span></div>
+<div class="code-line"><span class="ln">366</span><span class="lc">        <span class="s-fn">printf</span>(<span class="s-str">"그러나 일반적으로 DFS는 최단 경로를 보장하지 않습니다.\n"</span>);</span></div>
+<div class="code-line"><span class="ln">367</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">368</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">369</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">370</span><span class="lc"><span class="s-cm">/* === 메인 === */</span></span></div>
+<div class="code-line"><span class="ln">371</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">main</span>(<span class="s-type">void</span>) {</span></div>
+<div class="code-line"><span class="ln">372</span><span class="lc">    <span class="s-type">int</span> choice;</span></div>
+<div class="code-line"><span class="ln">373</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">374</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"=== 미로 탈출 v3 ===\n"</span>);</span></div>
+<div class="code-line"><span class="ln">375</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">376</span><span class="lc">    <span class="s-kw">do</span> {</span></div>
+<div class="code-line"><span class="ln">377</span><span class="lc">        <span class="s-fn">printf</span>(<span class="s-str">"\n--- 메뉴 ---\n"</span>);</span></div>
+<div class="code-line"><span class="ln">378</span><span class="lc">        <span class="s-fn">printf</span>(<span class="s-str">" 1. 내장 미로 선택       2. 파일에서 미로 읽기\n"</span>);</span></div>
+<div class="code-line"><span class="ln">379</span><span class="lc">        <span class="s-fn">printf</span>(<span class="s-str">" 3. BFS 최단 경로        4. 경로 시각화\n"</span>);</span></div>
+<div class="code-line"><span class="ln">380</span><span class="lc">        <span class="s-fn">printf</span>(<span class="s-str">" 5. DFS vs BFS 비교      0. 종료\n"</span>);</span></div>
+<div class="code-line"><span class="ln">381</span><span class="lc">        <span class="s-fn">printf</span>(<span class="s-str">"선택: "</span>);</span></div>
+<div class="code-line"><span class="ln">382</span><span class="lc">        <span class="s-fn">scanf</span>(<span class="s-str">"%d"</span>, &amp;choice);</span></div>
+<div class="code-line"><span class="ln">383</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">384</span><span class="lc">        <span class="s-kw">switch</span> (choice) {</span></div>
+<div class="code-line"><span class="ln">385</span><span class="lc">        <span class="s-kw">case</span> <span class="s-num">1</span>: {</span></div>
+<div class="code-line"><span class="ln">386</span><span class="lc">            <span class="s-fn">printf</span>(<span class="s-str">"\n내장 미로 선택 (1: 7x7, 2: 5x8, 3: 10x10): "</span>);</span></div>
+<div class="code-line"><span class="ln">387</span><span class="lc">            <span class="s-type">int</span> id;</span></div>
+<div class="code-line"><span class="ln">388</span><span class="lc">            <span class="s-fn">scanf</span>(<span class="s-str">"%d"</span>, &amp;id);</span></div>
+<div class="code-line"><span class="ln">389</span><span class="lc">            <span class="s-kw">if</span> (id &lt; <span class="s-num">1</span> || id &gt; <span class="s-num">3</span>) id = <span class="s-num">1</span>;</span></div>
+<div class="code-line"><span class="ln">390</span><span class="lc">            <span class="s-fn">loadBuiltinMaze</span>(id);</span></div>
+<div class="code-line"><span class="ln">391</span><span class="lc">            <span class="s-kw">break</span>;</span></div>
+<div class="code-line"><span class="ln">392</span><span class="lc">        }</span></div>
+<div class="code-line"><span class="ln">393</span><span class="lc">        <span class="s-kw">case</span> <span class="s-num">2</span>: {</span></div>
+<div class="code-line"><span class="ln">394</span><span class="lc">            <span class="s-type">char</span> filename[<span class="s-num">100</span>];</span></div>
+<div class="code-line"><span class="ln">395</span><span class="lc">            <span class="s-fn">printf</span>(<span class="s-str">"파일 이름: "</span>);</span></div>
+<div class="code-line"><span class="ln">396</span><span class="lc">            <span class="s-fn">scanf</span>(<span class="s-str">"%s"</span>, filename);</span></div>
+<div class="code-line"><span class="ln">397</span><span class="lc">            <span class="s-fn">loadMaze</span>(filename);</span></div>
+<div class="code-line"><span class="ln">398</span><span class="lc">            <span class="s-kw">break</span>;</span></div>
+<div class="code-line"><span class="ln">399</span><span class="lc">        }</span></div>
+<div class="code-line"><span class="ln">400</span><span class="lc">        <span class="s-kw">case</span> <span class="s-num">3</span>: {</span></div>
+<div class="code-line"><span class="ln">401</span><span class="lc">            <span class="s-kw">if</span> (rows == <span class="s-num">0</span>) {</span></div>
+<div class="code-line"><span class="ln">402</span><span class="lc">                <span class="s-fn">printf</span>(<span class="s-str">"먼저 미로를 불러오십시오.\n"</span>);</span></div>
+<div class="code-line"><span class="ln">403</span><span class="lc">                <span class="s-kw">break</span>;</span></div>
+<div class="code-line"><span class="ln">404</span><span class="lc">            }</span></div>
+<div class="code-line"><span class="ln">405</span><span class="lc">            <span class="s-type">int</span> result = <span class="s-fn">solveBFS</span>(<span class="s-num">0</span>, <span class="s-num">0</span>, rows - <span class="s-num">1</span>, cols - <span class="s-num">1</span>);</span></div>
+<div class="code-line"><span class="ln">406</span><span class="lc">            <span class="s-kw">if</span> (result == -<span class="s-num">1</span>) {</span></div>
+<div class="code-line"><span class="ln">407</span><span class="lc">                <span class="s-fn">printf</span>(<span class="s-str">"경로가 존재하지 않습니다.\n"</span>);</span></div>
+<div class="code-line"><span class="ln">408</span><span class="lc">            } <span class="s-kw">else</span> {</span></div>
+<div class="code-line"><span class="ln">409</span><span class="lc">                <span class="s-fn">printf</span>(<span class="s-str">"\nBFS 최단 경로 길이: %d\n"</span>, result);</span></div>
+<div class="code-line"><span class="ln">410</span><span class="lc">                <span class="s-fn">printf</span>(<span class="s-str">"방문한 칸 수: %d\n"</span>, bfsVisitCount);</span></div>
+<div class="code-line"><span class="ln">411</span><span class="lc">                <span class="s-fn">tracePath</span>(<span class="s-num">0</span>, <span class="s-num">0</span>, rows - <span class="s-num">1</span>, cols - <span class="s-num">1</span>);</span></div>
+<div class="code-line"><span class="ln">412</span><span class="lc">                <span class="s-fn">printPathDetail</span>();</span></div>
+<div class="code-line"><span class="ln">413</span><span class="lc">            }</span></div>
+<div class="code-line"><span class="ln">414</span><span class="lc">            <span class="s-kw">break</span>;</span></div>
+<div class="code-line"><span class="ln">415</span><span class="lc">        }</span></div>
+<div class="code-line"><span class="ln">416</span><span class="lc">        <span class="s-kw">case</span> <span class="s-num">4</span>: {</span></div>
+<div class="code-line"><span class="ln">417</span><span class="lc">            <span class="s-kw">if</span> (rows == <span class="s-num">0</span>) {</span></div>
+<div class="code-line"><span class="ln">418</span><span class="lc">                <span class="s-fn">printf</span>(<span class="s-str">"먼저 미로를 불러오십시오.\n"</span>);</span></div>
+<div class="code-line"><span class="ln">419</span><span class="lc">                <span class="s-kw">break</span>;</span></div>
+<div class="code-line"><span class="ln">420</span><span class="lc">            }</span></div>
+<div class="code-line"><span class="ln">421</span><span class="lc">            <span class="s-type">int</span> result = <span class="s-fn">solveBFS</span>(<span class="s-num">0</span>, <span class="s-num">0</span>, rows - <span class="s-num">1</span>, cols - <span class="s-num">1</span>);</span></div>
+<div class="code-line"><span class="ln">422</span><span class="lc">            <span class="s-kw">if</span> (result == -<span class="s-num">1</span>) {</span></div>
+<div class="code-line"><span class="ln">423</span><span class="lc">                <span class="s-fn">printf</span>(<span class="s-str">"경로가 존재하지 않습니다.\n"</span>);</span></div>
+<div class="code-line"><span class="ln">424</span><span class="lc">            } <span class="s-kw">else</span> {</span></div>
+<div class="code-line"><span class="ln">425</span><span class="lc">                <span class="s-fn">tracePath</span>(<span class="s-num">0</span>, <span class="s-num">0</span>, rows - <span class="s-num">1</span>, cols - <span class="s-num">1</span>);</span></div>
+<div class="code-line"><span class="ln">426</span><span class="lc">                <span class="s-fn">printMazeWithPath</span>(<span class="s-str">"BFS 최단 경로 시각화"</span>);</span></div>
+<div class="code-line"><span class="ln">427</span><span class="lc">            }</span></div>
+<div class="code-line"><span class="ln">428</span><span class="lc">            <span class="s-kw">break</span>;</span></div>
+<div class="code-line"><span class="ln">429</span><span class="lc">        }</span></div>
+<div class="code-line"><span class="ln">430</span><span class="lc">        <span class="s-kw">case</span> <span class="s-num">5</span>: {</span></div>
+<div class="code-line"><span class="ln">431</span><span class="lc">            <span class="s-kw">if</span> (rows == <span class="s-num">0</span>) {</span></div>
+<div class="code-line"><span class="ln">432</span><span class="lc">                <span class="s-fn">printf</span>(<span class="s-str">"먼저 미로를 불러오십시오.\n"</span>);</span></div>
+<div class="code-line"><span class="ln">433</span><span class="lc">                <span class="s-kw">break</span>;</span></div>
+<div class="code-line"><span class="ln">434</span><span class="lc">            }</span></div>
+<div class="code-line"><span class="ln">435</span><span class="lc">            <span class="s-fn">compareSearch</span>(<span class="s-num">0</span>, <span class="s-num">0</span>, rows - <span class="s-num">1</span>, cols - <span class="s-num">1</span>);</span></div>
+<div class="code-line"><span class="ln">436</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">437</span><span class="lc">            <span class="s-cm">/* BFS 경로를 다시 구해서 시각화 */</span></span></div>
+<div class="code-line"><span class="ln">438</span><span class="lc">            <span class="s-type">int</span> result = <span class="s-fn">solveBFS</span>(<span class="s-num">0</span>, <span class="s-num">0</span>, rows - <span class="s-num">1</span>, cols - <span class="s-num">1</span>);</span></div>
+<div class="code-line"><span class="ln">439</span><span class="lc">            <span class="s-kw">if</span> (result != -<span class="s-num">1</span>) {</span></div>
+<div class="code-line"><span class="ln">440</span><span class="lc">                <span class="s-fn">tracePath</span>(<span class="s-num">0</span>, <span class="s-num">0</span>, rows - <span class="s-num">1</span>, cols - <span class="s-num">1</span>);</span></div>
+<div class="code-line"><span class="ln">441</span><span class="lc">                <span class="s-fn">printMazeWithPath</span>(<span class="s-str">"BFS 최단 경로"</span>);</span></div>
+<div class="code-line"><span class="ln">442</span><span class="lc">            }</span></div>
+<div class="code-line"><span class="ln">443</span><span class="lc">            <span class="s-kw">break</span>;</span></div>
+<div class="code-line"><span class="ln">444</span><span class="lc">        }</span></div>
+<div class="code-line"><span class="ln">445</span><span class="lc">        <span class="s-kw">case</span> <span class="s-num">0</span>:</span></div>
+<div class="code-line"><span class="ln">446</span><span class="lc">            <span class="s-fn">printf</span>(<span class="s-str">"종료합니다.\n"</span>);</span></div>
+<div class="code-line"><span class="ln">447</span><span class="lc">            <span class="s-kw">break</span>;</span></div>
+<div class="code-line"><span class="ln">448</span><span class="lc">        <span class="s-kw">default</span>:</span></div>
+<div class="code-line"><span class="ln">449</span><span class="lc">            <span class="s-fn">printf</span>(<span class="s-str">"잘못된 선택입니다.\n"</span>);</span></div>
+<div class="code-line"><span class="ln">450</span><span class="lc">            <span class="s-kw">break</span>;</span></div>
+<div class="code-line"><span class="ln">451</span><span class="lc">        }</span></div>
+<div class="code-line"><span class="ln">452</span><span class="lc">    } <span class="s-kw">while</span> (choice != <span class="s-num">0</span>);</span></div>
+<div class="code-line"><span class="ln">453</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">454</span><span class="lc">    <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">455</span><span class="lc">}</span></div>
+</div>
+</div>
+<div class="debug-section"><div class="debug-bar">DEBUG LAB — 에러를 찾으시오</div><div class="debug-body">
+
+<p style="margin:14px 0 0; font-size:14px;"><b>에러:</b> </p>
+<p style="font-size:14px;"><b>수정:</b> </p>
+</div></div>
+<div class="debug-section"><div class="debug-bar">DEBUG LAB — 에러를 찾으시오</div><div class="debug-body">
+
+<p style="margin:14px 0 0; font-size:14px;"><b>에러:</b> </p>
+<p style="font-size:14px;"><b>수정:</b> </p>
+</div></div>
+<h2 class="section-title">에러 체험</h2>
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc"><span class="s-cm">// 에러 1: 경계 검사 누락</span></span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc"><span class="s-kw">for</span> (<span class="s-type">int</span> d = <span class="s-num">0</span>; d &lt; <span class="s-num">4</span>; d++) {</span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc">    <span class="s-type">int</span> nr = cur.r + dx[d];</span></div>
+<div class="code-line"><span class="ln">4</span><span class="lc">    <span class="s-type">int</span> nc = cur.c + dy[d];</span></div>
+<div class="code-line"><span class="ln">5</span><span class="lc">    <span class="s-cm">// 경계 검사 없이 바로 배열 접근!</span></span></div>
+<div class="code-line"><span class="ln">6</span><span class="lc">    <span class="s-kw">if</span> (maze[nr][nc] == <span class="s-num">0</span> &amp;&amp; !visited[nr][nc]) {</span></div>
+<div class="code-line"><span class="ln">7</span><span class="lc">        <span class="s-cm">// nr이 음수이거나 ROWS 이상이면 배열 범위 밖 접근!</span></span></div>
+<div class="code-line"><span class="ln">8</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">9</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">10</span><span class="lc"><span class="s-cm">// 수정: if (nr &lt; 0 || nr &gt;= ROWS || nc &lt; 0 || nc &gt;= COLS) continue;</span></span></div>
+<div class="code-line"><span class="ln">11</span><span class="lc"><span class="s-cm">//       를 반드시 먼저 검사합니다.</span></span></div>
+<div class="code-line"><span class="ln">12</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">13</span><span class="lc"><span class="s-cm">// 에러 2: 방문 표시 시점 오류</span></span></div>
+<div class="code-line"><span class="ln">14</span><span class="lc"><span class="s-kw">while</span> (!<span class="s-fn">isEmpty</span>()) {</span></div>
+<div class="code-line"><span class="ln">15</span><span class="lc">    Pos cur = <span class="s-fn">dequeue</span>();</span></div>
+<div class="code-line"><span class="ln">16</span><span class="lc">    visited[cur.r][cur.c] = <span class="s-num">1</span>;  <span class="s-cm">// 큐에서 꺼낼 때 방문 표시?</span></span></div>
+<div class="code-line"><span class="ln">17</span><span class="lc">    <span class="s-cm">// 같은 칸이 큐에 여러 번 들어갈 수 있습니다!</span></span></div>
+<div class="code-line"><span class="ln">18</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">19</span><span class="lc"><span class="s-cm">// 수정: 큐에 넣는 시점(enqueue)에서 visited를 1로 설정해야 합니다.</span></span></div>
+<div class="code-line"><span class="ln">20</span><span class="lc"><span class="s-cm">//       if (!visited[nr][nc]) {</span></span></div>
+<div class="code-line"><span class="ln">21</span><span class="lc"><span class="s-cm">//           visited[nr][nc] = 1;  // enqueue 전에 표시</span></span></div>
+<div class="code-line"><span class="ln">22</span><span class="lc"><span class="s-cm">//           enqueue(nr, nc);</span></span></div>
+<div class="code-line"><span class="ln">23</span><span class="lc"><span class="s-cm">//       }</span></span></div>
+<div class="code-line"><span class="ln">24</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">25</span><span class="lc"><span class="s-cm">// 에러 3: dx/dy 배열 크기 불일치</span></span></div>
+<div class="code-line"><span class="ln">26</span><span class="lc"><span class="s-type">int</span> dx[<span class="s-num">4</span>] = {-<span class="s-num">1</span>, <span class="s-num">1</span>, <span class="s-num">0</span>, <span class="s-num">0</span>};</span></div>
+<div class="code-line"><span class="ln">27</span><span class="lc"><span class="s-type">int</span> dy[<span class="s-num">3</span>] = {<span class="s-num">0</span>, <span class="s-num">0</span>, -<span class="s-num">1</span>};  <span class="s-cm">// dy가 3개뿐! 우(+1)가 빠짐</span></span></div>
+<div class="code-line"><span class="ln">28</span><span class="lc"><span class="s-kw">for</span> (<span class="s-type">int</span> d = <span class="s-num">0</span>; d &lt; <span class="s-num">4</span>; d++) {</span></div>
+<div class="code-line"><span class="ln">29</span><span class="lc">    <span class="s-type">int</span> nr = cur.r + dx[d];</span></div>
+<div class="code-line"><span class="ln">30</span><span class="lc">    <span class="s-type">int</span> nc = cur.c + dy[d];  <span class="s-cm">// d=3일 때 dy 범위 초과!</span></span></div>
+<div class="code-line"><span class="ln">31</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">32</span><span class="lc"><span class="s-cm">// 수정: dx와 dy는 반드시 같은 크기여야 합니다.</span></span></div>
+<div class="code-line"><span class="ln">33</span><span class="lc"><span class="s-cm">//       int dy[4] = {0, 0, -1, 1};</span></span></div>
+<div class="code-line"><span class="ln">34</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">35</span><span class="lc"><span class="s-cm">// 에러 4: 경로 역추적에서 무한 루프</span></span></div>
+<div class="code-line"><span class="ln">36</span><span class="lc"><span class="s-type">void</span> <span class="s-fn">tracePath_wrong</span>(<span class="s-type">int</span> sr, <span class="s-type">int</span> sc, <span class="s-type">int</span> er, <span class="s-type">int</span> ec) {</span></div>
+<div class="code-line"><span class="ln">37</span><span class="lc">    <span class="s-type">int</span> r = er, c = ec;</span></div>
+<div class="code-line"><span class="ln">38</span><span class="lc">    <span class="s-kw">while</span> (<span class="s-num">1</span>) {  <span class="s-cm">// 종료 조건을 잊으면 무한 루프!</span></span></div>
+<div class="code-line"><span class="ln">39</span><span class="lc">        path[pathLen++] = (Pos){r, c};</span></div>
+<div class="code-line"><span class="ln">40</span><span class="lc">        r = parentR[r][c];</span></div>
+<div class="code-line"><span class="ln">41</span><span class="lc">        c = parentC[r][c];  <span class="s-cm">// r이 이미 변경된 후 사용!</span></span></div>
+<div class="code-line"><span class="ln">42</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">43</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">44</span><span class="lc"><span class="s-cm">// 수정: while (r != sr || c != sc)로 종료 조건을 명시하고,</span></span></div>
+<div class="code-line"><span class="ln">45</span><span class="lc"><span class="s-cm">//       int pr = parentR[r][c]; int pc = parentC[r][c];</span></span></div>
+<div class="code-line"><span class="ln">46</span><span class="lc"><span class="s-cm">//       r = pr; c = pc; 로 동시에 갱신해야 합니다.</span></span></div>
+</div>
+</div>
+<h2 class="section-title">설명하기</h2>
+<table class="trace"><thead><tr><th style="width:40px">줄</th><th style="width:220px">코드</th><th>역할</th></tr></thead><tbody></tbody></table>
+<h2 class="section-title">예제</h2>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 1</span><p style="margin:0;font-size:14px">5x5 격자를 int 배열로 선언하고 0과 1로 채운 뒤,<br>격자를 .과 #으로 출력하는 프로그램을 작성하십시오.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 2</span><p style="margin:0;font-size:14px">dx/dy 배열을 선언하고, 주어진 좌표 (2,3)의<br>상하좌우 이웃 4개의 좌표를 출력하는 프로그램을 작성하십시오.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 3</span><p style="margin:0;font-size:14px">구조체 배열 기반 큐를 구현하고,<br>Pos 구조체 5개를 enqueue한 뒤 순서대로 dequeue하여 출력하십시오.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 4</span><p style="margin:0;font-size:14px">5x5 미로에서 BFS를 수행하여 (0,0)부터 (4,4)까지의<br>최단 거리를 구하는 프로그램을 작성하십시오.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 5</span><p style="margin:0;font-size:14px">BFS 탐색 후 거리 맵(각 칸까지의 최단 거리)을<br>2D 형태로 출력하는 프로그램을 작성하십시오.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 6</span><p style="margin:0;font-size:14px">parentR/parentC 배열을 이용하여 BFS 최단 경로를<br>역추적하고 좌표 목록으로 출력하는 프로그램을 작성하십시오.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 7</span><p style="margin:0;font-size:14px">BFS 경로를 미로 위에 시각화하여 출력하십시오.<br>S=시작, E=도착, *=경로, #=벽, .=통로로 표시하십시오.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 8</span><p style="margin:0;font-size:14px">파일에서 미로를 읽어(첫 줄: 행 열, 이후: 0/1 격자)<br>BFS 최단 경로를 구하는 프로그램을 작성하십시오.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 9</span><p style="margin:0;font-size:14px">같은 미로에 대해 DFS와 BFS를 각각 수행하고,<br>찾은 경로의 길이와 방문한 칸 수를 비교하는 표를 출력하십시오.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 10</span><p style="margin:0;font-size:14px">8방향(상하좌우 + 대각선)으로 이동 가능한 미로 탐색기를<br>구현하십시오. dx/dy 배열을 8개로 확장하고 BFS로 최단 경로를<br>구한 뒤 경로를 시각화하십시오.</p></div>
+<h2 class="section-title">대회 기출</h2>
+<h2 class="section-title">요약</h2>
+<div class="warmup-box"><div class="warmup-title">핵심 정리</div><div class="wq"><b>1.</b> 2D 격자 미로: int maze[R][C], 0=통로, 1=벽</div><div class="wq"><b>2.</b> 방향 배열: dx[]={-1,1,0,0}, dy[]={0,0,-1,1}로 상하좌우 이동</div><div class="wq"><b>3.</b> BFS 큐: Pos 구조체 배열, front/rear로 관리</div><div class="wq"><b>4.</b> visited 배열: enqueue 시점에 1로 설정하여 중복 방문 방지</div><div class="wq"><b>5.</b> dist 배열: 시작점부터의 최단 거리, dist[nr][nc] = dist[cur] + 1</div><div class="wq"><b>6.</b> 최단 경로 보장: BFS는 레이어별 탐색으로 처음 도달 = 최단 거리</div><div class="wq"><b>7.</b> 경로 역추적: parentR/parentC에 이전 좌표 기록, 도착점에서 역순 추적</div><div class="wq"><b>8.</b> DFS vs BFS: DFS는 깊이 우선(스택), BFS는 너비 우선(큐)</div><div class="wq"><b>9.</b> DFS는 최단 경로를 보장하지 않음 -- 경로 존재 확인에 적합</div><div class="wq"><b>10.</b> 시간 복잡도: O(R x C) -- 모든 칸을 최대 한 번 방문</div></div>
+<h2 class="section-title">다음 유닛으로</h2>
+<div class="note-box"><span class="note-label"></span>
+<div style="font-weight:700;margin-bottom:6px;color:#1a2e4a">다음: 다익스트라 -- 최단 거리</div>BFS는 모든 간선의 가중치가 같은(1인) 그래프에서 최단 경로를 구합니다. 다음 유닛에서는 간선마다 다른 가중치를 가진 그래프에서 최단 거리를 구하는 다익스트라(Dijkstra) 알고리즘을 학습합니다. 우선순위 큐를 활용하여 가중치가 가장 작은 경로부터 탐색하는 원리이며, 네비게이션 경로 탐색, 네트워크 라우팅 등 실제 세계의 최단 경로 문제를 해결하는 핵심 알고리즘입니다.</div>
+
+    <span class="page-num">2</span>
+  </div>
+</div>
+<div class="page">
+  <div class="content-page">
+    <div class="unit-header-bar">
+      <span class="unit-tag">UNIT 12</span>
+      <span class="unit-title-sm">3과목 연결</span>
+    </div>
+<h2 class="section-title">10축 매핑</h2>
+<div class="note-box"><span class="note-label"></span>
+<div style="font-weight:700;margin-bottom:6px;color:#1a2e4a">이 유닛에서 키운 역량</div>C언어 ★★★★★ -- 2D 배열, 구조체, 큐/스택, 파일 입출력, memset/memcpy 등 다양한 문법을 종합 활용하여 완전한 미로 탈출 프로그램을 구현했습니다.<br>컴퓨팅사고력 ★★★★★ -- BFS의 레이어별 탐색 원리, 경로 역추적 알고리즘, dx/dy 방향 배열 기법, DFS와 BFS의 특성 비교 등 그래프 탐색의 핵심 사고를 학습했습니다.<br>디버깅 ★★★★★ -- 경계 검사 누락, 방문 표시 시점 오류, dx/dy 배열 불일치, 경로 역추적 무한 루프 등 BFS 구현의 전형적 오류를 체험했습니다.<br>KOI ★★★★★ -- 2D 격자 BFS는 정보올림피아드와 코딩 대회에서 가장 빈번하게 출제되는 유형이며, 이 프로젝트의 패턴이 그대로 적용됩니다.</div>
+
+    <span class="page-num">3</span>
+  </div>
+</div>
+<div class="page contest-page-wrap">
+  <div class="chapter-page">
+    <div class="chapter-sidebar"></div>
+    <div class="chapter-accent-bar"></div>
+    <div style="flex:1; min-width:0; padding:50px 50px 40px 45px; position:relative;">
+      <div class="problems-chapter-ref">Chapter 12: 미로 탈출 (BFS)</div>
+      <h2 class="problems-title">대회 문제 (Online Judge)</h2>
+      <p style="font-size:14px; color:#6b7280; margin:-8px 0 24px;">실제 온라인 저지에 출제된 문제입니다. 아래에 코드를 작성한 뒤, 사이트에 제출하여 채점하십시오.</p>
+
+        <div class="contest-card">
+          <div class="contest-header">
+            <div class="contest-num-source">
+              <span class="contest-num">1번</span>
+              <span class="contest-source">백준 1260</span>
+            </div>
+            <span class="diff diff-mid">대회</span>
+          </div>
+          <div class="contest-body">
+            <p class="contest-question">DFS와 BFS로 그래프를 탐색하십시오.</p>
+            
+            <div class="contest-write-area">
+              <div class="contest-write-label">코드 작성</div>
+              <textarea class="contest-textarea" rows="12" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="contest-card">
+          <div class="contest-header">
+            <div class="contest-num-source">
+              <span class="contest-num">2번</span>
+              <span class="contest-source">백준 2606</span>
+            </div>
+            <span class="diff diff-mid">대회</span>
+          </div>
+          <div class="contest-body">
+            <p class="contest-question">바이러스에 감염되는 컴퓨터 수를 구하십시오.</p>
+            
+            <div class="contest-write-area">
+              <div class="contest-write-label">코드 작성</div>
+              <textarea class="contest-textarea" rows="12" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="contest-card">
+          <div class="contest-header">
+            <div class="contest-num-source">
+              <span class="contest-num">3번</span>
+              <span class="contest-source">백준 2178</span>
+            </div>
+            <span class="diff diff-mid">대회</span>
+          </div>
+          <div class="contest-body">
+            <p class="contest-question">미로의 최단 경로 길이를 구하십시오.</p>
+            
+            <div class="contest-write-area">
+              <div class="contest-write-label">코드 작성</div>
+              <textarea class="contest-textarea" rows="12" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="contest-card">
+          <div class="contest-header">
+            <div class="contest-num-source">
+              <span class="contest-num">4번</span>
+              <span class="contest-source">백준 7576</span>
+            </div>
+            <span class="diff diff-mid">대회</span>
+          </div>
+          <div class="contest-body">
+            <p class="contest-question">토마토가 모두 익는 최소 일수를 구하십시오.</p>
+            
+            <div class="contest-write-area">
+              <div class="contest-write-label">코드 작성</div>
+              <textarea class="contest-textarea" rows="12" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="contest-card">
+          <div class="contest-header">
+            <div class="contest-num-source">
+              <span class="contest-num">5번</span>
+              <span class="contest-source">백준 1753</span>
+            </div>
+            <span class="diff diff-mid">대회</span>
+          </div>
+          <div class="contest-body">
+            <p class="contest-question">한 정점에서 다른 모든 정점까지의 최단 거리를 구하십시오.</p>
+            
+            <div class="contest-write-area">
+              <div class="contest-write-label">코드 작성</div>
+              <textarea class="contest-textarea" rows="12" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="contest-card">
+          <div class="contest-header">
+            <div class="contest-num-source">
+              <span class="contest-num">6번</span>
+              <span class="contest-source">백준 11404</span>
+            </div>
+            <span class="diff diff-mid">대회</span>
+          </div>
+          <div class="contest-body">
+            <p class="contest-question">모든 정점 쌍 사이의 최단 거리를 구하십시오.</p>
+            
+            <div class="contest-write-area">
+              <div class="contest-write-label">코드 작성</div>
+              <textarea class="contest-textarea" rows="12" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="contest-card">
+          <div class="contest-header">
+            <div class="contest-num-source">
+              <span class="contest-num">7번</span>
+              <span class="contest-source">백준 1197</span>
+            </div>
+            <span class="diff diff-mid">대회</span>
+          </div>
+          <div class="contest-body">
+            <p class="contest-question">최소 스패닝 트리의 가중치 합을 구하십시오.</p>
+            
+            <div class="contest-write-area">
+              <div class="contest-write-label">코드 작성</div>
+              <textarea class="contest-textarea" rows="12" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="contest-card">
+          <div class="contest-header">
+            <div class="contest-num-source">
+              <span class="contest-num">8번</span>
+              <span class="contest-source">백준 1916</span>
+            </div>
+            <span class="diff diff-mid">대회</span>
+          </div>
+          <div class="contest-body">
+            <p class="contest-question">출발 도시에서 도착 도시까지의 최소 비용을 구하십시오.</p>
+            
+            <div class="contest-write-area">
+              <div class="contest-write-label">코드 작성</div>
+              <textarea class="contest-textarea" rows="12" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="contest-card">
+          <div class="contest-header">
+            <div class="contest-num-source">
+              <span class="contest-num">9번</span>
+              <span class="contest-source">백준 12865</span>
+            </div>
+            <span class="diff diff-mid">대회</span>
+          </div>
+          <div class="contest-body">
+            <p class="contest-question">배낭에 넣을 수 있는 물건의 최대 가치를 구하십시오.</p>
+            
+            <div class="contest-write-area">
+              <div class="contest-write-label">코드 작성</div>
+              <textarea class="contest-textarea" rows="12" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="contest-card">
+          <div class="contest-header">
+            <div class="contest-num-source">
+              <span class="contest-num">10번</span>
+              <span class="contest-source">백준 1786</span>
+            </div>
+            <span class="diff diff-mid">대회</span>
+          </div>
+          <div class="contest-body">
+            <p class="contest-question">문자열에서 패턴이 나타나는 위치를 모두 찾으십시오.</p>
+            
+            <div class="contest-write-area">
+              <div class="contest-write-label">코드 작성</div>
+              <textarea class="contest-textarea" rows="12" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+            </div>
+          </div>
+        </div>
+      <span class="page-num">4</span>
+    </div>
+  </div>
+</div>
+</body>
+</html>

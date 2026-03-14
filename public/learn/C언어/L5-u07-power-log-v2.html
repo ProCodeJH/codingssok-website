@@ -1,0 +1,1577 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>코딩쏙 교재 — 거듭제곱과 로그</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+
+  :root {
+    --navy: #1a2e4a;
+    --navy-mid: #2c4a6e;
+    --navy-light: #3d6590;
+    --orange: #e07830;
+    --orange-light: #f5e6d8;
+    --white: #ffffff;
+    --bg: #f7f8fa;
+    --bg-warm: #faf9f7;
+    --gray-50: #f9fafb;
+    --gray-100: #f3f4f6;
+    --gray-200: #e5e7eb;
+    --gray-300: #d1d5db;
+    --gray-400: #9ca3af;
+    --gray-500: #6b7280;
+    --gray-600: #4b5563;
+    --gray-700: #374151;
+    --gray-800: #1f2937;
+    --text: #2d3748;
+    --green: #16a34a;
+    --green-bg: #dcfce7;
+    --red: #dc2626;
+    --red-bg: #fee2e2;
+    --blue: #2563eb;
+    --blue-bg: #dbeafe;
+    --yellow-bg: #fef9c3;
+    --font: 'Noto Sans KR', sans-serif;
+    --mono: 'JetBrains Mono', 'Consolas', monospace;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: var(--font); background: #e8eaed; font-size: 15px; }
+
+  /* ========== PAGE ========== */
+  .page {
+    width: 210mm;
+    min-height: 295mm;
+    margin: 24px auto;
+    background: var(--white);
+    box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* ========== PAGE 1: CHAPTER START ========== */
+  .chapter-page {
+    display: flex;
+    min-height: 295mm;
+  }
+
+  .chapter-sidebar {
+    width: 10px;
+    background: var(--navy);
+    flex-shrink: 0;
+  }
+
+  .chapter-accent-bar {
+    width: 7px;
+    background: var(--orange);
+    flex-shrink: 0;
+  }
+
+  .chapter-body {
+    flex: 1;
+    padding: 70px 65px 50px 55px;
+    position: relative;
+  }
+
+  .chapter-watermark {
+    position: absolute;
+    top: -10px;
+    right: -15px;
+    font-size: 280px;
+    font-weight: 900;
+    color: rgba(180,195,212,0.35);
+    line-height: 1;
+    pointer-events: none;
+    letter-spacing: -10px;
+  }
+
+  .chapter-label {
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--navy-mid);
+    letter-spacing: 2px;
+    margin-bottom: 4px;
+  }
+
+  .chapter-title {
+    font-size: 44px;
+    font-weight: 900;
+    color: var(--navy);
+    line-height: 1.15;
+    margin-bottom: 12px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .chapter-sub {
+    font-size: 16px;
+    color: var(--gray-500);
+    font-weight: 400;
+    margin-bottom: 20px;
+    padding-bottom: 28px;
+    border-bottom: 1px solid var(--gray-200);
+  }
+
+  /* Learning objectives */
+  .obj-title {
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--navy);
+    margin-bottom: 16px;
+    margin-top: 32px;
+  }
+
+  .obj-list {
+    list-style: none;
+    margin-bottom: 40px;
+  }
+
+  .obj-list li {
+    padding: 5px 0 5px 24px;
+    position: relative;
+    font-size: 15px;
+    color: var(--gray-700);
+    line-height: 1.6;
+  }
+
+  .obj-list li::before {
+    content: '•';
+    position: absolute;
+    left: 8px;
+    color: var(--navy-mid);
+    font-weight: 700;
+  }
+
+  /* Prerequisites flow */
+  .prereq-title {
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--navy);
+    margin-bottom: 18px;
+  }
+
+  .prereq-flow {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    margin-bottom: 44px;
+  }
+
+  .prereq-item {
+    padding: 9px 22px;
+    border: 1.5px solid var(--gray-300);
+    border-radius: 50px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--gray-600);
+    background: var(--white);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+  }
+
+  .prereq-item.current {
+    border-color: var(--navy);
+    color: var(--navy);
+    font-weight: 700;
+    background: #edf2f7;
+    box-shadow: 0 2px 6px rgba(26,46,74,0.12);
+  }
+
+  .prereq-arrow {
+    width: 36px;
+    text-align: center;
+    color: var(--gray-300);
+    font-size: 18px;
+    font-weight: 300;
+  }
+
+  /* Predict box */
+  .predict-box {
+    background: var(--gray-50);
+    border: 1.5px solid var(--gray-200);
+    border-radius: 12px;
+    padding: 24px 28px;
+  }
+
+  .predict-label {
+    display: inline-block;
+    background: var(--orange);
+    color: var(--white);
+    font-size: 12px;
+    font-weight: 600;
+    padding: 3px 12px;
+    border-radius: 4px;
+    margin-bottom: 14px;
+    letter-spacing: 0.5px;
+  }
+
+  .predict-q {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--navy);
+    margin-bottom: 16px;
+  }
+
+  .predict-code {
+    background: var(--white);
+    border: 1px solid var(--gray-200);
+    border-radius: 8px;
+    padding: 14px 18px;
+    font-family: var(--mono);
+    font-size: 13px;
+    line-height: 1.65;
+    color: var(--gray-700);
+  }
+
+  /* ========== PAGE 2: CORE CONTENT ========== */
+  .content-page {
+    padding: 55px 65px;
+  }
+
+  .unit-header-bar {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    margin-bottom: 8px;
+  }
+
+  .unit-tag {
+    font-size: 12px;
+    color: var(--orange);
+    font-weight: 600;
+    letter-spacing: 1px;
+  }
+
+  .unit-title-sm {
+    font-size: 14px;
+    color: var(--gray-400);
+    font-weight: 400;
+  }
+
+  .section-title {
+    font-size: 24px;
+    font-weight: 800;
+    color: var(--navy);
+    margin-bottom: 24px;
+    margin-top: 8px;
+    padding-left: 16px;
+    border-left: 5px solid var(--orange);
+  }
+
+  p {
+    font-size: 15.5px;
+    line-height: 1.9;
+    color: var(--text);
+    margin-bottom: 18px;
+  }
+
+  p code {
+    font-family: var(--mono);
+    font-size: 13.5px;
+    background: #f1f3f5;
+    padding: 2px 7px;
+    border-radius: 4px;
+    color: var(--navy);
+    font-weight: 500;
+  }
+
+  /* Code block */
+  .code-wrap {
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    border: 1px solid var(--gray-200);
+    margin: 22px 0;
+  }
+
+  .code-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 9px 18px;
+    background: var(--navy);
+    font-size: 12px;
+  }
+
+  .code-bar-lang {
+    font-family: var(--mono);
+    font-weight: 600;
+    color: var(--white);
+  }
+
+  .code-bar-file {
+    color: rgba(255,255,255,0.6);
+    font-weight: 400;
+  }
+
+  .code-body {
+    background: #f8f9fb;
+    padding: 20px 0;
+    font-family: var(--mono);
+    font-size: 13.5px;
+    line-height: 1.75;
+    border: 1px solid var(--gray-200);
+    border-top: none;
+    border-radius: 0 0 12px 12px;
+  }
+
+  .code-line {
+    display: flex;
+    padding: 0 20px;
+  }
+
+  .code-line:hover {
+    background: #f0f4f8;
+  }
+
+  .code-line.highlighted {
+    background: #fff8e1;
+  }
+
+  .ln {
+    width: 30px;
+    text-align: right;
+    color: #b8bfc8;
+    font-size: 12px;
+    margin-right: 18px;
+    user-select: none;
+    flex-shrink: 0;
+    padding-top: 1px;
+  }
+
+  .lc { flex: 1; }
+
+  /* syntax */
+  .s-pp { color: #8b5cf6; font-weight: 600; }
+  .s-str { color: #d97706; }
+  .s-type { color: #2563eb; font-weight: 500; }
+  .s-kw { color: #7c3aed; font-weight: 500; }
+  .s-fn { color: #059669; font-weight: 500; }
+  .s-num { color: #dc2626; }
+  .s-cm { color: #9ca3af; font-style: italic; }
+
+  /* Output block */
+  .output-wrap {
+    border-radius: 10px;
+    overflow: hidden;
+    margin: 10px 0 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    border: 1px solid #d1d5db;
+  }
+
+  .output-bar {
+    padding: 9px 18px;
+    background: #374151;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--white);
+    letter-spacing: 0.5px;
+  }
+
+  .output-body {
+    padding: 16px 20px;
+    font-family: var(--mono);
+    font-size: 13.5px;
+    line-height: 1.7;
+    color: var(--gray-800);
+    background: #f1f5f9;
+    border: 1px solid var(--gray-200);
+    border-top: none;
+    border-radius: 0 0 10px 10px;
+  }
+
+  /* Callout */
+  .tip {
+    margin: 28px 0;
+    padding: 18px 24px;
+    background: #dbeafe;
+    border-left: 5px solid #2563eb;
+    border-radius: 0 12px 12px 0;
+    font-size: 14.5px;
+    line-height: 1.8;
+    color: var(--text);
+  }
+
+  .tip-label {
+    font-weight: 700;
+    color: #2563eb;
+    font-size: 13px;
+    display: block;
+    margin-bottom: 4px;
+  }
+
+  .warn {
+    margin: 28px 0;
+    padding: 18px 24px;
+    background: #fef3c7;
+    border-left: 5px solid #d97706;
+    border-radius: 0 12px 12px 0;
+    font-size: 14.5px;
+    line-height: 1.8;
+  }
+
+  .warn-label {
+    font-weight: 700;
+    color: #d97706;
+    font-size: 13px;
+    display: block;
+    margin-bottom: 4px;
+  }
+
+  .note-box {
+    margin: 28px 0;
+    padding: 18px 24px;
+    background: #e2e8f0;
+    border-left: 5px solid #64748b;
+    border-radius: 0 12px 12px 0;
+    font-size: 14.5px;
+    line-height: 1.8;
+  }
+
+  .note-label {
+    font-weight: 700;
+    color: var(--gray-600);
+    font-size: 13px;
+    display: block;
+    margin-bottom: 4px;
+  }
+
+  /* Trace table */
+  table.trace {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    margin: 28px 0;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+    font-size: 14px;
+  }
+
+  table.trace th {
+    background: var(--navy);
+    color: var(--white);
+    padding: 10px 16px;
+    text-align: left;
+    font-weight: 500;
+    font-size: 13px;
+  }
+
+  table.trace td {
+    padding: 10px 16px;
+    border-bottom: 1px solid var(--gray-200);
+    color: var(--gray-700);
+  }
+
+  table.trace tr:nth-child(even) td { background: var(--gray-50); }
+  table.trace tr:last-child td { border-bottom: none; }
+
+  table.trace td code {
+    font-family: var(--mono);
+    font-size: 12.5px;
+    background: #eef1f5;
+    padding: 2px 6px;
+    border-radius: 4px;
+    color: var(--navy);
+  }
+
+  /* ========== PAGE 3: PROBLEMS ========== */
+  .problems-header {
+    margin-bottom: 8px;
+  }
+
+  .problems-chapter-ref {
+    font-size: 13px;
+    color: var(--gray-500);
+    margin-bottom: 4px;
+  }
+
+  .problems-title {
+    font-size: 28px;
+    font-weight: 800;
+    color: var(--navy);
+    margin-bottom: 24px;
+  }
+
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 16px;
+  }
+
+  .prob-card {
+    background: var(--white);
+    border: 1px solid var(--gray-200);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 3px 15px rgba(0,0,0,0.06);
+  }
+
+  .prob-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 16px;
+    background: var(--navy);
+  }
+
+  .prob-num {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--white);
+  }
+
+  .diff {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    font-size: 12px;
+    font-weight: 800;
+  }
+
+  .diff-basic { background: #22c55e; color: white; }
+  .diff-mid { background: #f59e0b; color: white; }
+  .diff-hard { background: #ef4444; color: white; }
+
+  .prob-desc {
+    font-size: 13.5px;
+    line-height: 1.65;
+    color: var(--gray-600);
+    margin-bottom: 10px;
+    padding: 14px 16px 0;
+  }
+
+  .prob-code {
+    background: var(--gray-50);
+    border: 1px solid var(--gray-200);
+    border-radius: 6px;
+    padding: 10px 14px;
+    margin: 0 16px 16px;
+    font-family: var(--mono);
+    font-size: 12.5px;
+    line-height: 1.55;
+    color: var(--gray-600);
+  }
+
+  /* Competition section */
+  .comp-section {
+    margin-top: 32px;
+    padding-top: 24px;
+    border-top: 2px solid var(--navy);
+  }
+
+  .comp-title {
+    font-size: 22px;
+    font-weight: 800;
+    color: var(--navy);
+    margin-bottom: 20px;
+  }
+
+  .comp-card {
+    background: var(--white);
+    border: 1.5px solid var(--gray-200);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 18px rgba(0,0,0,0.06);
+  }
+
+  .comp-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 16px;
+    background: #0f766e;
+  }
+
+  .comp-header .comp-name {
+    color: var(--white);
+    font-size: 15px;
+    font-weight: 700;
+    margin: 0;
+  }
+
+  .comp-inner {
+    padding: 14px 18px 18px;
+  }
+
+  .comp-badge {
+    display: inline-block;
+    padding: 3px 12px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 700;
+  }
+
+  .badge-bj { background: #93c5fd; color: #1e3a5f; }
+  .badge-cu { background: #c4b5fd; color: #3b1f7e; }
+  .badge-pg { background: #7dd3fc; color: #0c4a6e; }
+
+  .comp-name {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--navy);
+    margin-bottom: 6px;
+  }
+
+  .comp-desc {
+    font-size: 14px;
+    color: var(--gray-600);
+    line-height: 1.7;
+    margin-bottom: 14px;
+  }
+
+  .io-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+
+  .io-card {
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid var(--gray-200);
+  }
+
+  .io-h {
+    padding: 6px 14px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--gray-600);
+    background: #e2e8f0;
+  }
+
+  .io-c {
+    padding: 10px 14px;
+    font-family: var(--mono);
+    font-size: 13px;
+    line-height: 1.5;
+    background: var(--white);
+  }
+
+  /* ========== DEBUG LAB ========== */
+  .debug-section {
+    margin: 24px 0;
+    border: 2px solid var(--red);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+
+  .debug-bar {
+    background: var(--red);
+    color: var(--white);
+    padding: 10px 20px;
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 1px;
+  }
+
+  .debug-body {
+    padding: 20px;
+    background: #fef2f2;
+  }
+
+  /* 10축 connection */
+  .connect-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 16px;
+    margin: 28px 0;
+  }
+
+  .connect-card {
+    border-radius: 12px;
+    padding: 20px;
+    text-align: center;
+    border: 1px solid var(--gray-200);
+    box-shadow: 0 3px 14px rgba(0,0,0,0.05);
+  }
+
+  .connect-card h5 {
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 8px;
+  }
+
+  .connect-card p {
+    font-size: 13px;
+    margin: 0;
+    color: var(--gray-600);
+    line-height: 1.6;
+  }
+
+  .cc1 { border-top: 3px solid #8b5cf6; }
+  .cc1 h5 { color: #8b5cf6; }
+  .cc2 { border-top: 3px solid var(--green); }
+  .cc2 h5 { color: var(--green); }
+  .cc3 { border-top: 3px solid var(--navy); }
+  .cc3 h5 { color: var(--navy); }
+
+  /* PAGE NUMBER */
+  .page-num {
+    position: absolute;
+    bottom: 20px;
+    right: 30px;
+    font-size: 12px;
+    color: var(--gray-400);
+  }
+
+  /* WARMUP */
+  .warmup-box {
+    background: #e0e7f1;
+    border-radius: 12px;
+    padding: 24px 28px;
+    margin: 28px 0;
+    border: 2px solid #c7d2e0;
+  }
+
+  .warmup-title {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--navy);
+    margin-bottom: 14px;
+  }
+
+  .wq {
+    padding: 9px 16px;
+    background: var(--white);
+    border-radius: 8px;
+    margin-bottom: 8px;
+    font-size: 14px;
+    border: 1px solid var(--gray-200);
+    color: var(--gray-700);
+  }
+
+  .wq b { color: var(--navy); margin-right: 6px; }
+  .wq .hint { color: var(--gray-400); font-size: 13px; }
+
+  /* ===== CONTEST PROBLEMS PAGE ===== */
+  .contest-page-wrap .chapter-page {
+    min-height: auto;
+  }
+
+  .contest-page-wrap .chapter-page > div:last-child {
+    min-width: 0;
+    overflow-wrap: break-word;
+    word-break: break-word;
+  }
+
+  .contest-card {
+    background: white;
+    border: 1.5px solid var(--gray-200);
+    border-radius: 12px;
+    margin-bottom: 28px;
+    overflow: hidden;
+    break-inside: avoid;
+  }
+
+  .contest-header {
+    background: var(--navy);
+    color: white;
+    padding: 14px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .contest-num-source {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .contest-num {
+    font-weight: 700;
+    font-size: 16px;
+  }
+
+  .contest-source {
+    background: rgba(255,255,255,0.15);
+    padding: 3px 10px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 500;
+  }
+
+  .contest-body {
+    padding: 20px 24px 24px;
+  }
+
+  .contest-question {
+    font-size: 15px;
+    line-height: 1.7;
+    color: var(--text);
+    margin: 0 0 16px;
+    word-break: break-word;
+    overflow-wrap: break-word;
+  }
+
+  .contest-expected {
+    background: #1e293b;
+    border-radius: 8px;
+    overflow: hidden;
+    margin-bottom: 20px;
+  }
+
+  .contest-expected-label {
+    background: #334155;
+    color: #94a3b8;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 6px 14px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .contest-expected-body {
+    color: #e2e8f0;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    line-height: 1.6;
+    padding: 12px 16px;
+    margin: 0;
+    white-space: pre;
+  }
+
+  .contest-write-area {
+    border: 2px dashed var(--gray-300);
+    border-radius: 10px;
+    overflow: hidden;
+    transition: border-color 0.2s;
+  }
+
+  .contest-write-area:focus-within {
+    border-color: var(--orange);
+    border-style: solid;
+  }
+
+  .contest-write-label {
+    background: var(--bg);
+    color: var(--gray-500);
+    font-size: 12px;
+    font-weight: 600;
+    padding: 8px 14px;
+    border-bottom: 1px solid var(--gray-200);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .contest-textarea {
+    width: 100%;
+    min-height: 200px;
+    padding: 16px 18px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    line-height: 1.7;
+    color: var(--text);
+    background: #fafbfc;
+    border: none;
+    outline: none;
+    resize: vertical;
+    tab-size: 4;
+    box-sizing: border-box;
+  }
+
+  .contest-textarea::placeholder {
+    color: var(--gray-300);
+  }
+
+  @media print {
+    body { background: white; }
+    .page { box-shadow: none; margin: 0; page-break-after: always; }
+    .contest-textarea { border: 1px solid var(--gray-300); min-height: 180px; }
+  }
+
+</style>
+</head>
+<body>
+
+<div class="page">
+  <div class="chapter-page">
+    <div class="chapter-sidebar"></div>
+    <div class="chapter-accent-bar"></div>
+    <div class="chapter-body">
+      <div class="chapter-watermark">07</div>
+      <div class="chapter-label">Chapter 07</div>
+      <h1 class="chapter-title">거듭제곱과 로그</h1>
+      <p class="chapter-sub">반복문으로 거듭제곱을 계산하고, 빠른 거듭제곱 알고리즘과 로그의 활용을 학습합니다.</p>
+
+      <h3 class="obj-title">이 유닛에서 배우는 것</h3>
+      <ul class="obj-list">
+        <li>반복문으로 a^n을 계산할 수 있습니다.</li>
+        <li>빠른 거듭제곱(분할 정복) 알고리즘의 원리를 이해합니다.</li>
+        <li>로그의 개념을 이해하고 자릿수 계산에 활용할 수 있습니다.</li>
+        <li>거듭제곱에서 오버플로를 방지하는 모듈러 연산을 적용할 수 있습니다.</li>
+      </ul>
+
+      <h3 class="prereq-title">선수 학습</h3>
+      <div class="prereq-flow">
+        <div class="prereq-item">L4-U05 for문 기초</div><div class="prereq-arrow">→</div>
+        <div class="prereq-item">L5-U05 팩토리얼과 조합</div><div class="prereq-arrow">→</div>
+        <div class="prereq-item current">L2-U09 실수형 float, double</div>
+      </div>
+
+      <div class="predict-box">
+        <div class="predict-label">예측해 봅시다</div>
+        <div class="predict-q">long long r = 1; for (int i = 0; i < 10; i++) r *= 2; 실행 후 r의 값은 무엇입니까?</div>
+        
+      </div>
+
+      <span class="page-num">1</span>
+    </div>
+  </div>
+</div>
+<div class="page">
+  <div class="content-page">
+    <div class="unit-header-bar">
+      <span class="unit-tag">UNIT 07</span>
+      <span class="unit-title-sm">거듭제곱과 로그</span>
+    </div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 1</span><p style="margin:0;font-size:14px">2^10의 값은 무엇입니까?</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 2</span><p style="margin:0;font-size:14px">a^0의 값은 무엇입니까? (a ≠ 0)</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 3</span><p style="margin:0;font-size:14px">1000은 몇 자리 수입니까? 10을 몇 번 곱하면 1000이 됩니까?</p></div>
+<h2 class="section-title">예측</h2>
+<p>undefined</p>
+<h2 class="section-title">이야기</h2>
+<p>undefined</p>
+<h2 class="section-title">핵심 개념</h2>
+<div class="note-box"><span class="note-label"></span>
+<div style="font-weight:700;margin-bottom:6px;color:#1a2e4a">거듭제곱</div>a^n = a × a × a × ... × a (n번 곱하기)<br>a^0 = 1, a^1 = a<br>2^10 = 1024, 3^5 = 243, 10^6 = 1,000,000</div>
+<div class="note-box"><span class="note-label"></span>
+<div style="font-weight:700;margin-bottom:6px;color:#1a2e4a">로그(logarithm)</div>log_b(x) = n은 b^n = x와 같은 뜻입니다.<br>log_10(1000) = 3 (10^3 = 1000)<br>log_2(1024) = 10 (2^10 = 1024)<br>양의 정수 x의 자릿수 = (int)log10(x) + 1</div>
+<h2 class="section-title">기본 거듭제곱</h2>
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;stdio.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">main</span>(<span class="s-type">void</span>) {</span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc">    <span class="s-type">int</span> base, exp;</span></div>
+<div class="code-line"><span class="ln">4</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"밑과 지수 입력: "</span>);</span></div>
+<div class="code-line"><span class="ln">5</span><span class="lc">    <span class="s-fn">scanf</span>(<span class="s-str">"%d %d"</span>, &amp;base, &amp;exp);</span></div>
+<div class="code-line"><span class="ln">6</span><span class="lc">    </span></div>
+<div class="code-line"><span class="ln">7</span><span class="lc">    <span class="s-type">long</span> <span class="s-type">long</span> result = <span class="s-num">1</span>;</span></div>
+<div class="code-line"><span class="ln">8</span><span class="lc">    <span class="s-kw">for</span> (<span class="s-type">int</span> i = <span class="s-num">0</span>; i &lt; exp; i++) {</span></div>
+<div class="code-line"><span class="ln">9</span><span class="lc">        result *= base;</span></div>
+<div class="code-line"><span class="ln">10</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">11</span><span class="lc">    </span></div>
+<div class="code-line"><span class="ln">12</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"%d^%d = %lld\n"</span>, base, exp, result);</span></div>
+<div class="code-line"><span class="ln">13</span><span class="lc">    <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">14</span><span class="lc">}</span></div>
+</div>
+</div>
+<div class="output-wrap"><div class="output-bar">실행 결과</div><div class="output-body">밑과 지수 입력: 2 20
+2^20 = 1048576</div></div>
+<h2 class="section-title">2의 거듭제곱 표</h2>
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;stdio.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">main</span>(<span class="s-type">void</span>) {</span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc">    <span class="s-type">long</span> <span class="s-type">long</span> val = <span class="s-num">1</span>;</span></div>
+<div class="code-line"><span class="ln">4</span><span class="lc">    <span class="s-kw">for</span> (<span class="s-type">int</span> i = <span class="s-num">0</span>; i &lt;= <span class="s-num">30</span>; i++) {</span></div>
+<div class="code-line"><span class="ln">5</span><span class="lc">        <span class="s-fn">printf</span>(<span class="s-str">"2^%2d = %13lld\n"</span>, i, val);</span></div>
+<div class="code-line"><span class="ln">6</span><span class="lc">        val *= <span class="s-num">2</span>;</span></div>
+<div class="code-line"><span class="ln">7</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">8</span><span class="lc">    <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">9</span><span class="lc">}</span></div>
+</div>
+</div>
+<div class="output-wrap"><div class="output-bar">실행 결과</div><div class="output-body">2^ 0 =             1
+2^ 1 =             2
+2^ 2 =             4
+...
+2^10 =          1024
+2^20 =       1048576
+2^30 =    1073741824</div></div>
+<h2 class="section-title">빠른 거듭제곱</h2>
+<p>undefined</p>
+<div style="margin:22px 0"></div>
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;stdio.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">main</span>(<span class="s-type">void</span>) {</span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc">    <span class="s-type">long</span> <span class="s-type">long</span> base;</span></div>
+<div class="code-line"><span class="ln">4</span><span class="lc">    <span class="s-type">int</span> exp;</span></div>
+<div class="code-line"><span class="ln">5</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"밑과 지수 입력: "</span>);</span></div>
+<div class="code-line"><span class="ln">6</span><span class="lc">    <span class="s-fn">scanf</span>(<span class="s-str">"%lld %d"</span>, &amp;base, &amp;exp);</span></div>
+<div class="code-line"><span class="ln">7</span><span class="lc">    </span></div>
+<div class="code-line"><span class="ln">8</span><span class="lc">    <span class="s-type">long</span> <span class="s-type">long</span> result = <span class="s-num">1</span>;</span></div>
+<div class="code-line"><span class="ln">9</span><span class="lc">    <span class="s-type">long</span> <span class="s-type">long</span> b = base;</span></div>
+<div class="code-line"><span class="ln">10</span><span class="lc">    <span class="s-type">int</span> e = exp;</span></div>
+<div class="code-line"><span class="ln">11</span><span class="lc">    </span></div>
+<div class="code-line"><span class="ln">12</span><span class="lc">    <span class="s-kw">while</span> (e &gt; <span class="s-num">0</span>) {</span></div>
+<div class="code-line"><span class="ln">13</span><span class="lc">        <span class="s-kw">if</span> (e % <span class="s-num">2</span> == <span class="s-num">1</span>) {   <span class="s-cm">// 지수가 홀수</span></span></div>
+<div class="code-line"><span class="ln">14</span><span class="lc">            result *= b;</span></div>
+<div class="code-line"><span class="ln">15</span><span class="lc">        }</span></div>
+<div class="code-line"><span class="ln">16</span><span class="lc">        b *= b;             <span class="s-cm">// 밑을 제곱</span></span></div>
+<div class="code-line"><span class="ln">17</span><span class="lc">        e /= <span class="s-num">2</span>;             <span class="s-cm">// 지수를 반으로</span></span></div>
+<div class="code-line"><span class="ln">18</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">19</span><span class="lc">    </span></div>
+<div class="code-line"><span class="ln">20</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"%lld^%d = %lld\n"</span>, base, exp, result);</span></div>
+<div class="code-line"><span class="ln">21</span><span class="lc">    <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">22</span><span class="lc">}</span></div>
+</div>
+</div>
+<div class="output-wrap"><div class="output-bar">실행 결과</div><div class="output-body">밑과 지수 입력: 3 13
+3^13 = 1594323</div></div>
+<div class="debug-section"><div class="debug-bar">DEBUG LAB — 에러를 찾으시오</div><div class="debug-body">
+
+<p style="margin:14px 0 0; font-size:14px;"><b>에러:</b> </p>
+<p style="font-size:14px;"><b>수정:</b> </p>
+</div></div>
+<h2 class="section-title">모듈러 거듭제곱</h2>
+<p>undefined</p>
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;stdio.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">main</span>(<span class="s-type">void</span>) {</span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc">    <span class="s-type">long</span> <span class="s-type">long</span> base;</span></div>
+<div class="code-line"><span class="ln">4</span><span class="lc">    <span class="s-type">int</span> exp, mod;</span></div>
+<div class="code-line"><span class="ln">5</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"밑 지수 모듈러: "</span>);</span></div>
+<div class="code-line"><span class="ln">6</span><span class="lc">    <span class="s-fn">scanf</span>(<span class="s-str">"%lld %d %d"</span>, &amp;base, &amp;exp, &amp;mod);</span></div>
+<div class="code-line"><span class="ln">7</span><span class="lc">    </span></div>
+<div class="code-line"><span class="ln">8</span><span class="lc">    <span class="s-type">long</span> <span class="s-type">long</span> result = <span class="s-num">1</span>;</span></div>
+<div class="code-line"><span class="ln">9</span><span class="lc">    base %= mod;</span></div>
+<div class="code-line"><span class="ln">10</span><span class="lc">    <span class="s-type">int</span> e = exp;</span></div>
+<div class="code-line"><span class="ln">11</span><span class="lc">    </span></div>
+<div class="code-line"><span class="ln">12</span><span class="lc">    <span class="s-kw">while</span> (e &gt; <span class="s-num">0</span>) {</span></div>
+<div class="code-line"><span class="ln">13</span><span class="lc">        <span class="s-kw">if</span> (e % <span class="s-num">2</span> == <span class="s-num">1</span>)</span></div>
+<div class="code-line"><span class="ln">14</span><span class="lc">            result = result * base % mod;</span></div>
+<div class="code-line"><span class="ln">15</span><span class="lc">        base = base * base % mod;</span></div>
+<div class="code-line"><span class="ln">16</span><span class="lc">        e /= <span class="s-num">2</span>;</span></div>
+<div class="code-line"><span class="ln">17</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">18</span><span class="lc">    </span></div>
+<div class="code-line"><span class="ln">19</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"%lld^%d mod %d = %lld\n"</span>,</span></div>
+<div class="code-line"><span class="ln">20</span><span class="lc">           base, exp, mod, result);</span></div>
+<div class="code-line"><span class="ln">21</span><span class="lc">    <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">22</span><span class="lc">}</span></div>
+</div>
+</div>
+<div class="output-wrap"><div class="output-bar">실행 결과</div><div class="output-body">밑 지수 모듈러: 2 30 1000
+2^30 mod 1000 = 824</div></div>
+<h2 class="section-title">자릿수 구하기</h2>
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;stdio.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">main</span>(<span class="s-type">void</span>) {</span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc">    <span class="s-type">int</span> n;</span></div>
+<div class="code-line"><span class="ln">4</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"양의 정수: "</span>);</span></div>
+<div class="code-line"><span class="ln">5</span><span class="lc">    <span class="s-fn">scanf</span>(<span class="s-str">"%d"</span>, &amp;n);</span></div>
+<div class="code-line"><span class="ln">6</span><span class="lc">    </span></div>
+<div class="code-line"><span class="ln">7</span><span class="lc">    <span class="s-type">int</span> digits = <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">8</span><span class="lc">    <span class="s-type">int</span> temp = n;</span></div>
+<div class="code-line"><span class="ln">9</span><span class="lc">    <span class="s-kw">while</span> (temp &gt; <span class="s-num">0</span>) {</span></div>
+<div class="code-line"><span class="ln">10</span><span class="lc">        digits++;</span></div>
+<div class="code-line"><span class="ln">11</span><span class="lc">        temp /= <span class="s-num">10</span>;</span></div>
+<div class="code-line"><span class="ln">12</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">13</span><span class="lc">    </span></div>
+<div class="code-line"><span class="ln">14</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"%d은(는) %d자리 수입니다.\n"</span>, n, digits);</span></div>
+<div class="code-line"><span class="ln">15</span><span class="lc">    <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">16</span><span class="lc">}</span></div>
+</div>
+</div>
+<div class="output-wrap"><div class="output-bar">실행 결과</div><div class="output-body">양의 정수: 12345
+12345은(는) 5자리 수입니다.</div></div>
+<h2 class="section-title">에러 체험</h2>
+<div class="note-box"><span class="note-label"></span>
+<div style="font-weight:700;margin-bottom:6px;color:#1a2e4a">에러 1: pow() 함수의 정수 오차</div>int result = pow(2, 10);  // 1023이 될 수 있음!<br><br>→ pow()는 double을 반환하며 부동소수점 오차가 있습니다.<br>→ 정수 거듭제곱은 반복문으로 직접 계산하십시오.</div>
+<div class="note-box"><span class="note-label"></span>
+<div style="font-weight:700;margin-bottom:6px;color:#1a2e4a">에러 2: 빠른 거듭제곱에서 base 원본 변경</div>while (e > 0) {<br>    if (e % 2 == 1) result *= base;<br>    base *= base;  // 원본 base 변경!<br>    e /= 2;<br>}<br>printf("%d^%d\n", base, exp);  // base가 변경됨<br><br>→ 원본 base를 보존하려면 별도 변수를 사용하십시오.</div>
+<div class="note-box"><span class="note-label"></span>
+<div style="font-weight:700;margin-bottom:6px;color:#1a2e4a">에러 3: 모듈러 연산 누락</div>result = result * base;  // 오버플로 발생!<br>result %= mod;<br><br>→ 곱셈 직후 즉시 모듈러를 적용하십시오.<br>→ result = result * base % mod;</div>
+<h2 class="section-title">설명하기</h2>
+<div class="tip"><span class="tip-label">설명하기</span><p style="margin:0">빠른 거듭제곱에서 지수를 2로 나누고 밑을 제곱하는 것이 왜 올바른 결과를 내는지 a^13의 예로 설명하십시오. 13 = 1101(2)과의 관계도 서술하십시오.</p></div>
+<h2 class="section-title">예제</h2>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 1</span><p style="margin:0;font-size:14px">a^n을 반복문으로 구하십시오.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 2</span><p style="margin:0;font-size:14px">2^0부터 2^20까지 출력하십시오.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 3</span><p style="margin:0;font-size:14px">N의 자릿수를 구하십시오.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 4</span><p style="margin:0;font-size:14px">10^N을 구하십시오.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 5</span><p style="margin:0;font-size:14px">a^n을 빠른 거듭제곱으로 구하십시오.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 6</span><p style="margin:0;font-size:14px">a^n mod m을 빠른 거듭제곱으로 구하십시오.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 7</span><p style="margin:0;font-size:14px">1^1 + 2^2 + 3^3 + ... + N^N의 합을 구하십시오.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 8</span><p style="margin:0;font-size:14px">2^N이 처음으로 K자리가 되는 N을 구하십시오.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 9</span><p style="margin:0;font-size:14px">N을 입력받아 가장 가까운 2의 거듭제곱을 출력하십시오. (예: 13 → 16)</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 10</span><p style="margin:0;font-size:14px">N을 이진수로 변환할 때 필요한 비트 수를 구하십시오. (= floor(log2(N)) + 1)</p></div>
+<h2 class="section-title">대회 기출 문제</h2>
+<h2 class="section-title">대회 기출</h2>
+<h2 class="section-title">요약</h2>
+<div class="warmup-box"><div class="warmup-title">핵심 정리</div><div class="wq"><b>1.</b> 기본 거듭제곱: for문으로 n번 곱하기 — O(n)</div><div class="wq"><b>2.</b> 빠른 거듭제곱: 지수를 반으로, 밑을 제곱 — O(log n)</div><div class="wq"><b>3.</b> 모듈러 거듭제곱: 매 곱셈마다 % mod 적용</div><div class="wq"><b>4.</b> 자릿수: while(t > 0) { digits++; t /= 10; }</div><div class="wq"><b>5.</b> pow() 주의: 실수 오차 발생 가능, 정수는 직접 계산</div></div>
+
+    <span class="page-num">2</span>
+  </div>
+</div>
+<div class="page">
+  <div class="content-page">
+    <div class="unit-header-bar">
+      <span class="unit-tag">UNIT 07</span>
+      <span class="unit-title-sm">3과목 연결</span>
+    </div>
+<h2 class="section-title">10축 매핑</h2>
+<div class="note-box"><span class="note-label"></span>
+<div style="font-weight:700;margin-bottom:6px;color:#1a2e4a">이 유닛에서 키운 역량</div>C언어 ★★★★☆ — 반복문과 비트 연산으로 거듭제곱을 구현했습니다.<br>컴퓨팅사고력 ★★★★★ — O(n)에서 O(log n)으로의 최적화를 체험했습니다.<br>디버깅 ★★★★☆ — pow() 오차, 오버플로, 모듈러 누락 오류를 체험했습니다.<br>KOI ★★★★★ — 빠른 거듭제곱과 모듈러 연산은 대회 필수 기법입니다.</div>
+<h2 class="section-title">다음 유닛 예고</h2>
+<p>undefined</p>
+<table class="trace"><thead><tr><th>용어</th><th>설명</th></tr></thead><tbody><tr><td><code>거듭제곱</code></td><td>같은 수를 여러 번 곱하는 연산. a^n = a × a × ... × a (n번).</td></tr><tr><td><code>빠른 거듭제곱</code></td><td>지수를 이진수로 분해하여 O(log n)에 거듭제곱을 구하는 분할 정복 알고리즘.</td></tr><tr><td><code>모듈러 연산</code></td><td>나머지 연산. (a×b) % m = ((a%m) × (b%m)) % m 성질로 오버플로를 방지합니다.</td></tr><tr><td><code>로그</code></td><td>거듭제곱의 역연산. log_b(x) = n이면 b^n = x입니다.</td></tr></tbody></table>
+
+    <span class="page-num">3</span>
+  </div>
+</div>
+<div class="page contest-page-wrap">
+  <div class="chapter-page">
+    <div class="chapter-sidebar"></div>
+    <div class="chapter-accent-bar"></div>
+    <div style="flex:1; min-width:0; padding:50px 50px 40px 45px; position:relative;">
+      <div class="problems-chapter-ref">Chapter 07: 거듭제곱과 로그</div>
+      <h2 class="problems-title">대회 문제 (Online Judge)</h2>
+      <p style="font-size:14px; color:#6b7280; margin:-8px 0 24px;">실제 온라인 저지에 출제된 문제입니다. 아래에 코드를 작성한 뒤, 사이트에 제출하여 채점하십시오.</p>
+
+        <div class="contest-card">
+          <div class="contest-header">
+            <div class="contest-num-source">
+              <span class="contest-num">1번</span>
+              <span class="contest-source">백준 1000</span>
+            </div>
+            <span class="diff diff-mid">대회</span>
+          </div>
+          <div class="contest-body">
+            <p class="contest-question">두 정수 A와 B를 입력받아 A+B를 출력하십시오.</p>
+            
+            <div class="contest-write-area">
+              <div class="contest-write-label">코드 작성</div>
+              <textarea class="contest-textarea" rows="12" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="contest-card">
+          <div class="contest-header">
+            <div class="contest-num-source">
+              <span class="contest-num">2번</span>
+              <span class="contest-source">백준 1001</span>
+            </div>
+            <span class="diff diff-mid">대회</span>
+          </div>
+          <div class="contest-body">
+            <p class="contest-question">두 정수 A와 B를 입력받아 A-B를 출력하십시오.</p>
+            
+            <div class="contest-write-area">
+              <div class="contest-write-label">코드 작성</div>
+              <textarea class="contest-textarea" rows="12" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="contest-card">
+          <div class="contest-header">
+            <div class="contest-num-source">
+              <span class="contest-num">3번</span>
+              <span class="contest-source">백준 10869</span>
+            </div>
+            <span class="diff diff-mid">대회</span>
+          </div>
+          <div class="contest-body">
+            <p class="contest-question">두 자연수 A, B를 입력받아 A+B, A-B, A*B, A/B(몫), A%B(나머지)를 출력하십시오.</p>
+            
+            <div class="contest-write-area">
+              <div class="contest-write-label">코드 작성</div>
+              <textarea class="contest-textarea" rows="12" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="contest-card">
+          <div class="contest-header">
+            <div class="contest-num-source">
+              <span class="contest-num">4번</span>
+              <span class="contest-source">백준 2741</span>
+            </div>
+            <span class="diff diff-mid">대회</span>
+          </div>
+          <div class="contest-body">
+            <p class="contest-question">N을 입력받아 1부터 N까지 한 줄에 하나씩 출력하십시오.</p>
+            
+            <div class="contest-write-area">
+              <div class="contest-write-label">코드 작성</div>
+              <textarea class="contest-textarea" rows="12" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="contest-card">
+          <div class="contest-header">
+            <div class="contest-num-source">
+              <span class="contest-num">5번</span>
+              <span class="contest-source">백준 2739</span>
+            </div>
+            <span class="diff diff-mid">대회</span>
+          </div>
+          <div class="contest-body">
+            <p class="contest-question">구구단 N단을 출력하십시오.</p>
+            
+            <div class="contest-write-area">
+              <div class="contest-write-label">코드 작성</div>
+              <textarea class="contest-textarea" rows="12" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="contest-card">
+          <div class="contest-header">
+            <div class="contest-num-source">
+              <span class="contest-num">6번</span>
+              <span class="contest-source">백준 11720</span>
+            </div>
+            <span class="diff diff-mid">대회</span>
+          </div>
+          <div class="contest-body">
+            <p class="contest-question">N개의 숫자가 공백 없이 주어질 때 각 숫자의 합을 출력하십시오.</p>
+            
+            <div class="contest-write-area">
+              <div class="contest-write-label">코드 작성</div>
+              <textarea class="contest-textarea" rows="12" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="contest-card">
+          <div class="contest-header">
+            <div class="contest-num-source">
+              <span class="contest-num">7번</span>
+              <span class="contest-source">백준 2438</span>
+            </div>
+            <span class="diff diff-mid">대회</span>
+          </div>
+          <div class="contest-body">
+            <p class="contest-question">별 찍기 - 1: N줄에 걸쳐 왼쪽 정렬 삼각형을 출력하십시오.</p>
+            
+            <div class="contest-write-area">
+              <div class="contest-write-label">코드 작성</div>
+              <textarea class="contest-textarea" rows="12" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="contest-card">
+          <div class="contest-header">
+            <div class="contest-num-source">
+              <span class="contest-num">8번</span>
+              <span class="contest-source">백준 2439</span>
+            </div>
+            <span class="diff diff-mid">대회</span>
+          </div>
+          <div class="contest-body">
+            <p class="contest-question">별 찍기 - 2: N줄에 걸쳐 오른쪽 정렬 삼각형을 출력하십시오.</p>
+            
+            <div class="contest-write-area">
+              <div class="contest-write-label">코드 작성</div>
+              <textarea class="contest-textarea" rows="12" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="contest-card">
+          <div class="contest-header">
+            <div class="contest-num-source">
+              <span class="contest-num">9번</span>
+              <span class="contest-source">백준 11382</span>
+            </div>
+            <span class="diff diff-mid">대회</span>
+          </div>
+          <div class="contest-body">
+            <p class="contest-question">세 정수 A, B, C를 입력받아 A+B+C를 출력하십시오.</p>
+            
+            <div class="contest-write-area">
+              <div class="contest-write-label">코드 작성</div>
+              <textarea class="contest-textarea" rows="12" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="contest-card">
+          <div class="contest-header">
+            <div class="contest-num-source">
+              <span class="contest-num">10번</span>
+              <span class="contest-source">백준 1008</span>
+            </div>
+            <span class="diff diff-mid">대회</span>
+          </div>
+          <div class="contest-body">
+            <p class="contest-question">두 정수 A와 B를 입력받아 A/B를 소수점 9자리까지 출력하십시오.</p>
+            
+            <div class="contest-write-area">
+              <div class="contest-write-label">코드 작성</div>
+              <textarea class="contest-textarea" rows="12" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="contest-card">
+          <div class="contest-header">
+            <div class="contest-num-source">
+              <span class="contest-num">1번</span>
+              <span class="contest-source">백준 1978</span>
+            </div>
+            <span class="diff diff-mid">대회</span>
+          </div>
+          <div class="contest-body">
+            <p class="contest-question">주어진 수들 중 소수의 개수를 구하십시오.</p>
+            
+            <div class="contest-write-area">
+              <div class="contest-write-label">코드 작성</div>
+              <textarea class="contest-textarea" rows="12" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="contest-card">
+          <div class="contest-header">
+            <div class="contest-num-source">
+              <span class="contest-num">2번</span>
+              <span class="contest-source">백준 2581</span>
+            </div>
+            <span class="diff diff-mid">대회</span>
+          </div>
+          <div class="contest-body">
+            <p class="contest-question">M 이상 N 이하의 소수의 합과 최솟값을 구하십시오.</p>
+            
+            <div class="contest-write-area">
+              <div class="contest-write-label">코드 작성</div>
+              <textarea class="contest-textarea" rows="12" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="contest-card">
+          <div class="contest-header">
+            <div class="contest-num-source">
+              <span class="contest-num">3번</span>
+              <span class="contest-source">백준 1929</span>
+            </div>
+            <span class="diff diff-mid">대회</span>
+          </div>
+          <div class="contest-body">
+            <p class="contest-question">M 이상 N 이하의 소수를 모두 출력하십시오.</p>
+            
+            <div class="contest-write-area">
+              <div class="contest-write-label">코드 작성</div>
+              <textarea class="contest-textarea" rows="12" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="contest-card">
+          <div class="contest-header">
+            <div class="contest-num-source">
+              <span class="contest-num">4번</span>
+              <span class="contest-source">백준 2609</span>
+            </div>
+            <span class="diff diff-mid">대회</span>
+          </div>
+          <div class="contest-body">
+            <p class="contest-question">두 수의 최대공약수와 최소공배수를 구하십시오.</p>
+            
+            <div class="contest-write-area">
+              <div class="contest-write-label">코드 작성</div>
+              <textarea class="contest-textarea" rows="12" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="contest-card">
+          <div class="contest-header">
+            <div class="contest-num-source">
+              <span class="contest-num">5번</span>
+              <span class="contest-source">백준 1934</span>
+            </div>
+            <span class="diff diff-mid">대회</span>
+          </div>
+          <div class="contest-body">
+            <p class="contest-question">두 수의 최소공배수를 구하십시오.</p>
+            
+            <div class="contest-write-area">
+              <div class="contest-write-label">코드 작성</div>
+              <textarea class="contest-textarea" rows="12" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="contest-card">
+          <div class="contest-header">
+            <div class="contest-num-source">
+              <span class="contest-num">6번</span>
+              <span class="contest-source">백준 10872</span>
+            </div>
+            <span class="diff diff-mid">대회</span>
+          </div>
+          <div class="contest-body">
+            <p class="contest-question">N!을 출력하십시오.</p>
+            
+            <div class="contest-write-area">
+              <div class="contest-write-label">코드 작성</div>
+              <textarea class="contest-textarea" rows="12" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="contest-card">
+          <div class="contest-header">
+            <div class="contest-num-source">
+              <span class="contest-num">7번</span>
+              <span class="contest-source">백준 10870</span>
+            </div>
+            <span class="diff diff-mid">대회</span>
+          </div>
+          <div class="contest-body">
+            <p class="contest-question">피보나치 수를 구하십시오.</p>
+            
+            <div class="contest-write-area">
+              <div class="contest-write-label">코드 작성</div>
+              <textarea class="contest-textarea" rows="12" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="contest-card">
+          <div class="contest-header">
+            <div class="contest-num-source">
+              <span class="contest-num">8번</span>
+              <span class="contest-source">백준 11050</span>
+            </div>
+            <span class="diff diff-mid">대회</span>
+          </div>
+          <div class="contest-body">
+            <p class="contest-question">이항 계수 C(n, k)를 구하십시오.</p>
+            
+            <div class="contest-write-area">
+              <div class="contest-write-label">코드 작성</div>
+              <textarea class="contest-textarea" rows="12" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="contest-card">
+          <div class="contest-header">
+            <div class="contest-num-source">
+              <span class="contest-num">9번</span>
+              <span class="contest-source">백준 2745</span>
+            </div>
+            <span class="diff diff-mid">대회</span>
+          </div>
+          <div class="contest-body">
+            <p class="contest-question">B진법 수를 10진법으로 변환하십시오.</p>
+            
+            <div class="contest-write-area">
+              <div class="contest-write-label">코드 작성</div>
+              <textarea class="contest-textarea" rows="12" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="contest-card">
+          <div class="contest-header">
+            <div class="contest-num-source">
+              <span class="contest-num">10번</span>
+              <span class="contest-source">백준 11729</span>
+            </div>
+            <span class="diff diff-mid">대회</span>
+          </div>
+          <div class="contest-body">
+            <p class="contest-question">하노이 탑의 이동 순서를 출력하십시오.</p>
+            
+            <div class="contest-write-area">
+              <div class="contest-write-label">코드 작성</div>
+              <textarea class="contest-textarea" rows="12" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+            </div>
+          </div>
+        </div>
+      <span class="page-num">4</span>
+    </div>
+  </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,2188 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>코딩쏙 교재 — 파일 아카이버 (tar 구현)</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+
+  :root {
+    --navy: #1a2e4a;
+    --navy-mid: #2c4a6e;
+    --navy-light: #3d6590;
+    --orange: #e07830;
+    --orange-light: #f5e6d8;
+    --white: #ffffff;
+    --bg: #f7f8fa;
+    --bg-warm: #faf9f7;
+    --gray-50: #f9fafb;
+    --gray-100: #f3f4f6;
+    --gray-200: #e5e7eb;
+    --gray-300: #d1d5db;
+    --gray-400: #9ca3af;
+    --gray-500: #6b7280;
+    --gray-600: #4b5563;
+    --gray-700: #374151;
+    --gray-800: #1f2937;
+    --text: #2d3748;
+    --green: #16a34a;
+    --green-bg: #dcfce7;
+    --red: #dc2626;
+    --red-bg: #fee2e2;
+    --blue: #2563eb;
+    --blue-bg: #dbeafe;
+    --yellow-bg: #fef9c3;
+    --font: 'Noto Sans KR', sans-serif;
+    --mono: 'JetBrains Mono', 'Consolas', monospace;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: var(--font); background: #e8eaed; font-size: 15px; }
+
+  /* ========== PAGE ========== */
+  .page {
+    width: 210mm;
+    min-height: 295mm;
+    margin: 24px auto;
+    background: var(--white);
+    box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* ========== PAGE 1: CHAPTER START ========== */
+  .chapter-page {
+    display: flex;
+    min-height: 295mm;
+  }
+
+  .chapter-sidebar {
+    width: 10px;
+    background: var(--navy);
+    flex-shrink: 0;
+  }
+
+  .chapter-accent-bar {
+    width: 7px;
+    background: var(--orange);
+    flex-shrink: 0;
+  }
+
+  .chapter-body {
+    flex: 1;
+    padding: 70px 65px 50px 55px;
+    position: relative;
+  }
+
+  .chapter-watermark {
+    position: absolute;
+    top: -10px;
+    right: -15px;
+    font-size: 280px;
+    font-weight: 900;
+    color: rgba(180,195,212,0.35);
+    line-height: 1;
+    pointer-events: none;
+    letter-spacing: -10px;
+  }
+
+  .chapter-label {
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--navy-mid);
+    letter-spacing: 2px;
+    margin-bottom: 4px;
+  }
+
+  .chapter-title {
+    font-size: 44px;
+    font-weight: 900;
+    color: var(--navy);
+    line-height: 1.15;
+    margin-bottom: 12px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .chapter-sub {
+    font-size: 16px;
+    color: var(--gray-500);
+    font-weight: 400;
+    margin-bottom: 20px;
+    padding-bottom: 28px;
+    border-bottom: 1px solid var(--gray-200);
+  }
+
+  /* Learning objectives */
+  .obj-title {
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--navy);
+    margin-bottom: 16px;
+    margin-top: 32px;
+  }
+
+  .obj-list {
+    list-style: none;
+    margin-bottom: 40px;
+  }
+
+  .obj-list li {
+    padding: 5px 0 5px 24px;
+    position: relative;
+    font-size: 15px;
+    color: var(--gray-700);
+    line-height: 1.6;
+  }
+
+  .obj-list li::before {
+    content: '•';
+    position: absolute;
+    left: 8px;
+    color: var(--navy-mid);
+    font-weight: 700;
+  }
+
+  /* Prerequisites flow */
+  .prereq-title {
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--navy);
+    margin-bottom: 18px;
+  }
+
+  .prereq-flow {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    margin-bottom: 44px;
+  }
+
+  .prereq-item {
+    padding: 9px 22px;
+    border: 1.5px solid var(--gray-300);
+    border-radius: 50px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--gray-600);
+    background: var(--white);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+  }
+
+  .prereq-item.current {
+    border-color: var(--navy);
+    color: var(--navy);
+    font-weight: 700;
+    background: #edf2f7;
+    box-shadow: 0 2px 6px rgba(26,46,74,0.12);
+  }
+
+  .prereq-arrow {
+    width: 36px;
+    text-align: center;
+    color: var(--gray-300);
+    font-size: 18px;
+    font-weight: 300;
+  }
+
+  /* Predict box */
+  .predict-box {
+    background: var(--gray-50);
+    border: 1.5px solid var(--gray-200);
+    border-radius: 12px;
+    padding: 24px 28px;
+  }
+
+  .predict-label {
+    display: inline-block;
+    background: var(--orange);
+    color: var(--white);
+    font-size: 12px;
+    font-weight: 600;
+    padding: 3px 12px;
+    border-radius: 4px;
+    margin-bottom: 14px;
+    letter-spacing: 0.5px;
+  }
+
+  .predict-q {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--navy);
+    margin-bottom: 16px;
+  }
+
+  .predict-code {
+    background: var(--white);
+    border: 1px solid var(--gray-200);
+    border-radius: 8px;
+    padding: 14px 18px;
+    font-family: var(--mono);
+    font-size: 13px;
+    line-height: 1.65;
+    color: var(--gray-700);
+  }
+
+  /* ========== PAGE 2: CORE CONTENT ========== */
+  .content-page {
+    padding: 55px 65px;
+  }
+
+  .unit-header-bar {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    margin-bottom: 8px;
+  }
+
+  .unit-tag {
+    font-size: 12px;
+    color: var(--orange);
+    font-weight: 600;
+    letter-spacing: 1px;
+  }
+
+  .unit-title-sm {
+    font-size: 14px;
+    color: var(--gray-400);
+    font-weight: 400;
+  }
+
+  .section-title {
+    font-size: 24px;
+    font-weight: 800;
+    color: var(--navy);
+    margin-bottom: 24px;
+    margin-top: 8px;
+    padding-left: 16px;
+    border-left: 5px solid var(--orange);
+  }
+
+  p {
+    font-size: 15.5px;
+    line-height: 1.9;
+    color: var(--text);
+    margin-bottom: 18px;
+  }
+
+  p code {
+    font-family: var(--mono);
+    font-size: 13.5px;
+    background: #f1f3f5;
+    padding: 2px 7px;
+    border-radius: 4px;
+    color: var(--navy);
+    font-weight: 500;
+  }
+
+  /* Code block */
+  .code-wrap {
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    border: 1px solid var(--gray-200);
+    margin: 22px 0;
+  }
+
+  .code-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 9px 18px;
+    background: var(--navy);
+    font-size: 12px;
+  }
+
+  .code-bar-lang {
+    font-family: var(--mono);
+    font-weight: 600;
+    color: var(--white);
+  }
+
+  .code-bar-file {
+    color: rgba(255,255,255,0.6);
+    font-weight: 400;
+  }
+
+  .code-body {
+    background: #f8f9fb;
+    padding: 20px 0;
+    font-family: var(--mono);
+    font-size: 13.5px;
+    line-height: 1.75;
+    border: 1px solid var(--gray-200);
+    border-top: none;
+    border-radius: 0 0 12px 12px;
+  }
+
+  .code-line {
+    display: flex;
+    padding: 0 20px;
+  }
+
+  .code-line:hover {
+    background: #f0f4f8;
+  }
+
+  .code-line.highlighted {
+    background: #fff8e1;
+  }
+
+  .ln {
+    width: 30px;
+    text-align: right;
+    color: #b8bfc8;
+    font-size: 12px;
+    margin-right: 18px;
+    user-select: none;
+    flex-shrink: 0;
+    padding-top: 1px;
+  }
+
+  .lc { flex: 1; }
+
+  /* syntax */
+  .s-pp { color: #8b5cf6; font-weight: 600; }
+  .s-str { color: #d97706; }
+  .s-type { color: #2563eb; font-weight: 500; }
+  .s-kw { color: #7c3aed; font-weight: 500; }
+  .s-fn { color: #059669; font-weight: 500; }
+  .s-num { color: #dc2626; }
+  .s-cm { color: #9ca3af; font-style: italic; }
+
+  /* Output block */
+  .output-wrap {
+    border-radius: 10px;
+    overflow: hidden;
+    margin: 10px 0 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    border: 1px solid #d1d5db;
+  }
+
+  .output-bar {
+    padding: 9px 18px;
+    background: #374151;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--white);
+    letter-spacing: 0.5px;
+  }
+
+  .output-body {
+    padding: 16px 20px;
+    font-family: var(--mono);
+    font-size: 13.5px;
+    line-height: 1.7;
+    color: var(--gray-800);
+    background: #f1f5f9;
+    border: 1px solid var(--gray-200);
+    border-top: none;
+    border-radius: 0 0 10px 10px;
+  }
+
+  /* Callout */
+  .tip {
+    margin: 28px 0;
+    padding: 18px 24px;
+    background: #dbeafe;
+    border-left: 5px solid #2563eb;
+    border-radius: 0 12px 12px 0;
+    font-size: 14.5px;
+    line-height: 1.8;
+    color: var(--text);
+  }
+
+  .tip-label {
+    font-weight: 700;
+    color: #2563eb;
+    font-size: 13px;
+    display: block;
+    margin-bottom: 4px;
+  }
+
+  .warn {
+    margin: 28px 0;
+    padding: 18px 24px;
+    background: #fef3c7;
+    border-left: 5px solid #d97706;
+    border-radius: 0 12px 12px 0;
+    font-size: 14.5px;
+    line-height: 1.8;
+  }
+
+  .warn-label {
+    font-weight: 700;
+    color: #d97706;
+    font-size: 13px;
+    display: block;
+    margin-bottom: 4px;
+  }
+
+  .note-box {
+    margin: 28px 0;
+    padding: 18px 24px;
+    background: #e2e8f0;
+    border-left: 5px solid #64748b;
+    border-radius: 0 12px 12px 0;
+    font-size: 14.5px;
+    line-height: 1.8;
+  }
+
+  .note-label {
+    font-weight: 700;
+    color: var(--gray-600);
+    font-size: 13px;
+    display: block;
+    margin-bottom: 4px;
+  }
+
+  /* Trace table */
+  table.trace {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    margin: 28px 0;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+    font-size: 14px;
+  }
+
+  table.trace th {
+    background: var(--navy);
+    color: var(--white);
+    padding: 10px 16px;
+    text-align: left;
+    font-weight: 500;
+    font-size: 13px;
+  }
+
+  table.trace td {
+    padding: 10px 16px;
+    border-bottom: 1px solid var(--gray-200);
+    color: var(--gray-700);
+  }
+
+  table.trace tr:nth-child(even) td { background: var(--gray-50); }
+  table.trace tr:last-child td { border-bottom: none; }
+
+  table.trace td code {
+    font-family: var(--mono);
+    font-size: 12.5px;
+    background: #eef1f5;
+    padding: 2px 6px;
+    border-radius: 4px;
+    color: var(--navy);
+  }
+
+  /* ========== PAGE 3: PROBLEMS ========== */
+  .problems-header {
+    margin-bottom: 8px;
+  }
+
+  .problems-chapter-ref {
+    font-size: 13px;
+    color: var(--gray-500);
+    margin-bottom: 4px;
+  }
+
+  .problems-title {
+    font-size: 28px;
+    font-weight: 800;
+    color: var(--navy);
+    margin-bottom: 24px;
+  }
+
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 16px;
+  }
+
+  .prob-card {
+    background: var(--white);
+    border: 1px solid var(--gray-200);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 3px 15px rgba(0,0,0,0.06);
+  }
+
+  .prob-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 16px;
+    background: var(--navy);
+  }
+
+  .prob-num {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--white);
+  }
+
+  .diff {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    font-size: 12px;
+    font-weight: 800;
+  }
+
+  .diff-basic { background: #22c55e; color: white; }
+  .diff-mid { background: #f59e0b; color: white; }
+  .diff-hard { background: #ef4444; color: white; }
+
+  .prob-desc {
+    font-size: 13.5px;
+    line-height: 1.65;
+    color: var(--gray-600);
+    margin-bottom: 10px;
+    padding: 14px 16px 0;
+  }
+
+  .prob-code {
+    background: var(--gray-50);
+    border: 1px solid var(--gray-200);
+    border-radius: 6px;
+    padding: 10px 14px;
+    margin: 0 16px 16px;
+    font-family: var(--mono);
+    font-size: 12.5px;
+    line-height: 1.55;
+    color: var(--gray-600);
+  }
+
+  /* Competition section */
+  .comp-section {
+    margin-top: 32px;
+    padding-top: 24px;
+    border-top: 2px solid var(--navy);
+  }
+
+  .comp-title {
+    font-size: 22px;
+    font-weight: 800;
+    color: var(--navy);
+    margin-bottom: 20px;
+  }
+
+  .comp-card {
+    background: var(--white);
+    border: 1.5px solid var(--gray-200);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 18px rgba(0,0,0,0.06);
+  }
+
+  .comp-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 16px;
+    background: #0f766e;
+  }
+
+  .comp-header .comp-name {
+    color: var(--white);
+    font-size: 15px;
+    font-weight: 700;
+    margin: 0;
+  }
+
+  .comp-inner {
+    padding: 14px 18px 18px;
+  }
+
+  .comp-badge {
+    display: inline-block;
+    padding: 3px 12px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 700;
+  }
+
+  .badge-bj { background: #93c5fd; color: #1e3a5f; }
+  .badge-cu { background: #c4b5fd; color: #3b1f7e; }
+  .badge-pg { background: #7dd3fc; color: #0c4a6e; }
+
+  .comp-name {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--navy);
+    margin-bottom: 6px;
+  }
+
+  .comp-desc {
+    font-size: 14px;
+    color: var(--gray-600);
+    line-height: 1.7;
+    margin-bottom: 14px;
+  }
+
+  .io-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+
+  .io-card {
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid var(--gray-200);
+  }
+
+  .io-h {
+    padding: 6px 14px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--gray-600);
+    background: #e2e8f0;
+  }
+
+  .io-c {
+    padding: 10px 14px;
+    font-family: var(--mono);
+    font-size: 13px;
+    line-height: 1.5;
+    background: var(--white);
+  }
+
+  /* ========== DEBUG LAB ========== */
+  .debug-section {
+    margin: 24px 0;
+    border: 2px solid var(--red);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+
+  .debug-bar {
+    background: var(--red);
+    color: var(--white);
+    padding: 10px 20px;
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 1px;
+  }
+
+  .debug-body {
+    padding: 20px;
+    background: #fef2f2;
+  }
+
+  /* 10축 connection */
+  .connect-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 16px;
+    margin: 28px 0;
+  }
+
+  .connect-card {
+    border-radius: 12px;
+    padding: 20px;
+    text-align: center;
+    border: 1px solid var(--gray-200);
+    box-shadow: 0 3px 14px rgba(0,0,0,0.05);
+  }
+
+  .connect-card h5 {
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 8px;
+  }
+
+  .connect-card p {
+    font-size: 13px;
+    margin: 0;
+    color: var(--gray-600);
+    line-height: 1.6;
+  }
+
+  .cc1 { border-top: 3px solid #8b5cf6; }
+  .cc1 h5 { color: #8b5cf6; }
+  .cc2 { border-top: 3px solid var(--green); }
+  .cc2 h5 { color: var(--green); }
+  .cc3 { border-top: 3px solid var(--navy); }
+  .cc3 h5 { color: var(--navy); }
+
+  /* PAGE NUMBER */
+  .page-num {
+    position: absolute;
+    bottom: 20px;
+    right: 30px;
+    font-size: 12px;
+    color: var(--gray-400);
+  }
+
+  /* WARMUP */
+  .warmup-box {
+    background: #e0e7f1;
+    border-radius: 12px;
+    padding: 24px 28px;
+    margin: 28px 0;
+    border: 2px solid #c7d2e0;
+  }
+
+  .warmup-title {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--navy);
+    margin-bottom: 14px;
+  }
+
+  .wq {
+    padding: 9px 16px;
+    background: var(--white);
+    border-radius: 8px;
+    margin-bottom: 8px;
+    font-size: 14px;
+    border: 1px solid var(--gray-200);
+    color: var(--gray-700);
+  }
+
+  .wq b { color: var(--navy); margin-right: 6px; }
+  .wq .hint { color: var(--gray-400); font-size: 13px; }
+
+  /* ===== CONTEST PROBLEMS PAGE ===== */
+  .contest-page-wrap .chapter-page {
+    min-height: auto;
+  }
+
+  .contest-page-wrap .chapter-page > div:last-child {
+    min-width: 0;
+    overflow-wrap: break-word;
+    word-break: break-word;
+  }
+
+  .contest-card {
+    background: white;
+    border: 1.5px solid var(--gray-200);
+    border-radius: 12px;
+    margin-bottom: 28px;
+    overflow: hidden;
+    break-inside: avoid;
+  }
+
+  .contest-header {
+    background: var(--navy);
+    color: white;
+    padding: 14px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .contest-num-source {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .contest-num {
+    font-weight: 700;
+    font-size: 16px;
+  }
+
+  .contest-source {
+    background: rgba(255,255,255,0.15);
+    padding: 3px 10px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 500;
+  }
+
+  .contest-body {
+    padding: 20px 24px 24px;
+  }
+
+  .contest-question {
+    font-size: 15px;
+    line-height: 1.7;
+    color: var(--text);
+    margin: 0 0 16px;
+    word-break: break-word;
+    overflow-wrap: break-word;
+  }
+
+  .contest-expected {
+    background: #1e293b;
+    border-radius: 8px;
+    overflow: hidden;
+    margin-bottom: 20px;
+  }
+
+  .contest-expected-label {
+    background: #334155;
+    color: #94a3b8;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 6px 14px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .contest-expected-body {
+    color: #e2e8f0;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    line-height: 1.6;
+    padding: 12px 16px;
+    margin: 0;
+    white-space: pre;
+  }
+
+  .contest-write-area {
+    border: 2px dashed var(--gray-300);
+    border-radius: 10px;
+    overflow: hidden;
+    transition: border-color 0.2s;
+  }
+
+  .contest-write-area:focus-within {
+    border-color: var(--orange);
+    border-style: solid;
+  }
+
+  .contest-write-label {
+    background: var(--bg);
+    color: var(--gray-500);
+    font-size: 12px;
+    font-weight: 600;
+    padding: 8px 14px;
+    border-bottom: 1px solid var(--gray-200);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .contest-textarea {
+    width: 100%;
+    min-height: 200px;
+    padding: 16px 18px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    line-height: 1.7;
+    color: var(--text);
+    background: #fafbfc;
+    border: none;
+    outline: none;
+    resize: vertical;
+    tab-size: 4;
+    box-sizing: border-box;
+  }
+
+  .contest-textarea::placeholder {
+    color: var(--gray-300);
+  }
+
+  @media print {
+    body { background: white; }
+    .page { box-shadow: none; margin: 0; page-break-after: always; }
+    .contest-textarea { border: 1px solid var(--gray-300); min-height: 180px; }
+  }
+
+</style>
+</head>
+<body>
+
+<div class="page">
+  <div class="chapter-page">
+    <div class="chapter-sidebar"></div>
+    <div class="chapter-accent-bar"></div>
+    <div class="chapter-body">
+      <div class="chapter-watermark">03</div>
+      <div class="chapter-label">Chapter 03</div>
+      <h1 class="chapter-title">파일 아카이버 (tar 구현)</h1>
+      <p class="chapter-sub">여러 파일을 하나로 묶는 아카이브 프로그램을 단계적으로 구현하며, RLE 압축과 CRC 무결성 검증까지 완성합니다.</p>
+
+      <h3 class="obj-title">이 유닛에서 배우는 것</h3>
+      <ul class="obj-list">
+        <li>파일 이름과 크기 헤더를 설계하고 여러 파일을 하나의 아카이브로 묶고 풀 수 있습니다.</li>
+        <li>아카이브 내 파일 목록 조회, 개별 추출, 삭제 기능을 구현할 수 있습니다.</li>
+        <li>RLE 압축/해제를 아카이브에 적용하여 저장 공간을 절약할 수 있습니다.</li>
+        <li>CRC 체크섬으로 아카이브 파일의 무결성을 검증할 수 있습니다.</li>
+      </ul>
+
+      <h3 class="prereq-title">선수 학습</h3>
+      <div class="prereq-flow">
+        <div class="prereq-item">L11 파일 입출력</div><div class="prereq-arrow">→</div>
+        <div class="prereq-item current">L14-U02 비트 연산</div>
+      </div>
+
+      <div class="predict-box">
+        <div class="predict-label">예측해 봅시다</div>
+        <div class="predict-q">파일 3개(a.txt 10바이트, b.txt 20바이트, c.txt 5바이트)를 아카이브로 묶은 뒤, b.txt만 삭제하고 다시 저장하면 아카이브 파일 크기는 어떻게 변합니까?</div>
+        
+      </div>
+
+      <span class="page-num">1</span>
+    </div>
+  </div>
+</div>
+<div class="page">
+  <div class="content-page">
+    <div class="unit-header-bar">
+      <span class="unit-tag">UNIT 03</span>
+      <span class="unit-title-sm">파일 아카이버 (tar 구현)</span>
+    </div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 1</span><p style="margin:0;font-size:14px">3개의 파일(100바이트, 200바이트, 50바이트)을 하나로 묶으려 합니다. 각 파일마다 파일 이름(64바이트)과 크기(4바이트) 헤더를 붙인다면, 아카이브의 총 크기는 몇 바이트입니까?</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 2</span><p style="margin:0;font-size:14px">문자열 "AAABBBCCCCDD"를 RLE(Run-Length Encoding)로 압축하면 어떤 형태가 됩니까?</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 3</span><p style="margin:0;font-size:14px">fread와 fwrite 함수에서 바이너리 모드("rb", "wb")를 사용하는 이유는 무엇입니까?</p></div>
+<h2 class="section-title">예측</h2>
+<p>undefined</p>
+<h2 class="section-title">이야기</h2>
+<p>undefined</p>
+<h2 class="section-title">핵심 개념</h2>
+<div class="note-box"><span class="note-label"></span>
+<div style="font-weight:700;margin-bottom:6px;color:#1a2e4a">파일 아카이버 프로젝트 (tar 구현)</div>여러 파일을 하나의 아카이브 파일로 묶고 푸는 프로그램을 단계적으로 구현합니다.<br><br>버전 1: 기본 -- 단순 아카이브 (파일 이름+크기 헤더 + 데이터 연결, pack/unpack)<br>버전 2: 확장 -- 파일 목록 보기, 개별 파일 추출, 파일 삭제, 헤더에 타임스탬프<br>버전 3: 완성 -- RLE 압축/해제 지원, CRC 체크섬 무결성 검증, 디렉토리 구조 지원</div>
+<h2 class="section-title">버전 1: 기본 -- 단순 아카이브 (pack/unpack)</h2>
+<p>undefined</p>
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;stdio.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;stdlib.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;string.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">4</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">5</span><span class="lc"><span class="s-pp">#define</span> NAME_LEN <span class="s-num">64</span></span></div>
+<div class="code-line"><span class="ln">6</span><span class="lc"><span class="s-pp">#define</span> BUF_SIZE <span class="s-num">4096</span></span></div>
+<div class="code-line"><span class="ln">7</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">8</span><span class="lc"><span class="s-cm">/* 파일 헤더 구조체 */</span></span></div>
+<div class="code-line"><span class="ln">9</span><span class="lc"><span class="s-kw">typedef</span> <span class="s-kw">struct</span> {</span></div>
+<div class="code-line"><span class="ln">10</span><span class="lc">    <span class="s-type">char</span> name[NAME_LEN];       <span class="s-cm">/* 파일 이름 */</span></span></div>
+<div class="code-line"><span class="ln">11</span><span class="lc">    <span class="s-type">unsigned</span> <span class="s-type">int</span> size;         <span class="s-cm">/* 파일 크기 (바이트) */</span></span></div>
+<div class="code-line"><span class="ln">12</span><span class="lc">} FileHeader;</span></div>
+<div class="code-line"><span class="ln">13</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">14</span><span class="lc"><span class="s-cm">/* 파일 크기 구하기 */</span></span></div>
+<div class="code-line"><span class="ln">15</span><span class="lc"><span class="s-type">long</span> <span class="s-fn">getFileSize</span>(<span class="s-type">FILE</span> *fp) {</span></div>
+<div class="code-line"><span class="ln">16</span><span class="lc">    <span class="s-type">long</span> cur = <span class="s-fn">ftell</span>(fp);</span></div>
+<div class="code-line"><span class="ln">17</span><span class="lc">    <span class="s-fn">fseek</span>(fp, <span class="s-num">0</span>, SEEK_END);</span></div>
+<div class="code-line"><span class="ln">18</span><span class="lc">    <span class="s-type">long</span> size = <span class="s-fn">ftell</span>(fp);</span></div>
+<div class="code-line"><span class="ln">19</span><span class="lc">    <span class="s-fn">fseek</span>(fp, cur, SEEK_SET);</span></div>
+<div class="code-line"><span class="ln">20</span><span class="lc">    <span class="s-kw">return</span> size;</span></div>
+<div class="code-line"><span class="ln">21</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">22</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">23</span><span class="lc"><span class="s-cm">/* 파일 데이터를 dst에 size만큼 복사 */</span></span></div>
+<div class="code-line"><span class="ln">24</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">copyData</span>(<span class="s-type">FILE</span> *src, <span class="s-type">FILE</span> *dst, <span class="s-type">unsigned</span> <span class="s-type">int</span> size) {</span></div>
+<div class="code-line"><span class="ln">25</span><span class="lc">    <span class="s-type">unsigned</span> <span class="s-type">char</span> buf[BUF_SIZE];</span></div>
+<div class="code-line"><span class="ln">26</span><span class="lc">    <span class="s-type">unsigned</span> <span class="s-type">int</span> remaining = size;</span></div>
+<div class="code-line"><span class="ln">27</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">28</span><span class="lc">    <span class="s-kw">while</span> (remaining &gt; <span class="s-num">0</span>) {</span></div>
+<div class="code-line"><span class="ln">29</span><span class="lc">        <span class="s-type">unsigned</span> <span class="s-type">int</span> toRead = remaining &lt; BUF_SIZE</span></div>
+<div class="code-line"><span class="ln">30</span><span class="lc">                              ? remaining : BUF_SIZE;</span></div>
+<div class="code-line"><span class="ln">31</span><span class="lc">        <span class="s-type">unsigned</span> <span class="s-type">int</span> readCount = (<span class="s-type">unsigned</span> <span class="s-type">int</span>)<span class="s-fn">fread</span>(</span></div>
+<div class="code-line"><span class="ln">32</span><span class="lc">            buf, <span class="s-num">1</span>, toRead, src);</span></div>
+<div class="code-line"><span class="ln">33</span><span class="lc">        <span class="s-kw">if</span> (readCount == <span class="s-num">0</span>) {</span></div>
+<div class="code-line"><span class="ln">34</span><span class="lc">            <span class="s-fn">fprintf</span>(stderr, <span class="s-str">"오류: 파일 읽기 실패\n"</span>);</span></div>
+<div class="code-line"><span class="ln">35</span><span class="lc">            <span class="s-kw">return</span> -<span class="s-num">1</span>;</span></div>
+<div class="code-line"><span class="ln">36</span><span class="lc">        }</span></div>
+<div class="code-line"><span class="ln">37</span><span class="lc">        <span class="s-fn">fwrite</span>(buf, <span class="s-num">1</span>, readCount, dst);</span></div>
+<div class="code-line"><span class="ln">38</span><span class="lc">        remaining -= readCount;</span></div>
+<div class="code-line"><span class="ln">39</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">40</span><span class="lc">    <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">41</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">42</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">43</span><span class="lc"><span class="s-cm">/* pack: 여러 파일을 하나의 아카이브로 묶기 */</span></span></div>
+<div class="code-line"><span class="ln">44</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">pack</span>(<span class="s-kw">const</span> <span class="s-type">char</span> *archiveName, <span class="s-kw">const</span> <span class="s-type">char</span> *files[],</span></div>
+<div class="code-line"><span class="ln">45</span><span class="lc">         <span class="s-type">int</span> fileCount) {</span></div>
+<div class="code-line"><span class="ln">46</span><span class="lc">    <span class="s-type">FILE</span> *archive = <span class="s-fn">fopen</span>(archiveName, <span class="s-str">"wb"</span>);</span></div>
+<div class="code-line"><span class="ln">47</span><span class="lc">    <span class="s-kw">if</span> (archive == <span class="s-kw">NULL</span>) {</span></div>
+<div class="code-line"><span class="ln">48</span><span class="lc">        <span class="s-fn">fprintf</span>(stderr, <span class="s-str">"오류: 아카이브 생성 실패\n"</span>);</span></div>
+<div class="code-line"><span class="ln">49</span><span class="lc">        <span class="s-kw">return</span> -<span class="s-num">1</span>;</span></div>
+<div class="code-line"><span class="ln">50</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">51</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">52</span><span class="lc">    <span class="s-cm">/* 파일 개수 기록 */</span></span></div>
+<div class="code-line"><span class="ln">53</span><span class="lc">    <span class="s-fn">fwrite</span>(&amp;fileCount, <span class="s-kw">sizeof</span>(<span class="s-type">int</span>), <span class="s-num">1</span>, archive);</span></div>
+<div class="code-line"><span class="ln">54</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">55</span><span class="lc">    <span class="s-kw">for</span> (<span class="s-type">int</span> i = <span class="s-num">0</span>; i &lt; fileCount; i++) {</span></div>
+<div class="code-line"><span class="ln">56</span><span class="lc">        <span class="s-type">FILE</span> *fp = <span class="s-fn">fopen</span>(files[i], <span class="s-str">"rb"</span>);</span></div>
+<div class="code-line"><span class="ln">57</span><span class="lc">        <span class="s-kw">if</span> (fp == <span class="s-kw">NULL</span>) {</span></div>
+<div class="code-line"><span class="ln">58</span><span class="lc">            <span class="s-fn">fprintf</span>(stderr, <span class="s-str">"오류: %s 열기 실패\n"</span>, files[i]);</span></div>
+<div class="code-line"><span class="ln">59</span><span class="lc">            <span class="s-fn">fclose</span>(archive);</span></div>
+<div class="code-line"><span class="ln">60</span><span class="lc">            <span class="s-kw">return</span> -<span class="s-num">1</span>;</span></div>
+<div class="code-line"><span class="ln">61</span><span class="lc">        }</span></div>
+<div class="code-line"><span class="ln">62</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">63</span><span class="lc">        <span class="s-cm">/* 헤더 작성 */</span></span></div>
+<div class="code-line"><span class="ln">64</span><span class="lc">        FileHeader header;</span></div>
+<div class="code-line"><span class="ln">65</span><span class="lc">        <span class="s-fn">memset</span>(&amp;header, <span class="s-num">0</span>, <span class="s-kw">sizeof</span>(header));</span></div>
+<div class="code-line"><span class="ln">66</span><span class="lc">        <span class="s-fn">strncpy</span>(header.name, files[i], NAME_LEN - <span class="s-num">1</span>);</span></div>
+<div class="code-line"><span class="ln">67</span><span class="lc">        header.size = (<span class="s-type">unsigned</span> <span class="s-type">int</span>)<span class="s-fn">getFileSize</span>(fp);</span></div>
+<div class="code-line"><span class="ln">68</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">69</span><span class="lc">        <span class="s-fn">fwrite</span>(&amp;header, <span class="s-kw">sizeof</span>(FileHeader), <span class="s-num">1</span>, archive);</span></div>
+<div class="code-line"><span class="ln">70</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">71</span><span class="lc">        <span class="s-cm">/* 파일 데이터 복사 */</span></span></div>
+<div class="code-line"><span class="ln">72</span><span class="lc">        <span class="s-fn">copyData</span>(fp, archive, header.size);</span></div>
+<div class="code-line"><span class="ln">73</span><span class="lc">        <span class="s-fn">fclose</span>(fp);</span></div>
+<div class="code-line"><span class="ln">74</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">75</span><span class="lc">        <span class="s-fn">printf</span>(<span class="s-str">"  추가: %-30s (%u 바이트)\n"</span>,</span></div>
+<div class="code-line"><span class="ln">76</span><span class="lc">               header.name, header.size);</span></div>
+<div class="code-line"><span class="ln">77</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">78</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">79</span><span class="lc">    <span class="s-fn">fclose</span>(archive);</span></div>
+<div class="code-line"><span class="ln">80</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"아카이브 '%s' 생성 완료 (%d개 파일)\n"</span>,</span></div>
+<div class="code-line"><span class="ln">81</span><span class="lc">           archiveName, fileCount);</span></div>
+<div class="code-line"><span class="ln">82</span><span class="lc">    <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">83</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">84</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">85</span><span class="lc"><span class="s-cm">/* unpack: 아카이브에서 모든 파일 꺼내기 */</span></span></div>
+<div class="code-line"><span class="ln">86</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">unpack</span>(<span class="s-kw">const</span> <span class="s-type">char</span> *archiveName) {</span></div>
+<div class="code-line"><span class="ln">87</span><span class="lc">    <span class="s-type">FILE</span> *archive = <span class="s-fn">fopen</span>(archiveName, <span class="s-str">"rb"</span>);</span></div>
+<div class="code-line"><span class="ln">88</span><span class="lc">    <span class="s-kw">if</span> (archive == <span class="s-kw">NULL</span>) {</span></div>
+<div class="code-line"><span class="ln">89</span><span class="lc">        <span class="s-fn">fprintf</span>(stderr, <span class="s-str">"오류: 아카이브 열기 실패\n"</span>);</span></div>
+<div class="code-line"><span class="ln">90</span><span class="lc">        <span class="s-kw">return</span> -<span class="s-num">1</span>;</span></div>
+<div class="code-line"><span class="ln">91</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">92</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">93</span><span class="lc">    <span class="s-type">int</span> fileCount;</span></div>
+<div class="code-line"><span class="ln">94</span><span class="lc">    <span class="s-fn">fread</span>(&amp;fileCount, <span class="s-kw">sizeof</span>(<span class="s-type">int</span>), <span class="s-num">1</span>, archive);</span></div>
+<div class="code-line"><span class="ln">95</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"아카이브 '%s': %d개 파일 포함\n"</span>,</span></div>
+<div class="code-line"><span class="ln">96</span><span class="lc">           archiveName, fileCount);</span></div>
+<div class="code-line"><span class="ln">97</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">98</span><span class="lc">    <span class="s-kw">for</span> (<span class="s-type">int</span> i = <span class="s-num">0</span>; i &lt; fileCount; i++) {</span></div>
+<div class="code-line"><span class="ln">99</span><span class="lc">        FileHeader header;</span></div>
+<div class="code-line"><span class="ln">100</span><span class="lc">        <span class="s-fn">fread</span>(&amp;header, <span class="s-kw">sizeof</span>(FileHeader), <span class="s-num">1</span>, archive);</span></div>
+<div class="code-line"><span class="ln">101</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">102</span><span class="lc">        <span class="s-type">FILE</span> *fp = <span class="s-fn">fopen</span>(header.name, <span class="s-str">"wb"</span>);</span></div>
+<div class="code-line"><span class="ln">103</span><span class="lc">        <span class="s-kw">if</span> (fp == <span class="s-kw">NULL</span>) {</span></div>
+<div class="code-line"><span class="ln">104</span><span class="lc">            <span class="s-fn">fprintf</span>(stderr, <span class="s-str">"오류: %s 생성 실패\n"</span>,</span></div>
+<div class="code-line"><span class="ln">105</span><span class="lc">                    header.name);</span></div>
+<div class="code-line"><span class="ln">106</span><span class="lc">            <span class="s-fn">fclose</span>(archive);</span></div>
+<div class="code-line"><span class="ln">107</span><span class="lc">            <span class="s-kw">return</span> -<span class="s-num">1</span>;</span></div>
+<div class="code-line"><span class="ln">108</span><span class="lc">        }</span></div>
+<div class="code-line"><span class="ln">109</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">110</span><span class="lc">        <span class="s-fn">copyData</span>(archive, fp, header.size);</span></div>
+<div class="code-line"><span class="ln">111</span><span class="lc">        <span class="s-fn">fclose</span>(fp);</span></div>
+<div class="code-line"><span class="ln">112</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">113</span><span class="lc">        <span class="s-fn">printf</span>(<span class="s-str">"  추출: %-30s (%u 바이트)\n"</span>,</span></div>
+<div class="code-line"><span class="ln">114</span><span class="lc">               header.name, header.size);</span></div>
+<div class="code-line"><span class="ln">115</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">116</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">117</span><span class="lc">    <span class="s-fn">fclose</span>(archive);</span></div>
+<div class="code-line"><span class="ln">118</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"전체 추출 완료\n"</span>);</span></div>
+<div class="code-line"><span class="ln">119</span><span class="lc">    <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">120</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">121</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">122</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">main</span>(<span class="s-type">int</span> argc, <span class="s-type">char</span> *argv[]) {</span></div>
+<div class="code-line"><span class="ln">123</span><span class="lc">    <span class="s-kw">if</span> (argc &lt; <span class="s-num">3</span>) {</span></div>
+<div class="code-line"><span class="ln">124</span><span class="lc">        <span class="s-fn">printf</span>(<span class="s-str">"사용법:\n"</span>);</span></div>
+<div class="code-line"><span class="ln">125</span><span class="lc">        <span class="s-fn">printf</span>(<span class="s-str">"  묶기: %s pack archive.arc "</span></span></div>
+<div class="code-line"><span class="ln">126</span><span class="lc">               <span class="s-str">"file1 file2 ...\n"</span>, argv[<span class="s-num">0</span>]);</span></div>
+<div class="code-line"><span class="ln">127</span><span class="lc">        <span class="s-fn">printf</span>(<span class="s-str">"  풀기: %s unpack archive.arc\n"</span>, argv[<span class="s-num">0</span>]);</span></div>
+<div class="code-line"><span class="ln">128</span><span class="lc">        <span class="s-kw">return</span> <span class="s-num">1</span>;</span></div>
+<div class="code-line"><span class="ln">129</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">130</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">131</span><span class="lc">    <span class="s-kw">if</span> (<span class="s-fn">strcmp</span>(argv[<span class="s-num">1</span>], <span class="s-str">"pack"</span>) == <span class="s-num">0</span>) {</span></div>
+<div class="code-line"><span class="ln">132</span><span class="lc">        <span class="s-kw">if</span> (argc &lt; <span class="s-num">4</span>) {</span></div>
+<div class="code-line"><span class="ln">133</span><span class="lc">            <span class="s-fn">printf</span>(<span class="s-str">"묶을 파일을 지정하십시오.\n"</span>);</span></div>
+<div class="code-line"><span class="ln">134</span><span class="lc">            <span class="s-kw">return</span> <span class="s-num">1</span>;</span></div>
+<div class="code-line"><span class="ln">135</span><span class="lc">        }</span></div>
+<div class="code-line"><span class="ln">136</span><span class="lc">        <span class="s-kw">const</span> <span class="s-type">char</span> *files[<span class="s-num">100</span>];</span></div>
+<div class="code-line"><span class="ln">137</span><span class="lc">        <span class="s-type">int</span> count = argc - <span class="s-num">3</span>;</span></div>
+<div class="code-line"><span class="ln">138</span><span class="lc">        <span class="s-kw">for</span> (<span class="s-type">int</span> i = <span class="s-num">0</span>; i &lt; count; i++) {</span></div>
+<div class="code-line"><span class="ln">139</span><span class="lc">            files[i] = argv[i + <span class="s-num">3</span>];</span></div>
+<div class="code-line"><span class="ln">140</span><span class="lc">        }</span></div>
+<div class="code-line"><span class="ln">141</span><span class="lc">        <span class="s-kw">return</span> <span class="s-fn">pack</span>(argv[<span class="s-num">2</span>], files, count);</span></div>
+<div class="code-line"><span class="ln">142</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">143</span><span class="lc">    <span class="s-kw">else</span> <span class="s-kw">if</span> (<span class="s-fn">strcmp</span>(argv[<span class="s-num">1</span>], <span class="s-str">"unpack"</span>) == <span class="s-num">0</span>) {</span></div>
+<div class="code-line"><span class="ln">144</span><span class="lc">        <span class="s-kw">return</span> <span class="s-fn">unpack</span>(argv[<span class="s-num">2</span>]);</span></div>
+<div class="code-line"><span class="ln">145</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">146</span><span class="lc">    <span class="s-kw">else</span> {</span></div>
+<div class="code-line"><span class="ln">147</span><span class="lc">        <span class="s-fn">printf</span>(<span class="s-str">"알 수 없는 명령: %s\n"</span>, argv[<span class="s-num">1</span>]);</span></div>
+<div class="code-line"><span class="ln">148</span><span class="lc">        <span class="s-kw">return</span> <span class="s-num">1</span>;</span></div>
+<div class="code-line"><span class="ln">149</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">150</span><span class="lc">}</span></div>
+</div>
+</div>
+<div class="debug-section"><div class="debug-bar">DEBUG LAB — 에러를 찾으시오</div><div class="debug-body">
+
+<p style="margin:14px 0 0; font-size:14px;"><b>에러:</b> </p>
+<p style="font-size:14px;"><b>수정:</b> </p>
+</div></div>
+<h2 class="section-title">버전 2: 확장 -- 목록/추출/삭제 + 타임스탬프</h2>
+<p>undefined</p>
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;stdio.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;stdlib.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;string.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">4</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;time.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">5</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">6</span><span class="lc"><span class="s-pp">#define</span> NAME_LEN  <span class="s-num">64</span></span></div>
+<div class="code-line"><span class="ln">7</span><span class="lc"><span class="s-pp">#define</span> BUF_SIZE  <span class="s-num">4096</span></span></div>
+<div class="code-line"><span class="ln">8</span><span class="lc"><span class="s-pp">#define</span> MAX_FILES <span class="s-num">256</span></span></div>
+<div class="code-line"><span class="ln">9</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">10</span><span class="lc"><span class="s-cm">/* 확장 헤더: 타임스탬프 포함 */</span></span></div>
+<div class="code-line"><span class="ln">11</span><span class="lc"><span class="s-kw">typedef</span> <span class="s-kw">struct</span> {</span></div>
+<div class="code-line"><span class="ln">12</span><span class="lc">    <span class="s-type">char</span> name[NAME_LEN];       <span class="s-cm">/* 파일 이름 */</span></span></div>
+<div class="code-line"><span class="ln">13</span><span class="lc">    <span class="s-type">unsigned</span> <span class="s-type">int</span> size;         <span class="s-cm">/* 파일 크기 */</span></span></div>
+<div class="code-line"><span class="ln">14</span><span class="lc">    <span class="s-type">unsigned</span> <span class="s-type">int</span> timestamp;    <span class="s-cm">/* 수정 시각 (Unix time) */</span></span></div>
+<div class="code-line"><span class="ln">15</span><span class="lc">} FileHeader;</span></div>
+<div class="code-line"><span class="ln">16</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">17</span><span class="lc"><span class="s-type">long</span> <span class="s-fn">getFileSize</span>(<span class="s-type">FILE</span> *fp) {</span></div>
+<div class="code-line"><span class="ln">18</span><span class="lc">    <span class="s-type">long</span> cur = <span class="s-fn">ftell</span>(fp);</span></div>
+<div class="code-line"><span class="ln">19</span><span class="lc">    <span class="s-fn">fseek</span>(fp, <span class="s-num">0</span>, SEEK_END);</span></div>
+<div class="code-line"><span class="ln">20</span><span class="lc">    <span class="s-type">long</span> size = <span class="s-fn">ftell</span>(fp);</span></div>
+<div class="code-line"><span class="ln">21</span><span class="lc">    <span class="s-fn">fseek</span>(fp, cur, SEEK_SET);</span></div>
+<div class="code-line"><span class="ln">22</span><span class="lc">    <span class="s-kw">return</span> size;</span></div>
+<div class="code-line"><span class="ln">23</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">24</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">25</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">copyData</span>(<span class="s-type">FILE</span> *src, <span class="s-type">FILE</span> *dst, <span class="s-type">unsigned</span> <span class="s-type">int</span> size) {</span></div>
+<div class="code-line"><span class="ln">26</span><span class="lc">    <span class="s-type">unsigned</span> <span class="s-type">char</span> buf[BUF_SIZE];</span></div>
+<div class="code-line"><span class="ln">27</span><span class="lc">    <span class="s-type">unsigned</span> <span class="s-type">int</span> remaining = size;</span></div>
+<div class="code-line"><span class="ln">28</span><span class="lc">    <span class="s-kw">while</span> (remaining &gt; <span class="s-num">0</span>) {</span></div>
+<div class="code-line"><span class="ln">29</span><span class="lc">        <span class="s-type">unsigned</span> <span class="s-type">int</span> toRead = remaining &lt; BUF_SIZE</span></div>
+<div class="code-line"><span class="ln">30</span><span class="lc">                              ? remaining : BUF_SIZE;</span></div>
+<div class="code-line"><span class="ln">31</span><span class="lc">        <span class="s-type">unsigned</span> <span class="s-type">int</span> r = (<span class="s-type">unsigned</span> <span class="s-type">int</span>)<span class="s-fn">fread</span>(</span></div>
+<div class="code-line"><span class="ln">32</span><span class="lc">            buf, <span class="s-num">1</span>, toRead, src);</span></div>
+<div class="code-line"><span class="ln">33</span><span class="lc">        <span class="s-kw">if</span> (r == <span class="s-num">0</span>) <span class="s-kw">return</span> -<span class="s-num">1</span>;</span></div>
+<div class="code-line"><span class="ln">34</span><span class="lc">        <span class="s-fn">fwrite</span>(buf, <span class="s-num">1</span>, r, dst);</span></div>
+<div class="code-line"><span class="ln">35</span><span class="lc">        remaining -= r;</span></div>
+<div class="code-line"><span class="ln">36</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">37</span><span class="lc">    <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">38</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">39</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">40</span><span class="lc"><span class="s-cm">/* pack: 여러 파일을 아카이브로 묶기 */</span></span></div>
+<div class="code-line"><span class="ln">41</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">pack</span>(<span class="s-kw">const</span> <span class="s-type">char</span> *arcName, <span class="s-kw">const</span> <span class="s-type">char</span> *files[],</span></div>
+<div class="code-line"><span class="ln">42</span><span class="lc">         <span class="s-type">int</span> count) {</span></div>
+<div class="code-line"><span class="ln">43</span><span class="lc">    <span class="s-type">FILE</span> *arc = <span class="s-fn">fopen</span>(arcName, <span class="s-str">"wb"</span>);</span></div>
+<div class="code-line"><span class="ln">44</span><span class="lc">    <span class="s-kw">if</span> (!arc) {</span></div>
+<div class="code-line"><span class="ln">45</span><span class="lc">        <span class="s-fn">fprintf</span>(stderr, <span class="s-str">"오류: 아카이브 생성 실패\n"</span>);</span></div>
+<div class="code-line"><span class="ln">46</span><span class="lc">        <span class="s-kw">return</span> -<span class="s-num">1</span>;</span></div>
+<div class="code-line"><span class="ln">47</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">48</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">49</span><span class="lc">    <span class="s-fn">fwrite</span>(&amp;count, <span class="s-kw">sizeof</span>(<span class="s-type">int</span>), <span class="s-num">1</span>, arc);</span></div>
+<div class="code-line"><span class="ln">50</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">51</span><span class="lc">    <span class="s-kw">for</span> (<span class="s-type">int</span> i = <span class="s-num">0</span>; i &lt; count; i++) {</span></div>
+<div class="code-line"><span class="ln">52</span><span class="lc">        <span class="s-type">FILE</span> *fp = <span class="s-fn">fopen</span>(files[i], <span class="s-str">"rb"</span>);</span></div>
+<div class="code-line"><span class="ln">53</span><span class="lc">        <span class="s-kw">if</span> (!fp) {</span></div>
+<div class="code-line"><span class="ln">54</span><span class="lc">            <span class="s-fn">fprintf</span>(stderr, <span class="s-str">"오류: %s 열기 실패\n"</span>,</span></div>
+<div class="code-line"><span class="ln">55</span><span class="lc">                    files[i]);</span></div>
+<div class="code-line"><span class="ln">56</span><span class="lc">            <span class="s-fn">fclose</span>(arc);</span></div>
+<div class="code-line"><span class="ln">57</span><span class="lc">            <span class="s-kw">return</span> -<span class="s-num">1</span>;</span></div>
+<div class="code-line"><span class="ln">58</span><span class="lc">        }</span></div>
+<div class="code-line"><span class="ln">59</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">60</span><span class="lc">        FileHeader h;</span></div>
+<div class="code-line"><span class="ln">61</span><span class="lc">        <span class="s-fn">memset</span>(&amp;h, <span class="s-num">0</span>, <span class="s-kw">sizeof</span>(h));</span></div>
+<div class="code-line"><span class="ln">62</span><span class="lc">        <span class="s-fn">strncpy</span>(h.name, files[i], NAME_LEN - <span class="s-num">1</span>);</span></div>
+<div class="code-line"><span class="ln">63</span><span class="lc">        h.size = (<span class="s-type">unsigned</span> <span class="s-type">int</span>)<span class="s-fn">getFileSize</span>(fp);</span></div>
+<div class="code-line"><span class="ln">64</span><span class="lc">        h.timestamp = (<span class="s-type">unsigned</span> <span class="s-type">int</span>)<span class="s-fn">time</span>(<span class="s-kw">NULL</span>);</span></div>
+<div class="code-line"><span class="ln">65</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">66</span><span class="lc">        <span class="s-fn">fwrite</span>(&amp;h, <span class="s-kw">sizeof</span>(FileHeader), <span class="s-num">1</span>, arc);</span></div>
+<div class="code-line"><span class="ln">67</span><span class="lc">        <span class="s-fn">copyData</span>(fp, arc, h.size);</span></div>
+<div class="code-line"><span class="ln">68</span><span class="lc">        <span class="s-fn">fclose</span>(fp);</span></div>
+<div class="code-line"><span class="ln">69</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">70</span><span class="lc">        <span class="s-fn">printf</span>(<span class="s-str">"  추가: %-30s %8u 바이트\n"</span>,</span></div>
+<div class="code-line"><span class="ln">71</span><span class="lc">               h.name, h.size);</span></div>
+<div class="code-line"><span class="ln">72</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">73</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">74</span><span class="lc">    <span class="s-fn">fclose</span>(arc);</span></div>
+<div class="code-line"><span class="ln">75</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"아카이브 '%s' 생성 완료 (%d개)\n"</span>,</span></div>
+<div class="code-line"><span class="ln">76</span><span class="lc">           arcName, count);</span></div>
+<div class="code-line"><span class="ln">77</span><span class="lc">    <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">78</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">79</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">80</span><span class="lc"><span class="s-cm">/* list: 아카이브 내 파일 목록 출력 */</span></span></div>
+<div class="code-line"><span class="ln">81</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">list</span>(<span class="s-kw">const</span> <span class="s-type">char</span> *arcName) {</span></div>
+<div class="code-line"><span class="ln">82</span><span class="lc">    <span class="s-type">FILE</span> *arc = <span class="s-fn">fopen</span>(arcName, <span class="s-str">"rb"</span>);</span></div>
+<div class="code-line"><span class="ln">83</span><span class="lc">    <span class="s-kw">if</span> (!arc) {</span></div>
+<div class="code-line"><span class="ln">84</span><span class="lc">        <span class="s-fn">fprintf</span>(stderr, <span class="s-str">"오류: 아카이브 열기 실패\n"</span>);</span></div>
+<div class="code-line"><span class="ln">85</span><span class="lc">        <span class="s-kw">return</span> -<span class="s-num">1</span>;</span></div>
+<div class="code-line"><span class="ln">86</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">87</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">88</span><span class="lc">    <span class="s-type">int</span> count;</span></div>
+<div class="code-line"><span class="ln">89</span><span class="lc">    <span class="s-fn">fread</span>(&amp;count, <span class="s-kw">sizeof</span>(<span class="s-type">int</span>), <span class="s-num">1</span>, arc);</span></div>
+<div class="code-line"><span class="ln">90</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">91</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"아카이브: %s (%d개 파일)\n\n"</span>, arcName, count);</span></div>
+<div class="code-line"><span class="ln">92</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"%-5s %-30s %10s  %-20s\n"</span>,</span></div>
+<div class="code-line"><span class="ln">93</span><span class="lc">           <span class="s-str">"번호"</span>, <span class="s-str">"파일 이름"</span>, <span class="s-str">"크기"</span>, <span class="s-str">"수정 시각"</span>);</span></div>
+<div class="code-line"><span class="ln">94</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"-----------------------------------------------"</span></span></div>
+<div class="code-line"><span class="ln">95</span><span class="lc">           <span class="s-str">"---------------------\n"</span>);</span></div>
+<div class="code-line"><span class="ln">96</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">97</span><span class="lc">    <span class="s-type">unsigned</span> <span class="s-type">int</span> totalSize = <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">98</span><span class="lc">    <span class="s-kw">for</span> (<span class="s-type">int</span> i = <span class="s-num">0</span>; i &lt; count; i++) {</span></div>
+<div class="code-line"><span class="ln">99</span><span class="lc">        FileHeader h;</span></div>
+<div class="code-line"><span class="ln">100</span><span class="lc">        <span class="s-fn">fread</span>(&amp;h, <span class="s-kw">sizeof</span>(FileHeader), <span class="s-num">1</span>, arc);</span></div>
+<div class="code-line"><span class="ln">101</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">102</span><span class="lc">        time_t t = (time_t)h.timestamp;</span></div>
+<div class="code-line"><span class="ln">103</span><span class="lc">        <span class="s-type">char</span> timeBuf[<span class="s-num">32</span>];</span></div>
+<div class="code-line"><span class="ln">104</span><span class="lc">        <span class="s-fn">strftime</span>(timeBuf, <span class="s-kw">sizeof</span>(timeBuf),</span></div>
+<div class="code-line"><span class="ln">105</span><span class="lc">                 <span class="s-str">"%Y-%m-%d %H:%M:%S"</span>, <span class="s-fn">localtime</span>(&amp;t));</span></div>
+<div class="code-line"><span class="ln">106</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">107</span><span class="lc">        <span class="s-fn">printf</span>(<span class="s-str">"%-5d %-30s %10u  %s\n"</span>,</span></div>
+<div class="code-line"><span class="ln">108</span><span class="lc">               i + <span class="s-num">1</span>, h.name, h.size, timeBuf);</span></div>
+<div class="code-line"><span class="ln">109</span><span class="lc">        totalSize += h.size;</span></div>
+<div class="code-line"><span class="ln">110</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">111</span><span class="lc">        <span class="s-cm">/* 데이터 건너뛰기 */</span></span></div>
+<div class="code-line"><span class="ln">112</span><span class="lc">        <span class="s-fn">fseek</span>(arc, h.size, SEEK_CUR);</span></div>
+<div class="code-line"><span class="ln">113</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">114</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">115</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"-----------------------------------------------"</span></span></div>
+<div class="code-line"><span class="ln">116</span><span class="lc">           <span class="s-str">"---------------------\n"</span>);</span></div>
+<div class="code-line"><span class="ln">117</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"총 %d개 파일, %u 바이트\n"</span>, count, totalSize);</span></div>
+<div class="code-line"><span class="ln">118</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">119</span><span class="lc">    <span class="s-fn">fclose</span>(arc);</span></div>
+<div class="code-line"><span class="ln">120</span><span class="lc">    <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">121</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">122</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">123</span><span class="lc"><span class="s-cm">/* extract: 특정 파일만 추출 */</span></span></div>
+<div class="code-line"><span class="ln">124</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">extract</span>(<span class="s-kw">const</span> <span class="s-type">char</span> *arcName, <span class="s-kw">const</span> <span class="s-type">char</span> *target) {</span></div>
+<div class="code-line"><span class="ln">125</span><span class="lc">    <span class="s-type">FILE</span> *arc = <span class="s-fn">fopen</span>(arcName, <span class="s-str">"rb"</span>);</span></div>
+<div class="code-line"><span class="ln">126</span><span class="lc">    <span class="s-kw">if</span> (!arc) {</span></div>
+<div class="code-line"><span class="ln">127</span><span class="lc">        <span class="s-fn">fprintf</span>(stderr, <span class="s-str">"오류: 아카이브 열기 실패\n"</span>);</span></div>
+<div class="code-line"><span class="ln">128</span><span class="lc">        <span class="s-kw">return</span> -<span class="s-num">1</span>;</span></div>
+<div class="code-line"><span class="ln">129</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">130</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">131</span><span class="lc">    <span class="s-type">int</span> count;</span></div>
+<div class="code-line"><span class="ln">132</span><span class="lc">    <span class="s-fn">fread</span>(&amp;count, <span class="s-kw">sizeof</span>(<span class="s-type">int</span>), <span class="s-num">1</span>, arc);</span></div>
+<div class="code-line"><span class="ln">133</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">134</span><span class="lc">    <span class="s-kw">for</span> (<span class="s-type">int</span> i = <span class="s-num">0</span>; i &lt; count; i++) {</span></div>
+<div class="code-line"><span class="ln">135</span><span class="lc">        FileHeader h;</span></div>
+<div class="code-line"><span class="ln">136</span><span class="lc">        <span class="s-fn">fread</span>(&amp;h, <span class="s-kw">sizeof</span>(FileHeader), <span class="s-num">1</span>, arc);</span></div>
+<div class="code-line"><span class="ln">137</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">138</span><span class="lc">        <span class="s-kw">if</span> (<span class="s-fn">strcmp</span>(h.name, target) == <span class="s-num">0</span>) {</span></div>
+<div class="code-line"><span class="ln">139</span><span class="lc">            <span class="s-type">FILE</span> *fp = <span class="s-fn">fopen</span>(h.name, <span class="s-str">"wb"</span>);</span></div>
+<div class="code-line"><span class="ln">140</span><span class="lc">            <span class="s-kw">if</span> (!fp) {</span></div>
+<div class="code-line"><span class="ln">141</span><span class="lc">                <span class="s-fn">fprintf</span>(stderr, <span class="s-str">"오류: 파일 생성 실패\n"</span>);</span></div>
+<div class="code-line"><span class="ln">142</span><span class="lc">                <span class="s-fn">fclose</span>(arc);</span></div>
+<div class="code-line"><span class="ln">143</span><span class="lc">                <span class="s-kw">return</span> -<span class="s-num">1</span>;</span></div>
+<div class="code-line"><span class="ln">144</span><span class="lc">            }</span></div>
+<div class="code-line"><span class="ln">145</span><span class="lc">            <span class="s-fn">copyData</span>(arc, fp, h.size);</span></div>
+<div class="code-line"><span class="ln">146</span><span class="lc">            <span class="s-fn">fclose</span>(fp);</span></div>
+<div class="code-line"><span class="ln">147</span><span class="lc">            <span class="s-fn">printf</span>(<span class="s-str">"추출 완료: %s (%u 바이트)\n"</span>,</span></div>
+<div class="code-line"><span class="ln">148</span><span class="lc">                   h.name, h.size);</span></div>
+<div class="code-line"><span class="ln">149</span><span class="lc">            <span class="s-fn">fclose</span>(arc);</span></div>
+<div class="code-line"><span class="ln">150</span><span class="lc">            <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">151</span><span class="lc">        }</span></div>
+<div class="code-line"><span class="ln">152</span><span class="lc">        <span class="s-cm">/* 이 파일이 아니면 데이터 건너뛰기 */</span></span></div>
+<div class="code-line"><span class="ln">153</span><span class="lc">        <span class="s-fn">fseek</span>(arc, h.size, SEEK_CUR);</span></div>
+<div class="code-line"><span class="ln">154</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">155</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">156</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"파일 '%s'를 찾을 수 없습니다.\n"</span>, target);</span></div>
+<div class="code-line"><span class="ln">157</span><span class="lc">    <span class="s-fn">fclose</span>(arc);</span></div>
+<div class="code-line"><span class="ln">158</span><span class="lc">    <span class="s-kw">return</span> -<span class="s-num">1</span>;</span></div>
+<div class="code-line"><span class="ln">159</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">160</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">161</span><span class="lc"><span class="s-cm">/* delete: 특정 파일을 아카이브에서 삭제 */</span></span></div>
+<div class="code-line"><span class="ln">162</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">delete</span>(<span class="s-kw">const</span> <span class="s-type">char</span> *arcName, <span class="s-kw">const</span> <span class="s-type">char</span> *target) {</span></div>
+<div class="code-line"><span class="ln">163</span><span class="lc">    <span class="s-type">FILE</span> *arc = <span class="s-fn">fopen</span>(arcName, <span class="s-str">"rb"</span>);</span></div>
+<div class="code-line"><span class="ln">164</span><span class="lc">    <span class="s-kw">if</span> (!arc) {</span></div>
+<div class="code-line"><span class="ln">165</span><span class="lc">        <span class="s-fn">fprintf</span>(stderr, <span class="s-str">"오류: 아카이브 열기 실패\n"</span>);</span></div>
+<div class="code-line"><span class="ln">166</span><span class="lc">        <span class="s-kw">return</span> -<span class="s-num">1</span>;</span></div>
+<div class="code-line"><span class="ln">167</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">168</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">169</span><span class="lc">    <span class="s-type">int</span> count;</span></div>
+<div class="code-line"><span class="ln">170</span><span class="lc">    <span class="s-fn">fread</span>(&amp;count, <span class="s-kw">sizeof</span>(<span class="s-type">int</span>), <span class="s-num">1</span>, arc);</span></div>
+<div class="code-line"><span class="ln">171</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">172</span><span class="lc">    <span class="s-cm">/* 임시 아카이브에 대상 제외하고 복사 */</span></span></div>
+<div class="code-line"><span class="ln">173</span><span class="lc">    <span class="s-kw">const</span> <span class="s-type">char</span> *tmpName = <span class="s-str">"__temp__.arc"</span>;</span></div>
+<div class="code-line"><span class="ln">174</span><span class="lc">    <span class="s-type">FILE</span> *tmp = <span class="s-fn">fopen</span>(tmpName, <span class="s-str">"wb"</span>);</span></div>
+<div class="code-line"><span class="ln">175</span><span class="lc">    <span class="s-kw">if</span> (!tmp) {</span></div>
+<div class="code-line"><span class="ln">176</span><span class="lc">        <span class="s-fn">fclose</span>(arc);</span></div>
+<div class="code-line"><span class="ln">177</span><span class="lc">        <span class="s-kw">return</span> -<span class="s-num">1</span>;</span></div>
+<div class="code-line"><span class="ln">178</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">179</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">180</span><span class="lc">    <span class="s-type">int</span> newCount = count - <span class="s-num">1</span>;</span></div>
+<div class="code-line"><span class="ln">181</span><span class="lc">    <span class="s-type">int</span> found = <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">182</span><span class="lc">    <span class="s-fn">fwrite</span>(&amp;newCount, <span class="s-kw">sizeof</span>(<span class="s-type">int</span>), <span class="s-num">1</span>, tmp);</span></div>
+<div class="code-line"><span class="ln">183</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">184</span><span class="lc">    <span class="s-kw">for</span> (<span class="s-type">int</span> i = <span class="s-num">0</span>; i &lt; count; i++) {</span></div>
+<div class="code-line"><span class="ln">185</span><span class="lc">        FileHeader h;</span></div>
+<div class="code-line"><span class="ln">186</span><span class="lc">        <span class="s-fn">fread</span>(&amp;h, <span class="s-kw">sizeof</span>(FileHeader), <span class="s-num">1</span>, arc);</span></div>
+<div class="code-line"><span class="ln">187</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">188</span><span class="lc">        <span class="s-kw">if</span> (<span class="s-fn">strcmp</span>(h.name, target) == <span class="s-num">0</span> &amp;&amp; !found) {</span></div>
+<div class="code-line"><span class="ln">189</span><span class="lc">            <span class="s-cm">/* 삭제 대상: 데이터 건너뛰기 */</span></span></div>
+<div class="code-line"><span class="ln">190</span><span class="lc">            <span class="s-fn">fseek</span>(arc, h.size, SEEK_CUR);</span></div>
+<div class="code-line"><span class="ln">191</span><span class="lc">            found = <span class="s-num">1</span>;</span></div>
+<div class="code-line"><span class="ln">192</span><span class="lc">            <span class="s-fn">printf</span>(<span class="s-str">"삭제: %s (%u 바이트)\n"</span>,</span></div>
+<div class="code-line"><span class="ln">193</span><span class="lc">                   h.name, h.size);</span></div>
+<div class="code-line"><span class="ln">194</span><span class="lc">        } <span class="s-kw">else</span> {</span></div>
+<div class="code-line"><span class="ln">195</span><span class="lc">            <span class="s-cm">/* 유지할 파일: 헤더+데이터 복사 */</span></span></div>
+<div class="code-line"><span class="ln">196</span><span class="lc">            <span class="s-fn">fwrite</span>(&amp;h, <span class="s-kw">sizeof</span>(FileHeader), <span class="s-num">1</span>, tmp);</span></div>
+<div class="code-line"><span class="ln">197</span><span class="lc">            <span class="s-fn">copyData</span>(arc, tmp, h.size);</span></div>
+<div class="code-line"><span class="ln">198</span><span class="lc">        }</span></div>
+<div class="code-line"><span class="ln">199</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">200</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">201</span><span class="lc">    <span class="s-fn">fclose</span>(arc);</span></div>
+<div class="code-line"><span class="ln">202</span><span class="lc">    <span class="s-fn">fclose</span>(tmp);</span></div>
+<div class="code-line"><span class="ln">203</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">204</span><span class="lc">    <span class="s-kw">if</span> (!found) {</span></div>
+<div class="code-line"><span class="ln">205</span><span class="lc">        <span class="s-fn">remove</span>(tmpName);</span></div>
+<div class="code-line"><span class="ln">206</span><span class="lc">        <span class="s-fn">printf</span>(<span class="s-str">"파일 '%s'를 찾을 수 없습니다.\n"</span>, target);</span></div>
+<div class="code-line"><span class="ln">207</span><span class="lc">        <span class="s-kw">return</span> -<span class="s-num">1</span>;</span></div>
+<div class="code-line"><span class="ln">208</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">209</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">210</span><span class="lc">    <span class="s-cm">/* 원본 교체 */</span></span></div>
+<div class="code-line"><span class="ln">211</span><span class="lc">    <span class="s-fn">remove</span>(arcName);</span></div>
+<div class="code-line"><span class="ln">212</span><span class="lc">    <span class="s-fn">rename</span>(tmpName, arcName);</span></div>
+<div class="code-line"><span class="ln">213</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"아카이브 갱신 완료 (%d -&gt; %d개)\n"</span>,</span></div>
+<div class="code-line"><span class="ln">214</span><span class="lc">           count, newCount);</span></div>
+<div class="code-line"><span class="ln">215</span><span class="lc">    <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">216</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">217</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">218</span><span class="lc"><span class="s-cm">/* unpack: 전체 추출 */</span></span></div>
+<div class="code-line"><span class="ln">219</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">unpack</span>(<span class="s-kw">const</span> <span class="s-type">char</span> *arcName) {</span></div>
+<div class="code-line"><span class="ln">220</span><span class="lc">    <span class="s-type">FILE</span> *arc = <span class="s-fn">fopen</span>(arcName, <span class="s-str">"rb"</span>);</span></div>
+<div class="code-line"><span class="ln">221</span><span class="lc">    <span class="s-kw">if</span> (!arc) {</span></div>
+<div class="code-line"><span class="ln">222</span><span class="lc">        <span class="s-fn">fprintf</span>(stderr, <span class="s-str">"오류: 아카이브 열기 실패\n"</span>);</span></div>
+<div class="code-line"><span class="ln">223</span><span class="lc">        <span class="s-kw">return</span> -<span class="s-num">1</span>;</span></div>
+<div class="code-line"><span class="ln">224</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">225</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">226</span><span class="lc">    <span class="s-type">int</span> count;</span></div>
+<div class="code-line"><span class="ln">227</span><span class="lc">    <span class="s-fn">fread</span>(&amp;count, <span class="s-kw">sizeof</span>(<span class="s-type">int</span>), <span class="s-num">1</span>, arc);</span></div>
+<div class="code-line"><span class="ln">228</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">229</span><span class="lc">    <span class="s-kw">for</span> (<span class="s-type">int</span> i = <span class="s-num">0</span>; i &lt; count; i++) {</span></div>
+<div class="code-line"><span class="ln">230</span><span class="lc">        FileHeader h;</span></div>
+<div class="code-line"><span class="ln">231</span><span class="lc">        <span class="s-fn">fread</span>(&amp;h, <span class="s-kw">sizeof</span>(FileHeader), <span class="s-num">1</span>, arc);</span></div>
+<div class="code-line"><span class="ln">232</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">233</span><span class="lc">        <span class="s-type">FILE</span> *fp = <span class="s-fn">fopen</span>(h.name, <span class="s-str">"wb"</span>);</span></div>
+<div class="code-line"><span class="ln">234</span><span class="lc">        <span class="s-kw">if</span> (!fp) {</span></div>
+<div class="code-line"><span class="ln">235</span><span class="lc">            <span class="s-fn">fclose</span>(arc);</span></div>
+<div class="code-line"><span class="ln">236</span><span class="lc">            <span class="s-kw">return</span> -<span class="s-num">1</span>;</span></div>
+<div class="code-line"><span class="ln">237</span><span class="lc">        }</span></div>
+<div class="code-line"><span class="ln">238</span><span class="lc">        <span class="s-fn">copyData</span>(arc, fp, h.size);</span></div>
+<div class="code-line"><span class="ln">239</span><span class="lc">        <span class="s-fn">fclose</span>(fp);</span></div>
+<div class="code-line"><span class="ln">240</span><span class="lc">        <span class="s-fn">printf</span>(<span class="s-str">"  추출: %-30s %8u 바이트\n"</span>,</span></div>
+<div class="code-line"><span class="ln">241</span><span class="lc">               h.name, h.size);</span></div>
+<div class="code-line"><span class="ln">242</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">243</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">244</span><span class="lc">    <span class="s-fn">fclose</span>(arc);</span></div>
+<div class="code-line"><span class="ln">245</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"전체 추출 완료 (%d개)\n"</span>, count);</span></div>
+<div class="code-line"><span class="ln">246</span><span class="lc">    <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">247</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">248</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">249</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">main</span>(<span class="s-type">int</span> argc, <span class="s-type">char</span> *argv[]) {</span></div>
+<div class="code-line"><span class="ln">250</span><span class="lc">    <span class="s-kw">if</span> (argc &lt; <span class="s-num">3</span>) {</span></div>
+<div class="code-line"><span class="ln">251</span><span class="lc">        <span class="s-fn">printf</span>(<span class="s-str">"사용법:\n"</span>);</span></div>
+<div class="code-line"><span class="ln">252</span><span class="lc">        <span class="s-fn">printf</span>(<span class="s-str">"  묶기:   %s pack    arc파일 "</span></span></div>
+<div class="code-line"><span class="ln">253</span><span class="lc">               <span class="s-str">"file1 file2 ...\n"</span>, argv[<span class="s-num">0</span>]);</span></div>
+<div class="code-line"><span class="ln">254</span><span class="lc">        <span class="s-fn">printf</span>(<span class="s-str">"  풀기:   %s unpack  arc파일\n"</span>, argv[<span class="s-num">0</span>]);</span></div>
+<div class="code-line"><span class="ln">255</span><span class="lc">        <span class="s-fn">printf</span>(<span class="s-str">"  목록:   %s list    arc파일\n"</span>, argv[<span class="s-num">0</span>]);</span></div>
+<div class="code-line"><span class="ln">256</span><span class="lc">        <span class="s-fn">printf</span>(<span class="s-str">"  추출:   %s extract arc파일 "</span></span></div>
+<div class="code-line"><span class="ln">257</span><span class="lc">               <span class="s-str">"파일이름\n"</span>, argv[<span class="s-num">0</span>]);</span></div>
+<div class="code-line"><span class="ln">258</span><span class="lc">        <span class="s-fn">printf</span>(<span class="s-str">"  삭제:   %s delete  arc파일 "</span></span></div>
+<div class="code-line"><span class="ln">259</span><span class="lc">               <span class="s-str">"파일이름\n"</span>, argv[<span class="s-num">0</span>]);</span></div>
+<div class="code-line"><span class="ln">260</span><span class="lc">        <span class="s-kw">return</span> <span class="s-num">1</span>;</span></div>
+<div class="code-line"><span class="ln">261</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">262</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">263</span><span class="lc">    <span class="s-kw">if</span> (<span class="s-fn">strcmp</span>(argv[<span class="s-num">1</span>], <span class="s-str">"pack"</span>) == <span class="s-num">0</span>) {</span></div>
+<div class="code-line"><span class="ln">264</span><span class="lc">        <span class="s-kw">if</span> (argc &lt; <span class="s-num">4</span>) {</span></div>
+<div class="code-line"><span class="ln">265</span><span class="lc">            <span class="s-fn">printf</span>(<span class="s-str">"묶을 파일을 지정하십시오.\n"</span>);</span></div>
+<div class="code-line"><span class="ln">266</span><span class="lc">            <span class="s-kw">return</span> <span class="s-num">1</span>;</span></div>
+<div class="code-line"><span class="ln">267</span><span class="lc">        }</span></div>
+<div class="code-line"><span class="ln">268</span><span class="lc">        <span class="s-kw">const</span> <span class="s-type">char</span> *files[MAX_FILES];</span></div>
+<div class="code-line"><span class="ln">269</span><span class="lc">        <span class="s-type">int</span> cnt = argc - <span class="s-num">3</span>;</span></div>
+<div class="code-line"><span class="ln">270</span><span class="lc">        <span class="s-kw">for</span> (<span class="s-type">int</span> i = <span class="s-num">0</span>; i &lt; cnt; i++)</span></div>
+<div class="code-line"><span class="ln">271</span><span class="lc">            files[i] = argv[i + <span class="s-num">3</span>];</span></div>
+<div class="code-line"><span class="ln">272</span><span class="lc">        <span class="s-kw">return</span> <span class="s-fn">pack</span>(argv[<span class="s-num">2</span>], files, cnt);</span></div>
+<div class="code-line"><span class="ln">273</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">274</span><span class="lc">    <span class="s-kw">else</span> <span class="s-kw">if</span> (<span class="s-fn">strcmp</span>(argv[<span class="s-num">1</span>], <span class="s-str">"unpack"</span>) == <span class="s-num">0</span>) {</span></div>
+<div class="code-line"><span class="ln">275</span><span class="lc">        <span class="s-kw">return</span> <span class="s-fn">unpack</span>(argv[<span class="s-num">2</span>]);</span></div>
+<div class="code-line"><span class="ln">276</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">277</span><span class="lc">    <span class="s-kw">else</span> <span class="s-kw">if</span> (<span class="s-fn">strcmp</span>(argv[<span class="s-num">1</span>], <span class="s-str">"list"</span>) == <span class="s-num">0</span>) {</span></div>
+<div class="code-line"><span class="ln">278</span><span class="lc">        <span class="s-kw">return</span> <span class="s-fn">list</span>(argv[<span class="s-num">2</span>]);</span></div>
+<div class="code-line"><span class="ln">279</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">280</span><span class="lc">    <span class="s-kw">else</span> <span class="s-kw">if</span> (<span class="s-fn">strcmp</span>(argv[<span class="s-num">1</span>], <span class="s-str">"extract"</span>) == <span class="s-num">0</span>) {</span></div>
+<div class="code-line"><span class="ln">281</span><span class="lc">        <span class="s-kw">if</span> (argc &lt; <span class="s-num">4</span>) {</span></div>
+<div class="code-line"><span class="ln">282</span><span class="lc">            <span class="s-fn">printf</span>(<span class="s-str">"추출할 파일 이름을 지정하십시오.\n"</span>);</span></div>
+<div class="code-line"><span class="ln">283</span><span class="lc">            <span class="s-kw">return</span> <span class="s-num">1</span>;</span></div>
+<div class="code-line"><span class="ln">284</span><span class="lc">        }</span></div>
+<div class="code-line"><span class="ln">285</span><span class="lc">        <span class="s-kw">return</span> <span class="s-fn">extract</span>(argv[<span class="s-num">2</span>], argv[<span class="s-num">3</span>]);</span></div>
+<div class="code-line"><span class="ln">286</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">287</span><span class="lc">    <span class="s-kw">else</span> <span class="s-kw">if</span> (<span class="s-fn">strcmp</span>(argv[<span class="s-num">1</span>], <span class="s-str">"delete"</span>) == <span class="s-num">0</span>) {</span></div>
+<div class="code-line"><span class="ln">288</span><span class="lc">        <span class="s-kw">if</span> (argc &lt; <span class="s-num">4</span>) {</span></div>
+<div class="code-line"><span class="ln">289</span><span class="lc">            <span class="s-fn">printf</span>(<span class="s-str">"삭제할 파일 이름을 지정하십시오.\n"</span>);</span></div>
+<div class="code-line"><span class="ln">290</span><span class="lc">            <span class="s-kw">return</span> <span class="s-num">1</span>;</span></div>
+<div class="code-line"><span class="ln">291</span><span class="lc">        }</span></div>
+<div class="code-line"><span class="ln">292</span><span class="lc">        <span class="s-kw">return</span> <span class="s-fn">delete</span>(argv[<span class="s-num">2</span>], argv[<span class="s-num">3</span>]);</span></div>
+<div class="code-line"><span class="ln">293</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">294</span><span class="lc">    <span class="s-kw">else</span> {</span></div>
+<div class="code-line"><span class="ln">295</span><span class="lc">        <span class="s-fn">printf</span>(<span class="s-str">"알 수 없는 명령: %s\n"</span>, argv[<span class="s-num">1</span>]);</span></div>
+<div class="code-line"><span class="ln">296</span><span class="lc">        <span class="s-kw">return</span> <span class="s-num">1</span>;</span></div>
+<div class="code-line"><span class="ln">297</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">298</span><span class="lc">}</span></div>
+</div>
+</div>
+<div class="debug-section"><div class="debug-bar">DEBUG LAB — 에러를 찾으시오</div><div class="debug-body">
+
+<p style="margin:14px 0 0; font-size:14px;"><b>에러:</b> </p>
+<p style="font-size:14px;"><b>수정:</b> </p>
+</div></div>
+<div class="debug-section"><div class="debug-bar">DEBUG LAB — 에러를 찾으시오</div><div class="debug-body">
+
+<p style="margin:14px 0 0; font-size:14px;"><b>에러:</b> </p>
+<p style="font-size:14px;"><b>수정:</b> </p>
+</div></div>
+<h2 class="section-title">버전 3: 완성 -- RLE 압축 + CRC 체크섬 + 디렉토리</h2>
+<p>undefined</p>
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;stdio.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;stdlib.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;string.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">4</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;time.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">5</span><span class="lc"><span class="s-pp">#include</span> &lt;sys/stat.h&gt;</span></div>
+<div class="code-line"><span class="ln">6</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">7</span><span class="lc"><span class="s-pp">#define</span> NAME_LEN   <span class="s-num">128</span></span></div>
+<div class="code-line"><span class="ln">8</span><span class="lc"><span class="s-pp">#define</span> BUF_SIZE   <span class="s-num">4096</span></span></div>
+<div class="code-line"><span class="ln">9</span><span class="lc"><span class="s-pp">#define</span> MAX_FILES  <span class="s-num">256</span></span></div>
+<div class="code-line"><span class="ln">10</span><span class="lc"><span class="s-pp">#define</span> CRC_POLY   0xEDB88320u</span></div>
+<div class="code-line"><span class="ln">11</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">12</span><span class="lc"><span class="s-cm">/* ===== CRC-32 계산 ===== */</span></span></div>
+<div class="code-line"><span class="ln">13</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">14</span><span class="lc"><span class="s-type">unsigned</span> <span class="s-type">int</span> crcTable[<span class="s-num">256</span>];</span></div>
+<div class="code-line"><span class="ln">15</span><span class="lc"><span class="s-type">int</span> crcTableInit = <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">16</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">17</span><span class="lc"><span class="s-type">void</span> <span class="s-fn">initCrcTable</span>(<span class="s-type">void</span>) {</span></div>
+<div class="code-line"><span class="ln">18</span><span class="lc">    <span class="s-kw">for</span> (<span class="s-type">unsigned</span> <span class="s-type">int</span> i = <span class="s-num">0</span>; i &lt; <span class="s-num">256</span>; i++) {</span></div>
+<div class="code-line"><span class="ln">19</span><span class="lc">        <span class="s-type">unsigned</span> <span class="s-type">int</span> crc = i;</span></div>
+<div class="code-line"><span class="ln">20</span><span class="lc">        <span class="s-kw">for</span> (<span class="s-type">int</span> j = <span class="s-num">0</span>; j &lt; <span class="s-num">8</span>; j++) {</span></div>
+<div class="code-line"><span class="ln">21</span><span class="lc">            <span class="s-kw">if</span> (crc &amp; <span class="s-num">1</span>)</span></div>
+<div class="code-line"><span class="ln">22</span><span class="lc">                crc = (crc &gt;&gt; <span class="s-num">1</span>) ^ CRC_POLY;</span></div>
+<div class="code-line"><span class="ln">23</span><span class="lc">            <span class="s-kw">else</span></span></div>
+<div class="code-line"><span class="ln">24</span><span class="lc">                crc &gt;&gt;= <span class="s-num">1</span>;</span></div>
+<div class="code-line"><span class="ln">25</span><span class="lc">        }</span></div>
+<div class="code-line"><span class="ln">26</span><span class="lc">        crcTable[i] = crc;</span></div>
+<div class="code-line"><span class="ln">27</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">28</span><span class="lc">    crcTableInit = <span class="s-num">1</span>;</span></div>
+<div class="code-line"><span class="ln">29</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">30</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">31</span><span class="lc"><span class="s-type">unsigned</span> <span class="s-type">int</span> <span class="s-fn">crc32</span>(<span class="s-kw">const</span> <span class="s-type">unsigned</span> <span class="s-type">char</span> *data,</span></div>
+<div class="code-line"><span class="ln">32</span><span class="lc">                   <span class="s-type">unsigned</span> <span class="s-type">int</span> len) {</span></div>
+<div class="code-line"><span class="ln">33</span><span class="lc">    <span class="s-kw">if</span> (!crcTableInit) <span class="s-fn">initCrcTable</span>();</span></div>
+<div class="code-line"><span class="ln">34</span><span class="lc">    <span class="s-type">unsigned</span> <span class="s-type">int</span> crc = 0xFFFFFFFFu;</span></div>
+<div class="code-line"><span class="ln">35</span><span class="lc">    <span class="s-kw">for</span> (<span class="s-type">unsigned</span> <span class="s-type">int</span> i = <span class="s-num">0</span>; i &lt; len; i++) {</span></div>
+<div class="code-line"><span class="ln">36</span><span class="lc">        crc = (crc &gt;&gt; <span class="s-num">8</span>) ^ crcTable[(crc ^ data[i]) &amp; <span class="s-num">0xFF</span>];</span></div>
+<div class="code-line"><span class="ln">37</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">38</span><span class="lc">    <span class="s-kw">return</span> crc ^ 0xFFFFFFFFu;</span></div>
+<div class="code-line"><span class="ln">39</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">40</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">41</span><span class="lc"><span class="s-type">unsigned</span> <span class="s-type">int</span> <span class="s-fn">crc32File</span>(<span class="s-type">FILE</span> *fp) {</span></div>
+<div class="code-line"><span class="ln">42</span><span class="lc">    <span class="s-kw">if</span> (!crcTableInit) <span class="s-fn">initCrcTable</span>();</span></div>
+<div class="code-line"><span class="ln">43</span><span class="lc">    <span class="s-type">unsigned</span> <span class="s-type">int</span> crc = 0xFFFFFFFFu;</span></div>
+<div class="code-line"><span class="ln">44</span><span class="lc">    <span class="s-type">unsigned</span> <span class="s-type">char</span> buf[BUF_SIZE];</span></div>
+<div class="code-line"><span class="ln">45</span><span class="lc">    <span class="s-type">size_t</span> n;</span></div>
+<div class="code-line"><span class="ln">46</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">47</span><span class="lc">    <span class="s-type">long</span> pos = <span class="s-fn">ftell</span>(fp);</span></div>
+<div class="code-line"><span class="ln">48</span><span class="lc">    <span class="s-kw">while</span> ((n = <span class="s-fn">fread</span>(buf, <span class="s-num">1</span>, BUF_SIZE, fp)) &gt; <span class="s-num">0</span>) {</span></div>
+<div class="code-line"><span class="ln">49</span><span class="lc">        <span class="s-kw">for</span> (<span class="s-type">size_t</span> i = <span class="s-num">0</span>; i &lt; n; i++) {</span></div>
+<div class="code-line"><span class="ln">50</span><span class="lc">            crc = (crc &gt;&gt; <span class="s-num">8</span>)</span></div>
+<div class="code-line"><span class="ln">51</span><span class="lc">                  ^ crcTable[(crc ^ buf[i]) &amp; <span class="s-num">0xFF</span>];</span></div>
+<div class="code-line"><span class="ln">52</span><span class="lc">        }</span></div>
+<div class="code-line"><span class="ln">53</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">54</span><span class="lc">    <span class="s-fn">fseek</span>(fp, pos, SEEK_SET);</span></div>
+<div class="code-line"><span class="ln">55</span><span class="lc">    <span class="s-kw">return</span> crc ^ 0xFFFFFFFFu;</span></div>
+<div class="code-line"><span class="ln">56</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">57</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">58</span><span class="lc"><span class="s-cm">/* ===== RLE 압축/해제 ===== */</span></span></div>
+<div class="code-line"><span class="ln">59</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">60</span><span class="lc"><span class="s-cm">/* RLE 압축: 반복 바이트를 (count, byte) 쌍으로 인코딩 */</span></span></div>
+<div class="code-line"><span class="ln">61</span><span class="lc"><span class="s-type">unsigned</span> <span class="s-type">int</span> <span class="s-fn">rleEncode</span>(<span class="s-kw">const</span> <span class="s-type">unsigned</span> <span class="s-type">char</span> *src,</span></div>
+<div class="code-line"><span class="ln">62</span><span class="lc">                      <span class="s-type">unsigned</span> <span class="s-type">int</span> srcLen,</span></div>
+<div class="code-line"><span class="ln">63</span><span class="lc">                      <span class="s-type">unsigned</span> <span class="s-type">char</span> *dst,</span></div>
+<div class="code-line"><span class="ln">64</span><span class="lc">                      <span class="s-type">unsigned</span> <span class="s-type">int</span> dstMax) {</span></div>
+<div class="code-line"><span class="ln">65</span><span class="lc">    <span class="s-type">unsigned</span> <span class="s-type">int</span> di = <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">66</span><span class="lc">    <span class="s-type">unsigned</span> <span class="s-type">int</span> i = <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">67</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">68</span><span class="lc">    <span class="s-kw">while</span> (i &lt; srcLen) {</span></div>
+<div class="code-line"><span class="ln">69</span><span class="lc">        <span class="s-type">unsigned</span> <span class="s-type">char</span> ch = src[i];</span></div>
+<div class="code-line"><span class="ln">70</span><span class="lc">        <span class="s-type">unsigned</span> <span class="s-type">int</span> count = <span class="s-num">1</span>;</span></div>
+<div class="code-line"><span class="ln">71</span><span class="lc">        <span class="s-kw">while</span> (i + count &lt; srcLen &amp;&amp;</span></div>
+<div class="code-line"><span class="ln">72</span><span class="lc">               src[i + count] == ch &amp;&amp; count &lt; <span class="s-num">255</span>) {</span></div>
+<div class="code-line"><span class="ln">73</span><span class="lc">            count++;</span></div>
+<div class="code-line"><span class="ln">74</span><span class="lc">        }</span></div>
+<div class="code-line"><span class="ln">75</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">76</span><span class="lc">        <span class="s-kw">if</span> (di + <span class="s-num">2</span> &gt; dstMax) <span class="s-kw">return</span> <span class="s-num">0</span>;  <span class="s-cm">/* 버퍼 초과 */</span></span></div>
+<div class="code-line"><span class="ln">77</span><span class="lc">        dst[di++] = (<span class="s-type">unsigned</span> <span class="s-type">char</span>)count;</span></div>
+<div class="code-line"><span class="ln">78</span><span class="lc">        dst[di++] = ch;</span></div>
+<div class="code-line"><span class="ln">79</span><span class="lc">        i += count;</span></div>
+<div class="code-line"><span class="ln">80</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">81</span><span class="lc">    <span class="s-kw">return</span> di;</span></div>
+<div class="code-line"><span class="ln">82</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">83</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">84</span><span class="lc"><span class="s-cm">/* RLE 해제 */</span></span></div>
+<div class="code-line"><span class="ln">85</span><span class="lc"><span class="s-type">unsigned</span> <span class="s-type">int</span> <span class="s-fn">rleDecode</span>(<span class="s-kw">const</span> <span class="s-type">unsigned</span> <span class="s-type">char</span> *src,</span></div>
+<div class="code-line"><span class="ln">86</span><span class="lc">                      <span class="s-type">unsigned</span> <span class="s-type">int</span> srcLen,</span></div>
+<div class="code-line"><span class="ln">87</span><span class="lc">                      <span class="s-type">unsigned</span> <span class="s-type">char</span> *dst,</span></div>
+<div class="code-line"><span class="ln">88</span><span class="lc">                      <span class="s-type">unsigned</span> <span class="s-type">int</span> dstMax) {</span></div>
+<div class="code-line"><span class="ln">89</span><span class="lc">    <span class="s-type">unsigned</span> <span class="s-type">int</span> di = <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">90</span><span class="lc">    <span class="s-type">unsigned</span> <span class="s-type">int</span> i = <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">91</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">92</span><span class="lc">    <span class="s-kw">while</span> (i + <span class="s-num">1</span> &lt; srcLen) {</span></div>
+<div class="code-line"><span class="ln">93</span><span class="lc">        <span class="s-type">unsigned</span> <span class="s-type">int</span> count = src[i];</span></div>
+<div class="code-line"><span class="ln">94</span><span class="lc">        <span class="s-type">unsigned</span> <span class="s-type">char</span> ch = src[i + <span class="s-num">1</span>];</span></div>
+<div class="code-line"><span class="ln">95</span><span class="lc">        <span class="s-kw">if</span> (di + count &gt; dstMax) <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">96</span><span class="lc">        <span class="s-kw">for</span> (<span class="s-type">unsigned</span> <span class="s-type">int</span> j = <span class="s-num">0</span>; j &lt; count; j++) {</span></div>
+<div class="code-line"><span class="ln">97</span><span class="lc">            dst[di++] = ch;</span></div>
+<div class="code-line"><span class="ln">98</span><span class="lc">        }</span></div>
+<div class="code-line"><span class="ln">99</span><span class="lc">        i += <span class="s-num">2</span>;</span></div>
+<div class="code-line"><span class="ln">100</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">101</span><span class="lc">    <span class="s-kw">return</span> di;</span></div>
+<div class="code-line"><span class="ln">102</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">103</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">104</span><span class="lc"><span class="s-cm">/* ===== 완성 헤더 구조 ===== */</span></span></div>
+<div class="code-line"><span class="ln">105</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">106</span><span class="lc"><span class="s-pp">#define</span> FLAG_COMPRESSED <span class="s-num">0x01</span>   <span class="s-cm">/* 압축 플래그 */</span></span></div>
+<div class="code-line"><span class="ln">107</span><span class="lc"><span class="s-pp">#define</span> FLAG_DIRECTORY  <span class="s-num">0x02</span>   <span class="s-cm">/* 디렉토리 플래그 */</span></span></div>
+<div class="code-line"><span class="ln">108</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">109</span><span class="lc"><span class="s-kw">typedef</span> <span class="s-kw">struct</span> {</span></div>
+<div class="code-line"><span class="ln">110</span><span class="lc">    <span class="s-type">char</span> name[NAME_LEN];       <span class="s-cm">/* 파일 경로 (디렉토리 포함) */</span></span></div>
+<div class="code-line"><span class="ln">111</span><span class="lc">    <span class="s-type">unsigned</span> <span class="s-type">int</span> origSize;     <span class="s-cm">/* 원본 파일 크기 */</span></span></div>
+<div class="code-line"><span class="ln">112</span><span class="lc">    <span class="s-type">unsigned</span> <span class="s-type">int</span> storedSize;   <span class="s-cm">/* 저장된 크기 (압축 시 다름) */</span></span></div>
+<div class="code-line"><span class="ln">113</span><span class="lc">    <span class="s-type">unsigned</span> <span class="s-type">int</span> timestamp;    <span class="s-cm">/* 수정 시각 */</span></span></div>
+<div class="code-line"><span class="ln">114</span><span class="lc">    <span class="s-type">unsigned</span> <span class="s-type">int</span> checksum;     <span class="s-cm">/* CRC-32 체크섬 (원본 기준) */</span></span></div>
+<div class="code-line"><span class="ln">115</span><span class="lc">    <span class="s-type">unsigned</span> <span class="s-type">char</span> flags;       <span class="s-cm">/* 비트 플래그 */</span></span></div>
+<div class="code-line"><span class="ln">116</span><span class="lc">    <span class="s-type">unsigned</span> <span class="s-type">char</span> reserved[<span class="s-num">3</span>]; <span class="s-cm">/* 예약 (정렬용) */</span></span></div>
+<div class="code-line"><span class="ln">117</span><span class="lc">} FileHeader;</span></div>
+<div class="code-line"><span class="ln">118</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">119</span><span class="lc"><span class="s-type">long</span> <span class="s-fn">getFileSize</span>(<span class="s-type">FILE</span> *fp) {</span></div>
+<div class="code-line"><span class="ln">120</span><span class="lc">    <span class="s-type">long</span> cur = <span class="s-fn">ftell</span>(fp);</span></div>
+<div class="code-line"><span class="ln">121</span><span class="lc">    <span class="s-fn">fseek</span>(fp, <span class="s-num">0</span>, SEEK_END);</span></div>
+<div class="code-line"><span class="ln">122</span><span class="lc">    <span class="s-type">long</span> size = <span class="s-fn">ftell</span>(fp);</span></div>
+<div class="code-line"><span class="ln">123</span><span class="lc">    <span class="s-fn">fseek</span>(fp, cur, SEEK_SET);</span></div>
+<div class="code-line"><span class="ln">124</span><span class="lc">    <span class="s-kw">return</span> size;</span></div>
+<div class="code-line"><span class="ln">125</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">126</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">127</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">copyData</span>(<span class="s-type">FILE</span> *src, <span class="s-type">FILE</span> *dst, <span class="s-type">unsigned</span> <span class="s-type">int</span> size) {</span></div>
+<div class="code-line"><span class="ln">128</span><span class="lc">    <span class="s-type">unsigned</span> <span class="s-type">char</span> buf[BUF_SIZE];</span></div>
+<div class="code-line"><span class="ln">129</span><span class="lc">    <span class="s-type">unsigned</span> <span class="s-type">int</span> remaining = size;</span></div>
+<div class="code-line"><span class="ln">130</span><span class="lc">    <span class="s-kw">while</span> (remaining &gt; <span class="s-num">0</span>) {</span></div>
+<div class="code-line"><span class="ln">131</span><span class="lc">        <span class="s-type">unsigned</span> <span class="s-type">int</span> toRead = remaining &lt; BUF_SIZE</span></div>
+<div class="code-line"><span class="ln">132</span><span class="lc">                              ? remaining : BUF_SIZE;</span></div>
+<div class="code-line"><span class="ln">133</span><span class="lc">        <span class="s-type">unsigned</span> <span class="s-type">int</span> r = (<span class="s-type">unsigned</span> <span class="s-type">int</span>)<span class="s-fn">fread</span>(</span></div>
+<div class="code-line"><span class="ln">134</span><span class="lc">            buf, <span class="s-num">1</span>, toRead, src);</span></div>
+<div class="code-line"><span class="ln">135</span><span class="lc">        <span class="s-kw">if</span> (r == <span class="s-num">0</span>) <span class="s-kw">return</span> -<span class="s-num">1</span>;</span></div>
+<div class="code-line"><span class="ln">136</span><span class="lc">        <span class="s-fn">fwrite</span>(buf, <span class="s-num">1</span>, r, dst);</span></div>
+<div class="code-line"><span class="ln">137</span><span class="lc">        remaining -= r;</span></div>
+<div class="code-line"><span class="ln">138</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">139</span><span class="lc">    <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">140</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">141</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">142</span><span class="lc"><span class="s-cm">/* 디렉토리 생성 (경로에 포함된 디렉토리) */</span></span></div>
+<div class="code-line"><span class="ln">143</span><span class="lc"><span class="s-type">void</span> <span class="s-fn">ensureDir</span>(<span class="s-kw">const</span> <span class="s-type">char</span> *path) {</span></div>
+<div class="code-line"><span class="ln">144</span><span class="lc">    <span class="s-type">char</span> tmp[NAME_LEN];</span></div>
+<div class="code-line"><span class="ln">145</span><span class="lc">    <span class="s-fn">strncpy</span>(tmp, path, NAME_LEN - <span class="s-num">1</span>);</span></div>
+<div class="code-line"><span class="ln">146</span><span class="lc">    tmp[NAME_LEN - <span class="s-num">1</span>] = '\<span class="s-num">0</span>';</span></div>
+<div class="code-line"><span class="ln">147</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">148</span><span class="lc">    <span class="s-kw">for</span> (<span class="s-type">char</span> *p = tmp + <span class="s-num">1</span>; *p; p++) {</span></div>
+<div class="code-line"><span class="ln">149</span><span class="lc">        <span class="s-kw">if</span> (*p == <span class="s-str">'/'</span> || *p == '\\') {</span></div>
+<div class="code-line"><span class="ln">150</span><span class="lc">            *p = '\<span class="s-num">0</span>';</span></div>
+<div class="code-line"><span class="ln">151</span><span class="lc"><span class="s-pp">#ifdef</span> _WIN32</span></div>
+<div class="code-line"><span class="ln">152</span><span class="lc">            <span class="s-fn">_mkdir</span>(tmp);</span></div>
+<div class="code-line"><span class="ln">153</span><span class="lc"><span class="s-pp">#<span class="s-kw">else</span></span></span></div>
+<div class="code-line"><span class="ln">154</span><span class="lc">            <span class="s-fn">mkdir</span>(tmp, <span class="s-num">0755</span>);</span></div>
+<div class="code-line"><span class="ln">155</span><span class="lc"><span class="s-pp">#endif</span></span></div>
+<div class="code-line"><span class="ln">156</span><span class="lc">            *p = <span class="s-str">'/'</span>;</span></div>
+<div class="code-line"><span class="ln">157</span><span class="lc">        }</span></div>
+<div class="code-line"><span class="ln">158</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">159</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">160</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">161</span><span class="lc"><span class="s-cm">/* pack: 압축 지원 아카이브 묶기 */</span></span></div>
+<div class="code-line"><span class="ln">162</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">pack</span>(<span class="s-kw">const</span> <span class="s-type">char</span> *arcName, <span class="s-kw">const</span> <span class="s-type">char</span> *files[],</span></div>
+<div class="code-line"><span class="ln">163</span><span class="lc">         <span class="s-type">int</span> count, <span class="s-type">int</span> compress) {</span></div>
+<div class="code-line"><span class="ln">164</span><span class="lc">    <span class="s-type">FILE</span> *arc = <span class="s-fn">fopen</span>(arcName, <span class="s-str">"wb"</span>);</span></div>
+<div class="code-line"><span class="ln">165</span><span class="lc">    <span class="s-kw">if</span> (!arc) {</span></div>
+<div class="code-line"><span class="ln">166</span><span class="lc">        <span class="s-fn">fprintf</span>(stderr, <span class="s-str">"오류: 아카이브 생성 실패\n"</span>);</span></div>
+<div class="code-line"><span class="ln">167</span><span class="lc">        <span class="s-kw">return</span> -<span class="s-num">1</span>;</span></div>
+<div class="code-line"><span class="ln">168</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">169</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">170</span><span class="lc">    <span class="s-cm">/* 매직 넘버 + 버전 */</span></span></div>
+<div class="code-line"><span class="ln">171</span><span class="lc">    <span class="s-kw">const</span> <span class="s-type">char</span> magic[<span class="s-num">4</span>] = {<span class="s-str">'M'</span>,<span class="s-str">'A'</span>,<span class="s-str">'R'</span>,<span class="s-str">'3'</span>};</span></div>
+<div class="code-line"><span class="ln">172</span><span class="lc">    <span class="s-fn">fwrite</span>(magic, <span class="s-num">1</span>, <span class="s-num">4</span>, arc);</span></div>
+<div class="code-line"><span class="ln">173</span><span class="lc">    <span class="s-fn">fwrite</span>(&amp;count, <span class="s-kw">sizeof</span>(<span class="s-type">int</span>), <span class="s-num">1</span>, arc);</span></div>
+<div class="code-line"><span class="ln">174</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">175</span><span class="lc">    <span class="s-type">unsigned</span> <span class="s-type">int</span> totalOrig = <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">176</span><span class="lc">    <span class="s-type">unsigned</span> <span class="s-type">int</span> totalStored = <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">177</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">178</span><span class="lc">    <span class="s-kw">for</span> (<span class="s-type">int</span> i = <span class="s-num">0</span>; i &lt; count; i++) {</span></div>
+<div class="code-line"><span class="ln">179</span><span class="lc">        <span class="s-type">FILE</span> *fp = <span class="s-fn">fopen</span>(files[i], <span class="s-str">"rb"</span>);</span></div>
+<div class="code-line"><span class="ln">180</span><span class="lc">        <span class="s-kw">if</span> (!fp) {</span></div>
+<div class="code-line"><span class="ln">181</span><span class="lc">            <span class="s-fn">fprintf</span>(stderr, <span class="s-str">"오류: %s 열기 실패\n"</span>,</span></div>
+<div class="code-line"><span class="ln">182</span><span class="lc">                    files[i]);</span></div>
+<div class="code-line"><span class="ln">183</span><span class="lc">            <span class="s-fn">fclose</span>(arc);</span></div>
+<div class="code-line"><span class="ln">184</span><span class="lc">            <span class="s-kw">return</span> -<span class="s-num">1</span>;</span></div>
+<div class="code-line"><span class="ln">185</span><span class="lc">        }</span></div>
+<div class="code-line"><span class="ln">186</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">187</span><span class="lc">        <span class="s-cm">/* 원본 데이터 읽기 */</span></span></div>
+<div class="code-line"><span class="ln">188</span><span class="lc">        <span class="s-type">unsigned</span> <span class="s-type">int</span> fsize = (<span class="s-type">unsigned</span> <span class="s-type">int</span>)<span class="s-fn">getFileSize</span>(fp);</span></div>
+<div class="code-line"><span class="ln">189</span><span class="lc">        <span class="s-type">unsigned</span> <span class="s-type">char</span> *origData = (<span class="s-type">unsigned</span> <span class="s-type">char</span> *)</span></div>
+<div class="code-line"><span class="ln">190</span><span class="lc">            <span class="s-fn">malloc</span>(fsize);</span></div>
+<div class="code-line"><span class="ln">191</span><span class="lc">        <span class="s-kw">if</span> (!origData) {</span></div>
+<div class="code-line"><span class="ln">192</span><span class="lc">            <span class="s-fn">fclose</span>(fp);</span></div>
+<div class="code-line"><span class="ln">193</span><span class="lc">            <span class="s-fn">fclose</span>(arc);</span></div>
+<div class="code-line"><span class="ln">194</span><span class="lc">            <span class="s-kw">return</span> -<span class="s-num">1</span>;</span></div>
+<div class="code-line"><span class="ln">195</span><span class="lc">        }</span></div>
+<div class="code-line"><span class="ln">196</span><span class="lc">        <span class="s-fn">fread</span>(origData, <span class="s-num">1</span>, fsize, fp);</span></div>
+<div class="code-line"><span class="ln">197</span><span class="lc">        <span class="s-fn">fclose</span>(fp);</span></div>
+<div class="code-line"><span class="ln">198</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">199</span><span class="lc">        <span class="s-cm">/* CRC 계산 */</span></span></div>
+<div class="code-line"><span class="ln">200</span><span class="lc">        <span class="s-type">unsigned</span> <span class="s-type">int</span> crc = <span class="s-fn">crc32</span>(origData, fsize);</span></div>
+<div class="code-line"><span class="ln">201</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">202</span><span class="lc">        <span class="s-cm">/* 헤더 작성 */</span></span></div>
+<div class="code-line"><span class="ln">203</span><span class="lc">        FileHeader h;</span></div>
+<div class="code-line"><span class="ln">204</span><span class="lc">        <span class="s-fn">memset</span>(&amp;h, <span class="s-num">0</span>, <span class="s-kw">sizeof</span>(h));</span></div>
+<div class="code-line"><span class="ln">205</span><span class="lc">        <span class="s-fn">strncpy</span>(h.name, files[i], NAME_LEN - <span class="s-num">1</span>);</span></div>
+<div class="code-line"><span class="ln">206</span><span class="lc">        h.origSize = fsize;</span></div>
+<div class="code-line"><span class="ln">207</span><span class="lc">        h.timestamp = (<span class="s-type">unsigned</span> <span class="s-type">int</span>)<span class="s-fn">time</span>(<span class="s-kw">NULL</span>);</span></div>
+<div class="code-line"><span class="ln">208</span><span class="lc">        h.checksum = crc;</span></div>
+<div class="code-line"><span class="ln">209</span><span class="lc">        h.flags = <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">210</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">211</span><span class="lc">        <span class="s-type">unsigned</span> <span class="s-type">char</span> *storeData = origData;</span></div>
+<div class="code-line"><span class="ln">212</span><span class="lc">        <span class="s-type">unsigned</span> <span class="s-type">int</span> storeSize = fsize;</span></div>
+<div class="code-line"><span class="ln">213</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">214</span><span class="lc">        <span class="s-cm">/* RLE 압축 시도 */</span></span></div>
+<div class="code-line"><span class="ln">215</span><span class="lc">        <span class="s-type">unsigned</span> <span class="s-type">char</span> *compData = <span class="s-kw">NULL</span>;</span></div>
+<div class="code-line"><span class="ln">216</span><span class="lc">        <span class="s-kw">if</span> (compress &amp;&amp; fsize &gt; <span class="s-num">0</span>) {</span></div>
+<div class="code-line"><span class="ln">217</span><span class="lc">            compData = (<span class="s-type">unsigned</span> <span class="s-type">char</span> *)</span></div>
+<div class="code-line"><span class="ln">218</span><span class="lc">                <span class="s-fn">malloc</span>(fsize * <span class="s-num">2</span>);</span></div>
+<div class="code-line"><span class="ln">219</span><span class="lc">            <span class="s-kw">if</span> (compData) {</span></div>
+<div class="code-line"><span class="ln">220</span><span class="lc">                <span class="s-type">unsigned</span> <span class="s-type">int</span> cLen = <span class="s-fn">rleEncode</span>(</span></div>
+<div class="code-line"><span class="ln">221</span><span class="lc">                    origData, fsize, compData,</span></div>
+<div class="code-line"><span class="ln">222</span><span class="lc">                    fsize * <span class="s-num">2</span>);</span></div>
+<div class="code-line"><span class="ln">223</span><span class="lc">                <span class="s-kw">if</span> (cLen &gt; <span class="s-num">0</span> &amp;&amp; cLen &lt; fsize) {</span></div>
+<div class="code-line"><span class="ln">224</span><span class="lc">                    <span class="s-cm">/* 압축 효과가 있을 때만 사용 */</span></span></div>
+<div class="code-line"><span class="ln">225</span><span class="lc">                    storeData = compData;</span></div>
+<div class="code-line"><span class="ln">226</span><span class="lc">                    storeSize = cLen;</span></div>
+<div class="code-line"><span class="ln">227</span><span class="lc">                    h.flags |= FLAG_COMPRESSED;</span></div>
+<div class="code-line"><span class="ln">228</span><span class="lc">                }</span></div>
+<div class="code-line"><span class="ln">229</span><span class="lc">            }</span></div>
+<div class="code-line"><span class="ln">230</span><span class="lc">        }</span></div>
+<div class="code-line"><span class="ln">231</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">232</span><span class="lc">        h.storedSize = storeSize;</span></div>
+<div class="code-line"><span class="ln">233</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">234</span><span class="lc">        <span class="s-fn">fwrite</span>(&amp;h, <span class="s-kw">sizeof</span>(FileHeader), <span class="s-num">1</span>, arc);</span></div>
+<div class="code-line"><span class="ln">235</span><span class="lc">        <span class="s-fn">fwrite</span>(storeData, <span class="s-num">1</span>, storeSize, arc);</span></div>
+<div class="code-line"><span class="ln">236</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">237</span><span class="lc">        totalOrig += fsize;</span></div>
+<div class="code-line"><span class="ln">238</span><span class="lc">        totalStored += storeSize;</span></div>
+<div class="code-line"><span class="ln">239</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">240</span><span class="lc">        <span class="s-fn">printf</span>(<span class="s-str">"  추가: %-30s %8u -&gt; %8u 바이트"</span>,</span></div>
+<div class="code-line"><span class="ln">241</span><span class="lc">               h.name, fsize, storeSize);</span></div>
+<div class="code-line"><span class="ln">242</span><span class="lc">        <span class="s-kw">if</span> (h.flags &amp; FLAG_COMPRESSED)</span></div>
+<div class="code-line"><span class="ln">243</span><span class="lc">            <span class="s-fn">printf</span>(<span class="s-str">" [압축]\n"</span>);</span></div>
+<div class="code-line"><span class="ln">244</span><span class="lc">        <span class="s-kw">else</span></span></div>
+<div class="code-line"><span class="ln">245</span><span class="lc">            <span class="s-fn">printf</span>(<span class="s-str">"\n"</span>);</span></div>
+<div class="code-line"><span class="ln">246</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">247</span><span class="lc">        <span class="s-fn">free</span>(origData);</span></div>
+<div class="code-line"><span class="ln">248</span><span class="lc">        <span class="s-kw">if</span> (compData) <span class="s-fn">free</span>(compData);</span></div>
+<div class="code-line"><span class="ln">249</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">250</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">251</span><span class="lc">    <span class="s-fn">fclose</span>(arc);</span></div>
+<div class="code-line"><span class="ln">252</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"\n아카이브 '%s' 생성 완료\n"</span>, arcName);</span></div>
+<div class="code-line"><span class="ln">253</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"  파일 수: %d\n"</span>, count);</span></div>
+<div class="code-line"><span class="ln">254</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"  원본 합계: %u 바이트\n"</span>, totalOrig);</span></div>
+<div class="code-line"><span class="ln">255</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"  저장 합계: %u 바이트\n"</span>, totalStored);</span></div>
+<div class="code-line"><span class="ln">256</span><span class="lc">    <span class="s-kw">if</span> (totalOrig &gt; <span class="s-num">0</span>) {</span></div>
+<div class="code-line"><span class="ln">257</span><span class="lc">        <span class="s-fn">printf</span>(<span class="s-str">"  압축률: %.1f%%\n"</span>,</span></div>
+<div class="code-line"><span class="ln">258</span><span class="lc">               (<span class="s-num">1.0</span> - (<span class="s-type">double</span>)totalStored / totalOrig)</span></div>
+<div class="code-line"><span class="ln">259</span><span class="lc">               * <span class="s-num">100.0</span>);</span></div>
+<div class="code-line"><span class="ln">260</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">261</span><span class="lc">    <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">262</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">263</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">264</span><span class="lc"><span class="s-cm">/* list: 목록 출력 */</span></span></div>
+<div class="code-line"><span class="ln">265</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">list</span>(<span class="s-kw">const</span> <span class="s-type">char</span> *arcName) {</span></div>
+<div class="code-line"><span class="ln">266</span><span class="lc">    <span class="s-type">FILE</span> *arc = <span class="s-fn">fopen</span>(arcName, <span class="s-str">"rb"</span>);</span></div>
+<div class="code-line"><span class="ln">267</span><span class="lc">    <span class="s-kw">if</span> (!arc) {</span></div>
+<div class="code-line"><span class="ln">268</span><span class="lc">        <span class="s-fn">fprintf</span>(stderr, <span class="s-str">"오류: 아카이브 열기 실패\n"</span>);</span></div>
+<div class="code-line"><span class="ln">269</span><span class="lc">        <span class="s-kw">return</span> -<span class="s-num">1</span>;</span></div>
+<div class="code-line"><span class="ln">270</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">271</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">272</span><span class="lc">    <span class="s-type">char</span> magic[<span class="s-num">4</span>];</span></div>
+<div class="code-line"><span class="ln">273</span><span class="lc">    <span class="s-fn">fread</span>(magic, <span class="s-num">1</span>, <span class="s-num">4</span>, arc);</span></div>
+<div class="code-line"><span class="ln">274</span><span class="lc">    <span class="s-kw">if</span> (<span class="s-fn">memcmp</span>(magic, <span class="s-str">"MAR3"</span>, <span class="s-num">4</span>) != <span class="s-num">0</span>) {</span></div>
+<div class="code-line"><span class="ln">275</span><span class="lc">        <span class="s-fn">fprintf</span>(stderr, <span class="s-str">"오류: 유효하지 않은 아카이브\n"</span>);</span></div>
+<div class="code-line"><span class="ln">276</span><span class="lc">        <span class="s-fn">fclose</span>(arc);</span></div>
+<div class="code-line"><span class="ln">277</span><span class="lc">        <span class="s-kw">return</span> -<span class="s-num">1</span>;</span></div>
+<div class="code-line"><span class="ln">278</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">279</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">280</span><span class="lc">    <span class="s-type">int</span> count;</span></div>
+<div class="code-line"><span class="ln">281</span><span class="lc">    <span class="s-fn">fread</span>(&amp;count, <span class="s-kw">sizeof</span>(<span class="s-type">int</span>), <span class="s-num">1</span>, arc);</span></div>
+<div class="code-line"><span class="ln">282</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">283</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"%-4s %-28s %10s %10s %10s  %-8s\n"</span>,</span></div>
+<div class="code-line"><span class="ln">284</span><span class="lc">           <span class="s-str">"No"</span>, <span class="s-str">"파일 이름"</span>, <span class="s-str">"원본"</span>, <span class="s-str">"저장"</span>,</span></div>
+<div class="code-line"><span class="ln">285</span><span class="lc">           <span class="s-str">"CRC-32"</span>, <span class="s-str">"플래그"</span>);</span></div>
+<div class="code-line"><span class="ln">286</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"-------------------------------------------"</span></span></div>
+<div class="code-line"><span class="ln">287</span><span class="lc">           <span class="s-str">"-------------------------------\n"</span>);</span></div>
+<div class="code-line"><span class="ln">288</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">289</span><span class="lc">    <span class="s-kw">for</span> (<span class="s-type">int</span> i = <span class="s-num">0</span>; i &lt; count; i++) {</span></div>
+<div class="code-line"><span class="ln">290</span><span class="lc">        FileHeader h;</span></div>
+<div class="code-line"><span class="ln">291</span><span class="lc">        <span class="s-fn">fread</span>(&amp;h, <span class="s-kw">sizeof</span>(FileHeader), <span class="s-num">1</span>, arc);</span></div>
+<div class="code-line"><span class="ln">292</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">293</span><span class="lc">        <span class="s-fn">printf</span>(<span class="s-str">"%-4d %-28s %10u %10u  %08X  "</span>,</span></div>
+<div class="code-line"><span class="ln">294</span><span class="lc">               i + <span class="s-num">1</span>, h.name, h.origSize,</span></div>
+<div class="code-line"><span class="ln">295</span><span class="lc">               h.storedSize, h.checksum);</span></div>
+<div class="code-line"><span class="ln">296</span><span class="lc">        <span class="s-kw">if</span> (h.flags &amp; FLAG_COMPRESSED)</span></div>
+<div class="code-line"><span class="ln">297</span><span class="lc">            <span class="s-fn">printf</span>(<span class="s-str">"[압축]"</span>);</span></div>
+<div class="code-line"><span class="ln">298</span><span class="lc">        <span class="s-fn">printf</span>(<span class="s-str">"\n"</span>);</span></div>
+<div class="code-line"><span class="ln">299</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">300</span><span class="lc">        <span class="s-fn">fseek</span>(arc, h.storedSize, SEEK_CUR);</span></div>
+<div class="code-line"><span class="ln">301</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">302</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">303</span><span class="lc">    <span class="s-fn">fclose</span>(arc);</span></div>
+<div class="code-line"><span class="ln">304</span><span class="lc">    <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">305</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">306</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">307</span><span class="lc"><span class="s-cm">/* unpack: 전체 추출 + CRC 검증 */</span></span></div>
+<div class="code-line"><span class="ln">308</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">unpack</span>(<span class="s-kw">const</span> <span class="s-type">char</span> *arcName) {</span></div>
+<div class="code-line"><span class="ln">309</span><span class="lc">    <span class="s-type">FILE</span> *arc = <span class="s-fn">fopen</span>(arcName, <span class="s-str">"rb"</span>);</span></div>
+<div class="code-line"><span class="ln">310</span><span class="lc">    <span class="s-kw">if</span> (!arc) {</span></div>
+<div class="code-line"><span class="ln">311</span><span class="lc">        <span class="s-fn">fprintf</span>(stderr, <span class="s-str">"오류: 아카이브 열기 실패\n"</span>);</span></div>
+<div class="code-line"><span class="ln">312</span><span class="lc">        <span class="s-kw">return</span> -<span class="s-num">1</span>;</span></div>
+<div class="code-line"><span class="ln">313</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">314</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">315</span><span class="lc">    <span class="s-type">char</span> magic[<span class="s-num">4</span>];</span></div>
+<div class="code-line"><span class="ln">316</span><span class="lc">    <span class="s-fn">fread</span>(magic, <span class="s-num">1</span>, <span class="s-num">4</span>, arc);</span></div>
+<div class="code-line"><span class="ln">317</span><span class="lc">    <span class="s-kw">if</span> (<span class="s-fn">memcmp</span>(magic, <span class="s-str">"MAR3"</span>, <span class="s-num">4</span>) != <span class="s-num">0</span>) {</span></div>
+<div class="code-line"><span class="ln">318</span><span class="lc">        <span class="s-fn">fprintf</span>(stderr, <span class="s-str">"오류: 유효하지 않은 아카이브\n"</span>);</span></div>
+<div class="code-line"><span class="ln">319</span><span class="lc">        <span class="s-fn">fclose</span>(arc);</span></div>
+<div class="code-line"><span class="ln">320</span><span class="lc">        <span class="s-kw">return</span> -<span class="s-num">1</span>;</span></div>
+<div class="code-line"><span class="ln">321</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">322</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">323</span><span class="lc">    <span class="s-type">int</span> count;</span></div>
+<div class="code-line"><span class="ln">324</span><span class="lc">    <span class="s-fn">fread</span>(&amp;count, <span class="s-kw">sizeof</span>(<span class="s-type">int</span>), <span class="s-num">1</span>, arc);</span></div>
+<div class="code-line"><span class="ln">325</span><span class="lc">    <span class="s-type">int</span> errors = <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">326</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">327</span><span class="lc">    <span class="s-kw">for</span> (<span class="s-type">int</span> i = <span class="s-num">0</span>; i &lt; count; i++) {</span></div>
+<div class="code-line"><span class="ln">328</span><span class="lc">        FileHeader h;</span></div>
+<div class="code-line"><span class="ln">329</span><span class="lc">        <span class="s-fn">fread</span>(&amp;h, <span class="s-kw">sizeof</span>(FileHeader), <span class="s-num">1</span>, arc);</span></div>
+<div class="code-line"><span class="ln">330</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">331</span><span class="lc">        <span class="s-cm">/* 저장된 데이터 읽기 */</span></span></div>
+<div class="code-line"><span class="ln">332</span><span class="lc">        <span class="s-type">unsigned</span> <span class="s-type">char</span> *stored = (<span class="s-type">unsigned</span> <span class="s-type">char</span> *)</span></div>
+<div class="code-line"><span class="ln">333</span><span class="lc">            <span class="s-fn">malloc</span>(h.storedSize);</span></div>
+<div class="code-line"><span class="ln">334</span><span class="lc">        <span class="s-kw">if</span> (!stored) {</span></div>
+<div class="code-line"><span class="ln">335</span><span class="lc">            <span class="s-fn">fclose</span>(arc);</span></div>
+<div class="code-line"><span class="ln">336</span><span class="lc">            <span class="s-kw">return</span> -<span class="s-num">1</span>;</span></div>
+<div class="code-line"><span class="ln">337</span><span class="lc">        }</span></div>
+<div class="code-line"><span class="ln">338</span><span class="lc">        <span class="s-fn">fread</span>(stored, <span class="s-num">1</span>, h.storedSize, arc);</span></div>
+<div class="code-line"><span class="ln">339</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">340</span><span class="lc">        <span class="s-cm">/* 압축 해제 */</span></span></div>
+<div class="code-line"><span class="ln">341</span><span class="lc">        <span class="s-type">unsigned</span> <span class="s-type">char</span> *origData;</span></div>
+<div class="code-line"><span class="ln">342</span><span class="lc">        <span class="s-type">unsigned</span> <span class="s-type">int</span> origLen;</span></div>
+<div class="code-line"><span class="ln">343</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">344</span><span class="lc">        <span class="s-kw">if</span> (h.flags &amp; FLAG_COMPRESSED) {</span></div>
+<div class="code-line"><span class="ln">345</span><span class="lc">            origData = (<span class="s-type">unsigned</span> <span class="s-type">char</span> *)</span></div>
+<div class="code-line"><span class="ln">346</span><span class="lc">                <span class="s-fn">malloc</span>(h.origSize);</span></div>
+<div class="code-line"><span class="ln">347</span><span class="lc">            <span class="s-kw">if</span> (!origData) {</span></div>
+<div class="code-line"><span class="ln">348</span><span class="lc">                <span class="s-fn">free</span>(stored);</span></div>
+<div class="code-line"><span class="ln">349</span><span class="lc">                <span class="s-fn">fclose</span>(arc);</span></div>
+<div class="code-line"><span class="ln">350</span><span class="lc">                <span class="s-kw">return</span> -<span class="s-num">1</span>;</span></div>
+<div class="code-line"><span class="ln">351</span><span class="lc">            }</span></div>
+<div class="code-line"><span class="ln">352</span><span class="lc">            origLen = <span class="s-fn">rleDecode</span>(stored, h.storedSize,</span></div>
+<div class="code-line"><span class="ln">353</span><span class="lc">                                origData, h.origSize);</span></div>
+<div class="code-line"><span class="ln">354</span><span class="lc">            <span class="s-fn">free</span>(stored);</span></div>
+<div class="code-line"><span class="ln">355</span><span class="lc">            <span class="s-kw">if</span> (origLen != h.origSize) {</span></div>
+<div class="code-line"><span class="ln">356</span><span class="lc">                <span class="s-fn">fprintf</span>(stderr,</span></div>
+<div class="code-line"><span class="ln">357</span><span class="lc">                    <span class="s-str">"오류: %s 압축 해제 크기 불일치\n"</span>,</span></div>
+<div class="code-line"><span class="ln">358</span><span class="lc">                    h.name);</span></div>
+<div class="code-line"><span class="ln">359</span><span class="lc">                <span class="s-fn">free</span>(origData);</span></div>
+<div class="code-line"><span class="ln">360</span><span class="lc">                errors++;</span></div>
+<div class="code-line"><span class="ln">361</span><span class="lc">                <span class="s-kw">continue</span>;</span></div>
+<div class="code-line"><span class="ln">362</span><span class="lc">            }</span></div>
+<div class="code-line"><span class="ln">363</span><span class="lc">        } <span class="s-kw">else</span> {</span></div>
+<div class="code-line"><span class="ln">364</span><span class="lc">            origData = stored;</span></div>
+<div class="code-line"><span class="ln">365</span><span class="lc">            origLen = h.storedSize;</span></div>
+<div class="code-line"><span class="ln">366</span><span class="lc">        }</span></div>
+<div class="code-line"><span class="ln">367</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">368</span><span class="lc">        <span class="s-cm">/* CRC 검증 */</span></span></div>
+<div class="code-line"><span class="ln">369</span><span class="lc">        <span class="s-type">unsigned</span> <span class="s-type">int</span> crc = <span class="s-fn">crc32</span>(origData, origLen);</span></div>
+<div class="code-line"><span class="ln">370</span><span class="lc">        <span class="s-kw">if</span> (crc != h.checksum) {</span></div>
+<div class="code-line"><span class="ln">371</span><span class="lc">            <span class="s-fn">fprintf</span>(stderr,</span></div>
+<div class="code-line"><span class="ln">372</span><span class="lc">                <span class="s-str">"경고: %s CRC 불일치 "</span></span></div>
+<div class="code-line"><span class="ln">373</span><span class="lc">                <span class="s-str">"(기대: %08X, 실제: %08X)\n"</span>,</span></div>
+<div class="code-line"><span class="ln">374</span><span class="lc">                h.name, h.checksum, crc);</span></div>
+<div class="code-line"><span class="ln">375</span><span class="lc">            errors++;</span></div>
+<div class="code-line"><span class="ln">376</span><span class="lc">        }</span></div>
+<div class="code-line"><span class="ln">377</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">378</span><span class="lc">        <span class="s-cm">/* 디렉토리 생성 + 파일 쓰기 */</span></span></div>
+<div class="code-line"><span class="ln">379</span><span class="lc">        <span class="s-fn">ensureDir</span>(h.name);</span></div>
+<div class="code-line"><span class="ln">380</span><span class="lc">        <span class="s-type">FILE</span> *fp = <span class="s-fn">fopen</span>(h.name, <span class="s-str">"wb"</span>);</span></div>
+<div class="code-line"><span class="ln">381</span><span class="lc">        <span class="s-kw">if</span> (!fp) {</span></div>
+<div class="code-line"><span class="ln">382</span><span class="lc">            <span class="s-fn">fprintf</span>(stderr, <span class="s-str">"오류: %s 생성 실패\n"</span>,</span></div>
+<div class="code-line"><span class="ln">383</span><span class="lc">                    h.name);</span></div>
+<div class="code-line"><span class="ln">384</span><span class="lc">            <span class="s-fn">free</span>(origData);</span></div>
+<div class="code-line"><span class="ln">385</span><span class="lc">            errors++;</span></div>
+<div class="code-line"><span class="ln">386</span><span class="lc">            <span class="s-kw">continue</span>;</span></div>
+<div class="code-line"><span class="ln">387</span><span class="lc">        }</span></div>
+<div class="code-line"><span class="ln">388</span><span class="lc">        <span class="s-fn">fwrite</span>(origData, <span class="s-num">1</span>, origLen, fp);</span></div>
+<div class="code-line"><span class="ln">389</span><span class="lc">        <span class="s-fn">fclose</span>(fp);</span></div>
+<div class="code-line"><span class="ln">390</span><span class="lc">        <span class="s-fn">free</span>(origData);</span></div>
+<div class="code-line"><span class="ln">391</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">392</span><span class="lc">        <span class="s-fn">printf</span>(<span class="s-str">"  추출: %-30s %8u 바이트"</span>,</span></div>
+<div class="code-line"><span class="ln">393</span><span class="lc">               h.name, origLen);</span></div>
+<div class="code-line"><span class="ln">394</span><span class="lc">        <span class="s-kw">if</span> (h.flags &amp; FLAG_COMPRESSED)</span></div>
+<div class="code-line"><span class="ln">395</span><span class="lc">            <span class="s-fn">printf</span>(<span class="s-str">" [압축 해제]"</span>);</span></div>
+<div class="code-line"><span class="ln">396</span><span class="lc">        <span class="s-kw">if</span> (crc == h.checksum)</span></div>
+<div class="code-line"><span class="ln">397</span><span class="lc">            <span class="s-fn">printf</span>(<span class="s-str">" [CRC OK]\n"</span>);</span></div>
+<div class="code-line"><span class="ln">398</span><span class="lc">        <span class="s-kw">else</span></span></div>
+<div class="code-line"><span class="ln">399</span><span class="lc">            <span class="s-fn">printf</span>(<span class="s-str">" [CRC FAIL]\n"</span>);</span></div>
+<div class="code-line"><span class="ln">400</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">401</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">402</span><span class="lc">    <span class="s-fn">fclose</span>(arc);</span></div>
+<div class="code-line"><span class="ln">403</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"\n추출 완료: %d개 파일"</span>, count);</span></div>
+<div class="code-line"><span class="ln">404</span><span class="lc">    <span class="s-kw">if</span> (errors &gt; <span class="s-num">0</span>)</span></div>
+<div class="code-line"><span class="ln">405</span><span class="lc">        <span class="s-fn">printf</span>(<span class="s-str">" (%d개 오류)\n"</span>, errors);</span></div>
+<div class="code-line"><span class="ln">406</span><span class="lc">    <span class="s-kw">else</span></span></div>
+<div class="code-line"><span class="ln">407</span><span class="lc">        <span class="s-fn">printf</span>(<span class="s-str">" (오류 없음)\n"</span>);</span></div>
+<div class="code-line"><span class="ln">408</span><span class="lc">    <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">409</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">410</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">411</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">main</span>(<span class="s-type">int</span> argc, <span class="s-type">char</span> *argv[]) {</span></div>
+<div class="code-line"><span class="ln">412</span><span class="lc">    <span class="s-kw">if</span> (argc &lt; <span class="s-num">3</span>) {</span></div>
+<div class="code-line"><span class="ln">413</span><span class="lc">        <span class="s-fn">printf</span>(<span class="s-str">"사용법:\n"</span>);</span></div>
+<div class="code-line"><span class="ln">414</span><span class="lc">        <span class="s-fn">printf</span>(<span class="s-str">"  묶기:     %s pack    arc파일 "</span></span></div>
+<div class="code-line"><span class="ln">415</span><span class="lc">               <span class="s-str">"file1 file2 ...\n"</span>, argv[<span class="s-num">0</span>]);</span></div>
+<div class="code-line"><span class="ln">416</span><span class="lc">        <span class="s-fn">printf</span>(<span class="s-str">"  압축묶기: %s packz   arc파일 "</span></span></div>
+<div class="code-line"><span class="ln">417</span><span class="lc">               <span class="s-str">"file1 file2 ...\n"</span>, argv[<span class="s-num">0</span>]);</span></div>
+<div class="code-line"><span class="ln">418</span><span class="lc">        <span class="s-fn">printf</span>(<span class="s-str">"  풀기:     %s unpack  arc파일\n"</span>,</span></div>
+<div class="code-line"><span class="ln">419</span><span class="lc">               argv[<span class="s-num">0</span>]);</span></div>
+<div class="code-line"><span class="ln">420</span><span class="lc">        <span class="s-fn">printf</span>(<span class="s-str">"  목록:     %s list    arc파일\n"</span>,</span></div>
+<div class="code-line"><span class="ln">421</span><span class="lc">               argv[<span class="s-num">0</span>]);</span></div>
+<div class="code-line"><span class="ln">422</span><span class="lc">        <span class="s-kw">return</span> <span class="s-num">1</span>;</span></div>
+<div class="code-line"><span class="ln">423</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">424</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">425</span><span class="lc">    <span class="s-type">int</span> compress = <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">426</span><span class="lc">    <span class="s-kw">if</span> (<span class="s-fn">strcmp</span>(argv[<span class="s-num">1</span>], <span class="s-str">"pack"</span>) == <span class="s-num">0</span> ||</span></div>
+<div class="code-line"><span class="ln">427</span><span class="lc">        <span class="s-fn">strcmp</span>(argv[<span class="s-num">1</span>], <span class="s-str">"packz"</span>) == <span class="s-num">0</span>) {</span></div>
+<div class="code-line"><span class="ln">428</span><span class="lc">        <span class="s-kw">if</span> (argc &lt; <span class="s-num">4</span>) {</span></div>
+<div class="code-line"><span class="ln">429</span><span class="lc">            <span class="s-fn">printf</span>(<span class="s-str">"묶을 파일을 지정하십시오.\n"</span>);</span></div>
+<div class="code-line"><span class="ln">430</span><span class="lc">            <span class="s-kw">return</span> <span class="s-num">1</span>;</span></div>
+<div class="code-line"><span class="ln">431</span><span class="lc">        }</span></div>
+<div class="code-line"><span class="ln">432</span><span class="lc">        compress = (<span class="s-fn">strcmp</span>(argv[<span class="s-num">1</span>], <span class="s-str">"packz"</span>) == <span class="s-num">0</span>);</span></div>
+<div class="code-line"><span class="ln">433</span><span class="lc">        <span class="s-kw">const</span> <span class="s-type">char</span> *files[MAX_FILES];</span></div>
+<div class="code-line"><span class="ln">434</span><span class="lc">        <span class="s-type">int</span> cnt = argc - <span class="s-num">3</span>;</span></div>
+<div class="code-line"><span class="ln">435</span><span class="lc">        <span class="s-kw">for</span> (<span class="s-type">int</span> i = <span class="s-num">0</span>; i &lt; cnt; i++)</span></div>
+<div class="code-line"><span class="ln">436</span><span class="lc">            files[i] = argv[i + <span class="s-num">3</span>];</span></div>
+<div class="code-line"><span class="ln">437</span><span class="lc">        <span class="s-kw">return</span> <span class="s-fn">pack</span>(argv[<span class="s-num">2</span>], files, cnt, compress);</span></div>
+<div class="code-line"><span class="ln">438</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">439</span><span class="lc">    <span class="s-kw">else</span> <span class="s-kw">if</span> (<span class="s-fn">strcmp</span>(argv[<span class="s-num">1</span>], <span class="s-str">"unpack"</span>) == <span class="s-num">0</span>) {</span></div>
+<div class="code-line"><span class="ln">440</span><span class="lc">        <span class="s-kw">return</span> <span class="s-fn">unpack</span>(argv[<span class="s-num">2</span>]);</span></div>
+<div class="code-line"><span class="ln">441</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">442</span><span class="lc">    <span class="s-kw">else</span> <span class="s-kw">if</span> (<span class="s-fn">strcmp</span>(argv[<span class="s-num">1</span>], <span class="s-str">"list"</span>) == <span class="s-num">0</span>) {</span></div>
+<div class="code-line"><span class="ln">443</span><span class="lc">        <span class="s-kw">return</span> <span class="s-fn">list</span>(argv[<span class="s-num">2</span>]);</span></div>
+<div class="code-line"><span class="ln">444</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">445</span><span class="lc">    <span class="s-kw">else</span> {</span></div>
+<div class="code-line"><span class="ln">446</span><span class="lc">        <span class="s-fn">printf</span>(<span class="s-str">"알 수 없는 명령: %s\n"</span>, argv[<span class="s-num">1</span>]);</span></div>
+<div class="code-line"><span class="ln">447</span><span class="lc">        <span class="s-kw">return</span> <span class="s-num">1</span>;</span></div>
+<div class="code-line"><span class="ln">448</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">449</span><span class="lc">}</span></div>
+</div>
+</div>
+<div class="debug-section"><div class="debug-bar">DEBUG LAB — 에러를 찾으시오</div><div class="debug-body">
+
+<p style="margin:14px 0 0; font-size:14px;"><b>에러:</b> </p>
+<p style="font-size:14px;"><b>수정:</b> </p>
+</div></div>
+<div class="debug-section"><div class="debug-bar">DEBUG LAB — 에러를 찾으시오</div><div class="debug-body">
+
+<p style="margin:14px 0 0; font-size:14px;"><b>에러:</b> </p>
+<p style="font-size:14px;"><b>수정:</b> </p>
+</div></div>
+<div class="debug-section"><div class="debug-bar">DEBUG LAB — 에러를 찾으시오</div><div class="debug-body">
+
+<p style="margin:14px 0 0; font-size:14px;"><b>에러:</b> </p>
+<p style="font-size:14px;"><b>수정:</b> </p>
+</div></div>
+<h2 class="section-title">에러 체험</h2>
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc"><span class="s-cm">// 에러 1: 텍스트 모드로 바이너리 파일 열기</span></span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc"><span class="s-type">FILE</span> *fp = <span class="s-fn">fopen</span>(<span class="s-str">"archive.arc"</span>, <span class="s-str">"w"</span>);   <span class="s-cm">// 텍스트 모드!</span></span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc"><span class="s-cm">// 수정: FILE *fp = fopen("archive.arc", "wb");</span></span></div>
+<div class="code-line"><span class="ln">4</span><span class="lc"><span class="s-cm">// 바이너리 데이터에 텍스트 모드를 사용하면 개행 문자가</span></span></div>
+<div class="code-line"><span class="ln">5</span><span class="lc"><span class="s-cm">// 변환되어 데이터가 손상됩니다.</span></span></div>
+<div class="code-line"><span class="ln">6</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">7</span><span class="lc"><span class="s-cm">// 에러 2: fread 반환값 무시</span></span></div>
+<div class="code-line"><span class="ln">8</span><span class="lc">FileHeader h;</span></div>
+<div class="code-line"><span class="ln">9</span><span class="lc"><span class="s-fn">fread</span>(&amp;h, <span class="s-kw">sizeof</span>(FileHeader), <span class="s-num">1</span>, arc);  <span class="s-cm">// 실패 확인 없음</span></span></div>
+<div class="code-line"><span class="ln">10</span><span class="lc"><span class="s-cm">// 수정: 반환값이 1이 아니면 파일 끝 또는 오류입니다.</span></span></div>
+<div class="code-line"><span class="ln">11</span><span class="lc"><span class="s-kw">if</span> (<span class="s-fn">fread</span>(&amp;h, <span class="s-kw">sizeof</span>(FileHeader), <span class="s-num">1</span>, arc) != <span class="s-num">1</span>) {</span></div>
+<div class="code-line"><span class="ln">12</span><span class="lc">    <span class="s-fn">fprintf</span>(stderr, <span class="s-str">"헤더 읽기 실패\n"</span>);</span></div>
+<div class="code-line"><span class="ln">13</span><span class="lc">    <span class="s-kw">return</span> -<span class="s-num">1</span>;</span></div>
+<div class="code-line"><span class="ln">14</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">15</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">16</span><span class="lc"><span class="s-cm">// 에러 3: strncpy 후 널 종료 누락</span></span></div>
+<div class="code-line"><span class="ln">17</span><span class="lc"><span class="s-fn">strncpy</span>(h.name, filename, NAME_LEN);   <span class="s-cm">// 꽉 차면 \0 없음</span></span></div>
+<div class="code-line"><span class="ln">18</span><span class="lc"><span class="s-cm">// 수정: strncpy(h.name, filename, NAME_LEN - 1);</span></span></div>
+<div class="code-line"><span class="ln">19</span><span class="lc"><span class="s-cm">//       h.name[NAME_LEN - 1] = '\0';</span></span></div>
+<div class="code-line"><span class="ln">20</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">21</span><span class="lc"><span class="s-cm">// 에러 4: 삭제 시 파일 개수 갱신 누락</span></span></div>
+<div class="code-line"><span class="ln">22</span><span class="lc"><span class="s-type">int</span> newCount = count;  <span class="s-cm">// 삭제했는데 개수를 줄이지 않음!</span></span></div>
+<div class="code-line"><span class="ln">23</span><span class="lc"><span class="s-cm">// 수정: int newCount = count - 1;</span></span></div>
+</div>
+</div>
+<h2 class="section-title">설명하기</h2>
+<table class="trace"><thead><tr><th style="width:40px">줄</th><th style="width:220px">코드</th><th>역할</th></tr></thead><tbody></tbody></table>
+<h2 class="section-title">예제</h2>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 1</span><p style="margin:0;font-size:14px">텍스트 파일 하나를 읽어서 그 내용을 다른 파일에 그대로<br>복사하는 프로그램을 작성하십시오. 바이너리 모드(rb, wb)를<br>사용하십시오.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 2</span><p style="margin:0;font-size:14px">파일의 크기를 바이트 단위로 출력하는 프로그램을 작성하십시오.<br>fseek와 ftell을 사용하십시오.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 3</span><p style="margin:0;font-size:14px">구조체 FileHeader(이름 64바이트, 크기 4바이트)를 파일에<br>fwrite로 기록하고, fread로 다시 읽어서 출력하는 프로그램을<br>작성하십시오.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 4</span><p style="margin:0;font-size:14px">2개의 파일을 하나의 아카이브로 묶는 pack 함수와, 아카이브에서<br>2개의 파일을 꺼내는 unpack 함수를 구현하십시오.<br>파일 개수는 고정 2개로 가정합니다.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 5</span><p style="margin:0;font-size:14px">아카이브 파일을 열어 포함된 파일의 이름과 크기 목록을<br>출력하는 list 함수를 구현하십시오. 데이터는 읽지 않고<br>fseek로 건너뛰십시오.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 6</span><p style="margin:0;font-size:14px">문자열에 대해 RLE 인코딩과 디코딩을 수행하는 두 함수를<br>작성하십시오. "AAABBC" 같은 입력을 "3A2B1C"로 변환하고<br>다시 복원하십시오.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 7</span><p style="margin:0;font-size:14px">아카이브에서 특정 이름의 파일만 추출하는 extract 함수를<br>구현하십시오. 이름이 일치하지 않는 파일은 fseek로<br>건너뛰십시오.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 8</span><p style="margin:0;font-size:14px">아카이브에서 특정 파일을 삭제하는 delete 함수를 구현하십시오.<br>임시 파일에 나머지를 복사한 뒤 원본을 교체하는 방식을<br>사용하십시오.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 9</span><p style="margin:0;font-size:14px">CRC-32 테이블을 생성하고, 파일의 CRC-32 체크섬을<br>계산하여 출력하는 프로그램을 작성하십시오.<br>다항식은 0xEDB88320을 사용하십시오.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 10</span><p style="margin:0;font-size:14px">RLE 압축을 적용한 아카이브 pack 함수를 구현하십시오.<br>헤더에 origSize와 storedSize를 모두 기록하고, 압축 효과가<br>없으면 원본 그대로 저장하십시오.</p></div>
+<h2 class="section-title">대회 기출</h2>
+<h2 class="section-title">요약</h2>
+<div class="warmup-box"><div class="warmup-title">핵심 정리</div><div class="wq"><b>1.</b> 아카이브 = 헤더(이름+크기) + 데이터를 파일 개수만큼 연결한 구조</div><div class="wq"><b>2.</b> pack: 각 파일의 헤더를 기록한 뒤 데이터를 순서대로 복사</div><div class="wq"><b>3.</b> unpack: 헤더를 읽어 파일 이름과 크기를 파악한 뒤 데이터를 추출</div><div class="wq"><b>4.</b> list: 헤더만 읽고 데이터는 fseek로 건너뛰어 목록 출력</div><div class="wq"><b>5.</b> extract: 이름이 일치하는 파일만 추출, 나머지는 건너뜀</div><div class="wq"><b>6.</b> delete: 임시 파일에 대상 제외 복사 후 원본 교체</div><div class="wq"><b>7.</b> RLE 압축: 연속 반복 바이트를 (개수, 바이트) 쌍으로 인코딩</div><div class="wq"><b>8.</b> RLE은 반복이 많은 데이터에 효과적, 랜덤 데이터에는 역효과</div><div class="wq"><b>9.</b> CRC-32: 다항식 나눗셈 기반 체크섬으로 데이터 무결성 검증</div><div class="wq"><b>10.</b> 매직 넘버로 파일 형식을 식별하여 잘못된 파일 열기를 방지</div></div>
+<h2 class="section-title">다음 유닛으로</h2>
+<div class="note-box"><span class="note-label"></span>
+<div style="font-weight:700;margin-bottom:6px;color:#1a2e4a">다음: JSON 파서</div>파일 아카이버를 통해 바이너리 직렬화와 파일 구조 설계를 경험했습니다. 다음 유닛에서는 텍스트 기반 직렬화 형식인 JSON을 파싱하는 프로그램을 구현합니다. 문자열을 토큰으로 분리하고 재귀적 구조를 처리하는 파서의 원리를 학습합니다.</div>
+
+    <span class="page-num">2</span>
+  </div>
+</div>
+<div class="page">
+  <div class="content-page">
+    <div class="unit-header-bar">
+      <span class="unit-tag">UNIT 03</span>
+      <span class="unit-title-sm">3과목 연결</span>
+    </div>
+<h2 class="section-title">10축 매핑</h2>
+<div class="note-box"><span class="note-label"></span>
+<div style="font-weight:700;margin-bottom:6px;color:#1a2e4a">이 유닛에서 키운 역량</div>C언어 ★★★★★ -- 파일 입출력(fread/fwrite), 구조체, 동적 메모리 할당, 비트 연산을 종합 활용하여 실용적인 파일 아카이버를 구현했습니다.<br>컴퓨팅사고력 ★★★★★ -- 헤더+데이터 연결 방식의 직렬화 구조를 설계하고, 압축/무결성 검증까지 확장하는 시스템 설계 역량을 키웠습니다.<br>디버깅 ★★★★★ -- 바이너리 모드 누락, fread 반환값 무시, strncpy 널 종료 누락, 파일 개수 갱신 오류 등 파일 처리 특유의 버그를 파악했습니다.<br>KOI ★★★★★ -- 파일 직렬화, 데이터 압축, 체크섬 검증은 시스템 프로그래밍과 알고리즘 대회 모두에서 활용되는 핵심 기법입니다.</div>
+
+    <span class="page-num">3</span>
+  </div>
+</div>
+<div class="page contest-page-wrap">
+  <div class="chapter-page">
+    <div class="chapter-sidebar"></div>
+    <div class="chapter-accent-bar"></div>
+    <div style="flex:1; min-width:0; padding:50px 50px 40px 45px; position:relative;">
+      <div class="problems-chapter-ref">Chapter 03: 파일 아카이버 (tar 구현)</div>
+      <h2 class="problems-title">대회 문제 (Online Judge)</h2>
+      <p style="font-size:14px; color:#6b7280; margin:-8px 0 24px;">실제 온라인 저지에 출제된 문제입니다. 아래에 코드를 작성한 뒤, 사이트에 제출하여 채점하십시오.</p>
+
+        <div class="contest-card">
+          <div class="contest-header">
+            <div class="contest-num-source">
+              <span class="contest-num">1번</span>
+              <span class="contest-source">백준 2206</span>
+            </div>
+            <span class="diff diff-mid">대회</span>
+          </div>
+          <div class="contest-body">
+            <p class="contest-question">벽을 최대 1개 부수고 이동하는 최단 경로를 구하십시오.</p>
+            
+            <div class="contest-write-area">
+              <div class="contest-write-label">코드 작성</div>
+              <textarea class="contest-textarea" rows="12" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="contest-card">
+          <div class="contest-header">
+            <div class="contest-num-source">
+              <span class="contest-num">2번</span>
+              <span class="contest-source">백준 1520</span>
+            </div>
+            <span class="diff diff-mid">대회</span>
+          </div>
+          <div class="contest-body">
+            <p class="contest-question">내리막 길로만 이동하는 경로의 수를 구하십시오.</p>
+            
+            <div class="contest-write-area">
+              <div class="contest-write-label">코드 작성</div>
+              <textarea class="contest-textarea" rows="12" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="contest-card">
+          <div class="contest-header">
+            <div class="contest-num-source">
+              <span class="contest-num">3번</span>
+              <span class="contest-source">백준 2252</span>
+            </div>
+            <span class="diff diff-mid">대회</span>
+          </div>
+          <div class="contest-body">
+            <p class="contest-question">줄 세우기 순서를 출력하십시오. (위상정렬)</p>
+            
+            <div class="contest-write-area">
+              <div class="contest-write-label">코드 작성</div>
+              <textarea class="contest-textarea" rows="12" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="contest-card">
+          <div class="contest-header">
+            <div class="contest-num-source">
+              <span class="contest-num">4번</span>
+              <span class="contest-source">백준 1005</span>
+            </div>
+            <span class="diff diff-mid">대회</span>
+          </div>
+          <div class="contest-body">
+            <p class="contest-question">건물을 짓는 최소 시간을 구하십시오.</p>
+            
+            <div class="contest-write-area">
+              <div class="contest-write-label">코드 작성</div>
+              <textarea class="contest-textarea" rows="12" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="contest-card">
+          <div class="contest-header">
+            <div class="contest-num-source">
+              <span class="contest-num">5번</span>
+              <span class="contest-source">백준 11066</span>
+            </div>
+            <span class="diff diff-mid">대회</span>
+          </div>
+          <div class="contest-body">
+            <p class="contest-question">파일을 합치는 최소 비용을 구하십시오.</p>
+            
+            <div class="contest-write-area">
+              <div class="contest-write-label">코드 작성</div>
+              <textarea class="contest-textarea" rows="12" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="contest-card">
+          <div class="contest-header">
+            <div class="contest-num-source">
+              <span class="contest-num">6번</span>
+              <span class="contest-source">백준 2293</span>
+            </div>
+            <span class="diff diff-mid">대회</span>
+          </div>
+          <div class="contest-body">
+            <p class="contest-question">동전으로 금액을 만드는 경우의 수를 구하십시오.</p>
+            
+            <div class="contest-write-area">
+              <div class="contest-write-label">코드 작성</div>
+              <textarea class="contest-textarea" rows="12" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="contest-card">
+          <div class="contest-header">
+            <div class="contest-num-source">
+              <span class="contest-num">7번</span>
+              <span class="contest-source">백준 11054</span>
+            </div>
+            <span class="diff diff-mid">대회</span>
+          </div>
+          <div class="contest-body">
+            <p class="contest-question">가장 긴 바이토닉 부분 수열의 길이를 구하십시오.</p>
+            
+            <div class="contest-write-area">
+              <div class="contest-write-label">코드 작성</div>
+              <textarea class="contest-textarea" rows="12" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="contest-card">
+          <div class="contest-header">
+            <div class="contest-num-source">
+              <span class="contest-num">8번</span>
+              <span class="contest-source">백준 9251</span>
+            </div>
+            <span class="diff diff-mid">대회</span>
+          </div>
+          <div class="contest-body">
+            <p class="contest-question">두 문자열의 LCS(최장 공통 부분 수열) 길이를 구하십시오.</p>
+            
+            <div class="contest-write-area">
+              <div class="contest-write-label">코드 작성</div>
+              <textarea class="contest-textarea" rows="12" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="contest-card">
+          <div class="contest-header">
+            <div class="contest-num-source">
+              <span class="contest-num">9번</span>
+              <span class="contest-source">백준 2098</span>
+            </div>
+            <span class="diff diff-mid">대회</span>
+          </div>
+          <div class="contest-body">
+            <p class="contest-question">외판원이 모든 도시를 방문하고 돌아오는 최소 비용을 구하십시오.</p>
+            
+            <div class="contest-write-area">
+              <div class="contest-write-label">코드 작성</div>
+              <textarea class="contest-textarea" rows="12" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="contest-card">
+          <div class="contest-header">
+            <div class="contest-num-source">
+              <span class="contest-num">10번</span>
+              <span class="contest-source">백준 1517</span>
+            </div>
+            <span class="diff diff-mid">대회</span>
+          </div>
+          <div class="contest-body">
+            <p class="contest-question">버블 소트에서 swap 횟수를 구하십시오.</p>
+            
+            <div class="contest-write-area">
+              <div class="contest-write-label">코드 작성</div>
+              <textarea class="contest-textarea" rows="12" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+            </div>
+          </div>
+        </div>
+      <span class="page-num">4</span>
+    </div>
+  </div>
+</div>
+</body>
+</html>

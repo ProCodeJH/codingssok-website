@@ -1,0 +1,1907 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>코딩쏙 교재 — 에러 헌터 — 버그를 찾아라 (프로젝트)</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+
+  :root {
+    --navy: #1a2e4a;
+    --navy-mid: #2c4a6e;
+    --navy-light: #3d6590;
+    --orange: #e07830;
+    --orange-light: #f5e6d8;
+    --white: #ffffff;
+    --bg: #f7f8fa;
+    --bg-warm: #faf9f7;
+    --gray-50: #f9fafb;
+    --gray-100: #f3f4f6;
+    --gray-200: #e5e7eb;
+    --gray-300: #d1d5db;
+    --gray-400: #9ca3af;
+    --gray-500: #6b7280;
+    --gray-600: #4b5563;
+    --gray-700: #374151;
+    --gray-800: #1f2937;
+    --text: #2d3748;
+    --green: #16a34a;
+    --green-bg: #dcfce7;
+    --red: #dc2626;
+    --red-bg: #fee2e2;
+    --blue: #2563eb;
+    --blue-bg: #dbeafe;
+    --yellow-bg: #fef9c3;
+    --font: 'Noto Sans KR', sans-serif;
+    --mono: 'JetBrains Mono', 'Consolas', monospace;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: var(--font); background: #e8eaed; font-size: 15px; }
+
+  /* ========== PAGE ========== */
+  .page {
+    width: 210mm;
+    min-height: 295mm;
+    margin: 24px auto;
+    background: var(--white);
+    box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* ========== PAGE 1: CHAPTER START ========== */
+  .chapter-page {
+    display: flex;
+    min-height: 295mm;
+  }
+
+  .chapter-sidebar {
+    width: 10px;
+    background: var(--navy);
+    flex-shrink: 0;
+  }
+
+  .chapter-accent-bar {
+    width: 7px;
+    background: var(--orange);
+    flex-shrink: 0;
+  }
+
+  .chapter-body {
+    flex: 1;
+    padding: 70px 65px 50px 55px;
+    position: relative;
+  }
+
+  .chapter-watermark {
+    position: absolute;
+    top: -10px;
+    right: -15px;
+    font-size: 280px;
+    font-weight: 900;
+    color: rgba(180,195,212,0.35);
+    line-height: 1;
+    pointer-events: none;
+    letter-spacing: -10px;
+  }
+
+  .chapter-label {
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--navy-mid);
+    letter-spacing: 2px;
+    margin-bottom: 4px;
+  }
+
+  .chapter-title {
+    font-size: 44px;
+    font-weight: 900;
+    color: var(--navy);
+    line-height: 1.15;
+    margin-bottom: 12px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .chapter-sub {
+    font-size: 16px;
+    color: var(--gray-500);
+    font-weight: 400;
+    margin-bottom: 20px;
+    padding-bottom: 28px;
+    border-bottom: 1px solid var(--gray-200);
+  }
+
+  /* Learning objectives */
+  .obj-title {
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--navy);
+    margin-bottom: 16px;
+    margin-top: 32px;
+  }
+
+  .obj-list {
+    list-style: none;
+    margin-bottom: 40px;
+  }
+
+  .obj-list li {
+    padding: 5px 0 5px 24px;
+    position: relative;
+    font-size: 15px;
+    color: var(--gray-700);
+    line-height: 1.6;
+  }
+
+  .obj-list li::before {
+    content: '•';
+    position: absolute;
+    left: 8px;
+    color: var(--navy-mid);
+    font-weight: 700;
+  }
+
+  /* Prerequisites flow */
+  .prereq-title {
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--navy);
+    margin-bottom: 18px;
+  }
+
+  .prereq-flow {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    margin-bottom: 44px;
+  }
+
+  .prereq-item {
+    padding: 9px 22px;
+    border: 1.5px solid var(--gray-300);
+    border-radius: 50px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--gray-600);
+    background: var(--white);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+  }
+
+  .prereq-item.current {
+    border-color: var(--navy);
+    color: var(--navy);
+    font-weight: 700;
+    background: #edf2f7;
+    box-shadow: 0 2px 6px rgba(26,46,74,0.12);
+  }
+
+  .prereq-arrow {
+    width: 36px;
+    text-align: center;
+    color: var(--gray-300);
+    font-size: 18px;
+    font-weight: 300;
+  }
+
+  /* Predict box */
+  .predict-box {
+    background: var(--gray-50);
+    border: 1.5px solid var(--gray-200);
+    border-radius: 12px;
+    padding: 24px 28px;
+  }
+
+  .predict-label {
+    display: inline-block;
+    background: var(--orange);
+    color: var(--white);
+    font-size: 12px;
+    font-weight: 600;
+    padding: 3px 12px;
+    border-radius: 4px;
+    margin-bottom: 14px;
+    letter-spacing: 0.5px;
+  }
+
+  .predict-q {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--navy);
+    margin-bottom: 16px;
+  }
+
+  .predict-code {
+    background: var(--white);
+    border: 1px solid var(--gray-200);
+    border-radius: 8px;
+    padding: 14px 18px;
+    font-family: var(--mono);
+    font-size: 13px;
+    line-height: 1.65;
+    color: var(--gray-700);
+  }
+
+  /* ========== PAGE 2: CORE CONTENT ========== */
+  .content-page {
+    padding: 55px 65px;
+  }
+
+  .unit-header-bar {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    margin-bottom: 8px;
+  }
+
+  .unit-tag {
+    font-size: 12px;
+    color: var(--orange);
+    font-weight: 600;
+    letter-spacing: 1px;
+  }
+
+  .unit-title-sm {
+    font-size: 14px;
+    color: var(--gray-400);
+    font-weight: 400;
+  }
+
+  .section-title {
+    font-size: 24px;
+    font-weight: 800;
+    color: var(--navy);
+    margin-bottom: 24px;
+    margin-top: 8px;
+    padding-left: 16px;
+    border-left: 5px solid var(--orange);
+  }
+
+  p {
+    font-size: 15.5px;
+    line-height: 1.9;
+    color: var(--text);
+    margin-bottom: 18px;
+  }
+
+  p code {
+    font-family: var(--mono);
+    font-size: 13.5px;
+    background: #f1f3f5;
+    padding: 2px 7px;
+    border-radius: 4px;
+    color: var(--navy);
+    font-weight: 500;
+  }
+
+  /* Code block */
+  .code-wrap {
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    border: 1px solid var(--gray-200);
+    margin: 22px 0;
+  }
+
+  .code-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 9px 18px;
+    background: var(--navy);
+    font-size: 12px;
+  }
+
+  .code-bar-lang {
+    font-family: var(--mono);
+    font-weight: 600;
+    color: var(--white);
+  }
+
+  .code-bar-file {
+    color: rgba(255,255,255,0.6);
+    font-weight: 400;
+  }
+
+  .code-body {
+    background: #f8f9fb;
+    padding: 20px 0;
+    font-family: var(--mono);
+    font-size: 13.5px;
+    line-height: 1.75;
+    border: 1px solid var(--gray-200);
+    border-top: none;
+    border-radius: 0 0 12px 12px;
+  }
+
+  .code-line {
+    display: flex;
+    padding: 0 20px;
+  }
+
+  .code-line:hover {
+    background: #f0f4f8;
+  }
+
+  .code-line.highlighted {
+    background: #fff8e1;
+  }
+
+  .ln {
+    width: 30px;
+    text-align: right;
+    color: #b8bfc8;
+    font-size: 12px;
+    margin-right: 18px;
+    user-select: none;
+    flex-shrink: 0;
+    padding-top: 1px;
+  }
+
+  .lc { flex: 1; }
+
+  /* syntax */
+  .s-pp { color: #8b5cf6; font-weight: 600; }
+  .s-str { color: #d97706; }
+  .s-type { color: #2563eb; font-weight: 500; }
+  .s-kw { color: #7c3aed; font-weight: 500; }
+  .s-fn { color: #059669; font-weight: 500; }
+  .s-num { color: #dc2626; }
+  .s-cm { color: #9ca3af; font-style: italic; }
+
+  /* Output block */
+  .output-wrap {
+    border-radius: 10px;
+    overflow: hidden;
+    margin: 10px 0 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    border: 1px solid #d1d5db;
+  }
+
+  .output-bar {
+    padding: 9px 18px;
+    background: #374151;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--white);
+    letter-spacing: 0.5px;
+  }
+
+  .output-body {
+    padding: 16px 20px;
+    font-family: var(--mono);
+    font-size: 13.5px;
+    line-height: 1.7;
+    color: var(--gray-800);
+    background: #f1f5f9;
+    border: 1px solid var(--gray-200);
+    border-top: none;
+    border-radius: 0 0 10px 10px;
+  }
+
+  /* Callout */
+  .tip {
+    margin: 28px 0;
+    padding: 18px 24px;
+    background: #dbeafe;
+    border-left: 5px solid #2563eb;
+    border-radius: 0 12px 12px 0;
+    font-size: 14.5px;
+    line-height: 1.8;
+    color: var(--text);
+  }
+
+  .tip-label {
+    font-weight: 700;
+    color: #2563eb;
+    font-size: 13px;
+    display: block;
+    margin-bottom: 4px;
+  }
+
+  .warn {
+    margin: 28px 0;
+    padding: 18px 24px;
+    background: #fef3c7;
+    border-left: 5px solid #d97706;
+    border-radius: 0 12px 12px 0;
+    font-size: 14.5px;
+    line-height: 1.8;
+  }
+
+  .warn-label {
+    font-weight: 700;
+    color: #d97706;
+    font-size: 13px;
+    display: block;
+    margin-bottom: 4px;
+  }
+
+  .note-box {
+    margin: 28px 0;
+    padding: 18px 24px;
+    background: #e2e8f0;
+    border-left: 5px solid #64748b;
+    border-radius: 0 12px 12px 0;
+    font-size: 14.5px;
+    line-height: 1.8;
+  }
+
+  .note-label {
+    font-weight: 700;
+    color: var(--gray-600);
+    font-size: 13px;
+    display: block;
+    margin-bottom: 4px;
+  }
+
+  /* Trace table */
+  table.trace {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    margin: 28px 0;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+    font-size: 14px;
+  }
+
+  table.trace th {
+    background: var(--navy);
+    color: var(--white);
+    padding: 10px 16px;
+    text-align: left;
+    font-weight: 500;
+    font-size: 13px;
+  }
+
+  table.trace td {
+    padding: 10px 16px;
+    border-bottom: 1px solid var(--gray-200);
+    color: var(--gray-700);
+  }
+
+  table.trace tr:nth-child(even) td { background: var(--gray-50); }
+  table.trace tr:last-child td { border-bottom: none; }
+
+  table.trace td code {
+    font-family: var(--mono);
+    font-size: 12.5px;
+    background: #eef1f5;
+    padding: 2px 6px;
+    border-radius: 4px;
+    color: var(--navy);
+  }
+
+  /* ========== PAGE 3: PROBLEMS ========== */
+  .problems-header {
+    margin-bottom: 8px;
+  }
+
+  .problems-chapter-ref {
+    font-size: 13px;
+    color: var(--gray-500);
+    margin-bottom: 4px;
+  }
+
+  .problems-title {
+    font-size: 28px;
+    font-weight: 800;
+    color: var(--navy);
+    margin-bottom: 24px;
+  }
+
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 16px;
+  }
+
+  .prob-card {
+    background: var(--white);
+    border: 1px solid var(--gray-200);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 3px 15px rgba(0,0,0,0.06);
+  }
+
+  .prob-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 16px;
+    background: var(--navy);
+  }
+
+  .prob-num {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--white);
+  }
+
+  .diff {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    font-size: 12px;
+    font-weight: 800;
+  }
+
+  .diff-basic { background: #22c55e; color: white; }
+  .diff-mid { background: #f59e0b; color: white; }
+  .diff-hard { background: #ef4444; color: white; }
+
+  .prob-desc {
+    font-size: 13.5px;
+    line-height: 1.65;
+    color: var(--gray-600);
+    margin-bottom: 10px;
+    padding: 14px 16px 0;
+  }
+
+  .prob-code {
+    background: var(--gray-50);
+    border: 1px solid var(--gray-200);
+    border-radius: 6px;
+    padding: 10px 14px;
+    margin: 0 16px 16px;
+    font-family: var(--mono);
+    font-size: 12.5px;
+    line-height: 1.55;
+    color: var(--gray-600);
+  }
+
+  /* Competition section */
+  .comp-section {
+    margin-top: 32px;
+    padding-top: 24px;
+    border-top: 2px solid var(--navy);
+  }
+
+  .comp-title {
+    font-size: 22px;
+    font-weight: 800;
+    color: var(--navy);
+    margin-bottom: 20px;
+  }
+
+  .comp-card {
+    background: var(--white);
+    border: 1.5px solid var(--gray-200);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 18px rgba(0,0,0,0.06);
+  }
+
+  .comp-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 16px;
+    background: #0f766e;
+  }
+
+  .comp-header .comp-name {
+    color: var(--white);
+    font-size: 15px;
+    font-weight: 700;
+    margin: 0;
+  }
+
+  .comp-inner {
+    padding: 14px 18px 18px;
+  }
+
+  .comp-badge {
+    display: inline-block;
+    padding: 3px 12px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 700;
+  }
+
+  .badge-bj { background: #93c5fd; color: #1e3a5f; }
+  .badge-cu { background: #c4b5fd; color: #3b1f7e; }
+  .badge-pg { background: #7dd3fc; color: #0c4a6e; }
+
+  .comp-name {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--navy);
+    margin-bottom: 6px;
+  }
+
+  .comp-desc {
+    font-size: 14px;
+    color: var(--gray-600);
+    line-height: 1.7;
+    margin-bottom: 14px;
+  }
+
+  .io-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+
+  .io-card {
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid var(--gray-200);
+  }
+
+  .io-h {
+    padding: 6px 14px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--gray-600);
+    background: #e2e8f0;
+  }
+
+  .io-c {
+    padding: 10px 14px;
+    font-family: var(--mono);
+    font-size: 13px;
+    line-height: 1.5;
+    background: var(--white);
+  }
+
+  /* ========== DEBUG LAB ========== */
+  .debug-section {
+    margin: 24px 0;
+    border: 2px solid var(--red);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+
+  .debug-bar {
+    background: var(--red);
+    color: var(--white);
+    padding: 10px 20px;
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 1px;
+  }
+
+  .debug-body {
+    padding: 20px;
+    background: #fef2f2;
+  }
+
+  /* 10축 connection */
+  .connect-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 16px;
+    margin: 28px 0;
+  }
+
+  .connect-card {
+    border-radius: 12px;
+    padding: 20px;
+    text-align: center;
+    border: 1px solid var(--gray-200);
+    box-shadow: 0 3px 14px rgba(0,0,0,0.05);
+  }
+
+  .connect-card h5 {
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 8px;
+  }
+
+  .connect-card p {
+    font-size: 13px;
+    margin: 0;
+    color: var(--gray-600);
+    line-height: 1.6;
+  }
+
+  .cc1 { border-top: 3px solid #8b5cf6; }
+  .cc1 h5 { color: #8b5cf6; }
+  .cc2 { border-top: 3px solid var(--green); }
+  .cc2 h5 { color: var(--green); }
+  .cc3 { border-top: 3px solid var(--navy); }
+  .cc3 h5 { color: var(--navy); }
+
+  /* PAGE NUMBER */
+  .page-num {
+    position: absolute;
+    bottom: 20px;
+    right: 30px;
+    font-size: 12px;
+    color: var(--gray-400);
+  }
+
+  /* WARMUP */
+  .warmup-box {
+    background: #e0e7f1;
+    border-radius: 12px;
+    padding: 24px 28px;
+    margin: 28px 0;
+    border: 2px solid #c7d2e0;
+  }
+
+  .warmup-title {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--navy);
+    margin-bottom: 14px;
+  }
+
+  .wq {
+    padding: 9px 16px;
+    background: var(--white);
+    border-radius: 8px;
+    margin-bottom: 8px;
+    font-size: 14px;
+    border: 1px solid var(--gray-200);
+    color: var(--gray-700);
+  }
+
+  .wq b { color: var(--navy); margin-right: 6px; }
+  .wq .hint { color: var(--gray-400); font-size: 13px; }
+
+  /* ===== CONTEST PROBLEMS PAGE ===== */
+  .contest-page-wrap .chapter-page {
+    min-height: auto;
+  }
+
+  .contest-page-wrap .chapter-page > div:last-child {
+    min-width: 0;
+    overflow-wrap: break-word;
+    word-break: break-word;
+  }
+
+  .contest-card {
+    background: white;
+    border: 1.5px solid var(--gray-200);
+    border-radius: 12px;
+    margin-bottom: 28px;
+    overflow: hidden;
+    break-inside: avoid;
+  }
+
+  .contest-header {
+    background: var(--navy);
+    color: white;
+    padding: 14px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .contest-num-source {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .contest-num {
+    font-weight: 700;
+    font-size: 16px;
+  }
+
+  .contest-source {
+    background: rgba(255,255,255,0.15);
+    padding: 3px 10px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 500;
+  }
+
+  .contest-body {
+    padding: 20px 24px 24px;
+  }
+
+  .contest-question {
+    font-size: 15px;
+    line-height: 1.7;
+    color: var(--text);
+    margin: 0 0 16px;
+    word-break: break-word;
+    overflow-wrap: break-word;
+  }
+
+  .contest-expected {
+    background: #1e293b;
+    border-radius: 8px;
+    overflow: hidden;
+    margin-bottom: 20px;
+  }
+
+  .contest-expected-label {
+    background: #334155;
+    color: #94a3b8;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 6px 14px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .contest-expected-body {
+    color: #e2e8f0;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    line-height: 1.6;
+    padding: 12px 16px;
+    margin: 0;
+    white-space: pre;
+  }
+
+  .contest-write-area {
+    border: 2px dashed var(--gray-300);
+    border-radius: 10px;
+    overflow: hidden;
+    transition: border-color 0.2s;
+  }
+
+  .contest-write-area:focus-within {
+    border-color: var(--orange);
+    border-style: solid;
+  }
+
+  .contest-write-label {
+    background: var(--bg);
+    color: var(--gray-500);
+    font-size: 12px;
+    font-weight: 600;
+    padding: 8px 14px;
+    border-bottom: 1px solid var(--gray-200);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .contest-textarea {
+    width: 100%;
+    min-height: 200px;
+    padding: 16px 18px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    line-height: 1.7;
+    color: var(--text);
+    background: #fafbfc;
+    border: none;
+    outline: none;
+    resize: vertical;
+    tab-size: 4;
+    box-sizing: border-box;
+  }
+
+  .contest-textarea::placeholder {
+    color: var(--gray-300);
+  }
+
+  @media print {
+    body { background: white; }
+    .page { box-shadow: none; margin: 0; page-break-after: always; }
+    .contest-textarea { border: 1px solid var(--gray-300); min-height: 180px; }
+  }
+
+</style>
+</head>
+<body>
+
+<div class="page">
+  <div class="chapter-page">
+    <div class="chapter-sidebar"></div>
+    <div class="chapter-accent-bar"></div>
+    <div class="chapter-body">
+      <div class="chapter-watermark">11</div>
+      <div class="chapter-label">Chapter 11</div>
+      <h1 class="chapter-title">에러 헌터</h1>
+      <p class="chapter-sub">컴파일 에러, 런타임 에러, 논리 에러가 숨어있는 코드를 분석하여 모든 버그를 찾아 수정하는 종합 프로젝트입니다.</p>
+
+      <h3 class="obj-title">이 유닛에서 배우는 것</h3>
+      <ul class="obj-list">
+        <li>에러 메시지를 읽고 컴파일 에러의 원인을 즉시 파악할 수 있습니다.</li>
+        <li>컴파일 에러, 런타임 에러, 논리 에러를 구분하고 각각의 해결 전략을 적용할 수 있습니다.</li>
+        <li>여러 에러가 동시에 있는 코드에서 첫 번째 에러부터 순서대로 수정할 수 있습니다.</li>
+        <li>주석 처리를 활용하여 에러 범위를 좁히는 기법을 실전에 적용할 수 있습니다.</li>
+      </ul>
+
+      <h3 class="prereq-title">선수 학습</h3>
+      <div class="prereq-flow">
+        <div class="prereq-item">Unit 09: 컴파일 에러 유형과 에러 메시지 읽기</div><div class="prereq-arrow">→</div>
+        <div class="prereq-item current">Unit 10: 런타임 에러와 논리 에러 구분</div>
+      </div>
+
+      <div class="predict-box">
+        <div class="predict-label">예측해 봅시다</div>
+        <div class="predict-q">아래 코드에는 에러가 몇 개 있을까요? 각각 어떤 종류의 에러일까요?</div>
+        <div class="predict-code">#include &lt;stdio.h&gt;;<br>
+<br>
+int main(void) {<br>
+    printf("Helo World\n")<br>
+    return 0;<br>
+}</div>
+      </div>
+
+      <span class="page-num">1</span>
+    </div>
+  </div>
+</div>
+<div class="page">
+  <div class="content-page">
+    <div class="unit-header-bar">
+      <span class="unit-tag">UNIT 11</span>
+      <span class="unit-title-sm">에러 헌터</span>
+    </div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 1</span><p style="margin:0;font-size:14px">에러의 세 종류를 적으십시오.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 2</span><p style="margin:0;font-size:14px">에러가 여러 개일 때 어떤 에러부터 수정합니까?</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 3</span><p style="margin:0;font-size:14px">에러 메시지에서 가장 중요한 두 가지 정보는 무엇입니까?</p></div>
+<h2 class="section-title">예측</h2>
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span><span class="code-bar-file">predict.c</span></div>
+  <div class="code-body"><div class="code-line highlighted"><span class="ln">1</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;stdio.h&gt;</span>;</span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">main</span>(<span class="s-type">void</span>) {</span></div>
+<div class="code-line highlighted"><span class="ln">4</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"Helo World\n"</span>)</span></div>
+<div class="code-line"><span class="ln">5</span><span class="lc">    <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">6</span><span class="lc">}</span></div>
+</div>
+</div>
+<h2 class="section-title">에러 헌터란?</h2>
+<p>에러 헌터 프로젝트는 버그가 숨어있는 코드를 받아서 모든 에러를 찾고 수정하는 활동입니다. 실제 프로그래밍에서 디버깅은 코드 작성만큼 중요한 능력입니다.</p>
+<div class="note-box"><span class="note-label">에러 헌터 절차</span>
+<b>Step 1:</b> 코드를 읽고 눈에 보이는 문제를 표시합니다.<br><b>Step 2:</b> 컴파일합니다. 에러 메시지를 읽고 첫 번째 에러부터 수정합니다.<br><b>Step 3:</b> 컴파일 에러가 모두 해결되면 실행합니다.<br><b>Step 4:</b> 실행 결과를 기대 출력과 비교합니다.<br><b>Step 5:</b> 결과가 다르면 논리 에러를 찾아 수정합니다.<br><b>Step 6:</b> gcc -Wall로 경고까지 모두 해결합니다.</div>
+<h2 class="section-title">디버깅 도구 정리</h2>
+<p>지금까지 배운 디버깅 도구를 정리합니다.</p>
+<table class="trace"><thead><tr><th>도구</th><th>용도</th><th>사용법</th></tr></thead><tbody><tr><td>에러 메시지 읽기</td><td>컴파일 에러 위치와 원인 파악</td><td>파일명:줄번호:설명 형식을 읽음</td></tr><tr><td>첫 번째 에러부터</td><td>연쇄 에러 해결</td><td>첫 에러 수정 → 재컴파일 → 반복</td></tr><tr><td>윗줄 확인</td><td>세미콜론 누락 등</td><td>에러가 가리키는 줄의 윗줄도 점검</td></tr><tr><td>주석 처리</td><td>에러 범위 좁히기</td><td>코드 일부를 /* */로 비활성화</td></tr><tr><td>gcc -Wall</td><td>경고 확인</td><td>모든 경고를 표시하여 잠재적 문제 발견</td></tr><tr><td>Ctrl + C</td><td>강제 종료</td><td>무한 실행 프로그램 종료</td></tr><tr><td>출력 비교</td><td>논리 에러 발견</td><td>기대 출력과 실제 출력을 한 줄씩 비교</td></tr></tbody></table>
+<h2 class="section-title">미션 1 — 컴파일 에러 사냥</h2>
+<p>아래 코드에는 컴파일 에러가 5개 있습니다. 모두 찾아 수정하십시오.</p>
+<div class="note-box"><span class="note-label">기대 출력</span>
+Hello, World!<br>I love C programming!<br>Let's go!</div>
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span><span class="code-bar-file">mission1.c</span></div>
+  <div class="code-body"><div class="code-line highlighted"><span class="ln">1</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;stdio.h&gt;</span>;</span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">main</span>(<span class="s-type">void</span>) {</span></div>
+<div class="code-line highlighted"><span class="ln">4</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"Hello, World!\n"</span>)</span></div>
+<div class="code-line"><span class="ln">5</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"I love C programming!\n"</span>);</span></div>
+<div class="code-line highlighted"><span class="ln">6</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"Let's go!\n"</span>)</span></div>
+<div class="code-line highlighted"><span class="ln">7</span><span class="lc">    retrun <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">8</span><span class="lc">}</span></div>
+</div>
+</div>
+<div style="margin:22px 0"><div style="display:flex;align-items:flex-start;gap:14px;margin-bottom:8px">
+<div style="width:32px;height:32px;background:#1a2e4a;color:white;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;flex-shrink:0">1</div>
+<div><div style="font-size:15px;font-weight:700;color:#1a2e4a;margin-bottom:2px">에러 1: 1번 줄</div><div style="font-size:14px;color:#6b7280;line-height:1.6">#include <stdio.h>; → 전처리 지시자 뒤에 세미콜론이 있습니다. 세미콜론을 제거합니다.</div></div></div><div style="display:flex;align-items:flex-start;gap:14px;margin-bottom:8px">
+<div style="width:32px;height:32px;background:#1a2e4a;color:white;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;flex-shrink:0">2</div>
+<div><div style="font-size:15px;font-weight:700;color:#1a2e4a;margin-bottom:2px">에러 2: 4번 줄</div><div style="font-size:14px;color:#6b7280;line-height:1.6">printf("Hello, World!\n") → 세미콜론이 없습니다. 끝에 ; 을 추가합니다.</div></div></div><div style="display:flex;align-items:flex-start;gap:14px;margin-bottom:8px">
+<div style="width:32px;height:32px;background:#1a2e4a;color:white;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;flex-shrink:0">3</div>
+<div><div style="font-size:15px;font-weight:700;color:#1a2e4a;margin-bottom:2px">에러 3: 6번 줄</div><div style="font-size:14px;color:#6b7280;line-height:1.6">printf("Let's go!\n") → 세미콜론이 없습니다. 끝에 ; 을 추가합니다.</div></div></div><div style="display:flex;align-items:flex-start;gap:14px;margin-bottom:8px">
+<div style="width:32px;height:32px;background:#1a2e4a;color:white;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;flex-shrink:0">4</div>
+<div><div style="font-size:15px;font-weight:700;color:#1a2e4a;margin-bottom:2px">에러 4: 7번 줄</div><div style="font-size:14px;color:#6b7280;line-height:1.6">retrun → return 철자 오류입니다.</div></div></div><div style="display:flex;align-items:flex-start;gap:14px;margin-bottom:8px">
+<div style="width:32px;height:32px;background:#1a2e4a;color:white;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;flex-shrink:0">5</div>
+<div><div style="font-size:15px;font-weight:700;color:#1a2e4a;margin-bottom:2px">에러 5: 닫는 }</div><div style="font-size:14px;color:#6b7280;line-height:1.6">닫는 중괄호 }가 없습니다. return 0; 다음 줄에 }를 추가합니다.</div></div></div></div>
+<h2 class="section-title">미션 2 — 혼합 에러 사냥</h2>
+<p>아래 코드에는 컴파일 에러와 논리 에러가 섞여 있습니다.</p>
+<div class="note-box"><span class="note-label">기대 출력</span>
+====================<br>&nbsp;&nbsp;자기소개<br>====================<br>이름: 김코딩<br>학교: 코딩중학교<br>취미: 프로그래밍<br>====================</div>
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span><span class="code-bar-file">mission2.c</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;stdio.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">main</span>(<span class="s-type">void</span>) {</span></div>
+<div class="code-line"><span class="ln">4</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"====================\n"</span>);</span></div>
+<div class="code-line highlighted"><span class="ln">5</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"  자기소개\n"</span>)</span></div>
+<div class="code-line"><span class="ln">6</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"====================\n"</span>);</span></div>
+<div class="code-line"><span class="ln">7</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"이름: 김코딩\n"</span>);</span></div>
+<div class="code-line highlighted"><span class="ln">8</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"취미: 프로그래밍\n"</span>);</span></div>
+<div class="code-line highlighted"><span class="ln">9</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"학교: 코딩중학교\n"</span>);</span></div>
+<div class="code-line"><span class="ln">10</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"====================\n"</span>);</span></div>
+<div class="code-line"><span class="ln">11</span><span class="lc">    <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">12</span><span class="lc">}</span></div>
+</div>
+</div>
+<div style="margin:22px 0"><div style="display:flex;align-items:flex-start;gap:14px;margin-bottom:8px">
+<div style="width:32px;height:32px;background:#1a2e4a;color:white;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;flex-shrink:0">1</div>
+<div><div style="font-size:15px;font-weight:700;color:#1a2e4a;margin-bottom:2px">컴파일 에러: 5번 줄</div><div style="font-size:14px;color:#6b7280;line-height:1.6">세미콜론 누락. printf("  자기소개\n"); 로 수정합니다.</div></div></div><div style="display:flex;align-items:flex-start;gap:14px;margin-bottom:8px">
+<div style="width:32px;height:32px;background:#1a2e4a;color:white;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;flex-shrink:0">2</div>
+<div><div style="font-size:15px;font-weight:700;color:#1a2e4a;margin-bottom:2px">논리 에러: 8-9번 줄</div><div style="font-size:14px;color:#6b7280;line-height:1.6">기대 출력은 학교 → 취미 순서이지만 코드는 취미 → 학교 순서입니다. 8번과 9번 줄의 순서를 바꿉니다.</div></div></div></div>
+<h2 class="section-title">미션 3 — 에러 메시지 해독</h2>
+<p>에러 메시지만 보고 원인을 추론하는 연습입니다.</p>
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span><span class="code-bar-file">cmd</span></div>
+  <div class="code-body"><div class="code-line highlighted"><span class="ln">1</span><span class="lc">quiz.c:<span class="s-num">3</span>:<span class="s-num">5</span>: error: expected <span class="s-str">'{'</span> before 'printf'</span></div>
+<div class="code-line highlighted"><span class="ln">2</span><span class="lc">quiz.c:<span class="s-num">4</span>:<span class="s-num">5</span>: error: expected <span class="s-str">';'</span> before '<span class="s-kw">return</span>'</span></div>
+<div class="code-line highlighted"><span class="ln">3</span><span class="lc">quiz.c:<span class="s-num">5</span>:<span class="s-num">1</span>: error: expected identifier or <span class="s-str">'('</span> before <span class="s-str">'}'</span> token</span></div>
+</div>
+</div>
+<p>이 에러 메시지로부터 원인을 추론합니다.</p>
+<div style="margin:22px 0"><div style="display:flex;align-items:flex-start;gap:14px;margin-bottom:8px">
+<div style="width:32px;height:32px;background:#1a2e4a;color:white;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;flex-shrink:0">1</div>
+<div><div style="font-size:15px;font-weight:700;color:#1a2e4a;margin-bottom:2px">에러 1 해독</div><div style="font-size:14px;color:#6b7280;line-height:1.6">3번 줄의 printf 앞에 { 가 필요합니다 → int main(void) 뒤에 여는 중괄호 {가 없습니다.</div></div></div><div style="display:flex;align-items:flex-start;gap:14px;margin-bottom:8px">
+<div style="width:32px;height:32px;background:#1a2e4a;color:white;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;flex-shrink:0">2</div>
+<div><div style="font-size:15px;font-weight:700;color:#1a2e4a;margin-bottom:2px">에러 2 해독</div><div style="font-size:14px;color:#6b7280;line-height:1.6">4번 줄의 return 앞에 ; 가 필요합니다 → 3번 줄의 printf 끝에 세미콜론이 없습니다.</div></div></div><div style="display:flex;align-items:flex-start;gap:14px;margin-bottom:8px">
+<div style="width:32px;height:32px;background:#1a2e4a;color:white;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;flex-shrink:0">3</div>
+<div><div style="font-size:15px;font-weight:700;color:#1a2e4a;margin-bottom:2px">에러 3 해독</div><div style="font-size:14px;color:#6b7280;line-height:1.6">에러 1({누락)을 수정하면 이 에러도 사라집니다. 연쇄 에러입니다.</div></div></div></div>
+<div class="note-box"><span class="note-label">핵심 교훈</span>
+에러 3개가 표시되었지만 실제 원인은 2개(여는 { 누락 + 세미콜론 누락)입니다. 항상 첫 번째 에러부터 수정하고 재컴파일하십시오.</div>
+<h2 class="section-title">미션 4 — 주석 처리 디버깅</h2>
+<p>코드가 길어지면 에러 위치를 찾기 어렵습니다. 주석 처리로 범위를 좁히는 기법을 연습합니다.</p>
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span><span class="code-bar-file">mission4.c</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;stdio.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">main</span>(<span class="s-type">void</span>) {</span></div>
+<div class="code-line"><span class="ln">4</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"Step 1\n"</span>);</span></div>
+<div class="code-line"><span class="ln">5</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"Step 2\n"</span>);</span></div>
+<div class="code-line highlighted"><span class="ln">6</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"Step 3\n"</span>)</span></div>
+<div class="code-line"><span class="ln">7</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"Step 4\n"</span>);</span></div>
+<div class="code-line"><span class="ln">8</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"Step 5\n"</span>);</span></div>
+<div class="code-line"><span class="ln">9</span><span class="lc">    <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">10</span><span class="lc">}</span></div>
+</div>
+</div>
+<p>이 코드는 컴파일 에러가 발생합니다. 하지만 어디서 에러가 나는지 모르겠다면 주석 처리로 범위를 좁힙니다.</p>
+<div style="margin:22px 0"><div style="display:flex;align-items:flex-start;gap:14px;margin-bottom:8px">
+<div style="width:32px;height:32px;background:#1a2e4a;color:white;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;flex-shrink:0">1</div>
+<div><div style="font-size:15px;font-weight:700;color:#1a2e4a;margin-bottom:2px">Step 1: 후반부 주석 처리</div><div style="font-size:14px;color:#6b7280;line-height:1.6">Step 3~5를 /* */로 감쌉니다. 컴파일합니다. → 성공. 문제는 후반부에 있습니다.</div></div></div><div style="display:flex;align-items:flex-start;gap:14px;margin-bottom:8px">
+<div style="width:32px;height:32px;background:#1a2e4a;color:white;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;flex-shrink:0">2</div>
+<div><div style="font-size:15px;font-weight:700;color:#1a2e4a;margin-bottom:2px">Step 2: 범위 좁히기</div><div style="font-size:14px;color:#6b7280;line-height:1.6">Step 3만 살리고 Step 4~5를 주석 처리합니다. 컴파일합니다. → 에러 발생. Step 3에 문제가 있습니다.</div></div></div><div style="display:flex;align-items:flex-start;gap:14px;margin-bottom:8px">
+<div style="width:32px;height:32px;background:#1a2e4a;color:white;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;flex-shrink:0">3</div>
+<div><div style="font-size:15px;font-weight:700;color:#1a2e4a;margin-bottom:2px">Step 3: 원인 확인</div><div style="font-size:14px;color:#6b7280;line-height:1.6">6번 줄 printf("Step 3\n")에 세미콜론이 없습니다. 추가합니다.</div></div></div><div style="display:flex;align-items:flex-start;gap:14px;margin-bottom:8px">
+<div style="width:32px;height:32px;background:#1a2e4a;color:white;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;flex-shrink:0">4</div>
+<div><div style="font-size:15px;font-weight:700;color:#1a2e4a;margin-bottom:2px">Step 4: 주석 해제</div><div style="font-size:14px;color:#6b7280;line-height:1.6">모든 주석을 해제하고 다시 컴파일합니다. → 성공.</div></div></div></div>
+<div class="tip"><span class="tip-label">TIP: 이진 탐색 디버깅</span>
+코드를 절반으로 나누어 주석 처리하고, 에러가 어느 절반에 있는지 확인합니다. 다시 그 절반을 반으로 나눕니다. 이 방법을 반복하면 에러 위치를 빠르게 좁힐 수 있습니다.<br><br>이것은 이진 탐색(binary search) 알고리즘의 원리와 같습니다.</div>
+<h2 class="section-title">에러 체험 — 모든 에러 유형 총정리</h2>
+<p>세 가지 에러 유형을 한 코드에서 경험합니다.</p>
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span><span class="code-bar-file">all_errors.c</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;stdio.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">main</span>(<span class="s-type">void</span>) {</span></div>
+<div class="code-line highlighted"><span class="ln">4</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"A\n"</span>)</span></div>
+<div class="code-line highlighted"><span class="ln">5</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"C\n"</span>);</span></div>
+<div class="code-line highlighted"><span class="ln">6</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"B\n"</span>);</span></div>
+<div class="code-line"><span class="ln">7</span><span class="lc">    <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">8</span><span class="lc">}</span></div>
+</div>
+</div>
+<p>이 코드에는 두 가지 에러가 있습니다.</p>
+<table class="trace"><thead><tr><th>에러</th><th>종류</th><th>원인</th><th>해결</th></tr></thead><tbody><tr><td>4번 줄 세미콜론 누락</td><td>컴파일 에러</td><td>printf 뒤에 ; 없음</td><td>세미콜론 추가</td></tr><tr><td>5-6번 줄 순서 뒤바뀜</td><td>논리 에러</td><td>B와 C의 출력 순서가 반대</td><td>줄 순서 교환</td></tr></tbody></table>
+<h2 class="section-title">에러 체험 — 겉보기에 정상인 코드</h2>
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span><span class="code-bar-file">looks_ok.c</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;stdio.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">main</span>(<span class="s-type">void</span>) {</span></div>
+<div class="code-line highlighted"><span class="ln">4</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"Hello World!\n"</span>);</span></div>
+<div class="code-line"><span class="ln">5</span><span class="lc">    <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">6</span><span class="lc">}</span></div>
+</div>
+</div>
+<p>이 코드는 컴파일 에러도 없고 실행도 됩니다. 하지만 기대 출력이 "Hello, World!"(콤마 포함)라면 이것은 논리 에러입니다. 콤마가 빠졌습니다.</p>
+<div class="warn"><span class="warn-label">논리 에러의 위험성</span>
+논리 에러는 에러 메시지가 없으므로 프로그래머가 스스로 발견해야 합니다.<br><br><b>예방법:</b><br>1. 기대 출력을 미리 정확히 적어놓습니다.<br>2. 실제 출력과 한 글자씩 비교합니다.<br>3. 대회 문제에서는 복사-붙여넣기로 비교합니다.</div>
+<h2 class="section-title">에러 체험 — 경고도 잡아라</h2>
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span><span class="code-bar-file">warning_hunt.c</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;stdio.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">main</span>(<span class="s-type">void</span>) {</span></div>
+<div class="code-line highlighted"><span class="ln">4</span><span class="lc">    <span class="s-type">int</span> x;</span></div>
+<div class="code-line"><span class="ln">5</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"Hello\n"</span>);</span></div>
+<div class="code-line"><span class="ln">6</span><span class="lc">    <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">7</span><span class="lc">}</span></div>
+</div>
+</div>
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span><span class="code-bar-file">cmd</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc">C:\C_Study&gt; gcc -Wall warning_hunt.c -o warning_hunt</span></div>
+<div class="code-line highlighted"><span class="ln">2</span><span class="lc">warning_hunt.c:<span class="s-num">4</span>:<span class="s-num">9</span>: warning: unused variable <span class="s-str">'x'</span></span></div>
+</div>
+</div>
+<p>변수 x를 선언했지만 사용하지 않았습니다. 경고입니다. 불필요한 코드를 제거하면 경고도 사라집니다.</p>
+<h2 class="section-title">에러 체험 — 문자열 안의 함정</h2>
+<div class="debug-section"><div class="debug-bar">DEBUG LAB — 에러를 찾으시오</div><div class="debug-body">
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc"><span class="s-fn">printf</span>(<span class="s-str">"파일: C:\new\test.txt\n"</span>);</span></div>
+</div>
+</div>
+<p style="margin:14px 0 0; font-size:14px;"><b>에러:</b> \n이 줄바꿈, \t가 탭으로 해석됨</p>
+<p style="font-size:14px;"><b>수정:</b> \\로 역슬래시 이스케이프</p>
+</div></div>
+<h2 class="section-title">설명하기 — 파인만 기법</h2>
+<p>아래 질문에 자신의 말로 답해 보십시오.</p>
+<div class="note-box"><span class="note-label">설명 연습 1</span>
+"에러 헌터가 뭐야?"라고 물었습니다. 디버깅의 중요성과 함께 설명하십시오.</div>
+<div class="note-box"><span class="note-label">설명 연습 2</span>
+"에러가 너무 많아서 어디서부터 고쳐야 할지 모르겠어"라고 말했습니다. 전략을 알려 주십시오.</div>
+<div class="note-box"><span class="note-label">설명 연습 3</span>
+"주석 처리로 디버깅한다는 게 무슨 뜻이야?"라고 물었습니다. 이진 탐색 비유를 포함하여 설명하십시오.</div>
+<div class="note-box"><span class="note-label">설명 연습 4</span>
+아래 빈칸을 채우십시오.<br><br>1. 에러 헌터의 첫 단계는 코드를 ______고 눈에 보이는 문제를 표시하는 것입니다.<br>2. 컴파일 에러를 모두 해결한 뒤에는 ______합니다.<br>3. 실행 결과를 ______ 출력과 비교합니다.<br>4. 주석 처리 디버깅은 코드를 ______으로 나누어 에러를 좁히는 기법입니다.<br>5. gcc _______ 옵션으로 경고까지 확인합니다.</div>
+<div class="note-box"><span class="note-label">정답</span>
+1. 읽<br>2. 실행<br>3. 기대<br>4. 절반(반)<br>5. -Wall</div>
+<h2 class="section-title">용어 정리</h2>
+<table class="trace"><thead><tr><th>용어</th><th>설명</th></tr></thead><tbody><tr><td><code>디버깅(debugging)</code></td><td>프로그램의 버그(오류)를 찾아 수정하는 과정입니다. 프로그래밍에서 가장 중요한 능력 중 하나입니다.</td></tr><tr><td><code>버그(bug)</code></td><td>프로그램의 오류를 뜻합니다. 1947년 하버드 컴퓨터에서 발견된 나방(bug)에서 유래했습니다.</td></tr><tr><td><code>이진 탐색 디버깅</code></td><td>코드를 절반씩 나누어 에러가 있는 범위를 좁히는 디버깅 기법입니다. 이진 탐색 알고리즘과 같은 원리입니다.</td></tr><tr><td><code>연쇄 에러(cascade error)</code></td><td>하나의 실수가 여러 에러 메시지를 발생시키는 현상입니다. 첫 번째 에러를 수정하면 나머지가 사라집니다.</td></tr><tr><td><code>기대 출력(expected output)</code></td><td>프로그램이 올바르게 동작할 때 나와야 하는 출력입니다. 실제 출력과 비교하여 논리 에러를 찾습니다.</td></tr></tbody></table>
+<h2 class="section-title">핵심 요약</h2>
+<div class="warmup-box"><div class="warmup-title">Unit 11 핵심 정리</div><div class="wq"><b>1.</b> 에러 헌터: 버그를 찾아 수정하는 종합 디버깅 프로젝트입니다</div><div class="wq"><b>2.</b> 절차: 코드 읽기 → 컴파일 → 에러 수정 → 실행 → 출력 비교 → 경고 해결</div><div class="wq"><b>3.</b> 항상 첫 번째 에러부터 수정하고 재컴파일하십시오</div><div class="wq"><b>4.</b> 주석 처리로 에러 범위를 좁히는 이진 탐색 디버깅을 활용하십시오</div><div class="wq"><b>5.</b> 논리 에러는 에러 메시지가 없으므로 기대 출력과 한 글자씩 비교하십시오</div><div class="wq"><b>6.</b> gcc -Wall로 경고까지 0개로 만드는 것이 최종 목표입니다</div></div>
+<p>에러 헌터가 되어 아래 코드의 버그를 모두 찾으십시오.</p>
+<p>정확한 출력을 만드는 최종 연습입니다. 에러 없이, 경고 없이, 출력까지 정확하게 작성하십시오.</p>
+<h2 class="section-title">대회 기출</h2>
+
+    <span class="page-num">2</span>
+  </div>
+</div>
+<div class="page">
+  <div class="content-page">
+    <div class="unit-header-bar">
+      <span class="unit-tag">UNIT 11</span>
+      <span class="unit-title-sm">3과목 연결</span>
+    </div>
+<h2 class="section-title">10축 매핑</h2>
+<p>이번 유닛에서 배운 내용을 10개의 학습 축으로 연결합니다.</p>
+<div class="note-box"><span class="note-label">축 1: C언어 [필수]</span>
+<b>이 유닛의 C 지식:</b> 에러 유형 종합, gcc -Wall, 에러 메시지 해독 실전<br><b>깊이:</b> LAYER 1 — U01~U10의 모든 문법과 에러를 종합하여 실전 적용<br><b>핵심:</b> 코드를 작성하는 것만큼 디버깅하는 것이 중요합니다</div>
+<div class="note-box"><span class="note-label">축 2: 컴퓨팅 사고력 [필수]</span>
+<b>사고 패턴: 알고리즘적 사고(Algorithmic Thinking)</b><br>에러 헌터 절차(읽기→컴파일→수정→실행→비교→경고해결)는 하나의 알고리즘입니다. 정해진 절차를 따르면 누구나 체계적으로 디버깅할 수 있습니다.<br><br>주석 처리 디버깅은 이진 탐색 알고리즘의 원리를 디버깅에 적용한 것입니다.</div>
+<div class="note-box"><span class="note-label">축 3: 디버깅 [필수]</span>
+<b>이 유닛의 디버깅 종합:</b><br>1. 에러 메시지 읽기 (파일:줄:설명)<br>2. 첫 번째 에러부터 수정<br>3. 주석 처리로 범위 좁히기 (이진 탐색)<br>4. 기대 출력과 실제 출력 비교 (논리 에러)<br>5. gcc -Wall로 경고까지 해결<br><br>이 다섯 가지 기법을 모든 디버깅에 적용하십시오.</div>
+<div class="note-box"><span class="note-label">축 4: KOI — 정보올림피아드 [필수]</span>
+<b>난이도:</b> TIER 1<br><b>대회에서 디버깅:</b><br>- CE(컴파일 에러) → 에러 메시지 읽기<br>- WA(틀렸습니다) → 출력 비교, 예외 케이스 확인<br>- RE(런타임 에러) → 0으로 나누기, 범위 초과 확인<br>- 디버깅 속도가 대회 성적을 좌우합니다</div>
+<div class="tip"><span class="tip-label">축 7: 프로젝트 [선택]</span>
+<b>이 유닛 자체가 프로젝트입니다.</b><br>에러 헌터는 기획→설계→구현이 아닌, 분석→진단→수정의 프로젝트입니다.<br><br>실무에서 버그 리포트를 받으면 이와 동일한 절차로 문제를 해결합니다.</div>
+<div class="tip"><span class="tip-label">축 6: 실생활 연결 [선택]</span>
+<b>디버깅 = 문제 해결</b><br>에러 헌터의 절차(증상 관찰 → 원인 추론 → 해결 시도 → 검증)는 의사의 진단, 탐정의 수사, 과학자의 실험과 동일한 구조입니다.<br><br>프로그래밍에서 배운 디버깅 사고방식은 모든 분야의 문제 해결에 적용할 수 있습니다.</div>
+<h2 class="section-title">다음 유닛 예고</h2>
+<div class="note-box"><span class="note-label">다음 유닛을 위한 예측</span>
+<b>예측:</b> 아래 코드는 몇 줄을 출력할까요?<br><br><code>#include &lt;stdio.h&gt;</code><br><code>int main(void) {</code><br><code>&nbsp;&nbsp;&nbsp;&nbsp;printf("AAA");</code><br><code>&nbsp;&nbsp;&nbsp;&nbsp;printf("BBB\n");</code><br><code>&nbsp;&nbsp;&nbsp;&nbsp;printf("CCC\nDDD\n");</code><br><code>&nbsp;&nbsp;&nbsp;&nbsp;printf("EEE\nFFF");</code><br><code>&nbsp;&nbsp;&nbsp;&nbsp;printf("GGG\n");</code><br><code>&nbsp;&nbsp;&nbsp;&nbsp;return 0;</code><br><code>}</code><br><br><b>다음 유닛:</b> Unit 12 — 여러 줄 출력과 printf 기초<br>printf를 깊이 있게 학습하고, 여러 줄 출력 패턴을 체계적으로 정리합니다.</div>
+
+    <span class="page-num">3</span>
+  </div>
+</div>
+<div class="page">
+  <div class="chapter-page">
+    <div class="chapter-sidebar"></div>
+    <div class="chapter-accent-bar"></div>
+    <div style="flex:1; min-width:0; padding:50px 50px 40px 45px; position:relative;">
+      <div class="problems-chapter-ref">Chapter 11: 에러 헌터</div>
+      <h2 class="problems-title">연습 문제 (Practice Problems)</h2>
+
+        <div class="prob-card">
+          <div class="prob-header">
+            <span class="prob-num">1. 아래 코드의 에러를 찾아 수정하십시오. 에러 1개.
+
+[기대 출력]
+Hello!</span>
+            <span class="diff diff-basic">하</span>
+          </div>
+          <p class="prob-desc">아래 코드의 에러를 찾아 수정하십시오. 에러 1개.<br><br>[기대 출력]<br>Hello!</p>
+          <div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span><span class="code-bar-file">hunt1.c</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;stdio.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">main</span>(<span class="s-type">void</span>) {</span></div>
+<div class="code-line highlighted"><span class="ln">4</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"Hello!\n"</span>)</span></div>
+<div class="code-line"><span class="ln">5</span><span class="lc">    <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">6</span><span class="lc">}</span></div>
+</div>
+</div>
+          <div class="contest-write-area" style="margin-top:12px;">
+            <div class="contest-write-label">답 작성</div>
+            <textarea class="contest-textarea" rows="4" spellcheck="false" style="font-family:'Noto Sans KR',sans-serif;" placeholder=""></textarea>
+          </div>
+        </div>
+        <div class="prob-card">
+          <div class="prob-header">
+            <span class="prob-num">2. 아래 코드의 에러를 찾아 수정하십시오. 에러 1개.
+
+[기대 출력]
+A
+B</span>
+            <span class="diff diff-basic">하</span>
+          </div>
+          <p class="prob-desc">아래 코드의 에러를 찾아 수정하십시오. 에러 1개.<br><br>[기대 출력]<br>A<br>B</p>
+          <div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span><span class="code-bar-file">hunt2.c</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;stdio.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">main</span>(<span class="s-type">void</span>) {</span></div>
+<div class="code-line"><span class="ln">4</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"A\n"</span>);</span></div>
+<div class="code-line"><span class="ln">5</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"B\n"</span>);</span></div>
+<div class="code-line"><span class="ln">6</span><span class="lc">    <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line highlighted"><span class="ln">7</span><span class="lc"></span></div>
+</div>
+</div>
+          <div class="contest-write-area" style="margin-top:12px;">
+            <div class="contest-write-label">답 작성</div>
+            <textarea class="contest-textarea" rows="4" spellcheck="false" style="font-family:'Noto Sans KR',sans-serif;" placeholder=""></textarea>
+          </div>
+        </div>
+        <div class="prob-card">
+          <div class="prob-header">
+            <span class="prob-num">3. 아래 코드는 어떤 종류의 에러입니까? 수정하십시오.
+
+[기대 출력]
+Hello, World!</span>
+            <span class="diff diff-basic">하</span>
+          </div>
+          <p class="prob-desc">아래 코드는 어떤 종류의 에러입니까? 수정하십시오.<br><br>[기대 출력]<br>Hello, World!</p>
+          <div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span><span class="code-bar-file">hunt3.c</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;stdio.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">main</span>(<span class="s-type">void</span>) {</span></div>
+<div class="code-line highlighted"><span class="ln">4</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"Hello World!\n"</span>);</span></div>
+<div class="code-line"><span class="ln">5</span><span class="lc">    <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">6</span><span class="lc">}</span></div>
+</div>
+</div>
+          <div class="contest-write-area" style="margin-top:12px;">
+            <div class="contest-write-label">답 작성</div>
+            <textarea class="contest-textarea" rows="4" spellcheck="false" style="font-family:'Noto Sans KR',sans-serif;" placeholder=""></textarea>
+          </div>
+        </div>
+        <div class="prob-card">
+          <div class="prob-header">
+            <span class="prob-num">4. 에러 헌터 절차 6단계를 순서대로 적으십시오.</span>
+            <span class="diff diff-basic">하</span>
+          </div>
+          <p class="prob-desc">에러 헌터 절차 6단계를 순서대로 적으십시오.</p>
+          
+          <div class="contest-write-area" style="margin-top:12px;">
+            <div class="contest-write-label">답 작성</div>
+            <textarea class="contest-textarea" rows="4" spellcheck="false" style="font-family:'Noto Sans KR',sans-serif;" placeholder=""></textarea>
+          </div>
+        </div>
+        <div class="prob-card">
+          <div class="prob-header">
+            <span class="prob-num">5. 아래 코드의 에러를 모두 찾아 수정하십시오. 에러 3개.
+
+[기대 출력]
+========
+  Menu
+========
+1. Start
+2. Exit</span>
+            <span class="diff diff-mid">중</span>
+          </div>
+          <p class="prob-desc">아래 코드의 에러를 모두 찾아 수정하십시오. 에러 3개.<br><br>[기대 출력]<br>========<br>  Menu<br>========<br>1. Start<br>2. Exit</p>
+          <div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span><span class="code-bar-file">hunt5.c</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;stdio.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">main</span>(<span class="s-type">void</span>) {</span></div>
+<div class="code-line highlighted"><span class="ln">4</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"========\n"</span>)</span></div>
+<div class="code-line"><span class="ln">5</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"  Menu\n"</span>);</span></div>
+<div class="code-line"><span class="ln">6</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"========\n"</span>);</span></div>
+<div class="code-line highlighted"><span class="ln">7</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"2. Exit\n"</span>);</span></div>
+<div class="code-line highlighted"><span class="ln">8</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"1. Start\n"</span>);</span></div>
+<div class="code-line"><span class="ln">9</span><span class="lc">    <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">10</span><span class="lc">}</span></div>
+</div>
+</div>
+          <div class="contest-write-area" style="margin-top:12px;">
+            <div class="contest-write-label">답 작성</div>
+            <textarea class="contest-textarea" rows="4" spellcheck="false" style="font-family:'Noto Sans KR',sans-serif;" placeholder=""></textarea>
+          </div>
+        </div>
+        <div class="prob-card">
+          <div class="prob-header">
+            <span class="prob-num">6. 아래 에러 메시지만 보고 원인을 추론하십시오. 코드를 보지 않고 답하십시오.
+
+bug.c:1:19: error: expected identifier or '(' before ';'
+bug.c:5:5: error: expected ';' before 'printf'
+bug.c:8:1: error: expected '}' at end of input</span>
+            <span class="diff diff-mid">중</span>
+          </div>
+          <p class="prob-desc">아래 에러 메시지만 보고 원인을 추론하십시오. 코드를 보지 않고 답하십시오.<br><br>bug.c:1:19: error: expected identifier or '(' before ';'<br>bug.c:5:5: error: expected ';' before 'printf'<br>bug.c:8:1: error: expected '}' at end of input</p>
+          
+          <div class="contest-write-area" style="margin-top:12px;">
+            <div class="contest-write-label">답 작성</div>
+            <textarea class="contest-textarea" rows="4" spellcheck="false" style="font-family:'Noto Sans KR',sans-serif;" placeholder=""></textarea>
+          </div>
+        </div>
+        <div class="prob-card">
+          <div class="prob-header">
+            <span class="prob-num">7. 아래 코드의 에러를 모두 찾아 수정하십시오. 컴파일 에러 2개, 논리 에러 1개.
+
+[기대 출력]
+Name: Kim
+Age: 15
+Hobby: Coding</span>
+            <span class="diff diff-mid">중</span>
+          </div>
+          <p class="prob-desc">아래 코드의 에러를 모두 찾아 수정하십시오. 컴파일 에러 2개, 논리 에러 1개.<br><br>[기대 출력]<br>Name: Kim<br>Age: 15<br>Hobby: Coding</p>
+          <div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span><span class="code-bar-file">hunt7.c</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;stdio.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">main</span>(<span class="s-type">void</span>) {</span></div>
+<div class="code-line highlighted"><span class="ln">4</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"Name: Kim\n"</span>)</span></div>
+<div class="code-line highlighted"><span class="ln">5</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"Hobby: Coding\n"</span>);</span></div>
+<div class="code-line highlighted"><span class="ln">6</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"Age: 15\n"</span>);</span></div>
+<div class="code-line"><span class="ln">7</span><span class="lc">    <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line highlighted"><span class="ln">8</span><span class="lc"></span></div>
+</div>
+</div>
+          <div class="contest-write-area" style="margin-top:12px;">
+            <div class="contest-write-label">답 작성</div>
+            <textarea class="contest-textarea" rows="4" spellcheck="false" style="font-family:'Noto Sans KR',sans-serif;" placeholder=""></textarea>
+          </div>
+        </div>
+        <div class="prob-card">
+          <div class="prob-header">
+            <span class="prob-num">8. 주석 처리 디버깅 기법을 사용하여 아래 코드의 에러를 찾으십시오. 절차를 적고 최종 수정 코드를 작성하십시오.</span>
+            <span class="diff diff-mid">중</span>
+          </div>
+          <p class="prob-desc">주석 처리 디버깅 기법을 사용하여 아래 코드의 에러를 찾으십시오. 절차를 적고 최종 수정 코드를 작성하십시오.</p>
+          <div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span><span class="code-bar-file">hunt8.c</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;stdio.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">main</span>(<span class="s-type">void</span>) {</span></div>
+<div class="code-line"><span class="ln">4</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"Line 1\n"</span>);</span></div>
+<div class="code-line"><span class="ln">5</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"Line 2\n"</span>);</span></div>
+<div class="code-line"><span class="ln">6</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"Line 3\n"</span>);</span></div>
+<div class="code-line highlighted"><span class="ln">7</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"Line 4\n"</span>)</span></div>
+<div class="code-line"><span class="ln">8</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"Line 5\n"</span>);</span></div>
+<div class="code-line"><span class="ln">9</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"Line 6\n"</span>);</span></div>
+<div class="code-line"><span class="ln">10</span><span class="lc">    <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">11</span><span class="lc">}</span></div>
+</div>
+</div>
+          <div class="contest-write-area" style="margin-top:12px;">
+            <div class="contest-write-label">답 작성</div>
+            <textarea class="contest-textarea" rows="4" spellcheck="false" style="font-family:'Noto Sans KR',sans-serif;" placeholder=""></textarea>
+          </div>
+        </div>
+        <div class="prob-card">
+          <div class="prob-header">
+            <span class="prob-num">9. 아래 코드의 에러를 모두 찾아 수정하십시오. 컴파일 에러 3개, 논리 에러 2개.
+
+[기대 출력]
++============+
+|  Welcome!  |
++============+
+Name: Kim Coding
+School: Coding Academy</span>
+            <span class="diff diff-hard">상</span>
+          </div>
+          <p class="prob-desc">아래 코드의 에러를 모두 찾아 수정하십시오. 컴파일 에러 3개, 논리 에러 2개.<br><br>[기대 출력]<br>+============+<br>|  Welcome!  |<br>+============+<br>Name: Kim Coding<br>School: Coding Academy</p>
+          <div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span><span class="code-bar-file">hunt9.c</span></div>
+  <div class="code-body"><div class="code-line highlighted"><span class="ln">1</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;stdio.h&gt;</span>;</span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">main</span>(<span class="s-type">void</span>) {</span></div>
+<div class="code-line"><span class="ln">4</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"+============+\n"</span>);</span></div>
+<div class="code-line highlighted"><span class="ln">5</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"|  Welcone!  |\n"</span>);</span></div>
+<div class="code-line highlighted"><span class="ln">6</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"+============+\n"</span>)</span></div>
+<div class="code-line highlighted"><span class="ln">7</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"School: Coding Academy\n"</span>);</span></div>
+<div class="code-line highlighted"><span class="ln">8</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"Name: Kim Coding\n"</span>);</span></div>
+<div class="code-line"><span class="ln">9</span><span class="lc">    <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">10</span><span class="lc">}</span></div>
+</div>
+</div>
+          <div class="contest-write-area" style="margin-top:12px;">
+            <div class="contest-write-label">답 작성</div>
+            <textarea class="contest-textarea" rows="4" spellcheck="false" style="font-family:'Noto Sans KR',sans-serif;" placeholder=""></textarea>
+          </div>
+        </div>
+        <div class="prob-card">
+          <div class="prob-header">
+            <span class="prob-num">10. 아래 코드를 gcc -Wall로 컴파일했을 때 에러 0개, 경고 0개가 되도록 수정하십시오. 기대 출력도 정확히 맞추십시오.
+
+[기대 출력]
+File: C:\data\test.txt
+Status: "OK"
+Done!</span>
+            <span class="diff diff-hard">상</span>
+          </div>
+          <p class="prob-desc">아래 코드를 gcc -Wall로 컴파일했을 때 에러 0개, 경고 0개가 되도록 수정하십시오. 기대 출력도 정확히 맞추십시오.<br><br>[기대 출력]<br>File: C:\data\test.txt<br>Status: "OK"<br>Done!</p>
+          <div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span><span class="code-bar-file">hunt10.c</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;stdio.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">main</span>(<span class="s-type">void</span>) {</span></div>
+<div class="code-line highlighted"><span class="ln">4</span><span class="lc">    <span class="s-type">int</span> result;</span></div>
+<div class="code-line highlighted"><span class="ln">5</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"File: C:\data\test.txt\n"</span>);</span></div>
+<div class="code-line highlighted"><span class="ln">6</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"Status: "</span>OK<span class="s-str">"\n"</span>);</span></div>
+<div class="code-line highlighted"><span class="ln">7</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"Done!\n"</span>)</span></div>
+<div class="code-line"><span class="ln">8</span><span class="lc">    <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">9</span><span class="lc">}</span></div>
+</div>
+</div>
+          <div class="contest-write-area" style="margin-top:12px;">
+            <div class="contest-write-label">답 작성</div>
+            <textarea class="contest-textarea" rows="4" spellcheck="false" style="font-family:'Noto Sans KR',sans-serif;" placeholder=""></textarea>
+          </div>
+        </div>
+      <span class="page-num">4</span>
+    </div>
+  </div>
+</div>
+<div class="page contest-page-wrap">
+  <div class="chapter-page">
+    <div class="chapter-sidebar"></div>
+    <div class="chapter-accent-bar"></div>
+    <div style="flex:1; min-width:0; padding:50px 50px 40px 45px; position:relative;">
+      <div class="problems-chapter-ref">Chapter 11: 에러 헌터</div>
+      <h2 class="problems-title">대회 문제 (Online Judge)</h2>
+      <p style="font-size:14px; color:#6b7280; margin:-8px 0 24px;">실제 온라인 저지에 출제된 문제입니다. 아래에 코드를 작성한 뒤, 사이트에 제출하여 채점하십시오.</p>
+
+        <div class="contest-card">
+          <div class="contest-header">
+            <div class="contest-num-source">
+              <span class="contest-num">11번</span>
+              <span class="contest-source">백준 2557</span>
+            </div>
+            <span class="diff diff-basic">하</span>
+          </div>
+          <div class="contest-body">
+            <p class="contest-question">[백준 2557] Hello World<br><br>Hello World!를 출력하십시오.<br><br>[출력]<br>Hello World!</p>
+            <div class="contest-expected"><div class="contest-expected-label">예상 출력</div><pre class="contest-expected-body">Hello World!</pre></div>
+            <div class="contest-write-area">
+              <div class="contest-write-label">코드 작성</div>
+              <textarea class="contest-textarea" rows="12" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="contest-card">
+          <div class="contest-header">
+            <div class="contest-num-source">
+              <span class="contest-num">12번</span>
+              <span class="contest-source">백준 10718</span>
+            </div>
+            <span class="diff diff-basic">하</span>
+          </div>
+          <div class="contest-body">
+            <p class="contest-question">[백준 10718] We love kriii<br><br>강한친구 대한육군을 두 줄 출력하십시오.<br><br>[출력]<br>강한친구 대한육군<br>강한친구 대한육군</p>
+            <div class="contest-expected"><div class="contest-expected-label">예상 출력</div><pre class="contest-expected-body">강한친구 대한육군
+강한친구 대한육군</pre></div>
+            <div class="contest-write-area">
+              <div class="contest-write-label">코드 작성</div>
+              <textarea class="contest-textarea" rows="12" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="contest-card">
+          <div class="contest-header">
+            <div class="contest-num-source">
+              <span class="contest-num">13번</span>
+              <span class="contest-source">코드업 1000</span>
+            </div>
+            <span class="diff diff-basic">하</span>
+          </div>
+          <div class="contest-body">
+            <p class="contest-question">[코드업 1000] 영문 출력<br><br>Hello를 출력하십시오.<br><br>[출력]<br>Hello</p>
+            <div class="contest-expected"><div class="contest-expected-label">예상 출력</div><pre class="contest-expected-body">Hello</pre></div>
+            <div class="contest-write-area">
+              <div class="contest-write-label">코드 작성</div>
+              <textarea class="contest-textarea" rows="12" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="contest-card">
+          <div class="contest-header">
+            <div class="contest-num-source">
+              <span class="contest-num">14번</span>
+              <span class="contest-source">백준 10171</span>
+            </div>
+            <span class="diff diff-mid">중</span>
+          </div>
+          <div class="contest-body">
+            <p class="contest-question">[백준 10171] 고양이<br><br>아래 고양이를 정확히 출력하십시오.<br><br>[출력]<br>\    /\<br> )  ( ')<br>(  /  )<br> \(__)|</p>
+            <div class="contest-expected"><div class="contest-expected-label">예상 출력</div><pre class="contest-expected-body">\    /\
+ )  ( ')
+(  /  )
+ \(__)|</pre></div>
+            <div class="contest-write-area">
+              <div class="contest-write-label">코드 작성</div>
+              <textarea class="contest-textarea" rows="12" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="contest-card">
+          <div class="contest-header">
+            <div class="contest-num-source">
+              <span class="contest-num">15번</span>
+              <span class="contest-source">백준 10172</span>
+            </div>
+            <span class="diff diff-mid">중</span>
+          </div>
+          <div class="contest-body">
+            <p class="contest-question">[백준 10172] 개<br><br>아래 개를 정확히 출력하십시오.<br><br>[출력]<br>|\_/|<br>|q p|   /}<br>( 0 )"""\<br>|"^"`    |<br>||_/=\\__|</p>
+            <div class="contest-expected"><div class="contest-expected-label">예상 출력</div><pre class="contest-expected-body">|\_/|
+|q p|   /}
+( 0 )"""\
+|"^"`    |
+||_/=\\__|</pre></div>
+            <div class="contest-write-area">
+              <div class="contest-write-label">코드 작성</div>
+              <textarea class="contest-textarea" rows="12" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="contest-card">
+          <div class="contest-header">
+            <div class="contest-num-source">
+              <span class="contest-num">16번</span>
+              <span class="contest-source">백준 25083</span>
+            </div>
+            <span class="diff diff-mid">중</span>
+          </div>
+          <div class="contest-body">
+            <p class="contest-question">[백준 25083] 새싹<br><br>아래 새싹을 정확히 출력하십시오.<br><br>[출력]<br>         ,r'"7<br>r`-_   ,'  ,/<br> \. ". L_r'<br>   `~\/<br>     |<br>     |</p>
+            <div class="contest-expected"><div class="contest-expected-label">예상 출력</div><pre class="contest-expected-body">,r'"7
+r`-_   ,'  ,/
+ \. ". L_r'
+   `~\/
+     |
+     |</pre></div>
+            <div class="contest-write-area">
+              <div class="contest-write-label">코드 작성</div>
+              <textarea class="contest-textarea" rows="12" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="contest-card">
+          <div class="contest-header">
+            <div class="contest-num-source">
+              <span class="contest-num">17번</span>
+              <span class="contest-source">코드업 1008</span>
+            </div>
+            <span class="diff diff-mid">중</span>
+          </div>
+          <div class="contest-body">
+            <p class="contest-question">[코드업 1008] 출력하기08<br><br>유니코드 선 문자 표를 출력하십시오.<br><br>[출력]<br>┌┬┐<br>├┼┤<br>└┴┘</p>
+            <div class="contest-expected"><div class="contest-expected-label">예상 출력</div><pre class="contest-expected-body">┌┬┐
+├┼┤
+└┴┘</pre></div>
+            <div class="contest-write-area">
+              <div class="contest-write-label">코드 작성</div>
+              <textarea class="contest-textarea" rows="12" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="contest-card">
+          <div class="contest-header">
+            <div class="contest-num-source">
+              <span class="contest-num">18번</span>
+              <span class="contest-source">백준 변형</span>
+            </div>
+            <span class="diff diff-hard">상</span>
+          </div>
+          <div class="contest-body">
+            <p class="contest-question">[백준 변형] 에러 헌터 종합<br><br>아래 코드의 에러를 모두 수정하여 정확한 출력을 만드십시오. 컴파일 에러 4개, 논리 에러 1개가 있습니다.<br><br>[기대 출력]<br>===== Report =====<br>Name: Kim<br>Score: 100<br>===== End =====<br><br>#include <stdio.h>;<br>int main(void)<br>    printf("===== Report =====\n");<br>    printf("Score: 100\n")<br>    printf("Name: Kim\n");<br>    printf("===== End =====\n");<br>    return 0;<br>}</p>
+            
+            <div class="contest-write-area">
+              <div class="contest-write-label">코드 작성</div>
+              <textarea class="contest-textarea" rows="12" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="contest-card">
+          <div class="contest-header">
+            <div class="contest-num-source">
+              <span class="contest-num">19번</span>
+              <span class="contest-source">백준 변형</span>
+            </div>
+            <span class="diff diff-hard">상</span>
+          </div>
+          <div class="contest-body">
+            <p class="contest-question">[백준 변형] 피라미드<br><br>아래 피라미드를 printf로 정확히 출력하십시오.<br><br>[출력]<br>    *<br>   ***<br>  *****<br> *******<br>*********</p>
+            <div class="contest-expected"><div class="contest-expected-label">예상 출력</div><pre class="contest-expected-body">*
+   ***
+  *****
+ *******
+*********</pre></div>
+            <div class="contest-write-area">
+              <div class="contest-write-label">코드 작성</div>
+              <textarea class="contest-textarea" rows="12" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="contest-card">
+          <div class="contest-header">
+            <div class="contest-num-source">
+              <span class="contest-num">20번</span>
+              <span class="contest-source">백준 변형</span>
+            </div>
+            <span class="diff diff-hard">상</span>
+          </div>
+          <div class="contest-body">
+            <p class="contest-question">[백준 변형] 명함 완성<br><br>아래 명함을 에러 없이 출력하십시오. 모든 줄의 | 위치가 정확히 맞아야 합니다.<br><br>[출력]<br>+==========================+<br>|  Name:  Kim Coding       |<br>|  Tel:   010-1234-5678    |<br>|  Motto: "Never give up!" |<br>+==========================+</p>
+            <div class="contest-expected"><div class="contest-expected-label">예상 출력</div><pre class="contest-expected-body">+==========================+
+|  Name:  Kim Coding       |
+|  Tel:   010-1234-5678    |
+|  Motto: "Never give up!" |
++==========================+</pre></div>
+            <div class="contest-write-area">
+              <div class="contest-write-label">코드 작성</div>
+              <textarea class="contest-textarea" rows="12" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="contest-card">
+          <div class="contest-header">
+            <div class="contest-num-source">
+              <span class="contest-num">1번</span>
+              <span class="contest-source">백준 2557</span>
+            </div>
+            <span class="diff diff-mid">대회</span>
+          </div>
+          <div class="contest-body">
+            <p class="contest-question">"Hello World"를 출력하십시오.</p>
+            
+            <div class="contest-write-area">
+              <div class="contest-write-label">코드 작성</div>
+              <textarea class="contest-textarea" rows="12" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="contest-card">
+          <div class="contest-header">
+            <div class="contest-num-source">
+              <span class="contest-num">2번</span>
+              <span class="contest-source">백준 10171</span>
+            </div>
+            <span class="diff diff-mid">대회</span>
+          </div>
+          <div class="contest-body">
+            <p class="contest-question">고양이를 출력하십시오.</p>
+            
+            <div class="contest-write-area">
+              <div class="contest-write-label">코드 작성</div>
+              <textarea class="contest-textarea" rows="12" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="contest-card">
+          <div class="contest-header">
+            <div class="contest-num-source">
+              <span class="contest-num">3번</span>
+              <span class="contest-source">백준 10172</span>
+            </div>
+            <span class="diff diff-mid">대회</span>
+          </div>
+          <div class="contest-body">
+            <p class="contest-question">개를 출력하십시오.</p>
+            
+            <div class="contest-write-area">
+              <div class="contest-write-label">코드 작성</div>
+              <textarea class="contest-textarea" rows="12" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="contest-card">
+          <div class="contest-header">
+            <div class="contest-num-source">
+              <span class="contest-num">4번</span>
+              <span class="contest-source">백준 25083</span>
+            </div>
+            <span class="diff diff-mid">대회</span>
+          </div>
+          <div class="contest-body">
+            <p class="contest-question">새싹을 출력하십시오.</p>
+            
+            <div class="contest-write-area">
+              <div class="contest-write-label">코드 작성</div>
+              <textarea class="contest-textarea" rows="12" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="contest-card">
+          <div class="contest-header">
+            <div class="contest-num-source">
+              <span class="contest-num">5번</span>
+              <span class="contest-source">백준 10926</span>
+            </div>
+            <span class="diff diff-mid">대회</span>
+          </div>
+          <div class="contest-body">
+            <p class="contest-question">ID를 입력받아 뒤에 ??!를 붙여 출력하십시오.</p>
+            
+            <div class="contest-write-area">
+              <div class="contest-write-label">코드 작성</div>
+              <textarea class="contest-textarea" rows="12" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="contest-card">
+          <div class="contest-header">
+            <div class="contest-num-source">
+              <span class="contest-num">6번</span>
+              <span class="contest-source">백준 10998</span>
+            </div>
+            <span class="diff diff-mid">대회</span>
+          </div>
+          <div class="contest-body">
+            <p class="contest-question">두 정수 A와 B를 입력받아 A×B를 출력하십시오.</p>
+            
+            <div class="contest-write-area">
+              <div class="contest-write-label">코드 작성</div>
+              <textarea class="contest-textarea" rows="12" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="contest-card">
+          <div class="contest-header">
+            <div class="contest-num-source">
+              <span class="contest-num">7번</span>
+              <span class="contest-source">백준 10869</span>
+            </div>
+            <span class="diff diff-mid">대회</span>
+          </div>
+          <div class="contest-body">
+            <p class="contest-question">두 자연수의 사칙연산 결과를 모두 출력하십시오.</p>
+            
+            <div class="contest-write-area">
+              <div class="contest-write-label">코드 작성</div>
+              <textarea class="contest-textarea" rows="12" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="contest-card">
+          <div class="contest-header">
+            <div class="contest-num-source">
+              <span class="contest-num">8번</span>
+              <span class="contest-source">백준 11382</span>
+            </div>
+            <span class="diff diff-mid">대회</span>
+          </div>
+          <div class="contest-body">
+            <p class="contest-question">세 정수를 입력받아 합을 출력하십시오.</p>
+            
+            <div class="contest-write-area">
+              <div class="contest-write-label">코드 작성</div>
+              <textarea class="contest-textarea" rows="12" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="contest-card">
+          <div class="contest-header">
+            <div class="contest-num-source">
+              <span class="contest-num">9번</span>
+              <span class="contest-source">백준 10430</span>
+            </div>
+            <span class="diff diff-mid">대회</span>
+          </div>
+          <div class="contest-body">
+            <p class="contest-question">(A+B)%C 등 나머지 연산 결과를 출력하십시오.</p>
+            
+            <div class="contest-write-area">
+              <div class="contest-write-label">코드 작성</div>
+              <textarea class="contest-textarea" rows="12" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="contest-card">
+          <div class="contest-header">
+            <div class="contest-num-source">
+              <span class="contest-num">10번</span>
+              <span class="contest-source">백준 2739</span>
+            </div>
+            <span class="diff diff-mid">대회</span>
+          </div>
+          <div class="contest-body">
+            <p class="contest-question">N을 입력받아 구구단을 출력하십시오.</p>
+            
+            <div class="contest-write-area">
+              <div class="contest-write-label">코드 작성</div>
+              <textarea class="contest-textarea" rows="12" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+            </div>
+          </div>
+        </div>
+      <span class="page-num">5</span>
+    </div>
+  </div>
+</div>
+</body>
+</html>

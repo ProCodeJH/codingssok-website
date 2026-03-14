@@ -1,0 +1,1897 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>코딩쏙 교재 — 커스텀 qsort 비교 함수</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+
+  :root {
+    --navy: #1a2e4a;
+    --navy-mid: #2c4a6e;
+    --navy-light: #3d6590;
+    --orange: #e07830;
+    --orange-light: #f5e6d8;
+    --white: #ffffff;
+    --bg: #f7f8fa;
+    --bg-warm: #faf9f7;
+    --gray-50: #f9fafb;
+    --gray-100: #f3f4f6;
+    --gray-200: #e5e7eb;
+    --gray-300: #d1d5db;
+    --gray-400: #9ca3af;
+    --gray-500: #6b7280;
+    --gray-600: #4b5563;
+    --gray-700: #374151;
+    --gray-800: #1f2937;
+    --text: #2d3748;
+    --green: #16a34a;
+    --green-bg: #dcfce7;
+    --red: #dc2626;
+    --red-bg: #fee2e2;
+    --blue: #2563eb;
+    --blue-bg: #dbeafe;
+    --yellow-bg: #fef9c3;
+    --font: 'Noto Sans KR', sans-serif;
+    --mono: 'JetBrains Mono', 'Consolas', monospace;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: var(--font); background: #e8eaed; font-size: 15px; }
+
+  /* ========== PAGE ========== */
+  .page {
+    width: 210mm;
+    min-height: 295mm;
+    margin: 24px auto;
+    background: var(--white);
+    box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* ========== PAGE 1: CHAPTER START ========== */
+  .chapter-page {
+    display: flex;
+    min-height: 295mm;
+  }
+
+  .chapter-sidebar {
+    width: 10px;
+    background: var(--navy);
+    flex-shrink: 0;
+  }
+
+  .chapter-accent-bar {
+    width: 7px;
+    background: var(--orange);
+    flex-shrink: 0;
+  }
+
+  .chapter-body {
+    flex: 1;
+    padding: 70px 65px 50px 55px;
+    position: relative;
+  }
+
+  .chapter-watermark {
+    position: absolute;
+    top: -10px;
+    right: -15px;
+    font-size: 280px;
+    font-weight: 900;
+    color: rgba(180,195,212,0.35);
+    line-height: 1;
+    pointer-events: none;
+    letter-spacing: -10px;
+  }
+
+  .chapter-label {
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--navy-mid);
+    letter-spacing: 2px;
+    margin-bottom: 4px;
+  }
+
+  .chapter-title {
+    font-size: 44px;
+    font-weight: 900;
+    color: var(--navy);
+    line-height: 1.15;
+    margin-bottom: 12px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .chapter-sub {
+    font-size: 16px;
+    color: var(--gray-500);
+    font-weight: 400;
+    margin-bottom: 20px;
+    padding-bottom: 28px;
+    border-bottom: 1px solid var(--gray-200);
+  }
+
+  /* Learning objectives */
+  .obj-title {
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--navy);
+    margin-bottom: 16px;
+    margin-top: 32px;
+  }
+
+  .obj-list {
+    list-style: none;
+    margin-bottom: 40px;
+  }
+
+  .obj-list li {
+    padding: 5px 0 5px 24px;
+    position: relative;
+    font-size: 15px;
+    color: var(--gray-700);
+    line-height: 1.6;
+  }
+
+  .obj-list li::before {
+    content: '•';
+    position: absolute;
+    left: 8px;
+    color: var(--navy-mid);
+    font-weight: 700;
+  }
+
+  /* Prerequisites flow */
+  .prereq-title {
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--navy);
+    margin-bottom: 18px;
+  }
+
+  .prereq-flow {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    margin-bottom: 44px;
+  }
+
+  .prereq-item {
+    padding: 9px 22px;
+    border: 1.5px solid var(--gray-300);
+    border-radius: 50px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--gray-600);
+    background: var(--white);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+  }
+
+  .prereq-item.current {
+    border-color: var(--navy);
+    color: var(--navy);
+    font-weight: 700;
+    background: #edf2f7;
+    box-shadow: 0 2px 6px rgba(26,46,74,0.12);
+  }
+
+  .prereq-arrow {
+    width: 36px;
+    text-align: center;
+    color: var(--gray-300);
+    font-size: 18px;
+    font-weight: 300;
+  }
+
+  /* Predict box */
+  .predict-box {
+    background: var(--gray-50);
+    border: 1.5px solid var(--gray-200);
+    border-radius: 12px;
+    padding: 24px 28px;
+  }
+
+  .predict-label {
+    display: inline-block;
+    background: var(--orange);
+    color: var(--white);
+    font-size: 12px;
+    font-weight: 600;
+    padding: 3px 12px;
+    border-radius: 4px;
+    margin-bottom: 14px;
+    letter-spacing: 0.5px;
+  }
+
+  .predict-q {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--navy);
+    margin-bottom: 16px;
+  }
+
+  .predict-code {
+    background: var(--white);
+    border: 1px solid var(--gray-200);
+    border-radius: 8px;
+    padding: 14px 18px;
+    font-family: var(--mono);
+    font-size: 13px;
+    line-height: 1.65;
+    color: var(--gray-700);
+  }
+
+  /* ========== PAGE 2: CORE CONTENT ========== */
+  .content-page {
+    padding: 55px 65px;
+  }
+
+  .unit-header-bar {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    margin-bottom: 8px;
+  }
+
+  .unit-tag {
+    font-size: 12px;
+    color: var(--orange);
+    font-weight: 600;
+    letter-spacing: 1px;
+  }
+
+  .unit-title-sm {
+    font-size: 14px;
+    color: var(--gray-400);
+    font-weight: 400;
+  }
+
+  .section-title {
+    font-size: 24px;
+    font-weight: 800;
+    color: var(--navy);
+    margin-bottom: 24px;
+    margin-top: 8px;
+    padding-left: 16px;
+    border-left: 5px solid var(--orange);
+  }
+
+  p {
+    font-size: 15.5px;
+    line-height: 1.9;
+    color: var(--text);
+    margin-bottom: 18px;
+  }
+
+  p code {
+    font-family: var(--mono);
+    font-size: 13.5px;
+    background: #f1f3f5;
+    padding: 2px 7px;
+    border-radius: 4px;
+    color: var(--navy);
+    font-weight: 500;
+  }
+
+  /* Code block */
+  .code-wrap {
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    border: 1px solid var(--gray-200);
+    margin: 22px 0;
+  }
+
+  .code-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 9px 18px;
+    background: var(--navy);
+    font-size: 12px;
+  }
+
+  .code-bar-lang {
+    font-family: var(--mono);
+    font-weight: 600;
+    color: var(--white);
+  }
+
+  .code-bar-file {
+    color: rgba(255,255,255,0.6);
+    font-weight: 400;
+  }
+
+  .code-body {
+    background: #f8f9fb;
+    padding: 20px 0;
+    font-family: var(--mono);
+    font-size: 13.5px;
+    line-height: 1.75;
+    border: 1px solid var(--gray-200);
+    border-top: none;
+    border-radius: 0 0 12px 12px;
+  }
+
+  .code-line {
+    display: flex;
+    padding: 0 20px;
+  }
+
+  .code-line:hover {
+    background: #f0f4f8;
+  }
+
+  .code-line.highlighted {
+    background: #fff8e1;
+  }
+
+  .ln {
+    width: 30px;
+    text-align: right;
+    color: #b8bfc8;
+    font-size: 12px;
+    margin-right: 18px;
+    user-select: none;
+    flex-shrink: 0;
+    padding-top: 1px;
+  }
+
+  .lc { flex: 1; }
+
+  /* syntax */
+  .s-pp { color: #8b5cf6; font-weight: 600; }
+  .s-str { color: #d97706; }
+  .s-type { color: #2563eb; font-weight: 500; }
+  .s-kw { color: #7c3aed; font-weight: 500; }
+  .s-fn { color: #059669; font-weight: 500; }
+  .s-num { color: #dc2626; }
+  .s-cm { color: #9ca3af; font-style: italic; }
+
+  /* Output block */
+  .output-wrap {
+    border-radius: 10px;
+    overflow: hidden;
+    margin: 10px 0 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    border: 1px solid #d1d5db;
+  }
+
+  .output-bar {
+    padding: 9px 18px;
+    background: #374151;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--white);
+    letter-spacing: 0.5px;
+  }
+
+  .output-body {
+    padding: 16px 20px;
+    font-family: var(--mono);
+    font-size: 13.5px;
+    line-height: 1.7;
+    color: var(--gray-800);
+    background: #f1f5f9;
+    border: 1px solid var(--gray-200);
+    border-top: none;
+    border-radius: 0 0 10px 10px;
+  }
+
+  /* Callout */
+  .tip {
+    margin: 28px 0;
+    padding: 18px 24px;
+    background: #dbeafe;
+    border-left: 5px solid #2563eb;
+    border-radius: 0 12px 12px 0;
+    font-size: 14.5px;
+    line-height: 1.8;
+    color: var(--text);
+  }
+
+  .tip-label {
+    font-weight: 700;
+    color: #2563eb;
+    font-size: 13px;
+    display: block;
+    margin-bottom: 4px;
+  }
+
+  .warn {
+    margin: 28px 0;
+    padding: 18px 24px;
+    background: #fef3c7;
+    border-left: 5px solid #d97706;
+    border-radius: 0 12px 12px 0;
+    font-size: 14.5px;
+    line-height: 1.8;
+  }
+
+  .warn-label {
+    font-weight: 700;
+    color: #d97706;
+    font-size: 13px;
+    display: block;
+    margin-bottom: 4px;
+  }
+
+  .note-box {
+    margin: 28px 0;
+    padding: 18px 24px;
+    background: #e2e8f0;
+    border-left: 5px solid #64748b;
+    border-radius: 0 12px 12px 0;
+    font-size: 14.5px;
+    line-height: 1.8;
+  }
+
+  .note-label {
+    font-weight: 700;
+    color: var(--gray-600);
+    font-size: 13px;
+    display: block;
+    margin-bottom: 4px;
+  }
+
+  /* Trace table */
+  table.trace {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    margin: 28px 0;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+    font-size: 14px;
+  }
+
+  table.trace th {
+    background: var(--navy);
+    color: var(--white);
+    padding: 10px 16px;
+    text-align: left;
+    font-weight: 500;
+    font-size: 13px;
+  }
+
+  table.trace td {
+    padding: 10px 16px;
+    border-bottom: 1px solid var(--gray-200);
+    color: var(--gray-700);
+  }
+
+  table.trace tr:nth-child(even) td { background: var(--gray-50); }
+  table.trace tr:last-child td { border-bottom: none; }
+
+  table.trace td code {
+    font-family: var(--mono);
+    font-size: 12.5px;
+    background: #eef1f5;
+    padding: 2px 6px;
+    border-radius: 4px;
+    color: var(--navy);
+  }
+
+  /* ========== PAGE 3: PROBLEMS ========== */
+  .problems-header {
+    margin-bottom: 8px;
+  }
+
+  .problems-chapter-ref {
+    font-size: 13px;
+    color: var(--gray-500);
+    margin-bottom: 4px;
+  }
+
+  .problems-title {
+    font-size: 28px;
+    font-weight: 800;
+    color: var(--navy);
+    margin-bottom: 24px;
+  }
+
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 16px;
+  }
+
+  .prob-card {
+    background: var(--white);
+    border: 1px solid var(--gray-200);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 3px 15px rgba(0,0,0,0.06);
+  }
+
+  .prob-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 16px;
+    background: var(--navy);
+  }
+
+  .prob-num {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--white);
+  }
+
+  .diff {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    font-size: 12px;
+    font-weight: 800;
+  }
+
+  .diff-basic { background: #22c55e; color: white; }
+  .diff-mid { background: #f59e0b; color: white; }
+  .diff-hard { background: #ef4444; color: white; }
+
+  .prob-desc {
+    font-size: 13.5px;
+    line-height: 1.65;
+    color: var(--gray-600);
+    margin-bottom: 10px;
+    padding: 14px 16px 0;
+  }
+
+  .prob-code {
+    background: var(--gray-50);
+    border: 1px solid var(--gray-200);
+    border-radius: 6px;
+    padding: 10px 14px;
+    margin: 0 16px 16px;
+    font-family: var(--mono);
+    font-size: 12.5px;
+    line-height: 1.55;
+    color: var(--gray-600);
+  }
+
+  /* Competition section */
+  .comp-section {
+    margin-top: 32px;
+    padding-top: 24px;
+    border-top: 2px solid var(--navy);
+  }
+
+  .comp-title {
+    font-size: 22px;
+    font-weight: 800;
+    color: var(--navy);
+    margin-bottom: 20px;
+  }
+
+  .comp-card {
+    background: var(--white);
+    border: 1.5px solid var(--gray-200);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 18px rgba(0,0,0,0.06);
+  }
+
+  .comp-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 16px;
+    background: #0f766e;
+  }
+
+  .comp-header .comp-name {
+    color: var(--white);
+    font-size: 15px;
+    font-weight: 700;
+    margin: 0;
+  }
+
+  .comp-inner {
+    padding: 14px 18px 18px;
+  }
+
+  .comp-badge {
+    display: inline-block;
+    padding: 3px 12px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 700;
+  }
+
+  .badge-bj { background: #93c5fd; color: #1e3a5f; }
+  .badge-cu { background: #c4b5fd; color: #3b1f7e; }
+  .badge-pg { background: #7dd3fc; color: #0c4a6e; }
+
+  .comp-name {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--navy);
+    margin-bottom: 6px;
+  }
+
+  .comp-desc {
+    font-size: 14px;
+    color: var(--gray-600);
+    line-height: 1.7;
+    margin-bottom: 14px;
+  }
+
+  .io-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+
+  .io-card {
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid var(--gray-200);
+  }
+
+  .io-h {
+    padding: 6px 14px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--gray-600);
+    background: #e2e8f0;
+  }
+
+  .io-c {
+    padding: 10px 14px;
+    font-family: var(--mono);
+    font-size: 13px;
+    line-height: 1.5;
+    background: var(--white);
+  }
+
+  /* ========== DEBUG LAB ========== */
+  .debug-section {
+    margin: 24px 0;
+    border: 2px solid var(--red);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+
+  .debug-bar {
+    background: var(--red);
+    color: var(--white);
+    padding: 10px 20px;
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 1px;
+  }
+
+  .debug-body {
+    padding: 20px;
+    background: #fef2f2;
+  }
+
+  /* 10축 connection */
+  .connect-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 16px;
+    margin: 28px 0;
+  }
+
+  .connect-card {
+    border-radius: 12px;
+    padding: 20px;
+    text-align: center;
+    border: 1px solid var(--gray-200);
+    box-shadow: 0 3px 14px rgba(0,0,0,0.05);
+  }
+
+  .connect-card h5 {
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 8px;
+  }
+
+  .connect-card p {
+    font-size: 13px;
+    margin: 0;
+    color: var(--gray-600);
+    line-height: 1.6;
+  }
+
+  .cc1 { border-top: 3px solid #8b5cf6; }
+  .cc1 h5 { color: #8b5cf6; }
+  .cc2 { border-top: 3px solid var(--green); }
+  .cc2 h5 { color: var(--green); }
+  .cc3 { border-top: 3px solid var(--navy); }
+  .cc3 h5 { color: var(--navy); }
+
+  /* PAGE NUMBER */
+  .page-num {
+    position: absolute;
+    bottom: 20px;
+    right: 30px;
+    font-size: 12px;
+    color: var(--gray-400);
+  }
+
+  /* WARMUP */
+  .warmup-box {
+    background: #e0e7f1;
+    border-radius: 12px;
+    padding: 24px 28px;
+    margin: 28px 0;
+    border: 2px solid #c7d2e0;
+  }
+
+  .warmup-title {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--navy);
+    margin-bottom: 14px;
+  }
+
+  .wq {
+    padding: 9px 16px;
+    background: var(--white);
+    border-radius: 8px;
+    margin-bottom: 8px;
+    font-size: 14px;
+    border: 1px solid var(--gray-200);
+    color: var(--gray-700);
+  }
+
+  .wq b { color: var(--navy); margin-right: 6px; }
+  .wq .hint { color: var(--gray-400); font-size: 13px; }
+
+  /* ===== CONTEST PROBLEMS PAGE ===== */
+  .contest-page-wrap .chapter-page {
+    min-height: auto;
+  }
+
+  .contest-page-wrap .chapter-page > div:last-child {
+    min-width: 0;
+    overflow-wrap: break-word;
+    word-break: break-word;
+  }
+
+  .contest-card {
+    background: white;
+    border: 1.5px solid var(--gray-200);
+    border-radius: 12px;
+    margin-bottom: 28px;
+    overflow: hidden;
+    break-inside: avoid;
+  }
+
+  .contest-header {
+    background: var(--navy);
+    color: white;
+    padding: 14px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .contest-num-source {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .contest-num {
+    font-weight: 700;
+    font-size: 16px;
+  }
+
+  .contest-source {
+    background: rgba(255,255,255,0.15);
+    padding: 3px 10px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 500;
+  }
+
+  .contest-body {
+    padding: 20px 24px 24px;
+  }
+
+  .contest-question {
+    font-size: 15px;
+    line-height: 1.7;
+    color: var(--text);
+    margin: 0 0 16px;
+    word-break: break-word;
+    overflow-wrap: break-word;
+  }
+
+  .contest-expected {
+    background: #1e293b;
+    border-radius: 8px;
+    overflow: hidden;
+    margin-bottom: 20px;
+  }
+
+  .contest-expected-label {
+    background: #334155;
+    color: #94a3b8;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 6px 14px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .contest-expected-body {
+    color: #e2e8f0;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    line-height: 1.6;
+    padding: 12px 16px;
+    margin: 0;
+    white-space: pre;
+  }
+
+  .contest-write-area {
+    border: 2px dashed var(--gray-300);
+    border-radius: 10px;
+    overflow: hidden;
+    transition: border-color 0.2s;
+  }
+
+  .contest-write-area:focus-within {
+    border-color: var(--orange);
+    border-style: solid;
+  }
+
+  .contest-write-label {
+    background: var(--bg);
+    color: var(--gray-500);
+    font-size: 12px;
+    font-weight: 600;
+    padding: 8px 14px;
+    border-bottom: 1px solid var(--gray-200);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .contest-textarea {
+    width: 100%;
+    min-height: 200px;
+    padding: 16px 18px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    line-height: 1.7;
+    color: var(--text);
+    background: #fafbfc;
+    border: none;
+    outline: none;
+    resize: vertical;
+    tab-size: 4;
+    box-sizing: border-box;
+  }
+
+  .contest-textarea::placeholder {
+    color: var(--gray-300);
+  }
+
+  @media print {
+    body { background: white; }
+    .page { box-shadow: none; margin: 0; page-break-after: always; }
+    .contest-textarea { border: 1px solid var(--gray-300); min-height: 180px; }
+  }
+
+</style>
+</head>
+<body>
+
+<div class="page">
+  <div class="chapter-page">
+    <div class="chapter-sidebar"></div>
+    <div class="chapter-accent-bar"></div>
+    <div class="chapter-body">
+      <div class="chapter-watermark">09</div>
+      <div class="chapter-label">Chapter 09</div>
+      <h1 class="chapter-title">커스텀 qsort 비교 함수</h1>
+      <p class="chapter-sub">함수 포인터와 콜백을 활용하여 다양한 비교 함수로 qsort를 사용하는 프로젝트입니다.</p>
+
+      <h3 class="obj-title">이 유닛에서 배우는 것</h3>
+      <ul class="obj-list">
+        <li>정수, 문자열, 구조체 각각에 맞는 비교 함수를 작성하고 qsort에 전달할 수 있습니다.</li>
+        <li>다중 정렬 기준을 적용하는 비교 함수를 설계하고 구현할 수 있습니다.</li>
+        <li>비교 함수 배열을 활용하여 사용자가 정렬 기준을 선택하는 시스템을 만들 수 있습니다.</li>
+        <li>void 포인터 기반 범용 정렬 프레임워크를 구현하고 성능을 측정할 수 있습니다.</li>
+      </ul>
+
+      <h3 class="prereq-title">선수 학습</h3>
+      <div class="prereq-flow">
+        <div class="prereq-item current">L14-U08</div>
+      </div>
+
+      
+
+      <span class="page-num">1</span>
+    </div>
+  </div>
+</div>
+<div class="page">
+  <div class="content-page">
+    <div class="unit-header-bar">
+      <span class="unit-tag">UNIT 09</span>
+      <span class="unit-title-sm">커스텀 qsort 비교 함수</span>
+    </div>
+<h2 class="section-title">프로젝트 개요</h2>
+<div class="note-box"><span class="note-label"></span>
+<div style="font-weight:700;margin-bottom:6px;color:#1a2e4a">커스텀 qsort 비교 함수 프로젝트 (Custom qsort Comparator)</div>함수 포인터와 콜백 패턴을 활용하여 다양한 데이터 타입을 qsort로 정렬하는 프로젝트입니다.<br><br>버전 1: 기본 -- 정수/문자열/구조체 각각의 비교 함수 작성 + qsort 사용<br>버전 2: 확장 -- 다중 기준 정렬(1차 점수 내림차순, 2차 이름 오름차순) + 사용자 선택 기준 + 비교 함수 배열<br>버전 3: 완성 -- 범용 정렬 프레임워크 -- void 포인터 활용, 비교 함수 등록, 정렬 결과 파일 저장, 성능 측정</div>
+<h2 class="section-title">버전 1: 기본 -- 정수/문자열/구조체 비교 함수 + qsort</h2>
+<p>undefined</p>
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;stdio.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;stdlib.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;string.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">4</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">5</span><span class="lc"><span class="s-cm">/* ===== 1. 정수 비교 함수 ===== */</span></span></div>
+<div class="code-line"><span class="ln">6</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">7</span><span class="lc"><span class="s-cm">/* 오름차순 정렬 */</span></span></div>
+<div class="code-line"><span class="ln">8</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">cmpIntAsc</span>(<span class="s-kw">const</span> <span class="s-type">void</span> *a, <span class="s-kw">const</span> <span class="s-type">void</span> *b) {</span></div>
+<div class="code-line"><span class="ln">9</span><span class="lc">    <span class="s-type">int</span> x = *(<span class="s-kw">const</span> <span class="s-type">int</span> *)a;</span></div>
+<div class="code-line"><span class="ln">10</span><span class="lc">    <span class="s-type">int</span> y = *(<span class="s-kw">const</span> <span class="s-type">int</span> *)b;</span></div>
+<div class="code-line"><span class="ln">11</span><span class="lc">    <span class="s-kw">return</span> x - y;</span></div>
+<div class="code-line"><span class="ln">12</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">13</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">14</span><span class="lc"><span class="s-cm">/* 내림차순 정렬 */</span></span></div>
+<div class="code-line"><span class="ln">15</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">cmpIntDesc</span>(<span class="s-kw">const</span> <span class="s-type">void</span> *a, <span class="s-kw">const</span> <span class="s-type">void</span> *b) {</span></div>
+<div class="code-line"><span class="ln">16</span><span class="lc">    <span class="s-type">int</span> x = *(<span class="s-kw">const</span> <span class="s-type">int</span> *)a;</span></div>
+<div class="code-line"><span class="ln">17</span><span class="lc">    <span class="s-type">int</span> y = *(<span class="s-kw">const</span> <span class="s-type">int</span> *)b;</span></div>
+<div class="code-line"><span class="ln">18</span><span class="lc">    <span class="s-kw">return</span> y - x;</span></div>
+<div class="code-line"><span class="ln">19</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">20</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">21</span><span class="lc"><span class="s-cm">/* ===== 2. 문자열 비교 함수 ===== */</span></span></div>
+<div class="code-line"><span class="ln">22</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">23</span><span class="lc"><span class="s-cm">/* 사전순 오름차순 */</span></span></div>
+<div class="code-line"><span class="ln">24</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">cmpStrAsc</span>(<span class="s-kw">const</span> <span class="s-type">void</span> *a, <span class="s-kw">const</span> <span class="s-type">void</span> *b) {</span></div>
+<div class="code-line"><span class="ln">25</span><span class="lc">    <span class="s-kw">const</span> <span class="s-type">char</span> *s1 = *(<span class="s-kw">const</span> <span class="s-type">char</span> **)a;</span></div>
+<div class="code-line"><span class="ln">26</span><span class="lc">    <span class="s-kw">const</span> <span class="s-type">char</span> *s2 = *(<span class="s-kw">const</span> <span class="s-type">char</span> **)b;</span></div>
+<div class="code-line"><span class="ln">27</span><span class="lc">    <span class="s-kw">return</span> <span class="s-fn">strcmp</span>(s1, s2);</span></div>
+<div class="code-line"><span class="ln">28</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">29</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">30</span><span class="lc"><span class="s-cm">/* 문자열 길이순 오름차순 */</span></span></div>
+<div class="code-line"><span class="ln">31</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">cmpStrByLen</span>(<span class="s-kw">const</span> <span class="s-type">void</span> *a, <span class="s-kw">const</span> <span class="s-type">void</span> *b) {</span></div>
+<div class="code-line"><span class="ln">32</span><span class="lc">    <span class="s-kw">const</span> <span class="s-type">char</span> *s1 = *(<span class="s-kw">const</span> <span class="s-type">char</span> **)a;</span></div>
+<div class="code-line"><span class="ln">33</span><span class="lc">    <span class="s-kw">const</span> <span class="s-type">char</span> *s2 = *(<span class="s-kw">const</span> <span class="s-type">char</span> **)b;</span></div>
+<div class="code-line"><span class="ln">34</span><span class="lc">    <span class="s-kw">return</span> (<span class="s-type">int</span>)<span class="s-fn">strlen</span>(s1) - (<span class="s-type">int</span>)<span class="s-fn">strlen</span>(s2);</span></div>
+<div class="code-line"><span class="ln">35</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">36</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">37</span><span class="lc"><span class="s-cm">/* ===== 3. 구조체 비교 함수 ===== */</span></span></div>
+<div class="code-line"><span class="ln">38</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">39</span><span class="lc"><span class="s-kw">typedef</span> <span class="s-kw">struct</span> {</span></div>
+<div class="code-line"><span class="ln">40</span><span class="lc">    <span class="s-type">char</span> name[<span class="s-num">30</span>];</span></div>
+<div class="code-line"><span class="ln">41</span><span class="lc">    <span class="s-type">int</span>  score;</span></div>
+<div class="code-line"><span class="ln">42</span><span class="lc">} Student;</span></div>
+<div class="code-line"><span class="ln">43</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">44</span><span class="lc"><span class="s-cm">/* 점수 오름차순 */</span></span></div>
+<div class="code-line"><span class="ln">45</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">cmpStudentByScore</span>(<span class="s-kw">const</span> <span class="s-type">void</span> *a, <span class="s-kw">const</span> <span class="s-type">void</span> *b) {</span></div>
+<div class="code-line"><span class="ln">46</span><span class="lc">    <span class="s-kw">const</span> Student *s1 = (<span class="s-kw">const</span> Student *)a;</span></div>
+<div class="code-line"><span class="ln">47</span><span class="lc">    <span class="s-kw">const</span> Student *s2 = (<span class="s-kw">const</span> Student *)b;</span></div>
+<div class="code-line"><span class="ln">48</span><span class="lc">    <span class="s-kw">return</span> s1-&gt;score - s2-&gt;score;</span></div>
+<div class="code-line"><span class="ln">49</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">50</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">51</span><span class="lc"><span class="s-cm">/* 이름 사전순 오름차순 */</span></span></div>
+<div class="code-line"><span class="ln">52</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">cmpStudentByName</span>(<span class="s-kw">const</span> <span class="s-type">void</span> *a, <span class="s-kw">const</span> <span class="s-type">void</span> *b) {</span></div>
+<div class="code-line"><span class="ln">53</span><span class="lc">    <span class="s-kw">const</span> Student *s1 = (<span class="s-kw">const</span> Student *)a;</span></div>
+<div class="code-line"><span class="ln">54</span><span class="lc">    <span class="s-kw">const</span> Student *s2 = (<span class="s-kw">const</span> Student *)b;</span></div>
+<div class="code-line"><span class="ln">55</span><span class="lc">    <span class="s-kw">return</span> <span class="s-fn">strcmp</span>(s1-&gt;name, s2-&gt;name);</span></div>
+<div class="code-line"><span class="ln">56</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">57</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">58</span><span class="lc"><span class="s-cm">/* 배열 출력 헬퍼 함수 */</span></span></div>
+<div class="code-line"><span class="ln">59</span><span class="lc"><span class="s-type">void</span> <span class="s-fn">printIntArr</span>(<span class="s-kw">const</span> <span class="s-type">int</span> arr[], <span class="s-type">int</span> n) {</span></div>
+<div class="code-line"><span class="ln">60</span><span class="lc">    <span class="s-kw">for</span> (<span class="s-type">int</span> i = <span class="s-num">0</span>; i &lt; n; i++)</span></div>
+<div class="code-line"><span class="ln">61</span><span class="lc">        <span class="s-fn">printf</span>(<span class="s-str">"%d "</span>, arr[i]);</span></div>
+<div class="code-line"><span class="ln">62</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"\n"</span>);</span></div>
+<div class="code-line"><span class="ln">63</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">64</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">65</span><span class="lc"><span class="s-type">void</span> <span class="s-fn">printStrArr</span>(<span class="s-kw">const</span> <span class="s-type">char</span> *arr[], <span class="s-type">int</span> n) {</span></div>
+<div class="code-line"><span class="ln">66</span><span class="lc">    <span class="s-kw">for</span> (<span class="s-type">int</span> i = <span class="s-num">0</span>; i &lt; n; i++)</span></div>
+<div class="code-line"><span class="ln">67</span><span class="lc">        <span class="s-fn">printf</span>(<span class="s-str">"%s "</span>, arr[i]);</span></div>
+<div class="code-line"><span class="ln">68</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"\n"</span>);</span></div>
+<div class="code-line"><span class="ln">69</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">70</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">71</span><span class="lc"><span class="s-type">void</span> <span class="s-fn">printStudents</span>(<span class="s-kw">const</span> Student arr[], <span class="s-type">int</span> n) {</span></div>
+<div class="code-line"><span class="ln">72</span><span class="lc">    <span class="s-kw">for</span> (<span class="s-type">int</span> i = <span class="s-num">0</span>; i &lt; n; i++)</span></div>
+<div class="code-line"><span class="ln">73</span><span class="lc">        <span class="s-fn">printf</span>(<span class="s-str">"  %-10s %3d점\n"</span>, arr[i].name, arr[i].score);</span></div>
+<div class="code-line"><span class="ln">74</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">75</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">76</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">main</span>(<span class="s-type">void</span>) {</span></div>
+<div class="code-line"><span class="ln">77</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"=== 커스텀 qsort 비교 함수 v1 ===\n\n"</span>);</span></div>
+<div class="code-line"><span class="ln">78</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">79</span><span class="lc">    <span class="s-cm">/* --- 정수 배열 --- */</span></span></div>
+<div class="code-line"><span class="ln">80</span><span class="lc">    <span class="s-type">int</span> nums[] = {<span class="s-num">42</span>, <span class="s-num">17</span>, <span class="s-num">85</span>, <span class="s-num">3</span>, <span class="s-num">61</span>, <span class="s-num">29</span>, <span class="s-num">54</span>};</span></div>
+<div class="code-line"><span class="ln">81</span><span class="lc">    <span class="s-type">int</span> numCount = <span class="s-kw">sizeof</span>(nums) / <span class="s-kw">sizeof</span>(nums[<span class="s-num">0</span>]);</span></div>
+<div class="code-line"><span class="ln">82</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">83</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"[정수 배열 원본] "</span>);</span></div>
+<div class="code-line"><span class="ln">84</span><span class="lc">    <span class="s-fn">printIntArr</span>(nums, numCount);</span></div>
+<div class="code-line"><span class="ln">85</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">86</span><span class="lc">    <span class="s-fn">qsort</span>(nums, numCount, <span class="s-kw">sizeof</span>(<span class="s-type">int</span>), cmpIntAsc);</span></div>
+<div class="code-line"><span class="ln">87</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"[오름차순 정렬] "</span>);</span></div>
+<div class="code-line"><span class="ln">88</span><span class="lc">    <span class="s-fn">printIntArr</span>(nums, numCount);</span></div>
+<div class="code-line"><span class="ln">89</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">90</span><span class="lc">    <span class="s-fn">qsort</span>(nums, numCount, <span class="s-kw">sizeof</span>(<span class="s-type">int</span>), cmpIntDesc);</span></div>
+<div class="code-line"><span class="ln">91</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"[내림차순 정렬] "</span>);</span></div>
+<div class="code-line"><span class="ln">92</span><span class="lc">    <span class="s-fn">printIntArr</span>(nums, numCount);</span></div>
+<div class="code-line"><span class="ln">93</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">94</span><span class="lc">    <span class="s-cm">/* --- 문자열 배열 --- */</span></span></div>
+<div class="code-line"><span class="ln">95</span><span class="lc">    <span class="s-kw">const</span> <span class="s-type">char</span> *words[] = {<span class="s-str">"banana"</span>, <span class="s-str">"apple"</span>, <span class="s-str">"cherry"</span>, <span class="s-str">"date"</span>, <span class="s-str">"elderberry"</span>};</span></div>
+<div class="code-line"><span class="ln">96</span><span class="lc">    <span class="s-type">int</span> wordCount = <span class="s-kw">sizeof</span>(words) / <span class="s-kw">sizeof</span>(words[<span class="s-num">0</span>]);</span></div>
+<div class="code-line"><span class="ln">97</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">98</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"\n[문자열 원본]   "</span>);</span></div>
+<div class="code-line"><span class="ln">99</span><span class="lc">    <span class="s-fn">printStrArr</span>(words, wordCount);</span></div>
+<div class="code-line"><span class="ln">100</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">101</span><span class="lc">    <span class="s-fn">qsort</span>(words, wordCount, <span class="s-kw">sizeof</span>(<span class="s-type">char</span> *), cmpStrAsc);</span></div>
+<div class="code-line"><span class="ln">102</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"[사전순 정렬]   "</span>);</span></div>
+<div class="code-line"><span class="ln">103</span><span class="lc">    <span class="s-fn">printStrArr</span>(words, wordCount);</span></div>
+<div class="code-line"><span class="ln">104</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">105</span><span class="lc">    <span class="s-fn">qsort</span>(words, wordCount, <span class="s-kw">sizeof</span>(<span class="s-type">char</span> *), cmpStrByLen);</span></div>
+<div class="code-line"><span class="ln">106</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"[길이순 정렬]   "</span>);</span></div>
+<div class="code-line"><span class="ln">107</span><span class="lc">    <span class="s-fn">printStrArr</span>(words, wordCount);</span></div>
+<div class="code-line"><span class="ln">108</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">109</span><span class="lc">    <span class="s-cm">/* --- 구조체 배열 --- */</span></span></div>
+<div class="code-line"><span class="ln">110</span><span class="lc">    Student students[] = {</span></div>
+<div class="code-line"><span class="ln">111</span><span class="lc">        {<span class="s-str">"Kim"</span>,   <span class="s-num">88</span>},</span></div>
+<div class="code-line"><span class="ln">112</span><span class="lc">        {<span class="s-str">"Lee"</span>,   <span class="s-num">72</span>},</span></div>
+<div class="code-line"><span class="ln">113</span><span class="lc">        {<span class="s-str">"Park"</span>,  <span class="s-num">95</span>},</span></div>
+<div class="code-line"><span class="ln">114</span><span class="lc">        {<span class="s-str">"Choi"</span>,  <span class="s-num">72</span>},</span></div>
+<div class="code-line"><span class="ln">115</span><span class="lc">        {<span class="s-str">"Jung"</span>,  <span class="s-num">90</span>}</span></div>
+<div class="code-line"><span class="ln">116</span><span class="lc">    };</span></div>
+<div class="code-line"><span class="ln">117</span><span class="lc">    <span class="s-type">int</span> stuCount = <span class="s-kw">sizeof</span>(students) / <span class="s-kw">sizeof</span>(students[<span class="s-num">0</span>]);</span></div>
+<div class="code-line"><span class="ln">118</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">119</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"\n[학생 원본]\n"</span>);</span></div>
+<div class="code-line"><span class="ln">120</span><span class="lc">    <span class="s-fn">printStudents</span>(students, stuCount);</span></div>
+<div class="code-line"><span class="ln">121</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">122</span><span class="lc">    <span class="s-fn">qsort</span>(students, stuCount, <span class="s-kw">sizeof</span>(Student), cmpStudentByScore);</span></div>
+<div class="code-line"><span class="ln">123</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"[점수순 정렬]\n"</span>);</span></div>
+<div class="code-line"><span class="ln">124</span><span class="lc">    <span class="s-fn">printStudents</span>(students, stuCount);</span></div>
+<div class="code-line"><span class="ln">125</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">126</span><span class="lc">    <span class="s-fn">qsort</span>(students, stuCount, <span class="s-kw">sizeof</span>(Student), cmpStudentByName);</span></div>
+<div class="code-line"><span class="ln">127</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"[이름순 정렬]\n"</span>);</span></div>
+<div class="code-line"><span class="ln">128</span><span class="lc">    <span class="s-fn">printStudents</span>(students, stuCount);</span></div>
+<div class="code-line"><span class="ln">129</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">130</span><span class="lc">    <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">131</span><span class="lc">}</span></div>
+</div>
+</div>
+<div class="note-box"><span class="note-label"></span>
+<div style="font-weight:700;margin-bottom:6px;color:#1a2e4a">qsort 비교 함수의 규칙</div>qsort의 비교 함수는 반드시 다음 시그니처를 따릅니다.<br><br>  int compare(const void *a, const void *b);<br><br>반환값의 의미:<br>  음수 (<0)  : a가 b보다 앞에 위치<br>  0          : a와 b의 순서가 같음<br>  양수 (>0)  : a가 b보다 뒤에 위치<br><br>void 포인터 캐스팅 순서:<br>  정수:      const void* -> const int* -> 역참조<br>  문자열:    const void* -> const char** -> 역참조<br>  구조체:    const void* -> const Student* -> 멤버 접근<br><br>주의: 정수 비교에서 return a - b는 오버플로우 위험이 있습니다.<br>INT_MAX - (-1) 등의 경우 오버플로우가 발생하므로,<br>안전한 비교는 if (x < y) return -1; 형태를 권장합니다.</div>
+<h2 class="section-title">버전 2: 확장 -- 다중 기준 정렬 + 사용자 선택 + 비교 함수 배열</h2>
+<p>undefined</p>
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;stdio.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;stdlib.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;string.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">4</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">5</span><span class="lc"><span class="s-pp">#define</span> MAX_STUDENTS <span class="s-num">100</span></span></div>
+<div class="code-line"><span class="ln">6</span><span class="lc"><span class="s-pp">#define</span> NAME_LEN      <span class="s-num">30</span></span></div>
+<div class="code-line"><span class="ln">7</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">8</span><span class="lc"><span class="s-kw">typedef</span> <span class="s-kw">struct</span> {</span></div>
+<div class="code-line"><span class="ln">9</span><span class="lc">    <span class="s-type">char</span> name[NAME_LEN];</span></div>
+<div class="code-line"><span class="ln">10</span><span class="lc">    <span class="s-type">int</span>  score;</span></div>
+<div class="code-line"><span class="ln">11</span><span class="lc">    <span class="s-type">int</span>  age;</span></div>
+<div class="code-line"><span class="ln">12</span><span class="lc">} Student;</span></div>
+<div class="code-line"><span class="ln">13</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">14</span><span class="lc"><span class="s-cm">/* ===== 단일 기준 비교 함수들 ===== */</span></span></div>
+<div class="code-line"><span class="ln">15</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">16</span><span class="lc"><span class="s-cm">/* 이름 오름차순 */</span></span></div>
+<div class="code-line"><span class="ln">17</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">cmpByNameAsc</span>(<span class="s-kw">const</span> <span class="s-type">void</span> *a, <span class="s-kw">const</span> <span class="s-type">void</span> *b) {</span></div>
+<div class="code-line"><span class="ln">18</span><span class="lc">    <span class="s-kw">const</span> Student *s1 = (<span class="s-kw">const</span> Student *)a;</span></div>
+<div class="code-line"><span class="ln">19</span><span class="lc">    <span class="s-kw">const</span> Student *s2 = (<span class="s-kw">const</span> Student *)b;</span></div>
+<div class="code-line"><span class="ln">20</span><span class="lc">    <span class="s-kw">return</span> <span class="s-fn">strcmp</span>(s1-&gt;name, s2-&gt;name);</span></div>
+<div class="code-line"><span class="ln">21</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">22</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">23</span><span class="lc"><span class="s-cm">/* 점수 오름차순 */</span></span></div>
+<div class="code-line"><span class="ln">24</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">cmpByScoreAsc</span>(<span class="s-kw">const</span> <span class="s-type">void</span> *a, <span class="s-kw">const</span> <span class="s-type">void</span> *b) {</span></div>
+<div class="code-line"><span class="ln">25</span><span class="lc">    <span class="s-kw">const</span> Student *s1 = (<span class="s-kw">const</span> Student *)a;</span></div>
+<div class="code-line"><span class="ln">26</span><span class="lc">    <span class="s-kw">const</span> Student *s2 = (<span class="s-kw">const</span> Student *)b;</span></div>
+<div class="code-line"><span class="ln">27</span><span class="lc">    <span class="s-kw">return</span> s1-&gt;score - s2-&gt;score;</span></div>
+<div class="code-line"><span class="ln">28</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">29</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">30</span><span class="lc"><span class="s-cm">/* 점수 내림차순 */</span></span></div>
+<div class="code-line"><span class="ln">31</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">cmpByScoreDesc</span>(<span class="s-kw">const</span> <span class="s-type">void</span> *a, <span class="s-kw">const</span> <span class="s-type">void</span> *b) {</span></div>
+<div class="code-line"><span class="ln">32</span><span class="lc">    <span class="s-kw">const</span> Student *s1 = (<span class="s-kw">const</span> Student *)a;</span></div>
+<div class="code-line"><span class="ln">33</span><span class="lc">    <span class="s-kw">const</span> Student *s2 = (<span class="s-kw">const</span> Student *)b;</span></div>
+<div class="code-line"><span class="ln">34</span><span class="lc">    <span class="s-kw">return</span> s2-&gt;score - s1-&gt;score;</span></div>
+<div class="code-line"><span class="ln">35</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">36</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">37</span><span class="lc"><span class="s-cm">/* 나이 오름차순 */</span></span></div>
+<div class="code-line"><span class="ln">38</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">cmpByAgeAsc</span>(<span class="s-kw">const</span> <span class="s-type">void</span> *a, <span class="s-kw">const</span> <span class="s-type">void</span> *b) {</span></div>
+<div class="code-line"><span class="ln">39</span><span class="lc">    <span class="s-kw">const</span> Student *s1 = (<span class="s-kw">const</span> Student *)a;</span></div>
+<div class="code-line"><span class="ln">40</span><span class="lc">    <span class="s-kw">const</span> Student *s2 = (<span class="s-kw">const</span> Student *)b;</span></div>
+<div class="code-line"><span class="ln">41</span><span class="lc">    <span class="s-kw">return</span> s1-&gt;age - s2-&gt;age;</span></div>
+<div class="code-line"><span class="ln">42</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">43</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">44</span><span class="lc"><span class="s-cm">/* ===== 다중 기준 비교 함수 ===== */</span></span></div>
+<div class="code-line"><span class="ln">45</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">46</span><span class="lc"><span class="s-cm">/* 1차: 점수 내림차순, 2차: 이름 오름차순 */</span></span></div>
+<div class="code-line"><span class="ln">47</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">cmpScoreDescNameAsc</span>(<span class="s-kw">const</span> <span class="s-type">void</span> *a, <span class="s-kw">const</span> <span class="s-type">void</span> *b) {</span></div>
+<div class="code-line"><span class="ln">48</span><span class="lc">    <span class="s-kw">const</span> Student *s1 = (<span class="s-kw">const</span> Student *)a;</span></div>
+<div class="code-line"><span class="ln">49</span><span class="lc">    <span class="s-kw">const</span> Student *s2 = (<span class="s-kw">const</span> Student *)b;</span></div>
+<div class="code-line"><span class="ln">50</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">51</span><span class="lc">    <span class="s-cm">/* 1차 기준: 점수 내림차순 */</span></span></div>
+<div class="code-line"><span class="ln">52</span><span class="lc">    <span class="s-kw">if</span> (s1-&gt;score != s2-&gt;score)</span></div>
+<div class="code-line"><span class="ln">53</span><span class="lc">        <span class="s-kw">return</span> s2-&gt;score - s1-&gt;score;</span></div>
+<div class="code-line"><span class="ln">54</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">55</span><span class="lc">    <span class="s-cm">/* 2차 기준: 이름 오름차순 */</span></span></div>
+<div class="code-line"><span class="ln">56</span><span class="lc">    <span class="s-kw">return</span> <span class="s-fn">strcmp</span>(s1-&gt;name, s2-&gt;name);</span></div>
+<div class="code-line"><span class="ln">57</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">58</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">59</span><span class="lc"><span class="s-cm">/* 1차: 나이 오름차순, 2차: 점수 내림차순, 3차: 이름 오름차순 */</span></span></div>
+<div class="code-line"><span class="ln">60</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">cmpAgeScoreName</span>(<span class="s-kw">const</span> <span class="s-type">void</span> *a, <span class="s-kw">const</span> <span class="s-type">void</span> *b) {</span></div>
+<div class="code-line"><span class="ln">61</span><span class="lc">    <span class="s-kw">const</span> Student *s1 = (<span class="s-kw">const</span> Student *)a;</span></div>
+<div class="code-line"><span class="ln">62</span><span class="lc">    <span class="s-kw">const</span> Student *s2 = (<span class="s-kw">const</span> Student *)b;</span></div>
+<div class="code-line"><span class="ln">63</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">64</span><span class="lc">    <span class="s-kw">if</span> (s1-&gt;age != s2-&gt;age)</span></div>
+<div class="code-line"><span class="ln">65</span><span class="lc">        <span class="s-kw">return</span> s1-&gt;age - s2-&gt;age;</span></div>
+<div class="code-line"><span class="ln">66</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">67</span><span class="lc">    <span class="s-kw">if</span> (s1-&gt;score != s2-&gt;score)</span></div>
+<div class="code-line"><span class="ln">68</span><span class="lc">        <span class="s-kw">return</span> s2-&gt;score - s1-&gt;score;</span></div>
+<div class="code-line"><span class="ln">69</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">70</span><span class="lc">    <span class="s-kw">return</span> <span class="s-fn">strcmp</span>(s1-&gt;name, s2-&gt;name);</span></div>
+<div class="code-line"><span class="ln">71</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">72</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">73</span><span class="lc"><span class="s-cm">/* ===== 비교 함수 배열 (함수 포인터 배열) ===== */</span></span></div>
+<div class="code-line"><span class="ln">74</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">75</span><span class="lc"><span class="s-kw">typedef</span> <span class="s-type">int</span> (*Comparator)(<span class="s-kw">const</span> <span class="s-type">void</span> *, <span class="s-kw">const</span> <span class="s-type">void</span> *);</span></div>
+<div class="code-line"><span class="ln">76</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">77</span><span class="lc"><span class="s-kw">typedef</span> <span class="s-kw">struct</span> {</span></div>
+<div class="code-line"><span class="ln">78</span><span class="lc">    <span class="s-kw">const</span> <span class="s-type">char</span> *label;         <span class="s-cm">/* 메뉴에 표시할 이름 */</span></span></div>
+<div class="code-line"><span class="ln">79</span><span class="lc">    Comparator  func;          <span class="s-cm">/* 비교 함수 포인터 */</span></span></div>
+<div class="code-line"><span class="ln">80</span><span class="lc">} SortOption;</span></div>
+<div class="code-line"><span class="ln">81</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">82</span><span class="lc">SortOption sortOptions[] = {</span></div>
+<div class="code-line"><span class="ln">83</span><span class="lc">    {<span class="s-str">"이름 오름차순"</span>,                   cmpByNameAsc},</span></div>
+<div class="code-line"><span class="ln">84</span><span class="lc">    {<span class="s-str">"점수 오름차순"</span>,                   cmpByScoreAsc},</span></div>
+<div class="code-line"><span class="ln">85</span><span class="lc">    {<span class="s-str">"점수 내림차순"</span>,                   cmpByScoreDesc},</span></div>
+<div class="code-line"><span class="ln">86</span><span class="lc">    {<span class="s-str">"나이 오름차순"</span>,                   cmpByAgeAsc},</span></div>
+<div class="code-line"><span class="ln">87</span><span class="lc">    {<span class="s-str">"점수 내림차순 + 이름 오름차순"</span>,   cmpScoreDescNameAsc},</span></div>
+<div class="code-line"><span class="ln">88</span><span class="lc">    {<span class="s-str">"나이 + 점수 + 이름 (복합)"</span>,       cmpAgeScoreName}</span></div>
+<div class="code-line"><span class="ln">89</span><span class="lc">};</span></div>
+<div class="code-line"><span class="ln">90</span><span class="lc"><span class="s-type">int</span> numOptions = <span class="s-kw">sizeof</span>(sortOptions) / <span class="s-kw">sizeof</span>(sortOptions[<span class="s-num">0</span>]);</span></div>
+<div class="code-line"><span class="ln">91</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">92</span><span class="lc"><span class="s-cm">/* 학생 목록 출력 */</span></span></div>
+<div class="code-line"><span class="ln">93</span><span class="lc"><span class="s-type">void</span> <span class="s-fn">printStudents</span>(<span class="s-kw">const</span> Student arr[], <span class="s-type">int</span> n) {</span></div>
+<div class="code-line"><span class="ln">94</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"\n%-4s %-12s %6s %4s\n"</span>, <span class="s-str">"번호"</span>, <span class="s-str">"이름"</span>, <span class="s-str">"점수"</span>, <span class="s-str">"나이"</span>);</span></div>
+<div class="code-line"><span class="ln">95</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"------------------------------------\n"</span>);</span></div>
+<div class="code-line"><span class="ln">96</span><span class="lc">    <span class="s-kw">for</span> (<span class="s-type">int</span> i = <span class="s-num">0</span>; i &lt; n; i++) {</span></div>
+<div class="code-line"><span class="ln">97</span><span class="lc">        <span class="s-fn">printf</span>(<span class="s-str">"%-4d %-12s %6d %4d\n"</span>,</span></div>
+<div class="code-line"><span class="ln">98</span><span class="lc">               i + <span class="s-num">1</span>, arr[i].name, arr[i].score, arr[i].age);</span></div>
+<div class="code-line"><span class="ln">99</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">100</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"------------------------------------\n"</span>);</span></div>
+<div class="code-line"><span class="ln">101</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">102</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">103</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">main</span>(<span class="s-type">void</span>) {</span></div>
+<div class="code-line"><span class="ln">104</span><span class="lc">    Student students[] = {</span></div>
+<div class="code-line"><span class="ln">105</span><span class="lc">        {<span class="s-str">"Kim"</span>,    <span class="s-num">88</span>, <span class="s-num">20</span>},</span></div>
+<div class="code-line"><span class="ln">106</span><span class="lc">        {<span class="s-str">"Lee"</span>,    <span class="s-num">72</span>, <span class="s-num">22</span>},</span></div>
+<div class="code-line"><span class="ln">107</span><span class="lc">        {<span class="s-str">"Park"</span>,   <span class="s-num">95</span>, <span class="s-num">20</span>},</span></div>
+<div class="code-line"><span class="ln">108</span><span class="lc">        {<span class="s-str">"Choi"</span>,   <span class="s-num">72</span>, <span class="s-num">21</span>},</span></div>
+<div class="code-line"><span class="ln">109</span><span class="lc">        {<span class="s-str">"Jung"</span>,   <span class="s-num">90</span>, <span class="s-num">22</span>},</span></div>
+<div class="code-line"><span class="ln">110</span><span class="lc">        {<span class="s-str">"Yoon"</span>,   <span class="s-num">88</span>, <span class="s-num">21</span>},</span></div>
+<div class="code-line"><span class="ln">111</span><span class="lc">        {<span class="s-str">"Han"</span>,    <span class="s-num">95</span>, <span class="s-num">20</span>},</span></div>
+<div class="code-line"><span class="ln">112</span><span class="lc">        {<span class="s-str">"Shin"</span>,   <span class="s-num">85</span>, <span class="s-num">23</span>}</span></div>
+<div class="code-line"><span class="ln">113</span><span class="lc">    };</span></div>
+<div class="code-line"><span class="ln">114</span><span class="lc">    <span class="s-type">int</span> count = <span class="s-kw">sizeof</span>(students) / <span class="s-kw">sizeof</span>(students[<span class="s-num">0</span>]);</span></div>
+<div class="code-line"><span class="ln">115</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">116</span><span class="lc">    <span class="s-cm">/* 원본 백업 */</span></span></div>
+<div class="code-line"><span class="ln">117</span><span class="lc">    Student backup[MAX_STUDENTS];</span></div>
+<div class="code-line"><span class="ln">118</span><span class="lc">    <span class="s-fn">memcpy</span>(backup, students, <span class="s-kw">sizeof</span>(Student) * count);</span></div>
+<div class="code-line"><span class="ln">119</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">120</span><span class="lc">    <span class="s-type">int</span> choice;</span></div>
+<div class="code-line"><span class="ln">121</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">122</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"=== 커스텀 qsort 비교 함수 v2 ===\n"</span>);</span></div>
+<div class="code-line"><span class="ln">123</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">124</span><span class="lc">    <span class="s-kw">do</span> {</span></div>
+<div class="code-line"><span class="ln">125</span><span class="lc">        <span class="s-fn">printf</span>(<span class="s-str">"\n--- 정렬 기준 선택 ---\n"</span>);</span></div>
+<div class="code-line"><span class="ln">126</span><span class="lc">        <span class="s-kw">for</span> (<span class="s-type">int</span> i = <span class="s-num">0</span>; i &lt; numOptions; i++) {</span></div>
+<div class="code-line"><span class="ln">127</span><span class="lc">            <span class="s-fn">printf</span>(<span class="s-str">"%d. %s\n"</span>, i + <span class="s-num">1</span>, sortOptions[i].label);</span></div>
+<div class="code-line"><span class="ln">128</span><span class="lc">        }</span></div>
+<div class="code-line"><span class="ln">129</span><span class="lc">        <span class="s-fn">printf</span>(<span class="s-str">"0. 종료\n"</span>);</span></div>
+<div class="code-line"><span class="ln">130</span><span class="lc">        <span class="s-fn">printf</span>(<span class="s-str">"선택: "</span>);</span></div>
+<div class="code-line"><span class="ln">131</span><span class="lc">        <span class="s-fn">scanf</span>(<span class="s-str">"%d"</span>, &amp;choice);</span></div>
+<div class="code-line"><span class="ln">132</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">133</span><span class="lc">        <span class="s-kw">if</span> (choice &gt;= <span class="s-num">1</span> &amp;&amp; choice &lt;= numOptions) {</span></div>
+<div class="code-line"><span class="ln">134</span><span class="lc">            <span class="s-cm">/* 원본 복원 후 정렬 */</span></span></div>
+<div class="code-line"><span class="ln">135</span><span class="lc">            <span class="s-fn">memcpy</span>(students, backup, <span class="s-kw">sizeof</span>(Student) * count);</span></div>
+<div class="code-line"><span class="ln">136</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">137</span><span class="lc">            <span class="s-cm">/* 비교 함수 배열에서 선택된 함수로 qsort 호출 */</span></span></div>
+<div class="code-line"><span class="ln">138</span><span class="lc">            <span class="s-fn">qsort</span>(students, count, <span class="s-kw">sizeof</span>(Student),</span></div>
+<div class="code-line"><span class="ln">139</span><span class="lc">                  sortOptions[choice - <span class="s-num">1</span>].func);</span></div>
+<div class="code-line"><span class="ln">140</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">141</span><span class="lc">            <span class="s-fn">printf</span>(<span class="s-str">"\n[%s] 정렬 결과:"</span>,</span></div>
+<div class="code-line"><span class="ln">142</span><span class="lc">                   sortOptions[choice - <span class="s-num">1</span>].label);</span></div>
+<div class="code-line"><span class="ln">143</span><span class="lc">            <span class="s-fn">printStudents</span>(students, count);</span></div>
+<div class="code-line"><span class="ln">144</span><span class="lc">        } <span class="s-kw">else</span> <span class="s-kw">if</span> (choice != <span class="s-num">0</span>) {</span></div>
+<div class="code-line"><span class="ln">145</span><span class="lc">            <span class="s-fn">printf</span>(<span class="s-str">"잘못된 선택입니다.\n"</span>);</span></div>
+<div class="code-line"><span class="ln">146</span><span class="lc">        }</span></div>
+<div class="code-line"><span class="ln">147</span><span class="lc">    } <span class="s-kw">while</span> (choice != <span class="s-num">0</span>);</span></div>
+<div class="code-line"><span class="ln">148</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">149</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"종료합니다.\n"</span>);</span></div>
+<div class="code-line"><span class="ln">150</span><span class="lc">    <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">151</span><span class="lc">}</span></div>
+</div>
+</div>
+<div class="debug-section"><div class="debug-bar">DEBUG LAB — 에러를 찾으시오</div><div class="debug-body">
+
+<p style="margin:14px 0 0; font-size:14px;"><b>에러:</b> </p>
+<p style="font-size:14px;"><b>수정:</b> </p>
+</div></div>
+<h2 class="section-title">버전 3: 완성 -- 범용 정렬 프레임워크</h2>
+<p>undefined</p>
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;stdio.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;stdlib.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;string.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">4</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;time.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">5</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">6</span><span class="lc"><span class="s-pp">#define</span> MAX_STUDENTS    <span class="s-num">100</span></span></div>
+<div class="code-line"><span class="ln">7</span><span class="lc"><span class="s-pp">#define</span> MAX_COMPARATORS  <span class="s-num">10</span></span></div>
+<div class="code-line"><span class="ln">8</span><span class="lc"><span class="s-pp">#define</span> NAME_LEN         <span class="s-num">30</span></span></div>
+<div class="code-line"><span class="ln">9</span><span class="lc"><span class="s-pp">#define</span> RESULT_FILE      <span class="s-str">"sort_result.txt"</span></span></div>
+<div class="code-line"><span class="ln">10</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">11</span><span class="lc"><span class="s-cm">/* ===== 구조체 정의 ===== */</span></span></div>
+<div class="code-line"><span class="ln">12</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">13</span><span class="lc"><span class="s-kw">typedef</span> <span class="s-kw">struct</span> {</span></div>
+<div class="code-line"><span class="ln">14</span><span class="lc">    <span class="s-type">char</span> name[NAME_LEN];</span></div>
+<div class="code-line"><span class="ln">15</span><span class="lc">    <span class="s-type">int</span>  score;</span></div>
+<div class="code-line"><span class="ln">16</span><span class="lc">    <span class="s-type">int</span>  age;</span></div>
+<div class="code-line"><span class="ln">17</span><span class="lc">    <span class="s-type">char</span> grade;                <span class="s-cm">/* 'A', 'B', 'C', 'D', 'F' */</span></span></div>
+<div class="code-line"><span class="ln">18</span><span class="lc">} Student;</span></div>
+<div class="code-line"><span class="ln">19</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">20</span><span class="lc"><span class="s-kw">typedef</span> <span class="s-type">int</span> (*Comparator)(<span class="s-kw">const</span> <span class="s-type">void</span> *, <span class="s-kw">const</span> <span class="s-type">void</span> *);</span></div>
+<div class="code-line"><span class="ln">21</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">22</span><span class="lc"><span class="s-kw">typedef</span> <span class="s-kw">struct</span> {</span></div>
+<div class="code-line"><span class="ln">23</span><span class="lc">    <span class="s-type">char</span>       label[<span class="s-num">50</span>];      <span class="s-cm">/* 비교 함수 설명 */</span></span></div>
+<div class="code-line"><span class="ln">24</span><span class="lc">    Comparator func;           <span class="s-cm">/* 비교 함수 포인터 */</span></span></div>
+<div class="code-line"><span class="ln">25</span><span class="lc">} ComparatorEntry;</span></div>
+<div class="code-line"><span class="ln">26</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">27</span><span class="lc"><span class="s-cm">/* ===== 비교 함수 레지스트리 ===== */</span></span></div>
+<div class="code-line"><span class="ln">28</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">29</span><span class="lc">ComparatorEntry registry[MAX_COMPARATORS];</span></div>
+<div class="code-line"><span class="ln">30</span><span class="lc"><span class="s-type">int</span> registrySize = <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">31</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">32</span><span class="lc"><span class="s-cm">/* 비교 함수 등록 */</span></span></div>
+<div class="code-line"><span class="ln">33</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">registerComparator</span>(<span class="s-kw">const</span> <span class="s-type">char</span> *label, Comparator func) {</span></div>
+<div class="code-line"><span class="ln">34</span><span class="lc">    <span class="s-kw">if</span> (registrySize &gt;= MAX_COMPARATORS) {</span></div>
+<div class="code-line"><span class="ln">35</span><span class="lc">        <span class="s-fn">printf</span>(<span class="s-str">"비교 함수 등록 공간이 부족합니다.\n"</span>);</span></div>
+<div class="code-line"><span class="ln">36</span><span class="lc">        <span class="s-kw">return</span> -<span class="s-num">1</span>;</span></div>
+<div class="code-line"><span class="ln">37</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">38</span><span class="lc">    <span class="s-fn">strcpy</span>(registry[registrySize].label, label);</span></div>
+<div class="code-line"><span class="ln">39</span><span class="lc">    registry[registrySize].func = func;</span></div>
+<div class="code-line"><span class="ln">40</span><span class="lc">    <span class="s-kw">return</span> registrySize++;</span></div>
+<div class="code-line"><span class="ln">41</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">42</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">43</span><span class="lc"><span class="s-cm">/* ===== 비교 함수 모음 ===== */</span></span></div>
+<div class="code-line"><span class="ln">44</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">45</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">cmpByNameAsc</span>(<span class="s-kw">const</span> <span class="s-type">void</span> *a, <span class="s-kw">const</span> <span class="s-type">void</span> *b) {</span></div>
+<div class="code-line"><span class="ln">46</span><span class="lc">    <span class="s-kw">return</span> <span class="s-fn">strcmp</span>(((<span class="s-kw">const</span> Student *)a)-&gt;name,</span></div>
+<div class="code-line"><span class="ln">47</span><span class="lc">                  ((<span class="s-kw">const</span> Student *)b)-&gt;name);</span></div>
+<div class="code-line"><span class="ln">48</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">49</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">50</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">cmpByNameDesc</span>(<span class="s-kw">const</span> <span class="s-type">void</span> *a, <span class="s-kw">const</span> <span class="s-type">void</span> *b) {</span></div>
+<div class="code-line"><span class="ln">51</span><span class="lc">    <span class="s-kw">return</span> <span class="s-fn">strcmp</span>(((<span class="s-kw">const</span> Student *)b)-&gt;name,</span></div>
+<div class="code-line"><span class="ln">52</span><span class="lc">                  ((<span class="s-kw">const</span> Student *)a)-&gt;name);</span></div>
+<div class="code-line"><span class="ln">53</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">54</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">55</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">cmpByScoreAsc</span>(<span class="s-kw">const</span> <span class="s-type">void</span> *a, <span class="s-kw">const</span> <span class="s-type">void</span> *b) {</span></div>
+<div class="code-line"><span class="ln">56</span><span class="lc">    <span class="s-type">int</span> sa = ((<span class="s-kw">const</span> Student *)a)-&gt;score;</span></div>
+<div class="code-line"><span class="ln">57</span><span class="lc">    <span class="s-type">int</span> sb = ((<span class="s-kw">const</span> Student *)b)-&gt;score;</span></div>
+<div class="code-line"><span class="ln">58</span><span class="lc">    <span class="s-kw">if</span> (sa &lt; sb) <span class="s-kw">return</span> -<span class="s-num">1</span>;</span></div>
+<div class="code-line"><span class="ln">59</span><span class="lc">    <span class="s-kw">if</span> (sa &gt; sb) <span class="s-kw">return</span>  <span class="s-num">1</span>;</span></div>
+<div class="code-line"><span class="ln">60</span><span class="lc">    <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">61</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">62</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">63</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">cmpByScoreDesc</span>(<span class="s-kw">const</span> <span class="s-type">void</span> *a, <span class="s-kw">const</span> <span class="s-type">void</span> *b) {</span></div>
+<div class="code-line"><span class="ln">64</span><span class="lc">    <span class="s-type">int</span> sa = ((<span class="s-kw">const</span> Student *)a)-&gt;score;</span></div>
+<div class="code-line"><span class="ln">65</span><span class="lc">    <span class="s-type">int</span> sb = ((<span class="s-kw">const</span> Student *)b)-&gt;score;</span></div>
+<div class="code-line"><span class="ln">66</span><span class="lc">    <span class="s-kw">if</span> (sa &gt; sb) <span class="s-kw">return</span> -<span class="s-num">1</span>;</span></div>
+<div class="code-line"><span class="ln">67</span><span class="lc">    <span class="s-kw">if</span> (sa &lt; sb) <span class="s-kw">return</span>  <span class="s-num">1</span>;</span></div>
+<div class="code-line"><span class="ln">68</span><span class="lc">    <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">69</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">70</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">71</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">cmpByAgeAsc</span>(<span class="s-kw">const</span> <span class="s-type">void</span> *a, <span class="s-kw">const</span> <span class="s-type">void</span> *b) {</span></div>
+<div class="code-line"><span class="ln">72</span><span class="lc">    <span class="s-type">int</span> aa = ((<span class="s-kw">const</span> Student *)a)-&gt;age;</span></div>
+<div class="code-line"><span class="ln">73</span><span class="lc">    <span class="s-type">int</span> ab = ((<span class="s-kw">const</span> Student *)b)-&gt;age;</span></div>
+<div class="code-line"><span class="ln">74</span><span class="lc">    <span class="s-kw">if</span> (aa &lt; ab) <span class="s-kw">return</span> -<span class="s-num">1</span>;</span></div>
+<div class="code-line"><span class="ln">75</span><span class="lc">    <span class="s-kw">if</span> (aa &gt; ab) <span class="s-kw">return</span>  <span class="s-num">1</span>;</span></div>
+<div class="code-line"><span class="ln">76</span><span class="lc">    <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">77</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">78</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">79</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">cmpByGradeThenScore</span>(<span class="s-kw">const</span> <span class="s-type">void</span> *a, <span class="s-kw">const</span> <span class="s-type">void</span> *b) {</span></div>
+<div class="code-line"><span class="ln">80</span><span class="lc">    <span class="s-kw">const</span> Student *s1 = (<span class="s-kw">const</span> Student *)a;</span></div>
+<div class="code-line"><span class="ln">81</span><span class="lc">    <span class="s-kw">const</span> Student *s2 = (<span class="s-kw">const</span> Student *)b;</span></div>
+<div class="code-line"><span class="ln">82</span><span class="lc">    <span class="s-kw">if</span> (s1-&gt;grade != s2-&gt;grade)</span></div>
+<div class="code-line"><span class="ln">83</span><span class="lc">        <span class="s-kw">return</span> s1-&gt;grade - s2-&gt;grade;</span></div>
+<div class="code-line"><span class="ln">84</span><span class="lc">    <span class="s-kw">return</span> s2-&gt;score - s1-&gt;score;</span></div>
+<div class="code-line"><span class="ln">85</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">86</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">87</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">cmpMulti</span>(<span class="s-kw">const</span> <span class="s-type">void</span> *a, <span class="s-kw">const</span> <span class="s-type">void</span> *b) {</span></div>
+<div class="code-line"><span class="ln">88</span><span class="lc">    <span class="s-kw">const</span> Student *s1 = (<span class="s-kw">const</span> Student *)a;</span></div>
+<div class="code-line"><span class="ln">89</span><span class="lc">    <span class="s-kw">const</span> Student *s2 = (<span class="s-kw">const</span> Student *)b;</span></div>
+<div class="code-line"><span class="ln">90</span><span class="lc">    <span class="s-cm">/* 1차: 점수 내림차순 */</span></span></div>
+<div class="code-line"><span class="ln">91</span><span class="lc">    <span class="s-kw">if</span> (s1-&gt;score != s2-&gt;score)</span></div>
+<div class="code-line"><span class="ln">92</span><span class="lc">        <span class="s-kw">return</span> s2-&gt;score - s1-&gt;score;</span></div>
+<div class="code-line"><span class="ln">93</span><span class="lc">    <span class="s-cm">/* 2차: 나이 오름차순 */</span></span></div>
+<div class="code-line"><span class="ln">94</span><span class="lc">    <span class="s-kw">if</span> (s1-&gt;age != s2-&gt;age)</span></div>
+<div class="code-line"><span class="ln">95</span><span class="lc">        <span class="s-kw">return</span> s1-&gt;age - s2-&gt;age;</span></div>
+<div class="code-line"><span class="ln">96</span><span class="lc">    <span class="s-cm">/* 3차: 이름 오름차순 */</span></span></div>
+<div class="code-line"><span class="ln">97</span><span class="lc">    <span class="s-kw">return</span> <span class="s-fn">strcmp</span>(s1-&gt;name, s2-&gt;name);</span></div>
+<div class="code-line"><span class="ln">98</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">99</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">100</span><span class="lc"><span class="s-cm">/* ===== 학점 계산 ===== */</span></span></div>
+<div class="code-line"><span class="ln">101</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">102</span><span class="lc"><span class="s-type">char</span> <span class="s-fn">calcGrade</span>(<span class="s-type">int</span> score) {</span></div>
+<div class="code-line"><span class="ln">103</span><span class="lc">    <span class="s-kw">if</span> (score &gt;= <span class="s-num">90</span>) <span class="s-kw">return</span> <span class="s-str">'A'</span>;</span></div>
+<div class="code-line"><span class="ln">104</span><span class="lc">    <span class="s-kw">if</span> (score &gt;= <span class="s-num">80</span>) <span class="s-kw">return</span> <span class="s-str">'B'</span>;</span></div>
+<div class="code-line"><span class="ln">105</span><span class="lc">    <span class="s-kw">if</span> (score &gt;= <span class="s-num">70</span>) <span class="s-kw">return</span> <span class="s-str">'C'</span>;</span></div>
+<div class="code-line"><span class="ln">106</span><span class="lc">    <span class="s-kw">if</span> (score &gt;= <span class="s-num">60</span>) <span class="s-kw">return</span> <span class="s-str">'D'</span>;</span></div>
+<div class="code-line"><span class="ln">107</span><span class="lc">    <span class="s-kw">return</span> <span class="s-str">'F'</span>;</span></div>
+<div class="code-line"><span class="ln">108</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">109</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">110</span><span class="lc"><span class="s-cm">/* ===== 출력 함수 ===== */</span></span></div>
+<div class="code-line"><span class="ln">111</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">112</span><span class="lc"><span class="s-type">void</span> <span class="s-fn">printStudents</span>(<span class="s-kw">const</span> Student arr[], <span class="s-type">int</span> n) {</span></div>
+<div class="code-line"><span class="ln">113</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"\n%-4s %-12s %6s %4s %4s\n"</span>,</span></div>
+<div class="code-line"><span class="ln">114</span><span class="lc">           <span class="s-str">"번호"</span>, <span class="s-str">"이름"</span>, <span class="s-str">"점수"</span>, <span class="s-str">"나이"</span>, <span class="s-str">"학점"</span>);</span></div>
+<div class="code-line"><span class="ln">115</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"------------------------------------------\n"</span>);</span></div>
+<div class="code-line"><span class="ln">116</span><span class="lc">    <span class="s-kw">for</span> (<span class="s-type">int</span> i = <span class="s-num">0</span>; i &lt; n; i++) {</span></div>
+<div class="code-line"><span class="ln">117</span><span class="lc">        <span class="s-fn">printf</span>(<span class="s-str">"%-4d %-12s %6d %4d    %c\n"</span>,</span></div>
+<div class="code-line"><span class="ln">118</span><span class="lc">               i + <span class="s-num">1</span>, arr[i].name, arr[i].score,</span></div>
+<div class="code-line"><span class="ln">119</span><span class="lc">               arr[i].age, arr[i].grade);</span></div>
+<div class="code-line"><span class="ln">120</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">121</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"------------------------------------------\n"</span>);</span></div>
+<div class="code-line"><span class="ln">122</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">123</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">124</span><span class="lc"><span class="s-cm">/* ===== 파일 저장 ===== */</span></span></div>
+<div class="code-line"><span class="ln">125</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">126</span><span class="lc"><span class="s-type">void</span> <span class="s-fn">saveResultToFile</span>(<span class="s-kw">const</span> Student arr[], <span class="s-type">int</span> n,</span></div>
+<div class="code-line"><span class="ln">127</span><span class="lc">                      <span class="s-kw">const</span> <span class="s-type">char</span> *sortLabel) {</span></div>
+<div class="code-line"><span class="ln">128</span><span class="lc">    <span class="s-type">FILE</span> *fp = <span class="s-fn">fopen</span>(RESULT_FILE, <span class="s-str">"a"</span>);</span></div>
+<div class="code-line"><span class="ln">129</span><span class="lc">    <span class="s-kw">if</span> (fp == <span class="s-kw">NULL</span>) {</span></div>
+<div class="code-line"><span class="ln">130</span><span class="lc">        <span class="s-fn">printf</span>(<span class="s-str">"파일 저장에 실패했습니다.\n"</span>);</span></div>
+<div class="code-line"><span class="ln">131</span><span class="lc">        <span class="s-kw">return</span>;</span></div>
+<div class="code-line"><span class="ln">132</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">133</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">134</span><span class="lc">    time_t now = <span class="s-fn">time</span>(<span class="s-kw">NULL</span>);</span></div>
+<div class="code-line"><span class="ln">135</span><span class="lc">    <span class="s-kw">struct</span> tm *t = <span class="s-fn">localtime</span>(&amp;now);</span></div>
+<div class="code-line"><span class="ln">136</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">137</span><span class="lc">    <span class="s-fn">fprintf</span>(fp, <span class="s-str">"\n=== 정렬 결과: %s ==="</span>, sortLabel);</span></div>
+<div class="code-line"><span class="ln">138</span><span class="lc">    <span class="s-fn">fprintf</span>(fp, <span class="s-str">" (%04d-%02d-%02d %02d:%02d:%02d)\n"</span>,</span></div>
+<div class="code-line"><span class="ln">139</span><span class="lc">            t-&gt;tm_year + <span class="s-num">1900</span>, t-&gt;tm_mon + <span class="s-num">1</span>, t-&gt;tm_mday,</span></div>
+<div class="code-line"><span class="ln">140</span><span class="lc">            t-&gt;tm_hour, t-&gt;tm_min, t-&gt;tm_sec);</span></div>
+<div class="code-line"><span class="ln">141</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">142</span><span class="lc">    <span class="s-fn">fprintf</span>(fp, <span class="s-str">"%-4s %-12s %6s %4s %4s\n"</span>,</span></div>
+<div class="code-line"><span class="ln">143</span><span class="lc">            <span class="s-str">"번호"</span>, <span class="s-str">"이름"</span>, <span class="s-str">"점수"</span>, <span class="s-str">"나이"</span>, <span class="s-str">"학점"</span>);</span></div>
+<div class="code-line"><span class="ln">144</span><span class="lc">    <span class="s-fn">fprintf</span>(fp, <span class="s-str">"------------------------------------------\n"</span>);</span></div>
+<div class="code-line"><span class="ln">145</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">146</span><span class="lc">    <span class="s-kw">for</span> (<span class="s-type">int</span> i = <span class="s-num">0</span>; i &lt; n; i++) {</span></div>
+<div class="code-line"><span class="ln">147</span><span class="lc">        <span class="s-fn">fprintf</span>(fp, <span class="s-str">"%-4d %-12s %6d %4d    %c\n"</span>,</span></div>
+<div class="code-line"><span class="ln">148</span><span class="lc">                i + <span class="s-num">1</span>, arr[i].name, arr[i].score,</span></div>
+<div class="code-line"><span class="ln">149</span><span class="lc">                arr[i].age, arr[i].grade);</span></div>
+<div class="code-line"><span class="ln">150</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">151</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">152</span><span class="lc">    <span class="s-fn">fprintf</span>(fp, <span class="s-str">"------------------------------------------\n"</span>);</span></div>
+<div class="code-line"><span class="ln">153</span><span class="lc">    <span class="s-fn">fclose</span>(fp);</span></div>
+<div class="code-line"><span class="ln">154</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"정렬 결과를 %s에 저장했습니다.\n"</span>, RESULT_FILE);</span></div>
+<div class="code-line"><span class="ln">155</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">156</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">157</span><span class="lc"><span class="s-cm">/* ===== 성능 측정 정렬 ===== */</span></span></div>
+<div class="code-line"><span class="ln">158</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">159</span><span class="lc"><span class="s-type">void</span> <span class="s-fn">sortWithTiming</span>(Student arr[], <span class="s-type">int</span> n, <span class="s-type">int</span> regIdx) {</span></div>
+<div class="code-line"><span class="ln">160</span><span class="lc">    <span class="s-kw">if</span> (regIdx &lt; <span class="s-num">0</span> || regIdx &gt;= registrySize) {</span></div>
+<div class="code-line"><span class="ln">161</span><span class="lc">        <span class="s-fn">printf</span>(<span class="s-str">"잘못된 비교 함수 인덱스입니다.\n"</span>);</span></div>
+<div class="code-line"><span class="ln">162</span><span class="lc">        <span class="s-kw">return</span>;</span></div>
+<div class="code-line"><span class="ln">163</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">164</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">165</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"\n[%s] 정렬 수행 중...\n"</span>, registry[regIdx].label);</span></div>
+<div class="code-line"><span class="ln">166</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">167</span><span class="lc">    clock_t start = <span class="s-fn">clock</span>();</span></div>
+<div class="code-line"><span class="ln">168</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">169</span><span class="lc">    <span class="s-fn">qsort</span>(arr, n, <span class="s-kw">sizeof</span>(Student), registry[regIdx].func);</span></div>
+<div class="code-line"><span class="ln">170</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">171</span><span class="lc">    clock_t end = <span class="s-fn">clock</span>();</span></div>
+<div class="code-line"><span class="ln">172</span><span class="lc">    <span class="s-type">double</span> elapsed = (<span class="s-type">double</span>)(end - start) / CLOCKS_PER_SEC * <span class="s-num">1000.0</span>;</span></div>
+<div class="code-line"><span class="ln">173</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">174</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"정렬 완료 (소요 시간: %.4f ms, 원소 수: %d)\n"</span>,</span></div>
+<div class="code-line"><span class="ln">175</span><span class="lc">           elapsed, n);</span></div>
+<div class="code-line"><span class="ln">176</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">177</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">178</span><span class="lc"><span class="s-cm">/* ===== 대량 데이터 생성 (성능 테스트용) ===== */</span></span></div>
+<div class="code-line"><span class="ln">179</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">180</span><span class="lc"><span class="s-type">void</span> <span class="s-fn">generateRandomStudents</span>(Student arr[], <span class="s-type">int</span> n) {</span></div>
+<div class="code-line"><span class="ln">181</span><span class="lc">    <span class="s-kw">const</span> <span class="s-type">char</span> *firstNames[] = {</span></div>
+<div class="code-line"><span class="ln">182</span><span class="lc">        <span class="s-str">"Kim"</span>, <span class="s-str">"Lee"</span>, <span class="s-str">"Park"</span>, <span class="s-str">"Choi"</span>, <span class="s-str">"Jung"</span>,</span></div>
+<div class="code-line"><span class="ln">183</span><span class="lc">        <span class="s-str">"Yoon"</span>, <span class="s-str">"Han"</span>, <span class="s-str">"Shin"</span>, <span class="s-str">"Oh"</span>, <span class="s-str">"Seo"</span>,</span></div>
+<div class="code-line"><span class="ln">184</span><span class="lc">        <span class="s-str">"Kang"</span>, <span class="s-str">"Jang"</span>, <span class="s-str">"Lim"</span>, <span class="s-str">"Kwon"</span>, <span class="s-str">"Hwang"</span></span></div>
+<div class="code-line"><span class="ln">185</span><span class="lc">    };</span></div>
+<div class="code-line"><span class="ln">186</span><span class="lc">    <span class="s-type">int</span> nameCount = <span class="s-kw">sizeof</span>(firstNames) / <span class="s-kw">sizeof</span>(firstNames[<span class="s-num">0</span>]);</span></div>
+<div class="code-line"><span class="ln">187</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">188</span><span class="lc">    <span class="s-fn">srand</span>((<span class="s-type">unsigned</span> <span class="s-type">int</span>)<span class="s-fn">time</span>(<span class="s-kw">NULL</span>));</span></div>
+<div class="code-line"><span class="ln">189</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">190</span><span class="lc">    <span class="s-kw">for</span> (<span class="s-type">int</span> i = <span class="s-num">0</span>; i &lt; n; i++) {</span></div>
+<div class="code-line"><span class="ln">191</span><span class="lc">        <span class="s-fn">snprintf</span>(arr[i].name, NAME_LEN, <span class="s-str">"%s%03d"</span>,</span></div>
+<div class="code-line"><span class="ln">192</span><span class="lc">                 firstNames[<span class="s-fn">rand</span>() % nameCount], i + <span class="s-num">1</span>);</span></div>
+<div class="code-line"><span class="ln">193</span><span class="lc">        arr[i].score = <span class="s-fn">rand</span>() % <span class="s-num">101</span>;          <span class="s-cm">/* 0 ~ 100 */</span></span></div>
+<div class="code-line"><span class="ln">194</span><span class="lc">        arr[i].age   = <span class="s-num">18</span> + <span class="s-fn">rand</span>() % <span class="s-num">8</span>;       <span class="s-cm">/* 18 ~ 25 */</span></span></div>
+<div class="code-line"><span class="ln">195</span><span class="lc">        arr[i].grade = <span class="s-fn">calcGrade</span>(arr[i].score);</span></div>
+<div class="code-line"><span class="ln">196</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">197</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">198</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">199</span><span class="lc"><span class="s-cm">/* ===== 메인 ===== */</span></span></div>
+<div class="code-line"><span class="ln">200</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">201</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">main</span>(<span class="s-type">void</span>) {</span></div>
+<div class="code-line"><span class="ln">202</span><span class="lc">    <span class="s-cm">/* 비교 함수 등록 */</span></span></div>
+<div class="code-line"><span class="ln">203</span><span class="lc">    <span class="s-fn">registerComparator</span>(<span class="s-str">"이름 오름차순"</span>,             cmpByNameAsc);</span></div>
+<div class="code-line"><span class="ln">204</span><span class="lc">    <span class="s-fn">registerComparator</span>(<span class="s-str">"이름 내림차순"</span>,             cmpByNameDesc);</span></div>
+<div class="code-line"><span class="ln">205</span><span class="lc">    <span class="s-fn">registerComparator</span>(<span class="s-str">"점수 오름차순"</span>,             cmpByScoreAsc);</span></div>
+<div class="code-line"><span class="ln">206</span><span class="lc">    <span class="s-fn">registerComparator</span>(<span class="s-str">"점수 내림차순"</span>,             cmpByScoreDesc);</span></div>
+<div class="code-line"><span class="ln">207</span><span class="lc">    <span class="s-fn">registerComparator</span>(<span class="s-str">"나이 오름차순"</span>,             cmpByAgeAsc);</span></div>
+<div class="code-line"><span class="ln">208</span><span class="lc">    <span class="s-fn">registerComparator</span>(<span class="s-str">"학점순 + 점수 내림차순"</span>,    cmpByGradeThenScore);</span></div>
+<div class="code-line"><span class="ln">209</span><span class="lc">    <span class="s-fn">registerComparator</span>(<span class="s-str">"복합 (점수/나이/이름)"</span>,     cmpMulti);</span></div>
+<div class="code-line"><span class="ln">210</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">211</span><span class="lc">    <span class="s-cm">/* 학생 데이터 */</span></span></div>
+<div class="code-line"><span class="ln">212</span><span class="lc">    Student students[] = {</span></div>
+<div class="code-line"><span class="ln">213</span><span class="lc">        {<span class="s-str">"Kim"</span>,    <span class="s-num">88</span>, <span class="s-num">20</span>, <span class="s-str">'B'</span>},</span></div>
+<div class="code-line"><span class="ln">214</span><span class="lc">        {<span class="s-str">"Lee"</span>,    <span class="s-num">72</span>, <span class="s-num">22</span>, <span class="s-str">'C'</span>},</span></div>
+<div class="code-line"><span class="ln">215</span><span class="lc">        {<span class="s-str">"Park"</span>,   <span class="s-num">95</span>, <span class="s-num">20</span>, <span class="s-str">'A'</span>},</span></div>
+<div class="code-line"><span class="ln">216</span><span class="lc">        {<span class="s-str">"Choi"</span>,   <span class="s-num">72</span>, <span class="s-num">21</span>, <span class="s-str">'C'</span>},</span></div>
+<div class="code-line"><span class="ln">217</span><span class="lc">        {<span class="s-str">"Jung"</span>,   <span class="s-num">90</span>, <span class="s-num">22</span>, <span class="s-str">'A'</span>},</span></div>
+<div class="code-line"><span class="ln">218</span><span class="lc">        {<span class="s-str">"Yoon"</span>,   <span class="s-num">88</span>, <span class="s-num">21</span>, <span class="s-str">'B'</span>},</span></div>
+<div class="code-line"><span class="ln">219</span><span class="lc">        {<span class="s-str">"Han"</span>,    <span class="s-num">95</span>, <span class="s-num">20</span>, <span class="s-str">'A'</span>},</span></div>
+<div class="code-line"><span class="ln">220</span><span class="lc">        {<span class="s-str">"Shin"</span>,   <span class="s-num">85</span>, <span class="s-num">23</span>, <span class="s-str">'B'</span>},</span></div>
+<div class="code-line"><span class="ln">221</span><span class="lc">        {<span class="s-str">"Oh"</span>,     <span class="s-num">60</span>, <span class="s-num">19</span>, <span class="s-str">'D'</span>},</span></div>
+<div class="code-line"><span class="ln">222</span><span class="lc">        {<span class="s-str">"Seo"</span>,    <span class="s-num">55</span>, <span class="s-num">24</span>, <span class="s-str">'F'</span>}</span></div>
+<div class="code-line"><span class="ln">223</span><span class="lc">    };</span></div>
+<div class="code-line"><span class="ln">224</span><span class="lc">    <span class="s-type">int</span> count = <span class="s-kw">sizeof</span>(students) / <span class="s-kw">sizeof</span>(students[<span class="s-num">0</span>]);</span></div>
+<div class="code-line"><span class="ln">225</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">226</span><span class="lc">    Student working[MAX_STUDENTS];</span></div>
+<div class="code-line"><span class="ln">227</span><span class="lc">    Student backup[MAX_STUDENTS];</span></div>
+<div class="code-line"><span class="ln">228</span><span class="lc">    <span class="s-fn">memcpy</span>(backup, students, <span class="s-kw">sizeof</span>(Student) * count);</span></div>
+<div class="code-line"><span class="ln">229</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">230</span><span class="lc">    <span class="s-type">int</span> choice;</span></div>
+<div class="code-line"><span class="ln">231</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">232</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"=== 범용 정렬 프레임워크 v3 ===\n"</span>);</span></div>
+<div class="code-line"><span class="ln">233</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">234</span><span class="lc">    <span class="s-kw">do</span> {</span></div>
+<div class="code-line"><span class="ln">235</span><span class="lc">        <span class="s-fn">printf</span>(<span class="s-str">"\n--- 메뉴 ---\n"</span>);</span></div>
+<div class="code-line"><span class="ln">236</span><span class="lc">        <span class="s-fn">printf</span>(<span class="s-str">" 1. 정렬 기준 선택 후 정렬\n"</span>);</span></div>
+<div class="code-line"><span class="ln">237</span><span class="lc">        <span class="s-fn">printf</span>(<span class="s-str">" 2. 정렬 결과 파일 저장\n"</span>);</span></div>
+<div class="code-line"><span class="ln">238</span><span class="lc">        <span class="s-fn">printf</span>(<span class="s-str">" 3. 성능 측정 (대량 데이터)\n"</span>);</span></div>
+<div class="code-line"><span class="ln">239</span><span class="lc">        <span class="s-fn">printf</span>(<span class="s-str">" 4. 등록된 비교 함수 목록\n"</span>);</span></div>
+<div class="code-line"><span class="ln">240</span><span class="lc">        <span class="s-fn">printf</span>(<span class="s-str">" 0. 종료\n"</span>);</span></div>
+<div class="code-line"><span class="ln">241</span><span class="lc">        <span class="s-fn">printf</span>(<span class="s-str">"선택: "</span>);</span></div>
+<div class="code-line"><span class="ln">242</span><span class="lc">        <span class="s-fn">scanf</span>(<span class="s-str">"%d"</span>, &amp;choice);</span></div>
+<div class="code-line"><span class="ln">243</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">244</span><span class="lc">        <span class="s-kw">switch</span> (choice) {</span></div>
+<div class="code-line"><span class="ln">245</span><span class="lc">        <span class="s-kw">case</span> <span class="s-num">1</span>: {</span></div>
+<div class="code-line"><span class="ln">246</span><span class="lc">            <span class="s-fn">printf</span>(<span class="s-str">"\n정렬 기준:\n"</span>);</span></div>
+<div class="code-line"><span class="ln">247</span><span class="lc">            <span class="s-kw">for</span> (<span class="s-type">int</span> i = <span class="s-num">0</span>; i &lt; registrySize; i++)</span></div>
+<div class="code-line"><span class="ln">248</span><span class="lc">                <span class="s-fn">printf</span>(<span class="s-str">"  %d. %s\n"</span>, i + <span class="s-num">1</span>, registry[i].label);</span></div>
+<div class="code-line"><span class="ln">249</span><span class="lc">            <span class="s-fn">printf</span>(<span class="s-str">"선택: "</span>);</span></div>
+<div class="code-line"><span class="ln">250</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">251</span><span class="lc">            <span class="s-type">int</span> sel;</span></div>
+<div class="code-line"><span class="ln">252</span><span class="lc">            <span class="s-fn">scanf</span>(<span class="s-str">"%d"</span>, &amp;sel);</span></div>
+<div class="code-line"><span class="ln">253</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">254</span><span class="lc">            <span class="s-kw">if</span> (sel &gt;= <span class="s-num">1</span> &amp;&amp; sel &lt;= registrySize) {</span></div>
+<div class="code-line"><span class="ln">255</span><span class="lc">                <span class="s-fn">memcpy</span>(working, backup, <span class="s-kw">sizeof</span>(Student) * count);</span></div>
+<div class="code-line"><span class="ln">256</span><span class="lc">                <span class="s-fn">sortWithTiming</span>(working, count, sel - <span class="s-num">1</span>);</span></div>
+<div class="code-line"><span class="ln">257</span><span class="lc">                <span class="s-fn">printStudents</span>(working, count);</span></div>
+<div class="code-line"><span class="ln">258</span><span class="lc">            } <span class="s-kw">else</span> {</span></div>
+<div class="code-line"><span class="ln">259</span><span class="lc">                <span class="s-fn">printf</span>(<span class="s-str">"잘못된 선택입니다.\n"</span>);</span></div>
+<div class="code-line"><span class="ln">260</span><span class="lc">            }</span></div>
+<div class="code-line"><span class="ln">261</span><span class="lc">            <span class="s-kw">break</span>;</span></div>
+<div class="code-line"><span class="ln">262</span><span class="lc">        }</span></div>
+<div class="code-line"><span class="ln">263</span><span class="lc">        <span class="s-kw">case</span> <span class="s-num">2</span>: {</span></div>
+<div class="code-line"><span class="ln">264</span><span class="lc">            <span class="s-fn">printf</span>(<span class="s-str">"\n저장할 정렬 기준:\n"</span>);</span></div>
+<div class="code-line"><span class="ln">265</span><span class="lc">            <span class="s-kw">for</span> (<span class="s-type">int</span> i = <span class="s-num">0</span>; i &lt; registrySize; i++)</span></div>
+<div class="code-line"><span class="ln">266</span><span class="lc">                <span class="s-fn">printf</span>(<span class="s-str">"  %d. %s\n"</span>, i + <span class="s-num">1</span>, registry[i].label);</span></div>
+<div class="code-line"><span class="ln">267</span><span class="lc">            <span class="s-fn">printf</span>(<span class="s-str">"선택: "</span>);</span></div>
+<div class="code-line"><span class="ln">268</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">269</span><span class="lc">            <span class="s-type">int</span> sel;</span></div>
+<div class="code-line"><span class="ln">270</span><span class="lc">            <span class="s-fn">scanf</span>(<span class="s-str">"%d"</span>, &amp;sel);</span></div>
+<div class="code-line"><span class="ln">271</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">272</span><span class="lc">            <span class="s-kw">if</span> (sel &gt;= <span class="s-num">1</span> &amp;&amp; sel &lt;= registrySize) {</span></div>
+<div class="code-line"><span class="ln">273</span><span class="lc">                <span class="s-fn">memcpy</span>(working, backup, <span class="s-kw">sizeof</span>(Student) * count);</span></div>
+<div class="code-line"><span class="ln">274</span><span class="lc">                <span class="s-fn">qsort</span>(working, count, <span class="s-kw">sizeof</span>(Student),</span></div>
+<div class="code-line"><span class="ln">275</span><span class="lc">                      registry[sel - <span class="s-num">1</span>].func);</span></div>
+<div class="code-line"><span class="ln">276</span><span class="lc">                <span class="s-fn">saveResultToFile</span>(working, count,</span></div>
+<div class="code-line"><span class="ln">277</span><span class="lc">                                 registry[sel - <span class="s-num">1</span>].label);</span></div>
+<div class="code-line"><span class="ln">278</span><span class="lc">            } <span class="s-kw">else</span> {</span></div>
+<div class="code-line"><span class="ln">279</span><span class="lc">                <span class="s-fn">printf</span>(<span class="s-str">"잘못된 선택입니다.\n"</span>);</span></div>
+<div class="code-line"><span class="ln">280</span><span class="lc">            }</span></div>
+<div class="code-line"><span class="ln">281</span><span class="lc">            <span class="s-kw">break</span>;</span></div>
+<div class="code-line"><span class="ln">282</span><span class="lc">        }</span></div>
+<div class="code-line"><span class="ln">283</span><span class="lc">        <span class="s-kw">case</span> <span class="s-num">3</span>: {</span></div>
+<div class="code-line"><span class="ln">284</span><span class="lc">            <span class="s-fn">printf</span>(<span class="s-str">"\n성능 테스트 (원소 수 입력, 최대 %d): "</span>,</span></div>
+<div class="code-line"><span class="ln">285</span><span class="lc">                   MAX_STUDENTS);</span></div>
+<div class="code-line"><span class="ln">286</span><span class="lc">            <span class="s-type">int</span> n;</span></div>
+<div class="code-line"><span class="ln">287</span><span class="lc">            <span class="s-fn">scanf</span>(<span class="s-str">"%d"</span>, &amp;n);</span></div>
+<div class="code-line"><span class="ln">288</span><span class="lc">            <span class="s-kw">if</span> (n &lt; <span class="s-num">1</span>) n = <span class="s-num">1</span>;</span></div>
+<div class="code-line"><span class="ln">289</span><span class="lc">            <span class="s-kw">if</span> (n &gt; MAX_STUDENTS) n = MAX_STUDENTS;</span></div>
+<div class="code-line"><span class="ln">290</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">291</span><span class="lc">            Student *testArr = (Student *)<span class="s-fn">malloc</span>(</span></div>
+<div class="code-line"><span class="ln">292</span><span class="lc">                <span class="s-kw">sizeof</span>(Student) * n);</span></div>
+<div class="code-line"><span class="ln">293</span><span class="lc">            <span class="s-kw">if</span> (testArr == <span class="s-kw">NULL</span>) {</span></div>
+<div class="code-line"><span class="ln">294</span><span class="lc">                <span class="s-fn">printf</span>(<span class="s-str">"메모리 할당 실패\n"</span>);</span></div>
+<div class="code-line"><span class="ln">295</span><span class="lc">                <span class="s-kw">break</span>;</span></div>
+<div class="code-line"><span class="ln">296</span><span class="lc">            }</span></div>
+<div class="code-line"><span class="ln">297</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">298</span><span class="lc">            <span class="s-fn">printf</span>(<span class="s-str">"\n--- 성능 비교 (원소 %d개) ---\n"</span>, n);</span></div>
+<div class="code-line"><span class="ln">299</span><span class="lc">            <span class="s-fn">printf</span>(<span class="s-str">"%-35s %12s\n"</span>, <span class="s-str">"비교 함수"</span>, <span class="s-str">"소요 시간"</span>);</span></div>
+<div class="code-line"><span class="ln">300</span><span class="lc">            <span class="s-fn">printf</span>(<span class="s-str">"-----------------------------------------------"</span></span></div>
+<div class="code-line"><span class="ln">301</span><span class="lc">                   <span class="s-str">"\n"</span>);</span></div>
+<div class="code-line"><span class="ln">302</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">303</span><span class="lc">            <span class="s-kw">for</span> (<span class="s-type">int</span> i = <span class="s-num">0</span>; i &lt; registrySize; i++) {</span></div>
+<div class="code-line"><span class="ln">304</span><span class="lc">                <span class="s-fn">generateRandomStudents</span>(testArr, n);</span></div>
+<div class="code-line"><span class="ln">305</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">306</span><span class="lc">                clock_t start = <span class="s-fn">clock</span>();</span></div>
+<div class="code-line"><span class="ln">307</span><span class="lc">                <span class="s-fn">qsort</span>(testArr, n, <span class="s-kw">sizeof</span>(Student),</span></div>
+<div class="code-line"><span class="ln">308</span><span class="lc">                      registry[i].func);</span></div>
+<div class="code-line"><span class="ln">309</span><span class="lc">                clock_t end = <span class="s-fn">clock</span>();</span></div>
+<div class="code-line"><span class="ln">310</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">311</span><span class="lc">                <span class="s-type">double</span> ms = (<span class="s-type">double</span>)(end - start)</span></div>
+<div class="code-line"><span class="ln">312</span><span class="lc">                            / CLOCKS_PER_SEC * <span class="s-num">1000.0</span>;</span></div>
+<div class="code-line"><span class="ln">313</span><span class="lc">                <span class="s-fn">printf</span>(<span class="s-str">"%-35s %10.4f ms\n"</span>,</span></div>
+<div class="code-line"><span class="ln">314</span><span class="lc">                       registry[i].label, ms);</span></div>
+<div class="code-line"><span class="ln">315</span><span class="lc">            }</span></div>
+<div class="code-line"><span class="ln">316</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">317</span><span class="lc">            <span class="s-fn">printf</span>(<span class="s-str">"-----------------------------------------------"</span></span></div>
+<div class="code-line"><span class="ln">318</span><span class="lc">                   <span class="s-str">"\n"</span>);</span></div>
+<div class="code-line"><span class="ln">319</span><span class="lc">            <span class="s-fn">free</span>(testArr);</span></div>
+<div class="code-line"><span class="ln">320</span><span class="lc">            <span class="s-kw">break</span>;</span></div>
+<div class="code-line"><span class="ln">321</span><span class="lc">        }</span></div>
+<div class="code-line"><span class="ln">322</span><span class="lc">        <span class="s-kw">case</span> <span class="s-num">4</span>:</span></div>
+<div class="code-line"><span class="ln">323</span><span class="lc">            <span class="s-fn">printf</span>(<span class="s-str">"\n등록된 비교 함수 (%d개):\n"</span>, registrySize);</span></div>
+<div class="code-line"><span class="ln">324</span><span class="lc">            <span class="s-kw">for</span> (<span class="s-type">int</span> i = <span class="s-num">0</span>; i &lt; registrySize; i++) {</span></div>
+<div class="code-line"><span class="ln">325</span><span class="lc">                <span class="s-fn">printf</span>(<span class="s-str">"  [%d] %s (주소: %p)\n"</span>,</span></div>
+<div class="code-line"><span class="ln">326</span><span class="lc">                       i, registry[i].label,</span></div>
+<div class="code-line"><span class="ln">327</span><span class="lc">                       (<span class="s-type">void</span> *)registry[i].func);</span></div>
+<div class="code-line"><span class="ln">328</span><span class="lc">            }</span></div>
+<div class="code-line"><span class="ln">329</span><span class="lc">            <span class="s-kw">break</span>;</span></div>
+<div class="code-line"><span class="ln">330</span><span class="lc">        <span class="s-kw">case</span> <span class="s-num">0</span>:</span></div>
+<div class="code-line"><span class="ln">331</span><span class="lc">            <span class="s-fn">printf</span>(<span class="s-str">"종료합니다.\n"</span>);</span></div>
+<div class="code-line"><span class="ln">332</span><span class="lc">            <span class="s-kw">break</span>;</span></div>
+<div class="code-line"><span class="ln">333</span><span class="lc">        <span class="s-kw">default</span>:</span></div>
+<div class="code-line"><span class="ln">334</span><span class="lc">            <span class="s-fn">printf</span>(<span class="s-str">"잘못된 선택입니다.\n"</span>);</span></div>
+<div class="code-line"><span class="ln">335</span><span class="lc">            <span class="s-kw">break</span>;</span></div>
+<div class="code-line"><span class="ln">336</span><span class="lc">        }</span></div>
+<div class="code-line"><span class="ln">337</span><span class="lc">    } <span class="s-kw">while</span> (choice != <span class="s-num">0</span>);</span></div>
+<div class="code-line"><span class="ln">338</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">339</span><span class="lc">    <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">340</span><span class="lc">}</span></div>
+</div>
+</div>
+<div class="debug-section"><div class="debug-bar">DEBUG LAB — 에러를 찾으시오</div><div class="debug-body">
+
+<p style="margin:14px 0 0; font-size:14px;"><b>에러:</b> </p>
+<p style="font-size:14px;"><b>수정:</b> </p>
+</div></div>
+<div class="debug-section"><div class="debug-bar">DEBUG LAB — 에러를 찾으시오</div><div class="debug-body">
+
+<p style="margin:14px 0 0; font-size:14px;"><b>에러:</b> </p>
+<p style="font-size:14px;"><b>수정:</b> </p>
+</div></div>
+<h2 class="section-title">에러 체험</h2>
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc"><span class="s-cm">// 에러 1: 문자열 배열의 비교 함수에서 잘못된 캐스팅</span></span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">cmpStr_wrong</span>(<span class="s-kw">const</span> <span class="s-type">void</span> *a, <span class="s-kw">const</span> <span class="s-type">void</span> *b) {</span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc">    <span class="s-cm">// const char *s1 = (const char *)a;  -- 잘못된 캐스팅!</span></span></div>
+<div class="code-line"><span class="ln">4</span><span class="lc">    <span class="s-cm">// 문자열 배열(char *[])을 정렬할 때 각 원소는 char * 포인터이므로</span></span></div>
+<div class="code-line"><span class="ln">5</span><span class="lc">    <span class="s-cm">// void *는 char **를 가리킵니다.</span></span></div>
+<div class="code-line"><span class="ln">6</span><span class="lc">    <span class="s-kw">return</span> <span class="s-fn">strcmp</span>((<span class="s-kw">const</span> <span class="s-type">char</span> *)a, (<span class="s-kw">const</span> <span class="s-type">char</span> *)b);</span></div>
+<div class="code-line"><span class="ln">7</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">8</span><span class="lc"><span class="s-cm">// 수정: const char *s1 = *(const char **)a;</span></span></div>
+<div class="code-line"><span class="ln">9</span><span class="lc"><span class="s-cm">//       const char *s2 = *(const char **)b;</span></span></div>
+<div class="code-line"><span class="ln">10</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">11</span><span class="lc"><span class="s-cm">// 에러 2: 정수 비교에서 오버플로우</span></span></div>
+<div class="code-line"><span class="ln">12</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">cmpInt_overflow</span>(<span class="s-kw">const</span> <span class="s-type">void</span> *a, <span class="s-kw">const</span> <span class="s-type">void</span> *b) {</span></div>
+<div class="code-line"><span class="ln">13</span><span class="lc">    <span class="s-kw">return</span> *(<span class="s-type">int</span> *)a - *(<span class="s-type">int</span> *)b;</span></div>
+<div class="code-line"><span class="ln">14</span><span class="lc">    <span class="s-cm">// a = INT_MAX, b = -1이면 INT_MAX - (-1) = 오버플로우!</span></span></div>
+<div class="code-line"><span class="ln">15</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">16</span><span class="lc"><span class="s-cm">// 수정: if (x &lt; y) return -1; if (x &gt; y) return 1; return 0;</span></span></div>
+<div class="code-line"><span class="ln">17</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">18</span><span class="lc"><span class="s-cm">// 에러 3: qsort의 세 번째 인자(원소 크기)를 잘못 전달</span></span></div>
+<div class="code-line"><span class="ln">19</span><span class="lc">Student arr[<span class="s-num">10</span>];</span></div>
+<div class="code-line"><span class="ln">20</span><span class="lc"><span class="s-fn">qsort</span>(arr, <span class="s-num">10</span>, <span class="s-kw">sizeof</span>(Student *), cmpByScoreAsc);</span></div>
+<div class="code-line"><span class="ln">21</span><span class="lc"><span class="s-cm">// sizeof(Student *)는 포인터 크기(4 또는 8바이트)이므로</span></span></div>
+<div class="code-line"><span class="ln">22</span><span class="lc"><span class="s-cm">// 구조체 배열의 원소 크기와 다릅니다!</span></span></div>
+<div class="code-line"><span class="ln">23</span><span class="lc"><span class="s-cm">// 수정: sizeof(Student)를 전달해야 합니다.</span></span></div>
+<div class="code-line"><span class="ln">24</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">25</span><span class="lc"><span class="s-cm">// 에러 4: 비교 함수에서 일관성 없는 반환</span></span></div>
+<div class="code-line"><span class="ln">26</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">cmpInconsistent</span>(<span class="s-kw">const</span> <span class="s-type">void</span> *a, <span class="s-kw">const</span> <span class="s-type">void</span> *b) {</span></div>
+<div class="code-line"><span class="ln">27</span><span class="lc">    <span class="s-kw">const</span> Student *s1 = (<span class="s-kw">const</span> Student *)a;</span></div>
+<div class="code-line"><span class="ln">28</span><span class="lc">    <span class="s-kw">const</span> Student *s2 = (<span class="s-kw">const</span> Student *)b;</span></div>
+<div class="code-line"><span class="ln">29</span><span class="lc">    <span class="s-kw">if</span> (s1-&gt;score &gt; s2-&gt;score) <span class="s-kw">return</span> <span class="s-num">1</span>;</span></div>
+<div class="code-line"><span class="ln">30</span><span class="lc">    <span class="s-kw">return</span> <span class="s-num">0</span>;  <span class="s-cm">// 같거나 작을 때 모두 0을 반환!</span></span></div>
+<div class="code-line"><span class="ln">31</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">32</span><span class="lc"><span class="s-cm">// 수정: s1 &lt; s2일 때 -1, 같을 때 0, 클 때 1을 정확히 반환해야 합니다.</span></span></div>
+</div>
+</div>
+<h2 class="section-title">설명하기</h2>
+<table class="trace"><thead><tr><th style="width:40px">줄</th><th style="width:220px">코드</th><th>역할</th></tr></thead><tbody></tbody></table>
+<h2 class="section-title">예제</h2>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 1</span><p style="margin:0;font-size:14px">정수 배열 10개를 입력받아 qsort로 오름차순 정렬한 뒤 출력하는 프로그램을 작성하십시오.<br>비교 함수를 별도로 정의하여 qsort에 전달하십시오.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 2</span><p style="margin:0;font-size:14px">정수 배열을 내림차순으로 정렬하는 비교 함수를 작성하고,<br>오름차순 함수와 함께 두 가지 결과를 모두 출력하십시오.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 3</span><p style="margin:0;font-size:14px">문자열 5개를 입력받아 qsort로 사전순 정렬한 뒤 출력하십시오.<br>const char * 배열의 비교 함수에서 올바른 캐스팅에 주의하십시오.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 4</span><p style="margin:0;font-size:14px">Student 구조체(이름, 점수)를 정의하고 5명의 데이터를 입력받아<br>점수 내림차순으로 정렬하여 출력하는 프로그램을 작성하십시오.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 5</span><p style="margin:0;font-size:14px">Student 배열을 다중 기준으로 정렬하는 비교 함수를 작성하십시오.<br>1차: 점수 내림차순, 2차: 이름 오름차순으로 정렬하십시오.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 6</span><p style="margin:0;font-size:14px">비교 함수 포인터 배열을 만들고, 사용자가 메뉴에서 선택한<br>기준으로 배열을 정렬하는 프로그램을 작성하십시오.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 7</span><p style="margin:0;font-size:14px">문자열 배열을 길이순으로 정렬하되, 길이가 같으면 사전순으로<br>정렬하는 비교 함수를 작성하십시오.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 8</span><p style="margin:0;font-size:14px">비교 함수를 등록하는 레지스트리를 구현하고, 등록된 함수 중<br>하나를 선택하여 정렬한 결과를 파일에 저장하는 프로그램을 작성하십시오.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 9</span><p style="margin:0;font-size:14px">같은 데이터를 서로 다른 비교 함수로 정렬하고, clock()으로<br>각 정렬의 소요 시간을 측정하여 비교 표를 출력하십시오.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 10</span><p style="margin:0;font-size:14px">정수, 실수, 문자열, 구조체 배열을 각각 정렬하는 범용 정렬 함수를<br>작성하십시오. 하나의 함수에서 비교 함수 포인터와 원소 크기를 인자로<br>받아 qsort를 호출하고, 정렬 전후를 출력하십시오.</p></div>
+<h2 class="section-title">대회 기출</h2>
+<h2 class="section-title">요약</h2>
+<div class="warmup-box"><div class="warmup-title">핵심 정리</div><div class="wq"><b>1.</b> qsort: stdlib.h의 범용 정렬 함수, 비교 함수 포인터를 인자로 받음</div><div class="wq"><b>2.</b> 비교 함수 시그니처: int (*)(const void *, const void *)</div><div class="wq"><b>3.</b> 반환값: 음수(a가 앞), 0(동일), 양수(a가 뒤)</div><div class="wq"><b>4.</b> 정수 비교: *(const int *)a -- 직접 역참조</div><div class="wq"><b>5.</b> 문자열 비교: *(const char **)a -- 이중 포인터 역참조</div><div class="wq"><b>6.</b> 구조체 비교: (const Student *)a -> 멤버 접근</div><div class="wq"><b>7.</b> 다중 기준: 1차 기준이 같으면 2차 기준으로 이동하는 체인 패턴</div><div class="wq"><b>8.</b> 함수 포인터 배열: 비교 함수를 배열에 저장하여 동적 선택 가능</div><div class="wq"><b>9.</b> 레지스트리 패턴: 비교 함수를 등록하고 이름으로 관리하는 구조</div><div class="wq"><b>10.</b> 정수 오버플로우 주의: a - b 대신 조건 분기로 안전하게 비교</div></div>
+<h2 class="section-title">다음 유닛으로</h2>
+<div class="note-box"><span class="note-label"></span>
+<div style="font-weight:700;margin-bottom:6px;color:#1a2e4a">다음: 가변 인자 함수 -- stdarg.h</div>qsort의 비교 함수를 통해 함수 포인터와 콜백 패턴을 완전히 익혔습니다. 다음 유닛에서는 printf처럼 인자의 개수가 정해지지 않은 가변 인자 함수를 학습합니다. stdarg.h의 va_list, va_start, va_arg, va_end 매크로를 사용하여 유연한 함수를 직접 구현합니다.</div>
+
+    <span class="page-num">2</span>
+  </div>
+</div>
+<div class="page">
+  <div class="content-page">
+    <div class="unit-header-bar">
+      <span class="unit-tag">UNIT 09</span>
+      <span class="unit-title-sm">3과목 연결</span>
+    </div>
+<h2 class="section-title">10축 매핑</h2>
+<div class="note-box"><span class="note-label"></span>
+<div style="font-weight:700;margin-bottom:6px;color:#1a2e4a">이 유닛에서 키운 역량</div>C언어 ★★★★★ -- 함수 포인터, void 포인터 캐스팅, qsort 활용, 비교 함수 설계, 구조체 배열 정렬 등 고급 문법을 종합적으로 활용했습니다.<br>컴퓨팅사고력 ★★★★★ -- 단일/다중 정렬 기준 설계, 비교 함수의 일관성 조건(반사성, 추이성, 반대칭성), 콜백 패턴의 추상화를 학습했습니다.<br>디버깅 ★★★★★ -- void 포인터 캐스팅 오류, 정수 오버플로우, 원소 크기 불일치, 비교 함수 일관성 위반 등 qsort 사용 시 빈번한 오류를 체험했습니다.<br>KOI ★★★★★ -- 대회에서 정렬은 가장 빈번하게 사용되는 기법이며, 커스텀 비교 함수로 다중 기준 정렬을 구현하는 능력은 필수입니다.</div>
+
+    <span class="page-num">3</span>
+  </div>
+</div>
+<div class="page contest-page-wrap">
+  <div class="chapter-page">
+    <div class="chapter-sidebar"></div>
+    <div class="chapter-accent-bar"></div>
+    <div style="flex:1; min-width:0; padding:50px 50px 40px 45px; position:relative;">
+      <div class="problems-chapter-ref">Chapter 09: 커스텀 qsort 비교 함수</div>
+      <h2 class="problems-title">대회 문제 (Online Judge)</h2>
+      <p style="font-size:14px; color:#6b7280; margin:-8px 0 24px;">실제 온라인 저지에 출제된 문제입니다. 아래에 코드를 작성한 뒤, 사이트에 제출하여 채점하십시오.</p>
+
+        <div class="contest-card">
+          <div class="contest-header">
+            <div class="contest-num-source">
+              <span class="contest-num">1번</span>
+              <span class="contest-source">백준 1629</span>
+            </div>
+            <span class="diff diff-mid">대회</span>
+          </div>
+          <div class="contest-body">
+            <p class="contest-question">A를 B번 곱한 수를 C로 나눈 나머지를 구하십시오.</p>
+            
+            <div class="contest-write-area">
+              <div class="contest-write-label">코드 작성</div>
+              <textarea class="contest-textarea" rows="12" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="contest-card">
+          <div class="contest-header">
+            <div class="contest-num-source">
+              <span class="contest-num">2번</span>
+              <span class="contest-source">백준 2447</span>
+            </div>
+            <span class="diff diff-mid">대회</span>
+          </div>
+          <div class="contest-body">
+            <p class="contest-question">별 찍기 패턴을 재귀로 출력하십시오.</p>
+            
+            <div class="contest-write-area">
+              <div class="contest-write-label">코드 작성</div>
+              <textarea class="contest-textarea" rows="12" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="contest-card">
+          <div class="contest-header">
+            <div class="contest-num-source">
+              <span class="contest-num">3번</span>
+              <span class="contest-source">백준 1074</span>
+            </div>
+            <span class="diff diff-mid">대회</span>
+          </div>
+          <div class="contest-body">
+            <p class="contest-question">Z 모양으로 방문하는 순서를 구하십시오.</p>
+            
+            <div class="contest-write-area">
+              <div class="contest-write-label">코드 작성</div>
+              <textarea class="contest-textarea" rows="12" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="contest-card">
+          <div class="contest-header">
+            <div class="contest-num-source">
+              <span class="contest-num">4번</span>
+              <span class="contest-source">백준 15649</span>
+            </div>
+            <span class="diff diff-mid">대회</span>
+          </div>
+          <div class="contest-body">
+            <p class="contest-question">1부터 N까지 자연수 중 M개를 고른 순열을 출력하십시오.</p>
+            
+            <div class="contest-write-area">
+              <div class="contest-write-label">코드 작성</div>
+              <textarea class="contest-textarea" rows="12" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="contest-card">
+          <div class="contest-header">
+            <div class="contest-num-source">
+              <span class="contest-num">5번</span>
+              <span class="contest-source">백준 15650</span>
+            </div>
+            <span class="diff diff-mid">대회</span>
+          </div>
+          <div class="contest-body">
+            <p class="contest-question">1부터 N까지 자연수 중 M개를 고른 조합을 출력하십시오.</p>
+            
+            <div class="contest-write-area">
+              <div class="contest-write-label">코드 작성</div>
+              <textarea class="contest-textarea" rows="12" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="contest-card">
+          <div class="contest-header">
+            <div class="contest-num-source">
+              <span class="contest-num">6번</span>
+              <span class="contest-source">백준 9663</span>
+            </div>
+            <span class="diff diff-mid">대회</span>
+          </div>
+          <div class="contest-body">
+            <p class="contest-question">N-Queen 문제의 경우의 수를 구하십시오.</p>
+            
+            <div class="contest-write-area">
+              <div class="contest-write-label">코드 작성</div>
+              <textarea class="contest-textarea" rows="12" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="contest-card">
+          <div class="contest-header">
+            <div class="contest-num-source">
+              <span class="contest-num">7번</span>
+              <span class="contest-source">백준 1182</span>
+            </div>
+            <span class="diff diff-mid">대회</span>
+          </div>
+          <div class="contest-body">
+            <p class="contest-question">부분수열의 합이 S가 되는 경우의 수를 구하십시오.</p>
+            
+            <div class="contest-write-area">
+              <div class="contest-write-label">코드 작성</div>
+              <textarea class="contest-textarea" rows="12" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="contest-card">
+          <div class="contest-header">
+            <div class="contest-num-source">
+              <span class="contest-num">8번</span>
+              <span class="contest-source">백준 6588</span>
+            </div>
+            <span class="diff diff-mid">대회</span>
+          </div>
+          <div class="contest-body">
+            <p class="contest-question">골드바흐의 추측을 검증하십시오.</p>
+            
+            <div class="contest-write-area">
+              <div class="contest-write-label">코드 작성</div>
+              <textarea class="contest-textarea" rows="12" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="contest-card">
+          <div class="contest-header">
+            <div class="contest-num-source">
+              <span class="contest-num">9번</span>
+              <span class="contest-source">백준 11758</span>
+            </div>
+            <span class="diff diff-mid">대회</span>
+          </div>
+          <div class="contest-body">
+            <p class="contest-question">세 점의 방향(CCW)을 판별하십시오.</p>
+            
+            <div class="contest-write-area">
+              <div class="contest-write-label">코드 작성</div>
+              <textarea class="contest-textarea" rows="12" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="contest-card">
+          <div class="contest-header">
+            <div class="contest-num-source">
+              <span class="contest-num">10번</span>
+              <span class="contest-source">백준 1987</span>
+            </div>
+            <span class="diff diff-mid">대회</span>
+          </div>
+          <div class="contest-body">
+            <p class="contest-question">알파벳을 중복 없이 지나는 최대 칸 수를 구하십시오.</p>
+            
+            <div class="contest-write-area">
+              <div class="contest-write-label">코드 작성</div>
+              <textarea class="contest-textarea" rows="12" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+            </div>
+          </div>
+        </div>
+      <span class="page-num">4</span>
+    </div>
+  </div>
+</div>
+</body>
+</html>

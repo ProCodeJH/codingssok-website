@@ -1,0 +1,1590 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>코딩쏙 교재 — 해시 테이블 기초</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+
+  :root {
+    --navy: #1a2e4a;
+    --navy-mid: #2c4a6e;
+    --navy-light: #3d6590;
+    --orange: #e07830;
+    --orange-light: #f5e6d8;
+    --white: #ffffff;
+    --bg: #f7f8fa;
+    --bg-warm: #faf9f7;
+    --gray-50: #f9fafb;
+    --gray-100: #f3f4f6;
+    --gray-200: #e5e7eb;
+    --gray-300: #d1d5db;
+    --gray-400: #9ca3af;
+    --gray-500: #6b7280;
+    --gray-600: #4b5563;
+    --gray-700: #374151;
+    --gray-800: #1f2937;
+    --text: #2d3748;
+    --green: #16a34a;
+    --green-bg: #dcfce7;
+    --red: #dc2626;
+    --red-bg: #fee2e2;
+    --blue: #2563eb;
+    --blue-bg: #dbeafe;
+    --yellow-bg: #fef9c3;
+    --font: 'Noto Sans KR', sans-serif;
+    --mono: 'JetBrains Mono', 'Consolas', monospace;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: var(--font); background: #e8eaed; font-size: 15px; }
+
+  /* ========== PAGE ========== */
+  .page {
+    width: 210mm;
+    min-height: 295mm;
+    margin: 24px auto;
+    background: var(--white);
+    box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* ========== PAGE 1: CHAPTER START ========== */
+  .chapter-page {
+    display: flex;
+    min-height: 295mm;
+  }
+
+  .chapter-sidebar {
+    width: 10px;
+    background: var(--navy);
+    flex-shrink: 0;
+  }
+
+  .chapter-accent-bar {
+    width: 7px;
+    background: var(--orange);
+    flex-shrink: 0;
+  }
+
+  .chapter-body {
+    flex: 1;
+    padding: 70px 65px 50px 55px;
+    position: relative;
+  }
+
+  .chapter-watermark {
+    position: absolute;
+    top: -10px;
+    right: -15px;
+    font-size: 280px;
+    font-weight: 900;
+    color: rgba(180,195,212,0.35);
+    line-height: 1;
+    pointer-events: none;
+    letter-spacing: -10px;
+  }
+
+  .chapter-label {
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--navy-mid);
+    letter-spacing: 2px;
+    margin-bottom: 4px;
+  }
+
+  .chapter-title {
+    font-size: 44px;
+    font-weight: 900;
+    color: var(--navy);
+    line-height: 1.15;
+    margin-bottom: 12px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .chapter-sub {
+    font-size: 16px;
+    color: var(--gray-500);
+    font-weight: 400;
+    margin-bottom: 20px;
+    padding-bottom: 28px;
+    border-bottom: 1px solid var(--gray-200);
+  }
+
+  /* Learning objectives */
+  .obj-title {
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--navy);
+    margin-bottom: 16px;
+    margin-top: 32px;
+  }
+
+  .obj-list {
+    list-style: none;
+    margin-bottom: 40px;
+  }
+
+  .obj-list li {
+    padding: 5px 0 5px 24px;
+    position: relative;
+    font-size: 15px;
+    color: var(--gray-700);
+    line-height: 1.6;
+  }
+
+  .obj-list li::before {
+    content: '•';
+    position: absolute;
+    left: 8px;
+    color: var(--navy-mid);
+    font-weight: 700;
+  }
+
+  /* Prerequisites flow */
+  .prereq-title {
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--navy);
+    margin-bottom: 18px;
+  }
+
+  .prereq-flow {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    margin-bottom: 44px;
+  }
+
+  .prereq-item {
+    padding: 9px 22px;
+    border: 1.5px solid var(--gray-300);
+    border-radius: 50px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--gray-600);
+    background: var(--white);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+  }
+
+  .prereq-item.current {
+    border-color: var(--navy);
+    color: var(--navy);
+    font-weight: 700;
+    background: #edf2f7;
+    box-shadow: 0 2px 6px rgba(26,46,74,0.12);
+  }
+
+  .prereq-arrow {
+    width: 36px;
+    text-align: center;
+    color: var(--gray-300);
+    font-size: 18px;
+    font-weight: 300;
+  }
+
+  /* Predict box */
+  .predict-box {
+    background: var(--gray-50);
+    border: 1.5px solid var(--gray-200);
+    border-radius: 12px;
+    padding: 24px 28px;
+  }
+
+  .predict-label {
+    display: inline-block;
+    background: var(--orange);
+    color: var(--white);
+    font-size: 12px;
+    font-weight: 600;
+    padding: 3px 12px;
+    border-radius: 4px;
+    margin-bottom: 14px;
+    letter-spacing: 0.5px;
+  }
+
+  .predict-q {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--navy);
+    margin-bottom: 16px;
+  }
+
+  .predict-code {
+    background: var(--white);
+    border: 1px solid var(--gray-200);
+    border-radius: 8px;
+    padding: 14px 18px;
+    font-family: var(--mono);
+    font-size: 13px;
+    line-height: 1.65;
+    color: var(--gray-700);
+  }
+
+  /* ========== PAGE 2: CORE CONTENT ========== */
+  .content-page {
+    padding: 55px 65px;
+  }
+
+  .unit-header-bar {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    margin-bottom: 8px;
+  }
+
+  .unit-tag {
+    font-size: 12px;
+    color: var(--orange);
+    font-weight: 600;
+    letter-spacing: 1px;
+  }
+
+  .unit-title-sm {
+    font-size: 14px;
+    color: var(--gray-400);
+    font-weight: 400;
+  }
+
+  .section-title {
+    font-size: 24px;
+    font-weight: 800;
+    color: var(--navy);
+    margin-bottom: 24px;
+    margin-top: 8px;
+    padding-left: 16px;
+    border-left: 5px solid var(--orange);
+  }
+
+  p {
+    font-size: 15.5px;
+    line-height: 1.9;
+    color: var(--text);
+    margin-bottom: 18px;
+  }
+
+  p code {
+    font-family: var(--mono);
+    font-size: 13.5px;
+    background: #f1f3f5;
+    padding: 2px 7px;
+    border-radius: 4px;
+    color: var(--navy);
+    font-weight: 500;
+  }
+
+  /* Code block */
+  .code-wrap {
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    border: 1px solid var(--gray-200);
+    margin: 22px 0;
+  }
+
+  .code-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 9px 18px;
+    background: var(--navy);
+    font-size: 12px;
+  }
+
+  .code-bar-lang {
+    font-family: var(--mono);
+    font-weight: 600;
+    color: var(--white);
+  }
+
+  .code-bar-file {
+    color: rgba(255,255,255,0.6);
+    font-weight: 400;
+  }
+
+  .code-body {
+    background: #f8f9fb;
+    padding: 20px 0;
+    font-family: var(--mono);
+    font-size: 13.5px;
+    line-height: 1.75;
+    border: 1px solid var(--gray-200);
+    border-top: none;
+    border-radius: 0 0 12px 12px;
+  }
+
+  .code-line {
+    display: flex;
+    padding: 0 20px;
+  }
+
+  .code-line:hover {
+    background: #f0f4f8;
+  }
+
+  .code-line.highlighted {
+    background: #fff8e1;
+  }
+
+  .ln {
+    width: 30px;
+    text-align: right;
+    color: #b8bfc8;
+    font-size: 12px;
+    margin-right: 18px;
+    user-select: none;
+    flex-shrink: 0;
+    padding-top: 1px;
+  }
+
+  .lc { flex: 1; }
+
+  /* syntax */
+  .s-pp { color: #8b5cf6; font-weight: 600; }
+  .s-str { color: #d97706; }
+  .s-type { color: #2563eb; font-weight: 500; }
+  .s-kw { color: #7c3aed; font-weight: 500; }
+  .s-fn { color: #059669; font-weight: 500; }
+  .s-num { color: #dc2626; }
+  .s-cm { color: #9ca3af; font-style: italic; }
+
+  /* Output block */
+  .output-wrap {
+    border-radius: 10px;
+    overflow: hidden;
+    margin: 10px 0 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    border: 1px solid #d1d5db;
+  }
+
+  .output-bar {
+    padding: 9px 18px;
+    background: #374151;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--white);
+    letter-spacing: 0.5px;
+  }
+
+  .output-body {
+    padding: 16px 20px;
+    font-family: var(--mono);
+    font-size: 13.5px;
+    line-height: 1.7;
+    color: var(--gray-800);
+    background: #f1f5f9;
+    border: 1px solid var(--gray-200);
+    border-top: none;
+    border-radius: 0 0 10px 10px;
+  }
+
+  /* Callout */
+  .tip {
+    margin: 28px 0;
+    padding: 18px 24px;
+    background: #dbeafe;
+    border-left: 5px solid #2563eb;
+    border-radius: 0 12px 12px 0;
+    font-size: 14.5px;
+    line-height: 1.8;
+    color: var(--text);
+  }
+
+  .tip-label {
+    font-weight: 700;
+    color: #2563eb;
+    font-size: 13px;
+    display: block;
+    margin-bottom: 4px;
+  }
+
+  .warn {
+    margin: 28px 0;
+    padding: 18px 24px;
+    background: #fef3c7;
+    border-left: 5px solid #d97706;
+    border-radius: 0 12px 12px 0;
+    font-size: 14.5px;
+    line-height: 1.8;
+  }
+
+  .warn-label {
+    font-weight: 700;
+    color: #d97706;
+    font-size: 13px;
+    display: block;
+    margin-bottom: 4px;
+  }
+
+  .note-box {
+    margin: 28px 0;
+    padding: 18px 24px;
+    background: #e2e8f0;
+    border-left: 5px solid #64748b;
+    border-radius: 0 12px 12px 0;
+    font-size: 14.5px;
+    line-height: 1.8;
+  }
+
+  .note-label {
+    font-weight: 700;
+    color: var(--gray-600);
+    font-size: 13px;
+    display: block;
+    margin-bottom: 4px;
+  }
+
+  /* Trace table */
+  table.trace {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    margin: 28px 0;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+    font-size: 14px;
+  }
+
+  table.trace th {
+    background: var(--navy);
+    color: var(--white);
+    padding: 10px 16px;
+    text-align: left;
+    font-weight: 500;
+    font-size: 13px;
+  }
+
+  table.trace td {
+    padding: 10px 16px;
+    border-bottom: 1px solid var(--gray-200);
+    color: var(--gray-700);
+  }
+
+  table.trace tr:nth-child(even) td { background: var(--gray-50); }
+  table.trace tr:last-child td { border-bottom: none; }
+
+  table.trace td code {
+    font-family: var(--mono);
+    font-size: 12.5px;
+    background: #eef1f5;
+    padding: 2px 6px;
+    border-radius: 4px;
+    color: var(--navy);
+  }
+
+  /* ========== PAGE 3: PROBLEMS ========== */
+  .problems-header {
+    margin-bottom: 8px;
+  }
+
+  .problems-chapter-ref {
+    font-size: 13px;
+    color: var(--gray-500);
+    margin-bottom: 4px;
+  }
+
+  .problems-title {
+    font-size: 28px;
+    font-weight: 800;
+    color: var(--navy);
+    margin-bottom: 24px;
+  }
+
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 16px;
+  }
+
+  .prob-card {
+    background: var(--white);
+    border: 1px solid var(--gray-200);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 3px 15px rgba(0,0,0,0.06);
+  }
+
+  .prob-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 16px;
+    background: var(--navy);
+  }
+
+  .prob-num {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--white);
+  }
+
+  .diff {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    font-size: 12px;
+    font-weight: 800;
+  }
+
+  .diff-basic { background: #22c55e; color: white; }
+  .diff-mid { background: #f59e0b; color: white; }
+  .diff-hard { background: #ef4444; color: white; }
+
+  .prob-desc {
+    font-size: 13.5px;
+    line-height: 1.65;
+    color: var(--gray-600);
+    margin-bottom: 10px;
+    padding: 14px 16px 0;
+  }
+
+  .prob-code {
+    background: var(--gray-50);
+    border: 1px solid var(--gray-200);
+    border-radius: 6px;
+    padding: 10px 14px;
+    margin: 0 16px 16px;
+    font-family: var(--mono);
+    font-size: 12.5px;
+    line-height: 1.55;
+    color: var(--gray-600);
+  }
+
+  /* Competition section */
+  .comp-section {
+    margin-top: 32px;
+    padding-top: 24px;
+    border-top: 2px solid var(--navy);
+  }
+
+  .comp-title {
+    font-size: 22px;
+    font-weight: 800;
+    color: var(--navy);
+    margin-bottom: 20px;
+  }
+
+  .comp-card {
+    background: var(--white);
+    border: 1.5px solid var(--gray-200);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 18px rgba(0,0,0,0.06);
+  }
+
+  .comp-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 16px;
+    background: #0f766e;
+  }
+
+  .comp-header .comp-name {
+    color: var(--white);
+    font-size: 15px;
+    font-weight: 700;
+    margin: 0;
+  }
+
+  .comp-inner {
+    padding: 14px 18px 18px;
+  }
+
+  .comp-badge {
+    display: inline-block;
+    padding: 3px 12px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 700;
+  }
+
+  .badge-bj { background: #93c5fd; color: #1e3a5f; }
+  .badge-cu { background: #c4b5fd; color: #3b1f7e; }
+  .badge-pg { background: #7dd3fc; color: #0c4a6e; }
+
+  .comp-name {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--navy);
+    margin-bottom: 6px;
+  }
+
+  .comp-desc {
+    font-size: 14px;
+    color: var(--gray-600);
+    line-height: 1.7;
+    margin-bottom: 14px;
+  }
+
+  .io-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+
+  .io-card {
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid var(--gray-200);
+  }
+
+  .io-h {
+    padding: 6px 14px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--gray-600);
+    background: #e2e8f0;
+  }
+
+  .io-c {
+    padding: 10px 14px;
+    font-family: var(--mono);
+    font-size: 13px;
+    line-height: 1.5;
+    background: var(--white);
+  }
+
+  /* ========== DEBUG LAB ========== */
+  .debug-section {
+    margin: 24px 0;
+    border: 2px solid var(--red);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+
+  .debug-bar {
+    background: var(--red);
+    color: var(--white);
+    padding: 10px 20px;
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 1px;
+  }
+
+  .debug-body {
+    padding: 20px;
+    background: #fef2f2;
+  }
+
+  /* 10축 connection */
+  .connect-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 16px;
+    margin: 28px 0;
+  }
+
+  .connect-card {
+    border-radius: 12px;
+    padding: 20px;
+    text-align: center;
+    border: 1px solid var(--gray-200);
+    box-shadow: 0 3px 14px rgba(0,0,0,0.05);
+  }
+
+  .connect-card h5 {
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 8px;
+  }
+
+  .connect-card p {
+    font-size: 13px;
+    margin: 0;
+    color: var(--gray-600);
+    line-height: 1.6;
+  }
+
+  .cc1 { border-top: 3px solid #8b5cf6; }
+  .cc1 h5 { color: #8b5cf6; }
+  .cc2 { border-top: 3px solid var(--green); }
+  .cc2 h5 { color: var(--green); }
+  .cc3 { border-top: 3px solid var(--navy); }
+  .cc3 h5 { color: var(--navy); }
+
+  /* PAGE NUMBER */
+  .page-num {
+    position: absolute;
+    bottom: 20px;
+    right: 30px;
+    font-size: 12px;
+    color: var(--gray-400);
+  }
+
+  /* WARMUP */
+  .warmup-box {
+    background: #e0e7f1;
+    border-radius: 12px;
+    padding: 24px 28px;
+    margin: 28px 0;
+    border: 2px solid #c7d2e0;
+  }
+
+  .warmup-title {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--navy);
+    margin-bottom: 14px;
+  }
+
+  .wq {
+    padding: 9px 16px;
+    background: var(--white);
+    border-radius: 8px;
+    margin-bottom: 8px;
+    font-size: 14px;
+    border: 1px solid var(--gray-200);
+    color: var(--gray-700);
+  }
+
+  .wq b { color: var(--navy); margin-right: 6px; }
+  .wq .hint { color: var(--gray-400); font-size: 13px; }
+
+  /* ===== CONTEST PROBLEMS PAGE ===== */
+  .contest-page-wrap .chapter-page {
+    min-height: auto;
+  }
+
+  .contest-page-wrap .chapter-page > div:last-child {
+    min-width: 0;
+    overflow-wrap: break-word;
+    word-break: break-word;
+  }
+
+  .contest-card {
+    background: white;
+    border: 1.5px solid var(--gray-200);
+    border-radius: 12px;
+    margin-bottom: 28px;
+    overflow: hidden;
+    break-inside: avoid;
+  }
+
+  .contest-header {
+    background: var(--navy);
+    color: white;
+    padding: 14px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .contest-num-source {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .contest-num {
+    font-weight: 700;
+    font-size: 16px;
+  }
+
+  .contest-source {
+    background: rgba(255,255,255,0.15);
+    padding: 3px 10px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 500;
+  }
+
+  .contest-body {
+    padding: 20px 24px 24px;
+  }
+
+  .contest-question {
+    font-size: 15px;
+    line-height: 1.7;
+    color: var(--text);
+    margin: 0 0 16px;
+    word-break: break-word;
+    overflow-wrap: break-word;
+  }
+
+  .contest-expected {
+    background: #1e293b;
+    border-radius: 8px;
+    overflow: hidden;
+    margin-bottom: 20px;
+  }
+
+  .contest-expected-label {
+    background: #334155;
+    color: #94a3b8;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 6px 14px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .contest-expected-body {
+    color: #e2e8f0;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    line-height: 1.6;
+    padding: 12px 16px;
+    margin: 0;
+    white-space: pre;
+  }
+
+  .contest-write-area {
+    border: 2px dashed var(--gray-300);
+    border-radius: 10px;
+    overflow: hidden;
+    transition: border-color 0.2s;
+  }
+
+  .contest-write-area:focus-within {
+    border-color: var(--orange);
+    border-style: solid;
+  }
+
+  .contest-write-label {
+    background: var(--bg);
+    color: var(--gray-500);
+    font-size: 12px;
+    font-weight: 600;
+    padding: 8px 14px;
+    border-bottom: 1px solid var(--gray-200);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .contest-textarea {
+    width: 100%;
+    min-height: 200px;
+    padding: 16px 18px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    line-height: 1.7;
+    color: var(--text);
+    background: #fafbfc;
+    border: none;
+    outline: none;
+    resize: vertical;
+    tab-size: 4;
+    box-sizing: border-box;
+  }
+
+  .contest-textarea::placeholder {
+    color: var(--gray-300);
+  }
+
+  @media print {
+    body { background: white; }
+    .page { box-shadow: none; margin: 0; page-break-after: always; }
+    .contest-textarea { border: 1px solid var(--gray-300); min-height: 180px; }
+  }
+
+</style>
+</head>
+<body>
+
+<div class="page">
+  <div class="chapter-page">
+    <div class="chapter-sidebar"></div>
+    <div class="chapter-accent-bar"></div>
+    <div class="chapter-body">
+      <div class="chapter-watermark">11</div>
+      <div class="chapter-label">Chapter 11</div>
+      <h1 class="chapter-title">해시 테이블 기초</h1>
+      <p class="chapter-sub">해시 함수와 체이닝으로 O(1) 평균 탐색이 가능한 해시 테이블을 구현합니다.</p>
+
+      <h3 class="obj-title">이 유닛에서 배우는 것</h3>
+      <ul class="obj-list">
+        <li>해시 함수의 개념(키를 인덱스로 변환)을 이해할 수 있습니다.</li>
+        <li>충돌(collision)의 원인을 파악하고 체이닝으로 해결할 수 있습니다.</li>
+        <li>해시 테이블의 insert/search/delete 연산을 직접 구현할 수 있습니다.</li>
+        <li>O(1) 평균 탐색 시간의 원리와 적재율의 관계를 설명할 수 있습니다.</li>
+      </ul>
+
+      <h3 class="prereq-title">선수 학습</h3>
+      <div class="prereq-flow">
+        <div class="prereq-item current">L13-U10</div>
+      </div>
+
+      <div class="predict-box">
+        <div class="predict-label">예측해 봅시다</div>
+        <div class="predict-q">int hash(int key) { return key % 7; }
+hash(15)와 hash(22)의 반환값은 각각 무엇입니까? 두 값이 같으면 이를 무엇이라 부릅니까?</div>
+        
+      </div>
+
+      <span class="page-num">1</span>
+    </div>
+  </div>
+</div>
+<div class="page">
+  <div class="content-page">
+    <div class="unit-header-bar">
+      <span class="unit-tag">UNIT 11</span>
+      <span class="unit-title-sm">해시 테이블 기초</span>
+    </div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 1</span><p style="margin:0;font-size:14px">배열에서 특정 값을 찾으려면 최악의 경우 몇 번 비교해야 합니까? (배열 크기 N)</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 2</span><p style="margin:0;font-size:14px">37 % 10의 결과는 무엇입니까? 이 연산으로 37을 0~9 범위의 인덱스로 변환할 수 있는 이유를 설명하십시오.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 3</span><p style="margin:0;font-size:14px">서로 다른 두 키가 같은 인덱스를 가리키면 어떤 문제가 발생합니까?</p></div>
+<h2 class="section-title">예측</h2>
+<p>undefined</p>
+<h2 class="section-title">이야기</h2>
+<p>undefined</p>
+<h2 class="section-title">핵심 개념</h2>
+<div class="note-box"><span class="note-label"></span>
+<div style="font-weight:700;margin-bottom:6px;color:#1a2e4a">해시 함수 (Hash Function)</div>키(key)를 배열 인덱스로 변환하는 함수입니다.<br><br>기본 형태: index = key % TABLE_SIZE<br><br>예) TABLE_SIZE = 7일 때<br>  hash(15) = 15 % 7 = 1<br>  hash(29) = 29 % 7 = 1  (충돌 발생!)<br>  hash(10) = 10 % 7 = 3</div>
+<div class="note-box"><span class="note-label"></span>
+<div style="font-weight:700;margin-bottom:6px;color:#1a2e4a">충돌(Collision)과 체이닝(Chaining)</div>서로 다른 키가 같은 인덱스를 반환하는 현상을 충돌이라 합니다.<br><br>체이닝: 각 인덱스에 연결 리스트를 두어 충돌된 데이터를 이어 붙이는 방식입니다.<br><br>[0] -> NULL<br>[1] -> [15] -> [29] -> NULL<br>[2] -> NULL<br>[3] -> [10] -> NULL<br>...<br><br>같은 인덱스의 데이터는 연결 리스트를 순회하여 탐색합니다.</div>
+<h2 class="section-title">해시 테이블 구조체 정의</h2>
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;stdio.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;stdlib.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;string.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">4</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">5</span><span class="lc"><span class="s-pp">#define</span> TABLE_SIZE <span class="s-num">13</span></span></div>
+<div class="code-line"><span class="ln">6</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">7</span><span class="lc"><span class="s-kw">typedef</span> <span class="s-kw">struct</span> Node {</span></div>
+<div class="code-line"><span class="ln">8</span><span class="lc">    <span class="s-type">int</span> key;</span></div>
+<div class="code-line"><span class="ln">9</span><span class="lc">    <span class="s-type">int</span> value;</span></div>
+<div class="code-line"><span class="ln">10</span><span class="lc">    <span class="s-kw">struct</span> Node *next;</span></div>
+<div class="code-line"><span class="ln">11</span><span class="lc">} Node;</span></div>
+<div class="code-line"><span class="ln">12</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">13</span><span class="lc"><span class="s-kw">typedef</span> <span class="s-kw">struct</span> {</span></div>
+<div class="code-line"><span class="ln">14</span><span class="lc">    Node *table[TABLE_SIZE];</span></div>
+<div class="code-line"><span class="ln">15</span><span class="lc">} HashTable;</span></div>
+<div class="code-line"><span class="ln">16</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">17</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">hash</span>(<span class="s-type">int</span> key) {</span></div>
+<div class="code-line"><span class="ln">18</span><span class="lc">    <span class="s-kw">return</span> ((key % TABLE_SIZE) + TABLE_SIZE) % TABLE_SIZE;</span></div>
+<div class="code-line"><span class="ln">19</span><span class="lc">    <span class="s-cm">// key가 음수여도 양수 인덱스를 보장합니다.</span></span></div>
+<div class="code-line"><span class="ln">20</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">21</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">22</span><span class="lc"><span class="s-type">void</span> <span class="s-fn">initTable</span>(HashTable *ht) {</span></div>
+<div class="code-line"><span class="ln">23</span><span class="lc">    <span class="s-kw">for</span> (<span class="s-type">int</span> i = <span class="s-num">0</span>; i &lt; TABLE_SIZE; i++)</span></div>
+<div class="code-line"><span class="ln">24</span><span class="lc">        ht-&gt;table[i] = <span class="s-kw">NULL</span>;</span></div>
+<div class="code-line"><span class="ln">25</span><span class="lc">}</span></div>
+</div>
+</div>
+<h2 class="section-title">insert 함수</h2>
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc"><span class="s-type">void</span> <span class="s-fn">insert</span>(HashTable *ht, <span class="s-type">int</span> key, <span class="s-type">int</span> value) {</span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc">    <span class="s-type">int</span> idx = <span class="s-fn">hash</span>(key);</span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc">    </span></div>
+<div class="code-line"><span class="ln">4</span><span class="lc">    <span class="s-cm">// 기존 키가 있으면 값 갱신</span></span></div>
+<div class="code-line"><span class="ln">5</span><span class="lc">    Node *cur = ht-&gt;table[idx];</span></div>
+<div class="code-line"><span class="ln">6</span><span class="lc">    <span class="s-kw">while</span> (cur != <span class="s-kw">NULL</span>) {</span></div>
+<div class="code-line"><span class="ln">7</span><span class="lc">        <span class="s-kw">if</span> (cur-&gt;key == key) {</span></div>
+<div class="code-line"><span class="ln">8</span><span class="lc">            cur-&gt;value = value;</span></div>
+<div class="code-line"><span class="ln">9</span><span class="lc">            <span class="s-kw">return</span>;</span></div>
+<div class="code-line"><span class="ln">10</span><span class="lc">        }</span></div>
+<div class="code-line"><span class="ln">11</span><span class="lc">        cur = cur-&gt;next;</span></div>
+<div class="code-line"><span class="ln">12</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">13</span><span class="lc">    </span></div>
+<div class="code-line"><span class="ln">14</span><span class="lc">    <span class="s-cm">// 새 노드를 연결 리스트 앞에 삽입</span></span></div>
+<div class="code-line"><span class="ln">15</span><span class="lc">    Node *newNode = (Node *)<span class="s-fn">malloc</span>(<span class="s-kw">sizeof</span>(Node));</span></div>
+<div class="code-line"><span class="ln">16</span><span class="lc">    newNode-&gt;key = key;</span></div>
+<div class="code-line"><span class="ln">17</span><span class="lc">    newNode-&gt;value = value;</span></div>
+<div class="code-line"><span class="ln">18</span><span class="lc">    newNode-&gt;next = ht-&gt;table[idx];</span></div>
+<div class="code-line"><span class="ln">19</span><span class="lc">    ht-&gt;table[idx] = newNode;</span></div>
+<div class="code-line"><span class="ln">20</span><span class="lc">}</span></div>
+</div>
+</div>
+<h2 class="section-title">search 함수</h2>
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc">Node *<span class="s-fn">search</span>(HashTable *ht, <span class="s-type">int</span> key) {</span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc">    <span class="s-type">int</span> idx = <span class="s-fn">hash</span>(key);</span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc">    Node *cur = ht-&gt;table[idx];</span></div>
+<div class="code-line"><span class="ln">4</span><span class="lc">    <span class="s-kw">while</span> (cur != <span class="s-kw">NULL</span>) {</span></div>
+<div class="code-line"><span class="ln">5</span><span class="lc">        <span class="s-kw">if</span> (cur-&gt;key == key)</span></div>
+<div class="code-line"><span class="ln">6</span><span class="lc">            <span class="s-kw">return</span> cur;</span></div>
+<div class="code-line"><span class="ln">7</span><span class="lc">        cur = cur-&gt;next;</span></div>
+<div class="code-line"><span class="ln">8</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">9</span><span class="lc">    <span class="s-kw">return</span> <span class="s-kw">NULL</span>;  <span class="s-cm">// 키를 찾지 못함</span></span></div>
+<div class="code-line"><span class="ln">10</span><span class="lc">}</span></div>
+</div>
+</div>
+<h2 class="section-title">delete 함수</h2>
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc"><span class="s-type">void</span> <span class="s-fn">delete</span>(HashTable *ht, <span class="s-type">int</span> key) {</span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc">    <span class="s-type">int</span> idx = <span class="s-fn">hash</span>(key);</span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc">    Node *cur = ht-&gt;table[idx];</span></div>
+<div class="code-line"><span class="ln">4</span><span class="lc">    Node *prev = <span class="s-kw">NULL</span>;</span></div>
+<div class="code-line"><span class="ln">5</span><span class="lc">    </span></div>
+<div class="code-line"><span class="ln">6</span><span class="lc">    <span class="s-kw">while</span> (cur != <span class="s-kw">NULL</span>) {</span></div>
+<div class="code-line"><span class="ln">7</span><span class="lc">        <span class="s-kw">if</span> (cur-&gt;key == key) {</span></div>
+<div class="code-line"><span class="ln">8</span><span class="lc">            <span class="s-kw">if</span> (prev == <span class="s-kw">NULL</span>)</span></div>
+<div class="code-line"><span class="ln">9</span><span class="lc">                ht-&gt;table[idx] = cur-&gt;next;</span></div>
+<div class="code-line"><span class="ln">10</span><span class="lc">            <span class="s-kw">else</span></span></div>
+<div class="code-line"><span class="ln">11</span><span class="lc">                prev-&gt;next = cur-&gt;next;</span></div>
+<div class="code-line"><span class="ln">12</span><span class="lc">            <span class="s-fn">free</span>(cur);</span></div>
+<div class="code-line"><span class="ln">13</span><span class="lc">            <span class="s-kw">return</span>;</span></div>
+<div class="code-line"><span class="ln">14</span><span class="lc">        }</span></div>
+<div class="code-line"><span class="ln">15</span><span class="lc">        prev = cur;</span></div>
+<div class="code-line"><span class="ln">16</span><span class="lc">        cur = cur-&gt;next;</span></div>
+<div class="code-line"><span class="ln">17</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">18</span><span class="lc">}</span></div>
+</div>
+</div>
+<h2 class="section-title">전체 테스트 코드</h2>
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">main</span>(<span class="s-type">void</span>) {</span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc">    HashTable ht;</span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc">    <span class="s-fn">initTable</span>(&amp;ht);</span></div>
+<div class="code-line"><span class="ln">4</span><span class="lc">    </span></div>
+<div class="code-line"><span class="ln">5</span><span class="lc">    <span class="s-fn">insert</span>(&amp;ht, <span class="s-num">15</span>, <span class="s-num">100</span>);</span></div>
+<div class="code-line"><span class="ln">6</span><span class="lc">    <span class="s-fn">insert</span>(&amp;ht, <span class="s-num">29</span>, <span class="s-num">200</span>);</span></div>
+<div class="code-line"><span class="ln">7</span><span class="lc">    <span class="s-fn">insert</span>(&amp;ht, <span class="s-num">10</span>, <span class="s-num">300</span>);</span></div>
+<div class="code-line"><span class="ln">8</span><span class="lc">    <span class="s-fn">insert</span>(&amp;ht, <span class="s-num">22</span>, <span class="s-num">400</span>);</span></div>
+<div class="code-line"><span class="ln">9</span><span class="lc">    </span></div>
+<div class="code-line"><span class="ln">10</span><span class="lc">    Node *result = <span class="s-fn">search</span>(&amp;ht, <span class="s-num">29</span>);</span></div>
+<div class="code-line"><span class="ln">11</span><span class="lc">    <span class="s-kw">if</span> (result != <span class="s-kw">NULL</span>)</span></div>
+<div class="code-line"><span class="ln">12</span><span class="lc">        <span class="s-fn">printf</span>(<span class="s-str">"key=%d, value=%d\n"</span>, result-&gt;key, result-&gt;value);</span></div>
+<div class="code-line"><span class="ln">13</span><span class="lc">    <span class="s-kw">else</span></span></div>
+<div class="code-line"><span class="ln">14</span><span class="lc">        <span class="s-fn">printf</span>(<span class="s-str">"Not found\n"</span>);</span></div>
+<div class="code-line"><span class="ln">15</span><span class="lc">    </span></div>
+<div class="code-line"><span class="ln">16</span><span class="lc">    <span class="s-fn">delete</span>(&amp;ht, <span class="s-num">15</span>);</span></div>
+<div class="code-line"><span class="ln">17</span><span class="lc">    result = <span class="s-fn">search</span>(&amp;ht, <span class="s-num">15</span>);</span></div>
+<div class="code-line"><span class="ln">18</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"%s\n"</span>, result ? <span class="s-str">"Found"</span> : <span class="s-str">"Not found"</span>);</span></div>
+<div class="code-line"><span class="ln">19</span><span class="lc">    </span></div>
+<div class="code-line"><span class="ln">20</span><span class="lc">    <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">21</span><span class="lc">}</span></div>
+</div>
+</div>
+<div class="output-wrap"><div class="output-bar">실행 결과</div><div class="output-body">key=29, value=200
+Not found</div></div>
+<h2 class="section-title">문자열 해시 함수 (djb2)</h2>
+<p>undefined</p>
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc"><span class="s-type">unsigned</span> <span class="s-type">long</span> <span class="s-fn">hashString</span>(<span class="s-kw">const</span> <span class="s-type">char</span> *str) {</span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc">    <span class="s-type">unsigned</span> <span class="s-type">long</span> hash = <span class="s-num">5381</span>;</span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc">    <span class="s-type">int</span> c;</span></div>
+<div class="code-line"><span class="ln">4</span><span class="lc">    <span class="s-kw">while</span> ((c = *str++) != '\<span class="s-num">0</span>') {</span></div>
+<div class="code-line"><span class="ln">5</span><span class="lc">        hash = hash * <span class="s-num">33</span> + c;   <span class="s-cm">// hash * 33 + c</span></span></div>
+<div class="code-line"><span class="ln">6</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">7</span><span class="lc">    <span class="s-kw">return</span> hash % TABLE_SIZE;</span></div>
+<div class="code-line"><span class="ln">8</span><span class="lc">}</span></div>
+</div>
+</div>
+<p>undefined</p>
+<h2 class="section-title">체이닝 vs 개방 주소법 비교</h2>
+<div class="note-box"><span class="note-label"></span>
+<div style="font-weight:700;margin-bottom:6px;color:#1a2e4a">충돌 해결 방법 비교표</div>항목             | 체이닝(Chaining)       | 개방 주소법(Open Addressing)<br>-----------------+------------------------+-----------------------------<br>구조             | 배열 + 연결 리스트     | 배열만 사용<br>충돌 처리        | 같은 인덱스에 노드 추가| 다른 빈 칸을 탐색<br>메모리           | 동적 할당 필요         | 추가 할당 불필요<br>삭제             | 간단 (노드 제거)       | 복잡 (삭제 표시 필요)<br>적재율 > 1       | 가능                   | 불가능<br>캐시 성능        | 낮음 (포인터 추적)     | 높음 (연속 메모리)<br>구현 난이도      | 보통                   | 높음</div>
+<h2 class="section-title">탐색 시간 비교</h2>
+<div class="note-box"><span class="note-label"></span>
+<div style="font-weight:700;margin-bottom:6px;color:#1a2e4a">자료구조별 탐색 시간 비교표</div>자료구조         | 평균 탐색    | 최악 탐색    | 삽입 평균<br>-----------------+--------------+--------------+----------<br>배열 (순차)      | O(N)         | O(N)         | O(1)<br>정렬 배열 (이진) | O(log N)     | O(log N)     | O(N)<br>연결 리스트      | O(N)         | O(N)         | O(1)<br>해시 테이블      | O(1)         | O(N)         | O(1)<br><br>해시 테이블의 최악 O(N)은 모든 키가 같은 인덱스에 몰릴 때 발생합니다.<br>좋은 해시 함수와 적절한 테이블 크기로 이를 방지합니다.</div>
+<h2 class="section-title">적재율(Load Factor)</h2>
+<div class="note-box"><span class="note-label"></span>
+<div style="font-weight:700;margin-bottom:6px;color:#1a2e4a">적재율(Load Factor)</div>적재율 = 저장된 원소 수 / 테이블 크기<br><br>alpha = n / TABLE_SIZE<br><br>적재율이 높을수록 충돌 확률이 증가합니다.<br>일반적으로 적재율 0.7~0.8 이하를 유지하는 것이 좋습니다.<br>적재율이 임계값을 넘으면 테이블 크기를 2배로 늘리고<br>모든 원소를 재해싱(rehashing)합니다.<br><br>TABLE_SIZE는 소수(prime number)로 선택하면<br>해시 값의 분포가 고르게 됩니다. (예: 13, 31, 97, 997)</div>
+<h2 class="section-title">에러 체험</h2>
+<div class="note-box"><span class="note-label"></span>
+<div style="font-weight:700;margin-bottom:6px;color:#1a2e4a">에러 1: 해시 함수가 음수를 반환</div>int hash(int key) {<br>    return key % TABLE_SIZE;  // key가 음수이면 음수 인덱스!<br>}<br><br>hash(-15) = -15 % 13 = -2  (배열 범위 초과!)<br><br>해결: return ((key % TABLE_SIZE) + TABLE_SIZE) % TABLE_SIZE;<br><br>C언어에서 음수 % 양수는 음수가 될 수 있으므로<br>TABLE_SIZE를 더한 뒤 다시 나머지를 구합니다.</div>
+<div class="note-box"><span class="note-label"></span>
+<div style="font-weight:700;margin-bottom:6px;color:#1a2e4a">에러 2: 체이닝에서 메모리 해제 누락</div>void destroyTable(HashTable *ht) {<br>    for (int i = 0; i < TABLE_SIZE; i++) {<br>        // ht->table[i] = NULL;  // 노드를 free하지 않고 NULL만 대입!<br>    }<br>}<br><br>해결: 각 연결 리스트의 모든 노드를 순회하며 free해야 합니다.<br><br>void destroyTable(HashTable *ht) {<br>    for (int i = 0; i < TABLE_SIZE; i++) {<br>        Node *cur = ht->table[i];<br>        while (cur != NULL) {<br>            Node *temp = cur;<br>            cur = cur->next;<br>            free(temp);<br>        }<br>        ht->table[i] = NULL;<br>    }<br>}</div>
+<div class="note-box"><span class="note-label"></span>
+<div style="font-weight:700;margin-bottom:6px;color:#1a2e4a">에러 3: 테이블 크기를 2의 거듭제곱으로 선택</div>#define TABLE_SIZE 16  // 2^4<br><br>key % 16은 하위 4비트만 사용하므로 충돌이 집중됩니다.<br><br>해결: TABLE_SIZE를 소수로 선택합니다.<br>#define TABLE_SIZE 13  // 소수<br>#define TABLE_SIZE 97  // 소수<br><br>소수 크기는 해시 값의 분포를 고르게 만들어<br>충돌 확률을 낮춥니다.</div>
+<h2 class="section-title">설명하기</h2>
+<div class="tip"><span class="tip-label">설명하기</span><p style="margin:0">해시 테이블의 평균 탐색 시간이 O(1)인 이유를 설명하십시오. 또한, 최악의 경우 O(N)이 되는 상황과 이를 방지하는 방법을 서술하십시오.</p></div>
+<h2 class="section-title">예제</h2>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 1</span><p style="margin:0;font-size:14px">TABLE_SIZE가 7일 때, 키 3, 10, 17, 24의 해시 값을 각각 구하고 어떤 충돌이 발생하는지 설명하십시오.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 2</span><p style="margin:0;font-size:14px">위 본문의 HashTable 구조체를 사용하여 키 5, 12, 19를 삽입하고 테이블 상태를 출력하는 프로그램을 작성하십시오.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 3</span><p style="margin:0;font-size:14px">search 함수를 사용하여 존재하는 키와 존재하지 않는 키를 각각 탐색하고 결과를 출력하십시오.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 4</span><p style="margin:0;font-size:14px">delete 함수로 키를 삭제한 뒤 search로 확인하는 프로그램을 작성하십시오.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 5</span><p style="margin:0;font-size:14px">djb2 해시 함수를 사용하여 문자열 "hello"와 "world"의 해시 값을 출력하십시오.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 6</span><p style="margin:0;font-size:14px">해시 테이블에 N개의 정수를 삽입한 뒤, 특정 값이 존재하는지 O(1)에 판별하는 프로그램을 작성하십시오.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 7</span><p style="margin:0;font-size:14px">해시 테이블을 사용하여 배열에서 중복된 값을 찾는 프로그램을 작성하십시오.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 8</span><p style="margin:0;font-size:14px">해시 테이블의 모든 노드를 순회하며 메모리를 해제하는 destroyTable 함수를 작성하십시오.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 9</span><p style="margin:0;font-size:14px">적재율을 계산하는 함수 loadFactor를 작성하십시오. 전체 저장된 원소 수를 TABLE_SIZE로 나눈 값을 반환합니다.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 10</span><p style="margin:0;font-size:14px">체이닝 해시 테이블에서 가장 긴 연결 리스트의 길이를 구하는 함수를 작성하십시오. 이 값이 클수록 해시 함수의 품질이 나쁜 것입니다.</p></div>
+<h2 class="section-title">대회 기출 문제</h2>
+<h2 class="section-title">대회 기출</h2>
+<h2 class="section-title">요약</h2>
+<div class="warmup-box"><div class="warmup-title">핵심 정리</div><div class="wq"><b>1.</b> 해시 함수: key % TABLE_SIZE로 키를 인덱스로 변환</div><div class="wq"><b>2.</b> 충돌: 서로 다른 키가 같은 인덱스를 반환하는 현상</div><div class="wq"><b>3.</b> 체이닝: 각 인덱스에 연결 리스트를 두어 충돌을 해결</div><div class="wq"><b>4.</b> insert/search/delete: 해시 인덱스 계산 후 연결 리스트에서 처리</div><div class="wq"><b>5.</b> 적재율: n / TABLE_SIZE, 0.7 이하로 유지하면 성능이 좋음</div><div class="wq"><b>6.</b> TABLE_SIZE는 소수를 선택하면 해시 분포가 고름</div><div class="wq"><b>7.</b> 평균 O(1) 탐색, 최악 O(N) (모든 키가 같은 인덱스에 몰릴 때)</div></div>
+
+    <span class="page-num">2</span>
+  </div>
+</div>
+<div class="page">
+  <div class="content-page">
+    <div class="unit-header-bar">
+      <span class="unit-tag">UNIT 11</span>
+      <span class="unit-title-sm">3과목 연결</span>
+    </div>
+<h2 class="section-title">10축 매핑</h2>
+<div class="note-box"><span class="note-label"></span>
+<div style="font-weight:700;margin-bottom:6px;color:#1a2e4a">이 유닛에서 키운 역량</div>C언어 ★★★★★ -- 구조체, 포인터, 동적 할당을 종합 활용하여 해시 테이블을 구현했습니다.<br>컴퓨팅사고력 ★★★★★ -- 키-인덱스 변환 개념과 충돌 해결 전략을 설계했습니다.<br>디버깅 ★★★★☆ -- 음수 해시, 메모리 누수, 테이블 크기 선택 오류를 체험했습니다.<br>KOI ★★★★★ -- 해시 테이블은 대회에서 빈도 세기, 중복 판별 등에 핵심적으로 사용됩니다.</div>
+<h2 class="section-title">다음 유닛 예고</h2>
+<p>undefined</p>
+<table class="trace"><thead><tr><th>용어</th><th>설명</th></tr></thead><tbody><tr><td><code>해시 함수(Hash Function)</code></td><td>키(key)를 배열 인덱스로 변환하는 함수입니다. 기본 형태는 key % TABLE_SIZE입니다.</td></tr><tr><td><code>충돌(Collision)</code></td><td>서로 다른 키가 해시 함수를 통해 같은 인덱스를 반환하는 현상입니다.</td></tr><tr><td><code>체이닝(Chaining)</code></td><td>충돌이 발생한 인덱스에 연결 리스트를 두어 여러 데이터를 저장하는 방식입니다.</td></tr><tr><td><code>개방 주소법(Open Addressing)</code></td><td>충돌 시 다른 빈 인덱스를 탐색하여 데이터를 저장하는 방식입니다.</td></tr><tr><td><code>적재율(Load Factor)</code></td><td>저장된 원소 수를 테이블 크기로 나눈 값(n / TABLE_SIZE)입니다. 높을수록 충돌이 증가합니다.</td></tr><tr><td><code>djb2</code></td><td>Daniel J. Bernstein이 제안한 문자열 해시 알고리즘입니다. hash = hash * 33 + c 공식을 사용합니다.</td></tr><tr><td><code>재해싱(Rehashing)</code></td><td>적재율이 임계값을 넘으면 테이블 크기를 늘리고 모든 원소를 다시 해싱하는 작업입니다.</td></tr></tbody></table>
+
+    <span class="page-num">3</span>
+  </div>
+</div>
+<div class="page contest-page-wrap">
+  <div class="chapter-page">
+    <div class="chapter-sidebar"></div>
+    <div class="chapter-accent-bar"></div>
+    <div style="flex:1; min-width:0; padding:50px 50px 40px 45px; position:relative;">
+      <div class="problems-chapter-ref">Chapter 11: 해시 테이블 기초</div>
+      <h2 class="problems-title">대회 문제 (Online Judge)</h2>
+      <p style="font-size:14px; color:#6b7280; margin:-8px 0 24px;">실제 온라인 저지에 출제된 문제입니다. 아래에 코드를 작성한 뒤, 사이트에 제출하여 채점하십시오.</p>
+
+        <div class="contest-card">
+          <div class="contest-header">
+            <div class="contest-num-source">
+              <span class="contest-num">1번</span>
+              <span class="contest-source">백준 1000</span>
+            </div>
+            <span class="diff diff-mid">대회</span>
+          </div>
+          <div class="contest-body">
+            <p class="contest-question">두 정수 A와 B를 입력받아 A+B를 출력하십시오.</p>
+            
+            <div class="contest-write-area">
+              <div class="contest-write-label">코드 작성</div>
+              <textarea class="contest-textarea" rows="12" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="contest-card">
+          <div class="contest-header">
+            <div class="contest-num-source">
+              <span class="contest-num">2번</span>
+              <span class="contest-source">백준 1001</span>
+            </div>
+            <span class="diff diff-mid">대회</span>
+          </div>
+          <div class="contest-body">
+            <p class="contest-question">두 정수 A와 B를 입력받아 A-B를 출력하십시오.</p>
+            
+            <div class="contest-write-area">
+              <div class="contest-write-label">코드 작성</div>
+              <textarea class="contest-textarea" rows="12" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="contest-card">
+          <div class="contest-header">
+            <div class="contest-num-source">
+              <span class="contest-num">3번</span>
+              <span class="contest-source">백준 1008</span>
+            </div>
+            <span class="diff diff-mid">대회</span>
+          </div>
+          <div class="contest-body">
+            <p class="contest-question">두 정수 A와 B를 입력받아 A/B를 소수점 9자리까지 출력하십시오.</p>
+            
+            <div class="contest-write-area">
+              <div class="contest-write-label">코드 작성</div>
+              <textarea class="contest-textarea" rows="12" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="contest-card">
+          <div class="contest-header">
+            <div class="contest-num-source">
+              <span class="contest-num">4번</span>
+              <span class="contest-source">백준 2588</span>
+            </div>
+            <span class="diff diff-mid">대회</span>
+          </div>
+          <div class="contest-body">
+            <p class="contest-question">세 자리 수와 세 자리 수의 곱셈 결과를 각 자릿수별로 출력하십시오.</p>
+            
+            <div class="contest-write-area">
+              <div class="contest-write-label">코드 작성</div>
+              <textarea class="contest-textarea" rows="12" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="contest-card">
+          <div class="contest-header">
+            <div class="contest-num-source">
+              <span class="contest-num">5번</span>
+              <span class="contest-source">백준 8393</span>
+            </div>
+            <span class="diff diff-mid">대회</span>
+          </div>
+          <div class="contest-body">
+            <p class="contest-question">N이 주어졌을 때 1부터 N까지의 합을 구하십시오.</p>
+            
+            <div class="contest-write-area">
+              <div class="contest-write-label">코드 작성</div>
+              <textarea class="contest-textarea" rows="12" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="contest-card">
+          <div class="contest-header">
+            <div class="contest-num-source">
+              <span class="contest-num">6번</span>
+              <span class="contest-source">백준 2738</span>
+            </div>
+            <span class="diff diff-mid">대회</span>
+          </div>
+          <div class="contest-body">
+            <p class="contest-question">N*M 크기의 두 행렬 A와 B를 입력받아 A+B를 출력하십시오.</p>
+            
+            <div class="contest-write-area">
+              <div class="contest-write-label">코드 작성</div>
+              <textarea class="contest-textarea" rows="12" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="contest-card">
+          <div class="contest-header">
+            <div class="contest-num-source">
+              <span class="contest-num">7번</span>
+              <span class="contest-source">백준 15596</span>
+            </div>
+            <span class="diff diff-mid">대회</span>
+          </div>
+          <div class="contest-body">
+            <p class="contest-question">정수 배열을 입력받아 주어진 함수의 결과를 출력하십시오.</p>
+            
+            <div class="contest-write-area">
+              <div class="contest-write-label">코드 작성</div>
+              <textarea class="contest-textarea" rows="12" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="contest-card">
+          <div class="contest-header">
+            <div class="contest-num-source">
+              <span class="contest-num">8번</span>
+              <span class="contest-source">백준 4673</span>
+            </div>
+            <span class="diff diff-mid">대회</span>
+          </div>
+          <div class="contest-body">
+            <p class="contest-question">셀프 넘버: 생성자가 없는 숫자를 모두 출력하십시오.</p>
+            
+            <div class="contest-write-area">
+              <div class="contest-write-label">코드 작성</div>
+              <textarea class="contest-textarea" rows="12" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="contest-card">
+          <div class="contest-header">
+            <div class="contest-num-source">
+              <span class="contest-num">9번</span>
+              <span class="contest-source">백준 1065</span>
+            </div>
+            <span class="diff diff-mid">대회</span>
+          </div>
+          <div class="contest-body">
+            <p class="contest-question">어떤 양의 정수 N의 각 자릿수의 합을 구한 뒤, N이 그 합으로 나누어지면 한수라 합니다. 1 이상 N 이하의 한수의 개수를 출력하십시오.</p>
+            
+            <div class="contest-write-area">
+              <div class="contest-write-label">코드 작성</div>
+              <textarea class="contest-textarea" rows="12" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="contest-card">
+          <div class="contest-header">
+            <div class="contest-num-source">
+              <span class="contest-num">10번</span>
+              <span class="contest-source">백준 1546</span>
+            </div>
+            <span class="diff diff-mid">대회</span>
+          </div>
+          <div class="contest-body">
+            <p class="contest-question">시험 점수를 입력받아 새로운 평균을 기준으로 점수를 변환하여 출력하십시오.</p>
+            
+            <div class="contest-write-area">
+              <div class="contest-write-label">코드 작성</div>
+              <textarea class="contest-textarea" rows="12" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="contest-card">
+          <div class="contest-header">
+            <div class="contest-num-source">
+              <span class="contest-num">1번</span>
+              <span class="contest-source">백준 1935</span>
+            </div>
+            <span class="diff diff-mid">대회</span>
+          </div>
+          <div class="contest-body">
+            <p class="contest-question">후위 표기식의 값을 계산하십시오.</p>
+            
+            <div class="contest-write-area">
+              <div class="contest-write-label">코드 작성</div>
+              <textarea class="contest-textarea" rows="12" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="contest-card">
+          <div class="contest-header">
+            <div class="contest-num-source">
+              <span class="contest-num">2번</span>
+              <span class="contest-source">백준 1918</span>
+            </div>
+            <span class="diff diff-mid">대회</span>
+          </div>
+          <div class="contest-body">
+            <p class="contest-question">중위 표기식을 후위 표기식으로 변환하십시오.</p>
+            
+            <div class="contest-write-area">
+              <div class="contest-write-label">코드 작성</div>
+              <textarea class="contest-textarea" rows="12" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="contest-card">
+          <div class="contest-header">
+            <div class="contest-num-source">
+              <span class="contest-num">3번</span>
+              <span class="contest-source">백준 2504</span>
+            </div>
+            <span class="diff diff-mid">대회</span>
+          </div>
+          <div class="contest-body">
+            <p class="contest-question">괄호열의 값을 계산하십시오.</p>
+            
+            <div class="contest-write-area">
+              <div class="contest-write-label">코드 작성</div>
+              <textarea class="contest-textarea" rows="12" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="contest-card">
+          <div class="contest-header">
+            <div class="contest-num-source">
+              <span class="contest-num">4번</span>
+              <span class="contest-source">백준 5430</span>
+            </div>
+            <span class="diff diff-mid">대회</span>
+          </div>
+          <div class="contest-body">
+            <p class="contest-question">배열에 R(뒤집기)과 D(버리기) 함수를 적용하십시오.</p>
+            
+            <div class="contest-write-area">
+              <div class="contest-write-label">코드 작성</div>
+              <textarea class="contest-textarea" rows="12" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="contest-card">
+          <div class="contest-header">
+            <div class="contest-num-source">
+              <span class="contest-num">5번</span>
+              <span class="contest-source">백준 1021</span>
+            </div>
+            <span class="diff diff-mid">대회</span>
+          </div>
+          <div class="contest-body">
+            <p class="contest-question">회전하는 큐에서 원소를 꺼내는 최소 연산 수를 구하십시오.</p>
+            
+            <div class="contest-write-area">
+              <div class="contest-write-label">코드 작성</div>
+              <textarea class="contest-textarea" rows="12" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="contest-card">
+          <div class="contest-header">
+            <div class="contest-num-source">
+              <span class="contest-num">6번</span>
+              <span class="contest-source">백준 11279</span>
+            </div>
+            <span class="diff diff-mid">대회</span>
+          </div>
+          <div class="contest-body">
+            <p class="contest-question">최대 힙을 구현하십시오.</p>
+            
+            <div class="contest-write-area">
+              <div class="contest-write-label">코드 작성</div>
+              <textarea class="contest-textarea" rows="12" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="contest-card">
+          <div class="contest-header">
+            <div class="contest-num-source">
+              <span class="contest-num">7번</span>
+              <span class="contest-source">백준 1927</span>
+            </div>
+            <span class="diff diff-mid">대회</span>
+          </div>
+          <div class="contest-body">
+            <p class="contest-question">최소 힙을 구현하십시오.</p>
+            
+            <div class="contest-write-area">
+              <div class="contest-write-label">코드 작성</div>
+              <textarea class="contest-textarea" rows="12" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="contest-card">
+          <div class="contest-header">
+            <div class="contest-num-source">
+              <span class="contest-num">8번</span>
+              <span class="contest-source">백준 11286</span>
+            </div>
+            <span class="diff diff-mid">대회</span>
+          </div>
+          <div class="contest-body">
+            <p class="contest-question">절댓값 힙을 구현하십시오.</p>
+            
+            <div class="contest-write-area">
+              <div class="contest-write-label">코드 작성</div>
+              <textarea class="contest-textarea" rows="12" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="contest-card">
+          <div class="contest-header">
+            <div class="contest-num-source">
+              <span class="contest-num">9번</span>
+              <span class="contest-source">백준 1991</span>
+            </div>
+            <span class="diff diff-mid">대회</span>
+          </div>
+          <div class="contest-body">
+            <p class="contest-question">이진 트리를 전위, 중위, 후위 순회하십시오.</p>
+            
+            <div class="contest-write-area">
+              <div class="contest-write-label">코드 작성</div>
+              <textarea class="contest-textarea" rows="12" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="contest-card">
+          <div class="contest-header">
+            <div class="contest-num-source">
+              <span class="contest-num">10번</span>
+              <span class="contest-source">백준 5639</span>
+            </div>
+            <span class="diff diff-mid">대회</span>
+          </div>
+          <div class="contest-body">
+            <p class="contest-question">이진 검색 트리를 후위 순회한 결과를 출력하십시오.</p>
+            
+            <div class="contest-write-area">
+              <div class="contest-write-label">코드 작성</div>
+              <textarea class="contest-textarea" rows="12" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+            </div>
+          </div>
+        </div>
+      <span class="page-num">4</span>
+    </div>
+  </div>
+</div>
+</body>
+</html>

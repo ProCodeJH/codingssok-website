@@ -38,7 +38,7 @@ export interface Unit {
     title: string;
     subtitle?: string;
     duration?: string;
-    type?: '이론' | '실습' | '퀴즈' | '종합';
+    type?: '이론' | '실습' | '퀴즈' | '종합' | '프로젝트';
     difficulty?: 1 | 2 | 3;
     content?: string; // 학습 내용 (HTML/markdown) — 레거시 호환
     tip?: string;

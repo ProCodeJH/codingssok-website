@@ -1,0 +1,1535 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>코딩쏙 교재 — 0과 1의 세계 — 이진수</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+
+  :root {
+    --navy: #1a2e4a;
+    --navy-mid: #2c4a6e;
+    --navy-light: #3d6590;
+    --orange: #e07830;
+    --orange-light: #f5e6d8;
+    --white: #ffffff;
+    --bg: #f7f8fa;
+    --bg-warm: #faf9f7;
+    --gray-50: #f9fafb;
+    --gray-100: #f3f4f6;
+    --gray-200: #e5e7eb;
+    --gray-300: #d1d5db;
+    --gray-400: #9ca3af;
+    --gray-500: #6b7280;
+    --gray-600: #4b5563;
+    --gray-700: #374151;
+    --gray-800: #1f2937;
+    --text: #2d3748;
+    --green: #16a34a;
+    --green-bg: #dcfce7;
+    --red: #dc2626;
+    --red-bg: #fee2e2;
+    --blue: #2563eb;
+    --blue-bg: #dbeafe;
+    --yellow-bg: #fef9c3;
+    --font: 'Noto Sans KR', sans-serif;
+    --mono: 'JetBrains Mono', 'Consolas', monospace;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: var(--font); background: #e8eaed; font-size: 15px; }
+
+  /* ========== PAGE ========== */
+  .page {
+    width: 210mm;
+    min-height: 295mm;
+    margin: 24px auto;
+    background: var(--white);
+    box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* ========== PAGE 1: CHAPTER START ========== */
+  .chapter-page {
+    display: flex;
+    min-height: 295mm;
+  }
+
+  .chapter-sidebar {
+    width: 10px;
+    background: var(--navy);
+    flex-shrink: 0;
+  }
+
+  .chapter-accent-bar {
+    width: 7px;
+    background: var(--orange);
+    flex-shrink: 0;
+  }
+
+  .chapter-body {
+    flex: 1;
+    padding: 70px 65px 50px 55px;
+    position: relative;
+  }
+
+  .chapter-watermark {
+    position: absolute;
+    top: -10px;
+    right: -15px;
+    font-size: 280px;
+    font-weight: 900;
+    color: rgba(180,195,212,0.35);
+    line-height: 1;
+    pointer-events: none;
+    letter-spacing: -10px;
+  }
+
+  .chapter-label {
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--navy-mid);
+    letter-spacing: 2px;
+    margin-bottom: 4px;
+  }
+
+  .chapter-title {
+    font-size: 44px;
+    font-weight: 900;
+    color: var(--navy);
+    line-height: 1.15;
+    margin-bottom: 12px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .chapter-sub {
+    font-size: 16px;
+    color: var(--gray-500);
+    font-weight: 400;
+    margin-bottom: 20px;
+    padding-bottom: 28px;
+    border-bottom: 1px solid var(--gray-200);
+  }
+
+  /* Learning objectives */
+  .obj-title {
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--navy);
+    margin-bottom: 16px;
+    margin-top: 32px;
+  }
+
+  .obj-list {
+    list-style: none;
+    margin-bottom: 40px;
+  }
+
+  .obj-list li {
+    padding: 5px 0 5px 24px;
+    position: relative;
+    font-size: 15px;
+    color: var(--gray-700);
+    line-height: 1.6;
+  }
+
+  .obj-list li::before {
+    content: '•';
+    position: absolute;
+    left: 8px;
+    color: var(--navy-mid);
+    font-weight: 700;
+  }
+
+  /* Prerequisites flow */
+  .prereq-title {
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--navy);
+    margin-bottom: 18px;
+  }
+
+  .prereq-flow {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    margin-bottom: 44px;
+  }
+
+  .prereq-item {
+    padding: 9px 22px;
+    border: 1.5px solid var(--gray-300);
+    border-radius: 50px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--gray-600);
+    background: var(--white);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+  }
+
+  .prereq-item.current {
+    border-color: var(--navy);
+    color: var(--navy);
+    font-weight: 700;
+    background: #edf2f7;
+    box-shadow: 0 2px 6px rgba(26,46,74,0.12);
+  }
+
+  .prereq-arrow {
+    width: 36px;
+    text-align: center;
+    color: var(--gray-300);
+    font-size: 18px;
+    font-weight: 300;
+  }
+
+  /* Predict box */
+  .predict-box {
+    background: var(--gray-50);
+    border: 1.5px solid var(--gray-200);
+    border-radius: 12px;
+    padding: 24px 28px;
+  }
+
+  .predict-label {
+    display: inline-block;
+    background: var(--orange);
+    color: var(--white);
+    font-size: 12px;
+    font-weight: 600;
+    padding: 3px 12px;
+    border-radius: 4px;
+    margin-bottom: 14px;
+    letter-spacing: 0.5px;
+  }
+
+  .predict-q {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--navy);
+    margin-bottom: 16px;
+  }
+
+  .predict-code {
+    background: var(--white);
+    border: 1px solid var(--gray-200);
+    border-radius: 8px;
+    padding: 14px 18px;
+    font-family: var(--mono);
+    font-size: 13px;
+    line-height: 1.65;
+    color: var(--gray-700);
+  }
+
+  /* ========== PAGE 2: CORE CONTENT ========== */
+  .content-page {
+    padding: 55px 65px;
+  }
+
+  .unit-header-bar {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    margin-bottom: 8px;
+  }
+
+  .unit-tag {
+    font-size: 12px;
+    color: var(--orange);
+    font-weight: 600;
+    letter-spacing: 1px;
+  }
+
+  .unit-title-sm {
+    font-size: 14px;
+    color: var(--gray-400);
+    font-weight: 400;
+  }
+
+  .section-title {
+    font-size: 24px;
+    font-weight: 800;
+    color: var(--navy);
+    margin-bottom: 24px;
+    margin-top: 8px;
+    padding-left: 16px;
+    border-left: 5px solid var(--orange);
+  }
+
+  p {
+    font-size: 15.5px;
+    line-height: 1.9;
+    color: var(--text);
+    margin-bottom: 18px;
+  }
+
+  p code {
+    font-family: var(--mono);
+    font-size: 13.5px;
+    background: #f1f3f5;
+    padding: 2px 7px;
+    border-radius: 4px;
+    color: var(--navy);
+    font-weight: 500;
+  }
+
+  /* Code block */
+  .code-wrap {
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    border: 1px solid var(--gray-200);
+    margin: 22px 0;
+  }
+
+  .code-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 9px 18px;
+    background: var(--navy);
+    font-size: 12px;
+  }
+
+  .code-bar-lang {
+    font-family: var(--mono);
+    font-weight: 600;
+    color: var(--white);
+  }
+
+  .code-bar-file {
+    color: rgba(255,255,255,0.6);
+    font-weight: 400;
+  }
+
+  .code-body {
+    background: #f8f9fb;
+    padding: 20px 0;
+    font-family: var(--mono);
+    font-size: 13.5px;
+    line-height: 1.75;
+    border: 1px solid var(--gray-200);
+    border-top: none;
+    border-radius: 0 0 12px 12px;
+  }
+
+  .code-line {
+    display: flex;
+    padding: 0 20px;
+  }
+
+  .code-line:hover {
+    background: #f0f4f8;
+  }
+
+  .code-line.highlighted {
+    background: #fff8e1;
+  }
+
+  .ln {
+    width: 30px;
+    text-align: right;
+    color: #b8bfc8;
+    font-size: 12px;
+    margin-right: 18px;
+    user-select: none;
+    flex-shrink: 0;
+    padding-top: 1px;
+  }
+
+  .lc { flex: 1; }
+
+  /* syntax */
+  .s-pp { color: #8b5cf6; font-weight: 600; }
+  .s-str { color: #d97706; }
+  .s-type { color: #2563eb; font-weight: 500; }
+  .s-kw { color: #7c3aed; font-weight: 500; }
+  .s-fn { color: #059669; font-weight: 500; }
+  .s-num { color: #dc2626; }
+  .s-cm { color: #9ca3af; font-style: italic; }
+
+  /* Output block */
+  .output-wrap {
+    border-radius: 10px;
+    overflow: hidden;
+    margin: 10px 0 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    border: 1px solid #d1d5db;
+  }
+
+  .output-bar {
+    padding: 9px 18px;
+    background: #374151;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--white);
+    letter-spacing: 0.5px;
+  }
+
+  .output-body {
+    padding: 16px 20px;
+    font-family: var(--mono);
+    font-size: 13.5px;
+    line-height: 1.7;
+    color: var(--gray-800);
+    background: #f1f5f9;
+    border: 1px solid var(--gray-200);
+    border-top: none;
+    border-radius: 0 0 10px 10px;
+  }
+
+  /* Callout */
+  .tip {
+    margin: 28px 0;
+    padding: 18px 24px;
+    background: #dbeafe;
+    border-left: 5px solid #2563eb;
+    border-radius: 0 12px 12px 0;
+    font-size: 14.5px;
+    line-height: 1.8;
+    color: var(--text);
+  }
+
+  .tip-label {
+    font-weight: 700;
+    color: #2563eb;
+    font-size: 13px;
+    display: block;
+    margin-bottom: 4px;
+  }
+
+  .warn {
+    margin: 28px 0;
+    padding: 18px 24px;
+    background: #fef3c7;
+    border-left: 5px solid #d97706;
+    border-radius: 0 12px 12px 0;
+    font-size: 14.5px;
+    line-height: 1.8;
+  }
+
+  .warn-label {
+    font-weight: 700;
+    color: #d97706;
+    font-size: 13px;
+    display: block;
+    margin-bottom: 4px;
+  }
+
+  .note-box {
+    margin: 28px 0;
+    padding: 18px 24px;
+    background: #e2e8f0;
+    border-left: 5px solid #64748b;
+    border-radius: 0 12px 12px 0;
+    font-size: 14.5px;
+    line-height: 1.8;
+  }
+
+  .note-label {
+    font-weight: 700;
+    color: var(--gray-600);
+    font-size: 13px;
+    display: block;
+    margin-bottom: 4px;
+  }
+
+  /* Trace table */
+  table.trace {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    margin: 28px 0;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+    font-size: 14px;
+  }
+
+  table.trace th {
+    background: var(--navy);
+    color: var(--white);
+    padding: 10px 16px;
+    text-align: left;
+    font-weight: 500;
+    font-size: 13px;
+  }
+
+  table.trace td {
+    padding: 10px 16px;
+    border-bottom: 1px solid var(--gray-200);
+    color: var(--gray-700);
+  }
+
+  table.trace tr:nth-child(even) td { background: var(--gray-50); }
+  table.trace tr:last-child td { border-bottom: none; }
+
+  table.trace td code {
+    font-family: var(--mono);
+    font-size: 12.5px;
+    background: #eef1f5;
+    padding: 2px 6px;
+    border-radius: 4px;
+    color: var(--navy);
+  }
+
+  /* ========== PAGE 3: PROBLEMS ========== */
+  .problems-header {
+    margin-bottom: 8px;
+  }
+
+  .problems-chapter-ref {
+    font-size: 13px;
+    color: var(--gray-500);
+    margin-bottom: 4px;
+  }
+
+  .problems-title {
+    font-size: 28px;
+    font-weight: 800;
+    color: var(--navy);
+    margin-bottom: 24px;
+  }
+
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 16px;
+  }
+
+  .prob-card {
+    background: var(--white);
+    border: 1px solid var(--gray-200);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 3px 15px rgba(0,0,0,0.06);
+  }
+
+  .prob-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 16px;
+    background: var(--navy);
+  }
+
+  .prob-num {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--white);
+  }
+
+  .diff {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    font-size: 12px;
+    font-weight: 800;
+  }
+
+  .diff-basic { background: #22c55e; color: white; }
+  .diff-mid { background: #f59e0b; color: white; }
+  .diff-hard { background: #ef4444; color: white; }
+
+  .prob-desc {
+    font-size: 13.5px;
+    line-height: 1.65;
+    color: var(--gray-600);
+    margin-bottom: 10px;
+    padding: 14px 16px 0;
+  }
+
+  .prob-code {
+    background: var(--gray-50);
+    border: 1px solid var(--gray-200);
+    border-radius: 6px;
+    padding: 10px 14px;
+    margin: 0 16px 16px;
+    font-family: var(--mono);
+    font-size: 12.5px;
+    line-height: 1.55;
+    color: var(--gray-600);
+  }
+
+  /* Competition section */
+  .comp-section {
+    margin-top: 32px;
+    padding-top: 24px;
+    border-top: 2px solid var(--navy);
+  }
+
+  .comp-title {
+    font-size: 22px;
+    font-weight: 800;
+    color: var(--navy);
+    margin-bottom: 20px;
+  }
+
+  .comp-card {
+    background: var(--white);
+    border: 1.5px solid var(--gray-200);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 18px rgba(0,0,0,0.06);
+  }
+
+  .comp-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 16px;
+    background: #0f766e;
+  }
+
+  .comp-header .comp-name {
+    color: var(--white);
+    font-size: 15px;
+    font-weight: 700;
+    margin: 0;
+  }
+
+  .comp-inner {
+    padding: 14px 18px 18px;
+  }
+
+  .comp-badge {
+    display: inline-block;
+    padding: 3px 12px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 700;
+  }
+
+  .badge-bj { background: #93c5fd; color: #1e3a5f; }
+  .badge-cu { background: #c4b5fd; color: #3b1f7e; }
+  .badge-pg { background: #7dd3fc; color: #0c4a6e; }
+
+  .comp-name {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--navy);
+    margin-bottom: 6px;
+  }
+
+  .comp-desc {
+    font-size: 14px;
+    color: var(--gray-600);
+    line-height: 1.7;
+    margin-bottom: 14px;
+  }
+
+  .io-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+
+  .io-card {
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid var(--gray-200);
+  }
+
+  .io-h {
+    padding: 6px 14px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--gray-600);
+    background: #e2e8f0;
+  }
+
+  .io-c {
+    padding: 10px 14px;
+    font-family: var(--mono);
+    font-size: 13px;
+    line-height: 1.5;
+    background: var(--white);
+  }
+
+  /* ========== DEBUG LAB ========== */
+  .debug-section {
+    margin: 24px 0;
+    border: 2px solid var(--red);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+
+  .debug-bar {
+    background: var(--red);
+    color: var(--white);
+    padding: 10px 20px;
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 1px;
+  }
+
+  .debug-body {
+    padding: 20px;
+    background: #fef2f2;
+  }
+
+  /* 10축 connection */
+  .connect-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 16px;
+    margin: 28px 0;
+  }
+
+  .connect-card {
+    border-radius: 12px;
+    padding: 20px;
+    text-align: center;
+    border: 1px solid var(--gray-200);
+    box-shadow: 0 3px 14px rgba(0,0,0,0.05);
+  }
+
+  .connect-card h5 {
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 8px;
+  }
+
+  .connect-card p {
+    font-size: 13px;
+    margin: 0;
+    color: var(--gray-600);
+    line-height: 1.6;
+  }
+
+  .cc1 { border-top: 3px solid #8b5cf6; }
+  .cc1 h5 { color: #8b5cf6; }
+  .cc2 { border-top: 3px solid var(--green); }
+  .cc2 h5 { color: var(--green); }
+  .cc3 { border-top: 3px solid var(--navy); }
+  .cc3 h5 { color: var(--navy); }
+
+  /* PAGE NUMBER */
+  .page-num {
+    position: absolute;
+    bottom: 20px;
+    right: 30px;
+    font-size: 12px;
+    color: var(--gray-400);
+  }
+
+  /* WARMUP */
+  .warmup-box {
+    background: #e0e7f1;
+    border-radius: 12px;
+    padding: 24px 28px;
+    margin: 28px 0;
+    border: 2px solid #c7d2e0;
+  }
+
+  .warmup-title {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--navy);
+    margin-bottom: 14px;
+  }
+
+  .wq {
+    padding: 9px 16px;
+    background: var(--white);
+    border-radius: 8px;
+    margin-bottom: 8px;
+    font-size: 14px;
+    border: 1px solid var(--gray-200);
+    color: var(--gray-700);
+  }
+
+  .wq b { color: var(--navy); margin-right: 6px; }
+  .wq .hint { color: var(--gray-400); font-size: 13px; }
+
+  /* ===== CONTEST PROBLEMS PAGE ===== */
+  .contest-page-wrap .chapter-page {
+    min-height: auto;
+  }
+
+  .contest-page-wrap .chapter-page > div:last-child {
+    min-width: 0;
+    overflow-wrap: break-word;
+    word-break: break-word;
+  }
+
+  .contest-card {
+    background: white;
+    border: 1.5px solid var(--gray-200);
+    border-radius: 12px;
+    margin-bottom: 28px;
+    overflow: hidden;
+    break-inside: avoid;
+  }
+
+  .contest-header {
+    background: var(--navy);
+    color: white;
+    padding: 14px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .contest-num-source {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .contest-num {
+    font-weight: 700;
+    font-size: 16px;
+  }
+
+  .contest-source {
+    background: rgba(255,255,255,0.15);
+    padding: 3px 10px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 500;
+  }
+
+  .contest-body {
+    padding: 20px 24px 24px;
+  }
+
+  .contest-question {
+    font-size: 15px;
+    line-height: 1.7;
+    color: var(--text);
+    margin: 0 0 16px;
+    word-break: break-word;
+    overflow-wrap: break-word;
+  }
+
+  .contest-expected {
+    background: #1e293b;
+    border-radius: 8px;
+    overflow: hidden;
+    margin-bottom: 20px;
+  }
+
+  .contest-expected-label {
+    background: #334155;
+    color: #94a3b8;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 6px 14px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .contest-expected-body {
+    color: #e2e8f0;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    line-height: 1.6;
+    padding: 12px 16px;
+    margin: 0;
+    white-space: pre;
+  }
+
+  .contest-write-area {
+    border: 2px dashed var(--gray-300);
+    border-radius: 10px;
+    overflow: hidden;
+    transition: border-color 0.2s;
+  }
+
+  .contest-write-area:focus-within {
+    border-color: var(--orange);
+    border-style: solid;
+  }
+
+  .contest-write-label {
+    background: var(--bg);
+    color: var(--gray-500);
+    font-size: 12px;
+    font-weight: 600;
+    padding: 8px 14px;
+    border-bottom: 1px solid var(--gray-200);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .contest-textarea {
+    width: 100%;
+    min-height: 200px;
+    padding: 16px 18px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    line-height: 1.7;
+    color: var(--text);
+    background: #fafbfc;
+    border: none;
+    outline: none;
+    resize: vertical;
+    tab-size: 4;
+    box-sizing: border-box;
+  }
+
+  .contest-textarea::placeholder {
+    color: var(--gray-300);
+  }
+
+  @media print {
+    body { background: white; }
+    .page { box-shadow: none; margin: 0; page-break-after: always; }
+    .contest-textarea { border: 1px solid var(--gray-300); min-height: 180px; }
+  }
+
+</style>
+</head>
+<body>
+
+<div class="page">
+  <div class="chapter-page">
+    <div class="chapter-sidebar"></div>
+    <div class="chapter-accent-bar"></div>
+    <div class="chapter-body">
+      <div class="chapter-watermark">02</div>
+      <div class="chapter-label">Chapter 02</div>
+      <h1 class="chapter-title">0과 1의 세계</h1>
+      <p class="chapter-sub">컴퓨터가 0과 1만 사용하는 이유를 이해하고, 10진수와 2진수를 자유롭게 변환하며, 비트/바이트/ASCII의 개념을 설명할 수 있습니다.</p>
+
+      <h3 class="obj-title">이 유닛에서 배우는 것</h3>
+      <ul class="obj-list">
+        <li>컴퓨터가 0과 1만 사용하는 이유를 전기 스위치 비유로 설명할 수 있습니다.</li>
+        <li>10진수를 2진수로, 2진수를 10진수로 변환할 수 있습니다.</li>
+        <li>비트(bit)와 바이트(byte)의 관계와 표현 범위를 말할 수 있습니다.</li>
+        <li>ASCII 코드의 개념을 이해하고 대표적인 문자의 코드 값을 말할 수 있습니다.</li>
+      </ul>
+
+      <h3 class="prereq-title">선수 학습</h3>
+      <div class="prereq-flow">
+        <div class="prereq-item">L0-U01 수료</div><div class="prereq-arrow">→</div>
+        <div class="prereq-item">나눗셈과 나머지 개념 이해</div><div class="prereq-arrow">→</div>
+        <div class="prereq-item current">거듭제곱(2의 n제곱) 계산 가능</div>
+      </div>
+
+      <div class="predict-box">
+        <div class="predict-label">예측해 봅시다</div>
+        <div class="predict-q">10진수 13을 0과 1로만 표현해야 한다면 어떻게 쓸 수 있을까요? 정답을 모르더라도 나름의 규칙을 만들어 시도해 보십시오.</div>
+        
+      </div>
+
+      <span class="page-num">1</span>
+    </div>
+  </div>
+</div>
+<div class="page">
+  <div class="content-page">
+    <div class="unit-header-bar">
+      <span class="unit-tag">UNIT 02</span>
+      <span class="unit-title-sm">0과 1의 세계</span>
+    </div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 1</span><p style="margin:0;font-size:14px">방의 전등 스위치를 떠올려 보십시오. 스위치의 상태는 몇 가지입니까? 각 상태를 숫자로 표현한다면 어떤 숫자를 사용하겠습니까?</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 2</span><p style="margin:0;font-size:14px">우리가 일상에서 사용하는 숫자 체계는 0부터 9까지 10개의 숫자를 사용합니다. 이 체계를 무엇이라고 부르는지 알고 있습니까?</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 3</span><p style="margin:0;font-size:14px">컴퓨터 내부에서 사진, 음악, 문서가 모두 숫자로 저장된다고 합니다. 왜 숫자로 저장해야 한다고 생각합니까? 자유롭게 추측해 보십시오.</p></div>
+<h2 class="section-title">예측</h2>
+<div class="note-box"><span class="note-label">틀려도 괜찮습니다</span>
+정확한 변환 방법은 이 유닛에서 배웁니다. 지금은 "0과 1만으로 숫자를 표현할 수 있을까?"라는 질문에 대해 고민하는 것 자체가 중요합니다.</div>
+<h2 class="section-title">이야기 — 컴퓨터는 왜 0과 1만 이해하는가</h2>
+<p>컴퓨터 내부는 수십억 개의 아주 작은 전기 스위치(트랜지스터)로 이루어져 있습니다. 각 스위치는 딱 두 가지 상태만 가질 수 있습니다: 전류가 흐르거나(ON), 흐르지 않거나(OFF). 이것이 컴퓨터가 0과 1만 이해하는 근본적인 이유입니다.</p>
+<p>방의 전등 스위치를 떠올려 보십시오. 스위치를 올리면 불이 켜지고(1), 내리면 불이 꺼집니다(0). 컴퓨터의 트랜지스터도 이와 똑같습니다. 전압이 높으면 1, 낮으면 0입니다. 이 단순한 원리 위에 문자, 사진, 음악, 동영상 등 모든 정보가 표현됩니다.</p>
+<div class="note-box"><span class="note-label">핵심 원리</span>
+<b>전기 스위치 = 0 또는 1</b><br>- OFF (전류 없음) = 0<br>- ON (전류 있음) = 1<br><br>스위치 1개 = 2가지 상태 표현 가능<br>스위치 2개 = 4가지 상태 (00, 01, 10, 11)<br>스위치 8개 = 256가지 상태<br><br>스위치를 많이 모을수록 더 많은 정보를 표현할 수 있습니다.</div>
+<h2 class="section-title">핵심 개념</h2>
+<p>0과 1, 두 개의 숫자만 사용하는 수 체계를 이진수(binary number)라고 합니다. 우리가 일상에서 사용하는 수 체계는 0부터 9까지 10개의 숫자를 사용하므로 십진수(decimal number)라고 부릅니다.</p>
+<p>이진수의 원리는 전구 비유로 쉽게 이해할 수 있습니다. 전구 4개가 일렬로 놓여 있다고 상상해 보십시오. 각 전구는 켜짐(1) 또는 꺼짐(0) 두 가지 상태만 가집니다.</p>
+<table class="trace"><thead><tr><th>전구 4</th><th>전구 3</th><th>전구 2</th><th>전구 1</th><th>이진수</th><th>십진수</th></tr></thead><tbody><tr><td>꺼짐</td><td>꺼짐</td><td>꺼짐</td><td>꺼짐</td><td>0000</td><td>0</td></tr><tr><td>꺼짐</td><td>꺼짐</td><td>꺼짐</td><td>켜짐</td><td>0001</td><td>1</td></tr><tr><td>꺼짐</td><td>꺼짐</td><td>켜짐</td><td>꺼짐</td><td>0010</td><td>2</td></tr><tr><td>꺼짐</td><td>꺼짐</td><td>켜짐</td><td>켜짐</td><td>0011</td><td>3</td></tr><tr><td>꺼짐</td><td>켜짐</td><td>꺼짐</td><td>꺼짐</td><td>0100</td><td>4</td></tr><tr><td>꺼짐</td><td>켜짐</td><td>꺼짐</td><td>켜짐</td><td>0101</td><td>5</td></tr><tr><td>꺼짐</td><td>켜짐</td><td>켜짐</td><td>꺼짐</td><td>0110</td><td>6</td></tr><tr><td>꺼짐</td><td>켜짐</td><td>켜짐</td><td>켜짐</td><td>0111</td><td>7</td></tr><tr><td>켜짐</td><td>꺼짐</td><td>꺼짐</td><td>꺼짐</td><td>1000</td><td>8</td></tr><tr><td>켜짐</td><td>꺼짐</td><td>꺼짐</td><td>켜짐</td><td>1001</td><td>9</td></tr><tr><td>켜짐</td><td>꺼짐</td><td>켜짐</td><td>꺼짐</td><td>1010</td><td>10</td></tr><tr><td>켜짐</td><td>켜짐</td><td>켜짐</td><td>켜짐</td><td>1111</td><td>15</td></tr></tbody></table>
+<h2 class="section-title">10진수를 2진수로 변환하는 방법</h2>
+<p>10진수를 2진수로 바꾸는 방법은 간단합니다. 숫자를 2로 계속 나누고, 나머지를 아래에서 위로 읽으면 됩니다. 이것을 "나누기 2 반복법"이라고 합니다.</p>
+<div style="margin:22px 0"><div style="display:flex;align-items:flex-start;gap:14px;margin-bottom:8px">
+<div style="width:32px;height:32px;background:#1a2e4a;color:white;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;flex-shrink:0">1</div>
+<div><div style="font-size:15px;font-weight:700;color:#1a2e4a;margin-bottom:2px">1단계: 13 / 2 = 6 ... 나머지 1</div><div style="font-size:14px;color:#6b7280;line-height:1.6">13을 2로 나누면 몫은 6, 나머지는 1입니다.</div></div></div><div style="display:flex;align-items:flex-start;gap:14px;margin-bottom:8px">
+<div style="width:32px;height:32px;background:#1a2e4a;color:white;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;flex-shrink:0">2</div>
+<div><div style="font-size:15px;font-weight:700;color:#1a2e4a;margin-bottom:2px">2단계: 6 / 2 = 3 ... 나머지 0</div><div style="font-size:14px;color:#6b7280;line-height:1.6">몫 6을 다시 2로 나누면 몫은 3, 나머지는 0입니다.</div></div></div><div style="display:flex;align-items:flex-start;gap:14px;margin-bottom:8px">
+<div style="width:32px;height:32px;background:#1a2e4a;color:white;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;flex-shrink:0">3</div>
+<div><div style="font-size:15px;font-weight:700;color:#1a2e4a;margin-bottom:2px">3단계: 3 / 2 = 1 ... 나머지 1</div><div style="font-size:14px;color:#6b7280;line-height:1.6">몫 3을 다시 2로 나누면 몫은 1, 나머지는 1입니다.</div></div></div><div style="display:flex;align-items:flex-start;gap:14px;margin-bottom:8px">
+<div style="width:32px;height:32px;background:#1a2e4a;color:white;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;flex-shrink:0">4</div>
+<div><div style="font-size:15px;font-weight:700;color:#1a2e4a;margin-bottom:2px">4단계: 1 / 2 = 0 ... 나머지 1</div><div style="font-size:14px;color:#6b7280;line-height:1.6">몫 1을 다시 2로 나누면 몫은 0, 나머지는 1입니다. 몫이 0이 되면 중단합니다.</div></div></div><div style="display:flex;align-items:flex-start;gap:14px;margin-bottom:8px">
+<div style="width:32px;height:32px;background:#1a2e4a;color:white;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;flex-shrink:0">5</div>
+<div><div style="font-size:15px;font-weight:700;color:#1a2e4a;margin-bottom:2px">5단계: 나머지를 아래에서 위로 읽기</div><div style="font-size:14px;color:#6b7280;line-height:1.6">나머지를 역순으로 읽으면 1101입니다. 따라서 13(10) = 1101(2)입니다.</div></div></div></div>
+<table class="trace"><thead><tr><th>나눗셈</th><th>몫</th><th>나머지</th><th>읽는 순서</th></tr></thead><tbody><tr><td>13 / 2</td><td>6</td><td>1</td><td>4번째 (맨 아래)</td></tr><tr><td>6 / 2</td><td>3</td><td>0</td><td>3번째</td></tr><tr><td>3 / 2</td><td>1</td><td>1</td><td>2번째</td></tr><tr><td>1 / 2</td><td>0</td><td>1</td><td>1번째 (맨 위)</td></tr></tbody></table>
+<div class="note-box"><span class="note-label">결과</span>
+나머지를 아래에서 위로 읽으면: <b>1 1 0 1</b><br>따라서 <b>13(10진수) = 1101(2진수)</b></div>
+<h2 class="section-title">2진수를 10진수로 변환하는 방법</h2>
+<p>2진수를 10진수로 바꾸려면 각 자릿값을 계산하여 더합니다. 2진수의 자릿값은 오른쪽부터 1, 2, 4, 8, 16, 32 ... 순서입니다. 즉, 2의 0제곱, 2의 1제곱, 2의 2제곱 ... 입니다.</p>
+<table class="trace"><thead><tr><th>자릿수</th><th>4번째</th><th>3번째</th><th>2번째</th><th>1번째</th></tr></thead><tbody><tr><td>자릿값</td><td>8 (2^3)</td><td>4 (2^2)</td><td>2 (2^1)</td><td>1 (2^0)</td></tr><tr><td>이진수 1101</td><td>1</td><td>1</td><td>0</td><td>1</td></tr><tr><td>계산</td><td>1 x 8 = 8</td><td>1 x 4 = 4</td><td>0 x 2 = 0</td><td>1 x 1 = 1</td></tr></tbody></table>
+<div class="note-box"><span class="note-label">자릿값 합산</span>
+1101(2) = 8 + 4 + 0 + 1 = <b>13(10)</b><br><br>각 자리의 숫자(0 또는 1)에 해당 자릿값(2의 거듭제곱)을 곱한 뒤, 모두 더하면 10진수가 됩니다.</div>
+<p>몇 가지 더 연습해 봅시다.</p>
+<table class="trace"><thead><tr><th>2진수</th><th>계산 과정</th><th>10진수</th></tr></thead><tbody><tr><td>1010</td><td>1x8 + 0x4 + 1x2 + 0x1</td><td>10</td></tr><tr><td>1111</td><td>1x8 + 1x4 + 1x2 + 1x1</td><td>15</td></tr><tr><td>10000</td><td>1x16 + 0x8 + 0x4 + 0x2 + 0x1</td><td>16</td></tr><tr><td>11001</td><td>1x16 + 1x8 + 0x4 + 0x2 + 1x1</td><td>25</td></tr><tr><td>100000</td><td>1x32 + 0+0+0+0+0</td><td>32</td></tr><tr><td>11111111</td><td>128+64+32+16+8+4+2+1</td><td>255</td></tr></tbody></table>
+<h2 class="section-title">진법 비교 — 2진수, 8진수, 10진수, 16진수</h2>
+<p>컴퓨터 분야에서는 2진수 외에 8진수(octal)와 16진수(hexadecimal)도 자주 사용합니다. 8진수는 0~7의 8개 숫자를, 16진수는 0~9와 A~F의 16개 기호를 사용합니다.</p>
+<div class="debug-section"><div class="debug-bar">DEBUG LAB — 에러를 찾으시오</div><div class="debug-body">
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc">[<span class="s-num">2</span>진수 (Binary)]</span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc">사용 숫자: <span class="s-num">0</span>, <span class="s-num">1</span></span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc">자릿값: <span class="s-num">1</span>, <span class="s-num">2</span>, <span class="s-num">4</span>, <span class="s-num">8</span>, <span class="s-num">16</span> ...</span></div>
+<div class="code-line"><span class="ln">4</span><span class="lc">예: <span class="s-num">1101</span>(<span class="s-num">2</span>) = <span class="s-num">13</span></span></div>
+<div class="code-line"><span class="ln">5</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">6</span><span class="lc">장점: 컴퓨터 내부 표현 그대로</span></div>
+<div class="code-line"><span class="ln">7</span><span class="lc">단점: 자릿수가 길어 사람이 읽기 불편</span></div>
+</div>
+</div>
+<p style="margin:14px 0 0; font-size:14px;"><b>에러:</b> 컴퓨터 친화적</p>
+<p style="font-size:14px;"><b>수정:</b> 2진수의 축약 표현</p>
+</div></div>
+<table class="trace"><thead><tr><th>10진수</th><th>2진수</th><th>8진수</th><th>16진수</th></tr></thead><tbody><tr><td>0</td><td>0000</td><td>0</td><td>0</td></tr><tr><td>1</td><td>0001</td><td>1</td><td>1</td></tr><tr><td>5</td><td>0101</td><td>5</td><td>5</td></tr><tr><td>8</td><td>1000</td><td>10</td><td>8</td></tr><tr><td>10</td><td>1010</td><td>12</td><td>A</td></tr><tr><td>13</td><td>1101</td><td>15</td><td>D</td></tr><tr><td>15</td><td>1111</td><td>17</td><td>F</td></tr><tr><td>16</td><td>10000</td><td>20</td><td>10</td></tr><tr><td>100</td><td>1100100</td><td>144</td><td>64</td></tr><tr><td>255</td><td>11111111</td><td>377</td><td>FF</td></tr></tbody></table>
+<div class="tip"><span class="tip-label">16진수를 사용하는 이유</span>
+2진수 <code>11111111</code>은 8자리이지만, 16진수로 쓰면 <code>FF</code> 단 2자리입니다.<br>2진수 4자리가 16진수 1자리에 정확히 대응하므로, 긴 2진수를 간결하게 표현할 때 16진수를 사용합니다.<br><br>C언어에서는 16진수를 <code>0xFF</code>처럼 앞에 0x를 붙여 표기합니다.<br>8진수는 <code>017</code>처럼 앞에 0을 붙여 표기합니다.</div>
+<h2 class="section-title">비트(bit)와 바이트(byte)</h2>
+<p>컴퓨터가 다루는 정보의 가장 작은 단위를 비트(bit)라고 합니다. bit는 binary digit(이진 숫자)의 줄임말입니다. 1비트는 0 또는 1, 딱 하나의 이진수 자리를 뜻합니다.</p>
+<p>비트 8개를 묶은 것을 바이트(byte)라고 합니다. 1바이트는 8비트이며, 이것이 컴퓨터에서 데이터를 처리하는 기본 단위입니다.</p>
+<div class="note-box"><span class="note-label">비트로 표현할 수 있는 범위</span>
+<b>n비트로 표현 가능한 경우의 수 = 2^n</b><br><br>- 1비트: 2^1 = <b>2가지</b> (0, 1)<br>- 2비트: 2^2 = <b>4가지</b> (00, 01, 10, 11)<br>- 3비트: 2^3 = <b>8가지</b> (000 ~ 111)<br>- 4비트: 2^4 = <b>16가지</b> (0000 ~ 1111)<br>- 8비트(1바이트): 2^8 = <b>256가지</b> (00000000 ~ 11111111)<br>- 16비트: 2^16 = <b>65,536가지</b><br>- 32비트: 2^32 = <b>약 42억 가지</b></div>
+<table class="trace"><thead><tr><th>단위</th><th>비트 수</th><th>표현 범위 (부호 없는 정수)</th><th>일상 비유</th></tr></thead><tbody><tr><td>1 비트</td><td>1</td><td>0 ~ 1 (2가지)</td><td>스위치 1개</td></tr><tr><td>1 니블</td><td>4</td><td>0 ~ 15 (16가지)</td><td>16진수 1자리</td></tr><tr><td>1 바이트</td><td>8</td><td>0 ~ 255 (256가지)</td><td>영문 글자 1개</td></tr><tr><td>2 바이트</td><td>16</td><td>0 ~ 65,535</td><td>유니코드 기본 문자</td></tr><tr><td>4 바이트</td><td>32</td><td>0 ~ 약 42억</td><td>C언어 int 자료형</td></tr><tr><td>8 바이트</td><td>64</td><td>0 ~ 약 1,844경</td><td>C언어 long long 자료형</td></tr></tbody></table>
+<div class="tip"><span class="tip-label">데이터 크기 단위</span>
+1 KB (킬로바이트) = 1,024 바이트<br>1 MB (메가바이트) = 1,024 KB = 1,048,576 바이트<br>1 GB (기가바이트) = 1,024 MB<br>1 TB (테라바이트) = 1,024 GB<br><br>1,024 = 2^10이므로 컴퓨터에서는 1,000 대신 1,024를 기준으로 합니다.</div>
+<h2 class="section-title">문자도 숫자 — ASCII 코드</h2>
+<p>컴퓨터는 숫자만 이해합니다. 그렇다면 문자(A, B, C ...)는 어떻게 저장할까요? 답은 간단합니다. 각 문자에 고유한 번호를 부여하면 됩니다. 이 약속 체계를 ASCII(아스키) 코드라고 합니다.</p>
+<p>ASCII는 American Standard Code for Information Interchange의 약자입니다. 1963년에 만들어졌으며, 7비트를 사용하여 총 128개의 문자를 정의합니다.</p>
+<table class="trace"><thead><tr><th>문자</th><th>10진수</th><th>2진수</th><th>설명</th></tr></thead><tbody><tr><td>0 (숫자)</td><td>48</td><td>00110000</td><td>숫자 문자 0 (값 0이 아님)</td></tr><tr><td>9 (숫자)</td><td>57</td><td>00111001</td><td>숫자 문자 9</td></tr><tr><td>A</td><td>65</td><td>01000001</td><td>영문 대문자 A</td></tr><tr><td>B</td><td>66</td><td>01000010</td><td>영문 대문자 B</td></tr><tr><td>Z</td><td>90</td><td>01011010</td><td>영문 대문자 Z</td></tr><tr><td>a</td><td>97</td><td>01100001</td><td>영문 소문자 a</td></tr><tr><td>b</td><td>98</td><td>01100010</td><td>영문 소문자 b</td></tr><tr><td>z</td><td>122</td><td>01111010</td><td>영문 소문자 z</td></tr><tr><td>공백</td><td>32</td><td>00100000</td><td>스페이스(Space)</td></tr><tr><td>줄바꿈</td><td>10</td><td>00001010</td><td>LF (Line Feed)</td></tr></tbody></table>
+<div class="note-box"><span class="note-label">ASCII 규칙 3가지</span>
+1. 대문자 A~Z: 65~90 (연속 26개)<br>2. 소문자 a~z: 97~122 (연속 26개)<br>3. 대문자와 소문자의 차이: 항상 <b>32</b> (A=65, a=97 → 97-65=32)<br><br>이 규칙은 C 프로그래밍에서 대소문자 변환에 직접 활용됩니다.</div>
+<div class="tip"><span class="tip-label">숫자 문자와 숫자 값은 다르다</span>
+문자 '0'의 ASCII 코드는 48입니다. 숫자 값 0과는 다릅니다.<br>문자 '1'의 ASCII 코드는 49입니다. 숫자 값 1과는 다릅니다.<br><br>문자 '0'~'9'의 ASCII 코드는 48~57입니다.<br>따라서 문자 '5'의 숫자 값을 구하려면: '5' - '0' = 53 - 48 = 5</div>
+<h2 class="section-title">단계별 시각화 — 13을 이진수로 변환</h2>
+<div style="margin:22px 0"><div style="display:flex;align-items:flex-start;gap:14px;margin-bottom:8px">
+<div style="width:32px;height:32px;background:#1a2e4a;color:white;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;flex-shrink:0">1</div>
+<div><div style="font-size:15px;font-weight:700;color:#1a2e4a;margin-bottom:2px">STEP 1: 준비</div><div style="font-size:14px;color:#6b7280;line-height:1.6">변환할 10진수: 13. 이 숫자를 2로 반복해서 나눕니다. 나머지를 차례로 기록합니다.</div></div></div><div style="display:flex;align-items:flex-start;gap:14px;margin-bottom:8px">
+<div style="width:32px;height:32px;background:#1a2e4a;color:white;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;flex-shrink:0">2</div>
+<div><div style="font-size:15px;font-weight:700;color:#1a2e4a;margin-bottom:2px">STEP 2: 13 / 2</div><div style="font-size:14px;color:#6b7280;line-height:1.6">몫 = 6, 나머지 = 1. 나머지 1을 기록합니다.</div></div></div><div style="display:flex;align-items:flex-start;gap:14px;margin-bottom:8px">
+<div style="width:32px;height:32px;background:#1a2e4a;color:white;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;flex-shrink:0">3</div>
+<div><div style="font-size:15px;font-weight:700;color:#1a2e4a;margin-bottom:2px">STEP 3: 6 / 2</div><div style="font-size:14px;color:#6b7280;line-height:1.6">몫 = 3, 나머지 = 0. 나머지 0을 기록합니다.</div></div></div><div style="display:flex;align-items:flex-start;gap:14px;margin-bottom:8px">
+<div style="width:32px;height:32px;background:#1a2e4a;color:white;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;flex-shrink:0">4</div>
+<div><div style="font-size:15px;font-weight:700;color:#1a2e4a;margin-bottom:2px">STEP 4: 3 / 2</div><div style="font-size:14px;color:#6b7280;line-height:1.6">몫 = 1, 나머지 = 1. 나머지 1을 기록합니다.</div></div></div><div style="display:flex;align-items:flex-start;gap:14px;margin-bottom:8px">
+<div style="width:32px;height:32px;background:#1a2e4a;color:white;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;flex-shrink:0">5</div>
+<div><div style="font-size:15px;font-weight:700;color:#1a2e4a;margin-bottom:2px">STEP 5: 1 / 2</div><div style="font-size:14px;color:#6b7280;line-height:1.6">몫 = 0, 나머지 = 1. 나머지 1을 기록합니다. 몫이 0이므로 나눗셈을 중단합니다.</div></div></div><div style="display:flex;align-items:flex-start;gap:14px;margin-bottom:8px">
+<div style="width:32px;height:32px;background:#1a2e4a;color:white;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;flex-shrink:0">6</div>
+<div><div style="font-size:15px;font-weight:700;color:#1a2e4a;margin-bottom:2px">STEP 6: 결과 읽기</div><div style="font-size:14px;color:#6b7280;line-height:1.6">기록한 나머지를 아래에서 위로 읽습니다: 1, 1, 0, 1. 따라서 13(10) = 1101(2)입니다.</div></div></div><div style="display:flex;align-items:flex-start;gap:14px;margin-bottom:8px">
+<div style="width:32px;height:32px;background:#1a2e4a;color:white;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;flex-shrink:0">7</div>
+<div><div style="font-size:15px;font-weight:700;color:#1a2e4a;margin-bottom:2px">STEP 7: 검증</div><div style="font-size:14px;color:#6b7280;line-height:1.6">역으로 확인합니다: 1x8 + 1x4 + 0x2 + 1x1 = 8 + 4 + 0 + 1 = 13. 정답입니다.</div></div></div></div>
+<h2 class="section-title">에러 체험 — 이진수 변환에서 흔한 실수</h2>
+<div class="debug-section"><div class="debug-bar">DEBUG LAB — 에러를 찾으시오</div><div class="debug-body">
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc"><span class="s-num">13</span>을 이진수로 변환:</span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc"><span class="s-num">13</span> / <span class="s-num">2</span> = <span class="s-num">6</span> ... 나머지 <span class="s-num">1</span></span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc"><span class="s-num">6</span> / <span class="s-num">2</span> = <span class="s-num">3</span> ... 나머지 <span class="s-num">0</span></span></div>
+<div class="code-line"><span class="ln">4</span><span class="lc"><span class="s-num">3</span> / <span class="s-num">2</span> = <span class="s-num">1</span> ... 나머지 <span class="s-num">1</span></span></div>
+<div class="code-line"><span class="ln">5</span><span class="lc"><span class="s-num">1</span> / <span class="s-num">2</span> = <span class="s-num">0</span> ... 나머지 <span class="s-num">1</span></span></div>
+<div class="code-line"><span class="ln">6</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">7</span><span class="lc">나머지를 위에서 아래로 읽음: <span class="s-num">1011</span></span></div>
+</div>
+</div>
+<p style="margin:14px 0 0; font-size:14px;"><b>에러:</b> 오류: 읽는 방향이 반대</p>
+<p style="font-size:14px;"><b>수정:</b> 정답: 나머지를 역순으로 읽어야 합니다</p>
+</div></div>
+<div class="debug-section"><div class="debug-bar">DEBUG LAB — 에러를 찾으시오</div><div class="debug-body">
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc"><span class="s-num">2</span>진수 <span class="s-num">1010</span>을 <span class="s-num">10</span>진수로 변환:</span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc"><span class="s-num">1</span> + <span class="s-num">0</span> + <span class="s-num">1</span> + <span class="s-num">0</span> = <span class="s-num">2</span></span></div>
+</div>
+</div>
+<p style="margin:14px 0 0; font-size:14px;"><b>에러:</b> 오류: 자릿값을 무시하고 단순 합산</p>
+<p style="font-size:14px;"><b>수정:</b> 정답: 각 자리에 자릿값(2의 거듭제곱)을 곱해야 합니다</p>
+</div></div>
+<div class="debug-section"><div class="debug-bar">DEBUG LAB — 에러를 찾으시오</div><div class="debug-body">
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc"><span class="s-num">8</span>비트로 표현 가능한 수의 개수:</span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc"><span class="s-num">8</span> x <span class="s-num">2</span> = <span class="s-num">16</span>가지</span></div>
+</div>
+</div>
+<p style="margin:14px 0 0; font-size:14px;"><b>에러:</b> 오류: 곱셈이 아니라 거듭제곱</p>
+<p style="font-size:14px;"><b>수정:</b> 정답: n비트는 2의 n제곱 가지</p>
+</div></div>
+<h2 class="section-title">설명하기 — 파인만 기법</h2>
+<p>진짜 이해했는지 확인하는 가장 좋은 방법은 남에게 설명하는 것입니다. 아래 질문에 자신의 말로 답해 보십시오.</p>
+<div class="note-box"><span class="note-label">설명 연습 1</span>
+동생이 "컴퓨터는 왜 0이랑 1만 쓰는 거야?"라고 물었습니다. 전등 스위치 비유를 사용하여 설명해 보십시오.</div>
+<div class="note-box"><span class="note-label">설명 연습 2</span>
+친구에게 10진수 25를 2진수로 변환하는 과정을 단계별로 설명해 보십시오. 나누기 2 반복법을 사용하십시오.</div>
+<div class="note-box"><span class="note-label">설명 연습 3</span>
+"1바이트로 표현할 수 있는 숫자는 몇 가지야?"라는 질문에 왜 256가지인지 근거를 들어 설명해 보십시오.</div>
+<div class="note-box"><span class="note-label">설명 연습 4</span>
+아래 빈칸을 채우십시오.<br><br>1. 컴퓨터가 0과 1만 사용하는 이유는 내부가 ______로 이루어져 있기 때문입니다.<br>2. 이진수의 영어 표현은 ______입니다.<br>3. 1비트로 표현 가능한 상태: ______가지, 8비트: ______가지<br>4. 8비트를 묶어 1______라고 부릅니다.<br>5. ASCII에서 대문자 A의 코드 값은 ______, 소문자 a는 ______입니다.</div>
+<div class="note-box"><span class="note-label">정답</span>
+1. 전기 스위치(트랜지스터)<br>2. binary<br>3. 2가지, 256가지<br>4. 바이트(byte)<br>5. 65, 97</div>
+<p>이번 유닛에서 배운 내용을 확인하는 문제입니다. 답을 노트에 직접 적어 보십시오.</p>
+<p>실제 온라인 저지(Online Judge)에 출제된 문제입니다. 이번 유닛은 PRE-CODING 개념 유닛이므로, 아래 문제들은 C언어 코드 작성을 배운 뒤에 풀어 보십시오. 지금은 문제를 읽고 "어떤 연산이 필요한지" 파악하는 연습만 하면 됩니다.</p>
+<div class="note-box"><span class="note-label">온라인 저지 문제 풀기 안내</span>
+아래 문제들은 백준 온라인 저지(https://www.acmicpc.net)에서 풀 수 있습니다. 코드 작성법을 배운 뒤에 도전하십시오.</div>
+<h2 class="section-title">핵심 요약</h2>
+<div class="warmup-box"><div class="warmup-title">L0-U02 핵심 정리</div><div class="wq"><b>1.</b> 컴퓨터는 전기 스위치(트랜지스터)로 이루어져 있으므로 0과 1만 이해합니다</div><div class="wq"><b>2.</b> 10진수 → 2진수: 2로 반복 나누기, 나머지를 역순으로 읽기</div><div class="wq"><b>3.</b> 2진수 → 10진수: 각 자릿값(2의 거듭제곱)을 곱하여 합산</div><div class="wq"><b>4.</b> 1비트 = 2가지, 8비트 = 1바이트 = 256가지</div><div class="wq"><b>5.</b> 16진수는 2진수의 축약 표현 (2진수 4자리 = 16진수 1자리)</div><div class="wq"><b>6.</b> ASCII: 문자에 숫자를 대응시킨 약속 (A=65, a=97, 차이=32)</div></div>
+<h2 class="section-title">다음 유닛으로</h2>
+<div class="note-box"><span class="note-label">다음 유닛 안내</span>
+<b>다음 유닛:</b> 입력 → 처리 → 출력<br><br>컴퓨터 프로그램의 가장 기본적인 동작 구조를 배웁니다. 모든 프로그램은 데이터를 입력받고, 처리하고, 결과를 출력합니다. 이 세 단계를 이해하면 어떤 프로그램이든 설계할 수 있습니다.<br><br><b>예측:</b> "계산기" 프로그램은 입력-처리-출력 중 각 단계에서 무엇을 할까요?</div>
+
+    <span class="page-num">2</span>
+  </div>
+</div>
+<div class="page">
+  <div class="content-page">
+    <div class="unit-header-bar">
+      <span class="unit-tag">UNIT 02</span>
+      <span class="unit-title-sm">3과목 연결</span>
+    </div>
+<h2 class="section-title">10축 매핑</h2>
+<p>이번 유닛에서 배운 내용을 10개의 학습 축으로 연결합니다.</p>
+<div class="note-box"><span class="note-label">10축 매핑 정리</span>
+<b>축 1: C언어</b> — 아직 코드 작성 전. 이진수/진법/ASCII는 C의 자료형(int, char)과 비트 연산의 토대<br><b>축 2: 컴퓨팅 사고력</b> — 추상화: 전기 신호(아날로그) → 0/1(디지털) → 숫자 → 문자. 단계마다 추상화가 일어남<br><b>축 3: 디버깅</b> — 진법 변환의 흔한 실수 3가지(읽는 방향, 자릿값 누락, 거듭제곱 오류)를 학습<br><b>축 4: KOI/정보올림피아드</b> — 진법 변환은 정보올림피아드 필수 출제 영역. 비트 연산 문제의 기초<br><b>축 5: 코딩 습관</b> — 변환 과정을 표로 정리하는 습관. 손으로 직접 계산하여 검증하는 습관<br><b>축 6: 실생활 연결</b> — IP 주소(32비트), RGB 색상(각 8비트), 파일 크기(KB/MB/GB) 모두 이진수 기반<br><b>축 7: 수학 연결</b> — 거듭제곱, 로그(밑 2), 나머지 연산이 진법 변환의 수학적 기초<br><b>축 8: 대학/자격증 연결</b> — 정보처리기사 필기 1과목(디지털 논리), 컴퓨터 구조 과목에서 필수<br><b>축 9: AI 연결</b> — 신경망의 가중치도 부동소수점(이진수 기반)으로 저장됨. 양자화(quantization)는 비트 수를 줄이는 기법<br><b>축 10: 하드웨어 연결</b> — CPU의 ALU(산술논리장치)는 이진수 덧셈/뺄셈을 수행. 메모리의 각 셀은 1바이트</div>
+
+    <span class="page-num">3</span>
+  </div>
+</div>
+<div class="page">
+  <div class="chapter-page">
+    <div class="chapter-sidebar"></div>
+    <div class="chapter-accent-bar"></div>
+    <div style="flex:1; min-width:0; padding:50px 50px 40px 45px; position:relative;">
+      <div class="problems-chapter-ref">Chapter 02: 0과 1의 세계</div>
+      <h2 class="problems-title">연습 문제 (Practice Problems)</h2>
+
+        <div class="prob-card">
+          <div class="prob-header">
+            <span class="prob-num">1. 10진수 7을 2진수로 변환하십시오. 나누기 2 반복법을 사용하여 풀이 과정을 적으십시오.</span>
+            <span class="diff diff-basic">하</span>
+          </div>
+          <p class="prob-desc">10진수 7을 2진수로 변환하십시오. 나누기 2 반복법을 사용하여 풀이 과정을 적으십시오.</p>
+          
+          <div class="contest-write-area" style="margin-top:12px;">
+            <div class="contest-write-label">답 작성</div>
+            <textarea class="contest-textarea" rows="4" spellcheck="false" style="font-family:'Noto Sans KR',sans-serif;" placeholder=""></textarea>
+          </div>
+        </div>
+        <div class="prob-card">
+          <div class="prob-header">
+            <span class="prob-num">2. 2진수 1100을 10진수로 변환하십시오. 자릿값 합산 과정을 적으십시오.</span>
+            <span class="diff diff-basic">하</span>
+          </div>
+          <p class="prob-desc">2진수 1100을 10진수로 변환하십시오. 자릿값 합산 과정을 적으십시오.</p>
+          
+          <div class="contest-write-area" style="margin-top:12px;">
+            <div class="contest-write-label">답 작성</div>
+            <textarea class="contest-textarea" rows="4" spellcheck="false" style="font-family:'Noto Sans KR',sans-serif;" placeholder=""></textarea>
+          </div>
+        </div>
+        <div class="prob-card">
+          <div class="prob-header">
+            <span class="prob-num">3. 4비트로 표현할 수 있는 수의 범위는 0부터 몇까지입니까? 총 몇 가지입니까?</span>
+            <span class="diff diff-basic">하</span>
+          </div>
+          <p class="prob-desc">4비트로 표현할 수 있는 수의 범위는 0부터 몇까지입니까? 총 몇 가지입니까?</p>
+          
+          <div class="contest-write-area" style="margin-top:12px;">
+            <div class="contest-write-label">답 작성</div>
+            <textarea class="contest-textarea" rows="4" spellcheck="false" style="font-family:'Noto Sans KR',sans-serif;" placeholder=""></textarea>
+          </div>
+        </div>
+        <div class="prob-card">
+          <div class="prob-header">
+            <span class="prob-num">4. ASCII 코드에서 대문자 A는 65입니다. 대문자 C의 ASCII 코드 값은 얼마입니까?</span>
+            <span class="diff diff-basic">하</span>
+          </div>
+          <p class="prob-desc">ASCII 코드에서 대문자 A는 65입니다. 대문자 C의 ASCII 코드 값은 얼마입니까?</p>
+          
+          <div class="contest-write-area" style="margin-top:12px;">
+            <div class="contest-write-label">답 작성</div>
+            <textarea class="contest-textarea" rows="4" spellcheck="false" style="font-family:'Noto Sans KR',sans-serif;" placeholder=""></textarea>
+          </div>
+        </div>
+        <div class="prob-card">
+          <div class="prob-header">
+            <span class="prob-num">5. 1바이트는 몇 비트입니까? 1바이트로 표현할 수 있는 서로 다른 값은 몇 가지입니까?</span>
+            <span class="diff diff-basic">하</span>
+          </div>
+          <p class="prob-desc">1바이트는 몇 비트입니까? 1바이트로 표현할 수 있는 서로 다른 값은 몇 가지입니까?</p>
+          
+          <div class="contest-write-area" style="margin-top:12px;">
+            <div class="contest-write-label">답 작성</div>
+            <textarea class="contest-textarea" rows="4" spellcheck="false" style="font-family:'Noto Sans KR',sans-serif;" placeholder=""></textarea>
+          </div>
+        </div>
+        <div class="prob-card">
+          <div class="prob-header">
+            <span class="prob-num">6. 10진수 42를 2진수로 변환하십시오. 풀이 과정을 모두 적으십시오.</span>
+            <span class="diff diff-mid">중</span>
+          </div>
+          <p class="prob-desc">10진수 42를 2진수로 변환하십시오. 풀이 과정을 모두 적으십시오.</p>
+          
+          <div class="contest-write-area" style="margin-top:12px;">
+            <div class="contest-write-label">답 작성</div>
+            <textarea class="contest-textarea" rows="4" spellcheck="false" style="font-family:'Noto Sans KR',sans-serif;" placeholder=""></textarea>
+          </div>
+        </div>
+        <div class="prob-card">
+          <div class="prob-header">
+            <span class="prob-num">7. 2진수 10110을 10진수로 변환하십시오. 각 자릿값의 계산 과정을 적으십시오.</span>
+            <span class="diff diff-mid">중</span>
+          </div>
+          <p class="prob-desc">2진수 10110을 10진수로 변환하십시오. 각 자릿값의 계산 과정을 적으십시오.</p>
+          
+          <div class="contest-write-area" style="margin-top:12px;">
+            <div class="contest-write-label">답 작성</div>
+            <textarea class="contest-textarea" rows="4" spellcheck="false" style="font-family:'Noto Sans KR',sans-serif;" placeholder=""></textarea>
+          </div>
+        </div>
+        <div class="prob-card">
+          <div class="prob-header">
+            <span class="prob-num">8. 10진수 255를 2진수, 8진수, 16진수로 각각 변환하십시오.</span>
+            <span class="diff diff-mid">중</span>
+          </div>
+          <p class="prob-desc">10진수 255를 2진수, 8진수, 16진수로 각각 변환하십시오.</p>
+          
+          <div class="contest-write-area" style="margin-top:12px;">
+            <div class="contest-write-label">답 작성</div>
+            <textarea class="contest-textarea" rows="4" spellcheck="false" style="font-family:'Noto Sans KR',sans-serif;" placeholder=""></textarea>
+          </div>
+        </div>
+        <div class="prob-card">
+          <div class="prob-header">
+            <span class="prob-num">9. ASCII에서 소문자 a의 코드는 97입니다. 대문자 A의 코드는 65입니다. 소문자를 대문자로 변환하려면 어떤 연산을 해야 합니까? 의사코드(pseudocode)로 표현하십시오.
+
+힌트:
+  입력: 소문자 한 글자
+  출력: 대응하는 대문자</span>
+            <span class="diff diff-hard">상</span>
+          </div>
+          <p class="prob-desc">ASCII에서 소문자 a의 코드는 97입니다. 대문자 A의 코드는 65입니다. 소문자를 대문자로 변환하려면 어떤 연산을 해야 합니까? 의사코드(pseudocode)로 표현하십시오.<br><br>힌트:<br>  입력: 소문자 한 글자<br>  출력: 대응하는 대문자</p>
+          
+          <div class="contest-write-area" style="margin-top:12px;">
+            <div class="contest-write-label">답 작성</div>
+            <textarea class="contest-textarea" rows="4" spellcheck="false" style="font-family:'Noto Sans KR',sans-serif;" placeholder=""></textarea>
+          </div>
+        </div>
+        <div class="prob-card">
+          <div class="prob-header">
+            <span class="prob-num">10. n비트로 표현할 수 있는 부호 없는 정수의 범위는 0부터 2^n - 1까지입니다. 다음을 구하십시오.
+
+(1) 10비트로 표현 가능한 최대 값
+(2) 사진 1장이 3MB(3,145,728바이트)라면, 이 사진은 총 몇 비트로 이루어져 있습니까?
+(3) 32비트 정수 자료형의 최대 값은 2^32 - 1입니다. 이 값은 약 몇 억입니까?</span>
+            <span class="diff diff-hard">상</span>
+          </div>
+          <p class="prob-desc">n비트로 표현할 수 있는 부호 없는 정수의 범위는 0부터 2^n - 1까지입니다. 다음을 구하십시오.<br><br>(1) 10비트로 표현 가능한 최대 값<br>(2) 사진 1장이 3MB(3,145,728바이트)라면, 이 사진은 총 몇 비트로 이루어져 있습니까?<br>(3) 32비트 정수 자료형의 최대 값은 2^32 - 1입니다. 이 값은 약 몇 억입니까?</p>
+          
+          <div class="contest-write-area" style="margin-top:12px;">
+            <div class="contest-write-label">답 작성</div>
+            <textarea class="contest-textarea" rows="4" spellcheck="false" style="font-family:'Noto Sans KR',sans-serif;" placeholder=""></textarea>
+          </div>
+        </div>
+      <span class="page-num">4</span>
+    </div>
+  </div>
+</div>
+<div class="page contest-page-wrap">
+  <div class="chapter-page">
+    <div class="chapter-sidebar"></div>
+    <div class="chapter-accent-bar"></div>
+    <div style="flex:1; min-width:0; padding:50px 50px 40px 45px; position:relative;">
+      <div class="problems-chapter-ref">Chapter 02: 0과 1의 세계</div>
+      <h2 class="problems-title">대회 문제 (Online Judge)</h2>
+      <p style="font-size:14px; color:#6b7280; margin:-8px 0 24px;">실제 온라인 저지에 출제된 문제입니다. 아래에 코드를 작성한 뒤, 사이트에 제출하여 채점하십시오.</p>
+
+        <div class="contest-card">
+          <div class="contest-header">
+            <div class="contest-num-source">
+              <span class="contest-num">11번</span>
+              <span class="contest-source">백준 1000</span>
+            </div>
+            <span class="diff diff-basic">하</span>
+          </div>
+          <div class="contest-body">
+            <p class="contest-question">[백준 1000] A+B<br><br>두 정수 A와 B를 입력받은 다음, A+B를 출력하는 프로그램을 작성하십시오.<br><br>[입력] 첫째 줄에 A와 B가 주어진다. (0 < A, B < 10)<br>[출력] 첫째 줄에 A+B를 출력한다.<br><br>[예제 입력] 1 2<br>[예제 출력] 3<br><br>의사코드:<br>  A, B 입력받기<br>  A + B 출력하기</p>
+            <div class="contest-expected"><div class="contest-expected-label">예상 출력</div><pre class="contest-expected-body">첫째 줄에 A+B를 출력한다.
+
+[예제 입력] 1 2
+[예제 출력] 3
+
+의사코드:
+  A, B 입력받기
+  A + B 출력하기</pre></div>
+            <div class="contest-write-area">
+              <div class="contest-write-label">코드 작성</div>
+              <textarea class="contest-textarea" rows="12" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="contest-card">
+          <div class="contest-header">
+            <div class="contest-num-source">
+              <span class="contest-num">12번</span>
+              <span class="contest-source">백준 1001</span>
+            </div>
+            <span class="diff diff-basic">하</span>
+          </div>
+          <div class="contest-body">
+            <p class="contest-question">[백준 1001] A-B<br><br>두 정수 A와 B를 입력받은 다음, A-B를 출력하는 프로그램을 작성하십시오.<br><br>[입력] 첫째 줄에 A와 B가 주어진다. (0 < A, B < 10)<br>[출력] 첫째 줄에 A-B를 출력한다.<br><br>[예제 입력] 3 2<br>[예제 출력] 1<br><br>의사코드:<br>  A, B 입력받기<br>  A - B 출력하기</p>
+            <div class="contest-expected"><div class="contest-expected-label">예상 출력</div><pre class="contest-expected-body">첫째 줄에 A-B를 출력한다.
+
+[예제 입력] 3 2
+[예제 출력] 1
+
+의사코드:
+  A, B 입력받기
+  A - B 출력하기</pre></div>
+            <div class="contest-write-area">
+              <div class="contest-write-label">코드 작성</div>
+              <textarea class="contest-textarea" rows="12" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="contest-card">
+          <div class="contest-header">
+            <div class="contest-num-source">
+              <span class="contest-num">13번</span>
+              <span class="contest-source">백준 1008</span>
+            </div>
+            <span class="diff diff-basic">하</span>
+          </div>
+          <div class="contest-body">
+            <p class="contest-question">[백준 1008] A/B<br><br>두 정수 A와 B를 입력받은 다음, A/B를 출력하는 프로그램을 작성하십시오. 절대/상대 오차는 10^-9까지 허용한다.<br><br>[입력] 첫째 줄에 A와 B가 주어진다. (0 < A, B < 10)<br>[출력] 첫째 줄에 A/B를 출력한다.<br><br>[예제 입력] 1 3<br>[예제 출력] 0.33333333333333<br><br>의사코드:<br>  A, B 입력받기<br>  A / B 를 실수로 출력하기 (소수점 이하 충분히)</p>
+            <div class="contest-expected"><div class="contest-expected-label">예상 출력</div><pre class="contest-expected-body">첫째 줄에 A/B를 출력한다.
+
+[예제 입력] 1 3
+[예제 출력] 0.33333333333333
+
+의사코드:
+  A, B 입력받기
+  A / B 를 실수로 출력하기 (소수점 이하 충분히)</pre></div>
+            <div class="contest-write-area">
+              <div class="contest-write-label">코드 작성</div>
+              <textarea class="contest-textarea" rows="12" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="contest-card">
+          <div class="contest-header">
+            <div class="contest-num-source">
+              <span class="contest-num">14번</span>
+              <span class="contest-source">백준 2588</span>
+            </div>
+            <span class="diff diff-mid">중</span>
+          </div>
+          <div class="contest-body">
+            <p class="contest-question">[백준 2588] 곱셈<br><br>세 자리 수 두 개를 곱하는 과정에서 나오는 각 단계의 값을 출력하십시오.<br><br>[입력] 첫째 줄에 세 자리 자연수, 둘째 줄에 세 자리 자연수<br>[출력] 첫째 줄부터 넷째 줄까지 곱셈의 각 단계 값<br><br>[예제 입력]<br>472<br>385<br>[예제 출력]<br>2360    (472 x 5)<br>3776    (472 x 8)<br>1416    (472 x 3)<br>181720  (472 x 385)<br><br>의사코드:<br>  A, B 입력받기<br>  B의 일의 자리 x A 출력<br>  B의 십의 자리 x A 출력<br>  B의 백의 자리 x A 출력<br>  A x B 출력</p>
+            <div class="contest-expected"><div class="contest-expected-label">예상 출력</div><pre class="contest-expected-body">첫째 줄부터 넷째 줄까지 곱셈의 각 단계 값
+
+[예제 입력]
+472
+385
+[예제 출력]
+2360    (472 x 5)
+3776    (472 x 8)
+1416    (472 x 3)
+181720  (472 x 385)
+
+의사코드:
+  A, B 입력받기
+  B의 일의 자리 x A 출력
+  B의 십의 자리 x A 출력
+  B의 백의 자리 x A 출력
+  A x B 출력</pre></div>
+            <div class="contest-write-area">
+              <div class="contest-write-label">코드 작성</div>
+              <textarea class="contest-textarea" rows="12" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="contest-card">
+          <div class="contest-header">
+            <div class="contest-num-source">
+              <span class="contest-num">15번</span>
+              <span class="contest-source">백준 8393</span>
+            </div>
+            <span class="diff diff-mid">중</span>
+          </div>
+          <div class="contest-body">
+            <p class="contest-question">[백준 8393] 합<br><br>n이 주어졌을 때, 1부터 n까지 합을 구하는 프로그램을 작성하십시오.<br><br>[입력] 첫째 줄에 n (1 <= n <= 10000)<br>[출력] 1부터 n까지 합<br><br>[예제 입력] 3<br>[예제 출력] 6<br><br>의사코드:<br>  n 입력받기<br>  합 = 0<br>  1부터 n까지 반복:<br>    합 = 합 + 현재 수<br>  합 출력하기</p>
+            <div class="contest-expected"><div class="contest-expected-label">예상 출력</div><pre class="contest-expected-body">1부터 n까지 합
+
+[예제 입력] 3
+[예제 출력] 6
+
+의사코드:
+  n 입력받기
+  합 = 0
+  1부터 n까지 반복:
+    합 = 합 + 현재 수
+  합 출력하기</pre></div>
+            <div class="contest-write-area">
+              <div class="contest-write-label">코드 작성</div>
+              <textarea class="contest-textarea" rows="12" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="contest-card">
+          <div class="contest-header">
+            <div class="contest-num-source">
+              <span class="contest-num">16번</span>
+              <span class="contest-source">백준 2738</span>
+            </div>
+            <span class="diff diff-mid">중</span>
+          </div>
+          <div class="contest-body">
+            <p class="contest-question">[백준 2738] 행렬 덧셈<br><br>N x M 크기의 두 행렬 A와 B가 주어졌을 때, 두 행렬을 더한 행렬을 출력하십시오.<br><br>[입력] 첫째 줄에 N과 M. 다음 N개 줄에 행렬 A, 다음 N개 줄에 행렬 B<br>[출력] 행렬 A+B<br><br>의사코드:<br>  N, M 입력받기<br>  행렬 A 입력받기 (N x M)<br>  행렬 B 입력받기 (N x M)<br>  각 위치에서 A[i][j] + B[i][j] 출력하기</p>
+            <div class="contest-expected"><div class="contest-expected-label">예상 출력</div><pre class="contest-expected-body">행렬 A+B
+
+의사코드:
+  N, M 입력받기
+  행렬 A 입력받기 (N x M)
+  행렬 B 입력받기 (N x M)
+  각 위치에서 A[i][j] + B[i][j] 출력하기</pre></div>
+            <div class="contest-write-area">
+              <div class="contest-write-label">코드 작성</div>
+              <textarea class="contest-textarea" rows="12" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="contest-card">
+          <div class="contest-header">
+            <div class="contest-num-source">
+              <span class="contest-num">17번</span>
+              <span class="contest-source">백준 15596</span>
+            </div>
+            <span class="diff diff-mid">중</span>
+          </div>
+          <div class="contest-body">
+            <p class="contest-question">[백준 15596] 정수 N개의 합<br><br>정수 N개가 주어졌을 때, 정수들의 합을 구하는 함수를 작성하십시오.<br><br>의사코드:<br>  함수 sum(배열, 크기):<br>    합계 = 0<br>    배열의 각 원소에 대해:<br>      합계 = 합계 + 원소<br>    합계 반환</p>
+            
+            <div class="contest-write-area">
+              <div class="contest-write-label">코드 작성</div>
+              <textarea class="contest-textarea" rows="12" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="contest-card">
+          <div class="contest-header">
+            <div class="contest-num-source">
+              <span class="contest-num">18번</span>
+              <span class="contest-source">백준 4673</span>
+            </div>
+            <span class="diff diff-hard">상</span>
+          </div>
+          <div class="contest-body">
+            <p class="contest-question">[백준 4673] 셀프 넘버<br><br>양의 정수 n에 대해, d(n) = n + (n의 각 자릿수의 합)으로 정의합니다. 예를 들어 d(75) = 75 + 7 + 5 = 87입니다. 어떤 수의 d 함수 결과로도 만들어지지 않는 수를 셀프 넘버라고 합니다. 10000 이하의 셀프 넘버를 한 줄에 하나씩 출력하십시오.<br><br>의사코드:<br>  크기 10001의 배열을 모두 참(셀프 넘버)으로 초기화<br>  1부터 10000까지 각 수 n에 대해:<br>    d(n) 계산<br>    d(n)이 10000 이하이면 배열[d(n)] = 거짓<br>  배열에서 참인 수만 출력</p>
+            
+            <div class="contest-write-area">
+              <div class="contest-write-label">코드 작성</div>
+              <textarea class="contest-textarea" rows="12" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="contest-card">
+          <div class="contest-header">
+            <div class="contest-num-source">
+              <span class="contest-num">19번</span>
+              <span class="contest-source">백준 1065</span>
+            </div>
+            <span class="diff diff-hard">상</span>
+          </div>
+          <div class="contest-body">
+            <p class="contest-question">[백준 1065] 한수<br><br>어떤 양의 정수 X의 각 자릿수가 등차수열을 이루면, 그 수를 한수라고 합니다. N이 주어졌을 때, 1 이상 N 이하의 한수의 개수를 출력하십시오.<br><br>예: 135는 한수 (1, 3, 5 → 공차 2)<br><br>의사코드:<br>  N 입력받기<br>  한수 개수 = 0<br>  1부터 N까지 각 수에 대해:<br>    각 자릿수를 추출<br>    인접한 자릿수의 차이가 모두 같으면 한수<br>    한수이면 개수 + 1<br>  한수 개수 출력</p>
+            
+            <div class="contest-write-area">
+              <div class="contest-write-label">코드 작성</div>
+              <textarea class="contest-textarea" rows="12" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="contest-card">
+          <div class="contest-header">
+            <div class="contest-num-source">
+              <span class="contest-num">20번</span>
+              <span class="contest-source">백준 1546</span>
+            </div>
+            <span class="diff diff-hard">상</span>
+          </div>
+          <div class="contest-body">
+            <p class="contest-question">[백준 1546] 평균<br><br>세준이는 기말고사를 망쳤습니다. 세준이는 점수 중 최대값 M을 구한 뒤, 모든 점수를 점수/M*100으로 고쳤습니다. 새로운 평균을 구하십시오.<br><br>[입력] 첫째 줄에 시험 과목 수 N, 둘째 줄에 각 점수<br>[출력] 새로운 평균<br><br>의사코드:<br>  N 입력받기<br>  N개의 점수 입력받기<br>  최대값 M 구하기<br>  각 점수를 점수/M*100으로 변환<br>  변환된 점수의 평균 출력</p>
+            <div class="contest-expected"><div class="contest-expected-label">예상 출력</div><pre class="contest-expected-body">새로운 평균
+
+의사코드:
+  N 입력받기
+  N개의 점수 입력받기
+  최대값 M 구하기
+  각 점수를 점수/M*100으로 변환
+  변환된 점수의 평균 출력</pre></div>
+            <div class="contest-write-area">
+              <div class="contest-write-label">코드 작성</div>
+              <textarea class="contest-textarea" rows="12" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+            </div>
+          </div>
+        </div>
+      <span class="page-num">5</span>
+    </div>
+  </div>
+</div>
+</body>
+</html>

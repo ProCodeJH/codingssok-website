@@ -1,0 +1,1828 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>코딩쏙 교재 — C 표준 라이브러리 총정리</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+
+  :root {
+    --navy: #1a2e4a;
+    --navy-mid: #2c4a6e;
+    --navy-light: #3d6590;
+    --orange: #e07830;
+    --orange-light: #f5e6d8;
+    --white: #ffffff;
+    --bg: #f7f8fa;
+    --bg-warm: #faf9f7;
+    --gray-50: #f9fafb;
+    --gray-100: #f3f4f6;
+    --gray-200: #e5e7eb;
+    --gray-300: #d1d5db;
+    --gray-400: #9ca3af;
+    --gray-500: #6b7280;
+    --gray-600: #4b5563;
+    --gray-700: #374151;
+    --gray-800: #1f2937;
+    --text: #2d3748;
+    --green: #16a34a;
+    --green-bg: #dcfce7;
+    --red: #dc2626;
+    --red-bg: #fee2e2;
+    --blue: #2563eb;
+    --blue-bg: #dbeafe;
+    --yellow-bg: #fef9c3;
+    --font: 'Noto Sans KR', sans-serif;
+    --mono: 'JetBrains Mono', 'Consolas', monospace;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: var(--font); background: #e8eaed; font-size: 15px; }
+
+  /* ========== PAGE ========== */
+  .page {
+    width: 210mm;
+    min-height: 295mm;
+    margin: 24px auto;
+    background: var(--white);
+    box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* ========== PAGE 1: CHAPTER START ========== */
+  .chapter-page {
+    display: flex;
+    min-height: 295mm;
+  }
+
+  .chapter-sidebar {
+    width: 10px;
+    background: var(--navy);
+    flex-shrink: 0;
+  }
+
+  .chapter-accent-bar {
+    width: 7px;
+    background: var(--orange);
+    flex-shrink: 0;
+  }
+
+  .chapter-body {
+    flex: 1;
+    padding: 70px 65px 50px 55px;
+    position: relative;
+  }
+
+  .chapter-watermark {
+    position: absolute;
+    top: -10px;
+    right: -15px;
+    font-size: 280px;
+    font-weight: 900;
+    color: rgba(180,195,212,0.35);
+    line-height: 1;
+    pointer-events: none;
+    letter-spacing: -10px;
+  }
+
+  .chapter-label {
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--navy-mid);
+    letter-spacing: 2px;
+    margin-bottom: 4px;
+  }
+
+  .chapter-title {
+    font-size: 44px;
+    font-weight: 900;
+    color: var(--navy);
+    line-height: 1.15;
+    margin-bottom: 12px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .chapter-sub {
+    font-size: 16px;
+    color: var(--gray-500);
+    font-weight: 400;
+    margin-bottom: 20px;
+    padding-bottom: 28px;
+    border-bottom: 1px solid var(--gray-200);
+  }
+
+  /* Learning objectives */
+  .obj-title {
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--navy);
+    margin-bottom: 16px;
+    margin-top: 32px;
+  }
+
+  .obj-list {
+    list-style: none;
+    margin-bottom: 40px;
+  }
+
+  .obj-list li {
+    padding: 5px 0 5px 24px;
+    position: relative;
+    font-size: 15px;
+    color: var(--gray-700);
+    line-height: 1.6;
+  }
+
+  .obj-list li::before {
+    content: '•';
+    position: absolute;
+    left: 8px;
+    color: var(--navy-mid);
+    font-weight: 700;
+  }
+
+  /* Prerequisites flow */
+  .prereq-title {
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--navy);
+    margin-bottom: 18px;
+  }
+
+  .prereq-flow {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    margin-bottom: 44px;
+  }
+
+  .prereq-item {
+    padding: 9px 22px;
+    border: 1.5px solid var(--gray-300);
+    border-radius: 50px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--gray-600);
+    background: var(--white);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+  }
+
+  .prereq-item.current {
+    border-color: var(--navy);
+    color: var(--navy);
+    font-weight: 700;
+    background: #edf2f7;
+    box-shadow: 0 2px 6px rgba(26,46,74,0.12);
+  }
+
+  .prereq-arrow {
+    width: 36px;
+    text-align: center;
+    color: var(--gray-300);
+    font-size: 18px;
+    font-weight: 300;
+  }
+
+  /* Predict box */
+  .predict-box {
+    background: var(--gray-50);
+    border: 1.5px solid var(--gray-200);
+    border-radius: 12px;
+    padding: 24px 28px;
+  }
+
+  .predict-label {
+    display: inline-block;
+    background: var(--orange);
+    color: var(--white);
+    font-size: 12px;
+    font-weight: 600;
+    padding: 3px 12px;
+    border-radius: 4px;
+    margin-bottom: 14px;
+    letter-spacing: 0.5px;
+  }
+
+  .predict-q {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--navy);
+    margin-bottom: 16px;
+  }
+
+  .predict-code {
+    background: var(--white);
+    border: 1px solid var(--gray-200);
+    border-radius: 8px;
+    padding: 14px 18px;
+    font-family: var(--mono);
+    font-size: 13px;
+    line-height: 1.65;
+    color: var(--gray-700);
+  }
+
+  /* ========== PAGE 2: CORE CONTENT ========== */
+  .content-page {
+    padding: 55px 65px;
+  }
+
+  .unit-header-bar {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    margin-bottom: 8px;
+  }
+
+  .unit-tag {
+    font-size: 12px;
+    color: var(--orange);
+    font-weight: 600;
+    letter-spacing: 1px;
+  }
+
+  .unit-title-sm {
+    font-size: 14px;
+    color: var(--gray-400);
+    font-weight: 400;
+  }
+
+  .section-title {
+    font-size: 24px;
+    font-weight: 800;
+    color: var(--navy);
+    margin-bottom: 24px;
+    margin-top: 8px;
+    padding-left: 16px;
+    border-left: 5px solid var(--orange);
+  }
+
+  p {
+    font-size: 15.5px;
+    line-height: 1.9;
+    color: var(--text);
+    margin-bottom: 18px;
+  }
+
+  p code {
+    font-family: var(--mono);
+    font-size: 13.5px;
+    background: #f1f3f5;
+    padding: 2px 7px;
+    border-radius: 4px;
+    color: var(--navy);
+    font-weight: 500;
+  }
+
+  /* Code block */
+  .code-wrap {
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    border: 1px solid var(--gray-200);
+    margin: 22px 0;
+  }
+
+  .code-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 9px 18px;
+    background: var(--navy);
+    font-size: 12px;
+  }
+
+  .code-bar-lang {
+    font-family: var(--mono);
+    font-weight: 600;
+    color: var(--white);
+  }
+
+  .code-bar-file {
+    color: rgba(255,255,255,0.6);
+    font-weight: 400;
+  }
+
+  .code-body {
+    background: #f8f9fb;
+    padding: 20px 0;
+    font-family: var(--mono);
+    font-size: 13.5px;
+    line-height: 1.75;
+    border: 1px solid var(--gray-200);
+    border-top: none;
+    border-radius: 0 0 12px 12px;
+  }
+
+  .code-line {
+    display: flex;
+    padding: 0 20px;
+  }
+
+  .code-line:hover {
+    background: #f0f4f8;
+  }
+
+  .code-line.highlighted {
+    background: #fff8e1;
+  }
+
+  .ln {
+    width: 30px;
+    text-align: right;
+    color: #b8bfc8;
+    font-size: 12px;
+    margin-right: 18px;
+    user-select: none;
+    flex-shrink: 0;
+    padding-top: 1px;
+  }
+
+  .lc { flex: 1; }
+
+  /* syntax */
+  .s-pp { color: #8b5cf6; font-weight: 600; }
+  .s-str { color: #d97706; }
+  .s-type { color: #2563eb; font-weight: 500; }
+  .s-kw { color: #7c3aed; font-weight: 500; }
+  .s-fn { color: #059669; font-weight: 500; }
+  .s-num { color: #dc2626; }
+  .s-cm { color: #9ca3af; font-style: italic; }
+
+  /* Output block */
+  .output-wrap {
+    border-radius: 10px;
+    overflow: hidden;
+    margin: 10px 0 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    border: 1px solid #d1d5db;
+  }
+
+  .output-bar {
+    padding: 9px 18px;
+    background: #374151;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--white);
+    letter-spacing: 0.5px;
+  }
+
+  .output-body {
+    padding: 16px 20px;
+    font-family: var(--mono);
+    font-size: 13.5px;
+    line-height: 1.7;
+    color: var(--gray-800);
+    background: #f1f5f9;
+    border: 1px solid var(--gray-200);
+    border-top: none;
+    border-radius: 0 0 10px 10px;
+  }
+
+  /* Callout */
+  .tip {
+    margin: 28px 0;
+    padding: 18px 24px;
+    background: #dbeafe;
+    border-left: 5px solid #2563eb;
+    border-radius: 0 12px 12px 0;
+    font-size: 14.5px;
+    line-height: 1.8;
+    color: var(--text);
+  }
+
+  .tip-label {
+    font-weight: 700;
+    color: #2563eb;
+    font-size: 13px;
+    display: block;
+    margin-bottom: 4px;
+  }
+
+  .warn {
+    margin: 28px 0;
+    padding: 18px 24px;
+    background: #fef3c7;
+    border-left: 5px solid #d97706;
+    border-radius: 0 12px 12px 0;
+    font-size: 14.5px;
+    line-height: 1.8;
+  }
+
+  .warn-label {
+    font-weight: 700;
+    color: #d97706;
+    font-size: 13px;
+    display: block;
+    margin-bottom: 4px;
+  }
+
+  .note-box {
+    margin: 28px 0;
+    padding: 18px 24px;
+    background: #e2e8f0;
+    border-left: 5px solid #64748b;
+    border-radius: 0 12px 12px 0;
+    font-size: 14.5px;
+    line-height: 1.8;
+  }
+
+  .note-label {
+    font-weight: 700;
+    color: var(--gray-600);
+    font-size: 13px;
+    display: block;
+    margin-bottom: 4px;
+  }
+
+  /* Trace table */
+  table.trace {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    margin: 28px 0;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+    font-size: 14px;
+  }
+
+  table.trace th {
+    background: var(--navy);
+    color: var(--white);
+    padding: 10px 16px;
+    text-align: left;
+    font-weight: 500;
+    font-size: 13px;
+  }
+
+  table.trace td {
+    padding: 10px 16px;
+    border-bottom: 1px solid var(--gray-200);
+    color: var(--gray-700);
+  }
+
+  table.trace tr:nth-child(even) td { background: var(--gray-50); }
+  table.trace tr:last-child td { border-bottom: none; }
+
+  table.trace td code {
+    font-family: var(--mono);
+    font-size: 12.5px;
+    background: #eef1f5;
+    padding: 2px 6px;
+    border-radius: 4px;
+    color: var(--navy);
+  }
+
+  /* ========== PAGE 3: PROBLEMS ========== */
+  .problems-header {
+    margin-bottom: 8px;
+  }
+
+  .problems-chapter-ref {
+    font-size: 13px;
+    color: var(--gray-500);
+    margin-bottom: 4px;
+  }
+
+  .problems-title {
+    font-size: 28px;
+    font-weight: 800;
+    color: var(--navy);
+    margin-bottom: 24px;
+  }
+
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 16px;
+  }
+
+  .prob-card {
+    background: var(--white);
+    border: 1px solid var(--gray-200);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 3px 15px rgba(0,0,0,0.06);
+  }
+
+  .prob-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 16px;
+    background: var(--navy);
+  }
+
+  .prob-num {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--white);
+  }
+
+  .diff {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    font-size: 12px;
+    font-weight: 800;
+  }
+
+  .diff-basic { background: #22c55e; color: white; }
+  .diff-mid { background: #f59e0b; color: white; }
+  .diff-hard { background: #ef4444; color: white; }
+
+  .prob-desc {
+    font-size: 13.5px;
+    line-height: 1.65;
+    color: var(--gray-600);
+    margin-bottom: 10px;
+    padding: 14px 16px 0;
+  }
+
+  .prob-code {
+    background: var(--gray-50);
+    border: 1px solid var(--gray-200);
+    border-radius: 6px;
+    padding: 10px 14px;
+    margin: 0 16px 16px;
+    font-family: var(--mono);
+    font-size: 12.5px;
+    line-height: 1.55;
+    color: var(--gray-600);
+  }
+
+  /* Competition section */
+  .comp-section {
+    margin-top: 32px;
+    padding-top: 24px;
+    border-top: 2px solid var(--navy);
+  }
+
+  .comp-title {
+    font-size: 22px;
+    font-weight: 800;
+    color: var(--navy);
+    margin-bottom: 20px;
+  }
+
+  .comp-card {
+    background: var(--white);
+    border: 1.5px solid var(--gray-200);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 18px rgba(0,0,0,0.06);
+  }
+
+  .comp-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 16px;
+    background: #0f766e;
+  }
+
+  .comp-header .comp-name {
+    color: var(--white);
+    font-size: 15px;
+    font-weight: 700;
+    margin: 0;
+  }
+
+  .comp-inner {
+    padding: 14px 18px 18px;
+  }
+
+  .comp-badge {
+    display: inline-block;
+    padding: 3px 12px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 700;
+  }
+
+  .badge-bj { background: #93c5fd; color: #1e3a5f; }
+  .badge-cu { background: #c4b5fd; color: #3b1f7e; }
+  .badge-pg { background: #7dd3fc; color: #0c4a6e; }
+
+  .comp-name {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--navy);
+    margin-bottom: 6px;
+  }
+
+  .comp-desc {
+    font-size: 14px;
+    color: var(--gray-600);
+    line-height: 1.7;
+    margin-bottom: 14px;
+  }
+
+  .io-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+
+  .io-card {
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid var(--gray-200);
+  }
+
+  .io-h {
+    padding: 6px 14px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--gray-600);
+    background: #e2e8f0;
+  }
+
+  .io-c {
+    padding: 10px 14px;
+    font-family: var(--mono);
+    font-size: 13px;
+    line-height: 1.5;
+    background: var(--white);
+  }
+
+  /* ========== DEBUG LAB ========== */
+  .debug-section {
+    margin: 24px 0;
+    border: 2px solid var(--red);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+
+  .debug-bar {
+    background: var(--red);
+    color: var(--white);
+    padding: 10px 20px;
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 1px;
+  }
+
+  .debug-body {
+    padding: 20px;
+    background: #fef2f2;
+  }
+
+  /* 10축 connection */
+  .connect-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 16px;
+    margin: 28px 0;
+  }
+
+  .connect-card {
+    border-radius: 12px;
+    padding: 20px;
+    text-align: center;
+    border: 1px solid var(--gray-200);
+    box-shadow: 0 3px 14px rgba(0,0,0,0.05);
+  }
+
+  .connect-card h5 {
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 8px;
+  }
+
+  .connect-card p {
+    font-size: 13px;
+    margin: 0;
+    color: var(--gray-600);
+    line-height: 1.6;
+  }
+
+  .cc1 { border-top: 3px solid #8b5cf6; }
+  .cc1 h5 { color: #8b5cf6; }
+  .cc2 { border-top: 3px solid var(--green); }
+  .cc2 h5 { color: var(--green); }
+  .cc3 { border-top: 3px solid var(--navy); }
+  .cc3 h5 { color: var(--navy); }
+
+  /* PAGE NUMBER */
+  .page-num {
+    position: absolute;
+    bottom: 20px;
+    right: 30px;
+    font-size: 12px;
+    color: var(--gray-400);
+  }
+
+  /* WARMUP */
+  .warmup-box {
+    background: #e0e7f1;
+    border-radius: 12px;
+    padding: 24px 28px;
+    margin: 28px 0;
+    border: 2px solid #c7d2e0;
+  }
+
+  .warmup-title {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--navy);
+    margin-bottom: 14px;
+  }
+
+  .wq {
+    padding: 9px 16px;
+    background: var(--white);
+    border-radius: 8px;
+    margin-bottom: 8px;
+    font-size: 14px;
+    border: 1px solid var(--gray-200);
+    color: var(--gray-700);
+  }
+
+  .wq b { color: var(--navy); margin-right: 6px; }
+  .wq .hint { color: var(--gray-400); font-size: 13px; }
+
+  /* ===== CONTEST PROBLEMS PAGE ===== */
+  .contest-page-wrap .chapter-page {
+    min-height: auto;
+  }
+
+  .contest-page-wrap .chapter-page > div:last-child {
+    min-width: 0;
+    overflow-wrap: break-word;
+    word-break: break-word;
+  }
+
+  .contest-card {
+    background: white;
+    border: 1.5px solid var(--gray-200);
+    border-radius: 12px;
+    margin-bottom: 28px;
+    overflow: hidden;
+    break-inside: avoid;
+  }
+
+  .contest-header {
+    background: var(--navy);
+    color: white;
+    padding: 14px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .contest-num-source {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .contest-num {
+    font-weight: 700;
+    font-size: 16px;
+  }
+
+  .contest-source {
+    background: rgba(255,255,255,0.15);
+    padding: 3px 10px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 500;
+  }
+
+  .contest-body {
+    padding: 20px 24px 24px;
+  }
+
+  .contest-question {
+    font-size: 15px;
+    line-height: 1.7;
+    color: var(--text);
+    margin: 0 0 16px;
+    word-break: break-word;
+    overflow-wrap: break-word;
+  }
+
+  .contest-expected {
+    background: #1e293b;
+    border-radius: 8px;
+    overflow: hidden;
+    margin-bottom: 20px;
+  }
+
+  .contest-expected-label {
+    background: #334155;
+    color: #94a3b8;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 6px 14px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .contest-expected-body {
+    color: #e2e8f0;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    line-height: 1.6;
+    padding: 12px 16px;
+    margin: 0;
+    white-space: pre;
+  }
+
+  .contest-write-area {
+    border: 2px dashed var(--gray-300);
+    border-radius: 10px;
+    overflow: hidden;
+    transition: border-color 0.2s;
+  }
+
+  .contest-write-area:focus-within {
+    border-color: var(--orange);
+    border-style: solid;
+  }
+
+  .contest-write-label {
+    background: var(--bg);
+    color: var(--gray-500);
+    font-size: 12px;
+    font-weight: 600;
+    padding: 8px 14px;
+    border-bottom: 1px solid var(--gray-200);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .contest-textarea {
+    width: 100%;
+    min-height: 200px;
+    padding: 16px 18px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    line-height: 1.7;
+    color: var(--text);
+    background: #fafbfc;
+    border: none;
+    outline: none;
+    resize: vertical;
+    tab-size: 4;
+    box-sizing: border-box;
+  }
+
+  .contest-textarea::placeholder {
+    color: var(--gray-300);
+  }
+
+  @media print {
+    body { background: white; }
+    .page { box-shadow: none; margin: 0; page-break-after: always; }
+    .contest-textarea { border: 1px solid var(--gray-300); min-height: 180px; }
+  }
+
+</style>
+</head>
+<body>
+
+<div class="page">
+  <div class="chapter-page">
+    <div class="chapter-sidebar"></div>
+    <div class="chapter-accent-bar"></div>
+    <div class="chapter-body">
+      <div class="chapter-watermark">07</div>
+      <div class="chapter-label">Chapter 07</div>
+      <h1 class="chapter-title">C 표준 라이브러리 총정리</h1>
+      <p class="chapter-sub">C 표준 라이브러리의 주요 헤더 파일과 함수들을 분류별로 총정리하고, 실전에서 자주 사용하는 함수 활용법을 종합적으로 학습합니다.</p>
+
+      <h3 class="obj-title">이 유닛에서 배우는 것</h3>
+      <ul class="obj-list">
+        <li>C 표준 라이브러리의 구성 체계와 주요 헤더 파일의 역할을 설명할 수 있습니다.</li>
+        <li>stdio.h, stdlib.h, string.h, math.h 등 핵심 헤더의 주요 함수를 정확하게 사용할 수 있습니다.</li>
+        <li>목적에 맞는 표준 함수를 선택하여 효율적인 프로그램을 작성할 수 있습니다.</li>
+        <li>표준 라이브러리 함수의 반환값과 에러 처리 방법을 이해하고 적용할 수 있습니다.</li>
+      </ul>
+
+      <h3 class="prereq-title">선수 학습</h3>
+      <div class="prereq-flow">
+        <div class="prereq-item current">L1~L15 전체</div>
+      </div>
+
+      <div class="predict-box">
+        <div class="predict-label">예측해 봅시다</div>
+        <div class="predict-q">#include <stdlib.h>만 포함한 상태에서 printf("hello")를 호출하면 어떤 일이 발생합니까?</div>
+        
+      </div>
+
+      <span class="page-num">1</span>
+    </div>
+  </div>
+</div>
+<div class="page">
+  <div class="content-page">
+    <div class="unit-header-bar">
+      <span class="unit-tag">UNIT 07</span>
+      <span class="unit-title-sm">C 표준 라이브러리 총정리</span>
+    </div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 1</span><p style="margin:0;font-size:14px">#include <stdio.h>에서 stdio.h가 제공하는 함수 3개를 나열하십시오.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 2</span><p style="margin:0;font-size:14px">문자열의 길이를 구할 때 사용하는 함수와 해당 헤더 파일을 쓰십시오.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 3</span><p style="margin:0;font-size:14px">malloc 함수는 어떤 헤더 파일에 선언되어 있습니까?</p></div>
+<h2 class="section-title">예측</h2>
+<p>undefined</p>
+<h2 class="section-title">이야기</h2>
+<p>undefined</p>
+<h2 class="section-title">핵심 개념</h2>
+<div class="debug-section"><div class="debug-bar">DEBUG LAB — 에러를 찾으시오</div><div class="debug-body">
+
+<p style="margin:14px 0 0; font-size:14px;"><b>에러:</b> </p>
+<p style="font-size:14px;"><b>수정:</b> </p>
+</div></div>
+<h2 class="section-title">stdio.h - 표준 입출력</h2>
+<p>undefined</p>
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;stdio.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">main</span>(<span class="s-type">void</span>) {</span></div>
+<div class="code-line"><span class="ln">4</span><span class="lc">    <span class="s-cm">/* 콘솔 출력 */</span></span></div>
+<div class="code-line"><span class="ln">5</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"정수: %d, 실수: %.2f, 문자열: %s\n"</span>, <span class="s-num">42</span>, <span class="s-num">3.14</span>, <span class="s-str">"hello"</span>);</span></div>
+<div class="code-line"><span class="ln">6</span><span class="lc">    </span></div>
+<div class="code-line"><span class="ln">7</span><span class="lc">    <span class="s-cm">/* 파일 입출력 */</span></span></div>
+<div class="code-line"><span class="ln">8</span><span class="lc">    <span class="s-type">FILE</span> *fp = <span class="s-fn">fopen</span>(<span class="s-str">"data.txt"</span>, <span class="s-str">"w"</span>);</span></div>
+<div class="code-line"><span class="ln">9</span><span class="lc">    <span class="s-kw">if</span> (fp != <span class="s-kw">NULL</span>) {</span></div>
+<div class="code-line"><span class="ln">10</span><span class="lc">        <span class="s-fn">fprintf</span>(fp, <span class="s-str">"파일에 쓰는 데이터: %d\n"</span>, <span class="s-num">100</span>);</span></div>
+<div class="code-line"><span class="ln">11</span><span class="lc">        <span class="s-fn">fclose</span>(fp);</span></div>
+<div class="code-line"><span class="ln">12</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">13</span><span class="lc">    </span></div>
+<div class="code-line"><span class="ln">14</span><span class="lc">    <span class="s-cm">/* 파일 읽기 */</span></span></div>
+<div class="code-line"><span class="ln">15</span><span class="lc">    fp = <span class="s-fn">fopen</span>(<span class="s-str">"data.txt"</span>, <span class="s-str">"r"</span>);</span></div>
+<div class="code-line"><span class="ln">16</span><span class="lc">    <span class="s-kw">if</span> (fp != <span class="s-kw">NULL</span>) {</span></div>
+<div class="code-line"><span class="ln">17</span><span class="lc">        <span class="s-type">char</span> buf[<span class="s-num">256</span>];</span></div>
+<div class="code-line"><span class="ln">18</span><span class="lc">        <span class="s-kw">while</span> (<span class="s-fn">fgets</span>(buf, <span class="s-kw">sizeof</span>(buf), fp) != <span class="s-kw">NULL</span>) {</span></div>
+<div class="code-line"><span class="ln">19</span><span class="lc">            <span class="s-fn">printf</span>(<span class="s-str">"읽은 내용: %s"</span>, buf);</span></div>
+<div class="code-line"><span class="ln">20</span><span class="lc">        }</span></div>
+<div class="code-line"><span class="ln">21</span><span class="lc">        <span class="s-fn">fclose</span>(fp);</span></div>
+<div class="code-line"><span class="ln">22</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">23</span><span class="lc">    </span></div>
+<div class="code-line"><span class="ln">24</span><span class="lc">    <span class="s-cm">/* 파일 위치 제어 */</span></span></div>
+<div class="code-line"><span class="ln">25</span><span class="lc">    fp = <span class="s-fn">fopen</span>(<span class="s-str">"data.txt"</span>, <span class="s-str">"r"</span>);</span></div>
+<div class="code-line"><span class="ln">26</span><span class="lc">    <span class="s-kw">if</span> (fp != <span class="s-kw">NULL</span>) {</span></div>
+<div class="code-line"><span class="ln">27</span><span class="lc">        <span class="s-fn">fseek</span>(fp, <span class="s-num">0</span>, SEEK_END);</span></div>
+<div class="code-line"><span class="ln">28</span><span class="lc">        <span class="s-type">long</span> size = <span class="s-fn">ftell</span>(fp);</span></div>
+<div class="code-line"><span class="ln">29</span><span class="lc">        <span class="s-fn">printf</span>(<span class="s-str">"파일 크기: %ld바이트\n"</span>, size);</span></div>
+<div class="code-line"><span class="ln">30</span><span class="lc">        <span class="s-fn">fclose</span>(fp);</span></div>
+<div class="code-line"><span class="ln">31</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">32</span><span class="lc">    <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">33</span><span class="lc">}</span></div>
+</div>
+</div>
+<h2 class="section-title">stdlib.h - 범용 유틸리티</h2>
+<p>undefined</p>
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;stdio.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;stdlib.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;time.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">4</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">5</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">compare</span>(<span class="s-kw">const</span> <span class="s-type">void</span> *a, <span class="s-kw">const</span> <span class="s-type">void</span> *b) {</span></div>
+<div class="code-line"><span class="ln">6</span><span class="lc">    <span class="s-kw">return</span> (*(<span class="s-type">int</span> *)a - *(<span class="s-type">int</span> *)b);</span></div>
+<div class="code-line"><span class="ln">7</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">8</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">9</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">main</span>(<span class="s-type">void</span>) {</span></div>
+<div class="code-line"><span class="ln">10</span><span class="lc">    <span class="s-cm">/* 문자열 -&gt; 숫자 변환 */</span></span></div>
+<div class="code-line"><span class="ln">11</span><span class="lc">    <span class="s-type">int</span> num = <span class="s-fn">atoi</span>(<span class="s-str">"12345"</span>);</span></div>
+<div class="code-line"><span class="ln">12</span><span class="lc">    <span class="s-type">double</span> real = <span class="s-fn">atof</span>(<span class="s-str">"3.14159"</span>);</span></div>
+<div class="code-line"><span class="ln">13</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"atoi: %d, atof: %.5f\n"</span>, num, real);</span></div>
+<div class="code-line"><span class="ln">14</span><span class="lc">    </span></div>
+<div class="code-line"><span class="ln">15</span><span class="lc">    <span class="s-cm">/* 동적 메모리 */</span></span></div>
+<div class="code-line"><span class="ln">16</span><span class="lc">    <span class="s-type">int</span> *arr = (<span class="s-type">int</span> *)<span class="s-fn">malloc</span>(<span class="s-num">5</span> * <span class="s-kw">sizeof</span>(<span class="s-type">int</span>));</span></div>
+<div class="code-line"><span class="ln">17</span><span class="lc">    <span class="s-kw">if</span> (arr == <span class="s-kw">NULL</span>) { <span class="s-fn">printf</span>(<span class="s-str">"메모리 부족\n"</span>); <span class="s-kw">return</span> <span class="s-num">1</span>; }</span></div>
+<div class="code-line"><span class="ln">18</span><span class="lc">    <span class="s-kw">for</span> (<span class="s-type">int</span> i = <span class="s-num">0</span>; i &lt; <span class="s-num">5</span>; i++) arr[i] = <span class="s-num">50</span> - i * <span class="s-num">10</span>;</span></div>
+<div class="code-line"><span class="ln">19</span><span class="lc">    </span></div>
+<div class="code-line"><span class="ln">20</span><span class="lc">    <span class="s-cm">/* qsort 정렬 */</span></span></div>
+<div class="code-line"><span class="ln">21</span><span class="lc">    <span class="s-fn">qsort</span>(arr, <span class="s-num">5</span>, <span class="s-kw">sizeof</span>(<span class="s-type">int</span>), compare);</span></div>
+<div class="code-line"><span class="ln">22</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"정렬 결과: "</span>);</span></div>
+<div class="code-line"><span class="ln">23</span><span class="lc">    <span class="s-kw">for</span> (<span class="s-type">int</span> i = <span class="s-num">0</span>; i &lt; <span class="s-num">5</span>; i++) <span class="s-fn">printf</span>(<span class="s-str">"%d "</span>, arr[i]);</span></div>
+<div class="code-line"><span class="ln">24</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"\n"</span>);</span></div>
+<div class="code-line"><span class="ln">25</span><span class="lc">    </span></div>
+<div class="code-line"><span class="ln">26</span><span class="lc">    <span class="s-cm">/* bsearch 이진 탐색 */</span></span></div>
+<div class="code-line"><span class="ln">27</span><span class="lc">    <span class="s-type">int</span> key = <span class="s-num">30</span>;</span></div>
+<div class="code-line"><span class="ln">28</span><span class="lc">    <span class="s-type">int</span> *found = (<span class="s-type">int</span> *)<span class="s-fn">bsearch</span>(&amp;key, arr, <span class="s-num">5</span>, <span class="s-kw">sizeof</span>(<span class="s-type">int</span>), compare);</span></div>
+<div class="code-line"><span class="ln">29</span><span class="lc">    <span class="s-kw">if</span> (found) <span class="s-fn">printf</span>(<span class="s-str">"%d 발견\n"</span>, *found);</span></div>
+<div class="code-line"><span class="ln">30</span><span class="lc">    </span></div>
+<div class="code-line"><span class="ln">31</span><span class="lc">    <span class="s-cm">/* 난수 생성 */</span></span></div>
+<div class="code-line"><span class="ln">32</span><span class="lc">    <span class="s-fn">srand</span>((<span class="s-type">unsigned</span>)<span class="s-fn">time</span>(<span class="s-kw">NULL</span>));</span></div>
+<div class="code-line"><span class="ln">33</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"난수: %d\n"</span>, <span class="s-fn">rand</span>() % <span class="s-num">100</span>);</span></div>
+<div class="code-line"><span class="ln">34</span><span class="lc">    </span></div>
+<div class="code-line"><span class="ln">35</span><span class="lc">    <span class="s-fn">free</span>(arr);</span></div>
+<div class="code-line"><span class="ln">36</span><span class="lc">    <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">37</span><span class="lc">}</span></div>
+</div>
+</div>
+<h2 class="section-title">string.h - 문자열 처리</h2>
+<p>undefined</p>
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;stdio.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;string.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">4</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">main</span>(<span class="s-type">void</span>) {</span></div>
+<div class="code-line"><span class="ln">5</span><span class="lc">    <span class="s-type">char</span> str1[<span class="s-num">50</span>] = <span class="s-str">"Hello"</span>;</span></div>
+<div class="code-line"><span class="ln">6</span><span class="lc">    <span class="s-type">char</span> str2[<span class="s-num">50</span>] = <span class="s-str">"World"</span>;</span></div>
+<div class="code-line"><span class="ln">7</span><span class="lc">    <span class="s-type">char</span> str3[<span class="s-num">100</span>];</span></div>
+<div class="code-line"><span class="ln">8</span><span class="lc">    </span></div>
+<div class="code-line"><span class="ln">9</span><span class="lc">    <span class="s-cm">/* strlen - 문자열 길이 */</span></span></div>
+<div class="code-line"><span class="ln">10</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"길이: %zu\n"</span>, <span class="s-fn">strlen</span>(str1));       <span class="s-cm">/* 5 */</span></span></div>
+<div class="code-line"><span class="ln">11</span><span class="lc">    </span></div>
+<div class="code-line"><span class="ln">12</span><span class="lc">    <span class="s-cm">/* strcpy, strncpy - 복사 */</span></span></div>
+<div class="code-line"><span class="ln">13</span><span class="lc">    <span class="s-fn">strcpy</span>(str3, str1);                        <span class="s-cm">/* str3 = "Hello" */</span></span></div>
+<div class="code-line"><span class="ln">14</span><span class="lc">    <span class="s-fn">strncpy</span>(str3, str2, <span class="s-num">3</span>);                    <span class="s-cm">/* str3 = "Worlo" (3글자만 복사) */</span></span></div>
+<div class="code-line"><span class="ln">15</span><span class="lc">    </span></div>
+<div class="code-line"><span class="ln">16</span><span class="lc">    <span class="s-cm">/* strcmp - 비교 */</span></span></div>
+<div class="code-line"><span class="ln">17</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"비교: %d\n"</span>, <span class="s-fn">strcmp</span>(<span class="s-str">"abc"</span>, <span class="s-str">"abd"</span>)); <span class="s-cm">/* 음수 (c &lt; d) */</span></span></div>
+<div class="code-line"><span class="ln">18</span><span class="lc">    </span></div>
+<div class="code-line"><span class="ln">19</span><span class="lc">    <span class="s-cm">/* strcat - 연결 */</span></span></div>
+<div class="code-line"><span class="ln">20</span><span class="lc">    <span class="s-fn">strcpy</span>(str3, str1);</span></div>
+<div class="code-line"><span class="ln">21</span><span class="lc">    <span class="s-fn">strcat</span>(str3, <span class="s-str">" "</span>);</span></div>
+<div class="code-line"><span class="ln">22</span><span class="lc">    <span class="s-fn">strcat</span>(str3, str2);                        <span class="s-cm">/* str3 = "Hello World" */</span></span></div>
+<div class="code-line"><span class="ln">23</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"연결: %s\n"</span>, str3);</span></div>
+<div class="code-line"><span class="ln">24</span><span class="lc">    </span></div>
+<div class="code-line"><span class="ln">25</span><span class="lc">    <span class="s-cm">/* strchr, strstr - 검색 */</span></span></div>
+<div class="code-line"><span class="ln">26</span><span class="lc">    <span class="s-type">char</span> *p1 = <span class="s-fn">strchr</span>(str3, <span class="s-str">'W'</span>);              <span class="s-cm">/* 'W' 위치 */</span></span></div>
+<div class="code-line"><span class="ln">27</span><span class="lc">    <span class="s-type">char</span> *p2 = <span class="s-fn">strstr</span>(str3, <span class="s-str">"World"</span>);          <span class="s-cm">/* "World" 위치 */</span></span></div>
+<div class="code-line"><span class="ln">28</span><span class="lc">    <span class="s-kw">if</span> (p1) <span class="s-fn">printf</span>(<span class="s-str">"strchr: %s\n"</span>, p1);        <span class="s-cm">/* "World" */</span></span></div>
+<div class="code-line"><span class="ln">29</span><span class="lc">    <span class="s-kw">if</span> (p2) <span class="s-fn">printf</span>(<span class="s-str">"strstr: %s\n"</span>, p2);        <span class="s-cm">/* "World" */</span></span></div>
+<div class="code-line"><span class="ln">30</span><span class="lc">    </span></div>
+<div class="code-line"><span class="ln">31</span><span class="lc">    <span class="s-cm">/* strtok - 토큰 분리 */</span></span></div>
+<div class="code-line"><span class="ln">32</span><span class="lc">    <span class="s-type">char</span> csv[] = <span class="s-str">"apple,banana,cherry"</span>;</span></div>
+<div class="code-line"><span class="ln">33</span><span class="lc">    <span class="s-type">char</span> *tok = <span class="s-fn">strtok</span>(csv, <span class="s-str">","</span>);</span></div>
+<div class="code-line"><span class="ln">34</span><span class="lc">    <span class="s-kw">while</span> (tok != <span class="s-kw">NULL</span>) {</span></div>
+<div class="code-line"><span class="ln">35</span><span class="lc">        <span class="s-fn">printf</span>(<span class="s-str">"토큰: %s\n"</span>, tok);</span></div>
+<div class="code-line"><span class="ln">36</span><span class="lc">        tok = <span class="s-fn">strtok</span>(<span class="s-kw">NULL</span>, <span class="s-str">","</span>);</span></div>
+<div class="code-line"><span class="ln">37</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">38</span><span class="lc">    </span></div>
+<div class="code-line"><span class="ln">39</span><span class="lc">    <span class="s-cm">/* memcpy, memset - 메모리 블록 */</span></span></div>
+<div class="code-line"><span class="ln">40</span><span class="lc">    <span class="s-type">int</span> a[<span class="s-num">5</span>] = {<span class="s-num">1</span>, <span class="s-num">2</span>, <span class="s-num">3</span>, <span class="s-num">4</span>, <span class="s-num">5</span>};</span></div>
+<div class="code-line"><span class="ln">41</span><span class="lc">    <span class="s-type">int</span> b[<span class="s-num">5</span>];</span></div>
+<div class="code-line"><span class="ln">42</span><span class="lc">    <span class="s-fn">memcpy</span>(b, a, <span class="s-kw">sizeof</span>(a));                   <span class="s-cm">/* 배열 복사 */</span></span></div>
+<div class="code-line"><span class="ln">43</span><span class="lc">    <span class="s-fn">memset</span>(b, <span class="s-num">0</span>, <span class="s-kw">sizeof</span>(b));                   <span class="s-cm">/* 0으로 초기화 */</span></span></div>
+<div class="code-line"><span class="ln">44</span><span class="lc">    <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">45</span><span class="lc">}</span></div>
+</div>
+</div>
+<h2 class="section-title">math.h - 수학 함수</h2>
+<p>undefined</p>
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;stdio.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;math.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">4</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">main</span>(<span class="s-type">void</span>) {</span></div>
+<div class="code-line"><span class="ln">5</span><span class="lc">    <span class="s-cm">/* 거듭제곱, 제곱근 */</span></span></div>
+<div class="code-line"><span class="ln">6</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"2^10 = %.0f\n"</span>, <span class="s-fn">pow</span>(<span class="s-num">2</span>, <span class="s-num">10</span>));       <span class="s-cm">/* 1024 */</span></span></div>
+<div class="code-line"><span class="ln">7</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"sqrt(144) = %.0f\n"</span>, <span class="s-fn">sqrt</span>(<span class="s-num">144</span>));   <span class="s-cm">/* 12 */</span></span></div>
+<div class="code-line"><span class="ln">8</span><span class="lc">    </span></div>
+<div class="code-line"><span class="ln">9</span><span class="lc">    <span class="s-cm">/* 절대값 */</span></span></div>
+<div class="code-line"><span class="ln">10</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"abs(-7) = %d\n"</span>, <span class="s-fn">abs</span>(-<span class="s-num">7</span>));          <span class="s-cm">/* 7 (stdlib.h) */</span></span></div>
+<div class="code-line"><span class="ln">11</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"fabs(-3.14) = %.2f\n"</span>, <span class="s-fn">fabs</span>(-<span class="s-num">3.14</span>));<span class="s-cm">/* 3.14 */</span></span></div>
+<div class="code-line"><span class="ln">12</span><span class="lc">    </span></div>
+<div class="code-line"><span class="ln">13</span><span class="lc">    <span class="s-cm">/* 올림, 내림, 반올림 */</span></span></div>
+<div class="code-line"><span class="ln">14</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"ceil(2.3) = %.0f\n"</span>, <span class="s-fn">ceil</span>(<span class="s-num">2.3</span>));    <span class="s-cm">/* 3 */</span></span></div>
+<div class="code-line"><span class="ln">15</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"floor(2.7) = %.0f\n"</span>, <span class="s-fn">floor</span>(<span class="s-num">2.7</span>));  <span class="s-cm">/* 2 */</span></span></div>
+<div class="code-line"><span class="ln">16</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"round(2.5) = %.0f\n"</span>, <span class="s-fn">round</span>(<span class="s-num">2.5</span>));  <span class="s-cm">/* 3 */</span></span></div>
+<div class="code-line"><span class="ln">17</span><span class="lc">    </span></div>
+<div class="code-line"><span class="ln">18</span><span class="lc">    <span class="s-cm">/* 삼각함수 (라디안 단위) */</span></span></div>
+<div class="code-line"><span class="ln">19</span><span class="lc">    <span class="s-type">double</span> pi = <span class="s-fn">acos</span>(-<span class="s-num">1.0</span>);</span></div>
+<div class="code-line"><span class="ln">20</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"sin(pi/2) = %.2f\n"</span>, <span class="s-fn">sin</span>(pi / <span class="s-num">2</span>));  <span class="s-cm">/* 1.00 */</span></span></div>
+<div class="code-line"><span class="ln">21</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"cos(0) = %.2f\n"</span>, <span class="s-fn">cos</span>(<span class="s-num">0</span>));          <span class="s-cm">/* 1.00 */</span></span></div>
+<div class="code-line"><span class="ln">22</span><span class="lc">    </span></div>
+<div class="code-line"><span class="ln">23</span><span class="lc">    <span class="s-cm">/* 로그 */</span></span></div>
+<div class="code-line"><span class="ln">24</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"log(e) = %.2f\n"</span>, <span class="s-fn">log</span>(<span class="s-fn">exp</span>(<span class="s-num">1</span>)));     <span class="s-cm">/* 1.00 (자연로그) */</span></span></div>
+<div class="code-line"><span class="ln">25</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"log10(100) = %.2f\n"</span>, <span class="s-fn">log10</span>(<span class="s-num">100</span>));  <span class="s-cm">/* 2.00 */</span></span></div>
+<div class="code-line"><span class="ln">26</span><span class="lc">    <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">27</span><span class="lc">}</span></div>
+</div>
+</div>
+<h2 class="section-title">ctype.h - 문자 분류 및 변환</h2>
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;stdio.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;ctype.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">4</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">main</span>(<span class="s-type">void</span>) {</span></div>
+<div class="code-line"><span class="ln">5</span><span class="lc">    <span class="s-type">char</span> ch = <span class="s-str">'A'</span>;</span></div>
+<div class="code-line"><span class="ln">6</span><span class="lc">    </span></div>
+<div class="code-line"><span class="ln">7</span><span class="lc">    <span class="s-cm">/* 문자 분류 */</span></span></div>
+<div class="code-line"><span class="ln">8</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"isalpha('%c') = %d\n"</span>, ch, <span class="s-fn">isalpha</span>(ch));   <span class="s-cm">/* 0이 아닌 값 */</span></span></div>
+<div class="code-line"><span class="ln">9</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"isdigit('3') = %d\n"</span>, <span class="s-fn">isdigit</span>(<span class="s-str">'3'</span>));        <span class="s-cm">/* 0이 아닌 값 */</span></span></div>
+<div class="code-line"><span class="ln">10</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"isalnum('Z') = %d\n"</span>, <span class="s-fn">isalnum</span>(<span class="s-str">'Z'</span>));        <span class="s-cm">/* 0이 아닌 값 */</span></span></div>
+<div class="code-line"><span class="ln">11</span><span class="lc">    </span></div>
+<div class="code-line"><span class="ln">12</span><span class="lc">    <span class="s-cm">/* 대소문자 변환 */</span></span></div>
+<div class="code-line"><span class="ln">13</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"tolower('A') = %c\n"</span>, <span class="s-fn">tolower</span>(<span class="s-str">'A'</span>));        <span class="s-cm">/* 'a' */</span></span></div>
+<div class="code-line"><span class="ln">14</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"toupper('z') = %c\n"</span>, <span class="s-fn">toupper</span>(<span class="s-str">'z'</span>));        <span class="s-cm">/* 'Z' */</span></span></div>
+<div class="code-line"><span class="ln">15</span><span class="lc">    </span></div>
+<div class="code-line"><span class="ln">16</span><span class="lc">    <span class="s-cm">/* 실전 활용: 대소문자 무시 비교 */</span></span></div>
+<div class="code-line"><span class="ln">17</span><span class="lc">    <span class="s-type">char</span> s[] = <span class="s-str">"Hello World 123!"</span>;</span></div>
+<div class="code-line"><span class="ln">18</span><span class="lc">    <span class="s-type">int</span> alpha = <span class="s-num">0</span>, digit = <span class="s-num">0</span>, other = <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">19</span><span class="lc">    <span class="s-kw">for</span> (<span class="s-type">int</span> i = <span class="s-num">0</span>; s[i]; i++) {</span></div>
+<div class="code-line"><span class="ln">20</span><span class="lc">        <span class="s-kw">if</span> (<span class="s-fn">isalpha</span>(s[i])) alpha++;</span></div>
+<div class="code-line"><span class="ln">21</span><span class="lc">        <span class="s-kw">else</span> <span class="s-kw">if</span> (<span class="s-fn">isdigit</span>(s[i])) digit++;</span></div>
+<div class="code-line"><span class="ln">22</span><span class="lc">        <span class="s-kw">else</span> other++;</span></div>
+<div class="code-line"><span class="ln">23</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">24</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"알파벳: %d, 숫자: %d, 기타: %d\n"</span>, alpha, digit, other);</span></div>
+<div class="code-line"><span class="ln">25</span><span class="lc">    <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">26</span><span class="lc">}</span></div>
+</div>
+</div>
+<h2 class="section-title">time.h - 시간 함수</h2>
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;stdio.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;time.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">4</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">main</span>(<span class="s-type">void</span>) {</span></div>
+<div class="code-line"><span class="ln">5</span><span class="lc">    <span class="s-cm">/* 현재 시간 */</span></span></div>
+<div class="code-line"><span class="ln">6</span><span class="lc">    time_t now = <span class="s-fn">time</span>(<span class="s-kw">NULL</span>);</span></div>
+<div class="code-line"><span class="ln">7</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"1970-01-01부터 경과 초: %ld\n"</span>, (<span class="s-type">long</span>)now);</span></div>
+<div class="code-line"><span class="ln">8</span><span class="lc">    </span></div>
+<div class="code-line"><span class="ln">9</span><span class="lc">    <span class="s-cm">/* 시간 포맷 출력 */</span></span></div>
+<div class="code-line"><span class="ln">10</span><span class="lc">    <span class="s-type">char</span> buf[<span class="s-num">100</span>];</span></div>
+<div class="code-line"><span class="ln">11</span><span class="lc">    <span class="s-kw">struct</span> tm *t = <span class="s-fn">localtime</span>(&amp;now);</span></div>
+<div class="code-line"><span class="ln">12</span><span class="lc">    <span class="s-fn">strftime</span>(buf, <span class="s-kw">sizeof</span>(buf), <span class="s-str">"%Y-%m-%d %H:%M:%S"</span>, t);</span></div>
+<div class="code-line"><span class="ln">13</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"현재 시각: %s\n"</span>, buf);</span></div>
+<div class="code-line"><span class="ln">14</span><span class="lc">    </span></div>
+<div class="code-line"><span class="ln">15</span><span class="lc">    <span class="s-cm">/* 실행 시간 측정 */</span></span></div>
+<div class="code-line"><span class="ln">16</span><span class="lc">    clock_t start = <span class="s-fn">clock</span>();</span></div>
+<div class="code-line"><span class="ln">17</span><span class="lc">    <span class="s-type">long</span> sum = <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">18</span><span class="lc">    <span class="s-kw">for</span> (<span class="s-type">long</span> i = <span class="s-num">0</span>; i &lt; <span class="s-num">100000000L</span>; i++) sum += i;</span></div>
+<div class="code-line"><span class="ln">19</span><span class="lc">    clock_t end = <span class="s-fn">clock</span>();</span></div>
+<div class="code-line"><span class="ln">20</span><span class="lc">    <span class="s-type">double</span> elapsed = (<span class="s-type">double</span>)(end - start) / CLOCKS_PER_SEC;</span></div>
+<div class="code-line"><span class="ln">21</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"실행 시간: %.3f초\n"</span>, elapsed);</span></div>
+<div class="code-line"><span class="ln">22</span><span class="lc">    </span></div>
+<div class="code-line"><span class="ln">23</span><span class="lc">    <span class="s-cm">/* 시간 차이 계산 */</span></span></div>
+<div class="code-line"><span class="ln">24</span><span class="lc">    time_t t1 = <span class="s-fn">time</span>(<span class="s-kw">NULL</span>);</span></div>
+<div class="code-line"><span class="ln">25</span><span class="lc">    <span class="s-cm">/* ... 작업 수행 ... */</span></span></div>
+<div class="code-line"><span class="ln">26</span><span class="lc">    time_t t2 = <span class="s-fn">time</span>(<span class="s-kw">NULL</span>);</span></div>
+<div class="code-line"><span class="ln">27</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"경과: %.0f초\n"</span>, <span class="s-fn">difftime</span>(t2, t1));</span></div>
+<div class="code-line"><span class="ln">28</span><span class="lc">    <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">29</span><span class="lc">}</span></div>
+</div>
+</div>
+<h2 class="section-title">stdarg.h - 가변 인자</h2>
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;stdio.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;stdarg.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">4</span><span class="lc"><span class="s-cm">/* 가변 인자 함수: 여러 정수의 합 */</span></span></div>
+<div class="code-line"><span class="ln">5</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">sum</span>(<span class="s-type">int</span> count, ...) {</span></div>
+<div class="code-line"><span class="ln">6</span><span class="lc">    va_list ap;</span></div>
+<div class="code-line"><span class="ln">7</span><span class="lc">    <span class="s-fn">va_start</span>(ap, count);</span></div>
+<div class="code-line"><span class="ln">8</span><span class="lc">    <span class="s-type">int</span> total = <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">9</span><span class="lc">    <span class="s-kw">for</span> (<span class="s-type">int</span> i = <span class="s-num">0</span>; i &lt; count; i++) {</span></div>
+<div class="code-line"><span class="ln">10</span><span class="lc">        total += <span class="s-fn">va_arg</span>(ap, <span class="s-type">int</span>);</span></div>
+<div class="code-line"><span class="ln">11</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">12</span><span class="lc">    <span class="s-fn">va_end</span>(ap);</span></div>
+<div class="code-line"><span class="ln">13</span><span class="lc">    <span class="s-kw">return</span> total;</span></div>
+<div class="code-line"><span class="ln">14</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">15</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">16</span><span class="lc"><span class="s-cm">/* 가변 인자 함수: 서식 출력 래퍼 */</span></span></div>
+<div class="code-line"><span class="ln">17</span><span class="lc"><span class="s-type">void</span> <span class="s-fn">my_log</span>(<span class="s-kw">const</span> <span class="s-type">char</span> *fmt, ...) {</span></div>
+<div class="code-line"><span class="ln">18</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"[LOG] "</span>);</span></div>
+<div class="code-line"><span class="ln">19</span><span class="lc">    va_list ap;</span></div>
+<div class="code-line"><span class="ln">20</span><span class="lc">    <span class="s-fn">va_start</span>(ap, fmt);</span></div>
+<div class="code-line"><span class="ln">21</span><span class="lc">    <span class="s-fn">vprintf</span>(fmt, ap);</span></div>
+<div class="code-line"><span class="ln">22</span><span class="lc">    <span class="s-fn">va_end</span>(ap);</span></div>
+<div class="code-line"><span class="ln">23</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"\n"</span>);</span></div>
+<div class="code-line"><span class="ln">24</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">25</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">26</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">main</span>(<span class="s-type">void</span>) {</span></div>
+<div class="code-line"><span class="ln">27</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"합계: %d\n"</span>, <span class="s-fn">sum</span>(<span class="s-num">4</span>, <span class="s-num">10</span>, <span class="s-num">20</span>, <span class="s-num">30</span>, <span class="s-num">40</span>));  <span class="s-cm">/* 100 */</span></span></div>
+<div class="code-line"><span class="ln">28</span><span class="lc">    <span class="s-fn">my_log</span>(<span class="s-str">"값 = %d, 이름 = %s"</span>, <span class="s-num">42</span>, <span class="s-str">"test"</span>);</span></div>
+<div class="code-line"><span class="ln">29</span><span class="lc">    <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">30</span><span class="lc">}</span></div>
+</div>
+</div>
+<h2 class="section-title">보조 헤더: stdbool.h, limits.h, float.h, assert.h, errno.h</h2>
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;stdio.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;stdbool.h&gt;</span>   <span class="s-cm">/* bool, true, false */</span></span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;limits.h&gt;</span>    <span class="s-cm">/* 정수 한계값 */</span></span></div>
+<div class="code-line"><span class="ln">4</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;float.h&gt;</span>     <span class="s-cm">/* 실수 한계값 */</span></span></div>
+<div class="code-line"><span class="ln">5</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;assert.h&gt;</span>    <span class="s-cm">/* 디버깅용 단언 */</span></span></div>
+<div class="code-line"><span class="ln">6</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;errno.h&gt;</span>     <span class="s-cm">/* 에러 코드 */</span></span></div>
+<div class="code-line"><span class="ln">7</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;math.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">8</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">9</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">main</span>(<span class="s-type">void</span>) {</span></div>
+<div class="code-line"><span class="ln">10</span><span class="lc">    <span class="s-cm">/* stdbool.h */</span></span></div>
+<div class="code-line"><span class="ln">11</span><span class="lc">    bool flag = true;</span></div>
+<div class="code-line"><span class="ln">12</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"bool: %d\n"</span>, flag);                    <span class="s-cm">/* 1 */</span></span></div>
+<div class="code-line"><span class="ln">13</span><span class="lc">    </span></div>
+<div class="code-line"><span class="ln">14</span><span class="lc">    <span class="s-cm">/* limits.h */</span></span></div>
+<div class="code-line"><span class="ln">15</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"INT_MAX  = %d\n"</span>, INT_MAX);            <span class="s-cm">/* 2147483647 */</span></span></div>
+<div class="code-line"><span class="ln">16</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"INT_MIN  = %d\n"</span>, INT_MIN);            <span class="s-cm">/* -2147483648 */</span></span></div>
+<div class="code-line"><span class="ln">17</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"CHAR_MAX = %d\n"</span>, CHAR_MAX);           <span class="s-cm">/* 127 */</span></span></div>
+<div class="code-line"><span class="ln">18</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"LONG_MAX = %ld\n"</span>, LONG_MAX);</span></div>
+<div class="code-line"><span class="ln">19</span><span class="lc">    </span></div>
+<div class="code-line"><span class="ln">20</span><span class="lc">    <span class="s-cm">/* float.h */</span></span></div>
+<div class="code-line"><span class="ln">21</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"FLT_MAX     = %e\n"</span>, FLT_MAX);</span></div>
+<div class="code-line"><span class="ln">22</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"DBL_EPSILON = %e\n"</span>, DBL_EPSILON);</span></div>
+<div class="code-line"><span class="ln">23</span><span class="lc">    </span></div>
+<div class="code-line"><span class="ln">24</span><span class="lc">    <span class="s-cm">/* assert.h - 조건이 거짓이면 프로그램 중단 */</span></span></div>
+<div class="code-line"><span class="ln">25</span><span class="lc">    <span class="s-type">int</span> x = <span class="s-num">5</span>;</span></div>
+<div class="code-line"><span class="ln">26</span><span class="lc">    <span class="s-fn">assert</span>(x &gt; <span class="s-num">0</span>);   <span class="s-cm">/* 통과 */</span></span></div>
+<div class="code-line"><span class="ln">27</span><span class="lc">    <span class="s-cm">/* assert(x &lt; 0); -&gt; Assertion failed: x &lt; 0 */</span></span></div>
+<div class="code-line"><span class="ln">28</span><span class="lc">    </span></div>
+<div class="code-line"><span class="ln">29</span><span class="lc">    <span class="s-cm">/* errno.h */</span></span></div>
+<div class="code-line"><span class="ln">30</span><span class="lc">    errno = <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">31</span><span class="lc">    <span class="s-type">double</span> val = <span class="s-fn">sqrt</span>(-<span class="s-num">1.0</span>);</span></div>
+<div class="code-line"><span class="ln">32</span><span class="lc">    <span class="s-kw">if</span> (errno == EDOM) {</span></div>
+<div class="code-line"><span class="ln">33</span><span class="lc">        <span class="s-fn">printf</span>(<span class="s-str">"수학 도메인 에러 발생\n"</span>);</span></div>
+<div class="code-line"><span class="ln">34</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">35</span><span class="lc">    </span></div>
+<div class="code-line"><span class="ln">36</span><span class="lc">    <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">37</span><span class="lc">}</span></div>
+</div>
+</div>
+<h2 class="section-title">종합 예제: 모든 라이브러리 활용</h2>
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;stdio.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;stdlib.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;string.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">4</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;math.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">5</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;ctype.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">6</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;time.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">7</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">8</span><span class="lc"><span class="s-kw">typedef</span> <span class="s-kw">struct</span> {</span></div>
+<div class="code-line"><span class="ln">9</span><span class="lc">    <span class="s-type">char</span> name[<span class="s-num">50</span>];</span></div>
+<div class="code-line"><span class="ln">10</span><span class="lc">    <span class="s-type">double</span> score;</span></div>
+<div class="code-line"><span class="ln">11</span><span class="lc">} Student;</span></div>
+<div class="code-line"><span class="ln">12</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">13</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">cmp_score</span>(<span class="s-kw">const</span> <span class="s-type">void</span> *a, <span class="s-kw">const</span> <span class="s-type">void</span> *b) {</span></div>
+<div class="code-line"><span class="ln">14</span><span class="lc">    <span class="s-type">double</span> diff = ((Student *)b)-&gt;score - ((Student *)a)-&gt;score;</span></div>
+<div class="code-line"><span class="ln">15</span><span class="lc">    <span class="s-kw">return</span> (diff &gt; <span class="s-num">0</span>) - (diff &lt; <span class="s-num">0</span>);</span></div>
+<div class="code-line"><span class="ln">16</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">17</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">18</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">main</span>(<span class="s-type">void</span>) {</span></div>
+<div class="code-line"><span class="ln">19</span><span class="lc">    <span class="s-fn">srand</span>((<span class="s-type">unsigned</span>)<span class="s-fn">time</span>(<span class="s-kw">NULL</span>));</span></div>
+<div class="code-line"><span class="ln">20</span><span class="lc">    <span class="s-type">int</span> n = <span class="s-num">5</span>;</span></div>
+<div class="code-line"><span class="ln">21</span><span class="lc">    Student *students = (Student *)<span class="s-fn">malloc</span>(n * <span class="s-kw">sizeof</span>(Student));</span></div>
+<div class="code-line"><span class="ln">22</span><span class="lc">    <span class="s-kw">if</span> (!students) { <span class="s-fn">perror</span>(<span class="s-str">"malloc"</span>); <span class="s-kw">return</span> <span class="s-num">1</span>; }</span></div>
+<div class="code-line"><span class="ln">23</span><span class="lc">    </span></div>
+<div class="code-line"><span class="ln">24</span><span class="lc">    <span class="s-cm">/* 데이터 생성 */</span></span></div>
+<div class="code-line"><span class="ln">25</span><span class="lc">    <span class="s-kw">const</span> <span class="s-type">char</span> *names[] = {<span class="s-str">"Alice"</span>, <span class="s-str">"Bob"</span>, <span class="s-str">"Charlie"</span>, <span class="s-str">"David"</span>, <span class="s-str">"Eve"</span>};</span></div>
+<div class="code-line"><span class="ln">26</span><span class="lc">    <span class="s-kw">for</span> (<span class="s-type">int</span> i = <span class="s-num">0</span>; i &lt; n; i++) {</span></div>
+<div class="code-line"><span class="ln">27</span><span class="lc">        <span class="s-fn">strcpy</span>(students[i].name, names[i]);</span></div>
+<div class="code-line"><span class="ln">28</span><span class="lc">        students[i].score = (<span class="s-fn">rand</span>() % <span class="s-num">4001</span>) / <span class="s-num">100.0</span> + <span class="s-num">60.0</span>;</span></div>
+<div class="code-line"><span class="ln">29</span><span class="lc">        <span class="s-cm">/* toupper로 이름 첫 글자 대문자 확인 */</span></span></div>
+<div class="code-line"><span class="ln">30</span><span class="lc">        students[i].name[<span class="s-num">0</span>] = <span class="s-fn">toupper</span>(students[i].name[<span class="s-num">0</span>]);</span></div>
+<div class="code-line"><span class="ln">31</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">32</span><span class="lc">    </span></div>
+<div class="code-line"><span class="ln">33</span><span class="lc">    <span class="s-cm">/* qsort로 점수 내림차순 정렬 */</span></span></div>
+<div class="code-line"><span class="ln">34</span><span class="lc">    <span class="s-fn">qsort</span>(students, n, <span class="s-kw">sizeof</span>(Student), cmp_score);</span></div>
+<div class="code-line"><span class="ln">35</span><span class="lc">    </span></div>
+<div class="code-line"><span class="ln">36</span><span class="lc">    <span class="s-cm">/* 결과 출력 */</span></span></div>
+<div class="code-line"><span class="ln">37</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"===== 성적 순위표 =====\n"</span>);</span></div>
+<div class="code-line"><span class="ln">38</span><span class="lc">    <span class="s-type">double</span> sum = <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">39</span><span class="lc">    <span class="s-kw">for</span> (<span class="s-type">int</span> i = <span class="s-num">0</span>; i &lt; n; i++) {</span></div>
+<div class="code-line"><span class="ln">40</span><span class="lc">        <span class="s-fn">printf</span>(<span class="s-str">"%d위: %-10s %.2f점\n"</span>, i + <span class="s-num">1</span>, students[i].name, students[i].score);</span></div>
+<div class="code-line"><span class="ln">41</span><span class="lc">        sum += students[i].score;</span></div>
+<div class="code-line"><span class="ln">42</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">43</span><span class="lc">    <span class="s-type">double</span> avg = sum / n;</span></div>
+<div class="code-line"><span class="ln">44</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"평균: %.2f / 표준편차: %.2f\n"</span>, avg,</span></div>
+<div class="code-line"><span class="ln">45</span><span class="lc">           <span class="s-fn">sqrt</span>(sum / n - avg * avg &gt; <span class="s-num">0</span> ? sum / n - avg * avg : <span class="s-num">0</span>));</span></div>
+<div class="code-line"><span class="ln">46</span><span class="lc">    </span></div>
+<div class="code-line"><span class="ln">47</span><span class="lc">    <span class="s-cm">/* 현재 시각 출력 */</span></span></div>
+<div class="code-line"><span class="ln">48</span><span class="lc">    time_t now = <span class="s-fn">time</span>(<span class="s-kw">NULL</span>);</span></div>
+<div class="code-line"><span class="ln">49</span><span class="lc">    <span class="s-type">char</span> timebuf[<span class="s-num">64</span>];</span></div>
+<div class="code-line"><span class="ln">50</span><span class="lc">    <span class="s-fn">strftime</span>(timebuf, <span class="s-kw">sizeof</span>(timebuf), <span class="s-str">"%Y-%m-%d %H:%M:%S"</span>, <span class="s-fn">localtime</span>(&amp;now));</span></div>
+<div class="code-line"><span class="ln">51</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"출력 시각: %s\n"</span>, timebuf);</span></div>
+<div class="code-line"><span class="ln">52</span><span class="lc">    </span></div>
+<div class="code-line"><span class="ln">53</span><span class="lc">    <span class="s-cm">/* 파일 저장 */</span></span></div>
+<div class="code-line"><span class="ln">54</span><span class="lc">    <span class="s-type">FILE</span> *fp = <span class="s-fn">fopen</span>(<span class="s-str">"result.txt"</span>, <span class="s-str">"w"</span>);</span></div>
+<div class="code-line"><span class="ln">55</span><span class="lc">    <span class="s-kw">if</span> (fp) {</span></div>
+<div class="code-line"><span class="ln">56</span><span class="lc">        <span class="s-fn">fprintf</span>(fp, <span class="s-str">"성적 결과 (%s)\n"</span>, timebuf);</span></div>
+<div class="code-line"><span class="ln">57</span><span class="lc">        <span class="s-kw">for</span> (<span class="s-type">int</span> i = <span class="s-num">0</span>; i &lt; n; i++)</span></div>
+<div class="code-line"><span class="ln">58</span><span class="lc">            <span class="s-fn">fprintf</span>(fp, <span class="s-str">"%s: %.2f\n"</span>, students[i].name, students[i].score);</span></div>
+<div class="code-line"><span class="ln">59</span><span class="lc">        <span class="s-fn">fclose</span>(fp);</span></div>
+<div class="code-line"><span class="ln">60</span><span class="lc">        <span class="s-fn">printf</span>(<span class="s-str">"result.txt에 저장 완료\n"</span>);</span></div>
+<div class="code-line"><span class="ln">61</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">62</span><span class="lc">    </span></div>
+<div class="code-line"><span class="ln">63</span><span class="lc">    <span class="s-fn">free</span>(students);</span></div>
+<div class="code-line"><span class="ln">64</span><span class="lc">    <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">65</span><span class="lc">}</span></div>
+</div>
+</div>
+<div class="note-box"><span class="note-label"></span>
+<div style="font-weight:700;margin-bottom:6px;color:#1a2e4a">자주 쓰는 함수 TOP 20</div>1. printf (stdio.h) -- 서식 출력<br>2. scanf (stdio.h) -- 서식 입력<br>3. malloc (stdlib.h) -- 메모리 할당<br>4. free (stdlib.h) -- 메모리 해제<br>5. strlen (string.h) -- 문자열 길이<br>6. strcpy (string.h) -- 문자열 복사<br>7. strcmp (string.h) -- 문자열 비교<br>8. strcat (string.h) -- 문자열 연결<br>9. memset (string.h) -- 메모리 초기화<br>10. memcpy (string.h) -- 메모리 복사<br>11. fopen (stdio.h) -- 파일 열기<br>12. fclose (stdio.h) -- 파일 닫기<br>13. fprintf (stdio.h) -- 파일 서식 출력<br>14. fgets (stdio.h) -- 문자열 읽기 (안전)<br>15. qsort (stdlib.h) -- 정렬<br>16. atoi (stdlib.h) -- 문자열->정수 변환<br>17. sqrt (math.h) -- 제곱근<br>18. pow (math.h) -- 거듭제곱<br>19. rand (stdlib.h) -- 난수 생성<br>20. time (time.h) -- 현재 시간</div>
+<h2 class="section-title">에러 체험</h2>
+<div class="note-box"><span class="note-label"></span>
+<div style="font-weight:700;margin-bottom:6px;color:#1a2e4a">에러 1: 헤더 파일 누락</div>#include <stdio.h><br>int main(void) {<br>    int len = strlen("hello");  // 에러!<br>}<br><br>-> strlen은 string.h에 선언되어 있습니다.<br>-> #include <string.h>를 추가해야 합니다.</div>
+<div class="note-box"><span class="note-label"></span>
+<div style="font-weight:700;margin-bottom:6px;color:#1a2e4a">에러 2: math.h 링크 누락 (Linux/Mac)</div>gcc main.c           // sqrt 등에서 undefined reference 에러<br>gcc main.c -lm       // 정상 컴파일<br><br>-> math.h 함수 사용 시 -lm 플래그를 추가해야 합니다.<br>-> Windows(MSVC, MinGW)에서는 자동 링크됩니다.</div>
+<div class="note-box"><span class="note-label"></span>
+<div style="font-weight:700;margin-bottom:6px;color:#1a2e4a">에러 3: atoi 반환값 검증 누락</div>int n = atoi("abc");   // n = 0 (에러가 아님!)<br>int m = atoi("");      // m = 0<br><br>-> atoi는 변환 실패 시 0을 반환하여 정상값과 구분이 불가합니다.<br>-> 안전한 대안: strtol을 사용하면 에러를 감지할 수 있습니다.</div>
+<div class="note-box"><span class="note-label"></span>
+<div style="font-weight:700;margin-bottom:6px;color:#1a2e4a">에러 4: strcpy 버퍼 오버플로</div>char buf[5];<br>strcpy(buf, "Hello World");  // 버퍼 초과!<br><br>-> buf는 5바이트인데 11글자 + null = 12바이트를 복사합니다.<br>-> strncpy(buf, src, sizeof(buf) - 1)로 크기를 제한하십시오.</div>
+<h2 class="section-title">설명하기</h2>
+<div class="tip"><span class="tip-label">설명하기</span><p style="margin:0">C 표준 라이브러리가 언어 자체에 포함되지 않고 별도의 헤더 파일로 분리된 이유를 설명하십시오. 또한 strcpy 대신 strncpy를 사용해야 하는 상황과 그 이유를 서술하십시오.</p></div>
+<h2 class="section-title">예제</h2>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 1</span><p style="margin:0;font-size:14px">문자열 "12345"를 정수로 변환하여 출력하십시오. (atoi 사용)</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 2</span><p style="margin:0;font-size:14px">문자열 "Hello"의 길이를 strlen으로 구하고, strcpy로 다른 배열에 복사하여 출력하십시오.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 3</span><p style="margin:0;font-size:14px">pow 함수를 사용하여 2의 0승부터 10승까지 출력하십시오.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 4</span><p style="margin:0;font-size:14px">문자열을 입력받아 알파벳, 숫자, 공백, 기타 문자의 개수를 각각 세어 출력하십시오. (ctype.h 활용)</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 5</span><p style="margin:0;font-size:14px">정수 배열 {5, 2, 8, 1, 9, 3}을 qsort로 오름차순 정렬한 뒤 bsearch로 값 8을 검색하십시오.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 6</span><p style="margin:0;font-size:14px">strtok을 사용하여 CSV 문자열 "Kim,85,Lee,92,Park,78"에서 이름과 점수를 분리하여 출력하십시오.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 7</span><p style="margin:0;font-size:14px">가변 인자 함수 max_of(int count, ...)를 작성하여 전달받은 정수들 중 최대값을 반환하십시오.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 8</span><p style="margin:0;font-size:14px">현재 시각을 strftime으로 "YYYY년 MM월 DD일 HH시 MM분 SS초" 형식으로 출력하십시오.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 9</span><p style="margin:0;font-size:14px">errno를 활용하여 sqrt(-1), log(0) 호출 시 발생하는 수학 에러를 감지하고 에러 메시지를 출력하십시오.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 10</span><p style="margin:0;font-size:14px">assert를 활용하여 배열 인덱스가 유효 범위 내인지 검증하는 안전한 배열 접근 함수 safe_get(int *arr, int size, int idx)를 작성하십시오.</p></div>
+<h2 class="section-title">대회 기출 문제</h2>
+<h2 class="section-title">대회 기출</h2>
+<h2 class="section-title">요약</h2>
+<div class="warmup-box"><div class="warmup-title">핵심 정리</div><div class="wq"><b>1.</b> stdio.h: printf, scanf, fopen, fclose, fprintf, fgets 등 모든 입출력의 기반</div><div class="wq"><b>2.</b> stdlib.h: malloc/free 메모리 관리, atoi 변환, qsort 정렬, rand 난수</div><div class="wq"><b>3.</b> string.h: strlen, strcpy, strcmp, strcat, strchr, strstr, strtok, memcpy, memset</div><div class="wq"><b>4.</b> math.h: sqrt, pow, ceil, floor, round, sin, cos, log (-lm 링크 필요)</div><div class="wq"><b>5.</b> ctype.h: isalpha, isdigit, toupper, tolower 등 문자 분류/변환</div><div class="wq"><b>6.</b> time.h: time, clock, strftime으로 시간 측정과 포맷 출력</div><div class="wq"><b>7.</b> stdarg.h: va_start, va_arg, va_end로 가변 인자 함수 구현</div><div class="wq"><b>8.</b> 보조 헤더: stdbool.h(bool), limits.h(INT_MAX), assert.h(디버깅), errno.h(에러)</div></div>
+<h2 class="section-title">다음 유닛으로</h2>
+<div class="note-box"><span class="note-label"></span>
+<div style="font-weight:700;margin-bottom:6px;color:#1a2e4a">다음: C11/C17 새 기능</div>이번 유닛에서 C89/C99의 표준 라이브러리를 총정리했습니다. 다음 유닛에서는 C11과 C17에서 추가된 새로운 기능들을 학습합니다. _Generic 매크로, _Static_assert, 익명 구조체/공용체, threads.h를 활용한 멀티스레딩 등 현대 C언어의 최신 기능을 살펴봅니다.</div>
+<table class="trace"><thead><tr><th>용어</th><th>설명</th></tr></thead><tbody><tr><td><code>표준 라이브러리(Standard Library)</code></td><td>C 표준에서 정의한 함수와 매크로의 모음. 헤더 파일을 #include하여 사용합니다.</td></tr><tr><td><code>헤더 파일(Header File)</code></td><td>함수 선언, 매크로, 타입 정의를 담은 파일. #include <헤더명.h>로 포함합니다.</td></tr><tr><td><code>링크(Link)</code></td><td>컴파일된 오브젝트 파일과 라이브러리를 결합하여 실행 파일을 만드는 과정입니다.</td></tr><tr><td><code>가변 인자(Variadic Arguments)</code></td><td>함수에 전달하는 인자의 개수가 고정되지 않은 것. printf가 대표적인 예입니다.</td></tr><tr><td><code>errno</code></td><td>라이브러리 함수 호출 중 에러 발생 시 에러 코드가 저장되는 전역 변수입니다.</td></tr><tr><td><code>assert</code></td><td>조건이 거짓이면 프로그램을 즉시 중단시키는 디버깅용 매크로입니다.</td></tr></tbody></table>
+
+    <span class="page-num">2</span>
+  </div>
+</div>
+<div class="page">
+  <div class="content-page">
+    <div class="unit-header-bar">
+      <span class="unit-tag">UNIT 07</span>
+      <span class="unit-title-sm">3과목 연결</span>
+    </div>
+<h2 class="section-title">10축 매핑</h2>
+<div class="note-box"><span class="note-label"></span>
+<div style="font-weight:700;margin-bottom:6px;color:#1a2e4a">이 유닛에서 키운 역량</div>C언어 ★★★★★ -- 12개 표준 헤더와 50개 이상의 함수를 체계적으로 정리했습니다.<br>컴퓨팅사고력 ★★★★☆ -- 문제에 맞는 라이브러리 함수를 선택하는 판단력을 키웠습니다.<br>디버깅 ★★★★☆ -- 헤더 누락, 버퍼 오버플로, 링크 에러 등 실전 에러를 체험했습니다.<br>소프트웨어공학 ★★★★★ -- 표준화된 라이브러리를 이해하고 이식 가능한 코드 작성법을 익혔습니다.<br>KOI ★★★★☆ -- 대회에서 자주 사용하는 stdlib, string, math 함수를 총정리했습니다.</div>
+
+    <span class="page-num">3</span>
+  </div>
+</div>
+<div class="page contest-page-wrap">
+  <div class="chapter-page">
+    <div class="chapter-sidebar"></div>
+    <div class="chapter-accent-bar"></div>
+    <div style="flex:1; min-width:0; padding:50px 50px 40px 45px; position:relative;">
+      <div class="problems-chapter-ref">Chapter 07: C 표준 라이브러리 총정리</div>
+      <h2 class="problems-title">대회 문제 (Online Judge)</h2>
+      <p style="font-size:14px; color:#6b7280; margin:-8px 0 24px;">실제 온라인 저지에 출제된 문제입니다. 아래에 코드를 작성한 뒤, 사이트에 제출하여 채점하십시오.</p>
+
+        <div class="contest-card">
+          <div class="contest-header">
+            <div class="contest-num-source">
+              <span class="contest-num">1번</span>
+              <span class="contest-source">백준 1000</span>
+            </div>
+            <span class="diff diff-mid">대회</span>
+          </div>
+          <div class="contest-body">
+            <p class="contest-question">두 정수 A와 B를 입력받아 A+B를 출력하십시오.</p>
+            
+            <div class="contest-write-area">
+              <div class="contest-write-label">코드 작성</div>
+              <textarea class="contest-textarea" rows="12" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="contest-card">
+          <div class="contest-header">
+            <div class="contest-num-source">
+              <span class="contest-num">2번</span>
+              <span class="contest-source">백준 1001</span>
+            </div>
+            <span class="diff diff-mid">대회</span>
+          </div>
+          <div class="contest-body">
+            <p class="contest-question">두 정수 A와 B를 입력받아 A-B를 출력하십시오.</p>
+            
+            <div class="contest-write-area">
+              <div class="contest-write-label">코드 작성</div>
+              <textarea class="contest-textarea" rows="12" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="contest-card">
+          <div class="contest-header">
+            <div class="contest-num-source">
+              <span class="contest-num">3번</span>
+              <span class="contest-source">백준 1008</span>
+            </div>
+            <span class="diff diff-mid">대회</span>
+          </div>
+          <div class="contest-body">
+            <p class="contest-question">두 정수 A와 B를 입력받아 A/B를 소수점 아래 9자리까지 출력하십시오.</p>
+            
+            <div class="contest-write-area">
+              <div class="contest-write-label">코드 작성</div>
+              <textarea class="contest-textarea" rows="12" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="contest-card">
+          <div class="contest-header">
+            <div class="contest-num-source">
+              <span class="contest-num">4번</span>
+              <span class="contest-source">백준 2588</span>
+            </div>
+            <span class="diff diff-mid">대회</span>
+          </div>
+          <div class="contest-body">
+            <p class="contest-question">세 자리 수와 세 자리 수의 곱셈 과정을 각 단계별로 출력하십시오.</p>
+            
+            <div class="contest-write-area">
+              <div class="contest-write-label">코드 작성</div>
+              <textarea class="contest-textarea" rows="12" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="contest-card">
+          <div class="contest-header">
+            <div class="contest-num-source">
+              <span class="contest-num">5번</span>
+              <span class="contest-source">백준 8393</span>
+            </div>
+            <span class="diff diff-mid">대회</span>
+          </div>
+          <div class="contest-body">
+            <p class="contest-question">n이 주어졌을 때, 1부터 n까지 합을 출력하십시오.</p>
+            
+            <div class="contest-write-area">
+              <div class="contest-write-label">코드 작성</div>
+              <textarea class="contest-textarea" rows="12" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="contest-card">
+          <div class="contest-header">
+            <div class="contest-num-source">
+              <span class="contest-num">6번</span>
+              <span class="contest-source">백준 2738</span>
+            </div>
+            <span class="diff diff-mid">대회</span>
+          </div>
+          <div class="contest-body">
+            <p class="contest-question">N*M 크기의 두 행렬의 합을 출력하십시오.</p>
+            
+            <div class="contest-write-area">
+              <div class="contest-write-label">코드 작성</div>
+              <textarea class="contest-textarea" rows="12" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="contest-card">
+          <div class="contest-header">
+            <div class="contest-num-source">
+              <span class="contest-num">7번</span>
+              <span class="contest-source">백준 15596</span>
+            </div>
+            <span class="diff diff-mid">대회</span>
+          </div>
+          <div class="contest-body">
+            <p class="contest-question">정수 배열이 주어질 때, 배열의 각 원소에 대해 그 원소보다 큰 수 중 가장 왼쪽에 있는 수를 출력하십시오. (함수 구현)</p>
+            
+            <div class="contest-write-area">
+              <div class="contest-write-label">코드 작성</div>
+              <textarea class="contest-textarea" rows="12" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="contest-card">
+          <div class="contest-header">
+            <div class="contest-num-source">
+              <span class="contest-num">8번</span>
+              <span class="contest-source">백준 4673</span>
+            </div>
+            <span class="diff diff-mid">대회</span>
+          </div>
+          <div class="contest-body">
+            <p class="contest-question">셀프 넘버가 아닌 수를 구하여 10000 이하의 셀프 넘버를 모두 출력하십시오.</p>
+            
+            <div class="contest-write-area">
+              <div class="contest-write-label">코드 작성</div>
+              <textarea class="contest-textarea" rows="12" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="contest-card">
+          <div class="contest-header">
+            <div class="contest-num-source">
+              <span class="contest-num">9번</span>
+              <span class="contest-source">백준 1065</span>
+            </div>
+            <span class="diff diff-mid">대회</span>
+          </div>
+          <div class="contest-body">
+            <p class="contest-question">어떤 양의 정수 n에 대해 한수인지 판별하고, 1부터 N까지 한수의 개수를 출력하십시오.</p>
+            
+            <div class="contest-write-area">
+              <div class="contest-write-label">코드 작성</div>
+              <textarea class="contest-textarea" rows="12" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="contest-card">
+          <div class="contest-header">
+            <div class="contest-num-source">
+              <span class="contest-num">10번</span>
+              <span class="contest-source">백준 1546</span>
+            </div>
+            <span class="diff diff-mid">대회</span>
+          </div>
+          <div class="contest-body">
+            <p class="contest-question">시험 점수를 조작하여 새로운 평균을 구하십시오. (최대값 기준 비율 변환)</p>
+            
+            <div class="contest-write-area">
+              <div class="contest-write-label">코드 작성</div>
+              <textarea class="contest-textarea" rows="12" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="contest-card">
+          <div class="contest-header">
+            <div class="contest-num-source">
+              <span class="contest-num">1번</span>
+              <span class="contest-source">백준 2206</span>
+            </div>
+            <span class="diff diff-mid">대회</span>
+          </div>
+          <div class="contest-body">
+            <p class="contest-question">벽을 최대 1개 부수고 이동하는 최단 경로를 구하십시오.</p>
+            
+            <div class="contest-write-area">
+              <div class="contest-write-label">코드 작성</div>
+              <textarea class="contest-textarea" rows="12" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="contest-card">
+          <div class="contest-header">
+            <div class="contest-num-source">
+              <span class="contest-num">2번</span>
+              <span class="contest-source">백준 1520</span>
+            </div>
+            <span class="diff diff-mid">대회</span>
+          </div>
+          <div class="contest-body">
+            <p class="contest-question">내리막 길로만 이동하는 경로의 수를 구하십시오.</p>
+            
+            <div class="contest-write-area">
+              <div class="contest-write-label">코드 작성</div>
+              <textarea class="contest-textarea" rows="12" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="contest-card">
+          <div class="contest-header">
+            <div class="contest-num-source">
+              <span class="contest-num">3번</span>
+              <span class="contest-source">백준 2252</span>
+            </div>
+            <span class="diff diff-mid">대회</span>
+          </div>
+          <div class="contest-body">
+            <p class="contest-question">줄 세우기 순서를 출력하십시오. (위상정렬)</p>
+            
+            <div class="contest-write-area">
+              <div class="contest-write-label">코드 작성</div>
+              <textarea class="contest-textarea" rows="12" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="contest-card">
+          <div class="contest-header">
+            <div class="contest-num-source">
+              <span class="contest-num">4번</span>
+              <span class="contest-source">백준 1005</span>
+            </div>
+            <span class="diff diff-mid">대회</span>
+          </div>
+          <div class="contest-body">
+            <p class="contest-question">건물을 짓는 최소 시간을 구하십시오.</p>
+            
+            <div class="contest-write-area">
+              <div class="contest-write-label">코드 작성</div>
+              <textarea class="contest-textarea" rows="12" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="contest-card">
+          <div class="contest-header">
+            <div class="contest-num-source">
+              <span class="contest-num">5번</span>
+              <span class="contest-source">백준 11066</span>
+            </div>
+            <span class="diff diff-mid">대회</span>
+          </div>
+          <div class="contest-body">
+            <p class="contest-question">파일을 합치는 최소 비용을 구하십시오.</p>
+            
+            <div class="contest-write-area">
+              <div class="contest-write-label">코드 작성</div>
+              <textarea class="contest-textarea" rows="12" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="contest-card">
+          <div class="contest-header">
+            <div class="contest-num-source">
+              <span class="contest-num">6번</span>
+              <span class="contest-source">백준 2293</span>
+            </div>
+            <span class="diff diff-mid">대회</span>
+          </div>
+          <div class="contest-body">
+            <p class="contest-question">동전으로 금액을 만드는 경우의 수를 구하십시오.</p>
+            
+            <div class="contest-write-area">
+              <div class="contest-write-label">코드 작성</div>
+              <textarea class="contest-textarea" rows="12" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="contest-card">
+          <div class="contest-header">
+            <div class="contest-num-source">
+              <span class="contest-num">7번</span>
+              <span class="contest-source">백준 11054</span>
+            </div>
+            <span class="diff diff-mid">대회</span>
+          </div>
+          <div class="contest-body">
+            <p class="contest-question">가장 긴 바이토닉 부분 수열의 길이를 구하십시오.</p>
+            
+            <div class="contest-write-area">
+              <div class="contest-write-label">코드 작성</div>
+              <textarea class="contest-textarea" rows="12" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="contest-card">
+          <div class="contest-header">
+            <div class="contest-num-source">
+              <span class="contest-num">8번</span>
+              <span class="contest-source">백준 9251</span>
+            </div>
+            <span class="diff diff-mid">대회</span>
+          </div>
+          <div class="contest-body">
+            <p class="contest-question">두 문자열의 LCS(최장 공통 부분 수열) 길이를 구하십시오.</p>
+            
+            <div class="contest-write-area">
+              <div class="contest-write-label">코드 작성</div>
+              <textarea class="contest-textarea" rows="12" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="contest-card">
+          <div class="contest-header">
+            <div class="contest-num-source">
+              <span class="contest-num">9번</span>
+              <span class="contest-source">백준 2098</span>
+            </div>
+            <span class="diff diff-mid">대회</span>
+          </div>
+          <div class="contest-body">
+            <p class="contest-question">외판원이 모든 도시를 방문하고 돌아오는 최소 비용을 구하십시오.</p>
+            
+            <div class="contest-write-area">
+              <div class="contest-write-label">코드 작성</div>
+              <textarea class="contest-textarea" rows="12" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="contest-card">
+          <div class="contest-header">
+            <div class="contest-num-source">
+              <span class="contest-num">10번</span>
+              <span class="contest-source">백준 1517</span>
+            </div>
+            <span class="diff diff-mid">대회</span>
+          </div>
+          <div class="contest-body">
+            <p class="contest-question">버블 소트에서 swap 횟수를 구하십시오.</p>
+            
+            <div class="contest-write-area">
+              <div class="contest-write-label">코드 작성</div>
+              <textarea class="contest-textarea" rows="12" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+            </div>
+          </div>
+        </div>
+      <span class="page-num">4</span>
+    </div>
+  </div>
+</div>
+</body>
+</html>

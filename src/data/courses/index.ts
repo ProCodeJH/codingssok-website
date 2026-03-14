@@ -6,6 +6,7 @@
 import type { Course, Chapter } from './types';
 import { PYTHON_BASICS } from './python-basics';
 import { COMPUTER_BASICS } from './computer-basics';
+import { C_LANGUAGE_CHAPTERS } from './c-language';
 
 // ── 빈 챕터 (준비 중 코스용) ──
 const EMPTY_CHAPTERS: Chapter[] = [
@@ -140,10 +141,10 @@ export const COURSES: Course[] = [
         gradient: 'linear-gradient(135deg, #f59e0b, #ef4444)',
         cardImage: '/images/courses/c-lang.jpg',
         description: 'C언어의 기초부터 구조체, 함수, 파일I/O, 실전 프로젝트까지 체계적으로 학습합니다.',
-        totalUnits: 0,
+        totalUnits: 247,
         totalProblems: 0,
-        estimatedHours: 0,
-        chapters: EMPTY_CHAPTERS,
+        estimatedHours: 200,
+        chapters: C_LANGUAGE_CHAPTERS,
     },
     {
         id: '5',

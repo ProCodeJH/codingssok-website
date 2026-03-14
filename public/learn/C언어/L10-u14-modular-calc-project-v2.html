@@ -1,0 +1,1927 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>코딩쏙 교재 — 모듈형 계산기 — 프로젝트</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+
+  :root {
+    --navy: #1a2e4a;
+    --navy-mid: #2c4a6e;
+    --navy-light: #3d6590;
+    --orange: #e07830;
+    --orange-light: #f5e6d8;
+    --white: #ffffff;
+    --bg: #f7f8fa;
+    --bg-warm: #faf9f7;
+    --gray-50: #f9fafb;
+    --gray-100: #f3f4f6;
+    --gray-200: #e5e7eb;
+    --gray-300: #d1d5db;
+    --gray-400: #9ca3af;
+    --gray-500: #6b7280;
+    --gray-600: #4b5563;
+    --gray-700: #374151;
+    --gray-800: #1f2937;
+    --text: #2d3748;
+    --green: #16a34a;
+    --green-bg: #dcfce7;
+    --red: #dc2626;
+    --red-bg: #fee2e2;
+    --blue: #2563eb;
+    --blue-bg: #dbeafe;
+    --yellow-bg: #fef9c3;
+    --font: 'Noto Sans KR', sans-serif;
+    --mono: 'JetBrains Mono', 'Consolas', monospace;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: var(--font); background: #e8eaed; font-size: 15px; }
+
+  /* ========== PAGE ========== */
+  .page {
+    width: 210mm;
+    min-height: 295mm;
+    margin: 24px auto;
+    background: var(--white);
+    box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* ========== PAGE 1: CHAPTER START ========== */
+  .chapter-page {
+    display: flex;
+    min-height: 295mm;
+  }
+
+  .chapter-sidebar {
+    width: 10px;
+    background: var(--navy);
+    flex-shrink: 0;
+  }
+
+  .chapter-accent-bar {
+    width: 7px;
+    background: var(--orange);
+    flex-shrink: 0;
+  }
+
+  .chapter-body {
+    flex: 1;
+    padding: 70px 65px 50px 55px;
+    position: relative;
+  }
+
+  .chapter-watermark {
+    position: absolute;
+    top: -10px;
+    right: -15px;
+    font-size: 280px;
+    font-weight: 900;
+    color: rgba(180,195,212,0.35);
+    line-height: 1;
+    pointer-events: none;
+    letter-spacing: -10px;
+  }
+
+  .chapter-label {
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--navy-mid);
+    letter-spacing: 2px;
+    margin-bottom: 4px;
+  }
+
+  .chapter-title {
+    font-size: 44px;
+    font-weight: 900;
+    color: var(--navy);
+    line-height: 1.15;
+    margin-bottom: 12px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .chapter-sub {
+    font-size: 16px;
+    color: var(--gray-500);
+    font-weight: 400;
+    margin-bottom: 20px;
+    padding-bottom: 28px;
+    border-bottom: 1px solid var(--gray-200);
+  }
+
+  /* Learning objectives */
+  .obj-title {
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--navy);
+    margin-bottom: 16px;
+    margin-top: 32px;
+  }
+
+  .obj-list {
+    list-style: none;
+    margin-bottom: 40px;
+  }
+
+  .obj-list li {
+    padding: 5px 0 5px 24px;
+    position: relative;
+    font-size: 15px;
+    color: var(--gray-700);
+    line-height: 1.6;
+  }
+
+  .obj-list li::before {
+    content: '•';
+    position: absolute;
+    left: 8px;
+    color: var(--navy-mid);
+    font-weight: 700;
+  }
+
+  /* Prerequisites flow */
+  .prereq-title {
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--navy);
+    margin-bottom: 18px;
+  }
+
+  .prereq-flow {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    margin-bottom: 44px;
+  }
+
+  .prereq-item {
+    padding: 9px 22px;
+    border: 1.5px solid var(--gray-300);
+    border-radius: 50px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--gray-600);
+    background: var(--white);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+  }
+
+  .prereq-item.current {
+    border-color: var(--navy);
+    color: var(--navy);
+    font-weight: 700;
+    background: #edf2f7;
+    box-shadow: 0 2px 6px rgba(26,46,74,0.12);
+  }
+
+  .prereq-arrow {
+    width: 36px;
+    text-align: center;
+    color: var(--gray-300);
+    font-size: 18px;
+    font-weight: 300;
+  }
+
+  /* Predict box */
+  .predict-box {
+    background: var(--gray-50);
+    border: 1.5px solid var(--gray-200);
+    border-radius: 12px;
+    padding: 24px 28px;
+  }
+
+  .predict-label {
+    display: inline-block;
+    background: var(--orange);
+    color: var(--white);
+    font-size: 12px;
+    font-weight: 600;
+    padding: 3px 12px;
+    border-radius: 4px;
+    margin-bottom: 14px;
+    letter-spacing: 0.5px;
+  }
+
+  .predict-q {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--navy);
+    margin-bottom: 16px;
+  }
+
+  .predict-code {
+    background: var(--white);
+    border: 1px solid var(--gray-200);
+    border-radius: 8px;
+    padding: 14px 18px;
+    font-family: var(--mono);
+    font-size: 13px;
+    line-height: 1.65;
+    color: var(--gray-700);
+  }
+
+  /* ========== PAGE 2: CORE CONTENT ========== */
+  .content-page {
+    padding: 55px 65px;
+  }
+
+  .unit-header-bar {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    margin-bottom: 8px;
+  }
+
+  .unit-tag {
+    font-size: 12px;
+    color: var(--orange);
+    font-weight: 600;
+    letter-spacing: 1px;
+  }
+
+  .unit-title-sm {
+    font-size: 14px;
+    color: var(--gray-400);
+    font-weight: 400;
+  }
+
+  .section-title {
+    font-size: 24px;
+    font-weight: 800;
+    color: var(--navy);
+    margin-bottom: 24px;
+    margin-top: 8px;
+    padding-left: 16px;
+    border-left: 5px solid var(--orange);
+  }
+
+  p {
+    font-size: 15.5px;
+    line-height: 1.9;
+    color: var(--text);
+    margin-bottom: 18px;
+  }
+
+  p code {
+    font-family: var(--mono);
+    font-size: 13.5px;
+    background: #f1f3f5;
+    padding: 2px 7px;
+    border-radius: 4px;
+    color: var(--navy);
+    font-weight: 500;
+  }
+
+  /* Code block */
+  .code-wrap {
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    border: 1px solid var(--gray-200);
+    margin: 22px 0;
+  }
+
+  .code-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 9px 18px;
+    background: var(--navy);
+    font-size: 12px;
+  }
+
+  .code-bar-lang {
+    font-family: var(--mono);
+    font-weight: 600;
+    color: var(--white);
+  }
+
+  .code-bar-file {
+    color: rgba(255,255,255,0.6);
+    font-weight: 400;
+  }
+
+  .code-body {
+    background: #f8f9fb;
+    padding: 20px 0;
+    font-family: var(--mono);
+    font-size: 13.5px;
+    line-height: 1.75;
+    border: 1px solid var(--gray-200);
+    border-top: none;
+    border-radius: 0 0 12px 12px;
+  }
+
+  .code-line {
+    display: flex;
+    padding: 0 20px;
+  }
+
+  .code-line:hover {
+    background: #f0f4f8;
+  }
+
+  .code-line.highlighted {
+    background: #fff8e1;
+  }
+
+  .ln {
+    width: 30px;
+    text-align: right;
+    color: #b8bfc8;
+    font-size: 12px;
+    margin-right: 18px;
+    user-select: none;
+    flex-shrink: 0;
+    padding-top: 1px;
+  }
+
+  .lc { flex: 1; }
+
+  /* syntax */
+  .s-pp { color: #8b5cf6; font-weight: 600; }
+  .s-str { color: #d97706; }
+  .s-type { color: #2563eb; font-weight: 500; }
+  .s-kw { color: #7c3aed; font-weight: 500; }
+  .s-fn { color: #059669; font-weight: 500; }
+  .s-num { color: #dc2626; }
+  .s-cm { color: #9ca3af; font-style: italic; }
+
+  /* Output block */
+  .output-wrap {
+    border-radius: 10px;
+    overflow: hidden;
+    margin: 10px 0 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    border: 1px solid #d1d5db;
+  }
+
+  .output-bar {
+    padding: 9px 18px;
+    background: #374151;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--white);
+    letter-spacing: 0.5px;
+  }
+
+  .output-body {
+    padding: 16px 20px;
+    font-family: var(--mono);
+    font-size: 13.5px;
+    line-height: 1.7;
+    color: var(--gray-800);
+    background: #f1f5f9;
+    border: 1px solid var(--gray-200);
+    border-top: none;
+    border-radius: 0 0 10px 10px;
+  }
+
+  /* Callout */
+  .tip {
+    margin: 28px 0;
+    padding: 18px 24px;
+    background: #dbeafe;
+    border-left: 5px solid #2563eb;
+    border-radius: 0 12px 12px 0;
+    font-size: 14.5px;
+    line-height: 1.8;
+    color: var(--text);
+  }
+
+  .tip-label {
+    font-weight: 700;
+    color: #2563eb;
+    font-size: 13px;
+    display: block;
+    margin-bottom: 4px;
+  }
+
+  .warn {
+    margin: 28px 0;
+    padding: 18px 24px;
+    background: #fef3c7;
+    border-left: 5px solid #d97706;
+    border-radius: 0 12px 12px 0;
+    font-size: 14.5px;
+    line-height: 1.8;
+  }
+
+  .warn-label {
+    font-weight: 700;
+    color: #d97706;
+    font-size: 13px;
+    display: block;
+    margin-bottom: 4px;
+  }
+
+  .note-box {
+    margin: 28px 0;
+    padding: 18px 24px;
+    background: #e2e8f0;
+    border-left: 5px solid #64748b;
+    border-radius: 0 12px 12px 0;
+    font-size: 14.5px;
+    line-height: 1.8;
+  }
+
+  .note-label {
+    font-weight: 700;
+    color: var(--gray-600);
+    font-size: 13px;
+    display: block;
+    margin-bottom: 4px;
+  }
+
+  /* Trace table */
+  table.trace {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    margin: 28px 0;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+    font-size: 14px;
+  }
+
+  table.trace th {
+    background: var(--navy);
+    color: var(--white);
+    padding: 10px 16px;
+    text-align: left;
+    font-weight: 500;
+    font-size: 13px;
+  }
+
+  table.trace td {
+    padding: 10px 16px;
+    border-bottom: 1px solid var(--gray-200);
+    color: var(--gray-700);
+  }
+
+  table.trace tr:nth-child(even) td { background: var(--gray-50); }
+  table.trace tr:last-child td { border-bottom: none; }
+
+  table.trace td code {
+    font-family: var(--mono);
+    font-size: 12.5px;
+    background: #eef1f5;
+    padding: 2px 6px;
+    border-radius: 4px;
+    color: var(--navy);
+  }
+
+  /* ========== PAGE 3: PROBLEMS ========== */
+  .problems-header {
+    margin-bottom: 8px;
+  }
+
+  .problems-chapter-ref {
+    font-size: 13px;
+    color: var(--gray-500);
+    margin-bottom: 4px;
+  }
+
+  .problems-title {
+    font-size: 28px;
+    font-weight: 800;
+    color: var(--navy);
+    margin-bottom: 24px;
+  }
+
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 16px;
+  }
+
+  .prob-card {
+    background: var(--white);
+    border: 1px solid var(--gray-200);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 3px 15px rgba(0,0,0,0.06);
+  }
+
+  .prob-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 16px;
+    background: var(--navy);
+  }
+
+  .prob-num {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--white);
+  }
+
+  .diff {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    font-size: 12px;
+    font-weight: 800;
+  }
+
+  .diff-basic { background: #22c55e; color: white; }
+  .diff-mid { background: #f59e0b; color: white; }
+  .diff-hard { background: #ef4444; color: white; }
+
+  .prob-desc {
+    font-size: 13.5px;
+    line-height: 1.65;
+    color: var(--gray-600);
+    margin-bottom: 10px;
+    padding: 14px 16px 0;
+  }
+
+  .prob-code {
+    background: var(--gray-50);
+    border: 1px solid var(--gray-200);
+    border-radius: 6px;
+    padding: 10px 14px;
+    margin: 0 16px 16px;
+    font-family: var(--mono);
+    font-size: 12.5px;
+    line-height: 1.55;
+    color: var(--gray-600);
+  }
+
+  /* Competition section */
+  .comp-section {
+    margin-top: 32px;
+    padding-top: 24px;
+    border-top: 2px solid var(--navy);
+  }
+
+  .comp-title {
+    font-size: 22px;
+    font-weight: 800;
+    color: var(--navy);
+    margin-bottom: 20px;
+  }
+
+  .comp-card {
+    background: var(--white);
+    border: 1.5px solid var(--gray-200);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 18px rgba(0,0,0,0.06);
+  }
+
+  .comp-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 16px;
+    background: #0f766e;
+  }
+
+  .comp-header .comp-name {
+    color: var(--white);
+    font-size: 15px;
+    font-weight: 700;
+    margin: 0;
+  }
+
+  .comp-inner {
+    padding: 14px 18px 18px;
+  }
+
+  .comp-badge {
+    display: inline-block;
+    padding: 3px 12px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 700;
+  }
+
+  .badge-bj { background: #93c5fd; color: #1e3a5f; }
+  .badge-cu { background: #c4b5fd; color: #3b1f7e; }
+  .badge-pg { background: #7dd3fc; color: #0c4a6e; }
+
+  .comp-name {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--navy);
+    margin-bottom: 6px;
+  }
+
+  .comp-desc {
+    font-size: 14px;
+    color: var(--gray-600);
+    line-height: 1.7;
+    margin-bottom: 14px;
+  }
+
+  .io-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+
+  .io-card {
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid var(--gray-200);
+  }
+
+  .io-h {
+    padding: 6px 14px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--gray-600);
+    background: #e2e8f0;
+  }
+
+  .io-c {
+    padding: 10px 14px;
+    font-family: var(--mono);
+    font-size: 13px;
+    line-height: 1.5;
+    background: var(--white);
+  }
+
+  /* ========== DEBUG LAB ========== */
+  .debug-section {
+    margin: 24px 0;
+    border: 2px solid var(--red);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+
+  .debug-bar {
+    background: var(--red);
+    color: var(--white);
+    padding: 10px 20px;
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 1px;
+  }
+
+  .debug-body {
+    padding: 20px;
+    background: #fef2f2;
+  }
+
+  /* 10축 connection */
+  .connect-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 16px;
+    margin: 28px 0;
+  }
+
+  .connect-card {
+    border-radius: 12px;
+    padding: 20px;
+    text-align: center;
+    border: 1px solid var(--gray-200);
+    box-shadow: 0 3px 14px rgba(0,0,0,0.05);
+  }
+
+  .connect-card h5 {
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 8px;
+  }
+
+  .connect-card p {
+    font-size: 13px;
+    margin: 0;
+    color: var(--gray-600);
+    line-height: 1.6;
+  }
+
+  .cc1 { border-top: 3px solid #8b5cf6; }
+  .cc1 h5 { color: #8b5cf6; }
+  .cc2 { border-top: 3px solid var(--green); }
+  .cc2 h5 { color: var(--green); }
+  .cc3 { border-top: 3px solid var(--navy); }
+  .cc3 h5 { color: var(--navy); }
+
+  /* PAGE NUMBER */
+  .page-num {
+    position: absolute;
+    bottom: 20px;
+    right: 30px;
+    font-size: 12px;
+    color: var(--gray-400);
+  }
+
+  /* WARMUP */
+  .warmup-box {
+    background: #e0e7f1;
+    border-radius: 12px;
+    padding: 24px 28px;
+    margin: 28px 0;
+    border: 2px solid #c7d2e0;
+  }
+
+  .warmup-title {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--navy);
+    margin-bottom: 14px;
+  }
+
+  .wq {
+    padding: 9px 16px;
+    background: var(--white);
+    border-radius: 8px;
+    margin-bottom: 8px;
+    font-size: 14px;
+    border: 1px solid var(--gray-200);
+    color: var(--gray-700);
+  }
+
+  .wq b { color: var(--navy); margin-right: 6px; }
+  .wq .hint { color: var(--gray-400); font-size: 13px; }
+
+  /* ===== CONTEST PROBLEMS PAGE ===== */
+  .contest-page-wrap .chapter-page {
+    min-height: auto;
+  }
+
+  .contest-page-wrap .chapter-page > div:last-child {
+    min-width: 0;
+    overflow-wrap: break-word;
+    word-break: break-word;
+  }
+
+  .contest-card {
+    background: white;
+    border: 1.5px solid var(--gray-200);
+    border-radius: 12px;
+    margin-bottom: 28px;
+    overflow: hidden;
+    break-inside: avoid;
+  }
+
+  .contest-header {
+    background: var(--navy);
+    color: white;
+    padding: 14px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .contest-num-source {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .contest-num {
+    font-weight: 700;
+    font-size: 16px;
+  }
+
+  .contest-source {
+    background: rgba(255,255,255,0.15);
+    padding: 3px 10px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 500;
+  }
+
+  .contest-body {
+    padding: 20px 24px 24px;
+  }
+
+  .contest-question {
+    font-size: 15px;
+    line-height: 1.7;
+    color: var(--text);
+    margin: 0 0 16px;
+    word-break: break-word;
+    overflow-wrap: break-word;
+  }
+
+  .contest-expected {
+    background: #1e293b;
+    border-radius: 8px;
+    overflow: hidden;
+    margin-bottom: 20px;
+  }
+
+  .contest-expected-label {
+    background: #334155;
+    color: #94a3b8;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 6px 14px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .contest-expected-body {
+    color: #e2e8f0;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    line-height: 1.6;
+    padding: 12px 16px;
+    margin: 0;
+    white-space: pre;
+  }
+
+  .contest-write-area {
+    border: 2px dashed var(--gray-300);
+    border-radius: 10px;
+    overflow: hidden;
+    transition: border-color 0.2s;
+  }
+
+  .contest-write-area:focus-within {
+    border-color: var(--orange);
+    border-style: solid;
+  }
+
+  .contest-write-label {
+    background: var(--bg);
+    color: var(--gray-500);
+    font-size: 12px;
+    font-weight: 600;
+    padding: 8px 14px;
+    border-bottom: 1px solid var(--gray-200);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .contest-textarea {
+    width: 100%;
+    min-height: 200px;
+    padding: 16px 18px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    line-height: 1.7;
+    color: var(--text);
+    background: #fafbfc;
+    border: none;
+    outline: none;
+    resize: vertical;
+    tab-size: 4;
+    box-sizing: border-box;
+  }
+
+  .contest-textarea::placeholder {
+    color: var(--gray-300);
+  }
+
+  @media print {
+    body { background: white; }
+    .page { box-shadow: none; margin: 0; page-break-after: always; }
+    .contest-textarea { border: 1px solid var(--gray-300); min-height: 180px; }
+  }
+
+</style>
+</head>
+<body>
+
+<div class="page">
+  <div class="chapter-page">
+    <div class="chapter-sidebar"></div>
+    <div class="chapter-accent-bar"></div>
+    <div class="chapter-body">
+      <div class="chapter-watermark">14</div>
+      <div class="chapter-label">Chapter 14</div>
+      <h1 class="chapter-title">모듈형 계산기</h1>
+      <p class="chapter-sub">malloc/free, #define 매크로, 조건부 컴파일, 헤더 가드, 멀티파일 프로그래밍, static/extern을 종합 활용하여 모듈형 계산기를 단계적으로 완성합니다.</p>
+
+      <h3 class="obj-title">이 유닛에서 배우는 것</h3>
+      <ul class="obj-list">
+        <li>Layer 10의 모든 개념을 하나의 프로젝트에 종합합니다.</li>
+        <li>단일 파일 계산기를 멀티파일 구조로 리팩터링할 수 있습니다.</li>
+        <li>헤더 가드와 static/extern으로 모듈 간 인터페이스를 설계합니다.</li>
+        <li>조건부 컴파일로 디버그 모드와 기능 확장을 제어합니다.</li>
+      </ul>
+
+      <h3 class="prereq-title">선수 학습</h3>
+      <div class="prereq-flow">
+        <div class="prereq-item current">L10-U01~U13 전체</div>
+      </div>
+
+      
+
+      <span class="page-num">1</span>
+    </div>
+  </div>
+</div>
+<div class="page">
+  <div class="content-page">
+    <div class="unit-header-bar">
+      <span class="unit-tag">UNIT 14</span>
+      <span class="unit-title-sm">모듈형 계산기</span>
+    </div>
+<h2 class="section-title">프로젝트 개요</h2>
+<div class="note-box"><span class="note-label"></span>
+<div style="font-weight:700;margin-bottom:6px;color:#1a2e4a">모듈형 계산기 (Modular Calculator)</div>동적 메모리, 전처리기, 멀티파일 프로그래밍을 종합 활용합니다.<br><br>버전 1: 기본 — 단일 파일, 사칙연산(+, -, *, /)<br>버전 2: 확장 — 멀티파일(calc.h/calc.c/main.c), 계산 이력, 메모리 기능<br>버전 3: 완성 — config.h 설정, 공학 함수 모듈, 메뉴 시스템, #ifdef 디버그</div>
+<h2 class="section-title">버전 1: 단일 파일 사칙연산 계산기</h2>
+<p>undefined</p>
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;stdio.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;stdlib.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">4</span><span class="lc"><span class="s-pp">#define</span> MAX_EXPR <span class="s-num">64</span></span></div>
+<div class="code-line"><span class="ln">5</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">6</span><span class="lc"><span class="s-kw">typedef</span> <span class="s-kw">struct</span> {</span></div>
+<div class="code-line"><span class="ln">7</span><span class="lc">    <span class="s-type">double</span> left;</span></div>
+<div class="code-line"><span class="ln">8</span><span class="lc">    <span class="s-type">char</span> op;</span></div>
+<div class="code-line"><span class="ln">9</span><span class="lc">    <span class="s-type">double</span> right;</span></div>
+<div class="code-line"><span class="ln">10</span><span class="lc">    <span class="s-type">double</span> result;</span></div>
+<div class="code-line"><span class="ln">11</span><span class="lc">} Record;</span></div>
+<div class="code-line"><span class="ln">12</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">13</span><span class="lc"><span class="s-kw">typedef</span> <span class="s-kw">struct</span> {</span></div>
+<div class="code-line"><span class="ln">14</span><span class="lc">    Record *data;</span></div>
+<div class="code-line"><span class="ln">15</span><span class="lc">    <span class="s-type">int</span> size;</span></div>
+<div class="code-line"><span class="ln">16</span><span class="lc">    <span class="s-type">int</span> capacity;</span></div>
+<div class="code-line"><span class="ln">17</span><span class="lc">} History;</span></div>
+<div class="code-line"><span class="ln">18</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">19</span><span class="lc">History *<span class="s-fn">createHistory</span>(<span class="s-type">int</span> cap) {</span></div>
+<div class="code-line"><span class="ln">20</span><span class="lc">    History *h = (History*)<span class="s-fn">malloc</span>(<span class="s-kw">sizeof</span>(History));</span></div>
+<div class="code-line"><span class="ln">21</span><span class="lc">    <span class="s-kw">if</span> (h == <span class="s-kw">NULL</span>) <span class="s-kw">return</span> <span class="s-kw">NULL</span>;</span></div>
+<div class="code-line"><span class="ln">22</span><span class="lc">    h-&gt;data = (Record*)<span class="s-fn">malloc</span>(cap * <span class="s-kw">sizeof</span>(Record));</span></div>
+<div class="code-line"><span class="ln">23</span><span class="lc">    <span class="s-kw">if</span> (h-&gt;data == <span class="s-kw">NULL</span>) { <span class="s-fn">free</span>(h); <span class="s-kw">return</span> <span class="s-kw">NULL</span>; }</span></div>
+<div class="code-line"><span class="ln">24</span><span class="lc">    h-&gt;size = <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">25</span><span class="lc">    h-&gt;capacity = cap;</span></div>
+<div class="code-line"><span class="ln">26</span><span class="lc">    <span class="s-kw">return</span> h;</span></div>
+<div class="code-line"><span class="ln">27</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">28</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">29</span><span class="lc"><span class="s-type">void</span> <span class="s-fn">addRecord</span>(History *h, <span class="s-type">double</span> l, <span class="s-type">char</span> op, <span class="s-type">double</span> r, <span class="s-type">double</span> res) {</span></div>
+<div class="code-line"><span class="ln">30</span><span class="lc">    <span class="s-kw">if</span> (h-&gt;size &gt;= h-&gt;capacity) {</span></div>
+<div class="code-line"><span class="ln">31</span><span class="lc">        h-&gt;capacity *= <span class="s-num">2</span>;</span></div>
+<div class="code-line"><span class="ln">32</span><span class="lc">        Record *temp = (Record*)<span class="s-fn">realloc</span>(h-&gt;data,</span></div>
+<div class="code-line"><span class="ln">33</span><span class="lc">                        h-&gt;capacity * <span class="s-kw">sizeof</span>(Record));</span></div>
+<div class="code-line"><span class="ln">34</span><span class="lc">        <span class="s-kw">if</span> (temp == <span class="s-kw">NULL</span>) { <span class="s-fn">printf</span>(<span class="s-str">"확장 실패\n"</span>); <span class="s-kw">return</span>; }</span></div>
+<div class="code-line"><span class="ln">35</span><span class="lc">        h-&gt;data = temp;</span></div>
+<div class="code-line"><span class="ln">36</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">37</span><span class="lc">    h-&gt;data[h-&gt;size++] = (Record){l, op, r, res};</span></div>
+<div class="code-line"><span class="ln">38</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">39</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">40</span><span class="lc"><span class="s-type">void</span> <span class="s-fn">printHistory</span>(<span class="s-kw">const</span> History *h) {</span></div>
+<div class="code-line"><span class="ln">41</span><span class="lc">    <span class="s-kw">if</span> (h-&gt;size == <span class="s-num">0</span>) { <span class="s-fn">printf</span>(<span class="s-str">"이력이 없습니다.\n"</span>); <span class="s-kw">return</span>; }</span></div>
+<div class="code-line"><span class="ln">42</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"\n%-4s %10s %2s %10s = %12s\n"</span>,</span></div>
+<div class="code-line"><span class="ln">43</span><span class="lc">           <span class="s-str">"#"</span>, <span class="s-str">"왼쪽"</span>, <span class="s-str">"연산"</span>, <span class="s-str">"오른쪽"</span>, <span class="s-str">"결과"</span>);</span></div>
+<div class="code-line"><span class="ln">44</span><span class="lc">    <span class="s-kw">for</span> (<span class="s-type">int</span> i = <span class="s-num">0</span>; i &lt; h-&gt;size; i++)</span></div>
+<div class="code-line"><span class="ln">45</span><span class="lc">        <span class="s-fn">printf</span>(<span class="s-str">"%-4d %10.2f %2c %10.2f = %12.2f\n"</span>,</span></div>
+<div class="code-line"><span class="ln">46</span><span class="lc">               i + <span class="s-num">1</span>, h-&gt;data[i].left, h-&gt;data[i].op,</span></div>
+<div class="code-line"><span class="ln">47</span><span class="lc">               h-&gt;data[i].right, h-&gt;data[i].result);</span></div>
+<div class="code-line"><span class="ln">48</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">49</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">50</span><span class="lc"><span class="s-type">void</span> <span class="s-fn">destroyHistory</span>(History *h) {</span></div>
+<div class="code-line"><span class="ln">51</span><span class="lc">    <span class="s-fn">free</span>(h-&gt;data);</span></div>
+<div class="code-line"><span class="ln">52</span><span class="lc">    <span class="s-fn">free</span>(h);</span></div>
+<div class="code-line"><span class="ln">53</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">54</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">55</span><span class="lc"><span class="s-type">double</span> <span class="s-fn">calculate</span>(<span class="s-type">double</span> a, <span class="s-type">char</span> op, <span class="s-type">double</span> b, <span class="s-type">int</span> *ok) {</span></div>
+<div class="code-line"><span class="ln">56</span><span class="lc">    *ok = <span class="s-num">1</span>;</span></div>
+<div class="code-line"><span class="ln">57</span><span class="lc">    <span class="s-kw">switch</span> (op) {</span></div>
+<div class="code-line"><span class="ln">58</span><span class="lc">        <span class="s-kw">case</span> <span class="s-str">'+'</span>: <span class="s-kw">return</span> a + b;</span></div>
+<div class="code-line"><span class="ln">59</span><span class="lc">        <span class="s-kw">case</span> <span class="s-str">'-'</span>: <span class="s-kw">return</span> a - b;</span></div>
+<div class="code-line"><span class="ln">60</span><span class="lc">        <span class="s-kw">case</span> <span class="s-str">'*'</span>: <span class="s-kw">return</span> a * b;</span></div>
+<div class="code-line"><span class="ln">61</span><span class="lc">        <span class="s-kw">case</span> <span class="s-str">'/'</span>:</span></div>
+<div class="code-line"><span class="ln">62</span><span class="lc">            <span class="s-kw">if</span> (b == <span class="s-num">0</span>) { <span class="s-fn">printf</span>(<span class="s-str">"0으로 나눌 수 없습니다.\n"</span>); *ok = <span class="s-num">0</span>; <span class="s-kw">return</span> <span class="s-num">0</span>; }</span></div>
+<div class="code-line"><span class="ln">63</span><span class="lc">            <span class="s-kw">return</span> a / b;</span></div>
+<div class="code-line"><span class="ln">64</span><span class="lc">        <span class="s-kw">default</span>:</span></div>
+<div class="code-line"><span class="ln">65</span><span class="lc">            <span class="s-fn">printf</span>(<span class="s-str">"알 수 없는 연산자: %c\n"</span>, op);</span></div>
+<div class="code-line"><span class="ln">66</span><span class="lc">            *ok = <span class="s-num">0</span>; <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">67</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">68</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">69</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">70</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">main</span>(<span class="s-type">void</span>) {</span></div>
+<div class="code-line"><span class="ln">71</span><span class="lc">    History *hist = <span class="s-fn">createHistory</span>(<span class="s-num">4</span>);</span></div>
+<div class="code-line"><span class="ln">72</span><span class="lc">    <span class="s-kw">if</span> (hist == <span class="s-kw">NULL</span>) { <span class="s-fn">printf</span>(<span class="s-str">"메모리 할당 실패\n"</span>); <span class="s-kw">return</span> <span class="s-num">1</span>; }</span></div>
+<div class="code-line"><span class="ln">73</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">74</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"=== 사칙연산 계산기 ===\n"</span>);</span></div>
+<div class="code-line"><span class="ln">75</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"입력 형식: 숫자 연산자 숫자 (예: 10 + 3)\n"</span>);</span></div>
+<div class="code-line"><span class="ln">76</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"종료: q 입력\n\n"</span>);</span></div>
+<div class="code-line"><span class="ln">77</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">78</span><span class="lc">    <span class="s-type">char</span> line[MAX_EXPR];</span></div>
+<div class="code-line"><span class="ln">79</span><span class="lc">    <span class="s-kw">while</span> (<span class="s-num">1</span>) {</span></div>
+<div class="code-line"><span class="ln">80</span><span class="lc">        <span class="s-fn">printf</span>(<span class="s-str">"&gt; "</span>);</span></div>
+<div class="code-line"><span class="ln">81</span><span class="lc">        <span class="s-kw">if</span> (<span class="s-fn">fgets</span>(line, MAX_EXPR, stdin) == <span class="s-kw">NULL</span>) <span class="s-kw">break</span>;</span></div>
+<div class="code-line"><span class="ln">82</span><span class="lc">        <span class="s-kw">if</span> (line[<span class="s-num">0</span>] == <span class="s-str">'q'</span> || line[<span class="s-num">0</span>] == <span class="s-str">'Q'</span>) <span class="s-kw">break</span>;</span></div>
+<div class="code-line"><span class="ln">83</span><span class="lc">        <span class="s-kw">if</span> (line[<span class="s-num">0</span>] == <span class="s-str">'h'</span> || line[<span class="s-num">0</span>] == <span class="s-str">'H'</span>) {</span></div>
+<div class="code-line"><span class="ln">84</span><span class="lc">            <span class="s-fn">printHistory</span>(hist); <span class="s-kw">continue</span>;</span></div>
+<div class="code-line"><span class="ln">85</span><span class="lc">        }</span></div>
+<div class="code-line"><span class="ln">86</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">87</span><span class="lc">        <span class="s-type">double</span> a, b;</span></div>
+<div class="code-line"><span class="ln">88</span><span class="lc">        <span class="s-type">char</span> op;</span></div>
+<div class="code-line"><span class="ln">89</span><span class="lc">        <span class="s-kw">if</span> (<span class="s-fn">sscanf</span>(line, <span class="s-str">"%lf %c %lf"</span>, &amp;a, &amp;op, &amp;b) != <span class="s-num">3</span>) {</span></div>
+<div class="code-line"><span class="ln">90</span><span class="lc">            <span class="s-fn">printf</span>(<span class="s-str">"입력 형식 오류\n"</span>); <span class="s-kw">continue</span>;</span></div>
+<div class="code-line"><span class="ln">91</span><span class="lc">        }</span></div>
+<div class="code-line"><span class="ln">92</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">93</span><span class="lc">        <span class="s-type">int</span> ok;</span></div>
+<div class="code-line"><span class="ln">94</span><span class="lc">        <span class="s-type">double</span> result = <span class="s-fn">calculate</span>(a, op, b, &amp;ok);</span></div>
+<div class="code-line"><span class="ln">95</span><span class="lc">        <span class="s-kw">if</span> (ok) {</span></div>
+<div class="code-line"><span class="ln">96</span><span class="lc">            <span class="s-fn">printf</span>(<span class="s-str">"= %.2f\n"</span>, result);</span></div>
+<div class="code-line"><span class="ln">97</span><span class="lc">            <span class="s-fn">addRecord</span>(hist, a, op, b, result);</span></div>
+<div class="code-line"><span class="ln">98</span><span class="lc">        }</span></div>
+<div class="code-line"><span class="ln">99</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">100</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">101</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"\n--- 최종 이력 ---\n"</span>);</span></div>
+<div class="code-line"><span class="ln">102</span><span class="lc">    <span class="s-fn">printHistory</span>(hist);</span></div>
+<div class="code-line"><span class="ln">103</span><span class="lc">    <span class="s-fn">destroyHistory</span>(hist);</span></div>
+<div class="code-line"><span class="ln">104</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"메모리 해제 완료\n"</span>);</span></div>
+<div class="code-line"><span class="ln">105</span><span class="lc">    <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">106</span><span class="lc">}</span></div>
+</div>
+</div>
+<h2 class="section-title">버전 2: 멀티파일 + 이력 + 메모리 기능</h2>
+<p>undefined</p>
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc"><span class="s-cm">/* ===== calc.h ===== */</span></span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc"><span class="s-pp">#ifndef</span> CALC_H</span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc"><span class="s-pp">#define</span> CALC_H</span></div>
+<div class="code-line"><span class="ln">4</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">5</span><span class="lc"><span class="s-cm">/* 계산 이력 레코드 */</span></span></div>
+<div class="code-line"><span class="ln">6</span><span class="lc"><span class="s-kw">typedef</span> <span class="s-kw">struct</span> {</span></div>
+<div class="code-line"><span class="ln">7</span><span class="lc">    <span class="s-type">double</span> left;</span></div>
+<div class="code-line"><span class="ln">8</span><span class="lc">    <span class="s-type">char</span> op;</span></div>
+<div class="code-line"><span class="ln">9</span><span class="lc">    <span class="s-type">double</span> right;</span></div>
+<div class="code-line"><span class="ln">10</span><span class="lc">    <span class="s-type">double</span> result;</span></div>
+<div class="code-line"><span class="ln">11</span><span class="lc">} Record;</span></div>
+<div class="code-line"><span class="ln">12</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">13</span><span class="lc"><span class="s-cm">/* 동적 이력 배열 */</span></span></div>
+<div class="code-line"><span class="ln">14</span><span class="lc"><span class="s-kw">typedef</span> <span class="s-kw">struct</span> {</span></div>
+<div class="code-line"><span class="ln">15</span><span class="lc">    Record *data;</span></div>
+<div class="code-line"><span class="ln">16</span><span class="lc">    <span class="s-type">int</span> size;</span></div>
+<div class="code-line"><span class="ln">17</span><span class="lc">    <span class="s-type">int</span> capacity;</span></div>
+<div class="code-line"><span class="ln">18</span><span class="lc">} History;</span></div>
+<div class="code-line"><span class="ln">19</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">20</span><span class="lc"><span class="s-cm">/* 메모리 기능 */</span></span></div>
+<div class="code-line"><span class="ln">21</span><span class="lc"><span class="s-kw">typedef</span> <span class="s-kw">struct</span> {</span></div>
+<div class="code-line"><span class="ln">22</span><span class="lc">    <span class="s-type">double</span> value;</span></div>
+<div class="code-line"><span class="ln">23</span><span class="lc">    <span class="s-type">int</span> stored;  <span class="s-cm">/* 0: 비어있음, 1: 값 있음 */</span></span></div>
+<div class="code-line"><span class="ln">24</span><span class="lc">} Memory;</span></div>
+<div class="code-line"><span class="ln">25</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">26</span><span class="lc"><span class="s-cm">/* 계산 함수 */</span></span></div>
+<div class="code-line"><span class="ln">27</span><span class="lc"><span class="s-type">double</span> <span class="s-fn">calc_execute</span>(<span class="s-type">double</span> a, <span class="s-type">char</span> op, <span class="s-type">double</span> b, <span class="s-type">int</span> *ok);</span></div>
+<div class="code-line"><span class="ln">28</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">29</span><span class="lc"><span class="s-cm">/* 이력 관리 */</span></span></div>
+<div class="code-line"><span class="ln">30</span><span class="lc">History *<span class="s-fn">history_create</span>(<span class="s-type">int</span> cap);</span></div>
+<div class="code-line"><span class="ln">31</span><span class="lc"><span class="s-type">void</span>     <span class="s-fn">history_add</span>(History *h, <span class="s-type">double</span> l, <span class="s-type">char</span> op, <span class="s-type">double</span> r, <span class="s-type">double</span> res);</span></div>
+<div class="code-line"><span class="ln">32</span><span class="lc"><span class="s-type">void</span>     <span class="s-fn">history_print</span>(<span class="s-kw">const</span> History *h);</span></div>
+<div class="code-line"><span class="ln">33</span><span class="lc"><span class="s-type">void</span>     <span class="s-fn">history_clear</span>(History *h);</span></div>
+<div class="code-line"><span class="ln">34</span><span class="lc"><span class="s-type">void</span>     <span class="s-fn">history_destroy</span>(History *h);</span></div>
+<div class="code-line"><span class="ln">35</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">36</span><span class="lc"><span class="s-cm">/* 메모리 관리 */</span></span></div>
+<div class="code-line"><span class="ln">37</span><span class="lc"><span class="s-type">void</span> <span class="s-fn">memory_add</span>(Memory *m, <span class="s-type">double</span> val);</span></div>
+<div class="code-line"><span class="ln">38</span><span class="lc"><span class="s-type">void</span> <span class="s-fn">memory_recall</span>(<span class="s-kw">const</span> Memory *m);</span></div>
+<div class="code-line"><span class="ln">39</span><span class="lc"><span class="s-type">void</span> <span class="s-fn">memory_clear</span>(Memory *m);</span></div>
+<div class="code-line"><span class="ln">40</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">41</span><span class="lc"><span class="s-pp">#endif</span> <span class="s-cm">/* CALC_H */</span></span></div>
+</div>
+</div>
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc"><span class="s-cm">/* ===== calc.c ===== */</span></span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;stdio.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;stdlib.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">4</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">"calc.h"</span></span></div>
+<div class="code-line"><span class="ln">5</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">6</span><span class="lc"><span class="s-cm">/* --- 내부 전용 함수 (static) --- */</span></span></div>
+<div class="code-line"><span class="ln">7</span><span class="lc"><span class="s-kw">static</span> <span class="s-type">void</span> <span class="s-fn">ensureCapacity</span>(History *h) {</span></div>
+<div class="code-line"><span class="ln">8</span><span class="lc">    <span class="s-kw">if</span> (h-&gt;size &gt;= h-&gt;capacity) {</span></div>
+<div class="code-line"><span class="ln">9</span><span class="lc">        h-&gt;capacity *= <span class="s-num">2</span>;</span></div>
+<div class="code-line"><span class="ln">10</span><span class="lc">        h-&gt;data = (Record*)<span class="s-fn">realloc</span>(h-&gt;data,</span></div>
+<div class="code-line"><span class="ln">11</span><span class="lc">                   h-&gt;capacity * <span class="s-kw">sizeof</span>(Record));</span></div>
+<div class="code-line"><span class="ln">12</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">13</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">14</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">15</span><span class="lc"><span class="s-cm">/* --- 계산 --- */</span></span></div>
+<div class="code-line"><span class="ln">16</span><span class="lc"><span class="s-type">double</span> <span class="s-fn">calc_execute</span>(<span class="s-type">double</span> a, <span class="s-type">char</span> op, <span class="s-type">double</span> b, <span class="s-type">int</span> *ok) {</span></div>
+<div class="code-line"><span class="ln">17</span><span class="lc">    *ok = <span class="s-num">1</span>;</span></div>
+<div class="code-line"><span class="ln">18</span><span class="lc">    <span class="s-kw">switch</span> (op) {</span></div>
+<div class="code-line"><span class="ln">19</span><span class="lc">        <span class="s-kw">case</span> <span class="s-str">'+'</span>: <span class="s-kw">return</span> a + b;</span></div>
+<div class="code-line"><span class="ln">20</span><span class="lc">        <span class="s-kw">case</span> <span class="s-str">'-'</span>: <span class="s-kw">return</span> a - b;</span></div>
+<div class="code-line"><span class="ln">21</span><span class="lc">        <span class="s-kw">case</span> <span class="s-str">'*'</span>: <span class="s-kw">return</span> a * b;</span></div>
+<div class="code-line"><span class="ln">22</span><span class="lc">        <span class="s-kw">case</span> <span class="s-str">'/'</span>:</span></div>
+<div class="code-line"><span class="ln">23</span><span class="lc">            <span class="s-kw">if</span> (b == <span class="s-num">0</span>) {</span></div>
+<div class="code-line"><span class="ln">24</span><span class="lc">                <span class="s-fn">printf</span>(<span class="s-str">"오류: 0으로 나눌 수 없습니다.\n"</span>);</span></div>
+<div class="code-line"><span class="ln">25</span><span class="lc">                *ok = <span class="s-num">0</span>; <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">26</span><span class="lc">            }</span></div>
+<div class="code-line"><span class="ln">27</span><span class="lc">            <span class="s-kw">return</span> a / b;</span></div>
+<div class="code-line"><span class="ln">28</span><span class="lc">        <span class="s-kw">default</span>:</span></div>
+<div class="code-line"><span class="ln">29</span><span class="lc">            <span class="s-fn">printf</span>(<span class="s-str">"오류: 알 수 없는 연산자 '%c'\n"</span>, op);</span></div>
+<div class="code-line"><span class="ln">30</span><span class="lc">            *ok = <span class="s-num">0</span>; <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">31</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">32</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">33</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">34</span><span class="lc"><span class="s-cm">/* --- 이력 --- */</span></span></div>
+<div class="code-line"><span class="ln">35</span><span class="lc">History *<span class="s-fn">history_create</span>(<span class="s-type">int</span> cap) {</span></div>
+<div class="code-line"><span class="ln">36</span><span class="lc">    History *h = (History*)<span class="s-fn">malloc</span>(<span class="s-kw">sizeof</span>(History));</span></div>
+<div class="code-line"><span class="ln">37</span><span class="lc">    <span class="s-kw">if</span> (h == <span class="s-kw">NULL</span>) <span class="s-kw">return</span> <span class="s-kw">NULL</span>;</span></div>
+<div class="code-line"><span class="ln">38</span><span class="lc">    h-&gt;data = (Record*)<span class="s-fn">malloc</span>(cap * <span class="s-kw">sizeof</span>(Record));</span></div>
+<div class="code-line"><span class="ln">39</span><span class="lc">    <span class="s-kw">if</span> (h-&gt;data == <span class="s-kw">NULL</span>) { <span class="s-fn">free</span>(h); <span class="s-kw">return</span> <span class="s-kw">NULL</span>; }</span></div>
+<div class="code-line"><span class="ln">40</span><span class="lc">    h-&gt;size = <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">41</span><span class="lc">    h-&gt;capacity = cap;</span></div>
+<div class="code-line"><span class="ln">42</span><span class="lc">    <span class="s-kw">return</span> h;</span></div>
+<div class="code-line"><span class="ln">43</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">44</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">45</span><span class="lc"><span class="s-type">void</span> <span class="s-fn">history_add</span>(History *h, <span class="s-type">double</span> l, <span class="s-type">char</span> op, <span class="s-type">double</span> r, <span class="s-type">double</span> res) {</span></div>
+<div class="code-line"><span class="ln">46</span><span class="lc">    <span class="s-fn">ensureCapacity</span>(h);</span></div>
+<div class="code-line"><span class="ln">47</span><span class="lc">    h-&gt;data[h-&gt;size++] = (Record){l, op, r, res};</span></div>
+<div class="code-line"><span class="ln">48</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">49</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">50</span><span class="lc"><span class="s-type">void</span> <span class="s-fn">history_print</span>(<span class="s-kw">const</span> History *h) {</span></div>
+<div class="code-line"><span class="ln">51</span><span class="lc">    <span class="s-kw">if</span> (h-&gt;size == <span class="s-num">0</span>) { <span class="s-fn">printf</span>(<span class="s-str">"이력이 없습니다.\n"</span>); <span class="s-kw">return</span>; }</span></div>
+<div class="code-line"><span class="ln">52</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"%-4s %10s %2s %10s = %12s\n"</span>,</span></div>
+<div class="code-line"><span class="ln">53</span><span class="lc">           <span class="s-str">"#"</span>, <span class="s-str">"왼쪽"</span>, <span class="s-str">"op"</span>, <span class="s-str">"오른쪽"</span>, <span class="s-str">"결과"</span>);</span></div>
+<div class="code-line"><span class="ln">54</span><span class="lc">    <span class="s-kw">for</span> (<span class="s-type">int</span> i = <span class="s-num">0</span>; i &lt; h-&gt;size; i++)</span></div>
+<div class="code-line"><span class="ln">55</span><span class="lc">        <span class="s-fn">printf</span>(<span class="s-str">"%-4d %10.2f %2c %10.2f = %12.2f\n"</span>,</span></div>
+<div class="code-line"><span class="ln">56</span><span class="lc">               i+<span class="s-num">1</span>, h-&gt;data[i].left, h-&gt;data[i].op,</span></div>
+<div class="code-line"><span class="ln">57</span><span class="lc">               h-&gt;data[i].right, h-&gt;data[i].result);</span></div>
+<div class="code-line"><span class="ln">58</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">59</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">60</span><span class="lc"><span class="s-type">void</span> <span class="s-fn">history_clear</span>(History *h) {</span></div>
+<div class="code-line"><span class="ln">61</span><span class="lc">    h-&gt;size = <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">62</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">63</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">64</span><span class="lc"><span class="s-type">void</span> <span class="s-fn">history_destroy</span>(History *h) {</span></div>
+<div class="code-line"><span class="ln">65</span><span class="lc">    <span class="s-fn">free</span>(h-&gt;data);</span></div>
+<div class="code-line"><span class="ln">66</span><span class="lc">    <span class="s-fn">free</span>(h);</span></div>
+<div class="code-line"><span class="ln">67</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">68</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">69</span><span class="lc"><span class="s-cm">/* --- 메모리 --- */</span></span></div>
+<div class="code-line"><span class="ln">70</span><span class="lc"><span class="s-type">void</span> <span class="s-fn">memory_add</span>(Memory *m, <span class="s-type">double</span> val) {</span></div>
+<div class="code-line"><span class="ln">71</span><span class="lc">    m-&gt;value += val;</span></div>
+<div class="code-line"><span class="ln">72</span><span class="lc">    m-&gt;stored = <span class="s-num">1</span>;</span></div>
+<div class="code-line"><span class="ln">73</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"M+ : %.2f (저장값: %.2f)\n"</span>, val, m-&gt;value);</span></div>
+<div class="code-line"><span class="ln">74</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">75</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">76</span><span class="lc"><span class="s-type">void</span> <span class="s-fn">memory_recall</span>(<span class="s-kw">const</span> Memory *m) {</span></div>
+<div class="code-line"><span class="ln">77</span><span class="lc">    <span class="s-kw">if</span> (m-&gt;stored)</span></div>
+<div class="code-line"><span class="ln">78</span><span class="lc">        <span class="s-fn">printf</span>(<span class="s-str">"MR : %.2f\n"</span>, m-&gt;value);</span></div>
+<div class="code-line"><span class="ln">79</span><span class="lc">    <span class="s-kw">else</span></span></div>
+<div class="code-line"><span class="ln">80</span><span class="lc">        <span class="s-fn">printf</span>(<span class="s-str">"MR : 저장된 값 없음\n"</span>);</span></div>
+<div class="code-line"><span class="ln">81</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">82</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">83</span><span class="lc"><span class="s-type">void</span> <span class="s-fn">memory_clear</span>(Memory *m) {</span></div>
+<div class="code-line"><span class="ln">84</span><span class="lc">    m-&gt;value = <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">85</span><span class="lc">    m-&gt;stored = <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">86</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"MC : 메모리 초기화\n"</span>);</span></div>
+<div class="code-line"><span class="ln">87</span><span class="lc">}</span></div>
+</div>
+</div>
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc"><span class="s-cm">/* ===== main.c (버전 2) ===== */</span></span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;stdio.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;string.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">4</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">"calc.h"</span></span></div>
+<div class="code-line"><span class="ln">5</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">6</span><span class="lc"><span class="s-kw">static</span> <span class="s-type">void</span> <span class="s-fn">showMenu</span>(<span class="s-type">void</span>) {</span></div>
+<div class="code-line"><span class="ln">7</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"\n=== 계산기 v2 (멀티파일) ===\n"</span>);</span></div>
+<div class="code-line"><span class="ln">8</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"1. 계산     (예: 10 + 3)\n"</span>);</span></div>
+<div class="code-line"><span class="ln">9</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"2. 이력 보기\n"</span>);</span></div>
+<div class="code-line"><span class="ln">10</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"3. 이력 삭제\n"</span>);</span></div>
+<div class="code-line"><span class="ln">11</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"4. M+ (결과를 메모리에 추가)\n"</span>);</span></div>
+<div class="code-line"><span class="ln">12</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"5. MR (메모리 값 보기)\n"</span>);</span></div>
+<div class="code-line"><span class="ln">13</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"6. MC (메모리 초기화)\n"</span>);</span></div>
+<div class="code-line"><span class="ln">14</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"0. 종료\n"</span>);</span></div>
+<div class="code-line"><span class="ln">15</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">16</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">17</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">main</span>(<span class="s-type">void</span>) {</span></div>
+<div class="code-line"><span class="ln">18</span><span class="lc">    History *hist = <span class="s-fn">history_create</span>(<span class="s-num">8</span>);</span></div>
+<div class="code-line"><span class="ln">19</span><span class="lc">    <span class="s-kw">if</span> (hist == <span class="s-kw">NULL</span>) { <span class="s-fn">printf</span>(<span class="s-str">"메모리 할당 실패\n"</span>); <span class="s-kw">return</span> <span class="s-num">1</span>; }</span></div>
+<div class="code-line"><span class="ln">20</span><span class="lc">    Memory mem = {<span class="s-num">0.0</span>, <span class="s-num">0</span>};</span></div>
+<div class="code-line"><span class="ln">21</span><span class="lc">    <span class="s-type">double</span> lastResult = <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">22</span><span class="lc">    <span class="s-type">int</span> choice;</span></div>
+<div class="code-line"><span class="ln">23</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">24</span><span class="lc">    <span class="s-kw">do</span> {</span></div>
+<div class="code-line"><span class="ln">25</span><span class="lc">        <span class="s-fn">showMenu</span>();</span></div>
+<div class="code-line"><span class="ln">26</span><span class="lc">        <span class="s-fn">printf</span>(<span class="s-str">"선택: "</span>);</span></div>
+<div class="code-line"><span class="ln">27</span><span class="lc">        <span class="s-fn">scanf</span>(<span class="s-str">"%d"</span>, &amp;choice);</span></div>
+<div class="code-line"><span class="ln">28</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">29</span><span class="lc">        <span class="s-kw">switch</span> (choice) {</span></div>
+<div class="code-line"><span class="ln">30</span><span class="lc">            <span class="s-kw">case</span> <span class="s-num">1</span>: {</span></div>
+<div class="code-line"><span class="ln">31</span><span class="lc">                <span class="s-type">double</span> a, b; <span class="s-type">char</span> op;</span></div>
+<div class="code-line"><span class="ln">32</span><span class="lc">                <span class="s-fn">printf</span>(<span class="s-str">"입력 (숫자 연산자 숫자): "</span>);</span></div>
+<div class="code-line"><span class="ln">33</span><span class="lc">                <span class="s-fn">scanf</span>(<span class="s-str">"%lf %c %lf"</span>, &amp;a, &amp;op, &amp;b);</span></div>
+<div class="code-line"><span class="ln">34</span><span class="lc">                <span class="s-type">int</span> ok;</span></div>
+<div class="code-line"><span class="ln">35</span><span class="lc">                <span class="s-type">double</span> r = <span class="s-fn">calc_execute</span>(a, op, b, &amp;ok);</span></div>
+<div class="code-line"><span class="ln">36</span><span class="lc">                <span class="s-kw">if</span> (ok) {</span></div>
+<div class="code-line"><span class="ln">37</span><span class="lc">                    <span class="s-fn">printf</span>(<span class="s-str">"= %.2f\n"</span>, r);</span></div>
+<div class="code-line"><span class="ln">38</span><span class="lc">                    <span class="s-fn">history_add</span>(hist, a, op, b, r);</span></div>
+<div class="code-line"><span class="ln">39</span><span class="lc">                    lastResult = r;</span></div>
+<div class="code-line"><span class="ln">40</span><span class="lc">                }</span></div>
+<div class="code-line"><span class="ln">41</span><span class="lc">                <span class="s-kw">break</span>;</span></div>
+<div class="code-line"><span class="ln">42</span><span class="lc">            }</span></div>
+<div class="code-line"><span class="ln">43</span><span class="lc">            <span class="s-kw">case</span> <span class="s-num">2</span>: <span class="s-fn">history_print</span>(hist); <span class="s-kw">break</span>;</span></div>
+<div class="code-line"><span class="ln">44</span><span class="lc">            <span class="s-kw">case</span> <span class="s-num">3</span>: <span class="s-fn">history_clear</span>(hist); <span class="s-fn">printf</span>(<span class="s-str">"이력 삭제 완료\n"</span>); <span class="s-kw">break</span>;</span></div>
+<div class="code-line"><span class="ln">45</span><span class="lc">            <span class="s-kw">case</span> <span class="s-num">4</span>: <span class="s-fn">memory_add</span>(&amp;mem, lastResult); <span class="s-kw">break</span>;</span></div>
+<div class="code-line"><span class="ln">46</span><span class="lc">            <span class="s-kw">case</span> <span class="s-num">5</span>: <span class="s-fn">memory_recall</span>(&amp;mem); <span class="s-kw">break</span>;</span></div>
+<div class="code-line"><span class="ln">47</span><span class="lc">            <span class="s-kw">case</span> <span class="s-num">6</span>: <span class="s-fn">memory_clear</span>(&amp;mem); <span class="s-kw">break</span>;</span></div>
+<div class="code-line"><span class="ln">48</span><span class="lc">            <span class="s-kw">case</span> <span class="s-num">0</span>: <span class="s-kw">break</span>;</span></div>
+<div class="code-line"><span class="ln">49</span><span class="lc">            <span class="s-kw">default</span>: <span class="s-fn">printf</span>(<span class="s-str">"잘못된 선택\n"</span>); <span class="s-kw">break</span>;</span></div>
+<div class="code-line"><span class="ln">50</span><span class="lc">        }</span></div>
+<div class="code-line"><span class="ln">51</span><span class="lc">    } <span class="s-kw">while</span> (choice != <span class="s-num">0</span>);</span></div>
+<div class="code-line"><span class="ln">52</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">53</span><span class="lc">    <span class="s-fn">history_destroy</span>(hist);</span></div>
+<div class="code-line"><span class="ln">54</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"메모리 해제 완료\n"</span>);</span></div>
+<div class="code-line"><span class="ln">55</span><span class="lc">    <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">56</span><span class="lc">}</span></div>
+</div>
+</div>
+<h2 class="section-title">버전 3: 설정 헤더 + 공학 함수 모듈 + 디버그</h2>
+<p>undefined</p>
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc"><span class="s-cm">/* ===== config.h ===== */</span></span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc"><span class="s-pp">#ifndef</span> CONFIG_H</span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc"><span class="s-pp">#define</span> CONFIG_H</span></div>
+<div class="code-line"><span class="ln">4</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">5</span><span class="lc"><span class="s-cm">/* 프로그램 정보 */</span></span></div>
+<div class="code-line"><span class="ln">6</span><span class="lc"><span class="s-pp">#define</span> APP_NAME       <span class="s-str">"모듈형 계산기"</span></span></div>
+<div class="code-line"><span class="ln">7</span><span class="lc"><span class="s-pp">#define</span> APP_VERSION    <span class="s-str">"3.0"</span></span></div>
+<div class="code-line"><span class="ln">8</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">9</span><span class="lc"><span class="s-cm">/* 용량 설정 */</span></span></div>
+<div class="code-line"><span class="ln">10</span><span class="lc"><span class="s-pp">#define</span> INIT_HISTORY   <span class="s-num">16</span></span></div>
+<div class="code-line"><span class="ln">11</span><span class="lc"><span class="s-pp">#define</span> MAX_EXPR       <span class="s-num">128</span></span></div>
+<div class="code-line"><span class="ln">12</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">13</span><span class="lc"><span class="s-cm">/* 기능 토글 (1=켜기, 0=끄기) */</span></span></div>
+<div class="code-line"><span class="ln">14</span><span class="lc"><span class="s-pp">#define</span> FEATURE_MEMORY   <span class="s-num">1</span>   <span class="s-cm">/* M+, MR, MC */</span></span></div>
+<div class="code-line"><span class="ln">15</span><span class="lc"><span class="s-pp">#define</span> FEATURE_HISTORY  <span class="s-num">1</span>   <span class="s-cm">/* 계산 이력 */</span></span></div>
+<div class="code-line"><span class="ln">16</span><span class="lc"><span class="s-pp">#define</span> FEATURE_SCI      <span class="s-num">1</span>   <span class="s-cm">/* 공학 함수 */</span></span></div>
+<div class="code-line"><span class="ln">17</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">18</span><span class="lc"><span class="s-cm">/* 빌드 모드: gcc -DDEBUG 로 활성화 */</span></span></div>
+<div class="code-line"><span class="ln">19</span><span class="lc"><span class="s-cm">/* #define DEBUG */</span></span></div>
+<div class="code-line"><span class="ln">20</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">21</span><span class="lc"><span class="s-cm">/* 유틸리티 매크로 */</span></span></div>
+<div class="code-line"><span class="ln">22</span><span class="lc"><span class="s-pp">#define</span> <span class="s-fn">ABS</span>(x)    ((x) &lt; <span class="s-num">0</span> ? -(x) : (x))</span></div>
+<div class="code-line"><span class="ln">23</span><span class="lc"><span class="s-pp">#define</span> <span class="s-fn">SQUARE</span>(x) ((x) * (x))</span></div>
+<div class="code-line"><span class="ln">24</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">25</span><span class="lc"><span class="s-pp">#ifdef</span> DEBUG</span></div>
+<div class="code-line"><span class="ln">26</span><span class="lc"><span class="s-pp">#define</span> <span class="s-fn">LOG</span>(fmt, ...) <span class="s-fn">printf</span>(<span class="s-str">"[DBG:%s:%d] "</span> fmt <span class="s-str">"\n"</span>, \</span></div>
+<div class="code-line"><span class="ln">27</span><span class="lc">                             __FILE__, __LINE__, #<span class="s-pp">#__VA_ARGS__</span>)</span></div>
+<div class="code-line"><span class="ln">28</span><span class="lc"><span class="s-pp">#<span class="s-kw">else</span></span></span></div>
+<div class="code-line"><span class="ln">29</span><span class="lc"><span class="s-pp">#define</span> <span class="s-fn">LOG</span>(fmt, ...)</span></div>
+<div class="code-line"><span class="ln">30</span><span class="lc"><span class="s-pp">#endif</span></span></div>
+<div class="code-line"><span class="ln">31</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">32</span><span class="lc"><span class="s-pp">#endif</span> <span class="s-cm">/* CONFIG_H */</span></span></div>
+</div>
+</div>
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc"><span class="s-cm">/* ===== calc.h (버전 3) ===== */</span></span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc"><span class="s-pp">#ifndef</span> CALC_H</span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc"><span class="s-pp">#define</span> CALC_H</span></div>
+<div class="code-line"><span class="ln">4</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">5</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">"config.h"</span></span></div>
+<div class="code-line"><span class="ln">6</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">7</span><span class="lc"><span class="s-kw">typedef</span> <span class="s-kw">struct</span> {</span></div>
+<div class="code-line"><span class="ln">8</span><span class="lc">    <span class="s-type">double</span> left;</span></div>
+<div class="code-line"><span class="ln">9</span><span class="lc">    <span class="s-type">char</span> op;</span></div>
+<div class="code-line"><span class="ln">10</span><span class="lc">    <span class="s-type">double</span> right;</span></div>
+<div class="code-line"><span class="ln">11</span><span class="lc">    <span class="s-type">double</span> result;</span></div>
+<div class="code-line"><span class="ln">12</span><span class="lc">} Record;</span></div>
+<div class="code-line"><span class="ln">13</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">14</span><span class="lc"><span class="s-kw">typedef</span> <span class="s-kw">struct</span> {</span></div>
+<div class="code-line"><span class="ln">15</span><span class="lc">    Record *data;</span></div>
+<div class="code-line"><span class="ln">16</span><span class="lc">    <span class="s-type">int</span> size;</span></div>
+<div class="code-line"><span class="ln">17</span><span class="lc">    <span class="s-type">int</span> capacity;</span></div>
+<div class="code-line"><span class="ln">18</span><span class="lc">} History;</span></div>
+<div class="code-line"><span class="ln">19</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">20</span><span class="lc"><span class="s-kw">typedef</span> <span class="s-kw">struct</span> {</span></div>
+<div class="code-line"><span class="ln">21</span><span class="lc">    <span class="s-type">double</span> value;</span></div>
+<div class="code-line"><span class="ln">22</span><span class="lc">    <span class="s-type">int</span> stored;</span></div>
+<div class="code-line"><span class="ln">23</span><span class="lc">} Memory;</span></div>
+<div class="code-line"><span class="ln">24</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">25</span><span class="lc"><span class="s-cm">/* 사칙연산 */</span></span></div>
+<div class="code-line"><span class="ln">26</span><span class="lc"><span class="s-type">double</span> <span class="s-fn">calc_execute</span>(<span class="s-type">double</span> a, <span class="s-type">char</span> op, <span class="s-type">double</span> b, <span class="s-type">int</span> *ok);</span></div>
+<div class="code-line"><span class="ln">27</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">28</span><span class="lc"><span class="s-cm">/* 이력 */</span></span></div>
+<div class="code-line"><span class="ln">29</span><span class="lc">History *<span class="s-fn">history_create</span>(<span class="s-type">int</span> cap);</span></div>
+<div class="code-line"><span class="ln">30</span><span class="lc"><span class="s-type">void</span>     <span class="s-fn">history_add</span>(History *h, <span class="s-type">double</span> l, <span class="s-type">char</span> op, <span class="s-type">double</span> r, <span class="s-type">double</span> res);</span></div>
+<div class="code-line"><span class="ln">31</span><span class="lc"><span class="s-type">void</span>     <span class="s-fn">history_print</span>(<span class="s-kw">const</span> History *h);</span></div>
+<div class="code-line"><span class="ln">32</span><span class="lc"><span class="s-type">void</span>     <span class="s-fn">history_clear</span>(History *h);</span></div>
+<div class="code-line"><span class="ln">33</span><span class="lc"><span class="s-type">void</span>     <span class="s-fn">history_destroy</span>(History *h);</span></div>
+<div class="code-line"><span class="ln">34</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">35</span><span class="lc"><span class="s-cm">/* 메모리 */</span></span></div>
+<div class="code-line"><span class="ln">36</span><span class="lc"><span class="s-type">void</span> <span class="s-fn">memory_add</span>(Memory *m, <span class="s-type">double</span> val);</span></div>
+<div class="code-line"><span class="ln">37</span><span class="lc"><span class="s-type">void</span> <span class="s-fn">memory_recall</span>(<span class="s-kw">const</span> Memory *m);</span></div>
+<div class="code-line"><span class="ln">38</span><span class="lc"><span class="s-type">void</span> <span class="s-fn">memory_clear</span>(Memory *m);</span></div>
+<div class="code-line"><span class="ln">39</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">40</span><span class="lc"><span class="s-cm">/* 통계 */</span></span></div>
+<div class="code-line"><span class="ln">41</span><span class="lc"><span class="s-type">void</span> <span class="s-fn">history_stats</span>(<span class="s-kw">const</span> History *h);</span></div>
+<div class="code-line"><span class="ln">42</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">43</span><span class="lc"><span class="s-pp">#endif</span> <span class="s-cm">/* CALC_H */</span></span></div>
+</div>
+</div>
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc"><span class="s-cm">/* ===== sci.h ===== */</span></span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc"><span class="s-pp">#ifndef</span> SCI_H</span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc"><span class="s-pp">#define</span> SCI_H</span></div>
+<div class="code-line"><span class="ln">4</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">5</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">"config.h"</span></span></div>
+<div class="code-line"><span class="ln">6</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">7</span><span class="lc"><span class="s-pp">#<span class="s-kw">if</span></span> FEATURE_SCI</span></div>
+<div class="code-line"><span class="ln">8</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">9</span><span class="lc"><span class="s-type">double</span> <span class="s-fn">sci_power</span>(<span class="s-type">double</span> base, <span class="s-type">int</span> exp);</span></div>
+<div class="code-line"><span class="ln">10</span><span class="lc"><span class="s-type">double</span> <span class="s-fn">sci_sqrt</span>(<span class="s-type">double</span> x);</span></div>
+<div class="code-line"><span class="ln">11</span><span class="lc"><span class="s-type">double</span> <span class="s-fn">sci_factorial</span>(<span class="s-type">int</span> n);</span></div>
+<div class="code-line"><span class="ln">12</span><span class="lc"><span class="s-type">double</span> <span class="s-fn">sci_abs</span>(<span class="s-type">double</span> x);</span></div>
+<div class="code-line"><span class="ln">13</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">14</span><span class="lc"><span class="s-type">void</span>   <span class="s-fn">sci_show_menu</span>(<span class="s-type">void</span>);</span></div>
+<div class="code-line"><span class="ln">15</span><span class="lc"><span class="s-type">double</span> <span class="s-fn">sci_execute</span>(<span class="s-type">int</span> choice);</span></div>
+<div class="code-line"><span class="ln">16</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">17</span><span class="lc"><span class="s-pp">#endif</span> <span class="s-cm">/* FEATURE_SCI */</span></span></div>
+<div class="code-line"><span class="ln">18</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">19</span><span class="lc"><span class="s-pp">#endif</span> <span class="s-cm">/* SCI_H */</span></span></div>
+</div>
+</div>
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc"><span class="s-cm">/* ===== sci.c ===== */</span></span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;stdio.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;math.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">4</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">"sci.h"</span></span></div>
+<div class="code-line"><span class="ln">5</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">6</span><span class="lc"><span class="s-pp">#<span class="s-kw">if</span></span> FEATURE_SCI</span></div>
+<div class="code-line"><span class="ln">7</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">8</span><span class="lc"><span class="s-cm">/* static: 이 파일에서만 사용 */</span></span></div>
+<div class="code-line"><span class="ln">9</span><span class="lc"><span class="s-kw">static</span> <span class="s-type">int</span> callCount = <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">10</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">11</span><span class="lc"><span class="s-type">double</span> <span class="s-fn">sci_power</span>(<span class="s-type">double</span> base, <span class="s-type">int</span> exp) {</span></div>
+<div class="code-line"><span class="ln">12</span><span class="lc">    callCount++;</span></div>
+<div class="code-line"><span class="ln">13</span><span class="lc">    <span class="s-fn">LOG</span>(<span class="s-str">"power(%.2f, %d) 호출 #%d"</span>, base, exp, callCount);</span></div>
+<div class="code-line"><span class="ln">14</span><span class="lc">    <span class="s-type">double</span> result = <span class="s-num">1.0</span>;</span></div>
+<div class="code-line"><span class="ln">15</span><span class="lc">    <span class="s-type">int</span> neg = (exp &lt; <span class="s-num">0</span>);</span></div>
+<div class="code-line"><span class="ln">16</span><span class="lc">    <span class="s-kw">if</span> (neg) exp = -exp;</span></div>
+<div class="code-line"><span class="ln">17</span><span class="lc">    <span class="s-kw">for</span> (<span class="s-type">int</span> i = <span class="s-num">0</span>; i &lt; exp; i++) result *= base;</span></div>
+<div class="code-line"><span class="ln">18</span><span class="lc">    <span class="s-kw">return</span> neg ? <span class="s-num">1.0</span> / result : result;</span></div>
+<div class="code-line"><span class="ln">19</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">20</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">21</span><span class="lc"><span class="s-type">double</span> <span class="s-fn">sci_sqrt</span>(<span class="s-type">double</span> x) {</span></div>
+<div class="code-line"><span class="ln">22</span><span class="lc">    callCount++;</span></div>
+<div class="code-line"><span class="ln">23</span><span class="lc">    <span class="s-fn">LOG</span>(<span class="s-str">"sqrt(%.2f) 호출 #%d"</span>, x, callCount);</span></div>
+<div class="code-line"><span class="ln">24</span><span class="lc">    <span class="s-kw">if</span> (x &lt; <span class="s-num">0</span>) { <span class="s-fn">printf</span>(<span class="s-str">"오류: 음수의 제곱근\n"</span>); <span class="s-kw">return</span> -<span class="s-num">1</span>; }</span></div>
+<div class="code-line"><span class="ln">25</span><span class="lc">    <span class="s-kw">return</span> <span class="s-fn">sqrt</span>(x);</span></div>
+<div class="code-line"><span class="ln">26</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">27</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">28</span><span class="lc"><span class="s-type">double</span> <span class="s-fn">sci_factorial</span>(<span class="s-type">int</span> n) {</span></div>
+<div class="code-line"><span class="ln">29</span><span class="lc">    callCount++;</span></div>
+<div class="code-line"><span class="ln">30</span><span class="lc">    <span class="s-fn">LOG</span>(<span class="s-str">"factorial(%d) 호출 #%d"</span>, n, callCount);</span></div>
+<div class="code-line"><span class="ln">31</span><span class="lc">    <span class="s-kw">if</span> (n &lt; <span class="s-num">0</span>) { <span class="s-fn">printf</span>(<span class="s-str">"오류: 음수의 팩토리얼\n"</span>); <span class="s-kw">return</span> -<span class="s-num">1</span>; }</span></div>
+<div class="code-line"><span class="ln">32</span><span class="lc">    <span class="s-type">double</span> result = <span class="s-num">1.0</span>;</span></div>
+<div class="code-line"><span class="ln">33</span><span class="lc">    <span class="s-kw">for</span> (<span class="s-type">int</span> i = <span class="s-num">2</span>; i &lt;= n; i++) result *= i;</span></div>
+<div class="code-line"><span class="ln">34</span><span class="lc">    <span class="s-kw">return</span> result;</span></div>
+<div class="code-line"><span class="ln">35</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">36</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">37</span><span class="lc"><span class="s-type">double</span> <span class="s-fn">sci_abs</span>(<span class="s-type">double</span> x) {</span></div>
+<div class="code-line"><span class="ln">38</span><span class="lc">    callCount++;</span></div>
+<div class="code-line"><span class="ln">39</span><span class="lc">    <span class="s-kw">return</span> <span class="s-fn">ABS</span>(x);</span></div>
+<div class="code-line"><span class="ln">40</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">41</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">42</span><span class="lc"><span class="s-type">void</span> <span class="s-fn">sci_show_menu</span>(<span class="s-type">void</span>) {</span></div>
+<div class="code-line"><span class="ln">43</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"\n--- 공학 함수 ---\n"</span>);</span></div>
+<div class="code-line"><span class="ln">44</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"1. 거듭제곱 (x^n)\n"</span>);</span></div>
+<div class="code-line"><span class="ln">45</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"2. 제곱근 (sqrt)\n"</span>);</span></div>
+<div class="code-line"><span class="ln">46</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"3. 팩토리얼 (n!)\n"</span>);</span></div>
+<div class="code-line"><span class="ln">47</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"4. 절댓값 (|x|)\n"</span>);</span></div>
+<div class="code-line"><span class="ln">48</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">49</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">50</span><span class="lc"><span class="s-type">double</span> <span class="s-fn">sci_execute</span>(<span class="s-type">int</span> choice) {</span></div>
+<div class="code-line"><span class="ln">51</span><span class="lc">    <span class="s-type">double</span> x, result = <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">52</span><span class="lc">    <span class="s-type">int</span> n;</span></div>
+<div class="code-line"><span class="ln">53</span><span class="lc">    <span class="s-kw">switch</span> (choice) {</span></div>
+<div class="code-line"><span class="ln">54</span><span class="lc">        <span class="s-kw">case</span> <span class="s-num">1</span>:</span></div>
+<div class="code-line"><span class="ln">55</span><span class="lc">            <span class="s-fn">printf</span>(<span class="s-str">"밑: "</span>); <span class="s-fn">scanf</span>(<span class="s-str">"%lf"</span>, &amp;x);</span></div>
+<div class="code-line"><span class="ln">56</span><span class="lc">            <span class="s-fn">printf</span>(<span class="s-str">"지수(정수): "</span>); <span class="s-fn">scanf</span>(<span class="s-str">"%d"</span>, &amp;n);</span></div>
+<div class="code-line"><span class="ln">57</span><span class="lc">            result = <span class="s-fn">sci_power</span>(x, n);</span></div>
+<div class="code-line"><span class="ln">58</span><span class="lc">            <span class="s-fn">printf</span>(<span class="s-str">"= %.4f\n"</span>, result);</span></div>
+<div class="code-line"><span class="ln">59</span><span class="lc">            <span class="s-kw">break</span>;</span></div>
+<div class="code-line"><span class="ln">60</span><span class="lc">        <span class="s-kw">case</span> <span class="s-num">2</span>:</span></div>
+<div class="code-line"><span class="ln">61</span><span class="lc">            <span class="s-fn">printf</span>(<span class="s-str">"값: "</span>); <span class="s-fn">scanf</span>(<span class="s-str">"%lf"</span>, &amp;x);</span></div>
+<div class="code-line"><span class="ln">62</span><span class="lc">            result = <span class="s-fn">sci_sqrt</span>(x);</span></div>
+<div class="code-line"><span class="ln">63</span><span class="lc">            <span class="s-kw">if</span> (result &gt;= <span class="s-num">0</span>) <span class="s-fn">printf</span>(<span class="s-str">"= %.4f\n"</span>, result);</span></div>
+<div class="code-line"><span class="ln">64</span><span class="lc">            <span class="s-kw">break</span>;</span></div>
+<div class="code-line"><span class="ln">65</span><span class="lc">        <span class="s-kw">case</span> <span class="s-num">3</span>:</span></div>
+<div class="code-line"><span class="ln">66</span><span class="lc">            <span class="s-fn">printf</span>(<span class="s-str">"n: "</span>); <span class="s-fn">scanf</span>(<span class="s-str">"%d"</span>, &amp;n);</span></div>
+<div class="code-line"><span class="ln">67</span><span class="lc">            result = <span class="s-fn">sci_factorial</span>(n);</span></div>
+<div class="code-line"><span class="ln">68</span><span class="lc">            <span class="s-kw">if</span> (result &gt;= <span class="s-num">0</span>) <span class="s-fn">printf</span>(<span class="s-str">"= %.0f\n"</span>, result);</span></div>
+<div class="code-line"><span class="ln">69</span><span class="lc">            <span class="s-kw">break</span>;</span></div>
+<div class="code-line"><span class="ln">70</span><span class="lc">        <span class="s-kw">case</span> <span class="s-num">4</span>:</span></div>
+<div class="code-line"><span class="ln">71</span><span class="lc">            <span class="s-fn">printf</span>(<span class="s-str">"값: "</span>); <span class="s-fn">scanf</span>(<span class="s-str">"%lf"</span>, &amp;x);</span></div>
+<div class="code-line"><span class="ln">72</span><span class="lc">            result = <span class="s-fn">sci_abs</span>(x);</span></div>
+<div class="code-line"><span class="ln">73</span><span class="lc">            <span class="s-fn">printf</span>(<span class="s-str">"= %.4f\n"</span>, result);</span></div>
+<div class="code-line"><span class="ln">74</span><span class="lc">            <span class="s-kw">break</span>;</span></div>
+<div class="code-line"><span class="ln">75</span><span class="lc">        <span class="s-kw">default</span>:</span></div>
+<div class="code-line"><span class="ln">76</span><span class="lc">            <span class="s-fn">printf</span>(<span class="s-str">"잘못된 선택\n"</span>); <span class="s-kw">break</span>;</span></div>
+<div class="code-line"><span class="ln">77</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">78</span><span class="lc">    <span class="s-kw">return</span> result;</span></div>
+<div class="code-line"><span class="ln">79</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">80</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">81</span><span class="lc"><span class="s-pp">#endif</span> <span class="s-cm">/* FEATURE_SCI */</span></span></div>
+</div>
+</div>
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc"><span class="s-cm">/* ===== calc.c (버전 3) ===== */</span></span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;stdio.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;stdlib.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">4</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">"calc.h"</span></span></div>
+<div class="code-line"><span class="ln">5</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">6</span><span class="lc"><span class="s-cm">/* static: 외부에서 접근 불가 */</span></span></div>
+<div class="code-line"><span class="ln">7</span><span class="lc"><span class="s-kw">static</span> <span class="s-type">int</span> totalCalcs = <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">8</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">9</span><span class="lc"><span class="s-kw">static</span> <span class="s-type">void</span> <span class="s-fn">ensureCapacity</span>(History *h) {</span></div>
+<div class="code-line"><span class="ln">10</span><span class="lc">    <span class="s-kw">if</span> (h-&gt;size &gt;= h-&gt;capacity) {</span></div>
+<div class="code-line"><span class="ln">11</span><span class="lc">        h-&gt;capacity *= <span class="s-num">2</span>;</span></div>
+<div class="code-line"><span class="ln">12</span><span class="lc">        h-&gt;data = (Record*)<span class="s-fn">realloc</span>(h-&gt;data,</span></div>
+<div class="code-line"><span class="ln">13</span><span class="lc">                   h-&gt;capacity * <span class="s-kw">sizeof</span>(Record));</span></div>
+<div class="code-line"><span class="ln">14</span><span class="lc">        <span class="s-fn">LOG</span>(<span class="s-str">"이력 확장: 용량 %d"</span>, h-&gt;capacity);</span></div>
+<div class="code-line"><span class="ln">15</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">16</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">17</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">18</span><span class="lc"><span class="s-type">double</span> <span class="s-fn">calc_execute</span>(<span class="s-type">double</span> a, <span class="s-type">char</span> op, <span class="s-type">double</span> b, <span class="s-type">int</span> *ok) {</span></div>
+<div class="code-line"><span class="ln">19</span><span class="lc">    *ok = <span class="s-num">1</span>;</span></div>
+<div class="code-line"><span class="ln">20</span><span class="lc">    totalCalcs++;</span></div>
+<div class="code-line"><span class="ln">21</span><span class="lc">    <span class="s-fn">LOG</span>(<span class="s-str">"calc_execute: %.2f %c %.2f (호출 #%d)"</span>, a, op, b, totalCalcs);</span></div>
+<div class="code-line"><span class="ln">22</span><span class="lc">    <span class="s-kw">switch</span> (op) {</span></div>
+<div class="code-line"><span class="ln">23</span><span class="lc">        <span class="s-kw">case</span> <span class="s-str">'+'</span>: <span class="s-kw">return</span> a + b;</span></div>
+<div class="code-line"><span class="ln">24</span><span class="lc">        <span class="s-kw">case</span> <span class="s-str">'-'</span>: <span class="s-kw">return</span> a - b;</span></div>
+<div class="code-line"><span class="ln">25</span><span class="lc">        <span class="s-kw">case</span> <span class="s-str">'*'</span>: <span class="s-kw">return</span> a * b;</span></div>
+<div class="code-line"><span class="ln">26</span><span class="lc">        <span class="s-kw">case</span> <span class="s-str">'/'</span>:</span></div>
+<div class="code-line"><span class="ln">27</span><span class="lc">            <span class="s-kw">if</span> (b == <span class="s-num">0</span>) {</span></div>
+<div class="code-line"><span class="ln">28</span><span class="lc">                <span class="s-fn">printf</span>(<span class="s-str">"오류: 0으로 나눌 수 없습니다.\n"</span>);</span></div>
+<div class="code-line"><span class="ln">29</span><span class="lc">                *ok = <span class="s-num">0</span>; <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">30</span><span class="lc">            }</span></div>
+<div class="code-line"><span class="ln">31</span><span class="lc">            <span class="s-kw">return</span> a / b;</span></div>
+<div class="code-line"><span class="ln">32</span><span class="lc">        <span class="s-kw">default</span>:</span></div>
+<div class="code-line"><span class="ln">33</span><span class="lc">            <span class="s-fn">printf</span>(<span class="s-str">"오류: 알 수 없는 연산자 '%c'\n"</span>, op);</span></div>
+<div class="code-line"><span class="ln">34</span><span class="lc">            *ok = <span class="s-num">0</span>; <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">35</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">36</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">37</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">38</span><span class="lc">History *<span class="s-fn">history_create</span>(<span class="s-type">int</span> cap) {</span></div>
+<div class="code-line"><span class="ln">39</span><span class="lc">    History *h = (History*)<span class="s-fn">malloc</span>(<span class="s-kw">sizeof</span>(History));</span></div>
+<div class="code-line"><span class="ln">40</span><span class="lc">    <span class="s-kw">if</span> (h == <span class="s-kw">NULL</span>) <span class="s-kw">return</span> <span class="s-kw">NULL</span>;</span></div>
+<div class="code-line"><span class="ln">41</span><span class="lc">    h-&gt;data = (Record*)<span class="s-fn">calloc</span>(cap, <span class="s-kw">sizeof</span>(Record));</span></div>
+<div class="code-line"><span class="ln">42</span><span class="lc">    <span class="s-kw">if</span> (h-&gt;data == <span class="s-kw">NULL</span>) { <span class="s-fn">free</span>(h); <span class="s-kw">return</span> <span class="s-kw">NULL</span>; }</span></div>
+<div class="code-line"><span class="ln">43</span><span class="lc">    h-&gt;size = <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">44</span><span class="lc">    h-&gt;capacity = cap;</span></div>
+<div class="code-line"><span class="ln">45</span><span class="lc">    <span class="s-fn">LOG</span>(<span class="s-str">"이력 생성: 용량 %d"</span>, cap);</span></div>
+<div class="code-line"><span class="ln">46</span><span class="lc">    <span class="s-kw">return</span> h;</span></div>
+<div class="code-line"><span class="ln">47</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">48</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">49</span><span class="lc"><span class="s-type">void</span> <span class="s-fn">history_add</span>(History *h, <span class="s-type">double</span> l, <span class="s-type">char</span> op, <span class="s-type">double</span> r, <span class="s-type">double</span> res) {</span></div>
+<div class="code-line"><span class="ln">50</span><span class="lc">    <span class="s-fn">ensureCapacity</span>(h);</span></div>
+<div class="code-line"><span class="ln">51</span><span class="lc">    h-&gt;data[h-&gt;size++] = (Record){l, op, r, res};</span></div>
+<div class="code-line"><span class="ln">52</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">53</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">54</span><span class="lc"><span class="s-type">void</span> <span class="s-fn">history_print</span>(<span class="s-kw">const</span> History *h) {</span></div>
+<div class="code-line"><span class="ln">55</span><span class="lc">    <span class="s-kw">if</span> (h-&gt;size == <span class="s-num">0</span>) { <span class="s-fn">printf</span>(<span class="s-str">"이력이 없습니다.\n"</span>); <span class="s-kw">return</span>; }</span></div>
+<div class="code-line"><span class="ln">56</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"\n%-4s %10s %2s %10s = %12s\n"</span>,</span></div>
+<div class="code-line"><span class="ln">57</span><span class="lc">           <span class="s-str">"#"</span>, <span class="s-str">"왼쪽"</span>, <span class="s-str">"op"</span>, <span class="s-str">"오른쪽"</span>, <span class="s-str">"결과"</span>);</span></div>
+<div class="code-line"><span class="ln">58</span><span class="lc">    <span class="s-kw">for</span> (<span class="s-type">int</span> i = <span class="s-num">0</span>; i &lt; h-&gt;size; i++)</span></div>
+<div class="code-line"><span class="ln">59</span><span class="lc">        <span class="s-fn">printf</span>(<span class="s-str">"%-4d %10.2f %2c %10.2f = %12.2f\n"</span>,</span></div>
+<div class="code-line"><span class="ln">60</span><span class="lc">               i+<span class="s-num">1</span>, h-&gt;data[i].left, h-&gt;data[i].op,</span></div>
+<div class="code-line"><span class="ln">61</span><span class="lc">               h-&gt;data[i].right, h-&gt;data[i].result);</span></div>
+<div class="code-line"><span class="ln">62</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">63</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">64</span><span class="lc"><span class="s-type">void</span> <span class="s-fn">history_clear</span>(History *h) {</span></div>
+<div class="code-line"><span class="ln">65</span><span class="lc">    h-&gt;size = <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">66</span><span class="lc">    <span class="s-fn">LOG</span>(<span class="s-str">"이력 초기화"</span>);</span></div>
+<div class="code-line"><span class="ln">67</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">68</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">69</span><span class="lc"><span class="s-type">void</span> <span class="s-fn">history_destroy</span>(History *h) {</span></div>
+<div class="code-line"><span class="ln">70</span><span class="lc">    <span class="s-fn">LOG</span>(<span class="s-str">"이력 해제: %d건"</span>, h-&gt;size);</span></div>
+<div class="code-line"><span class="ln">71</span><span class="lc">    <span class="s-fn">free</span>(h-&gt;data);</span></div>
+<div class="code-line"><span class="ln">72</span><span class="lc">    <span class="s-fn">free</span>(h);</span></div>
+<div class="code-line"><span class="ln">73</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">74</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">75</span><span class="lc"><span class="s-type">void</span> <span class="s-fn">history_stats</span>(<span class="s-kw">const</span> History *h) {</span></div>
+<div class="code-line"><span class="ln">76</span><span class="lc">    <span class="s-kw">if</span> (h-&gt;size == <span class="s-num">0</span>) { <span class="s-fn">printf</span>(<span class="s-str">"이력이 없습니다.\n"</span>); <span class="s-kw">return</span>; }</span></div>
+<div class="code-line"><span class="ln">77</span><span class="lc">    <span class="s-type">double</span> sum = <span class="s-num">0</span>, max = h-&gt;data[<span class="s-num">0</span>].result, min = max;</span></div>
+<div class="code-line"><span class="ln">78</span><span class="lc">    <span class="s-kw">for</span> (<span class="s-type">int</span> i = <span class="s-num">0</span>; i &lt; h-&gt;size; i++) {</span></div>
+<div class="code-line"><span class="ln">79</span><span class="lc">        sum += h-&gt;data[i].result;</span></div>
+<div class="code-line"><span class="ln">80</span><span class="lc">        <span class="s-kw">if</span> (h-&gt;data[i].result &gt; max) max = h-&gt;data[i].result;</span></div>
+<div class="code-line"><span class="ln">81</span><span class="lc">        <span class="s-kw">if</span> (h-&gt;data[i].result &lt; min) min = h-&gt;data[i].result;</span></div>
+<div class="code-line"><span class="ln">82</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">83</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"\n계산 %d건: 평균=%.2f, 최대=%.2f, 최소=%.2f\n"</span>,</span></div>
+<div class="code-line"><span class="ln">84</span><span class="lc">           h-&gt;size, sum / h-&gt;size, max, min);</span></div>
+<div class="code-line"><span class="ln">85</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">86</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">87</span><span class="lc"><span class="s-type">void</span> <span class="s-fn">memory_add</span>(Memory *m, <span class="s-type">double</span> val) {</span></div>
+<div class="code-line"><span class="ln">88</span><span class="lc">    m-&gt;value += val;</span></div>
+<div class="code-line"><span class="ln">89</span><span class="lc">    m-&gt;stored = <span class="s-num">1</span>;</span></div>
+<div class="code-line"><span class="ln">90</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"M+ : %.2f (저장값: %.2f)\n"</span>, val, m-&gt;value);</span></div>
+<div class="code-line"><span class="ln">91</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">92</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">93</span><span class="lc"><span class="s-type">void</span> <span class="s-fn">memory_recall</span>(<span class="s-kw">const</span> Memory *m) {</span></div>
+<div class="code-line"><span class="ln">94</span><span class="lc">    <span class="s-kw">if</span> (m-&gt;stored)</span></div>
+<div class="code-line"><span class="ln">95</span><span class="lc">        <span class="s-fn">printf</span>(<span class="s-str">"MR : %.2f\n"</span>, m-&gt;value);</span></div>
+<div class="code-line"><span class="ln">96</span><span class="lc">    <span class="s-kw">else</span></span></div>
+<div class="code-line"><span class="ln">97</span><span class="lc">        <span class="s-fn">printf</span>(<span class="s-str">"MR : 저장된 값 없음\n"</span>);</span></div>
+<div class="code-line"><span class="ln">98</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">99</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">100</span><span class="lc"><span class="s-type">void</span> <span class="s-fn">memory_clear</span>(Memory *m) {</span></div>
+<div class="code-line"><span class="ln">101</span><span class="lc">    m-&gt;value = <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">102</span><span class="lc">    m-&gt;stored = <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">103</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"MC : 메모리 초기화\n"</span>);</span></div>
+<div class="code-line"><span class="ln">104</span><span class="lc">}</span></div>
+</div>
+</div>
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc"><span class="s-cm">/* ===== main.c (버전 3) ===== */</span></span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;stdio.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">"config.h"</span></span></div>
+<div class="code-line"><span class="ln">4</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">"calc.h"</span></span></div>
+<div class="code-line"><span class="ln">5</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">6</span><span class="lc"><span class="s-pp">#<span class="s-kw">if</span></span> FEATURE_SCI</span></div>
+<div class="code-line"><span class="ln">7</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">"sci.h"</span></span></div>
+<div class="code-line"><span class="ln">8</span><span class="lc"><span class="s-pp">#endif</span></span></div>
+<div class="code-line"><span class="ln">9</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">10</span><span class="lc"><span class="s-kw">static</span> <span class="s-type">void</span> <span class="s-fn">showMenu</span>(<span class="s-type">void</span>) {</span></div>
+<div class="code-line"><span class="ln">11</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"\n=== %s v%s ===\n"</span>, APP_NAME, APP_VERSION);</span></div>
+<div class="code-line"><span class="ln">12</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"1. 사칙연산\n"</span>);</span></div>
+<div class="code-line"><span class="ln">13</span><span class="lc"><span class="s-pp">#<span class="s-kw">if</span></span> FEATURE_HISTORY</span></div>
+<div class="code-line"><span class="ln">14</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"2. 이력 보기\n"</span>);</span></div>
+<div class="code-line"><span class="ln">15</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"3. 이력 삭제\n"</span>);</span></div>
+<div class="code-line"><span class="ln">16</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"4. 이력 통계\n"</span>);</span></div>
+<div class="code-line"><span class="ln">17</span><span class="lc"><span class="s-pp">#endif</span></span></div>
+<div class="code-line"><span class="ln">18</span><span class="lc"><span class="s-pp">#<span class="s-kw">if</span></span> FEATURE_MEMORY</span></div>
+<div class="code-line"><span class="ln">19</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"5. M+ (메모리 추가)\n"</span>);</span></div>
+<div class="code-line"><span class="ln">20</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"6. MR (메모리 읽기)\n"</span>);</span></div>
+<div class="code-line"><span class="ln">21</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"7. MC (메모리 초기화)\n"</span>);</span></div>
+<div class="code-line"><span class="ln">22</span><span class="lc"><span class="s-pp">#endif</span></span></div>
+<div class="code-line"><span class="ln">23</span><span class="lc"><span class="s-pp">#<span class="s-kw">if</span></span> FEATURE_SCI</span></div>
+<div class="code-line"><span class="ln">24</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"8. 공학 함수\n"</span>);</span></div>
+<div class="code-line"><span class="ln">25</span><span class="lc"><span class="s-pp">#endif</span></span></div>
+<div class="code-line"><span class="ln">26</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"0. 종료\n"</span>);</span></div>
+<div class="code-line"><span class="ln">27</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">28</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">29</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">main</span>(<span class="s-type">void</span>) {</span></div>
+<div class="code-line"><span class="ln">30</span><span class="lc">    <span class="s-fn">LOG</span>(<span class="s-str">"프로그램 시작"</span>);</span></div>
+<div class="code-line"><span class="ln">31</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">32</span><span class="lc"><span class="s-pp">#<span class="s-kw">if</span></span> FEATURE_HISTORY</span></div>
+<div class="code-line"><span class="ln">33</span><span class="lc">    History *hist = <span class="s-fn">history_create</span>(INIT_HISTORY);</span></div>
+<div class="code-line"><span class="ln">34</span><span class="lc">    <span class="s-kw">if</span> (hist == <span class="s-kw">NULL</span>) { <span class="s-fn">printf</span>(<span class="s-str">"메모리 할당 실패\n"</span>); <span class="s-kw">return</span> <span class="s-num">1</span>; }</span></div>
+<div class="code-line"><span class="ln">35</span><span class="lc"><span class="s-pp">#endif</span></span></div>
+<div class="code-line"><span class="ln">36</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">37</span><span class="lc"><span class="s-pp">#<span class="s-kw">if</span></span> FEATURE_MEMORY</span></div>
+<div class="code-line"><span class="ln">38</span><span class="lc">    Memory mem = {<span class="s-num">0.0</span>, <span class="s-num">0</span>};</span></div>
+<div class="code-line"><span class="ln">39</span><span class="lc"><span class="s-pp">#endif</span></span></div>
+<div class="code-line"><span class="ln">40</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">41</span><span class="lc">    <span class="s-type">double</span> lastResult = <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">42</span><span class="lc">    <span class="s-type">int</span> choice;</span></div>
+<div class="code-line"><span class="ln">43</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">44</span><span class="lc">    <span class="s-kw">do</span> {</span></div>
+<div class="code-line"><span class="ln">45</span><span class="lc">        <span class="s-fn">showMenu</span>();</span></div>
+<div class="code-line"><span class="ln">46</span><span class="lc">        <span class="s-fn">printf</span>(<span class="s-str">"선택: "</span>);</span></div>
+<div class="code-line"><span class="ln">47</span><span class="lc">        <span class="s-fn">scanf</span>(<span class="s-str">"%d"</span>, &amp;choice);</span></div>
+<div class="code-line"><span class="ln">48</span><span class="lc">        <span class="s-fn">LOG</span>(<span class="s-str">"메뉴 선택: %d"</span>, choice);</span></div>
+<div class="code-line"><span class="ln">49</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">50</span><span class="lc">        <span class="s-kw">switch</span> (choice) {</span></div>
+<div class="code-line"><span class="ln">51</span><span class="lc">            <span class="s-kw">case</span> <span class="s-num">1</span>: {</span></div>
+<div class="code-line"><span class="ln">52</span><span class="lc">                <span class="s-type">double</span> a, b; <span class="s-type">char</span> op;</span></div>
+<div class="code-line"><span class="ln">53</span><span class="lc">                <span class="s-fn">printf</span>(<span class="s-str">"입력 (숫자 연산자 숫자): "</span>);</span></div>
+<div class="code-line"><span class="ln">54</span><span class="lc">                <span class="s-fn">scanf</span>(<span class="s-str">"%lf %c %lf"</span>, &amp;a, &amp;op, &amp;b);</span></div>
+<div class="code-line"><span class="ln">55</span><span class="lc">                <span class="s-type">int</span> ok;</span></div>
+<div class="code-line"><span class="ln">56</span><span class="lc">                <span class="s-type">double</span> r = <span class="s-fn">calc_execute</span>(a, op, b, &amp;ok);</span></div>
+<div class="code-line"><span class="ln">57</span><span class="lc">                <span class="s-kw">if</span> (ok) {</span></div>
+<div class="code-line"><span class="ln">58</span><span class="lc">                    <span class="s-fn">printf</span>(<span class="s-str">"= %.2f\n"</span>, r);</span></div>
+<div class="code-line"><span class="ln">59</span><span class="lc"><span class="s-pp">#<span class="s-kw">if</span></span> FEATURE_HISTORY</span></div>
+<div class="code-line"><span class="ln">60</span><span class="lc">                    <span class="s-fn">history_add</span>(hist, a, op, b, r);</span></div>
+<div class="code-line"><span class="ln">61</span><span class="lc"><span class="s-pp">#endif</span></span></div>
+<div class="code-line"><span class="ln">62</span><span class="lc">                    lastResult = r;</span></div>
+<div class="code-line"><span class="ln">63</span><span class="lc">                }</span></div>
+<div class="code-line"><span class="ln">64</span><span class="lc">                <span class="s-kw">break</span>;</span></div>
+<div class="code-line"><span class="ln">65</span><span class="lc">            }</span></div>
+<div class="code-line"><span class="ln">66</span><span class="lc"><span class="s-pp">#<span class="s-kw">if</span></span> FEATURE_HISTORY</span></div>
+<div class="code-line"><span class="ln">67</span><span class="lc">            <span class="s-kw">case</span> <span class="s-num">2</span>: <span class="s-fn">history_print</span>(hist); <span class="s-kw">break</span>;</span></div>
+<div class="code-line"><span class="ln">68</span><span class="lc">            <span class="s-kw">case</span> <span class="s-num">3</span>: <span class="s-fn">history_clear</span>(hist);</span></div>
+<div class="code-line"><span class="ln">69</span><span class="lc">                    <span class="s-fn">printf</span>(<span class="s-str">"이력 삭제 완료\n"</span>); <span class="s-kw">break</span>;</span></div>
+<div class="code-line"><span class="ln">70</span><span class="lc">            <span class="s-kw">case</span> <span class="s-num">4</span>: <span class="s-fn">history_stats</span>(hist); <span class="s-kw">break</span>;</span></div>
+<div class="code-line"><span class="ln">71</span><span class="lc"><span class="s-pp">#endif</span></span></div>
+<div class="code-line"><span class="ln">72</span><span class="lc"><span class="s-pp">#<span class="s-kw">if</span></span> FEATURE_MEMORY</span></div>
+<div class="code-line"><span class="ln">73</span><span class="lc">            <span class="s-kw">case</span> <span class="s-num">5</span>: <span class="s-fn">memory_add</span>(&amp;mem, lastResult); <span class="s-kw">break</span>;</span></div>
+<div class="code-line"><span class="ln">74</span><span class="lc">            <span class="s-kw">case</span> <span class="s-num">6</span>: <span class="s-fn">memory_recall</span>(&amp;mem); <span class="s-kw">break</span>;</span></div>
+<div class="code-line"><span class="ln">75</span><span class="lc">            <span class="s-kw">case</span> <span class="s-num">7</span>: <span class="s-fn">memory_clear</span>(&amp;mem); <span class="s-kw">break</span>;</span></div>
+<div class="code-line"><span class="ln">76</span><span class="lc"><span class="s-pp">#endif</span></span></div>
+<div class="code-line"><span class="ln">77</span><span class="lc"><span class="s-pp">#<span class="s-kw">if</span></span> FEATURE_SCI</span></div>
+<div class="code-line"><span class="ln">78</span><span class="lc">            <span class="s-kw">case</span> <span class="s-num">8</span>: {</span></div>
+<div class="code-line"><span class="ln">79</span><span class="lc">                <span class="s-fn">sci_show_menu</span>();</span></div>
+<div class="code-line"><span class="ln">80</span><span class="lc">                <span class="s-type">int</span> sub;</span></div>
+<div class="code-line"><span class="ln">81</span><span class="lc">                <span class="s-fn">printf</span>(<span class="s-str">"선택: "</span>); <span class="s-fn">scanf</span>(<span class="s-str">"%d"</span>, &amp;sub);</span></div>
+<div class="code-line"><span class="ln">82</span><span class="lc">                lastResult = <span class="s-fn">sci_execute</span>(sub);</span></div>
+<div class="code-line"><span class="ln">83</span><span class="lc">                <span class="s-kw">break</span>;</span></div>
+<div class="code-line"><span class="ln">84</span><span class="lc">            }</span></div>
+<div class="code-line"><span class="ln">85</span><span class="lc"><span class="s-pp">#endif</span></span></div>
+<div class="code-line"><span class="ln">86</span><span class="lc">            <span class="s-kw">case</span> <span class="s-num">0</span>: <span class="s-kw">break</span>;</span></div>
+<div class="code-line"><span class="ln">87</span><span class="lc">            <span class="s-kw">default</span>: <span class="s-fn">printf</span>(<span class="s-str">"잘못된 선택\n"</span>); <span class="s-kw">break</span>;</span></div>
+<div class="code-line"><span class="ln">88</span><span class="lc">        }</span></div>
+<div class="code-line"><span class="ln">89</span><span class="lc">    } <span class="s-kw">while</span> (choice != <span class="s-num">0</span>);</span></div>
+<div class="code-line"><span class="ln">90</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">91</span><span class="lc"><span class="s-pp">#<span class="s-kw">if</span></span> FEATURE_HISTORY</span></div>
+<div class="code-line"><span class="ln">92</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"\n--- 최종 이력 ---\n"</span>);</span></div>
+<div class="code-line"><span class="ln">93</span><span class="lc">    <span class="s-fn">history_print</span>(hist);</span></div>
+<div class="code-line"><span class="ln">94</span><span class="lc">    <span class="s-fn">history_destroy</span>(hist);</span></div>
+<div class="code-line"><span class="ln">95</span><span class="lc"><span class="s-pp">#endif</span></span></div>
+<div class="code-line"><span class="ln">96</span><span class="lc">    <span class="s-fn">LOG</span>(<span class="s-str">"프로그램 종료"</span>);</span></div>
+<div class="code-line"><span class="ln">97</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"종료\n"</span>);</span></div>
+<div class="code-line"><span class="ln">98</span><span class="lc">    <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">99</span><span class="lc">}</span></div>
+</div>
+</div>
+<div class="debug-section"><div class="debug-bar">DEBUG LAB — 에러를 찾으시오</div><div class="debug-body">
+
+<p style="margin:14px 0 0; font-size:14px;"><b>에러:</b> </p>
+<p style="font-size:14px;"><b>수정:</b> </p>
+</div></div>
+<div class="debug-section"><div class="debug-bar">DEBUG LAB — 에러를 찾으시오</div><div class="debug-body">
+
+<p style="margin:14px 0 0; font-size:14px;"><b>에러:</b> </p>
+<p style="font-size:14px;"><b>수정:</b> </p>
+</div></div>
+<div class="note-box"><span class="note-label"></span>
+<div style="font-weight:700;margin-bottom:6px;color:#1a2e4a">Layer 10 종합 프로젝트 완성</div>이 프로젝트에서 Layer 10의 모든 핵심 개념을 활용했습니다.<br><br>malloc/free/calloc/realloc — 이력 배열을 동적으로 할당, 확장, 해제<br>#define 매크로 — 상수(APP_NAME), 함수(ABS, LOG), 설정값(INIT_HISTORY)<br>조건부 컴파일 — #if FEATURE_SCI, #ifdef DEBUG로 기능과 빌드 모드 제어<br>헤더 가드 — #ifndef CONFIG_H / #define CONFIG_H / #endif<br>멀티파일 — config.h(설정) + calc.h/calc.c(계산) + sci.h/sci.c(공학) + main.c(메인)<br>static/extern — static 함수/변수로 모듈 내부 구현 은닉</div>
+<h2 class="section-title">예제</h2>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 1</span><p style="margin:0;font-size:14px">두 수와 연산자를 입력받아 사칙연산 결과를 출력하는 함수를 작성하십시오.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 2</span><p style="margin:0;font-size:14px">Record 구조체와 History 구조체를 정의하고 create/destroy 함수를 작성하십시오.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 3</span><p style="margin:0;font-size:14px">계산 결과를 이력 배열에 추가하고 전체 이력을 출력하십시오.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 4</span><p style="margin:0;font-size:14px">calc.h와 calc.c를 분리하여 헤더 가드를 적용하십시오.<br>main.c에서 #include "calc.h"로 사용하십시오.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 5</span><p style="margin:0;font-size:14px">M+, MR, MC 메모리 기능을 구현하십시오.<br>(M+: 값 누적, MR: 저장값 출력, MC: 초기화)</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 6</span><p style="margin:0;font-size:14px">config.h를 만들어 FEATURE_MEMORY를 0으로 설정하면<br>메모리 기능이 비활성화되도록 구현하십시오.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 7</span><p style="margin:0;font-size:14px">sci.h/sci.c로 공학 함수 모듈을 분리하십시오.<br>static 변수로 호출 횟수를 추적하십시오.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 8</span><p style="margin:0;font-size:14px">#ifdef DEBUG와 LOG 매크로를 구현하고<br>gcc -DDEBUG로 디버그 모드를 활성화하십시오.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 9</span><p style="margin:0;font-size:14px">이력의 통계(총 계산 수, 결과 평균, 최대, 최소)를 출력하는<br>history_stats 함수를 작성하십시오.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 10</span><p style="margin:0;font-size:14px">config.h, calc.h/calc.c, sci.h/sci.c, main.c로 구성된<br>완전한 모듈형 계산기를 작성하십시오.<br>Makefile 또는 컴파일 명령을 함께 제시하십시오.</p></div>
+<h2 class="section-title">대회 기출</h2>
+<h2 class="section-title">요약</h2>
+<div class="warmup-box"><div class="warmup-title">핵심 정리</div><div class="wq"><b>1.</b> 종합 활용: malloc/free + #define + #ifdef + 헤더 가드 + 멀티파일 + static/extern</div><div class="wq"><b>2.</b> 설정 분리: config.h에 상수, 토글, 매크로 집중</div><div class="wq"><b>3.</b> 모듈 분리: calc.h/calc.c (계산) + sci.h/sci.c (공학) + main.c (메인)</div><div class="wq"><b>4.</b> 정보 은닉: static 함수/변수로 내부 구현 감추기</div><div class="wq"><b>5.</b> 기능 토글: #if FEATURE_SCI / #if FEATURE_MEMORY</div><div class="wq"><b>6.</b> 디버그 모드: gcc -DDEBUG (소스 수정 없이 전환)</div></div>
+<h2 class="section-title">다음 레이어로</h2>
+<div class="note-box"><span class="note-label"></span>
+<div style="font-weight:700;margin-bottom:6px;color:#1a2e4a">다음: Layer 11 — 파일 입출력</div>Layer 10 '동적 메모리와 전처리기'를 완성했습니다! malloc/free로 동적 메모리를 다루고, 매크로와 조건부 컴파일로 설정을 관리하며, 멀티파일 프로그래밍과 static/extern으로 모듈을 분리하는 방법을 모두 마스터했습니다. 다음 Layer에서는 파일 입출력을 배워 데이터를 파일에 저장하고 불러오는 방법을 익힙니다.</div>
+
+    <span class="page-num">2</span>
+  </div>
+</div>
+<div class="page">
+  <div class="content-page">
+    <div class="unit-header-bar">
+      <span class="unit-tag">UNIT 14</span>
+      <span class="unit-title-sm">3과목 연결</span>
+    </div>
+<h2 class="section-title">10축 매핑</h2>
+<div class="note-box"><span class="note-label"></span>
+<div style="font-weight:700;margin-bottom:6px;color:#1a2e4a">이 유닛에서 키운 역량</div>C언어 ★★★★★ — malloc/free, 매크로, 조건부 컴파일, 헤더 가드, 멀티파일, static/extern을 종합 활용하여 모듈형 프로그램을 완성했습니다.<br>컴퓨팅사고력 ★★★★★ — 설정/인터페이스/구현/메인의 4계층 모듈 분리 설계를 체계적으로 경험했습니다.<br>디버깅 ★★★★★ — #ifdef DEBUG와 LOG 매크로로 빌드 모드별 디버깅, 메모리 해제 순서 관리를 실습했습니다.<br>KOI ★★★★★ — 모듈 분리와 동적 메모리 관리는 대규모 프로그램의 필수 역량입니다.</div>
+
+    <span class="page-num">3</span>
+  </div>
+</div>
+<div class="page contest-page-wrap">
+  <div class="chapter-page">
+    <div class="chapter-sidebar"></div>
+    <div class="chapter-accent-bar"></div>
+    <div style="flex:1; min-width:0; padding:50px 50px 40px 45px; position:relative;">
+      <div class="problems-chapter-ref">Chapter 14: 모듈형 계산기</div>
+      <h2 class="problems-title">대회 문제 (Online Judge)</h2>
+      <p style="font-size:14px; color:#6b7280; margin:-8px 0 24px;">실제 온라인 저지에 출제된 문제입니다. 아래에 코드를 작성한 뒤, 사이트에 제출하여 채점하십시오.</p>
+
+        <div class="contest-card">
+          <div class="contest-header">
+            <div class="contest-num-source">
+              <span class="contest-num">1번</span>
+              <span class="contest-source">백준 10828</span>
+            </div>
+            <span class="diff diff-mid">대회</span>
+          </div>
+          <div class="contest-body">
+            <p class="contest-question">정수를 저장하는 스택을 구현하십시오.</p>
+            
+            <div class="contest-write-area">
+              <div class="contest-write-label">코드 작성</div>
+              <textarea class="contest-textarea" rows="12" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="contest-card">
+          <div class="contest-header">
+            <div class="contest-num-source">
+              <span class="contest-num">2번</span>
+              <span class="contest-source">백준 10845</span>
+            </div>
+            <span class="diff diff-mid">대회</span>
+          </div>
+          <div class="contest-body">
+            <p class="contest-question">정수를 저장하는 큐를 구현하십시오.</p>
+            
+            <div class="contest-write-area">
+              <div class="contest-write-label">코드 작성</div>
+              <textarea class="contest-textarea" rows="12" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="contest-card">
+          <div class="contest-header">
+            <div class="contest-num-source">
+              <span class="contest-num">3번</span>
+              <span class="contest-source">백준 10866</span>
+            </div>
+            <span class="diff diff-mid">대회</span>
+          </div>
+          <div class="contest-body">
+            <p class="contest-question">정수를 저장하는 덱을 구현하십시오.</p>
+            
+            <div class="contest-write-area">
+              <div class="contest-write-label">코드 작성</div>
+              <textarea class="contest-textarea" rows="12" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="contest-card">
+          <div class="contest-header">
+            <div class="contest-num-source">
+              <span class="contest-num">4번</span>
+              <span class="contest-source">백준 9012</span>
+            </div>
+            <span class="diff diff-mid">대회</span>
+          </div>
+          <div class="contest-body">
+            <p class="contest-question">괄호 문자열이 올바른지 판별하십시오.</p>
+            
+            <div class="contest-write-area">
+              <div class="contest-write-label">코드 작성</div>
+              <textarea class="contest-textarea" rows="12" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="contest-card">
+          <div class="contest-header">
+            <div class="contest-num-source">
+              <span class="contest-num">5번</span>
+              <span class="contest-source">백준 4949</span>
+            </div>
+            <span class="diff diff-mid">대회</span>
+          </div>
+          <div class="contest-body">
+            <p class="contest-question">소괄호와 대괄호가 균형잡혀 있는지 판별하십시오.</p>
+            
+            <div class="contest-write-area">
+              <div class="contest-write-label">코드 작성</div>
+              <textarea class="contest-textarea" rows="12" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="contest-card">
+          <div class="contest-header">
+            <div class="contest-num-source">
+              <span class="contest-num">6번</span>
+              <span class="contest-source">백준 1158</span>
+            </div>
+            <span class="diff diff-mid">대회</span>
+          </div>
+          <div class="contest-body">
+            <p class="contest-question">요세푸스 순열을 구하십시오.</p>
+            
+            <div class="contest-write-area">
+              <div class="contest-write-label">코드 작성</div>
+              <textarea class="contest-textarea" rows="12" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="contest-card">
+          <div class="contest-header">
+            <div class="contest-num-source">
+              <span class="contest-num">7번</span>
+              <span class="contest-source">백준 1874</span>
+            </div>
+            <span class="diff diff-mid">대회</span>
+          </div>
+          <div class="contest-body">
+            <p class="contest-question">스택을 이용하여 수열을 만들 수 있는지 판별하십시오.</p>
+            
+            <div class="contest-write-area">
+              <div class="contest-write-label">코드 작성</div>
+              <textarea class="contest-textarea" rows="12" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="contest-card">
+          <div class="contest-header">
+            <div class="contest-num-source">
+              <span class="contest-num">8번</span>
+              <span class="contest-source">백준 10799</span>
+            </div>
+            <span class="diff diff-mid">대회</span>
+          </div>
+          <div class="contest-body">
+            <p class="contest-question">레이저로 쇠막대기를 자를 때 조각의 수를 구하십시오.</p>
+            
+            <div class="contest-write-area">
+              <div class="contest-write-label">코드 작성</div>
+              <textarea class="contest-textarea" rows="12" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="contest-card">
+          <div class="contest-header">
+            <div class="contest-num-source">
+              <span class="contest-num">9번</span>
+              <span class="contest-source">백준 3986</span>
+            </div>
+            <span class="diff diff-mid">대회</span>
+          </div>
+          <div class="contest-body">
+            <p class="contest-question">좋은 단어인지 스택으로 판별하십시오.</p>
+            
+            <div class="contest-write-area">
+              <div class="contest-write-label">코드 작성</div>
+              <textarea class="contest-textarea" rows="12" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="contest-card">
+          <div class="contest-header">
+            <div class="contest-num-source">
+              <span class="contest-num">10번</span>
+              <span class="contest-source">백준 2346</span>
+            </div>
+            <span class="diff diff-mid">대회</span>
+          </div>
+          <div class="contest-body">
+            <p class="contest-question">풍선을 터뜨리는 순서를 구하십시오.</p>
+            
+            <div class="contest-write-area">
+              <div class="contest-write-label">코드 작성</div>
+              <textarea class="contest-textarea" rows="12" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+            </div>
+          </div>
+        </div>
+      <span class="page-num">4</span>
+    </div>
+  </div>
+</div>
+</body>
+</html>

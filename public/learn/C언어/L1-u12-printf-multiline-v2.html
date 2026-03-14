@@ -1,0 +1,1893 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>코딩쏙 교재 — 여러 줄 출력과 printf 기초 — 출력의 원리</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+
+  :root {
+    --navy: #1a2e4a;
+    --navy-mid: #2c4a6e;
+    --navy-light: #3d6590;
+    --orange: #e07830;
+    --orange-light: #f5e6d8;
+    --white: #ffffff;
+    --bg: #f7f8fa;
+    --bg-warm: #faf9f7;
+    --gray-50: #f9fafb;
+    --gray-100: #f3f4f6;
+    --gray-200: #e5e7eb;
+    --gray-300: #d1d5db;
+    --gray-400: #9ca3af;
+    --gray-500: #6b7280;
+    --gray-600: #4b5563;
+    --gray-700: #374151;
+    --gray-800: #1f2937;
+    --text: #2d3748;
+    --green: #16a34a;
+    --green-bg: #dcfce7;
+    --red: #dc2626;
+    --red-bg: #fee2e2;
+    --blue: #2563eb;
+    --blue-bg: #dbeafe;
+    --yellow-bg: #fef9c3;
+    --font: 'Noto Sans KR', sans-serif;
+    --mono: 'JetBrains Mono', 'Consolas', monospace;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: var(--font); background: #e8eaed; font-size: 15px; }
+
+  /* ========== PAGE ========== */
+  .page {
+    width: 210mm;
+    min-height: 295mm;
+    margin: 24px auto;
+    background: var(--white);
+    box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* ========== PAGE 1: CHAPTER START ========== */
+  .chapter-page {
+    display: flex;
+    min-height: 295mm;
+  }
+
+  .chapter-sidebar {
+    width: 10px;
+    background: var(--navy);
+    flex-shrink: 0;
+  }
+
+  .chapter-accent-bar {
+    width: 7px;
+    background: var(--orange);
+    flex-shrink: 0;
+  }
+
+  .chapter-body {
+    flex: 1;
+    padding: 70px 65px 50px 55px;
+    position: relative;
+  }
+
+  .chapter-watermark {
+    position: absolute;
+    top: -10px;
+    right: -15px;
+    font-size: 280px;
+    font-weight: 900;
+    color: rgba(180,195,212,0.35);
+    line-height: 1;
+    pointer-events: none;
+    letter-spacing: -10px;
+  }
+
+  .chapter-label {
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--navy-mid);
+    letter-spacing: 2px;
+    margin-bottom: 4px;
+  }
+
+  .chapter-title {
+    font-size: 44px;
+    font-weight: 900;
+    color: var(--navy);
+    line-height: 1.15;
+    margin-bottom: 12px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .chapter-sub {
+    font-size: 16px;
+    color: var(--gray-500);
+    font-weight: 400;
+    margin-bottom: 20px;
+    padding-bottom: 28px;
+    border-bottom: 1px solid var(--gray-200);
+  }
+
+  /* Learning objectives */
+  .obj-title {
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--navy);
+    margin-bottom: 16px;
+    margin-top: 32px;
+  }
+
+  .obj-list {
+    list-style: none;
+    margin-bottom: 40px;
+  }
+
+  .obj-list li {
+    padding: 5px 0 5px 24px;
+    position: relative;
+    font-size: 15px;
+    color: var(--gray-700);
+    line-height: 1.6;
+  }
+
+  .obj-list li::before {
+    content: '•';
+    position: absolute;
+    left: 8px;
+    color: var(--navy-mid);
+    font-weight: 700;
+  }
+
+  /* Prerequisites flow */
+  .prereq-title {
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--navy);
+    margin-bottom: 18px;
+  }
+
+  .prereq-flow {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    margin-bottom: 44px;
+  }
+
+  .prereq-item {
+    padding: 9px 22px;
+    border: 1.5px solid var(--gray-300);
+    border-radius: 50px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--gray-600);
+    background: var(--white);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+  }
+
+  .prereq-item.current {
+    border-color: var(--navy);
+    color: var(--navy);
+    font-weight: 700;
+    background: #edf2f7;
+    box-shadow: 0 2px 6px rgba(26,46,74,0.12);
+  }
+
+  .prereq-arrow {
+    width: 36px;
+    text-align: center;
+    color: var(--gray-300);
+    font-size: 18px;
+    font-weight: 300;
+  }
+
+  /* Predict box */
+  .predict-box {
+    background: var(--gray-50);
+    border: 1.5px solid var(--gray-200);
+    border-radius: 12px;
+    padding: 24px 28px;
+  }
+
+  .predict-label {
+    display: inline-block;
+    background: var(--orange);
+    color: var(--white);
+    font-size: 12px;
+    font-weight: 600;
+    padding: 3px 12px;
+    border-radius: 4px;
+    margin-bottom: 14px;
+    letter-spacing: 0.5px;
+  }
+
+  .predict-q {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--navy);
+    margin-bottom: 16px;
+  }
+
+  .predict-code {
+    background: var(--white);
+    border: 1px solid var(--gray-200);
+    border-radius: 8px;
+    padding: 14px 18px;
+    font-family: var(--mono);
+    font-size: 13px;
+    line-height: 1.65;
+    color: var(--gray-700);
+  }
+
+  /* ========== PAGE 2: CORE CONTENT ========== */
+  .content-page {
+    padding: 55px 65px;
+  }
+
+  .unit-header-bar {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    margin-bottom: 8px;
+  }
+
+  .unit-tag {
+    font-size: 12px;
+    color: var(--orange);
+    font-weight: 600;
+    letter-spacing: 1px;
+  }
+
+  .unit-title-sm {
+    font-size: 14px;
+    color: var(--gray-400);
+    font-weight: 400;
+  }
+
+  .section-title {
+    font-size: 24px;
+    font-weight: 800;
+    color: var(--navy);
+    margin-bottom: 24px;
+    margin-top: 8px;
+    padding-left: 16px;
+    border-left: 5px solid var(--orange);
+  }
+
+  p {
+    font-size: 15.5px;
+    line-height: 1.9;
+    color: var(--text);
+    margin-bottom: 18px;
+  }
+
+  p code {
+    font-family: var(--mono);
+    font-size: 13.5px;
+    background: #f1f3f5;
+    padding: 2px 7px;
+    border-radius: 4px;
+    color: var(--navy);
+    font-weight: 500;
+  }
+
+  /* Code block */
+  .code-wrap {
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    border: 1px solid var(--gray-200);
+    margin: 22px 0;
+  }
+
+  .code-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 9px 18px;
+    background: var(--navy);
+    font-size: 12px;
+  }
+
+  .code-bar-lang {
+    font-family: var(--mono);
+    font-weight: 600;
+    color: var(--white);
+  }
+
+  .code-bar-file {
+    color: rgba(255,255,255,0.6);
+    font-weight: 400;
+  }
+
+  .code-body {
+    background: #f8f9fb;
+    padding: 20px 0;
+    font-family: var(--mono);
+    font-size: 13.5px;
+    line-height: 1.75;
+    border: 1px solid var(--gray-200);
+    border-top: none;
+    border-radius: 0 0 12px 12px;
+  }
+
+  .code-line {
+    display: flex;
+    padding: 0 20px;
+  }
+
+  .code-line:hover {
+    background: #f0f4f8;
+  }
+
+  .code-line.highlighted {
+    background: #fff8e1;
+  }
+
+  .ln {
+    width: 30px;
+    text-align: right;
+    color: #b8bfc8;
+    font-size: 12px;
+    margin-right: 18px;
+    user-select: none;
+    flex-shrink: 0;
+    padding-top: 1px;
+  }
+
+  .lc { flex: 1; }
+
+  /* syntax */
+  .s-pp { color: #8b5cf6; font-weight: 600; }
+  .s-str { color: #d97706; }
+  .s-type { color: #2563eb; font-weight: 500; }
+  .s-kw { color: #7c3aed; font-weight: 500; }
+  .s-fn { color: #059669; font-weight: 500; }
+  .s-num { color: #dc2626; }
+  .s-cm { color: #9ca3af; font-style: italic; }
+
+  /* Output block */
+  .output-wrap {
+    border-radius: 10px;
+    overflow: hidden;
+    margin: 10px 0 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    border: 1px solid #d1d5db;
+  }
+
+  .output-bar {
+    padding: 9px 18px;
+    background: #374151;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--white);
+    letter-spacing: 0.5px;
+  }
+
+  .output-body {
+    padding: 16px 20px;
+    font-family: var(--mono);
+    font-size: 13.5px;
+    line-height: 1.7;
+    color: var(--gray-800);
+    background: #f1f5f9;
+    border: 1px solid var(--gray-200);
+    border-top: none;
+    border-radius: 0 0 10px 10px;
+  }
+
+  /* Callout */
+  .tip {
+    margin: 28px 0;
+    padding: 18px 24px;
+    background: #dbeafe;
+    border-left: 5px solid #2563eb;
+    border-radius: 0 12px 12px 0;
+    font-size: 14.5px;
+    line-height: 1.8;
+    color: var(--text);
+  }
+
+  .tip-label {
+    font-weight: 700;
+    color: #2563eb;
+    font-size: 13px;
+    display: block;
+    margin-bottom: 4px;
+  }
+
+  .warn {
+    margin: 28px 0;
+    padding: 18px 24px;
+    background: #fef3c7;
+    border-left: 5px solid #d97706;
+    border-radius: 0 12px 12px 0;
+    font-size: 14.5px;
+    line-height: 1.8;
+  }
+
+  .warn-label {
+    font-weight: 700;
+    color: #d97706;
+    font-size: 13px;
+    display: block;
+    margin-bottom: 4px;
+  }
+
+  .note-box {
+    margin: 28px 0;
+    padding: 18px 24px;
+    background: #e2e8f0;
+    border-left: 5px solid #64748b;
+    border-radius: 0 12px 12px 0;
+    font-size: 14.5px;
+    line-height: 1.8;
+  }
+
+  .note-label {
+    font-weight: 700;
+    color: var(--gray-600);
+    font-size: 13px;
+    display: block;
+    margin-bottom: 4px;
+  }
+
+  /* Trace table */
+  table.trace {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    margin: 28px 0;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+    font-size: 14px;
+  }
+
+  table.trace th {
+    background: var(--navy);
+    color: var(--white);
+    padding: 10px 16px;
+    text-align: left;
+    font-weight: 500;
+    font-size: 13px;
+  }
+
+  table.trace td {
+    padding: 10px 16px;
+    border-bottom: 1px solid var(--gray-200);
+    color: var(--gray-700);
+  }
+
+  table.trace tr:nth-child(even) td { background: var(--gray-50); }
+  table.trace tr:last-child td { border-bottom: none; }
+
+  table.trace td code {
+    font-family: var(--mono);
+    font-size: 12.5px;
+    background: #eef1f5;
+    padding: 2px 6px;
+    border-radius: 4px;
+    color: var(--navy);
+  }
+
+  /* ========== PAGE 3: PROBLEMS ========== */
+  .problems-header {
+    margin-bottom: 8px;
+  }
+
+  .problems-chapter-ref {
+    font-size: 13px;
+    color: var(--gray-500);
+    margin-bottom: 4px;
+  }
+
+  .problems-title {
+    font-size: 28px;
+    font-weight: 800;
+    color: var(--navy);
+    margin-bottom: 24px;
+  }
+
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 16px;
+  }
+
+  .prob-card {
+    background: var(--white);
+    border: 1px solid var(--gray-200);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 3px 15px rgba(0,0,0,0.06);
+  }
+
+  .prob-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 16px;
+    background: var(--navy);
+  }
+
+  .prob-num {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--white);
+  }
+
+  .diff {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    font-size: 12px;
+    font-weight: 800;
+  }
+
+  .diff-basic { background: #22c55e; color: white; }
+  .diff-mid { background: #f59e0b; color: white; }
+  .diff-hard { background: #ef4444; color: white; }
+
+  .prob-desc {
+    font-size: 13.5px;
+    line-height: 1.65;
+    color: var(--gray-600);
+    margin-bottom: 10px;
+    padding: 14px 16px 0;
+  }
+
+  .prob-code {
+    background: var(--gray-50);
+    border: 1px solid var(--gray-200);
+    border-radius: 6px;
+    padding: 10px 14px;
+    margin: 0 16px 16px;
+    font-family: var(--mono);
+    font-size: 12.5px;
+    line-height: 1.55;
+    color: var(--gray-600);
+  }
+
+  /* Competition section */
+  .comp-section {
+    margin-top: 32px;
+    padding-top: 24px;
+    border-top: 2px solid var(--navy);
+  }
+
+  .comp-title {
+    font-size: 22px;
+    font-weight: 800;
+    color: var(--navy);
+    margin-bottom: 20px;
+  }
+
+  .comp-card {
+    background: var(--white);
+    border: 1.5px solid var(--gray-200);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 18px rgba(0,0,0,0.06);
+  }
+
+  .comp-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 16px;
+    background: #0f766e;
+  }
+
+  .comp-header .comp-name {
+    color: var(--white);
+    font-size: 15px;
+    font-weight: 700;
+    margin: 0;
+  }
+
+  .comp-inner {
+    padding: 14px 18px 18px;
+  }
+
+  .comp-badge {
+    display: inline-block;
+    padding: 3px 12px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 700;
+  }
+
+  .badge-bj { background: #93c5fd; color: #1e3a5f; }
+  .badge-cu { background: #c4b5fd; color: #3b1f7e; }
+  .badge-pg { background: #7dd3fc; color: #0c4a6e; }
+
+  .comp-name {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--navy);
+    margin-bottom: 6px;
+  }
+
+  .comp-desc {
+    font-size: 14px;
+    color: var(--gray-600);
+    line-height: 1.7;
+    margin-bottom: 14px;
+  }
+
+  .io-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+
+  .io-card {
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid var(--gray-200);
+  }
+
+  .io-h {
+    padding: 6px 14px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--gray-600);
+    background: #e2e8f0;
+  }
+
+  .io-c {
+    padding: 10px 14px;
+    font-family: var(--mono);
+    font-size: 13px;
+    line-height: 1.5;
+    background: var(--white);
+  }
+
+  /* ========== DEBUG LAB ========== */
+  .debug-section {
+    margin: 24px 0;
+    border: 2px solid var(--red);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+
+  .debug-bar {
+    background: var(--red);
+    color: var(--white);
+    padding: 10px 20px;
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 1px;
+  }
+
+  .debug-body {
+    padding: 20px;
+    background: #fef2f2;
+  }
+
+  /* 10축 connection */
+  .connect-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 16px;
+    margin: 28px 0;
+  }
+
+  .connect-card {
+    border-radius: 12px;
+    padding: 20px;
+    text-align: center;
+    border: 1px solid var(--gray-200);
+    box-shadow: 0 3px 14px rgba(0,0,0,0.05);
+  }
+
+  .connect-card h5 {
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 8px;
+  }
+
+  .connect-card p {
+    font-size: 13px;
+    margin: 0;
+    color: var(--gray-600);
+    line-height: 1.6;
+  }
+
+  .cc1 { border-top: 3px solid #8b5cf6; }
+  .cc1 h5 { color: #8b5cf6; }
+  .cc2 { border-top: 3px solid var(--green); }
+  .cc2 h5 { color: var(--green); }
+  .cc3 { border-top: 3px solid var(--navy); }
+  .cc3 h5 { color: var(--navy); }
+
+  /* PAGE NUMBER */
+  .page-num {
+    position: absolute;
+    bottom: 20px;
+    right: 30px;
+    font-size: 12px;
+    color: var(--gray-400);
+  }
+
+  /* WARMUP */
+  .warmup-box {
+    background: #e0e7f1;
+    border-radius: 12px;
+    padding: 24px 28px;
+    margin: 28px 0;
+    border: 2px solid #c7d2e0;
+  }
+
+  .warmup-title {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--navy);
+    margin-bottom: 14px;
+  }
+
+  .wq {
+    padding: 9px 16px;
+    background: var(--white);
+    border-radius: 8px;
+    margin-bottom: 8px;
+    font-size: 14px;
+    border: 1px solid var(--gray-200);
+    color: var(--gray-700);
+  }
+
+  .wq b { color: var(--navy); margin-right: 6px; }
+  .wq .hint { color: var(--gray-400); font-size: 13px; }
+
+  /* ===== CONTEST PROBLEMS PAGE ===== */
+  .contest-page-wrap .chapter-page {
+    min-height: auto;
+  }
+
+  .contest-page-wrap .chapter-page > div:last-child {
+    min-width: 0;
+    overflow-wrap: break-word;
+    word-break: break-word;
+  }
+
+  .contest-card {
+    background: white;
+    border: 1.5px solid var(--gray-200);
+    border-radius: 12px;
+    margin-bottom: 28px;
+    overflow: hidden;
+    break-inside: avoid;
+  }
+
+  .contest-header {
+    background: var(--navy);
+    color: white;
+    padding: 14px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .contest-num-source {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .contest-num {
+    font-weight: 700;
+    font-size: 16px;
+  }
+
+  .contest-source {
+    background: rgba(255,255,255,0.15);
+    padding: 3px 10px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 500;
+  }
+
+  .contest-body {
+    padding: 20px 24px 24px;
+  }
+
+  .contest-question {
+    font-size: 15px;
+    line-height: 1.7;
+    color: var(--text);
+    margin: 0 0 16px;
+    word-break: break-word;
+    overflow-wrap: break-word;
+  }
+
+  .contest-expected {
+    background: #1e293b;
+    border-radius: 8px;
+    overflow: hidden;
+    margin-bottom: 20px;
+  }
+
+  .contest-expected-label {
+    background: #334155;
+    color: #94a3b8;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 6px 14px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .contest-expected-body {
+    color: #e2e8f0;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    line-height: 1.6;
+    padding: 12px 16px;
+    margin: 0;
+    white-space: pre;
+  }
+
+  .contest-write-area {
+    border: 2px dashed var(--gray-300);
+    border-radius: 10px;
+    overflow: hidden;
+    transition: border-color 0.2s;
+  }
+
+  .contest-write-area:focus-within {
+    border-color: var(--orange);
+    border-style: solid;
+  }
+
+  .contest-write-label {
+    background: var(--bg);
+    color: var(--gray-500);
+    font-size: 12px;
+    font-weight: 600;
+    padding: 8px 14px;
+    border-bottom: 1px solid var(--gray-200);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .contest-textarea {
+    width: 100%;
+    min-height: 200px;
+    padding: 16px 18px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    line-height: 1.7;
+    color: var(--text);
+    background: #fafbfc;
+    border: none;
+    outline: none;
+    resize: vertical;
+    tab-size: 4;
+    box-sizing: border-box;
+  }
+
+  .contest-textarea::placeholder {
+    color: var(--gray-300);
+  }
+
+  @media print {
+    body { background: white; }
+    .page { box-shadow: none; margin: 0; page-break-after: always; }
+    .contest-textarea { border: 1px solid var(--gray-300); min-height: 180px; }
+  }
+
+</style>
+</head>
+<body>
+
+<div class="page">
+  <div class="chapter-page">
+    <div class="chapter-sidebar"></div>
+    <div class="chapter-accent-bar"></div>
+    <div class="chapter-body">
+      <div class="chapter-watermark">12</div>
+      <div class="chapter-label">Chapter 12</div>
+      <h1 class="chapter-title">여러 줄 출력과 printf 기초</h1>
+      <p class="chapter-sub">printf의 동작 원리를 깊이 이해하고, 여러 줄 출력 패턴과 문자열 연결 규칙을 체계적으로 학습합니다.</p>
+
+      <h3 class="obj-title">이 유닛에서 배우는 것</h3>
+      <ul class="obj-list">
+        <li>printf가 버퍼에 쓰고 \n에서 출력하는 원리를 설명할 수 있습니다.</li>
+        <li>printf 하나로 여러 줄 출력, 여러 printf로 한 줄 출력하는 패턴을 자유롭게 사용합니다.</li>
+        <li>puts 함수와 printf의 차이를 이해합니다.</li>
+        <li>긴 문자열을 여러 줄로 나누어 작성하는 방법을 알고 있습니다.</li>
+      </ul>
+
+      <h3 class="prereq-title">선수 학습</h3>
+      <div class="prereq-flow">
+        <div class="prereq-item">Unit 03: printf와 이스케이프 시퀀스 기본 사용</div><div class="prereq-arrow">→</div>
+        <div class="prereq-item current">Unit 04: #include <stdio.h>와 프로그램 뼈대</div>
+      </div>
+
+      <div class="predict-box">
+        <div class="predict-label">예측해 봅시다</div>
+        <div class="predict-q">아래 코드는 몇 줄을 출력할까요? 각 줄의 내용은 무엇일까요?</div>
+        <div class="predict-code">#include &lt;stdio.h&gt;<br>
+<br>
+int main(void) {<br>
+    printf("AAA");<br>
+    printf("BBB\n");<br>
+    printf("CCC\nDDD\n");<br>
+    printf("EEE\nFFF");<br>
+    printf("GGG\n");<br>
+    return 0;<br>
+}</div>
+      </div>
+
+      <span class="page-num">1</span>
+    </div>
+  </div>
+</div>
+<div class="page">
+  <div class="content-page">
+    <div class="unit-header-bar">
+      <span class="unit-tag">UNIT 12</span>
+      <span class="unit-title-sm">여러 줄 출력과 printf 기초</span>
+    </div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 1</span><p style="margin:0;font-size:14px">printf("A"); printf("B\n"); 의 출력 결과를 적으십시오.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 2</span><p style="margin:0;font-size:14px">\n 없이 printf를 세 번 호출하면 출력이 어떻게 됩니까?</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 3</span><p style="margin:0;font-size:14px">printf 하나로 두 줄을 출력할 수 있습니까?</p></div>
+<h2 class="section-title">예측</h2>
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span><span class="code-bar-file">predict.c</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;stdio.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">main</span>(<span class="s-type">void</span>) {</span></div>
+<div class="code-line highlighted"><span class="ln">4</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"AAA"</span>);</span></div>
+<div class="code-line highlighted"><span class="ln">5</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"BBB\n"</span>);</span></div>
+<div class="code-line highlighted"><span class="ln">6</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"CCC\nDDD\n"</span>);</span></div>
+<div class="code-line highlighted"><span class="ln">7</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"EEE\nFFF"</span>);</span></div>
+<div class="code-line highlighted"><span class="ln">8</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"GGG\n"</span>);</span></div>
+<div class="code-line"><span class="ln">9</span><span class="lc">    <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">10</span><span class="lc">}</span></div>
+</div>
+</div>
+<h2 class="section-title">printf의 동작 원리</h2>
+<p>printf는 문자를 화면에 직접 쓰는 것이 아닙니다. 먼저 출력 버퍼(buffer)에 문자를 저장합니다. 버퍼가 줄바꿈(\n)을 만나거나, 프로그램이 종료되면 버퍼의 내용이 화면에 출력됩니다.</p>
+<div style="margin:22px 0"><div style="display:flex;align-items:flex-start;gap:14px;margin-bottom:8px">
+<div style="width:32px;height:32px;background:#1a2e4a;color:white;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;flex-shrink:0">1</div>
+<div><div style="font-size:15px;font-weight:700;color:#1a2e4a;margin-bottom:2px">1. printf("AB");</div><div style="font-size:14px;color:#6b7280;line-height:1.6">버퍼: [A][B] — 아직 화면에 출력 안 됨</div></div></div><div style="display:flex;align-items:flex-start;gap:14px;margin-bottom:8px">
+<div style="width:32px;height:32px;background:#1a2e4a;color:white;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;flex-shrink:0">2</div>
+<div><div style="font-size:15px;font-weight:700;color:#1a2e4a;margin-bottom:2px">2. printf("CD\n");</div><div style="font-size:14px;color:#6b7280;line-height:1.6">버퍼: [A][B][C][D][\n] → \n을 만나 화면에 출력: ABCD</div></div></div><div style="display:flex;align-items:flex-start;gap:14px;margin-bottom:8px">
+<div style="width:32px;height:32px;background:#1a2e4a;color:white;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;flex-shrink:0">3</div>
+<div><div style="font-size:15px;font-weight:700;color:#1a2e4a;margin-bottom:2px">3. printf("EF");</div><div style="font-size:14px;color:#6b7280;line-height:1.6">버퍼: [E][F] — 새 버퍼에 저장, 아직 출력 안 됨</div></div></div><div style="display:flex;align-items:flex-start;gap:14px;margin-bottom:8px">
+<div style="width:32px;height:32px;background:#1a2e4a;color:white;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;flex-shrink:0">4</div>
+<div><div style="font-size:15px;font-weight:700;color:#1a2e4a;margin-bottom:2px">4. 프로그램 종료</div><div style="font-size:14px;color:#6b7280;line-height:1.6">버퍼에 남은 [E][F]가 화면에 출력됨</div></div></div></div>
+<div class="note-box"><span class="note-label">핵심 원리</span>
+<b>printf는 버퍼에 쓴다.</b><br><br>- \n을 만나면 버퍼가 비워지고(flush) 화면에 출력됩니다.<br>- \n이 없으면 버퍼에 쌓여 있다가 프로그램 종료 시 출력됩니다.<br>- 따라서 여러 printf의 문자가 하나의 줄에 연결되어 출력될 수 있습니다.</div>
+<div class="tip"><span class="tip-label">TIP: 버퍼 이해는 나중에</span>
+버퍼의 정확한 동작 방식은 나중에 파일 입출력을 배울 때 깊이 다룹니다. 지금은 "\n이 나올 때까지 같은 줄에 이어진다"는 규칙만 기억하면 충분합니다.</div>
+<h2 class="section-title">패턴 1 — 여러 printf, 한 줄 출력</h2>
+<p>\n 없이 printf를 여러 번 호출하면 모든 내용이 한 줄에 이어집니다.</p>
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span><span class="code-bar-file">one_line.c</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;stdio.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">main</span>(<span class="s-type">void</span>) {</span></div>
+<div class="code-line highlighted"><span class="ln">4</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"Hello"</span>);</span></div>
+<div class="code-line highlighted"><span class="ln">5</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">" "</span>);</span></div>
+<div class="code-line highlighted"><span class="ln">6</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"World"</span>);</span></div>
+<div class="code-line highlighted"><span class="ln">7</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"!\n"</span>);</span></div>
+<div class="code-line"><span class="ln">8</span><span class="lc">    <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">9</span><span class="lc">}</span></div>
+</div>
+</div>
+<div class="output-wrap"><div class="output-bar">실행 결과</div><div class="output-body"></div></div>
+<p>네 번의 printf가 하나의 줄로 합쳐집니다. 마지막 printf에 \n이 있으므로 그 시점에 줄이 끝납니다.</p>
+<h2 class="section-title">패턴 2 — 한 printf, 여러 줄 출력</h2>
+<p>하나의 printf 안에 \n을 여러 개 넣으면 여러 줄을 출력할 수 있습니다.</p>
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span><span class="code-bar-file">multi_line.c</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;stdio.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">main</span>(<span class="s-type">void</span>) {</span></div>
+<div class="code-line highlighted"><span class="ln">4</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"Line 1\nLine 2\nLine 3\n"</span>);</span></div>
+<div class="code-line"><span class="ln">5</span><span class="lc">    <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">6</span><span class="lc">}</span></div>
+</div>
+</div>
+<div class="output-wrap"><div class="output-bar">실행 결과</div><div class="output-body"></div></div>
+<h2 class="section-title">패턴 3 — 빈 줄 출력</h2>
+<p>printf("\n");은 빈 줄을 출력합니다. 출력 사이에 여백을 만들 때 사용합니다.</p>
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span><span class="code-bar-file">blank_line.c</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;stdio.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">main</span>(<span class="s-type">void</span>) {</span></div>
+<div class="code-line highlighted"><span class="ln">4</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"Section 1\n"</span>);</span></div>
+<div class="code-line highlighted"><span class="ln">5</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"\n"</span>);</span></div>
+<div class="code-line highlighted"><span class="ln">6</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"Section 2\n"</span>);</span></div>
+<div class="code-line"><span class="ln">7</span><span class="lc">    <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">8</span><span class="lc">}</span></div>
+</div>
+</div>
+<div class="output-wrap"><div class="output-bar">실행 결과</div><div class="output-body"></div></div>
+<h2 class="section-title">패턴 4 — \n 위치에 따른 차이</h2>
+<p>\n의 위치에 따라 출력 형태가 달라집니다.</p>
+<table class="trace"><thead><tr><th>코드</th><th>출력</th><th>설명</th></tr></thead><tbody><tr><td>printf("AB\nCD\n");</td><td>AB(줄바꿈)CD(줄바꿈)</td><td>중간과 끝에 줄바꿈</td></tr><tr><td>printf("AB\nCD");</td><td>AB(줄바꿈)CD</td><td>중간에만 줄바꿈, 끝에는 없음</td></tr><tr><td>printf("\nAB\n");</td><td>(빈줄)AB(줄바꿈)</td><td>시작에 빈 줄, 끝에 줄바꿈</td></tr><tr><td>printf("AB"); printf("CD\n");</td><td>ABCD(줄바꿈)</td><td>두 printf가 한 줄에 이어짐</td></tr></tbody></table>
+<h2 class="section-title">예측 코드 분석</h2>
+<p>워밍업의 예측 코드를 한 줄씩 분석합니다.</p>
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span><span class="code-bar-file">predict_analysis.c</span></div>
+  <div class="code-body"><div class="code-line highlighted"><span class="ln">1</span><span class="lc"><span class="s-fn">printf</span>(<span class="s-str">"AAA"</span>);       <span class="s-cm">/* 버퍼: AAA */</span></span></div>
+<div class="code-line highlighted"><span class="ln">2</span><span class="lc"><span class="s-fn">printf</span>(<span class="s-str">"BBB\n"</span>);     <span class="s-cm">/* 버퍼: AAABBB\n → 출력: AAABBB */</span></span></div>
+<div class="code-line highlighted"><span class="ln">3</span><span class="lc"><span class="s-fn">printf</span>(<span class="s-str">"CCC\nDDD\n"</span>); <span class="s-cm">/* 출력: CCC, DDD (두 줄) */</span></span></div>
+<div class="code-line highlighted"><span class="ln">4</span><span class="lc"><span class="s-fn">printf</span>(<span class="s-str">"EEE\nFFF"</span>);  <span class="s-cm">/* 출력: EEE → 버퍼: FFF */</span></span></div>
+<div class="code-line highlighted"><span class="ln">5</span><span class="lc"><span class="s-fn">printf</span>(<span class="s-str">"GGG\n"</span>);     <span class="s-cm">/* 버퍼: FFFGGG\n → 출력: FFFGGG */</span></span></div>
+</div>
+</div>
+<div class="output-wrap"><div class="output-bar">실행 결과</div><div class="output-body"></div></div>
+<p>총 5줄이 출력됩니다. printf의 수(5개)와 출력 줄 수(5줄)가 같지만 이것은 우연입니다. 줄 수는 \n의 개수로 결정됩니다.</p>
+<div class="note-box"><span class="note-label">핵심 규칙</span>
+<b>출력 줄 수 = \n의 개수</b><br><br>printf의 호출 횟수가 아니라 \n의 개수가 출력 줄 수를 결정합니다. 위 코드에서 \n은 5개이므로 5줄이 출력됩니다.</div>
+<h2 class="section-title">puts — 자동 줄바꿈 함수</h2>
+<p>puts 함수는 문자열을 출력한 뒤 자동으로 줄바꿈을 추가합니다. stdio.h에 선언되어 있습니다.</p>
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span><span class="code-bar-file">puts_demo.c</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;stdio.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">main</span>(<span class="s-type">void</span>) {</span></div>
+<div class="code-line highlighted"><span class="ln">4</span><span class="lc">    <span class="s-fn">puts</span>(<span class="s-str">"Hello"</span>);</span></div>
+<div class="code-line highlighted"><span class="ln">5</span><span class="lc">    <span class="s-fn">puts</span>(<span class="s-str">"World"</span>);</span></div>
+<div class="code-line"><span class="ln">6</span><span class="lc">    <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">7</span><span class="lc">}</span></div>
+</div>
+</div>
+<div class="output-wrap"><div class="output-bar">실행 결과</div><div class="output-body"></div></div>
+<table class="trace"><thead><tr><th>구분</th><th>printf</th><th>puts</th></tr></thead><tbody><tr><td>줄바꿈</td><td>수동 (\n 필요)</td><td>자동 (항상 줄바꿈 추가)</td></tr><tr><td>서식 지정</td><td>%d, %s 등 사용 가능</td><td>문자열만 출력 가능</td></tr><tr><td>용도</td><td>범용 출력</td><td>단순 문자열 출력</td></tr><tr><td>예시</td><td>printf("Hi\n");</td><td>puts("Hi");</td></tr></tbody></table>
+<div class="tip"><span class="tip-label">TIP: printf vs puts</span>
+단순히 문자열 한 줄을 출력할 때는 puts가 간편합니다. 하지만 서식 지정(%d, %s 등)이 필요하거나 줄바꿈 없이 출력하려면 printf를 사용해야 합니다.<br><br>이 교재에서는 printf를 주로 사용합니다.</div>
+<h2 class="section-title">긴 문자열 나누어 쓰기</h2>
+<p>문자열이 길면 한 줄에 쓰기 어렵습니다. C에서는 인접한 문자열 리터럴이 자동으로 연결됩니다.</p>
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span><span class="code-bar-file">string_concat.c</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;stdio.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">main</span>(<span class="s-type">void</span>) {</span></div>
+<div class="code-line highlighted"><span class="ln">4</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"This is a very long "</span></span></div>
+<div class="code-line highlighted"><span class="ln">5</span><span class="lc">           <span class="s-str">"string that spans "</span></span></div>
+<div class="code-line highlighted"><span class="ln">6</span><span class="lc">           <span class="s-str">"multiple lines.\n"</span>);</span></div>
+<div class="code-line"><span class="ln">7</span><span class="lc">    <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">8</span><span class="lc">}</span></div>
+</div>
+</div>
+<div class="output-wrap"><div class="output-bar">실행 결과</div><div class="output-body"></div></div>
+<p>세 개의 문자열 리터럴이 하나로 연결됩니다. 이것은 C 언어의 공식 기능으로, 긴 문자열을 보기 좋게 나눌 때 유용합니다.</p>
+<div class="note-box"><span class="note-label">문자열 리터럴 연결</span>
+C에서 큰따옴표로 감싼 문자열이 연속으로 나오면 자동으로 하나로 연결됩니다.<br><br><code>"Hello " "World"</code> → <code>"Hello World"</code><br><br>사이에 쉼표나 +를 넣으면 안 됩니다. 그냥 나란히 쓰면 됩니다.</div>
+<h2 class="section-title">여러 줄 출력 실전 패턴</h2>
+<p>실전에서 자주 사용하는 여러 줄 출력 패턴을 정리합니다.</p>
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span><span class="code-bar-file">patterns.c</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;stdio.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">main</span>(<span class="s-type">void</span>) {</span></div>
+<div class="code-line"><span class="ln">4</span><span class="lc">    <span class="s-cm">/* 패턴 A: printf 여러 개 */</span></span></div>
+<div class="code-line highlighted"><span class="ln">5</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"==========\n"</span>);</span></div>
+<div class="code-line highlighted"><span class="ln">6</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"  Title\n"</span>);</span></div>
+<div class="code-line highlighted"><span class="ln">7</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"==========\n"</span>);</span></div>
+<div class="code-line"><span class="ln">8</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">9</span><span class="lc">    <span class="s-cm">/* 패턴 B: printf 하나에 \n 여러 개 */</span></span></div>
+<div class="code-line highlighted"><span class="ln">10</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"\nItem 1\nItem 2\nItem 3\n"</span>);</span></div>
+<div class="code-line"><span class="ln">11</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">12</span><span class="lc">    <span class="s-cm">/* 패턴 C: puts 사용 */</span></span></div>
+<div class="code-line highlighted"><span class="ln">13</span><span class="lc">    <span class="s-fn">puts</span>(<span class="s-str">"=========="</span>);</span></div>
+<div class="code-line highlighted"><span class="ln">14</span><span class="lc">    <span class="s-fn">puts</span>(<span class="s-str">"  Footer"</span>);</span></div>
+<div class="code-line highlighted"><span class="ln">15</span><span class="lc">    <span class="s-fn">puts</span>(<span class="s-str">"=========="</span>);</span></div>
+<div class="code-line"><span class="ln">16</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">17</span><span class="lc">    <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">18</span><span class="lc">}</span></div>
+</div>
+</div>
+<p>세 가지 패턴 모두 올바른 방법입니다. 상황에 따라 읽기 좋은 방법을 선택하십시오.</p>
+<h2 class="section-title">에러 체험 — \n 누락으로 붙어 출력</h2>
+<div class="debug-section"><div class="debug-bar">DEBUG LAB — 에러를 찾으시오</div><div class="debug-body">
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc"><span class="s-fn">printf</span>(<span class="s-str">"Hello"</span>);</span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc"><span class="s-fn">printf</span>(<span class="s-str">"World\n"</span>);</span></div>
+</div>
+</div>
+<p style="margin:14px 0 0; font-size:14px;"><b>에러:</b> 출력: HelloWorld — 붙어서 출력</p>
+<p style="font-size:14px;"><b>수정:</b> 출력: Hello(줄바꿈)World — 두 줄 출력</p>
+</div></div>
+<h2 class="section-title">에러 체험 — \n 과다로 빈 줄 발생</h2>
+<div class="debug-section"><div class="debug-bar">DEBUG LAB — 에러를 찾으시오</div><div class="debug-body">
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc"><span class="s-fn">printf</span>(<span class="s-str">"A\n\n"</span>);</span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc"><span class="s-fn">printf</span>(<span class="s-str">"B\n"</span>);</span></div>
+</div>
+</div>
+<p style="margin:14px 0 0; font-size:14px;"><b>에러:</b> 출력: A(빈줄)B — 의도하지 않은 빈 줄</p>
+<p style="font-size:14px;"><b>수정:</b> 출력: A(줄바꿈)B — 빈 줄 없음</p>
+</div></div>
+<h2 class="section-title">에러 체험 — 문자열 안에서 줄바꿈</h2>
+<div class="debug-section"><div class="debug-bar">DEBUG LAB — 에러를 찾으시오</div><div class="debug-body">
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc"><span class="s-fn">printf</span>("Hello</span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc">World\n");</span></div>
+</div>
+</div>
+<p style="margin:14px 0 0; font-size:14px;"><b>에러:</b> error: missing terminating " character</p>
+<p style="font-size:14px;"><b>수정:</b> 문자열 리터럴 연결로 나누어 쓰기</p>
+</div></div>
+<p>C의 문자열은 한 줄 안에서 열고 닫아야 합니다. 소스 코드의 줄바꿈으로 문자열을 나누면 에러가 발생합니다. 출력에서 줄을 바꾸려면 \n을 사용하십시오.</p>
+<h2 class="section-title">에러 체험 — puts에 \n 이중 줄바꿈</h2>
+<div class="debug-section"><div class="debug-bar">DEBUG LAB — 에러를 찾으시오</div><div class="debug-body">
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc"><span class="s-fn">puts</span>(<span class="s-str">"Hello\n"</span>);</span></div>
+</div>
+</div>
+<p style="margin:14px 0 0; font-size:14px;"><b>에러:</b> 출력: Hello(빈줄) — puts가 자동 \n 추가하므로 이중 줄바꿈</p>
+<p style="font-size:14px;"><b>수정:</b> 출력: Hello(줄바꿈) — puts 사용 시 \n 불필요</p>
+</div></div>
+<h2 class="section-title">에러 체험 — 문자열 리터럴 연결 실수</h2>
+<div class="debug-section"><div class="debug-bar">DEBUG LAB — 에러를 찾으시오</div><div class="debug-body">
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc"><span class="s-fn">printf</span>(<span class="s-str">"Hello"</span> + <span class="s-str">"World\n"</span>);</span></div>
+</div>
+</div>
+<p style="margin:14px 0 0; font-size:14px;"><b>에러:</b> error 또는 예상치 못한 동작 — + 연산자는 문자열 연결이 아님</p>
+<p style="font-size:14px;"><b>수정:</b> 출력: HelloWorld — 인접 문자열 자동 연결</p>
+</div></div>
+<h2 class="section-title">설명하기 — 파인만 기법</h2>
+<p>아래 질문에 자신의 말로 답해 보십시오.</p>
+<div class="note-box"><span class="note-label">설명 연습 1</span>
+"printf 두 개를 썼는데 왜 한 줄에 출력돼?"라고 물었습니다. 버퍼와 \n의 관계를 설명하십시오.</div>
+<div class="note-box"><span class="note-label">설명 연습 2</span>
+"printf 하나로 세 줄을 출력할 수 있어?"라고 물었습니다.</div>
+<div class="note-box"><span class="note-label">설명 연습 3</span>
+"puts랑 printf 뭐가 달라?"라고 물었습니다.</div>
+<div class="note-box"><span class="note-label">설명 연습 4</span>
+아래 빈칸을 채우십시오.<br><br>1. printf는 문자를 ______에 먼저 저장합니다.<br>2. 출력 줄 수는 ______의 개수로 결정됩니다.<br>3. puts는 출력 후 자동으로 ______을 추가합니다.<br>4. 인접한 문자열 리터럴은 자동으로 ______됩니다.<br>5. C의 문자열은 소스 코드의 한 ______ 안에서 열고 닫아야 합니다.</div>
+<div class="note-box"><span class="note-label">정답</span>
+1. 버퍼(buffer)<br>2. \n<br>3. 줄바꿈(\n)<br>4. 연결<br>5. 줄</div>
+<h2 class="section-title">용어 정리</h2>
+<table class="trace"><thead><tr><th>용어</th><th>설명</th></tr></thead><tbody><tr><td><code>버퍼(buffer)</code></td><td>데이터를 임시로 저장하는 메모리 영역입니다. printf는 버퍼에 쓰고, \n이나 프로그램 종료 시 화면에 출력합니다.</td></tr><tr><td><code>플러시(flush)</code></td><td>버퍼의 내용을 목적지(화면)로 보내고 버퍼를 비우는 동작입니다. \n이 플러시를 유발합니다.</td></tr><tr><td><code>puts</code></td><td>문자열을 출력한 뒤 자동으로 줄바꿈을 추가하는 함수입니다. stdio.h에 선언되어 있습니다.</td></tr><tr><td><code>문자열 리터럴(string literal)</code></td><td>큰따옴표로 감싼 문자 시퀀스입니다. "Hello"는 문자열 리터럴입니다.</td></tr><tr><td><code>문자열 리터럴 연결</code></td><td>C에서 인접한 문자열 리터럴이 자동으로 하나로 합쳐지는 기능입니다.</td></tr></tbody></table>
+<h2 class="section-title">핵심 요약</h2>
+<div class="warmup-box"><div class="warmup-title">Unit 12 핵심 정리</div><div class="wq"><b>1.</b> printf는 버퍼에 쓰고, \n을 만나면 화면에 출력(flush)합니다</div><div class="wq"><b>2.</b> 출력 줄 수 = \n의 개수 (printf 호출 횟수가 아님)</div><div class="wq"><b>3.</b> \n 없이 printf를 여러 번 호출하면 한 줄에 이어집니다</div><div class="wq"><b>4.</b> 한 printf에 \n을 여러 개 넣으면 여러 줄을 출력합니다</div><div class="wq"><b>5.</b> puts("문자열")은 출력 후 자동 줄바꿈 — printf와 달리 \n 불필요</div><div class="wq"><b>6.</b> 인접 문자열 리터럴 "A" "B"는 자동으로 "AB"로 연결됩니다</div></div>
+<p>printf의 동작 원리와 출력 패턴을 완벽히 익히십시오.</p>
+<p>다양한 출력 패턴으로 정확한 결과를 만드십시오.</p>
+<h2 class="section-title">대회 기출</h2>
+
+    <span class="page-num">2</span>
+  </div>
+</div>
+<div class="page">
+  <div class="content-page">
+    <div class="unit-header-bar">
+      <span class="unit-tag">UNIT 12</span>
+      <span class="unit-title-sm">3과목 연결</span>
+    </div>
+<h2 class="section-title">10축 매핑</h2>
+<p>이번 유닛에서 배운 내용을 10개의 학습 축으로 연결합니다.</p>
+<div class="note-box"><span class="note-label">축 1: C언어 [필수]</span>
+<b>이 유닛의 C 문법:</b> printf 버퍼 동작, puts 함수, 문자열 리터럴 연결<br><b>깊이:</b> LAYER 1 — printf의 내부 동작 원리(버퍼)까지 이해<br><b>새 함수:</b> <code>puts("문자열")</code> — 자동 줄바꿈 출력</div>
+<div class="note-box"><span class="note-label">축 2: 컴퓨팅 사고력 [필수]</span>
+<b>사고 패턴: 추적(Tracing)</b><br>printf가 호출될 때마다 버퍼의 상태를 추적하여 최종 출력을 예측했습니다. 코드를 한 줄씩 실행하며 상태 변화를 추적하는 것은 프로그램 이해의 기본입니다.</div>
+<div class="note-box"><span class="note-label">축 3: 디버깅 [필수]</span>
+<b>이 유닛의 에러:</b><br>1. \n 누락 → 출력이 붙어서 나옴 (논리 에러)<br>2. \n 과다 → 의도하지 않은 빈 줄 (논리 에러)<br>3. 소스 코드 줄바꿈으로 문자열 나누기 → 컴파일 에러<br>4. puts에 \n → 이중 줄바꿈<br>5. 문자열 + 연산자 → 에러</div>
+<div class="note-box"><span class="note-label">축 4: KOI — 정보올림피아드 [필수]</span>
+<b>난이도:</b> TIER 1 (출력 정확성)<br><b>대회에서 출력 패턴:</b><br>- 여러 줄 출력: printf에 \n 여러 개 또는 printf 여러 번<br>- 마지막 줄 끝 \n 확인<br>- 빈 줄이 있는 출력: printf("\n")으로 빈 줄 삽입</div>
+<div class="tip"><span class="tip-label">축 5: 코딩 습관 [선택]</span>
+<b>LAYER 1 — 출력 습관:</b><br>- 모든 printf 끝에 \n이 있는지 확인<br>- 여러 줄 출력은 읽기 좋은 방법 선택 (printf 여러 개 권장)<br>- 긴 문자열은 리터럴 연결로 나누어 쓰기</div>
+<div class="tip"><span class="tip-label">축 10: 하드웨어 연결 [선택]</span>
+<b>버퍼와 하드웨어:</b><br>출력 버퍼는 RAM에 있습니다. printf가 문자를 버퍼(RAM)에 쓰면, \n 시점에 운영체제가 버퍼 내용을 화면(GPU→모니터)으로 전송합니다.<br><br>버퍼를 사용하는 이유는 매 글자마다 화면에 보내는 것보다 모아서 한꺼번에 보내는 것이 훨씬 빠르기 때문입니다.</div>
+<h2 class="section-title">다음 유닛 예고</h2>
+<div class="note-box"><span class="note-label">다음 유닛을 위한 예측</span>
+<b>예측:</b> 아래 코드에서 \a, \b, \r은 무엇을 할까요?<br><br><code>printf("Hello\aWorld\n");</code><br><code>printf("ABCDE\b\b\n");</code><br><code>printf("12345\rHi\n");</code><br><br><b>다음 유닛:</b> Unit 13 — 이스케이프 시퀀스<br>\n, \t 외에도 다양한 이스케이프 시퀀스를 학습하고 활용합니다.</div>
+
+    <span class="page-num">3</span>
+  </div>
+</div>
+<div class="page">
+  <div class="chapter-page">
+    <div class="chapter-sidebar"></div>
+    <div class="chapter-accent-bar"></div>
+    <div style="flex:1; min-width:0; padding:50px 50px 40px 45px; position:relative;">
+      <div class="problems-chapter-ref">Chapter 12: 여러 줄 출력과 printf 기초</div>
+      <h2 class="problems-title">연습 문제 (Practice Problems)</h2>
+
+        <div class="prob-card">
+          <div class="prob-header">
+            <span class="prob-num">1. 아래 코드의 출력 결과를 적으십시오.</span>
+            <span class="diff diff-basic">하</span>
+          </div>
+          <p class="prob-desc">아래 코드의 출력 결과를 적으십시오.</p>
+          <div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span><span class="code-bar-file">ex1.c</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;stdio.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">main</span>(<span class="s-type">void</span>) {</span></div>
+<div class="code-line highlighted"><span class="ln">4</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"X"</span>);</span></div>
+<div class="code-line highlighted"><span class="ln">5</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"Y"</span>);</span></div>
+<div class="code-line highlighted"><span class="ln">6</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"Z\n"</span>);</span></div>
+<div class="code-line"><span class="ln">7</span><span class="lc">    <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">8</span><span class="lc">}</span></div>
+</div>
+</div>
+          <div class="contest-write-area" style="margin-top:12px;">
+            <div class="contest-write-label">답 작성</div>
+            <textarea class="contest-textarea" rows="4" spellcheck="false" style="font-family:'Noto Sans KR',sans-serif;" placeholder=""></textarea>
+          </div>
+        </div>
+        <div class="prob-card">
+          <div class="prob-header">
+            <span class="prob-num">2. 아래 코드의 출력 결과를 적으십시오.</span>
+            <span class="diff diff-basic">하</span>
+          </div>
+          <p class="prob-desc">아래 코드의 출력 결과를 적으십시오.</p>
+          <div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span><span class="code-bar-file">ex2.c</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;stdio.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">main</span>(<span class="s-type">void</span>) {</span></div>
+<div class="code-line highlighted"><span class="ln">4</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"A\nB\nC\n"</span>);</span></div>
+<div class="code-line"><span class="ln">5</span><span class="lc">    <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">6</span><span class="lc">}</span></div>
+</div>
+</div>
+          <div class="contest-write-area" style="margin-top:12px;">
+            <div class="contest-write-label">답 작성</div>
+            <textarea class="contest-textarea" rows="4" spellcheck="false" style="font-family:'Noto Sans KR',sans-serif;" placeholder=""></textarea>
+          </div>
+        </div>
+        <div class="prob-card">
+          <div class="prob-header">
+            <span class="prob-num">3. printf와 puts의 차이를 두 가지 적으십시오.</span>
+            <span class="diff diff-basic">하</span>
+          </div>
+          <p class="prob-desc">printf와 puts의 차이를 두 가지 적으십시오.</p>
+          
+          <div class="contest-write-area" style="margin-top:12px;">
+            <div class="contest-write-label">답 작성</div>
+            <textarea class="contest-textarea" rows="4" spellcheck="false" style="font-family:'Noto Sans KR',sans-serif;" placeholder=""></textarea>
+          </div>
+        </div>
+        <div class="prob-card">
+          <div class="prob-header">
+            <span class="prob-num">4. "출력 줄 수 = \n의 개수"라는 규칙을 자신의 말로 설명하십시오.</span>
+            <span class="diff diff-basic">하</span>
+          </div>
+          <p class="prob-desc">"출력 줄 수 = \n의 개수"라는 규칙을 자신의 말로 설명하십시오.</p>
+          
+          <div class="contest-write-area" style="margin-top:12px;">
+            <div class="contest-write-label">답 작성</div>
+            <textarea class="contest-textarea" rows="4" spellcheck="false" style="font-family:'Noto Sans KR',sans-serif;" placeholder=""></textarea>
+          </div>
+        </div>
+        <div class="prob-card">
+          <div class="prob-header">
+            <span class="prob-num">5. 아래 코드의 출력 결과를 적으십시오. 출력이 몇 줄인지도 적으십시오.</span>
+            <span class="diff diff-mid">중</span>
+          </div>
+          <p class="prob-desc">아래 코드의 출력 결과를 적으십시오. 출력이 몇 줄인지도 적으십시오.</p>
+          <div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span><span class="code-bar-file">ex5.c</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;stdio.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">main</span>(<span class="s-type">void</span>) {</span></div>
+<div class="code-line highlighted"><span class="ln">4</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"1"</span>);</span></div>
+<div class="code-line highlighted"><span class="ln">5</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"2\n3"</span>);</span></div>
+<div class="code-line highlighted"><span class="ln">6</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"4\n"</span>);</span></div>
+<div class="code-line highlighted"><span class="ln">7</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"5\n6\n7\n"</span>);</span></div>
+<div class="code-line"><span class="ln">8</span><span class="lc">    <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">9</span><span class="lc">}</span></div>
+</div>
+</div>
+          <div class="contest-write-area" style="margin-top:12px;">
+            <div class="contest-write-label">답 작성</div>
+            <textarea class="contest-textarea" rows="4" spellcheck="false" style="font-family:'Noto Sans KR',sans-serif;" placeholder=""></textarea>
+          </div>
+        </div>
+        <div class="prob-card">
+          <div class="prob-header">
+            <span class="prob-num">6. printf를 정확히 2번만 사용하여 아래 출력을 만드십시오.
+
+[출력]
+AAA
+BBB
+CCC</span>
+            <span class="diff diff-mid">중</span>
+          </div>
+          <p class="prob-desc">printf를 정확히 2번만 사용하여 아래 출력을 만드십시오.<br><br>[출력]<br>AAA<br>BBB<br>CCC</p>
+          
+          <div class="contest-write-area" style="margin-top:12px;">
+            <div class="contest-write-label">코드 작성</div>
+            <textarea class="contest-textarea" rows="8" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+          </div>
+        </div>
+        <div class="prob-card">
+          <div class="prob-header">
+            <span class="prob-num">7. puts를 사용하여 아래 출력을 만드십시오.
+
+[출력]
+=====
+Hello
+=====</span>
+            <span class="diff diff-mid">중</span>
+          </div>
+          <p class="prob-desc">puts를 사용하여 아래 출력을 만드십시오.<br><br>[출력]<br>=====<br>Hello<br>=====</p>
+          
+          <div class="contest-write-area" style="margin-top:12px;">
+            <div class="contest-write-label">코드 작성</div>
+            <textarea class="contest-textarea" rows="8" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+          </div>
+        </div>
+        <div class="prob-card">
+          <div class="prob-header">
+            <span class="prob-num">8. 아래 코드의 출력 결과를 적으십시오.</span>
+            <span class="diff diff-mid">중</span>
+          </div>
+          <p class="prob-desc">아래 코드의 출력 결과를 적으십시오.</p>
+          <div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span><span class="code-bar-file">ex8.c</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;stdio.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">main</span>(<span class="s-type">void</span>) {</span></div>
+<div class="code-line highlighted"><span class="ln">4</span><span class="lc">    <span class="s-fn">puts</span>(<span class="s-str">"Hello\n"</span>);</span></div>
+<div class="code-line highlighted"><span class="ln">5</span><span class="lc">    <span class="s-fn">puts</span>(<span class="s-str">"World"</span>);</span></div>
+<div class="code-line"><span class="ln">6</span><span class="lc">    <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">7</span><span class="lc">}</span></div>
+</div>
+</div>
+          <div class="contest-write-area" style="margin-top:12px;">
+            <div class="contest-write-label">답 작성</div>
+            <textarea class="contest-textarea" rows="4" spellcheck="false" style="font-family:'Noto Sans KR',sans-serif;" placeholder=""></textarea>
+          </div>
+        </div>
+        <div class="prob-card">
+          <div class="prob-header">
+            <span class="prob-num">9. 문자열 리터럴 연결 기능을 사용하여 아래 긴 문장을 한 줄에 출력하되, 소스 코드에서는 세 줄로 나누어 작성하십시오.
+
+[출력]
+The quick brown fox jumps over the lazy dog.</span>
+            <span class="diff diff-hard">상</span>
+          </div>
+          <p class="prob-desc">문자열 리터럴 연결 기능을 사용하여 아래 긴 문장을 한 줄에 출력하되, 소스 코드에서는 세 줄로 나누어 작성하십시오.<br><br>[출력]<br>The quick brown fox jumps over the lazy dog.</p>
+          
+          <div class="contest-write-area" style="margin-top:12px;">
+            <div class="contest-write-label">코드 작성</div>
+            <textarea class="contest-textarea" rows="8" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+          </div>
+        </div>
+        <div class="prob-card">
+          <div class="prob-header">
+            <span class="prob-num">10. 아래 코드의 출력 결과를 정확히 적으십시오. 빈 줄도 포함하여 총 몇 줄인지 적으십시오.</span>
+            <span class="diff diff-hard">상</span>
+          </div>
+          <p class="prob-desc">아래 코드의 출력 결과를 정확히 적으십시오. 빈 줄도 포함하여 총 몇 줄인지 적으십시오.</p>
+          <div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span><span class="code-bar-file">ex10.c</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;stdio.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">main</span>(<span class="s-type">void</span>) {</span></div>
+<div class="code-line highlighted"><span class="ln">4</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"A\n\nB\n"</span>);</span></div>
+<div class="code-line highlighted"><span class="ln">5</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"C"</span>);</span></div>
+<div class="code-line highlighted"><span class="ln">6</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"D"</span>);</span></div>
+<div class="code-line highlighted"><span class="ln">7</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"\nE\n"</span>);</span></div>
+<div class="code-line"><span class="ln">8</span><span class="lc">    <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">9</span><span class="lc">}</span></div>
+</div>
+</div>
+          <div class="contest-write-area" style="margin-top:12px;">
+            <div class="contest-write-label">답 작성</div>
+            <textarea class="contest-textarea" rows="4" spellcheck="false" style="font-family:'Noto Sans KR',sans-serif;" placeholder=""></textarea>
+          </div>
+        </div>
+      <span class="page-num">4</span>
+    </div>
+  </div>
+</div>
+<div class="page contest-page-wrap">
+  <div class="chapter-page">
+    <div class="chapter-sidebar"></div>
+    <div class="chapter-accent-bar"></div>
+    <div style="flex:1; min-width:0; padding:50px 50px 40px 45px; position:relative;">
+      <div class="problems-chapter-ref">Chapter 12: 여러 줄 출력과 printf 기초</div>
+      <h2 class="problems-title">대회 문제 (Online Judge)</h2>
+      <p style="font-size:14px; color:#6b7280; margin:-8px 0 24px;">실제 온라인 저지에 출제된 문제입니다. 아래에 코드를 작성한 뒤, 사이트에 제출하여 채점하십시오.</p>
+
+        <div class="contest-card">
+          <div class="contest-header">
+            <div class="contest-num-source">
+              <span class="contest-num">11번</span>
+              <span class="contest-source">백준 2557</span>
+            </div>
+            <span class="diff diff-basic">하</span>
+          </div>
+          <div class="contest-body">
+            <p class="contest-question">[백준 2557] Hello World<br><br>Hello World!를 출력하십시오.<br><br>[출력]<br>Hello World!</p>
+            <div class="contest-expected"><div class="contest-expected-label">예상 출력</div><pre class="contest-expected-body">Hello World!</pre></div>
+            <div class="contest-write-area">
+              <div class="contest-write-label">코드 작성</div>
+              <textarea class="contest-textarea" rows="12" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="contest-card">
+          <div class="contest-header">
+            <div class="contest-num-source">
+              <span class="contest-num">12번</span>
+              <span class="contest-source">백준 10718</span>
+            </div>
+            <span class="diff diff-basic">하</span>
+          </div>
+          <div class="contest-body">
+            <p class="contest-question">[백준 10718] We love kriii<br><br>강한친구 대한육군을 두 줄 출력하십시오.<br><br>[출력]<br>강한친구 대한육군<br>강한친구 대한육군</p>
+            <div class="contest-expected"><div class="contest-expected-label">예상 출력</div><pre class="contest-expected-body">강한친구 대한육군
+강한친구 대한육군</pre></div>
+            <div class="contest-write-area">
+              <div class="contest-write-label">코드 작성</div>
+              <textarea class="contest-textarea" rows="12" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="contest-card">
+          <div class="contest-header">
+            <div class="contest-num-source">
+              <span class="contest-num">13번</span>
+              <span class="contest-source">코드업 1000</span>
+            </div>
+            <span class="diff diff-basic">하</span>
+          </div>
+          <div class="contest-body">
+            <p class="contest-question">[코드업 1000] 영문 출력<br><br>Hello를 출력하십시오.<br><br>[출력]<br>Hello</p>
+            <div class="contest-expected"><div class="contest-expected-label">예상 출력</div><pre class="contest-expected-body">Hello</pre></div>
+            <div class="contest-write-area">
+              <div class="contest-write-label">코드 작성</div>
+              <textarea class="contest-textarea" rows="12" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="contest-card">
+          <div class="contest-header">
+            <div class="contest-num-source">
+              <span class="contest-num">14번</span>
+              <span class="contest-source">백준 10171</span>
+            </div>
+            <span class="diff diff-mid">중</span>
+          </div>
+          <div class="contest-body">
+            <p class="contest-question">[백준 10171] 고양이<br><br>아래 고양이를 정확히 출력하십시오.<br><br>[출력]<br>\    /\<br> )  ( ')<br>(  /  )<br> \(__)|</p>
+            <div class="contest-expected"><div class="contest-expected-label">예상 출력</div><pre class="contest-expected-body">\    /\
+ )  ( ')
+(  /  )
+ \(__)|</pre></div>
+            <div class="contest-write-area">
+              <div class="contest-write-label">코드 작성</div>
+              <textarea class="contest-textarea" rows="12" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="contest-card">
+          <div class="contest-header">
+            <div class="contest-num-source">
+              <span class="contest-num">15번</span>
+              <span class="contest-source">백준 10172</span>
+            </div>
+            <span class="diff diff-mid">중</span>
+          </div>
+          <div class="contest-body">
+            <p class="contest-question">[백준 10172] 개<br><br>아래 개를 정확히 출력하십시오.<br><br>[출력]<br>|\_/|<br>|q p|   /}<br>( 0 )"""\<br>|"^"`    |<br>||_/=\\__|</p>
+            <div class="contest-expected"><div class="contest-expected-label">예상 출력</div><pre class="contest-expected-body">|\_/|
+|q p|   /}
+( 0 )"""\
+|"^"`    |
+||_/=\\__|</pre></div>
+            <div class="contest-write-area">
+              <div class="contest-write-label">코드 작성</div>
+              <textarea class="contest-textarea" rows="12" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="contest-card">
+          <div class="contest-header">
+            <div class="contest-num-source">
+              <span class="contest-num">16번</span>
+              <span class="contest-source">백준 25083</span>
+            </div>
+            <span class="diff diff-mid">중</span>
+          </div>
+          <div class="contest-body">
+            <p class="contest-question">[백준 25083] 새싹<br><br>아래 새싹을 정확히 출력하십시오.<br><br>[출력]<br>         ,r'"7<br>r`-_   ,'  ,/<br> \. ". L_r'<br>   `~\/<br>     |<br>     |</p>
+            <div class="contest-expected"><div class="contest-expected-label">예상 출력</div><pre class="contest-expected-body">,r'"7
+r`-_   ,'  ,/
+ \. ". L_r'
+   `~\/
+     |
+     |</pre></div>
+            <div class="contest-write-area">
+              <div class="contest-write-label">코드 작성</div>
+              <textarea class="contest-textarea" rows="12" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="contest-card">
+          <div class="contest-header">
+            <div class="contest-num-source">
+              <span class="contest-num">17번</span>
+              <span class="contest-source">코드업 1008</span>
+            </div>
+            <span class="diff diff-mid">중</span>
+          </div>
+          <div class="contest-body">
+            <p class="contest-question">[코드업 1008] 출력하기08<br><br>유니코드 선 문자 표를 출력하십시오.<br><br>[출력]<br>┌┬┐<br>├┼┤<br>└┴┘</p>
+            <div class="contest-expected"><div class="contest-expected-label">예상 출력</div><pre class="contest-expected-body">┌┬┐
+├┼┤
+└┴┘</pre></div>
+            <div class="contest-write-area">
+              <div class="contest-write-label">코드 작성</div>
+              <textarea class="contest-textarea" rows="12" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="contest-card">
+          <div class="contest-header">
+            <div class="contest-num-source">
+              <span class="contest-num">18번</span>
+              <span class="contest-source">백준 변형</span>
+            </div>
+            <span class="diff diff-hard">상</span>
+          </div>
+          <div class="contest-body">
+            <p class="contest-question">[백준 변형] 한 printf 도전<br><br>printf를 단 1번만 사용하여 아래 출력을 만드십시오.<br><br>[출력]<br>*<br>**<br>***<br>****<br>*****</p>
+            <div class="contest-expected"><div class="contest-expected-label">예상 출력</div><pre class="contest-expected-body">*
+**
+***
+****
+*****</pre></div>
+            <div class="contest-write-area">
+              <div class="contest-write-label">코드 작성</div>
+              <textarea class="contest-textarea" rows="12" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="contest-card">
+          <div class="contest-header">
+            <div class="contest-num-source">
+              <span class="contest-num">19번</span>
+              <span class="contest-source">백준 변형</span>
+            </div>
+            <span class="diff diff-hard">상</span>
+          </div>
+          <div class="contest-body">
+            <p class="contest-question">[백준 변형] puts 도전<br><br>puts만 사용하여 (printf 사용 금지) 아래 출력을 만드십시오.<br><br>[출력]<br>+----+<br>|    |<br>+----+</p>
+            <div class="contest-expected"><div class="contest-expected-label">예상 출력</div><pre class="contest-expected-body">+----+
+|    |
++----+</pre></div>
+            <div class="contest-write-area">
+              <div class="contest-write-label">코드 작성</div>
+              <textarea class="contest-textarea" rows="12" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="contest-card">
+          <div class="contest-header">
+            <div class="contest-num-source">
+              <span class="contest-num">20번</span>
+              <span class="contest-source">백준 변형</span>
+            </div>
+            <span class="diff diff-hard">상</span>
+          </div>
+          <div class="contest-body">
+            <p class="contest-question">[백준 변형] 출력 줄 수 예측<br><br>아래 코드의 출력 줄 수를 구하고, 각 줄의 내용을 적으십시오.<br><br>printf("A\nB"); printf("C\n"); printf("D\nE\nF\n"); printf("G"); printf("H"); printf("I\n");</p>
+            
+            <div class="contest-write-area">
+              <div class="contest-write-label">코드 작성</div>
+              <textarea class="contest-textarea" rows="12" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="contest-card">
+          <div class="contest-header">
+            <div class="contest-num-source">
+              <span class="contest-num">1번</span>
+              <span class="contest-source">백준 2557</span>
+            </div>
+            <span class="diff diff-mid">대회</span>
+          </div>
+          <div class="contest-body">
+            <p class="contest-question">"Hello World"를 출력하십시오.</p>
+            
+            <div class="contest-write-area">
+              <div class="contest-write-label">코드 작성</div>
+              <textarea class="contest-textarea" rows="12" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="contest-card">
+          <div class="contest-header">
+            <div class="contest-num-source">
+              <span class="contest-num">2번</span>
+              <span class="contest-source">백준 10171</span>
+            </div>
+            <span class="diff diff-mid">대회</span>
+          </div>
+          <div class="contest-body">
+            <p class="contest-question">고양이를 출력하십시오.</p>
+            
+            <div class="contest-write-area">
+              <div class="contest-write-label">코드 작성</div>
+              <textarea class="contest-textarea" rows="12" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="contest-card">
+          <div class="contest-header">
+            <div class="contest-num-source">
+              <span class="contest-num">3번</span>
+              <span class="contest-source">백준 10172</span>
+            </div>
+            <span class="diff diff-mid">대회</span>
+          </div>
+          <div class="contest-body">
+            <p class="contest-question">개를 출력하십시오.</p>
+            
+            <div class="contest-write-area">
+              <div class="contest-write-label">코드 작성</div>
+              <textarea class="contest-textarea" rows="12" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="contest-card">
+          <div class="contest-header">
+            <div class="contest-num-source">
+              <span class="contest-num">4번</span>
+              <span class="contest-source">백준 25083</span>
+            </div>
+            <span class="diff diff-mid">대회</span>
+          </div>
+          <div class="contest-body">
+            <p class="contest-question">새싹을 출력하십시오.</p>
+            
+            <div class="contest-write-area">
+              <div class="contest-write-label">코드 작성</div>
+              <textarea class="contest-textarea" rows="12" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="contest-card">
+          <div class="contest-header">
+            <div class="contest-num-source">
+              <span class="contest-num">5번</span>
+              <span class="contest-source">백준 10926</span>
+            </div>
+            <span class="diff diff-mid">대회</span>
+          </div>
+          <div class="contest-body">
+            <p class="contest-question">ID를 입력받아 뒤에 ??!를 붙여 출력하십시오.</p>
+            
+            <div class="contest-write-area">
+              <div class="contest-write-label">코드 작성</div>
+              <textarea class="contest-textarea" rows="12" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="contest-card">
+          <div class="contest-header">
+            <div class="contest-num-source">
+              <span class="contest-num">6번</span>
+              <span class="contest-source">백준 10998</span>
+            </div>
+            <span class="diff diff-mid">대회</span>
+          </div>
+          <div class="contest-body">
+            <p class="contest-question">두 정수 A와 B를 입력받아 A×B를 출력하십시오.</p>
+            
+            <div class="contest-write-area">
+              <div class="contest-write-label">코드 작성</div>
+              <textarea class="contest-textarea" rows="12" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="contest-card">
+          <div class="contest-header">
+            <div class="contest-num-source">
+              <span class="contest-num">7번</span>
+              <span class="contest-source">백준 10869</span>
+            </div>
+            <span class="diff diff-mid">대회</span>
+          </div>
+          <div class="contest-body">
+            <p class="contest-question">두 자연수의 사칙연산 결과를 모두 출력하십시오.</p>
+            
+            <div class="contest-write-area">
+              <div class="contest-write-label">코드 작성</div>
+              <textarea class="contest-textarea" rows="12" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="contest-card">
+          <div class="contest-header">
+            <div class="contest-num-source">
+              <span class="contest-num">8번</span>
+              <span class="contest-source">백준 11382</span>
+            </div>
+            <span class="diff diff-mid">대회</span>
+          </div>
+          <div class="contest-body">
+            <p class="contest-question">세 정수를 입력받아 합을 출력하십시오.</p>
+            
+            <div class="contest-write-area">
+              <div class="contest-write-label">코드 작성</div>
+              <textarea class="contest-textarea" rows="12" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="contest-card">
+          <div class="contest-header">
+            <div class="contest-num-source">
+              <span class="contest-num">9번</span>
+              <span class="contest-source">백준 10430</span>
+            </div>
+            <span class="diff diff-mid">대회</span>
+          </div>
+          <div class="contest-body">
+            <p class="contest-question">(A+B)%C 등 나머지 연산 결과를 출력하십시오.</p>
+            
+            <div class="contest-write-area">
+              <div class="contest-write-label">코드 작성</div>
+              <textarea class="contest-textarea" rows="12" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="contest-card">
+          <div class="contest-header">
+            <div class="contest-num-source">
+              <span class="contest-num">10번</span>
+              <span class="contest-source">백준 2739</span>
+            </div>
+            <span class="diff diff-mid">대회</span>
+          </div>
+          <div class="contest-body">
+            <p class="contest-question">N을 입력받아 구구단을 출력하십시오.</p>
+            
+            <div class="contest-write-area">
+              <div class="contest-write-label">코드 작성</div>
+              <textarea class="contest-textarea" rows="12" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+            </div>
+          </div>
+        </div>
+      <span class="page-num">5</span>
+    </div>
+  </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,1914 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>코딩쏙 교재 — 스택 계산기 -- 후위 표기</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+
+  :root {
+    --navy: #1a2e4a;
+    --navy-mid: #2c4a6e;
+    --navy-light: #3d6590;
+    --orange: #e07830;
+    --orange-light: #f5e6d8;
+    --white: #ffffff;
+    --bg: #f7f8fa;
+    --bg-warm: #faf9f7;
+    --gray-50: #f9fafb;
+    --gray-100: #f3f4f6;
+    --gray-200: #e5e7eb;
+    --gray-300: #d1d5db;
+    --gray-400: #9ca3af;
+    --gray-500: #6b7280;
+    --gray-600: #4b5563;
+    --gray-700: #374151;
+    --gray-800: #1f2937;
+    --text: #2d3748;
+    --green: #16a34a;
+    --green-bg: #dcfce7;
+    --red: #dc2626;
+    --red-bg: #fee2e2;
+    --blue: #2563eb;
+    --blue-bg: #dbeafe;
+    --yellow-bg: #fef9c3;
+    --font: 'Noto Sans KR', sans-serif;
+    --mono: 'JetBrains Mono', 'Consolas', monospace;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: var(--font); background: #e8eaed; font-size: 15px; }
+
+  /* ========== PAGE ========== */
+  .page {
+    width: 210mm;
+    min-height: 295mm;
+    margin: 24px auto;
+    background: var(--white);
+    box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* ========== PAGE 1: CHAPTER START ========== */
+  .chapter-page {
+    display: flex;
+    min-height: 295mm;
+  }
+
+  .chapter-sidebar {
+    width: 10px;
+    background: var(--navy);
+    flex-shrink: 0;
+  }
+
+  .chapter-accent-bar {
+    width: 7px;
+    background: var(--orange);
+    flex-shrink: 0;
+  }
+
+  .chapter-body {
+    flex: 1;
+    padding: 70px 65px 50px 55px;
+    position: relative;
+  }
+
+  .chapter-watermark {
+    position: absolute;
+    top: -10px;
+    right: -15px;
+    font-size: 280px;
+    font-weight: 900;
+    color: rgba(180,195,212,0.35);
+    line-height: 1;
+    pointer-events: none;
+    letter-spacing: -10px;
+  }
+
+  .chapter-label {
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--navy-mid);
+    letter-spacing: 2px;
+    margin-bottom: 4px;
+  }
+
+  .chapter-title {
+    font-size: 44px;
+    font-weight: 900;
+    color: var(--navy);
+    line-height: 1.15;
+    margin-bottom: 12px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .chapter-sub {
+    font-size: 16px;
+    color: var(--gray-500);
+    font-weight: 400;
+    margin-bottom: 20px;
+    padding-bottom: 28px;
+    border-bottom: 1px solid var(--gray-200);
+  }
+
+  /* Learning objectives */
+  .obj-title {
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--navy);
+    margin-bottom: 16px;
+    margin-top: 32px;
+  }
+
+  .obj-list {
+    list-style: none;
+    margin-bottom: 40px;
+  }
+
+  .obj-list li {
+    padding: 5px 0 5px 24px;
+    position: relative;
+    font-size: 15px;
+    color: var(--gray-700);
+    line-height: 1.6;
+  }
+
+  .obj-list li::before {
+    content: '•';
+    position: absolute;
+    left: 8px;
+    color: var(--navy-mid);
+    font-weight: 700;
+  }
+
+  /* Prerequisites flow */
+  .prereq-title {
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--navy);
+    margin-bottom: 18px;
+  }
+
+  .prereq-flow {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    margin-bottom: 44px;
+  }
+
+  .prereq-item {
+    padding: 9px 22px;
+    border: 1.5px solid var(--gray-300);
+    border-radius: 50px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--gray-600);
+    background: var(--white);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+  }
+
+  .prereq-item.current {
+    border-color: var(--navy);
+    color: var(--navy);
+    font-weight: 700;
+    background: #edf2f7;
+    box-shadow: 0 2px 6px rgba(26,46,74,0.12);
+  }
+
+  .prereq-arrow {
+    width: 36px;
+    text-align: center;
+    color: var(--gray-300);
+    font-size: 18px;
+    font-weight: 300;
+  }
+
+  /* Predict box */
+  .predict-box {
+    background: var(--gray-50);
+    border: 1.5px solid var(--gray-200);
+    border-radius: 12px;
+    padding: 24px 28px;
+  }
+
+  .predict-label {
+    display: inline-block;
+    background: var(--orange);
+    color: var(--white);
+    font-size: 12px;
+    font-weight: 600;
+    padding: 3px 12px;
+    border-radius: 4px;
+    margin-bottom: 14px;
+    letter-spacing: 0.5px;
+  }
+
+  .predict-q {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--navy);
+    margin-bottom: 16px;
+  }
+
+  .predict-code {
+    background: var(--white);
+    border: 1px solid var(--gray-200);
+    border-radius: 8px;
+    padding: 14px 18px;
+    font-family: var(--mono);
+    font-size: 13px;
+    line-height: 1.65;
+    color: var(--gray-700);
+  }
+
+  /* ========== PAGE 2: CORE CONTENT ========== */
+  .content-page {
+    padding: 55px 65px;
+  }
+
+  .unit-header-bar {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    margin-bottom: 8px;
+  }
+
+  .unit-tag {
+    font-size: 12px;
+    color: var(--orange);
+    font-weight: 600;
+    letter-spacing: 1px;
+  }
+
+  .unit-title-sm {
+    font-size: 14px;
+    color: var(--gray-400);
+    font-weight: 400;
+  }
+
+  .section-title {
+    font-size: 24px;
+    font-weight: 800;
+    color: var(--navy);
+    margin-bottom: 24px;
+    margin-top: 8px;
+    padding-left: 16px;
+    border-left: 5px solid var(--orange);
+  }
+
+  p {
+    font-size: 15.5px;
+    line-height: 1.9;
+    color: var(--text);
+    margin-bottom: 18px;
+  }
+
+  p code {
+    font-family: var(--mono);
+    font-size: 13.5px;
+    background: #f1f3f5;
+    padding: 2px 7px;
+    border-radius: 4px;
+    color: var(--navy);
+    font-weight: 500;
+  }
+
+  /* Code block */
+  .code-wrap {
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    border: 1px solid var(--gray-200);
+    margin: 22px 0;
+  }
+
+  .code-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 9px 18px;
+    background: var(--navy);
+    font-size: 12px;
+  }
+
+  .code-bar-lang {
+    font-family: var(--mono);
+    font-weight: 600;
+    color: var(--white);
+  }
+
+  .code-bar-file {
+    color: rgba(255,255,255,0.6);
+    font-weight: 400;
+  }
+
+  .code-body {
+    background: #f8f9fb;
+    padding: 20px 0;
+    font-family: var(--mono);
+    font-size: 13.5px;
+    line-height: 1.75;
+    border: 1px solid var(--gray-200);
+    border-top: none;
+    border-radius: 0 0 12px 12px;
+  }
+
+  .code-line {
+    display: flex;
+    padding: 0 20px;
+  }
+
+  .code-line:hover {
+    background: #f0f4f8;
+  }
+
+  .code-line.highlighted {
+    background: #fff8e1;
+  }
+
+  .ln {
+    width: 30px;
+    text-align: right;
+    color: #b8bfc8;
+    font-size: 12px;
+    margin-right: 18px;
+    user-select: none;
+    flex-shrink: 0;
+    padding-top: 1px;
+  }
+
+  .lc { flex: 1; }
+
+  /* syntax */
+  .s-pp { color: #8b5cf6; font-weight: 600; }
+  .s-str { color: #d97706; }
+  .s-type { color: #2563eb; font-weight: 500; }
+  .s-kw { color: #7c3aed; font-weight: 500; }
+  .s-fn { color: #059669; font-weight: 500; }
+  .s-num { color: #dc2626; }
+  .s-cm { color: #9ca3af; font-style: italic; }
+
+  /* Output block */
+  .output-wrap {
+    border-radius: 10px;
+    overflow: hidden;
+    margin: 10px 0 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    border: 1px solid #d1d5db;
+  }
+
+  .output-bar {
+    padding: 9px 18px;
+    background: #374151;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--white);
+    letter-spacing: 0.5px;
+  }
+
+  .output-body {
+    padding: 16px 20px;
+    font-family: var(--mono);
+    font-size: 13.5px;
+    line-height: 1.7;
+    color: var(--gray-800);
+    background: #f1f5f9;
+    border: 1px solid var(--gray-200);
+    border-top: none;
+    border-radius: 0 0 10px 10px;
+  }
+
+  /* Callout */
+  .tip {
+    margin: 28px 0;
+    padding: 18px 24px;
+    background: #dbeafe;
+    border-left: 5px solid #2563eb;
+    border-radius: 0 12px 12px 0;
+    font-size: 14.5px;
+    line-height: 1.8;
+    color: var(--text);
+  }
+
+  .tip-label {
+    font-weight: 700;
+    color: #2563eb;
+    font-size: 13px;
+    display: block;
+    margin-bottom: 4px;
+  }
+
+  .warn {
+    margin: 28px 0;
+    padding: 18px 24px;
+    background: #fef3c7;
+    border-left: 5px solid #d97706;
+    border-radius: 0 12px 12px 0;
+    font-size: 14.5px;
+    line-height: 1.8;
+  }
+
+  .warn-label {
+    font-weight: 700;
+    color: #d97706;
+    font-size: 13px;
+    display: block;
+    margin-bottom: 4px;
+  }
+
+  .note-box {
+    margin: 28px 0;
+    padding: 18px 24px;
+    background: #e2e8f0;
+    border-left: 5px solid #64748b;
+    border-radius: 0 12px 12px 0;
+    font-size: 14.5px;
+    line-height: 1.8;
+  }
+
+  .note-label {
+    font-weight: 700;
+    color: var(--gray-600);
+    font-size: 13px;
+    display: block;
+    margin-bottom: 4px;
+  }
+
+  /* Trace table */
+  table.trace {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    margin: 28px 0;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+    font-size: 14px;
+  }
+
+  table.trace th {
+    background: var(--navy);
+    color: var(--white);
+    padding: 10px 16px;
+    text-align: left;
+    font-weight: 500;
+    font-size: 13px;
+  }
+
+  table.trace td {
+    padding: 10px 16px;
+    border-bottom: 1px solid var(--gray-200);
+    color: var(--gray-700);
+  }
+
+  table.trace tr:nth-child(even) td { background: var(--gray-50); }
+  table.trace tr:last-child td { border-bottom: none; }
+
+  table.trace td code {
+    font-family: var(--mono);
+    font-size: 12.5px;
+    background: #eef1f5;
+    padding: 2px 6px;
+    border-radius: 4px;
+    color: var(--navy);
+  }
+
+  /* ========== PAGE 3: PROBLEMS ========== */
+  .problems-header {
+    margin-bottom: 8px;
+  }
+
+  .problems-chapter-ref {
+    font-size: 13px;
+    color: var(--gray-500);
+    margin-bottom: 4px;
+  }
+
+  .problems-title {
+    font-size: 28px;
+    font-weight: 800;
+    color: var(--navy);
+    margin-bottom: 24px;
+  }
+
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 16px;
+  }
+
+  .prob-card {
+    background: var(--white);
+    border: 1px solid var(--gray-200);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 3px 15px rgba(0,0,0,0.06);
+  }
+
+  .prob-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 16px;
+    background: var(--navy);
+  }
+
+  .prob-num {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--white);
+  }
+
+  .diff {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    font-size: 12px;
+    font-weight: 800;
+  }
+
+  .diff-basic { background: #22c55e; color: white; }
+  .diff-mid { background: #f59e0b; color: white; }
+  .diff-hard { background: #ef4444; color: white; }
+
+  .prob-desc {
+    font-size: 13.5px;
+    line-height: 1.65;
+    color: var(--gray-600);
+    margin-bottom: 10px;
+    padding: 14px 16px 0;
+  }
+
+  .prob-code {
+    background: var(--gray-50);
+    border: 1px solid var(--gray-200);
+    border-radius: 6px;
+    padding: 10px 14px;
+    margin: 0 16px 16px;
+    font-family: var(--mono);
+    font-size: 12.5px;
+    line-height: 1.55;
+    color: var(--gray-600);
+  }
+
+  /* Competition section */
+  .comp-section {
+    margin-top: 32px;
+    padding-top: 24px;
+    border-top: 2px solid var(--navy);
+  }
+
+  .comp-title {
+    font-size: 22px;
+    font-weight: 800;
+    color: var(--navy);
+    margin-bottom: 20px;
+  }
+
+  .comp-card {
+    background: var(--white);
+    border: 1.5px solid var(--gray-200);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 18px rgba(0,0,0,0.06);
+  }
+
+  .comp-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 16px;
+    background: #0f766e;
+  }
+
+  .comp-header .comp-name {
+    color: var(--white);
+    font-size: 15px;
+    font-weight: 700;
+    margin: 0;
+  }
+
+  .comp-inner {
+    padding: 14px 18px 18px;
+  }
+
+  .comp-badge {
+    display: inline-block;
+    padding: 3px 12px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 700;
+  }
+
+  .badge-bj { background: #93c5fd; color: #1e3a5f; }
+  .badge-cu { background: #c4b5fd; color: #3b1f7e; }
+  .badge-pg { background: #7dd3fc; color: #0c4a6e; }
+
+  .comp-name {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--navy);
+    margin-bottom: 6px;
+  }
+
+  .comp-desc {
+    font-size: 14px;
+    color: var(--gray-600);
+    line-height: 1.7;
+    margin-bottom: 14px;
+  }
+
+  .io-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+
+  .io-card {
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid var(--gray-200);
+  }
+
+  .io-h {
+    padding: 6px 14px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--gray-600);
+    background: #e2e8f0;
+  }
+
+  .io-c {
+    padding: 10px 14px;
+    font-family: var(--mono);
+    font-size: 13px;
+    line-height: 1.5;
+    background: var(--white);
+  }
+
+  /* ========== DEBUG LAB ========== */
+  .debug-section {
+    margin: 24px 0;
+    border: 2px solid var(--red);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+
+  .debug-bar {
+    background: var(--red);
+    color: var(--white);
+    padding: 10px 20px;
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 1px;
+  }
+
+  .debug-body {
+    padding: 20px;
+    background: #fef2f2;
+  }
+
+  /* 10축 connection */
+  .connect-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 16px;
+    margin: 28px 0;
+  }
+
+  .connect-card {
+    border-radius: 12px;
+    padding: 20px;
+    text-align: center;
+    border: 1px solid var(--gray-200);
+    box-shadow: 0 3px 14px rgba(0,0,0,0.05);
+  }
+
+  .connect-card h5 {
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 8px;
+  }
+
+  .connect-card p {
+    font-size: 13px;
+    margin: 0;
+    color: var(--gray-600);
+    line-height: 1.6;
+  }
+
+  .cc1 { border-top: 3px solid #8b5cf6; }
+  .cc1 h5 { color: #8b5cf6; }
+  .cc2 { border-top: 3px solid var(--green); }
+  .cc2 h5 { color: var(--green); }
+  .cc3 { border-top: 3px solid var(--navy); }
+  .cc3 h5 { color: var(--navy); }
+
+  /* PAGE NUMBER */
+  .page-num {
+    position: absolute;
+    bottom: 20px;
+    right: 30px;
+    font-size: 12px;
+    color: var(--gray-400);
+  }
+
+  /* WARMUP */
+  .warmup-box {
+    background: #e0e7f1;
+    border-radius: 12px;
+    padding: 24px 28px;
+    margin: 28px 0;
+    border: 2px solid #c7d2e0;
+  }
+
+  .warmup-title {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--navy);
+    margin-bottom: 14px;
+  }
+
+  .wq {
+    padding: 9px 16px;
+    background: var(--white);
+    border-radius: 8px;
+    margin-bottom: 8px;
+    font-size: 14px;
+    border: 1px solid var(--gray-200);
+    color: var(--gray-700);
+  }
+
+  .wq b { color: var(--navy); margin-right: 6px; }
+  .wq .hint { color: var(--gray-400); font-size: 13px; }
+
+  /* ===== CONTEST PROBLEMS PAGE ===== */
+  .contest-page-wrap .chapter-page {
+    min-height: auto;
+  }
+
+  .contest-page-wrap .chapter-page > div:last-child {
+    min-width: 0;
+    overflow-wrap: break-word;
+    word-break: break-word;
+  }
+
+  .contest-card {
+    background: white;
+    border: 1.5px solid var(--gray-200);
+    border-radius: 12px;
+    margin-bottom: 28px;
+    overflow: hidden;
+    break-inside: avoid;
+  }
+
+  .contest-header {
+    background: var(--navy);
+    color: white;
+    padding: 14px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .contest-num-source {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .contest-num {
+    font-weight: 700;
+    font-size: 16px;
+  }
+
+  .contest-source {
+    background: rgba(255,255,255,0.15);
+    padding: 3px 10px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 500;
+  }
+
+  .contest-body {
+    padding: 20px 24px 24px;
+  }
+
+  .contest-question {
+    font-size: 15px;
+    line-height: 1.7;
+    color: var(--text);
+    margin: 0 0 16px;
+    word-break: break-word;
+    overflow-wrap: break-word;
+  }
+
+  .contest-expected {
+    background: #1e293b;
+    border-radius: 8px;
+    overflow: hidden;
+    margin-bottom: 20px;
+  }
+
+  .contest-expected-label {
+    background: #334155;
+    color: #94a3b8;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 6px 14px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .contest-expected-body {
+    color: #e2e8f0;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    line-height: 1.6;
+    padding: 12px 16px;
+    margin: 0;
+    white-space: pre;
+  }
+
+  .contest-write-area {
+    border: 2px dashed var(--gray-300);
+    border-radius: 10px;
+    overflow: hidden;
+    transition: border-color 0.2s;
+  }
+
+  .contest-write-area:focus-within {
+    border-color: var(--orange);
+    border-style: solid;
+  }
+
+  .contest-write-label {
+    background: var(--bg);
+    color: var(--gray-500);
+    font-size: 12px;
+    font-weight: 600;
+    padding: 8px 14px;
+    border-bottom: 1px solid var(--gray-200);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .contest-textarea {
+    width: 100%;
+    min-height: 200px;
+    padding: 16px 18px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    line-height: 1.7;
+    color: var(--text);
+    background: #fafbfc;
+    border: none;
+    outline: none;
+    resize: vertical;
+    tab-size: 4;
+    box-sizing: border-box;
+  }
+
+  .contest-textarea::placeholder {
+    color: var(--gray-300);
+  }
+
+  @media print {
+    body { background: white; }
+    .page { box-shadow: none; margin: 0; page-break-after: always; }
+    .contest-textarea { border: 1px solid var(--gray-300); min-height: 180px; }
+  }
+
+</style>
+</head>
+<body>
+
+<div class="page">
+  <div class="chapter-page">
+    <div class="chapter-sidebar"></div>
+    <div class="chapter-accent-bar"></div>
+    <div class="chapter-body">
+      <div class="chapter-watermark">04</div>
+      <div class="chapter-label">Chapter 04</div>
+      <h1 class="chapter-title">스택 계산기 -- 후위 표기</h1>
+      <p class="chapter-sub">스택을 활용하여 중위 표기식을 후위로 변환하고 계산하는 계산기를 구현합니다.</p>
+
+      <h3 class="obj-title">이 유닛에서 배우는 것</h3>
+      <ul class="obj-list">
+        <li>스택을 활용하여 후위 표기식을 계산할 수 있습니다.</li>
+        <li>중위 표기식을 후위 표기식으로 변환하는 알고리즘을 구현할 수 있습니다.</li>
+        <li>연산자 우선순위와 괄호 처리를 정확하게 구현할 수 있습니다.</li>
+        <li>다자릿수, 음수, 실수를 포함한 완전한 수식 계산기를 구현할 수 있습니다.</li>
+      </ul>
+
+      <h3 class="prereq-title">선수 학습</h3>
+      <div class="prereq-flow">
+        <div class="prereq-item current">L13-U03</div>
+      </div>
+
+      
+
+      <span class="page-num">1</span>
+    </div>
+  </div>
+</div>
+<div class="page">
+  <div class="content-page">
+    <div class="unit-header-bar">
+      <span class="unit-tag">UNIT 04</span>
+      <span class="unit-title-sm">스택 계산기 -- 후위 표기</span>
+    </div>
+<h2 class="section-title">프로젝트 개요</h2>
+<div class="note-box"><span class="note-label"></span>
+<div style="font-weight:700;margin-bottom:6px;color:#1a2e4a">스택 계산기 (Stack Calculator)</div>스택 자료구조를 활용하여 수학 수식을 계산하는 프로그램을 구현합니다. 후위 표기법(Reverse Polish Notation)은 괄호 없이 연산 순서를 명확하게 표현하며, 스택 하나로 효율적으로 계산할 수 있습니다.<br><br>버전 1: 기본 -- 후위 표기식 계산기 (사용자가 후위식 입력, 스택으로 계산)<br>버전 2: 확장 -- 중위->후위 변환 + 계산 (괄호 지원, 사칙연산)<br>버전 3: 완성 -- 완전한 수식 계산기 (다자릿수, 음수, 실수, 에러 처리, 히스토리)</div>
+<h2 class="section-title">후위 표기법이란</h2>
+<div class="debug-section"><div class="debug-bar">DEBUG LAB — 에러를 찾으시오</div><div class="debug-body">
+
+<p style="margin:14px 0 0; font-size:14px;"><b>에러:</b> </p>
+<p style="font-size:14px;"><b>수정:</b> </p>
+</div></div>
+<p>undefined</p>
+<h2 class="section-title">버전 1: 기본 -- 후위 표기식 계산기</h2>
+<p>undefined</p>
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;stdio.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;stdlib.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;string.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">4</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;ctype.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">5</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">6</span><span class="lc"><span class="s-pp">#define</span> MAX_STACK <span class="s-num">100</span></span></div>
+<div class="code-line"><span class="ln">7</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">8</span><span class="lc"><span class="s-cm">/* 정수 스택 */</span></span></div>
+<div class="code-line"><span class="ln">9</span><span class="lc"><span class="s-kw">typedef</span> <span class="s-kw">struct</span> {</span></div>
+<div class="code-line"><span class="ln">10</span><span class="lc">    <span class="s-type">int</span> data[MAX_STACK];</span></div>
+<div class="code-line"><span class="ln">11</span><span class="lc">    <span class="s-type">int</span> top;</span></div>
+<div class="code-line"><span class="ln">12</span><span class="lc">} IntStack;</span></div>
+<div class="code-line"><span class="ln">13</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">14</span><span class="lc"><span class="s-type">void</span> <span class="s-fn">initStack</span>(IntStack *s) {</span></div>
+<div class="code-line"><span class="ln">15</span><span class="lc">    s-&gt;top = -<span class="s-num">1</span>;</span></div>
+<div class="code-line"><span class="ln">16</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">17</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">18</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">isEmpty</span>(IntStack *s) {</span></div>
+<div class="code-line"><span class="ln">19</span><span class="lc">    <span class="s-kw">return</span> s-&gt;top == -<span class="s-num">1</span>;</span></div>
+<div class="code-line"><span class="ln">20</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">21</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">22</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">isFull</span>(IntStack *s) {</span></div>
+<div class="code-line"><span class="ln">23</span><span class="lc">    <span class="s-kw">return</span> s-&gt;top == MAX_STACK - <span class="s-num">1</span>;</span></div>
+<div class="code-line"><span class="ln">24</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">25</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">26</span><span class="lc"><span class="s-type">void</span> <span class="s-fn">push</span>(IntStack *s, <span class="s-type">int</span> value) {</span></div>
+<div class="code-line"><span class="ln">27</span><span class="lc">    <span class="s-kw">if</span> (<span class="s-fn">isFull</span>(s)) {</span></div>
+<div class="code-line"><span class="ln">28</span><span class="lc">        <span class="s-fn">printf</span>(<span class="s-str">"스택 오버플로우\n"</span>);</span></div>
+<div class="code-line"><span class="ln">29</span><span class="lc">        <span class="s-kw">return</span>;</span></div>
+<div class="code-line"><span class="ln">30</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">31</span><span class="lc">    s-&gt;data[++(s-&gt;top)] = value;</span></div>
+<div class="code-line"><span class="ln">32</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">33</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">34</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">pop</span>(IntStack *s) {</span></div>
+<div class="code-line"><span class="ln">35</span><span class="lc">    <span class="s-kw">if</span> (<span class="s-fn">isEmpty</span>(s)) {</span></div>
+<div class="code-line"><span class="ln">36</span><span class="lc">        <span class="s-fn">printf</span>(<span class="s-str">"스택 언더플로우\n"</span>);</span></div>
+<div class="code-line"><span class="ln">37</span><span class="lc">        <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">38</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">39</span><span class="lc">    <span class="s-kw">return</span> s-&gt;data[(s-&gt;top)--];</span></div>
+<div class="code-line"><span class="ln">40</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">41</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">42</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">peek</span>(IntStack *s) {</span></div>
+<div class="code-line"><span class="ln">43</span><span class="lc">    <span class="s-kw">if</span> (<span class="s-fn">isEmpty</span>(s)) {</span></div>
+<div class="code-line"><span class="ln">44</span><span class="lc">        <span class="s-fn">printf</span>(<span class="s-str">"스택이 비어 있습니다.\n"</span>);</span></div>
+<div class="code-line"><span class="ln">45</span><span class="lc">        <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">46</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">47</span><span class="lc">    <span class="s-kw">return</span> s-&gt;data[s-&gt;top];</span></div>
+<div class="code-line"><span class="ln">48</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">49</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">50</span><span class="lc"><span class="s-cm">/* 후위 표기식 계산 */</span></span></div>
+<div class="code-line"><span class="ln">51</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">evaluatePostfix</span>(<span class="s-kw">const</span> <span class="s-type">char</span> *expr) {</span></div>
+<div class="code-line"><span class="ln">52</span><span class="lc">    IntStack stack;</span></div>
+<div class="code-line"><span class="ln">53</span><span class="lc">    <span class="s-fn">initStack</span>(&amp;stack);</span></div>
+<div class="code-line"><span class="ln">54</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">55</span><span class="lc">    <span class="s-type">int</span> i = <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">56</span><span class="lc">    <span class="s-kw">while</span> (expr[i] != '\<span class="s-num">0</span>') {</span></div>
+<div class="code-line"><span class="ln">57</span><span class="lc">        <span class="s-cm">/* 공백 건너뛰기 */</span></span></div>
+<div class="code-line"><span class="ln">58</span><span class="lc">        <span class="s-kw">if</span> (expr[i] == <span class="s-str">' '</span>) {</span></div>
+<div class="code-line"><span class="ln">59</span><span class="lc">            i++;</span></div>
+<div class="code-line"><span class="ln">60</span><span class="lc">            <span class="s-kw">continue</span>;</span></div>
+<div class="code-line"><span class="ln">61</span><span class="lc">        }</span></div>
+<div class="code-line"><span class="ln">62</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">63</span><span class="lc">        <span class="s-cm">/* 숫자인 경우: 스택에 push */</span></span></div>
+<div class="code-line"><span class="ln">64</span><span class="lc">        <span class="s-kw">if</span> (<span class="s-fn">isdigit</span>(expr[i])) {</span></div>
+<div class="code-line"><span class="ln">65</span><span class="lc">            <span class="s-fn">push</span>(&amp;stack, expr[i] - <span class="s-str">'0'</span>);</span></div>
+<div class="code-line"><span class="ln">66</span><span class="lc">            i++;</span></div>
+<div class="code-line"><span class="ln">67</span><span class="lc">        }</span></div>
+<div class="code-line"><span class="ln">68</span><span class="lc">        <span class="s-cm">/* 연산자인 경우: 두 값을 pop하여 계산 */</span></span></div>
+<div class="code-line"><span class="ln">69</span><span class="lc">        <span class="s-kw">else</span> {</span></div>
+<div class="code-line"><span class="ln">70</span><span class="lc">            <span class="s-type">int</span> b = <span class="s-fn">pop</span>(&amp;stack);   <span class="s-cm">/* 나중에 push된 값이 오른쪽 피연산자 */</span></span></div>
+<div class="code-line"><span class="ln">71</span><span class="lc">            <span class="s-type">int</span> a = <span class="s-fn">pop</span>(&amp;stack);   <span class="s-cm">/* 먼저 push된 값이 왼쪽 피연산자 */</span></span></div>
+<div class="code-line"><span class="ln">72</span><span class="lc">            <span class="s-type">int</span> result = <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">73</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">74</span><span class="lc">            <span class="s-kw">switch</span> (expr[i]) {</span></div>
+<div class="code-line"><span class="ln">75</span><span class="lc">                <span class="s-kw">case</span> <span class="s-str">'+'</span>: result = a + b; <span class="s-kw">break</span>;</span></div>
+<div class="code-line"><span class="ln">76</span><span class="lc">                <span class="s-kw">case</span> <span class="s-str">'-'</span>: result = a - b; <span class="s-kw">break</span>;</span></div>
+<div class="code-line"><span class="ln">77</span><span class="lc">                <span class="s-kw">case</span> <span class="s-str">'*'</span>: result = a * b; <span class="s-kw">break</span>;</span></div>
+<div class="code-line"><span class="ln">78</span><span class="lc">                <span class="s-kw">case</span> <span class="s-str">'/'</span>:</span></div>
+<div class="code-line"><span class="ln">79</span><span class="lc">                    <span class="s-kw">if</span> (b == <span class="s-num">0</span>) {</span></div>
+<div class="code-line"><span class="ln">80</span><span class="lc">                        <span class="s-fn">printf</span>(<span class="s-str">"오류: 0으로 나눌 수 없습니다.\n"</span>);</span></div>
+<div class="code-line"><span class="ln">81</span><span class="lc">                        <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">82</span><span class="lc">                    }</span></div>
+<div class="code-line"><span class="ln">83</span><span class="lc">                    result = a / b;</span></div>
+<div class="code-line"><span class="ln">84</span><span class="lc">                    <span class="s-kw">break</span>;</span></div>
+<div class="code-line"><span class="ln">85</span><span class="lc">                <span class="s-kw">default</span>:</span></div>
+<div class="code-line"><span class="ln">86</span><span class="lc">                    <span class="s-fn">printf</span>(<span class="s-str">"오류: 알 수 없는 연산자 '%c'\n"</span>, expr[i]);</span></div>
+<div class="code-line"><span class="ln">87</span><span class="lc">                    <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">88</span><span class="lc">            }</span></div>
+<div class="code-line"><span class="ln">89</span><span class="lc">            <span class="s-fn">push</span>(&amp;stack, result);</span></div>
+<div class="code-line"><span class="ln">90</span><span class="lc">            i++;</span></div>
+<div class="code-line"><span class="ln">91</span><span class="lc">        }</span></div>
+<div class="code-line"><span class="ln">92</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">93</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">94</span><span class="lc">    <span class="s-kw">return</span> <span class="s-fn">pop</span>(&amp;stack);</span></div>
+<div class="code-line"><span class="ln">95</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">96</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">97</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">main</span>(<span class="s-type">void</span>) {</span></div>
+<div class="code-line"><span class="ln">98</span><span class="lc">    <span class="s-type">char</span> expression[<span class="s-num">256</span>];</span></div>
+<div class="code-line"><span class="ln">99</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">100</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"=== 후위 표기식 계산기 v1 ===\n"</span>);</span></div>
+<div class="code-line"><span class="ln">101</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"토큰 사이에 공백을 넣어 입력하십시오.\n"</span>);</span></div>
+<div class="code-line"><span class="ln">102</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"예: 3 4 2 * +\n\n"</span>);</span></div>
+<div class="code-line"><span class="ln">103</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">104</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"후위 표기식 (quit 입력 시 종료):\n"</span>);</span></div>
+<div class="code-line"><span class="ln">105</span><span class="lc">    <span class="s-kw">while</span> (<span class="s-num">1</span>) {</span></div>
+<div class="code-line"><span class="ln">106</span><span class="lc">        <span class="s-fn">printf</span>(<span class="s-str">"&gt; "</span>);</span></div>
+<div class="code-line"><span class="ln">107</span><span class="lc">        <span class="s-kw">if</span> (<span class="s-fn">fgets</span>(expression, <span class="s-kw">sizeof</span>(expression), stdin) == <span class="s-kw">NULL</span>)</span></div>
+<div class="code-line"><span class="ln">108</span><span class="lc">            <span class="s-kw">break</span>;</span></div>
+<div class="code-line"><span class="ln">109</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">110</span><span class="lc">        <span class="s-cm">/* 줄바꿈 제거 */</span></span></div>
+<div class="code-line"><span class="ln">111</span><span class="lc">        expression[<span class="s-fn">strcspn</span>(expression, <span class="s-str">"\n"</span>)] = '\<span class="s-num">0</span>';</span></div>
+<div class="code-line"><span class="ln">112</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">113</span><span class="lc">        <span class="s-kw">if</span> (<span class="s-fn">strcmp</span>(expression, <span class="s-str">"quit"</span>) == <span class="s-num">0</span>) <span class="s-kw">break</span>;</span></div>
+<div class="code-line"><span class="ln">114</span><span class="lc">        <span class="s-kw">if</span> (<span class="s-fn">strlen</span>(expression) == <span class="s-num">0</span>) <span class="s-kw">continue</span>;</span></div>
+<div class="code-line"><span class="ln">115</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">116</span><span class="lc">        <span class="s-type">int</span> result = <span class="s-fn">evaluatePostfix</span>(expression);</span></div>
+<div class="code-line"><span class="ln">117</span><span class="lc">        <span class="s-fn">printf</span>(<span class="s-str">"결과: %d\n\n"</span>, result);</span></div>
+<div class="code-line"><span class="ln">118</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">119</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">120</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"종료합니다.\n"</span>);</span></div>
+<div class="code-line"><span class="ln">121</span><span class="lc">    <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">122</span><span class="lc">}</span></div>
+</div>
+</div>
+<div class="debug-section"><div class="debug-bar">DEBUG LAB — 에러를 찾으시오</div><div class="debug-body">
+
+<p style="margin:14px 0 0; font-size:14px;"><b>에러:</b> </p>
+<p style="font-size:14px;"><b>수정:</b> </p>
+</div></div>
+<h2 class="section-title">버전 2: 확장 -- 중위->후위 변환 + 계산</h2>
+<p>undefined</p>
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;stdio.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;stdlib.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;string.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">4</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;ctype.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">5</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">6</span><span class="lc"><span class="s-pp">#define</span> MAX_STACK  <span class="s-num">100</span></span></div>
+<div class="code-line"><span class="ln">7</span><span class="lc"><span class="s-pp">#define</span> MAX_EXPR   <span class="s-num">256</span></span></div>
+<div class="code-line"><span class="ln">8</span><span class="lc"><span class="s-pp">#define</span> MAX_TOKENS <span class="s-num">100</span></span></div>
+<div class="code-line"><span class="ln">9</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">10</span><span class="lc"><span class="s-cm">/* ===== 정수 스택 ===== */</span></span></div>
+<div class="code-line"><span class="ln">11</span><span class="lc"><span class="s-kw">typedef</span> <span class="s-kw">struct</span> {</span></div>
+<div class="code-line"><span class="ln">12</span><span class="lc">    <span class="s-type">int</span> data[MAX_STACK];</span></div>
+<div class="code-line"><span class="ln">13</span><span class="lc">    <span class="s-type">int</span> top;</span></div>
+<div class="code-line"><span class="ln">14</span><span class="lc">} IntStack;</span></div>
+<div class="code-line"><span class="ln">15</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">16</span><span class="lc"><span class="s-type">void</span> <span class="s-fn">intInit</span>(IntStack *s)          { s-&gt;top = -<span class="s-num">1</span>; }</span></div>
+<div class="code-line"><span class="ln">17</span><span class="lc"><span class="s-type">int</span>  <span class="s-fn">intIsEmpty</span>(IntStack *s)       { <span class="s-kw">return</span> s-&gt;top == -<span class="s-num">1</span>; }</span></div>
+<div class="code-line"><span class="ln">18</span><span class="lc"><span class="s-type">void</span> <span class="s-fn">intPush</span>(IntStack *s, <span class="s-type">int</span> v)   { s-&gt;data[++(s-&gt;top)] = v; }</span></div>
+<div class="code-line"><span class="ln">19</span><span class="lc"><span class="s-type">int</span>  <span class="s-fn">intPop</span>(IntStack *s)           { <span class="s-kw">return</span> s-&gt;data[(s-&gt;top)--]; }</span></div>
+<div class="code-line"><span class="ln">20</span><span class="lc"><span class="s-type">int</span>  <span class="s-fn">intPeek</span>(IntStack *s)          { <span class="s-kw">return</span> s-&gt;data[s-&gt;top]; }</span></div>
+<div class="code-line"><span class="ln">21</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">22</span><span class="lc"><span class="s-cm">/* ===== 문자 스택 (연산자용) ===== */</span></span></div>
+<div class="code-line"><span class="ln">23</span><span class="lc"><span class="s-kw">typedef</span> <span class="s-kw">struct</span> {</span></div>
+<div class="code-line"><span class="ln">24</span><span class="lc">    <span class="s-type">char</span> data[MAX_STACK];</span></div>
+<div class="code-line"><span class="ln">25</span><span class="lc">    <span class="s-type">int</span>  top;</span></div>
+<div class="code-line"><span class="ln">26</span><span class="lc">} CharStack;</span></div>
+<div class="code-line"><span class="ln">27</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">28</span><span class="lc"><span class="s-type">void</span> <span class="s-fn">charInit</span>(CharStack *s)        { s-&gt;top = -<span class="s-num">1</span>; }</span></div>
+<div class="code-line"><span class="ln">29</span><span class="lc"><span class="s-type">int</span>  <span class="s-fn">charIsEmpty</span>(CharStack *s)     { <span class="s-kw">return</span> s-&gt;top == -<span class="s-num">1</span>; }</span></div>
+<div class="code-line"><span class="ln">30</span><span class="lc"><span class="s-type">void</span> <span class="s-fn">charPush</span>(CharStack *s, <span class="s-type">char</span> c){ s-&gt;data[++(s-&gt;top)] = c; }</span></div>
+<div class="code-line"><span class="ln">31</span><span class="lc"><span class="s-type">char</span> <span class="s-fn">charPop</span>(CharStack *s)         { <span class="s-kw">return</span> s-&gt;data[(s-&gt;top)--]; }</span></div>
+<div class="code-line"><span class="ln">32</span><span class="lc"><span class="s-type">char</span> <span class="s-fn">charPeek</span>(CharStack *s)        { <span class="s-kw">return</span> s-&gt;data[s-&gt;top]; }</span></div>
+<div class="code-line"><span class="ln">33</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">34</span><span class="lc"><span class="s-cm">/* 연산자 우선순위 */</span></span></div>
+<div class="code-line"><span class="ln">35</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">precedence</span>(<span class="s-type">char</span> op) {</span></div>
+<div class="code-line"><span class="ln">36</span><span class="lc">    <span class="s-kw">switch</span> (op) {</span></div>
+<div class="code-line"><span class="ln">37</span><span class="lc">        <span class="s-kw">case</span> <span class="s-str">'+'</span>: <span class="s-kw">case</span> <span class="s-str">'-'</span>: <span class="s-kw">return</span> <span class="s-num">1</span>;</span></div>
+<div class="code-line"><span class="ln">38</span><span class="lc">        <span class="s-kw">case</span> <span class="s-str">'*'</span>: <span class="s-kw">case</span> <span class="s-str">'/'</span>: <span class="s-kw">return</span> <span class="s-num">2</span>;</span></div>
+<div class="code-line"><span class="ln">39</span><span class="lc">        <span class="s-kw">default</span>:            <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">40</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">41</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">42</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">43</span><span class="lc"><span class="s-cm">/* 연산자인지 확인 */</span></span></div>
+<div class="code-line"><span class="ln">44</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">isOperator</span>(<span class="s-type">char</span> c) {</span></div>
+<div class="code-line"><span class="ln">45</span><span class="lc">    <span class="s-kw">return</span> c == <span class="s-str">'+'</span> || c == <span class="s-str">'-'</span> || c == <span class="s-str">'*'</span> || c == <span class="s-str">'/'</span>;</span></div>
+<div class="code-line"><span class="ln">46</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">47</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">48</span><span class="lc"><span class="s-cm">/* 중위 -&gt; 후위 변환 (Shunting Yard 알고리즘) */</span></span></div>
+<div class="code-line"><span class="ln">49</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">infixToPostfix</span>(<span class="s-kw">const</span> <span class="s-type">char</span> *infix, <span class="s-type">char</span> postfix[][<span class="s-num">16</span>], <span class="s-type">int</span> maxTokens) {</span></div>
+<div class="code-line"><span class="ln">50</span><span class="lc">    CharStack opStack;</span></div>
+<div class="code-line"><span class="ln">51</span><span class="lc">    <span class="s-fn">charInit</span>(&amp;opStack);</span></div>
+<div class="code-line"><span class="ln">52</span><span class="lc">    <span class="s-type">int</span> count = <span class="s-num">0</span>;  <span class="s-cm">/* 후위 토큰 개수 */</span></span></div>
+<div class="code-line"><span class="ln">53</span><span class="lc">    <span class="s-type">int</span> i = <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">54</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">55</span><span class="lc">    <span class="s-kw">while</span> (infix[i] != '\<span class="s-num">0</span>') {</span></div>
+<div class="code-line"><span class="ln">56</span><span class="lc">        <span class="s-cm">/* 공백 건너뛰기 */</span></span></div>
+<div class="code-line"><span class="ln">57</span><span class="lc">        <span class="s-kw">if</span> (infix[i] == <span class="s-str">' '</span>) {</span></div>
+<div class="code-line"><span class="ln">58</span><span class="lc">            i++;</span></div>
+<div class="code-line"><span class="ln">59</span><span class="lc">            <span class="s-kw">continue</span>;</span></div>
+<div class="code-line"><span class="ln">60</span><span class="lc">        }</span></div>
+<div class="code-line"><span class="ln">61</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">62</span><span class="lc">        <span class="s-cm">/* 숫자: 후위 출력에 추가 */</span></span></div>
+<div class="code-line"><span class="ln">63</span><span class="lc">        <span class="s-kw">if</span> (<span class="s-fn">isdigit</span>(infix[i])) {</span></div>
+<div class="code-line"><span class="ln">64</span><span class="lc">            <span class="s-type">char</span> num[<span class="s-num">16</span>];</span></div>
+<div class="code-line"><span class="ln">65</span><span class="lc">            <span class="s-type">int</span> j = <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">66</span><span class="lc">            <span class="s-kw">while</span> (<span class="s-fn">isdigit</span>(infix[i])) {</span></div>
+<div class="code-line"><span class="ln">67</span><span class="lc">                num[j++] = infix[i++];</span></div>
+<div class="code-line"><span class="ln">68</span><span class="lc">            }</span></div>
+<div class="code-line"><span class="ln">69</span><span class="lc">            num[j] = '\<span class="s-num">0</span>';</span></div>
+<div class="code-line"><span class="ln">70</span><span class="lc">            <span class="s-fn">strcpy</span>(postfix[count++], num);</span></div>
+<div class="code-line"><span class="ln">71</span><span class="lc">        }</span></div>
+<div class="code-line"><span class="ln">72</span><span class="lc">        <span class="s-cm">/* 여는 괄호: 연산자 스택에 push */</span></span></div>
+<div class="code-line"><span class="ln">73</span><span class="lc">        <span class="s-kw">else</span> <span class="s-kw">if</span> (infix[i] == <span class="s-str">'('</span>) {</span></div>
+<div class="code-line"><span class="ln">74</span><span class="lc">            <span class="s-fn">charPush</span>(&amp;opStack, <span class="s-str">'('</span>);</span></div>
+<div class="code-line"><span class="ln">75</span><span class="lc">            i++;</span></div>
+<div class="code-line"><span class="ln">76</span><span class="lc">        }</span></div>
+<div class="code-line"><span class="ln">77</span><span class="lc">        <span class="s-cm">/* 닫는 괄호: '('를 만날 때까지 pop */</span></span></div>
+<div class="code-line"><span class="ln">78</span><span class="lc">        <span class="s-kw">else</span> <span class="s-kw">if</span> (infix[i] == <span class="s-str">')'</span>) {</span></div>
+<div class="code-line"><span class="ln">79</span><span class="lc">            <span class="s-kw">while</span> (!<span class="s-fn">charIsEmpty</span>(&amp;opStack) &amp;&amp;</span></div>
+<div class="code-line"><span class="ln">80</span><span class="lc">                   <span class="s-fn">charPeek</span>(&amp;opStack) != <span class="s-str">'('</span>) {</span></div>
+<div class="code-line"><span class="ln">81</span><span class="lc">                <span class="s-type">char</span> op[<span class="s-num">2</span>] = { <span class="s-fn">charPop</span>(&amp;opStack), '\<span class="s-num">0</span>' };</span></div>
+<div class="code-line"><span class="ln">82</span><span class="lc">                <span class="s-fn">strcpy</span>(postfix[count++], op);</span></div>
+<div class="code-line"><span class="ln">83</span><span class="lc">            }</span></div>
+<div class="code-line"><span class="ln">84</span><span class="lc">            <span class="s-kw">if</span> (!<span class="s-fn">charIsEmpty</span>(&amp;opStack)) {</span></div>
+<div class="code-line"><span class="ln">85</span><span class="lc">                <span class="s-fn">charPop</span>(&amp;opStack);  <span class="s-cm">/* '(' 제거 */</span></span></div>
+<div class="code-line"><span class="ln">86</span><span class="lc">            }</span></div>
+<div class="code-line"><span class="ln">87</span><span class="lc">            i++;</span></div>
+<div class="code-line"><span class="ln">88</span><span class="lc">        }</span></div>
+<div class="code-line"><span class="ln">89</span><span class="lc">        <span class="s-cm">/* 연산자: 우선순위 비교 후 처리 */</span></span></div>
+<div class="code-line"><span class="ln">90</span><span class="lc">        <span class="s-kw">else</span> <span class="s-kw">if</span> (<span class="s-fn">isOperator</span>(infix[i])) {</span></div>
+<div class="code-line"><span class="ln">91</span><span class="lc">            <span class="s-kw">while</span> (!<span class="s-fn">charIsEmpty</span>(&amp;opStack) &amp;&amp;</span></div>
+<div class="code-line"><span class="ln">92</span><span class="lc">                   <span class="s-fn">charPeek</span>(&amp;opStack) != <span class="s-str">'('</span> &amp;&amp;</span></div>
+<div class="code-line"><span class="ln">93</span><span class="lc">                   <span class="s-fn">precedence</span>(<span class="s-fn">charPeek</span>(&amp;opStack)) &gt;= <span class="s-fn">precedence</span>(infix[i])) {</span></div>
+<div class="code-line"><span class="ln">94</span><span class="lc">                <span class="s-type">char</span> op[<span class="s-num">2</span>] = { <span class="s-fn">charPop</span>(&amp;opStack), '\<span class="s-num">0</span>' };</span></div>
+<div class="code-line"><span class="ln">95</span><span class="lc">                <span class="s-fn">strcpy</span>(postfix[count++], op);</span></div>
+<div class="code-line"><span class="ln">96</span><span class="lc">            }</span></div>
+<div class="code-line"><span class="ln">97</span><span class="lc">            <span class="s-fn">charPush</span>(&amp;opStack, infix[i]);</span></div>
+<div class="code-line"><span class="ln">98</span><span class="lc">            i++;</span></div>
+<div class="code-line"><span class="ln">99</span><span class="lc">        }</span></div>
+<div class="code-line"><span class="ln">100</span><span class="lc">        <span class="s-kw">else</span> {</span></div>
+<div class="code-line"><span class="ln">101</span><span class="lc">            i++;  <span class="s-cm">/* 알 수 없는 문자 건너뛰기 */</span></span></div>
+<div class="code-line"><span class="ln">102</span><span class="lc">        }</span></div>
+<div class="code-line"><span class="ln">103</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">104</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">105</span><span class="lc">    <span class="s-cm">/* 스택에 남은 연산자 모두 출력 */</span></span></div>
+<div class="code-line"><span class="ln">106</span><span class="lc">    <span class="s-kw">while</span> (!<span class="s-fn">charIsEmpty</span>(&amp;opStack)) {</span></div>
+<div class="code-line"><span class="ln">107</span><span class="lc">        <span class="s-type">char</span> op[<span class="s-num">2</span>] = { <span class="s-fn">charPop</span>(&amp;opStack), '\<span class="s-num">0</span>' };</span></div>
+<div class="code-line"><span class="ln">108</span><span class="lc">        <span class="s-fn">strcpy</span>(postfix[count++], op);</span></div>
+<div class="code-line"><span class="ln">109</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">110</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">111</span><span class="lc">    <span class="s-kw">return</span> count;</span></div>
+<div class="code-line"><span class="ln">112</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">113</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">114</span><span class="lc"><span class="s-cm">/* 후위 표기식 계산 (토큰 배열 버전) */</span></span></div>
+<div class="code-line"><span class="ln">115</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">evaluatePostfix</span>(<span class="s-type">char</span> tokens[][<span class="s-num">16</span>], <span class="s-type">int</span> tokenCount) {</span></div>
+<div class="code-line"><span class="ln">116</span><span class="lc">    IntStack stack;</span></div>
+<div class="code-line"><span class="ln">117</span><span class="lc">    <span class="s-fn">intInit</span>(&amp;stack);</span></div>
+<div class="code-line"><span class="ln">118</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">119</span><span class="lc">    <span class="s-kw">for</span> (<span class="s-type">int</span> i = <span class="s-num">0</span>; i &lt; tokenCount; i++) {</span></div>
+<div class="code-line"><span class="ln">120</span><span class="lc">        <span class="s-cm">/* 숫자 토큰 */</span></span></div>
+<div class="code-line"><span class="ln">121</span><span class="lc">        <span class="s-kw">if</span> (<span class="s-fn">isdigit</span>(tokens[i][<span class="s-num">0</span>])) {</span></div>
+<div class="code-line"><span class="ln">122</span><span class="lc">            <span class="s-fn">intPush</span>(&amp;stack, <span class="s-fn">atoi</span>(tokens[i]));</span></div>
+<div class="code-line"><span class="ln">123</span><span class="lc">        }</span></div>
+<div class="code-line"><span class="ln">124</span><span class="lc">        <span class="s-cm">/* 연산자 토큰 */</span></span></div>
+<div class="code-line"><span class="ln">125</span><span class="lc">        <span class="s-kw">else</span> <span class="s-kw">if</span> (<span class="s-fn">isOperator</span>(tokens[i][<span class="s-num">0</span>]) &amp;&amp; tokens[i][<span class="s-num">1</span>] == '\<span class="s-num">0</span>') {</span></div>
+<div class="code-line"><span class="ln">126</span><span class="lc">            <span class="s-type">int</span> b = <span class="s-fn">intPop</span>(&amp;stack);</span></div>
+<div class="code-line"><span class="ln">127</span><span class="lc">            <span class="s-type">int</span> a = <span class="s-fn">intPop</span>(&amp;stack);</span></div>
+<div class="code-line"><span class="ln">128</span><span class="lc">            <span class="s-type">int</span> result = <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">129</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">130</span><span class="lc">            <span class="s-kw">switch</span> (tokens[i][<span class="s-num">0</span>]) {</span></div>
+<div class="code-line"><span class="ln">131</span><span class="lc">                <span class="s-kw">case</span> <span class="s-str">'+'</span>: result = a + b; <span class="s-kw">break</span>;</span></div>
+<div class="code-line"><span class="ln">132</span><span class="lc">                <span class="s-kw">case</span> <span class="s-str">'-'</span>: result = a - b; <span class="s-kw">break</span>;</span></div>
+<div class="code-line"><span class="ln">133</span><span class="lc">                <span class="s-kw">case</span> <span class="s-str">'*'</span>: result = a * b; <span class="s-kw">break</span>;</span></div>
+<div class="code-line"><span class="ln">134</span><span class="lc">                <span class="s-kw">case</span> <span class="s-str">'/'</span>:</span></div>
+<div class="code-line"><span class="ln">135</span><span class="lc">                    <span class="s-kw">if</span> (b == <span class="s-num">0</span>) {</span></div>
+<div class="code-line"><span class="ln">136</span><span class="lc">                        <span class="s-fn">printf</span>(<span class="s-str">"오류: 0으로 나눌 수 없습니다.\n"</span>);</span></div>
+<div class="code-line"><span class="ln">137</span><span class="lc">                        <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">138</span><span class="lc">                    }</span></div>
+<div class="code-line"><span class="ln">139</span><span class="lc">                    result = a / b;</span></div>
+<div class="code-line"><span class="ln">140</span><span class="lc">                    <span class="s-kw">break</span>;</span></div>
+<div class="code-line"><span class="ln">141</span><span class="lc">            }</span></div>
+<div class="code-line"><span class="ln">142</span><span class="lc">            <span class="s-fn">intPush</span>(&amp;stack, result);</span></div>
+<div class="code-line"><span class="ln">143</span><span class="lc">        }</span></div>
+<div class="code-line"><span class="ln">144</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">145</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">146</span><span class="lc">    <span class="s-kw">return</span> <span class="s-fn">intPop</span>(&amp;stack);</span></div>
+<div class="code-line"><span class="ln">147</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">148</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">149</span><span class="lc"><span class="s-cm">/* 후위 토큰 출력 */</span></span></div>
+<div class="code-line"><span class="ln">150</span><span class="lc"><span class="s-type">void</span> <span class="s-fn">printPostfix</span>(<span class="s-type">char</span> tokens[][<span class="s-num">16</span>], <span class="s-type">int</span> count) {</span></div>
+<div class="code-line"><span class="ln">151</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"후위 표기: "</span>);</span></div>
+<div class="code-line"><span class="ln">152</span><span class="lc">    <span class="s-kw">for</span> (<span class="s-type">int</span> i = <span class="s-num">0</span>; i &lt; count; i++) {</span></div>
+<div class="code-line"><span class="ln">153</span><span class="lc">        <span class="s-fn">printf</span>(<span class="s-str">"%s "</span>, tokens[i]);</span></div>
+<div class="code-line"><span class="ln">154</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">155</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"\n"</span>);</span></div>
+<div class="code-line"><span class="ln">156</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">157</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">158</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">main</span>(<span class="s-type">void</span>) {</span></div>
+<div class="code-line"><span class="ln">159</span><span class="lc">    <span class="s-type">char</span> expression[MAX_EXPR];</span></div>
+<div class="code-line"><span class="ln">160</span><span class="lc">    <span class="s-type">char</span> postfix[MAX_TOKENS][<span class="s-num">16</span>];</span></div>
+<div class="code-line"><span class="ln">161</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">162</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"=== 수식 계산기 v2 ===\n"</span>);</span></div>
+<div class="code-line"><span class="ln">163</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"중위 표기식을 입력하십시오. (괄호 사용 가능)\n"</span>);</span></div>
+<div class="code-line"><span class="ln">164</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"예: (3 + 4) * 2\n\n"</span>);</span></div>
+<div class="code-line"><span class="ln">165</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">166</span><span class="lc">    <span class="s-kw">while</span> (<span class="s-num">1</span>) {</span></div>
+<div class="code-line"><span class="ln">167</span><span class="lc">        <span class="s-fn">printf</span>(<span class="s-str">"&gt; "</span>);</span></div>
+<div class="code-line"><span class="ln">168</span><span class="lc">        <span class="s-kw">if</span> (<span class="s-fn">fgets</span>(expression, <span class="s-kw">sizeof</span>(expression), stdin) == <span class="s-kw">NULL</span>)</span></div>
+<div class="code-line"><span class="ln">169</span><span class="lc">            <span class="s-kw">break</span>;</span></div>
+<div class="code-line"><span class="ln">170</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">171</span><span class="lc">        expression[<span class="s-fn">strcspn</span>(expression, <span class="s-str">"\n"</span>)] = '\<span class="s-num">0</span>';</span></div>
+<div class="code-line"><span class="ln">172</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">173</span><span class="lc">        <span class="s-kw">if</span> (<span class="s-fn">strcmp</span>(expression, <span class="s-str">"quit"</span>) == <span class="s-num">0</span>) <span class="s-kw">break</span>;</span></div>
+<div class="code-line"><span class="ln">174</span><span class="lc">        <span class="s-kw">if</span> (<span class="s-fn">strlen</span>(expression) == <span class="s-num">0</span>) <span class="s-kw">continue</span>;</span></div>
+<div class="code-line"><span class="ln">175</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">176</span><span class="lc">        <span class="s-cm">/* 1. 중위 -&gt; 후위 변환 */</span></span></div>
+<div class="code-line"><span class="ln">177</span><span class="lc">        <span class="s-type">int</span> tokenCount = <span class="s-fn">infixToPostfix</span>(expression, postfix, MAX_TOKENS);</span></div>
+<div class="code-line"><span class="ln">178</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">179</span><span class="lc">        <span class="s-cm">/* 2. 변환 결과 출력 */</span></span></div>
+<div class="code-line"><span class="ln">180</span><span class="lc">        <span class="s-fn">printPostfix</span>(postfix, tokenCount);</span></div>
+<div class="code-line"><span class="ln">181</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">182</span><span class="lc">        <span class="s-cm">/* 3. 후위 표기식 계산 */</span></span></div>
+<div class="code-line"><span class="ln">183</span><span class="lc">        <span class="s-type">int</span> result = <span class="s-fn">evaluatePostfix</span>(postfix, tokenCount);</span></div>
+<div class="code-line"><span class="ln">184</span><span class="lc">        <span class="s-fn">printf</span>(<span class="s-str">"결과: %d\n\n"</span>, result);</span></div>
+<div class="code-line"><span class="ln">185</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">186</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">187</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"종료합니다.\n"</span>);</span></div>
+<div class="code-line"><span class="ln">188</span><span class="lc">    <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">189</span><span class="lc">}</span></div>
+</div>
+</div>
+<div class="debug-section"><div class="debug-bar">DEBUG LAB — 에러를 찾으시오</div><div class="debug-body">
+
+<p style="margin:14px 0 0; font-size:14px;"><b>에러:</b> </p>
+<p style="font-size:14px;"><b>수정:</b> </p>
+</div></div>
+<h2 class="section-title">버전 3: 완성 -- 다자릿수, 실수, 에러 처리, 히스토리</h2>
+<p>undefined</p>
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;stdio.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;stdlib.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;string.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">4</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;ctype.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">5</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;math.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">6</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">7</span><span class="lc"><span class="s-pp">#define</span> MAX_STACK    <span class="s-num">100</span></span></div>
+<div class="code-line"><span class="ln">8</span><span class="lc"><span class="s-pp">#define</span> MAX_EXPR     <span class="s-num">256</span></span></div>
+<div class="code-line"><span class="ln">9</span><span class="lc"><span class="s-pp">#define</span> MAX_TOKENS   <span class="s-num">100</span></span></div>
+<div class="code-line"><span class="ln">10</span><span class="lc"><span class="s-pp">#define</span> TOKEN_LEN     <span class="s-num">32</span></span></div>
+<div class="code-line"><span class="ln">11</span><span class="lc"><span class="s-pp">#define</span> HISTORY_SIZE  <span class="s-num">20</span></span></div>
+<div class="code-line"><span class="ln">12</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">13</span><span class="lc"><span class="s-cm">/* ===== 실수 스택 ===== */</span></span></div>
+<div class="code-line"><span class="ln">14</span><span class="lc"><span class="s-kw">typedef</span> <span class="s-kw">struct</span> {</span></div>
+<div class="code-line"><span class="ln">15</span><span class="lc">    <span class="s-type">double</span> data[MAX_STACK];</span></div>
+<div class="code-line"><span class="ln">16</span><span class="lc">    <span class="s-type">int</span>    top;</span></div>
+<div class="code-line"><span class="ln">17</span><span class="lc">} DoubleStack;</span></div>
+<div class="code-line"><span class="ln">18</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">19</span><span class="lc"><span class="s-type">void</span> <span class="s-fn">dblInit</span>(DoubleStack *s)            { s-&gt;top = -<span class="s-num">1</span>; }</span></div>
+<div class="code-line"><span class="ln">20</span><span class="lc"><span class="s-type">int</span>  <span class="s-fn">dblIsEmpty</span>(DoubleStack *s)         { <span class="s-kw">return</span> s-&gt;top == -<span class="s-num">1</span>; }</span></div>
+<div class="code-line"><span class="ln">21</span><span class="lc"><span class="s-type">int</span>  <span class="s-fn">dblSize</span>(DoubleStack *s)            { <span class="s-kw">return</span> s-&gt;top + <span class="s-num">1</span>; }</span></div>
+<div class="code-line"><span class="ln">22</span><span class="lc"><span class="s-type">void</span> <span class="s-fn">dblPush</span>(DoubleStack *s, <span class="s-type">double</span> v)  { s-&gt;data[++(s-&gt;top)] = v; }</span></div>
+<div class="code-line"><span class="ln">23</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">24</span><span class="lc"><span class="s-type">double</span> <span class="s-fn">dblPop</span>(DoubleStack *s) {</span></div>
+<div class="code-line"><span class="ln">25</span><span class="lc">    <span class="s-kw">if</span> (s-&gt;top == -<span class="s-num">1</span>) <span class="s-kw">return</span> <span class="s-num">0.0</span>;</span></div>
+<div class="code-line"><span class="ln">26</span><span class="lc">    <span class="s-kw">return</span> s-&gt;data[(s-&gt;top)--];</span></div>
+<div class="code-line"><span class="ln">27</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">28</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">29</span><span class="lc"><span class="s-type">double</span> <span class="s-fn">dblPeek</span>(DoubleStack *s) {</span></div>
+<div class="code-line"><span class="ln">30</span><span class="lc">    <span class="s-kw">if</span> (s-&gt;top == -<span class="s-num">1</span>) <span class="s-kw">return</span> <span class="s-num">0.0</span>;</span></div>
+<div class="code-line"><span class="ln">31</span><span class="lc">    <span class="s-kw">return</span> s-&gt;data[s-&gt;top];</span></div>
+<div class="code-line"><span class="ln">32</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">33</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">34</span><span class="lc"><span class="s-cm">/* ===== 문자 스택 ===== */</span></span></div>
+<div class="code-line"><span class="ln">35</span><span class="lc"><span class="s-kw">typedef</span> <span class="s-kw">struct</span> {</span></div>
+<div class="code-line"><span class="ln">36</span><span class="lc">    <span class="s-type">char</span> data[MAX_STACK];</span></div>
+<div class="code-line"><span class="ln">37</span><span class="lc">    <span class="s-type">int</span>  top;</span></div>
+<div class="code-line"><span class="ln">38</span><span class="lc">} CharStack;</span></div>
+<div class="code-line"><span class="ln">39</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">40</span><span class="lc"><span class="s-type">void</span> <span class="s-fn">charInit</span>(CharStack *s)         { s-&gt;top = -<span class="s-num">1</span>; }</span></div>
+<div class="code-line"><span class="ln">41</span><span class="lc"><span class="s-type">int</span>  <span class="s-fn">charIsEmpty</span>(CharStack *s)      { <span class="s-kw">return</span> s-&gt;top == -<span class="s-num">1</span>; }</span></div>
+<div class="code-line"><span class="ln">42</span><span class="lc"><span class="s-type">void</span> <span class="s-fn">charPush</span>(CharStack *s, <span class="s-type">char</span> c) { s-&gt;data[++(s-&gt;top)] = c; }</span></div>
+<div class="code-line"><span class="ln">43</span><span class="lc"><span class="s-type">char</span> <span class="s-fn">charPop</span>(CharStack *s)          { <span class="s-kw">return</span> s-&gt;data[(s-&gt;top)--]; }</span></div>
+<div class="code-line"><span class="ln">44</span><span class="lc"><span class="s-type">char</span> <span class="s-fn">charPeek</span>(CharStack *s)         { <span class="s-kw">return</span> s-&gt;data[s-&gt;top]; }</span></div>
+<div class="code-line"><span class="ln">45</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">46</span><span class="lc"><span class="s-cm">/* ===== 히스토리 ===== */</span></span></div>
+<div class="code-line"><span class="ln">47</span><span class="lc"><span class="s-kw">typedef</span> <span class="s-kw">struct</span> {</span></div>
+<div class="code-line"><span class="ln">48</span><span class="lc">    <span class="s-type">char</span>   expression[MAX_EXPR];</span></div>
+<div class="code-line"><span class="ln">49</span><span class="lc">    <span class="s-type">double</span> result;</span></div>
+<div class="code-line"><span class="ln">50</span><span class="lc">} HistoryEntry;</span></div>
+<div class="code-line"><span class="ln">51</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">52</span><span class="lc">HistoryEntry history[HISTORY_SIZE];</span></div>
+<div class="code-line"><span class="ln">53</span><span class="lc"><span class="s-type">int</span> historyIndex = <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">54</span><span class="lc"><span class="s-type">int</span> historyCount = <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">55</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">56</span><span class="lc"><span class="s-type">void</span> <span class="s-fn">addHistory</span>(<span class="s-kw">const</span> <span class="s-type">char</span> *expr, <span class="s-type">double</span> result) {</span></div>
+<div class="code-line"><span class="ln">57</span><span class="lc">    <span class="s-fn">strcpy</span>(history[historyIndex].expression, expr);</span></div>
+<div class="code-line"><span class="ln">58</span><span class="lc">    history[historyIndex].result = result;</span></div>
+<div class="code-line"><span class="ln">59</span><span class="lc">    historyIndex = (historyIndex + <span class="s-num">1</span>) % HISTORY_SIZE;</span></div>
+<div class="code-line"><span class="ln">60</span><span class="lc">    <span class="s-kw">if</span> (historyCount &lt; HISTORY_SIZE) historyCount++;</span></div>
+<div class="code-line"><span class="ln">61</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">62</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">63</span><span class="lc"><span class="s-type">void</span> <span class="s-fn">showHistory</span>(<span class="s-type">void</span>) {</span></div>
+<div class="code-line"><span class="ln">64</span><span class="lc">    <span class="s-kw">if</span> (historyCount == <span class="s-num">0</span>) {</span></div>
+<div class="code-line"><span class="ln">65</span><span class="lc">        <span class="s-fn">printf</span>(<span class="s-str">"계산 기록이 없습니다.\n"</span>);</span></div>
+<div class="code-line"><span class="ln">66</span><span class="lc">        <span class="s-kw">return</span>;</span></div>
+<div class="code-line"><span class="ln">67</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">68</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">69</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"\n--- 계산 기록 (최근 %d건) ---\n"</span>, historyCount);</span></div>
+<div class="code-line"><span class="ln">70</span><span class="lc">    <span class="s-type">int</span> start = (historyIndex - historyCount + HISTORY_SIZE)</span></div>
+<div class="code-line"><span class="ln">71</span><span class="lc">                % HISTORY_SIZE;</span></div>
+<div class="code-line"><span class="ln">72</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">73</span><span class="lc">    <span class="s-kw">for</span> (<span class="s-type">int</span> i = <span class="s-num">0</span>; i &lt; historyCount; i++) {</span></div>
+<div class="code-line"><span class="ln">74</span><span class="lc">        <span class="s-type">int</span> idx = (start + i) % HISTORY_SIZE;</span></div>
+<div class="code-line"><span class="ln">75</span><span class="lc">        <span class="s-fn">printf</span>(<span class="s-str">"  %d. %s = %g\n"</span>,</span></div>
+<div class="code-line"><span class="ln">76</span><span class="lc">               i + <span class="s-num">1</span>, history[idx].expression, history[idx].result);</span></div>
+<div class="code-line"><span class="ln">77</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">78</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">79</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">80</span><span class="lc"><span class="s-cm">/* ===== 유틸리티 ===== */</span></span></div>
+<div class="code-line"><span class="ln">81</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">82</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">precedence</span>(<span class="s-type">char</span> op) {</span></div>
+<div class="code-line"><span class="ln">83</span><span class="lc">    <span class="s-kw">switch</span> (op) {</span></div>
+<div class="code-line"><span class="ln">84</span><span class="lc">        <span class="s-kw">case</span> <span class="s-str">'+'</span>: <span class="s-kw">case</span> <span class="s-str">'-'</span>: <span class="s-kw">return</span> <span class="s-num">1</span>;</span></div>
+<div class="code-line"><span class="ln">85</span><span class="lc">        <span class="s-kw">case</span> <span class="s-str">'*'</span>: <span class="s-kw">case</span> <span class="s-str">'/'</span>: <span class="s-kw">return</span> <span class="s-num">2</span>;</span></div>
+<div class="code-line"><span class="ln">86</span><span class="lc">        <span class="s-kw">default</span>:            <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">87</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">88</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">89</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">90</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">isOperator</span>(<span class="s-type">char</span> c) {</span></div>
+<div class="code-line"><span class="ln">91</span><span class="lc">    <span class="s-kw">return</span> c == <span class="s-str">'+'</span> || c == <span class="s-str">'-'</span> || c == <span class="s-str">'*'</span> || c == <span class="s-str">'/'</span>;</span></div>
+<div class="code-line"><span class="ln">92</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">93</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">94</span><span class="lc"><span class="s-cm">/* 단항 마이너스인지 판별 */</span></span></div>
+<div class="code-line"><span class="ln">95</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">isUnaryMinus</span>(<span class="s-kw">const</span> <span class="s-type">char</span> *expr, <span class="s-type">int</span> pos) {</span></div>
+<div class="code-line"><span class="ln">96</span><span class="lc">    <span class="s-kw">if</span> (expr[pos] != <span class="s-str">'-'</span>) <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">97</span><span class="lc">    <span class="s-kw">if</span> (pos == <span class="s-num">0</span>) <span class="s-kw">return</span> <span class="s-num">1</span>;</span></div>
+<div class="code-line"><span class="ln">98</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">99</span><span class="lc">    <span class="s-cm">/* 바로 앞 유효 문자 찾기 */</span></span></div>
+<div class="code-line"><span class="ln">100</span><span class="lc">    <span class="s-type">int</span> k = pos - <span class="s-num">1</span>;</span></div>
+<div class="code-line"><span class="ln">101</span><span class="lc">    <span class="s-kw">while</span> (k &gt;= <span class="s-num">0</span> &amp;&amp; expr[k] == <span class="s-str">' '</span>) k--;</span></div>
+<div class="code-line"><span class="ln">102</span><span class="lc">    <span class="s-kw">if</span> (k &lt; <span class="s-num">0</span>) <span class="s-kw">return</span> <span class="s-num">1</span>;</span></div>
+<div class="code-line"><span class="ln">103</span><span class="lc">    <span class="s-kw">if</span> (<span class="s-fn">isOperator</span>(expr[k]) || expr[k] == <span class="s-str">'('</span>) <span class="s-kw">return</span> <span class="s-num">1</span>;</span></div>
+<div class="code-line"><span class="ln">104</span><span class="lc">    <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">105</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">106</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">107</span><span class="lc"><span class="s-cm">/* ===== 토크나이저 (다자릿수, 실수, 음수 지원) ===== */</span></span></div>
+<div class="code-line"><span class="ln">108</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">109</span><span class="lc"><span class="s-kw">typedef</span> <span class="s-kw">struct</span> {</span></div>
+<div class="code-line"><span class="ln">110</span><span class="lc">    <span class="s-type">char</span> tokens[MAX_TOKENS][TOKEN_LEN];</span></div>
+<div class="code-line"><span class="ln">111</span><span class="lc">    <span class="s-type">int</span>  count;</span></div>
+<div class="code-line"><span class="ln">112</span><span class="lc">} TokenList;</span></div>
+<div class="code-line"><span class="ln">113</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">114</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">tokenize</span>(<span class="s-kw">const</span> <span class="s-type">char</span> *expr, TokenList *list) {</span></div>
+<div class="code-line"><span class="ln">115</span><span class="lc">    list-&gt;count = <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">116</span><span class="lc">    <span class="s-type">int</span> i = <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">117</span><span class="lc">    <span class="s-type">int</span> len = (<span class="s-type">int</span>)<span class="s-fn">strlen</span>(expr);</span></div>
+<div class="code-line"><span class="ln">118</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">119</span><span class="lc">    <span class="s-kw">while</span> (i &lt; len) {</span></div>
+<div class="code-line"><span class="ln">120</span><span class="lc">        <span class="s-kw">if</span> (expr[i] == <span class="s-str">' '</span>) {</span></div>
+<div class="code-line"><span class="ln">121</span><span class="lc">            i++;</span></div>
+<div class="code-line"><span class="ln">122</span><span class="lc">            <span class="s-kw">continue</span>;</span></div>
+<div class="code-line"><span class="ln">123</span><span class="lc">        }</span></div>
+<div class="code-line"><span class="ln">124</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">125</span><span class="lc">        <span class="s-cm">/* 숫자 또는 단항 마이너스 + 숫자 */</span></span></div>
+<div class="code-line"><span class="ln">126</span><span class="lc">        <span class="s-kw">if</span> (<span class="s-fn">isdigit</span>(expr[i]) || expr[i] == <span class="s-str">'.'</span> ||</span></div>
+<div class="code-line"><span class="ln">127</span><span class="lc">            <span class="s-fn">isUnaryMinus</span>(expr, i)) {</span></div>
+<div class="code-line"><span class="ln">128</span><span class="lc">            <span class="s-type">int</span> j = <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">129</span><span class="lc">            <span class="s-kw">if</span> (expr[i] == <span class="s-str">'-'</span>) {</span></div>
+<div class="code-line"><span class="ln">130</span><span class="lc">                list-&gt;tokens[list-&gt;count][j++] = expr[i++];</span></div>
+<div class="code-line"><span class="ln">131</span><span class="lc">            }</span></div>
+<div class="code-line"><span class="ln">132</span><span class="lc">            <span class="s-kw">while</span> (i &lt; len &amp;&amp; (<span class="s-fn">isdigit</span>(expr[i]) || expr[i] == <span class="s-str">'.'</span>)) {</span></div>
+<div class="code-line"><span class="ln">133</span><span class="lc">                list-&gt;tokens[list-&gt;count][j++] = expr[i++];</span></div>
+<div class="code-line"><span class="ln">134</span><span class="lc">            }</span></div>
+<div class="code-line"><span class="ln">135</span><span class="lc">            list-&gt;tokens[list-&gt;count][j] = '\<span class="s-num">0</span>';</span></div>
+<div class="code-line"><span class="ln">136</span><span class="lc">            list-&gt;count++;</span></div>
+<div class="code-line"><span class="ln">137</span><span class="lc">        }</span></div>
+<div class="code-line"><span class="ln">138</span><span class="lc">        <span class="s-cm">/* 연산자 또는 괄호 */</span></span></div>
+<div class="code-line"><span class="ln">139</span><span class="lc">        <span class="s-kw">else</span> <span class="s-kw">if</span> (<span class="s-fn">isOperator</span>(expr[i]) || expr[i] == <span class="s-str">'('</span> || expr[i] == <span class="s-str">')'</span>) {</span></div>
+<div class="code-line"><span class="ln">140</span><span class="lc">            list-&gt;tokens[list-&gt;count][<span class="s-num">0</span>] = expr[i];</span></div>
+<div class="code-line"><span class="ln">141</span><span class="lc">            list-&gt;tokens[list-&gt;count][<span class="s-num">1</span>] = '\<span class="s-num">0</span>';</span></div>
+<div class="code-line"><span class="ln">142</span><span class="lc">            list-&gt;count++;</span></div>
+<div class="code-line"><span class="ln">143</span><span class="lc">            i++;</span></div>
+<div class="code-line"><span class="ln">144</span><span class="lc">        }</span></div>
+<div class="code-line"><span class="ln">145</span><span class="lc">        <span class="s-kw">else</span> {</span></div>
+<div class="code-line"><span class="ln">146</span><span class="lc">            <span class="s-fn">printf</span>(<span class="s-str">"오류: 잘못된 문자 '%c' (위치 %d)\n"</span>, expr[i], i);</span></div>
+<div class="code-line"><span class="ln">147</span><span class="lc">            <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">148</span><span class="lc">        }</span></div>
+<div class="code-line"><span class="ln">149</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">150</span><span class="lc">    <span class="s-kw">return</span> <span class="s-num">1</span>;</span></div>
+<div class="code-line"><span class="ln">151</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">152</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">153</span><span class="lc"><span class="s-cm">/* ===== 중위 -&gt; 후위 변환 ===== */</span></span></div>
+<div class="code-line"><span class="ln">154</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">155</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">infixToPostfix</span>(TokenList *infix, TokenList *postfix) {</span></div>
+<div class="code-line"><span class="ln">156</span><span class="lc">    CharStack opStack;</span></div>
+<div class="code-line"><span class="ln">157</span><span class="lc">    <span class="s-fn">charInit</span>(&amp;opStack);</span></div>
+<div class="code-line"><span class="ln">158</span><span class="lc">    postfix-&gt;count = <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">159</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">160</span><span class="lc">    <span class="s-kw">for</span> (<span class="s-type">int</span> i = <span class="s-num">0</span>; i &lt; infix-&gt;count; i++) {</span></div>
+<div class="code-line"><span class="ln">161</span><span class="lc">        <span class="s-type">char</span> *token = infix-&gt;tokens[i];</span></div>
+<div class="code-line"><span class="ln">162</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">163</span><span class="lc">        <span class="s-cm">/* 숫자 토큰 (음수 포함: 첫 문자가 숫자이거나 '-' 뒤 숫자) */</span></span></div>
+<div class="code-line"><span class="ln">164</span><span class="lc">        <span class="s-kw">if</span> (<span class="s-fn">isdigit</span>(token[<span class="s-num">0</span>]) || token[<span class="s-num">0</span>] == <span class="s-str">'.'</span> ||</span></div>
+<div class="code-line"><span class="ln">165</span><span class="lc">            (token[<span class="s-num">0</span>] == <span class="s-str">'-'</span> &amp;&amp; token[<span class="s-num">1</span>] != '\<span class="s-num">0</span>')) {</span></div>
+<div class="code-line"><span class="ln">166</span><span class="lc">            <span class="s-fn">strcpy</span>(postfix-&gt;tokens[postfix-&gt;count++], token);</span></div>
+<div class="code-line"><span class="ln">167</span><span class="lc">        }</span></div>
+<div class="code-line"><span class="ln">168</span><span class="lc">        <span class="s-cm">/* 여는 괄호 */</span></span></div>
+<div class="code-line"><span class="ln">169</span><span class="lc">        <span class="s-kw">else</span> <span class="s-kw">if</span> (token[<span class="s-num">0</span>] == <span class="s-str">'('</span>) {</span></div>
+<div class="code-line"><span class="ln">170</span><span class="lc">            <span class="s-fn">charPush</span>(&amp;opStack, <span class="s-str">'('</span>);</span></div>
+<div class="code-line"><span class="ln">171</span><span class="lc">        }</span></div>
+<div class="code-line"><span class="ln">172</span><span class="lc">        <span class="s-cm">/* 닫는 괄호 */</span></span></div>
+<div class="code-line"><span class="ln">173</span><span class="lc">        <span class="s-kw">else</span> <span class="s-kw">if</span> (token[<span class="s-num">0</span>] == <span class="s-str">')'</span>) {</span></div>
+<div class="code-line"><span class="ln">174</span><span class="lc">            <span class="s-kw">while</span> (!<span class="s-fn">charIsEmpty</span>(&amp;opStack) &amp;&amp;</span></div>
+<div class="code-line"><span class="ln">175</span><span class="lc">                   <span class="s-fn">charPeek</span>(&amp;opStack) != <span class="s-str">'('</span>) {</span></div>
+<div class="code-line"><span class="ln">176</span><span class="lc">                <span class="s-type">char</span> op[<span class="s-num">2</span>] = { <span class="s-fn">charPop</span>(&amp;opStack), '\<span class="s-num">0</span>' };</span></div>
+<div class="code-line"><span class="ln">177</span><span class="lc">                <span class="s-fn">strcpy</span>(postfix-&gt;tokens[postfix-&gt;count++], op);</span></div>
+<div class="code-line"><span class="ln">178</span><span class="lc">            }</span></div>
+<div class="code-line"><span class="ln">179</span><span class="lc">            <span class="s-kw">if</span> (<span class="s-fn">charIsEmpty</span>(&amp;opStack)) {</span></div>
+<div class="code-line"><span class="ln">180</span><span class="lc">                <span class="s-fn">printf</span>(<span class="s-str">"오류: 괄호가 일치하지 않습니다.\n"</span>);</span></div>
+<div class="code-line"><span class="ln">181</span><span class="lc">                <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">182</span><span class="lc">            }</span></div>
+<div class="code-line"><span class="ln">183</span><span class="lc">            <span class="s-fn">charPop</span>(&amp;opStack);  <span class="s-cm">/* '(' 제거 */</span></span></div>
+<div class="code-line"><span class="ln">184</span><span class="lc">        }</span></div>
+<div class="code-line"><span class="ln">185</span><span class="lc">        <span class="s-cm">/* 연산자 */</span></span></div>
+<div class="code-line"><span class="ln">186</span><span class="lc">        <span class="s-kw">else</span> <span class="s-kw">if</span> (<span class="s-fn">isOperator</span>(token[<span class="s-num">0</span>]) &amp;&amp; token[<span class="s-num">1</span>] == '\<span class="s-num">0</span>') {</span></div>
+<div class="code-line"><span class="ln">187</span><span class="lc">            <span class="s-kw">while</span> (!<span class="s-fn">charIsEmpty</span>(&amp;opStack) &amp;&amp;</span></div>
+<div class="code-line"><span class="ln">188</span><span class="lc">                   <span class="s-fn">charPeek</span>(&amp;opStack) != <span class="s-str">'('</span> &amp;&amp;</span></div>
+<div class="code-line"><span class="ln">189</span><span class="lc">                   <span class="s-fn">precedence</span>(<span class="s-fn">charPeek</span>(&amp;opStack)) &gt;= <span class="s-fn">precedence</span>(token[<span class="s-num">0</span>])) {</span></div>
+<div class="code-line"><span class="ln">190</span><span class="lc">                <span class="s-type">char</span> op[<span class="s-num">2</span>] = { <span class="s-fn">charPop</span>(&amp;opStack), '\<span class="s-num">0</span>' };</span></div>
+<div class="code-line"><span class="ln">191</span><span class="lc">                <span class="s-fn">strcpy</span>(postfix-&gt;tokens[postfix-&gt;count++], op);</span></div>
+<div class="code-line"><span class="ln">192</span><span class="lc">            }</span></div>
+<div class="code-line"><span class="ln">193</span><span class="lc">            <span class="s-fn">charPush</span>(&amp;opStack, token[<span class="s-num">0</span>]);</span></div>
+<div class="code-line"><span class="ln">194</span><span class="lc">        }</span></div>
+<div class="code-line"><span class="ln">195</span><span class="lc">        <span class="s-kw">else</span> {</span></div>
+<div class="code-line"><span class="ln">196</span><span class="lc">            <span class="s-fn">printf</span>(<span class="s-str">"오류: 잘못된 토큰 '%s'\n"</span>, token);</span></div>
+<div class="code-line"><span class="ln">197</span><span class="lc">            <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">198</span><span class="lc">        }</span></div>
+<div class="code-line"><span class="ln">199</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">200</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">201</span><span class="lc">    <span class="s-kw">while</span> (!<span class="s-fn">charIsEmpty</span>(&amp;opStack)) {</span></div>
+<div class="code-line"><span class="ln">202</span><span class="lc">        <span class="s-kw">if</span> (<span class="s-fn">charPeek</span>(&amp;opStack) == <span class="s-str">'('</span>) {</span></div>
+<div class="code-line"><span class="ln">203</span><span class="lc">            <span class="s-fn">printf</span>(<span class="s-str">"오류: 괄호가 일치하지 않습니다.\n"</span>);</span></div>
+<div class="code-line"><span class="ln">204</span><span class="lc">            <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">205</span><span class="lc">        }</span></div>
+<div class="code-line"><span class="ln">206</span><span class="lc">        <span class="s-type">char</span> op[<span class="s-num">2</span>] = { <span class="s-fn">charPop</span>(&amp;opStack), '\<span class="s-num">0</span>' };</span></div>
+<div class="code-line"><span class="ln">207</span><span class="lc">        <span class="s-fn">strcpy</span>(postfix-&gt;tokens[postfix-&gt;count++], op);</span></div>
+<div class="code-line"><span class="ln">208</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">209</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">210</span><span class="lc">    <span class="s-kw">return</span> <span class="s-num">1</span>;</span></div>
+<div class="code-line"><span class="ln">211</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">212</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">213</span><span class="lc"><span class="s-cm">/* ===== 후위 표기식 계산 (실수) ===== */</span></span></div>
+<div class="code-line"><span class="ln">214</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">215</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">evaluatePostfix</span>(TokenList *postfix, <span class="s-type">double</span> *result) {</span></div>
+<div class="code-line"><span class="ln">216</span><span class="lc">    DoubleStack stack;</span></div>
+<div class="code-line"><span class="ln">217</span><span class="lc">    <span class="s-fn">dblInit</span>(&amp;stack);</span></div>
+<div class="code-line"><span class="ln">218</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">219</span><span class="lc">    <span class="s-kw">for</span> (<span class="s-type">int</span> i = <span class="s-num">0</span>; i &lt; postfix-&gt;count; i++) {</span></div>
+<div class="code-line"><span class="ln">220</span><span class="lc">        <span class="s-type">char</span> *token = postfix-&gt;tokens[i];</span></div>
+<div class="code-line"><span class="ln">221</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">222</span><span class="lc">        <span class="s-cm">/* 숫자 토큰 */</span></span></div>
+<div class="code-line"><span class="ln">223</span><span class="lc">        <span class="s-kw">if</span> (<span class="s-fn">isdigit</span>(token[<span class="s-num">0</span>]) || token[<span class="s-num">0</span>] == <span class="s-str">'.'</span> ||</span></div>
+<div class="code-line"><span class="ln">224</span><span class="lc">            (token[<span class="s-num">0</span>] == <span class="s-str">'-'</span> &amp;&amp; token[<span class="s-num">1</span>] != '\<span class="s-num">0</span>')) {</span></div>
+<div class="code-line"><span class="ln">225</span><span class="lc">            <span class="s-fn">dblPush</span>(&amp;stack, <span class="s-fn">atof</span>(token));</span></div>
+<div class="code-line"><span class="ln">226</span><span class="lc">        }</span></div>
+<div class="code-line"><span class="ln">227</span><span class="lc">        <span class="s-cm">/* 연산자 토큰 */</span></span></div>
+<div class="code-line"><span class="ln">228</span><span class="lc">        <span class="s-kw">else</span> <span class="s-kw">if</span> (<span class="s-fn">isOperator</span>(token[<span class="s-num">0</span>]) &amp;&amp; token[<span class="s-num">1</span>] == '\<span class="s-num">0</span>') {</span></div>
+<div class="code-line"><span class="ln">229</span><span class="lc">            <span class="s-kw">if</span> (<span class="s-fn">dblSize</span>(&amp;stack) &lt; <span class="s-num">2</span>) {</span></div>
+<div class="code-line"><span class="ln">230</span><span class="lc">                <span class="s-fn">printf</span>(<span class="s-str">"오류: 피연산자가 부족합니다.\n"</span>);</span></div>
+<div class="code-line"><span class="ln">231</span><span class="lc">                <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">232</span><span class="lc">            }</span></div>
+<div class="code-line"><span class="ln">233</span><span class="lc">            <span class="s-type">double</span> b = <span class="s-fn">dblPop</span>(&amp;stack);</span></div>
+<div class="code-line"><span class="ln">234</span><span class="lc">            <span class="s-type">double</span> a = <span class="s-fn">dblPop</span>(&amp;stack);</span></div>
+<div class="code-line"><span class="ln">235</span><span class="lc">            <span class="s-type">double</span> r = <span class="s-num">0.0</span>;</span></div>
+<div class="code-line"><span class="ln">236</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">237</span><span class="lc">            <span class="s-kw">switch</span> (token[<span class="s-num">0</span>]) {</span></div>
+<div class="code-line"><span class="ln">238</span><span class="lc">                <span class="s-kw">case</span> <span class="s-str">'+'</span>: r = a + b; <span class="s-kw">break</span>;</span></div>
+<div class="code-line"><span class="ln">239</span><span class="lc">                <span class="s-kw">case</span> <span class="s-str">'-'</span>: r = a - b; <span class="s-kw">break</span>;</span></div>
+<div class="code-line"><span class="ln">240</span><span class="lc">                <span class="s-kw">case</span> <span class="s-str">'*'</span>: r = a * b; <span class="s-kw">break</span>;</span></div>
+<div class="code-line"><span class="ln">241</span><span class="lc">                <span class="s-kw">case</span> <span class="s-str">'/'</span>:</span></div>
+<div class="code-line"><span class="ln">242</span><span class="lc">                    <span class="s-kw">if</span> (<span class="s-fn">fabs</span>(b) &lt; 1e-<span class="s-num">12</span>) {</span></div>
+<div class="code-line"><span class="ln">243</span><span class="lc">                        <span class="s-fn">printf</span>(<span class="s-str">"오류: 0으로 나눌 수 없습니다.\n"</span>);</span></div>
+<div class="code-line"><span class="ln">244</span><span class="lc">                        <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">245</span><span class="lc">                    }</span></div>
+<div class="code-line"><span class="ln">246</span><span class="lc">                    r = a / b;</span></div>
+<div class="code-line"><span class="ln">247</span><span class="lc">                    <span class="s-kw">break</span>;</span></div>
+<div class="code-line"><span class="ln">248</span><span class="lc">            }</span></div>
+<div class="code-line"><span class="ln">249</span><span class="lc">            <span class="s-fn">dblPush</span>(&amp;stack, r);</span></div>
+<div class="code-line"><span class="ln">250</span><span class="lc">        }</span></div>
+<div class="code-line"><span class="ln">251</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">252</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">253</span><span class="lc">    <span class="s-kw">if</span> (<span class="s-fn">dblSize</span>(&amp;stack) != <span class="s-num">1</span>) {</span></div>
+<div class="code-line"><span class="ln">254</span><span class="lc">        <span class="s-fn">printf</span>(<span class="s-str">"오류: 수식이 올바르지 않습니다.\n"</span>);</span></div>
+<div class="code-line"><span class="ln">255</span><span class="lc">        <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">256</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">257</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">258</span><span class="lc">    *result = <span class="s-fn">dblPop</span>(&amp;stack);</span></div>
+<div class="code-line"><span class="ln">259</span><span class="lc">    <span class="s-kw">return</span> <span class="s-num">1</span>;</span></div>
+<div class="code-line"><span class="ln">260</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">261</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">262</span><span class="lc"><span class="s-cm">/* 후위 토큰 출력 */</span></span></div>
+<div class="code-line"><span class="ln">263</span><span class="lc"><span class="s-type">void</span> <span class="s-fn">printPostfix</span>(TokenList *postfix) {</span></div>
+<div class="code-line"><span class="ln">264</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"후위 표기: "</span>);</span></div>
+<div class="code-line"><span class="ln">265</span><span class="lc">    <span class="s-kw">for</span> (<span class="s-type">int</span> i = <span class="s-num">0</span>; i &lt; postfix-&gt;count; i++) {</span></div>
+<div class="code-line"><span class="ln">266</span><span class="lc">        <span class="s-fn">printf</span>(<span class="s-str">"%s "</span>, postfix-&gt;tokens[i]);</span></div>
+<div class="code-line"><span class="ln">267</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">268</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"\n"</span>);</span></div>
+<div class="code-line"><span class="ln">269</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">270</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">271</span><span class="lc"><span class="s-cm">/* ===== 메인 ===== */</span></span></div>
+<div class="code-line"><span class="ln">272</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">273</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">main</span>(<span class="s-type">void</span>) {</span></div>
+<div class="code-line"><span class="ln">274</span><span class="lc">    <span class="s-type">char</span> expression[MAX_EXPR];</span></div>
+<div class="code-line"><span class="ln">275</span><span class="lc">    TokenList infix, postfix;</span></div>
+<div class="code-line"><span class="ln">276</span><span class="lc">    <span class="s-type">int</span> choice;</span></div>
+<div class="code-line"><span class="ln">277</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">278</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"=== 수식 계산기 v3 ===\n"</span>);</span></div>
+<div class="code-line"><span class="ln">279</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">280</span><span class="lc">    <span class="s-kw">do</span> {</span></div>
+<div class="code-line"><span class="ln">281</span><span class="lc">        <span class="s-fn">printf</span>(<span class="s-str">"\n1. 수식 계산  2. 계산 기록  0. 종료\n"</span>);</span></div>
+<div class="code-line"><span class="ln">282</span><span class="lc">        <span class="s-fn">printf</span>(<span class="s-str">"선택: "</span>);</span></div>
+<div class="code-line"><span class="ln">283</span><span class="lc">        <span class="s-fn">scanf</span>(<span class="s-str">"%d"</span>, &amp;choice);</span></div>
+<div class="code-line"><span class="ln">284</span><span class="lc">        <span class="s-fn">getchar</span>();  <span class="s-cm">/* 줄바꿈 제거 */</span></span></div>
+<div class="code-line"><span class="ln">285</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">286</span><span class="lc">        <span class="s-kw">switch</span> (choice) {</span></div>
+<div class="code-line"><span class="ln">287</span><span class="lc">            <span class="s-kw">case</span> <span class="s-num">1</span>:</span></div>
+<div class="code-line"><span class="ln">288</span><span class="lc">                <span class="s-fn">printf</span>(<span class="s-str">"수식 입력 (예: (3.14 + 2) * -5)\n"</span>);</span></div>
+<div class="code-line"><span class="ln">289</span><span class="lc">                <span class="s-fn">printf</span>(<span class="s-str">"&gt; "</span>);</span></div>
+<div class="code-line"><span class="ln">290</span><span class="lc">                <span class="s-kw">if</span> (<span class="s-fn">fgets</span>(expression, <span class="s-kw">sizeof</span>(expression), stdin) == <span class="s-kw">NULL</span>)</span></div>
+<div class="code-line"><span class="ln">291</span><span class="lc">                    <span class="s-kw">break</span>;</span></div>
+<div class="code-line"><span class="ln">292</span><span class="lc">                expression[<span class="s-fn">strcspn</span>(expression, <span class="s-str">"\n"</span>)] = '\<span class="s-num">0</span>';</span></div>
+<div class="code-line"><span class="ln">293</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">294</span><span class="lc">                <span class="s-kw">if</span> (<span class="s-fn">strlen</span>(expression) == <span class="s-num">0</span>) <span class="s-kw">break</span>;</span></div>
+<div class="code-line"><span class="ln">295</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">296</span><span class="lc">                <span class="s-cm">/* 1. 토크나이징 */</span></span></div>
+<div class="code-line"><span class="ln">297</span><span class="lc">                <span class="s-kw">if</span> (!<span class="s-fn">tokenize</span>(expression, &amp;infix)) <span class="s-kw">break</span>;</span></div>
+<div class="code-line"><span class="ln">298</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">299</span><span class="lc">                <span class="s-cm">/* 2. 중위 -&gt; 후위 변환 */</span></span></div>
+<div class="code-line"><span class="ln">300</span><span class="lc">                <span class="s-kw">if</span> (!<span class="s-fn">infixToPostfix</span>(&amp;infix, &amp;postfix)) <span class="s-kw">break</span>;</span></div>
+<div class="code-line"><span class="ln">301</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">302</span><span class="lc">                <span class="s-cm">/* 3. 변환 결과 출력 */</span></span></div>
+<div class="code-line"><span class="ln">303</span><span class="lc">                <span class="s-fn">printPostfix</span>(&amp;postfix);</span></div>
+<div class="code-line"><span class="ln">304</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">305</span><span class="lc">                <span class="s-cm">/* 4. 후위 표기식 계산 */</span></span></div>
+<div class="code-line"><span class="ln">306</span><span class="lc">                <span class="s-type">double</span> result;</span></div>
+<div class="code-line"><span class="ln">307</span><span class="lc">                <span class="s-kw">if</span> (<span class="s-fn">evaluatePostfix</span>(&amp;postfix, &amp;result)) {</span></div>
+<div class="code-line"><span class="ln">308</span><span class="lc">                    <span class="s-fn">printf</span>(<span class="s-str">"결과: %g\n"</span>, result);</span></div>
+<div class="code-line"><span class="ln">309</span><span class="lc">                    <span class="s-fn">addHistory</span>(expression, result);</span></div>
+<div class="code-line"><span class="ln">310</span><span class="lc">                }</span></div>
+<div class="code-line"><span class="ln">311</span><span class="lc">                <span class="s-kw">break</span>;</span></div>
+<div class="code-line"><span class="ln">312</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">313</span><span class="lc">            <span class="s-kw">case</span> <span class="s-num">2</span>:</span></div>
+<div class="code-line"><span class="ln">314</span><span class="lc">                <span class="s-fn">showHistory</span>();</span></div>
+<div class="code-line"><span class="ln">315</span><span class="lc">                <span class="s-kw">break</span>;</span></div>
+<div class="code-line"><span class="ln">316</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">317</span><span class="lc">            <span class="s-kw">case</span> <span class="s-num">0</span>:</span></div>
+<div class="code-line"><span class="ln">318</span><span class="lc">                <span class="s-fn">printf</span>(<span class="s-str">"종료합니다.\n"</span>);</span></div>
+<div class="code-line"><span class="ln">319</span><span class="lc">                <span class="s-kw">break</span>;</span></div>
+<div class="code-line"><span class="ln">320</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">321</span><span class="lc">            <span class="s-kw">default</span>:</span></div>
+<div class="code-line"><span class="ln">322</span><span class="lc">                <span class="s-fn">printf</span>(<span class="s-str">"잘못된 선택입니다.\n"</span>);</span></div>
+<div class="code-line"><span class="ln">323</span><span class="lc">                <span class="s-kw">break</span>;</span></div>
+<div class="code-line"><span class="ln">324</span><span class="lc">        }</span></div>
+<div class="code-line"><span class="ln">325</span><span class="lc">    } <span class="s-kw">while</span> (choice != <span class="s-num">0</span>);</span></div>
+<div class="code-line"><span class="ln">326</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">327</span><span class="lc">    <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">328</span><span class="lc">}</span></div>
+</div>
+</div>
+<div class="debug-section"><div class="debug-bar">DEBUG LAB — 에러를 찾으시오</div><div class="debug-body">
+
+<p style="margin:14px 0 0; font-size:14px;"><b>에러:</b> </p>
+<p style="font-size:14px;"><b>수정:</b> </p>
+</div></div>
+<div class="debug-section"><div class="debug-bar">DEBUG LAB — 에러를 찾으시오</div><div class="debug-body">
+
+<p style="margin:14px 0 0; font-size:14px;"><b>에러:</b> </p>
+<p style="font-size:14px;"><b>수정:</b> </p>
+</div></div>
+<h2 class="section-title">에러 체험</h2>
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc"><span class="s-cm">// 에러 1: pop 순서 오류 (a와 b 뒤바뀜)</span></span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc"><span class="s-type">int</span> b = <span class="s-fn">pop</span>(&amp;stack);  <span class="s-cm">// 나중에 push된 값</span></span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc"><span class="s-type">int</span> a = <span class="s-fn">pop</span>(&amp;stack);  <span class="s-cm">// 먼저 push된 값</span></span></div>
+<div class="code-line"><span class="ln">4</span><span class="lc"><span class="s-type">int</span> result = a - b;   <span class="s-cm">// 올바른 순서: a - b</span></span></div>
+<div class="code-line"><span class="ln">5</span><span class="lc"><span class="s-cm">// 만약 a = pop, b = pop 순서로 하면</span></span></div>
+<div class="code-line"><span class="ln">6</span><span class="lc"><span class="s-cm">// "5 3 -"가 3 - 5 = -2가 되어 오답 발생!</span></span></div>
+<div class="code-line"><span class="ln">7</span><span class="lc"><span class="s-cm">// 수정: 반드시 b를 먼저 pop하고 a를 나중에 pop합니다.</span></span></div>
+<div class="code-line"><span class="ln">8</span><span class="lc"><span class="s-cm">//       후위식에서 먼저 나온 숫자가 왼쪽 피연산자입니다.</span></span></div>
+<div class="code-line"><span class="ln">9</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">10</span><span class="lc"><span class="s-cm">// 에러 2: 괄호 처리 누락</span></span></div>
+<div class="code-line"><span class="ln">11</span><span class="lc"><span class="s-cm">// 중위: (3 + 4) * 2</span></span></div>
+<div class="code-line"><span class="ln">12</span><span class="lc"><span class="s-cm">// 정상 후위: 3 4 + 2 *   (결과: 14)</span></span></div>
+<div class="code-line"><span class="ln">13</span><span class="lc"><span class="s-cm">// 괄호 무시 시: 3 4 2 * + (결과: 11) -- 우선순위 오류!</span></span></div>
+<div class="code-line"><span class="ln">14</span><span class="lc"><span class="s-cm">// 수정: '('를 만나면 연산자 스택에 push하고,</span></span></div>
+<div class="code-line"><span class="ln">15</span><span class="lc"><span class="s-cm">//       ')'를 만나면 '('까지 모두 pop하여 출력합니다.</span></span></div>
+<div class="code-line"><span class="ln">16</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">17</span><span class="lc"><span class="s-cm">// 에러 3: 연산자 우선순위 비교 방향 오류</span></span></div>
+<div class="code-line"><span class="ln">18</span><span class="lc"><span class="s-cm">// 잘못된 코드: precedence(stack_top) &gt; precedence(current)</span></span></div>
+<div class="code-line"><span class="ln">19</span><span class="lc"><span class="s-cm">// 같은 우선순위일 때 pop하지 않으면 결합 순서가 틀립니다.</span></span></div>
+<div class="code-line"><span class="ln">20</span><span class="lc"><span class="s-cm">// 예: 6 - 3 - 1 -&gt; 후위: 6 3 - 1 -  (왼쪽부터 계산)</span></span></div>
+<div class="code-line"><span class="ln">21</span><span class="lc"><span class="s-cm">// 수정: precedence(stack_top) &gt;= precedence(current)</span></span></div>
+<div class="code-line"><span class="ln">22</span><span class="lc"><span class="s-cm">//       같은 우선순위에서는 왼쪽 결합이므로 &gt;= 비교를 사용합니다.</span></span></div>
+</div>
+</div>
+<h2 class="section-title">설명하기</h2>
+<table class="trace"><thead><tr><th style="width:40px">줄</th><th style="width:220px">코드</th><th>역할</th></tr></thead><tbody></tbody></table>
+<h2 class="section-title">예제</h2>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 1</span><p style="margin:0;font-size:14px">정수 스택을 구조체로 구현하고 push, pop, peek, isEmpty 함수를<br>작성하십시오. 5개의 정수를 push한 뒤 모두 pop하여 출력하십시오.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 2</span><p style="margin:0;font-size:14px">후위 표기식 "5 3 + 2 *"를 스택으로 계산하는 프로그램을<br>작성하십시오. 각 단계마다 스택 상태를 출력하십시오.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 3</span><p style="margin:0;font-size:14px">후위 표기식을 입력받아 계산하는 프로그램을 작성하십시오.<br>한 자리 정수와 사칙연산을 지원하면 됩니다.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 4</span><p style="margin:0;font-size:14px">연산자 우선순위를 반환하는 precedence 함수를 작성하고,<br>중위 표기식 "3 + 4 * 2"를 후위 표기식으로 변환하여<br>출력하는 프로그램을 작성하십시오.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 5</span><p style="margin:0;font-size:14px">괄호를 포함한 중위 표기식 "(1 + 2) * (3 + 4)"를<br>후위 표기식으로 변환하고 계산하는 프로그램을 작성하십시오.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 6</span><p style="margin:0;font-size:14px">다자릿수를 지원하는 후위 표기식 계산기를 작성하십시오.<br>예: "12 34 + 5 *"의 결과는 230입니다.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 7</span><p style="margin:0;font-size:14px">실수(double)를 지원하는 수식 계산기를 작성하십시오.<br>"3.14 * 2.0 + 1.5"를 계산할 수 있어야 합니다.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 8</span><p style="margin:0;font-size:14px">음수를 포함한 수식을 처리하는 계산기를 작성하십시오.<br>"(-5 + 3) * -2"를 올바르게 계산해야 합니다.<br>단항 마이너스와 이항 마이너스를 구분하십시오.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 9</span><p style="margin:0;font-size:14px">수식의 유효성을 검사하는 함수를 작성하십시오.<br>괄호 불일치, 연속된 연산자, 빈 괄호 등의 오류를<br>감지하고 오류 메시지를 출력하십시오.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 10</span><p style="margin:0;font-size:14px">계산 히스토리를 원형 버퍼로 관리하는 수식 계산기를<br>작성하십시오. 최근 10건의 수식과 결과를 저장하고,<br>히스토리 조회 기능을 포함하십시오.</p></div>
+<h2 class="section-title">대회 기출</h2>
+<h2 class="section-title">요약</h2>
+<div class="warmup-box"><div class="warmup-title">핵심 정리</div><div class="wq"><b>1.</b> 후위 표기법: 연산자가 피연산자 뒤에 위치, 괄호와 우선순위 불필요</div><div class="wq"><b>2.</b> 후위식 계산: 숫자는 push, 연산자는 pop 2회 -> 계산 -> push</div><div class="wq"><b>3.</b> pop 순서 주의: 나중에 push된 값이 오른쪽 피연산자 (b), 먼저 push된 값이 왼쪽 (a)</div><div class="wq"><b>4.</b> Shunting Yard: 연산자 스택으로 우선순위 비교하며 중위 -> 후위 변환</div><div class="wq"><b>5.</b> 괄호 처리: '(' push, ')' 만나면 '('까지 모두 pop하여 출력</div><div class="wq"><b>6.</b> 우선순위: *, / (2) > +, - (1), 같은 우선순위는 왼쪽 결합 (>=)</div><div class="wq"><b>7.</b> 토크나이저: 다자릿수, 실수, 단항 마이너스를 분리하여 토큰 배열 생성</div><div class="wq"><b>8.</b> 에러 처리: 괄호 불일치, 0 나누기, 피연산자 부족, 잘못된 문자 감지</div><div class="wq"><b>9.</b> 타입별 스택: IntStack (정수), DoubleStack (실수), CharStack (연산자)</div><div class="wq"><b>10.</b> 히스토리: 원형 버퍼로 최근 계산 기록을 관리하여 조회 가능</div></div>
+<h2 class="section-title">다음 유닛으로</h2>
+<div class="note-box"><span class="note-label"></span>
+<div style="font-weight:700;margin-bottom:6px;color:#1a2e4a">다음: 덱(Deque) -- 양쪽 입출력</div>스택은 한쪽 끝에서만 삽입/삭제가 가능한 LIFO 구조이고, 큐는 한쪽에서 삽입, 반대쪽에서 삭제하는 FIFO 구조입니다. 다음 유닛에서는 양쪽 끝에서 삽입과 삭제가 모두 가능한 덱(Deque, Double-Ended Queue)을 학습합니다. 덱은 스택과 큐의 기능을 모두 포함하는 범용 자료구조이며, 슬라이딩 윈도우 등 다양한 알고리즘 문제에서 활용됩니다.</div>
+
+    <span class="page-num">2</span>
+  </div>
+</div>
+<div class="page">
+  <div class="content-page">
+    <div class="unit-header-bar">
+      <span class="unit-tag">UNIT 04</span>
+      <span class="unit-title-sm">3과목 연결</span>
+    </div>
+<h2 class="section-title">10축 매핑</h2>
+<div class="note-box"><span class="note-label"></span>
+<div style="font-weight:700;margin-bottom:6px;color:#1a2e4a">이 유닛에서 키운 역량</div>C언어 ★★★★★ -- 스택 구조체 구현, 문자열 파싱, 토크나이저, 타입별 스택(int/double/char) 등 스택의 다양한 활용 패턴을 종합적으로 구현했습니다.<br>컴퓨팅사고력 ★★★★★ -- 후위 표기법의 원리를 이해하고, Shunting Yard 알고리즘으로 중위->후위 변환을 구현하며 알고리즘 설계 능력을 키웠습니다.<br>디버깅 ★★★★★ -- pop 순서 오류, 괄호 처리 누락, 우선순위 비교 방향 오류 등 스택 계산기 구현에서 발생하는 전형적인 버그를 파악하고 해결했습니다.<br>KOI ★★★★★ -- 스택을 활용한 수식 처리는 대회의 빈출 주제이며, 괄호 검사와 후위 표기식 계산은 스택 문제의 대표적인 유형입니다.</div>
+
+    <span class="page-num">3</span>
+  </div>
+</div>
+<div class="page contest-page-wrap">
+  <div class="chapter-page">
+    <div class="chapter-sidebar"></div>
+    <div class="chapter-accent-bar"></div>
+    <div style="flex:1; min-width:0; padding:50px 50px 40px 45px; position:relative;">
+      <div class="problems-chapter-ref">Chapter 04: 스택 계산기 -- 후위 표기</div>
+      <h2 class="problems-title">대회 문제 (Online Judge)</h2>
+      <p style="font-size:14px; color:#6b7280; margin:-8px 0 24px;">실제 온라인 저지에 출제된 문제입니다. 아래에 코드를 작성한 뒤, 사이트에 제출하여 채점하십시오.</p>
+
+        <div class="contest-card">
+          <div class="contest-header">
+            <div class="contest-num-source">
+              <span class="contest-num">1번</span>
+              <span class="contest-source">백준 1935</span>
+            </div>
+            <span class="diff diff-mid">대회</span>
+          </div>
+          <div class="contest-body">
+            <p class="contest-question">후위 표기식의 값을 계산하십시오.</p>
+            
+            <div class="contest-write-area">
+              <div class="contest-write-label">코드 작성</div>
+              <textarea class="contest-textarea" rows="12" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="contest-card">
+          <div class="contest-header">
+            <div class="contest-num-source">
+              <span class="contest-num">2번</span>
+              <span class="contest-source">백준 1918</span>
+            </div>
+            <span class="diff diff-mid">대회</span>
+          </div>
+          <div class="contest-body">
+            <p class="contest-question">중위 표기식을 후위 표기식으로 변환하십시오.</p>
+            
+            <div class="contest-write-area">
+              <div class="contest-write-label">코드 작성</div>
+              <textarea class="contest-textarea" rows="12" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="contest-card">
+          <div class="contest-header">
+            <div class="contest-num-source">
+              <span class="contest-num">3번</span>
+              <span class="contest-source">백준 2504</span>
+            </div>
+            <span class="diff diff-mid">대회</span>
+          </div>
+          <div class="contest-body">
+            <p class="contest-question">괄호열의 값을 계산하십시오.</p>
+            
+            <div class="contest-write-area">
+              <div class="contest-write-label">코드 작성</div>
+              <textarea class="contest-textarea" rows="12" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="contest-card">
+          <div class="contest-header">
+            <div class="contest-num-source">
+              <span class="contest-num">4번</span>
+              <span class="contest-source">백준 5430</span>
+            </div>
+            <span class="diff diff-mid">대회</span>
+          </div>
+          <div class="contest-body">
+            <p class="contest-question">배열에 R(뒤집기)과 D(버리기) 함수를 적용하십시오.</p>
+            
+            <div class="contest-write-area">
+              <div class="contest-write-label">코드 작성</div>
+              <textarea class="contest-textarea" rows="12" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="contest-card">
+          <div class="contest-header">
+            <div class="contest-num-source">
+              <span class="contest-num">5번</span>
+              <span class="contest-source">백준 1021</span>
+            </div>
+            <span class="diff diff-mid">대회</span>
+          </div>
+          <div class="contest-body">
+            <p class="contest-question">회전하는 큐에서 원소를 꺼내는 최소 연산 수를 구하십시오.</p>
+            
+            <div class="contest-write-area">
+              <div class="contest-write-label">코드 작성</div>
+              <textarea class="contest-textarea" rows="12" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="contest-card">
+          <div class="contest-header">
+            <div class="contest-num-source">
+              <span class="contest-num">6번</span>
+              <span class="contest-source">백준 11279</span>
+            </div>
+            <span class="diff diff-mid">대회</span>
+          </div>
+          <div class="contest-body">
+            <p class="contest-question">최대 힙을 구현하십시오.</p>
+            
+            <div class="contest-write-area">
+              <div class="contest-write-label">코드 작성</div>
+              <textarea class="contest-textarea" rows="12" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="contest-card">
+          <div class="contest-header">
+            <div class="contest-num-source">
+              <span class="contest-num">7번</span>
+              <span class="contest-source">백준 1927</span>
+            </div>
+            <span class="diff diff-mid">대회</span>
+          </div>
+          <div class="contest-body">
+            <p class="contest-question">최소 힙을 구현하십시오.</p>
+            
+            <div class="contest-write-area">
+              <div class="contest-write-label">코드 작성</div>
+              <textarea class="contest-textarea" rows="12" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="contest-card">
+          <div class="contest-header">
+            <div class="contest-num-source">
+              <span class="contest-num">8번</span>
+              <span class="contest-source">백준 11286</span>
+            </div>
+            <span class="diff diff-mid">대회</span>
+          </div>
+          <div class="contest-body">
+            <p class="contest-question">절댓값 힙을 구현하십시오.</p>
+            
+            <div class="contest-write-area">
+              <div class="contest-write-label">코드 작성</div>
+              <textarea class="contest-textarea" rows="12" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="contest-card">
+          <div class="contest-header">
+            <div class="contest-num-source">
+              <span class="contest-num">9번</span>
+              <span class="contest-source">백준 1991</span>
+            </div>
+            <span class="diff diff-mid">대회</span>
+          </div>
+          <div class="contest-body">
+            <p class="contest-question">이진 트리를 전위, 중위, 후위 순회하십시오.</p>
+            
+            <div class="contest-write-area">
+              <div class="contest-write-label">코드 작성</div>
+              <textarea class="contest-textarea" rows="12" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="contest-card">
+          <div class="contest-header">
+            <div class="contest-num-source">
+              <span class="contest-num">10번</span>
+              <span class="contest-source">백준 5639</span>
+            </div>
+            <span class="diff diff-mid">대회</span>
+          </div>
+          <div class="contest-body">
+            <p class="contest-question">이진 검색 트리를 후위 순회한 결과를 출력하십시오.</p>
+            
+            <div class="contest-write-area">
+              <div class="contest-write-label">코드 작성</div>
+              <textarea class="contest-textarea" rows="12" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+            </div>
+          </div>
+        </div>
+      <span class="page-num">4</span>
+    </div>
+  </div>
+</div>
+</body>
+</html>

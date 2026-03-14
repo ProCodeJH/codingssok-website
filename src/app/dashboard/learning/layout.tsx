@@ -27,6 +27,7 @@ import { useProfileEffect } from "@/hooks/useProfileEffect";
 const NAV_ITEMS = [
     { icon: "dashboard", label: "대시보드", href: "/dashboard/learning" },
     { icon: "assignment", label: "숙제", href: "/dashboard/learning/homework" },
+    { icon: "chat", label: "1:1 채팅", href: "/dashboard/learning/dm" },
     { icon: "quiz", label: "문제 은행", href: "/dashboard/learning/problems" },
     { icon: "military_tech", label: "승급전", href: "/dashboard/learning/promotion" },
 ];
@@ -294,6 +295,20 @@ function Navbar({ onMenuOpen, xp, level, tier }: { onMenuOpen: () => void; xp: n
                             <span style={{ fontSize: 13, fontWeight: 800, fontFamily: "'JetBrains Mono', monospace" }}>&gt;_</span>
                             C-Studio
                         </motion.a>
+
+                        {/* Admin Button */}
+                        {user?.role === 'teacher' && (
+                            <a href="/teacher/admin" style={{
+                                display: 'flex', alignItems: 'center', gap: 6,
+                                padding: '8px 16px', borderRadius: 10,
+                                background: 'linear-gradient(135deg, #ef4444, #f97316)',
+                                color: '#fff', fontSize: 12, fontWeight: 700,
+                                textDecoration: 'none', whiteSpace: 'nowrap',
+                            }}>
+                                <span className="material-symbols-outlined" style={{ fontSize: 16 }}>admin_panel_settings</span>
+                                관리자
+                            </a>
+                        )}
 
                         {/* User */}
                         <div className="hidden sm:flex" style={{ alignItems: "center", gap: 16, paddingLeft: 20, borderLeft: "1px solid rgba(226,232,240,0.5)" }}>

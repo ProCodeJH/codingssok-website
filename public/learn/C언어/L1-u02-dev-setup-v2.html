@@ -1,0 +1,1850 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>코딩쏙 교재 — 개발 환경 준비 — VS Code + gcc</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+
+  :root {
+    --navy: #1a2e4a;
+    --navy-mid: #2c4a6e;
+    --navy-light: #3d6590;
+    --orange: #e07830;
+    --orange-light: #f5e6d8;
+    --white: #ffffff;
+    --bg: #f7f8fa;
+    --bg-warm: #faf9f7;
+    --gray-50: #f9fafb;
+    --gray-100: #f3f4f6;
+    --gray-200: #e5e7eb;
+    --gray-300: #d1d5db;
+    --gray-400: #9ca3af;
+    --gray-500: #6b7280;
+    --gray-600: #4b5563;
+    --gray-700: #374151;
+    --gray-800: #1f2937;
+    --text: #2d3748;
+    --green: #16a34a;
+    --green-bg: #dcfce7;
+    --red: #dc2626;
+    --red-bg: #fee2e2;
+    --blue: #2563eb;
+    --blue-bg: #dbeafe;
+    --yellow-bg: #fef9c3;
+    --font: 'Noto Sans KR', sans-serif;
+    --mono: 'JetBrains Mono', 'Consolas', monospace;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: var(--font); background: #e8eaed; font-size: 15px; }
+
+  /* ========== PAGE ========== */
+  .page {
+    width: 210mm;
+    min-height: 295mm;
+    margin: 24px auto;
+    background: var(--white);
+    box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* ========== PAGE 1: CHAPTER START ========== */
+  .chapter-page {
+    display: flex;
+    min-height: 295mm;
+  }
+
+  .chapter-sidebar {
+    width: 10px;
+    background: var(--navy);
+    flex-shrink: 0;
+  }
+
+  .chapter-accent-bar {
+    width: 7px;
+    background: var(--orange);
+    flex-shrink: 0;
+  }
+
+  .chapter-body {
+    flex: 1;
+    padding: 70px 65px 50px 55px;
+    position: relative;
+  }
+
+  .chapter-watermark {
+    position: absolute;
+    top: -10px;
+    right: -15px;
+    font-size: 280px;
+    font-weight: 900;
+    color: rgba(180,195,212,0.35);
+    line-height: 1;
+    pointer-events: none;
+    letter-spacing: -10px;
+  }
+
+  .chapter-label {
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--navy-mid);
+    letter-spacing: 2px;
+    margin-bottom: 4px;
+  }
+
+  .chapter-title {
+    font-size: 44px;
+    font-weight: 900;
+    color: var(--navy);
+    line-height: 1.15;
+    margin-bottom: 12px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .chapter-sub {
+    font-size: 16px;
+    color: var(--gray-500);
+    font-weight: 400;
+    margin-bottom: 20px;
+    padding-bottom: 28px;
+    border-bottom: 1px solid var(--gray-200);
+  }
+
+  /* Learning objectives */
+  .obj-title {
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--navy);
+    margin-bottom: 16px;
+    margin-top: 32px;
+  }
+
+  .obj-list {
+    list-style: none;
+    margin-bottom: 40px;
+  }
+
+  .obj-list li {
+    padding: 5px 0 5px 24px;
+    position: relative;
+    font-size: 15px;
+    color: var(--gray-700);
+    line-height: 1.6;
+  }
+
+  .obj-list li::before {
+    content: '•';
+    position: absolute;
+    left: 8px;
+    color: var(--navy-mid);
+    font-weight: 700;
+  }
+
+  /* Prerequisites flow */
+  .prereq-title {
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--navy);
+    margin-bottom: 18px;
+  }
+
+  .prereq-flow {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    margin-bottom: 44px;
+  }
+
+  .prereq-item {
+    padding: 9px 22px;
+    border: 1.5px solid var(--gray-300);
+    border-radius: 50px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--gray-600);
+    background: var(--white);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+  }
+
+  .prereq-item.current {
+    border-color: var(--navy);
+    color: var(--navy);
+    font-weight: 700;
+    background: #edf2f7;
+    box-shadow: 0 2px 6px rgba(26,46,74,0.12);
+  }
+
+  .prereq-arrow {
+    width: 36px;
+    text-align: center;
+    color: var(--gray-300);
+    font-size: 18px;
+    font-weight: 300;
+  }
+
+  /* Predict box */
+  .predict-box {
+    background: var(--gray-50);
+    border: 1.5px solid var(--gray-200);
+    border-radius: 12px;
+    padding: 24px 28px;
+  }
+
+  .predict-label {
+    display: inline-block;
+    background: var(--orange);
+    color: var(--white);
+    font-size: 12px;
+    font-weight: 600;
+    padding: 3px 12px;
+    border-radius: 4px;
+    margin-bottom: 14px;
+    letter-spacing: 0.5px;
+  }
+
+  .predict-q {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--navy);
+    margin-bottom: 16px;
+  }
+
+  .predict-code {
+    background: var(--white);
+    border: 1px solid var(--gray-200);
+    border-radius: 8px;
+    padding: 14px 18px;
+    font-family: var(--mono);
+    font-size: 13px;
+    line-height: 1.65;
+    color: var(--gray-700);
+  }
+
+  /* ========== PAGE 2: CORE CONTENT ========== */
+  .content-page {
+    padding: 55px 65px;
+  }
+
+  .unit-header-bar {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    margin-bottom: 8px;
+  }
+
+  .unit-tag {
+    font-size: 12px;
+    color: var(--orange);
+    font-weight: 600;
+    letter-spacing: 1px;
+  }
+
+  .unit-title-sm {
+    font-size: 14px;
+    color: var(--gray-400);
+    font-weight: 400;
+  }
+
+  .section-title {
+    font-size: 24px;
+    font-weight: 800;
+    color: var(--navy);
+    margin-bottom: 24px;
+    margin-top: 8px;
+    padding-left: 16px;
+    border-left: 5px solid var(--orange);
+  }
+
+  p {
+    font-size: 15.5px;
+    line-height: 1.9;
+    color: var(--text);
+    margin-bottom: 18px;
+  }
+
+  p code {
+    font-family: var(--mono);
+    font-size: 13.5px;
+    background: #f1f3f5;
+    padding: 2px 7px;
+    border-radius: 4px;
+    color: var(--navy);
+    font-weight: 500;
+  }
+
+  /* Code block */
+  .code-wrap {
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    border: 1px solid var(--gray-200);
+    margin: 22px 0;
+  }
+
+  .code-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 9px 18px;
+    background: var(--navy);
+    font-size: 12px;
+  }
+
+  .code-bar-lang {
+    font-family: var(--mono);
+    font-weight: 600;
+    color: var(--white);
+  }
+
+  .code-bar-file {
+    color: rgba(255,255,255,0.6);
+    font-weight: 400;
+  }
+
+  .code-body {
+    background: #f8f9fb;
+    padding: 20px 0;
+    font-family: var(--mono);
+    font-size: 13.5px;
+    line-height: 1.75;
+    border: 1px solid var(--gray-200);
+    border-top: none;
+    border-radius: 0 0 12px 12px;
+  }
+
+  .code-line {
+    display: flex;
+    padding: 0 20px;
+  }
+
+  .code-line:hover {
+    background: #f0f4f8;
+  }
+
+  .code-line.highlighted {
+    background: #fff8e1;
+  }
+
+  .ln {
+    width: 30px;
+    text-align: right;
+    color: #b8bfc8;
+    font-size: 12px;
+    margin-right: 18px;
+    user-select: none;
+    flex-shrink: 0;
+    padding-top: 1px;
+  }
+
+  .lc { flex: 1; }
+
+  /* syntax */
+  .s-pp { color: #8b5cf6; font-weight: 600; }
+  .s-str { color: #d97706; }
+  .s-type { color: #2563eb; font-weight: 500; }
+  .s-kw { color: #7c3aed; font-weight: 500; }
+  .s-fn { color: #059669; font-weight: 500; }
+  .s-num { color: #dc2626; }
+  .s-cm { color: #9ca3af; font-style: italic; }
+
+  /* Output block */
+  .output-wrap {
+    border-radius: 10px;
+    overflow: hidden;
+    margin: 10px 0 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    border: 1px solid #d1d5db;
+  }
+
+  .output-bar {
+    padding: 9px 18px;
+    background: #374151;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--white);
+    letter-spacing: 0.5px;
+  }
+
+  .output-body {
+    padding: 16px 20px;
+    font-family: var(--mono);
+    font-size: 13.5px;
+    line-height: 1.7;
+    color: var(--gray-800);
+    background: #f1f5f9;
+    border: 1px solid var(--gray-200);
+    border-top: none;
+    border-radius: 0 0 10px 10px;
+  }
+
+  /* Callout */
+  .tip {
+    margin: 28px 0;
+    padding: 18px 24px;
+    background: #dbeafe;
+    border-left: 5px solid #2563eb;
+    border-radius: 0 12px 12px 0;
+    font-size: 14.5px;
+    line-height: 1.8;
+    color: var(--text);
+  }
+
+  .tip-label {
+    font-weight: 700;
+    color: #2563eb;
+    font-size: 13px;
+    display: block;
+    margin-bottom: 4px;
+  }
+
+  .warn {
+    margin: 28px 0;
+    padding: 18px 24px;
+    background: #fef3c7;
+    border-left: 5px solid #d97706;
+    border-radius: 0 12px 12px 0;
+    font-size: 14.5px;
+    line-height: 1.8;
+  }
+
+  .warn-label {
+    font-weight: 700;
+    color: #d97706;
+    font-size: 13px;
+    display: block;
+    margin-bottom: 4px;
+  }
+
+  .note-box {
+    margin: 28px 0;
+    padding: 18px 24px;
+    background: #e2e8f0;
+    border-left: 5px solid #64748b;
+    border-radius: 0 12px 12px 0;
+    font-size: 14.5px;
+    line-height: 1.8;
+  }
+
+  .note-label {
+    font-weight: 700;
+    color: var(--gray-600);
+    font-size: 13px;
+    display: block;
+    margin-bottom: 4px;
+  }
+
+  /* Trace table */
+  table.trace {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    margin: 28px 0;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+    font-size: 14px;
+  }
+
+  table.trace th {
+    background: var(--navy);
+    color: var(--white);
+    padding: 10px 16px;
+    text-align: left;
+    font-weight: 500;
+    font-size: 13px;
+  }
+
+  table.trace td {
+    padding: 10px 16px;
+    border-bottom: 1px solid var(--gray-200);
+    color: var(--gray-700);
+  }
+
+  table.trace tr:nth-child(even) td { background: var(--gray-50); }
+  table.trace tr:last-child td { border-bottom: none; }
+
+  table.trace td code {
+    font-family: var(--mono);
+    font-size: 12.5px;
+    background: #eef1f5;
+    padding: 2px 6px;
+    border-radius: 4px;
+    color: var(--navy);
+  }
+
+  /* ========== PAGE 3: PROBLEMS ========== */
+  .problems-header {
+    margin-bottom: 8px;
+  }
+
+  .problems-chapter-ref {
+    font-size: 13px;
+    color: var(--gray-500);
+    margin-bottom: 4px;
+  }
+
+  .problems-title {
+    font-size: 28px;
+    font-weight: 800;
+    color: var(--navy);
+    margin-bottom: 24px;
+  }
+
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 16px;
+  }
+
+  .prob-card {
+    background: var(--white);
+    border: 1px solid var(--gray-200);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 3px 15px rgba(0,0,0,0.06);
+  }
+
+  .prob-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 16px;
+    background: var(--navy);
+  }
+
+  .prob-num {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--white);
+  }
+
+  .diff {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    font-size: 12px;
+    font-weight: 800;
+  }
+
+  .diff-basic { background: #22c55e; color: white; }
+  .diff-mid { background: #f59e0b; color: white; }
+  .diff-hard { background: #ef4444; color: white; }
+
+  .prob-desc {
+    font-size: 13.5px;
+    line-height: 1.65;
+    color: var(--gray-600);
+    margin-bottom: 10px;
+    padding: 14px 16px 0;
+  }
+
+  .prob-code {
+    background: var(--gray-50);
+    border: 1px solid var(--gray-200);
+    border-radius: 6px;
+    padding: 10px 14px;
+    margin: 0 16px 16px;
+    font-family: var(--mono);
+    font-size: 12.5px;
+    line-height: 1.55;
+    color: var(--gray-600);
+  }
+
+  /* Competition section */
+  .comp-section {
+    margin-top: 32px;
+    padding-top: 24px;
+    border-top: 2px solid var(--navy);
+  }
+
+  .comp-title {
+    font-size: 22px;
+    font-weight: 800;
+    color: var(--navy);
+    margin-bottom: 20px;
+  }
+
+  .comp-card {
+    background: var(--white);
+    border: 1.5px solid var(--gray-200);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 18px rgba(0,0,0,0.06);
+  }
+
+  .comp-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 16px;
+    background: #0f766e;
+  }
+
+  .comp-header .comp-name {
+    color: var(--white);
+    font-size: 15px;
+    font-weight: 700;
+    margin: 0;
+  }
+
+  .comp-inner {
+    padding: 14px 18px 18px;
+  }
+
+  .comp-badge {
+    display: inline-block;
+    padding: 3px 12px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 700;
+  }
+
+  .badge-bj { background: #93c5fd; color: #1e3a5f; }
+  .badge-cu { background: #c4b5fd; color: #3b1f7e; }
+  .badge-pg { background: #7dd3fc; color: #0c4a6e; }
+
+  .comp-name {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--navy);
+    margin-bottom: 6px;
+  }
+
+  .comp-desc {
+    font-size: 14px;
+    color: var(--gray-600);
+    line-height: 1.7;
+    margin-bottom: 14px;
+  }
+
+  .io-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+
+  .io-card {
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid var(--gray-200);
+  }
+
+  .io-h {
+    padding: 6px 14px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--gray-600);
+    background: #e2e8f0;
+  }
+
+  .io-c {
+    padding: 10px 14px;
+    font-family: var(--mono);
+    font-size: 13px;
+    line-height: 1.5;
+    background: var(--white);
+  }
+
+  /* ========== DEBUG LAB ========== */
+  .debug-section {
+    margin: 24px 0;
+    border: 2px solid var(--red);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+
+  .debug-bar {
+    background: var(--red);
+    color: var(--white);
+    padding: 10px 20px;
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 1px;
+  }
+
+  .debug-body {
+    padding: 20px;
+    background: #fef2f2;
+  }
+
+  /* 10축 connection */
+  .connect-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 16px;
+    margin: 28px 0;
+  }
+
+  .connect-card {
+    border-radius: 12px;
+    padding: 20px;
+    text-align: center;
+    border: 1px solid var(--gray-200);
+    box-shadow: 0 3px 14px rgba(0,0,0,0.05);
+  }
+
+  .connect-card h5 {
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 8px;
+  }
+
+  .connect-card p {
+    font-size: 13px;
+    margin: 0;
+    color: var(--gray-600);
+    line-height: 1.6;
+  }
+
+  .cc1 { border-top: 3px solid #8b5cf6; }
+  .cc1 h5 { color: #8b5cf6; }
+  .cc2 { border-top: 3px solid var(--green); }
+  .cc2 h5 { color: var(--green); }
+  .cc3 { border-top: 3px solid var(--navy); }
+  .cc3 h5 { color: var(--navy); }
+
+  /* PAGE NUMBER */
+  .page-num {
+    position: absolute;
+    bottom: 20px;
+    right: 30px;
+    font-size: 12px;
+    color: var(--gray-400);
+  }
+
+  /* WARMUP */
+  .warmup-box {
+    background: #e0e7f1;
+    border-radius: 12px;
+    padding: 24px 28px;
+    margin: 28px 0;
+    border: 2px solid #c7d2e0;
+  }
+
+  .warmup-title {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--navy);
+    margin-bottom: 14px;
+  }
+
+  .wq {
+    padding: 9px 16px;
+    background: var(--white);
+    border-radius: 8px;
+    margin-bottom: 8px;
+    font-size: 14px;
+    border: 1px solid var(--gray-200);
+    color: var(--gray-700);
+  }
+
+  .wq b { color: var(--navy); margin-right: 6px; }
+  .wq .hint { color: var(--gray-400); font-size: 13px; }
+
+  /* ===== CONTEST PROBLEMS PAGE ===== */
+  .contest-page-wrap .chapter-page {
+    min-height: auto;
+  }
+
+  .contest-page-wrap .chapter-page > div:last-child {
+    min-width: 0;
+    overflow-wrap: break-word;
+    word-break: break-word;
+  }
+
+  .contest-card {
+    background: white;
+    border: 1.5px solid var(--gray-200);
+    border-radius: 12px;
+    margin-bottom: 28px;
+    overflow: hidden;
+    break-inside: avoid;
+  }
+
+  .contest-header {
+    background: var(--navy);
+    color: white;
+    padding: 14px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .contest-num-source {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .contest-num {
+    font-weight: 700;
+    font-size: 16px;
+  }
+
+  .contest-source {
+    background: rgba(255,255,255,0.15);
+    padding: 3px 10px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 500;
+  }
+
+  .contest-body {
+    padding: 20px 24px 24px;
+  }
+
+  .contest-question {
+    font-size: 15px;
+    line-height: 1.7;
+    color: var(--text);
+    margin: 0 0 16px;
+    word-break: break-word;
+    overflow-wrap: break-word;
+  }
+
+  .contest-expected {
+    background: #1e293b;
+    border-radius: 8px;
+    overflow: hidden;
+    margin-bottom: 20px;
+  }
+
+  .contest-expected-label {
+    background: #334155;
+    color: #94a3b8;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 6px 14px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .contest-expected-body {
+    color: #e2e8f0;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    line-height: 1.6;
+    padding: 12px 16px;
+    margin: 0;
+    white-space: pre;
+  }
+
+  .contest-write-area {
+    border: 2px dashed var(--gray-300);
+    border-radius: 10px;
+    overflow: hidden;
+    transition: border-color 0.2s;
+  }
+
+  .contest-write-area:focus-within {
+    border-color: var(--orange);
+    border-style: solid;
+  }
+
+  .contest-write-label {
+    background: var(--bg);
+    color: var(--gray-500);
+    font-size: 12px;
+    font-weight: 600;
+    padding: 8px 14px;
+    border-bottom: 1px solid var(--gray-200);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .contest-textarea {
+    width: 100%;
+    min-height: 200px;
+    padding: 16px 18px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    line-height: 1.7;
+    color: var(--text);
+    background: #fafbfc;
+    border: none;
+    outline: none;
+    resize: vertical;
+    tab-size: 4;
+    box-sizing: border-box;
+  }
+
+  .contest-textarea::placeholder {
+    color: var(--gray-300);
+  }
+
+  @media print {
+    body { background: white; }
+    .page { box-shadow: none; margin: 0; page-break-after: always; }
+    .contest-textarea { border: 1px solid var(--gray-300); min-height: 180px; }
+  }
+
+</style>
+</head>
+<body>
+
+<div class="page">
+  <div class="chapter-page">
+    <div class="chapter-sidebar"></div>
+    <div class="chapter-accent-bar"></div>
+    <div class="chapter-body">
+      <div class="chapter-watermark">02</div>
+      <div class="chapter-label">Chapter 02</div>
+      <h1 class="chapter-title">개발 환경 준비</h1>
+      <p class="chapter-sub">C 프로그램을 작성하고 실행하기 위한 도구(텍스트 편집기, 컴파일러)를 설치합니다.</p>
+
+      <h3 class="obj-title">이 유닛에서 배우는 것</h3>
+      <ul class="obj-list">
+        <li>VS Code를 설치하고 C 파일을 열 수 있습니다.</li>
+        <li>MinGW gcc를 설치하고 명령 프롬프트에서 gcc --version을 확인할 수 있습니다.</li>
+        <li>소스 코드 작성 → 컴파일 → 실행의 3단계를 직접 수행할 수 있습니다.</li>
+        <li>텍스트 편집기와 컴파일러의 역할 차이를 설명할 수 있습니다.</li>
+      </ul>
+
+      <h3 class="prereq-title">선수 학습</h3>
+      <div class="prereq-flow">
+        <div class="prereq-item">컴퓨터 켜기/끄기</div><div class="prereq-arrow">→</div>
+        <div class="prereq-item">인터넷에서 프로그램 다운로드 및 설치</div><div class="prereq-arrow">→</div>
+        <div class="prereq-item current">Unit 01: C언어의 역사와 특징</div>
+      </div>
+
+      <div class="predict-box">
+        <div class="predict-label">예측해 봅시다</div>
+        <div class="predict-q">C 프로그램을 만들려면 최소한 어떤 도구가 필요할까요? 메모장만으로 충분할지, 아니면 다른 프로그램이 더 필요할지 예측해 보십시오.</div>
+        <div class="predict-code">C:\Users\사용자&gt; gcc --version<br>
+gcc (Rev3, Built by MSYS2 project) 14.2.0<br>
+Copyright (C) 2024 Free Software Foundation, Inc.</div>
+      </div>
+
+      <span class="page-num">1</span>
+    </div>
+  </div>
+</div>
+<div class="page">
+  <div class="content-page">
+    <div class="unit-header-bar">
+      <span class="unit-tag">UNIT 02</span>
+      <span class="unit-title-sm">개발 환경 준비</span>
+    </div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 1</span><p style="margin:0;font-size:14px">Unit 01에서 배운 C언어의 컴파일 과정 4단계를 적어 보십시오.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 2</span><p style="margin:0;font-size:14px">C언어의 소스 코드 파일 확장자는 무엇입니까?</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 3</span><p style="margin:0;font-size:14px">현재 컴퓨터에 설치된 프로그램 중 "코드를 작성할 수 있는" 프로그램이 있습니까? (메모장도 포함)</p></div>
+<h2 class="section-title">예측</h2>
+<h2 class="section-title">왜 개발 환경이 필요한가</h2>
+<p>C 프로그램을 만들려면 두 가지 도구가 반드시 필요합니다. 첫째, 코드를 작성할 텍스트 편집기. 둘째, 코드를 기계어로 변환할 컴파일러입니다.</p>
+<p>메모장으로도 C 코드를 작성할 수 있습니다. 하지만 메모장에는 구문 강조(키워드에 색상 입히기), 자동 완성, 에러 표시 같은 기능이 없습니다. 전문 편집기를 사용하면 코딩 속도와 정확도가 크게 올라갑니다.</p>
+<div class="debug-section"><div class="debug-bar">DEBUG LAB — 에러를 찾으시오</div><div class="debug-body">
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc">[메모장]</span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc">- 모든 글자가 같은 색</span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc">- 오타를 찾기 어려움</span></div>
+<div class="code-line"><span class="ln">4</span><span class="lc">- 자동 완성 없음</span></div>
+<div class="code-line"><span class="ln">5</span><span class="lc">- 줄 번호 없음</span></div>
+</div>
+</div>
+<p style="margin:14px 0 0; font-size:14px;"><b>에러:</b> 코딩에 불편</p>
+<p style="font-size:14px;"><b>수정:</b> 코딩에 최적화</p>
+</div></div>
+<div style="margin:22px 0"><div style="display:flex;align-items:flex-start;gap:14px;margin-bottom:8px">
+<div style="width:32px;height:32px;background:#1a2e4a;color:white;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;flex-shrink:0">1</div>
+<div><div style="font-size:15px;font-weight:700;color:#1a2e4a;margin-bottom:2px">1. 텍스트 편집기 (VS Code)</div><div style="font-size:14px;color:#6b7280;line-height:1.6">코드를 작성하고 편집하는 도구입니다. 구문 강조, 자동 완성, 에러 표시 기능이 있습니다.</div></div></div><div style="display:flex;align-items:flex-start;gap:14px;margin-bottom:8px">
+<div style="width:32px;height:32px;background:#1a2e4a;color:white;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;flex-shrink:0">2</div>
+<div><div style="font-size:15px;font-weight:700;color:#1a2e4a;margin-bottom:2px">2. 컴파일러 (gcc)</div><div style="font-size:14px;color:#6b7280;line-height:1.6">작성한 코드(.c)를 실행 파일(.exe)로 변환합니다. MinGW를 통해 Windows에서 gcc를 사용합니다.</div></div></div><div style="display:flex;align-items:flex-start;gap:14px;margin-bottom:8px">
+<div style="width:32px;height:32px;background:#1a2e4a;color:white;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;flex-shrink:0">3</div>
+<div><div style="font-size:15px;font-weight:700;color:#1a2e4a;margin-bottom:2px">3. 터미널 (명령 프롬프트)</div><div style="font-size:14px;color:#6b7280;line-height:1.6">컴파일 명령을 입력하고 프로그램을 실행하는 곳입니다. VS Code에 내장되어 있습니다.</div></div></div></div>
+<h2 class="section-title">VS Code 설치</h2>
+<p>Visual Studio Code(VS Code)는 Microsoft가 만든 무료 텍스트 편집기입니다. 가볍고 빠르며, C/C++을 포함한 거의 모든 프로그래밍 언어를 지원합니다.</p>
+<div class="warn"><span class="warn-label">주의: Visual Studio와 다릅니다</span>
+<b>Visual Studio Code</b>와 <b>Visual Studio</b>는 다른 프로그램입니다.<br>- Visual Studio Code: 가벼운 텍스트 편집기 (이것을 설치합니다)<br>- Visual Studio: 대형 통합 개발 환경 (용량이 크고 복잡합니다)<br><br>검색할 때 반드시 "Visual Studio Code"로 검색하십시오.</div>
+<div style="margin:22px 0"><div style="display:flex;align-items:flex-start;gap:14px;margin-bottom:8px">
+<div style="width:32px;height:32px;background:#1a2e4a;color:white;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;flex-shrink:0">1</div>
+<div><div style="font-size:15px;font-weight:700;color:#1a2e4a;margin-bottom:2px">1단계: 다운로드</div><div style="font-size:14px;color:#6b7280;line-height:1.6">code.visualstudio.com에 접속합니다. 화면 중앙의 파란색 Download 버튼을 클릭합니다. Windows용이 자동으로 선택됩니다.</div></div></div><div style="display:flex;align-items:flex-start;gap:14px;margin-bottom:8px">
+<div style="width:32px;height:32px;background:#1a2e4a;color:white;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;flex-shrink:0">2</div>
+<div><div style="font-size:15px;font-weight:700;color:#1a2e4a;margin-bottom:2px">2단계: 설치</div><div style="font-size:14px;color:#6b7280;line-height:1.6">다운로드된 VSCodeUserSetup-x64-*.exe 파일을 실행합니다. 설치 중 "PATH에 추가" 옵션에 반드시 체크하십시오.</div></div></div><div style="display:flex;align-items:flex-start;gap:14px;margin-bottom:8px">
+<div style="width:32px;height:32px;background:#1a2e4a;color:white;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;flex-shrink:0">3</div>
+<div><div style="font-size:15px;font-weight:700;color:#1a2e4a;margin-bottom:2px">3단계: 실행 확인</div><div style="font-size:14px;color:#6b7280;line-height:1.6">바탕화면 또는 시작 메뉴에서 Visual Studio Code를 실행합니다. 파란색 창이 나타나면 설치 성공입니다.</div></div></div><div style="display:flex;align-items:flex-start;gap:14px;margin-bottom:8px">
+<div style="width:32px;height:32px;background:#1a2e4a;color:white;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;flex-shrink:0">4</div>
+<div><div style="font-size:15px;font-weight:700;color:#1a2e4a;margin-bottom:2px">4단계: 한국어 설정</div><div style="font-size:14px;color:#6b7280;line-height:1.6">왼쪽 사이드바에서 확장(Extensions) 아이콘을 클릭하고 "Korean Language Pack"을 검색하여 설치합니다. 재시작하면 한국어로 전환됩니다.</div></div></div><div style="display:flex;align-items:flex-start;gap:14px;margin-bottom:8px">
+<div style="width:32px;height:32px;background:#1a2e4a;color:white;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;flex-shrink:0">5</div>
+<div><div style="font-size:15px;font-weight:700;color:#1a2e4a;margin-bottom:2px">5단계: C/C++ 확장 설치</div><div style="font-size:14px;color:#6b7280;line-height:1.6">확장 탭에서 "C/C++"을 검색하고 Microsoft의 공식 확장을 설치합니다. 구문 강조와 IntelliSense(자동 완성) 기능이 활성화됩니다.</div></div></div></div>
+<h2 class="section-title">gcc 설치 (MinGW-w64)</h2>
+<p>gcc(GNU Compiler Collection)는 세계에서 가장 널리 사용되는 C 컴파일러입니다. Windows에서는 MinGW-w64를 통해 gcc를 사용할 수 있습니다.</p>
+<div class="note-box"><span class="note-label">gcc란?</span>
+<b>gcc</b> = GNU Compiler Collection<br>1987년 Richard Stallman이 시작한 오픈소스 컴파일러입니다. Linux에는 기본 내장, Windows에서는 MinGW를 통해 설치합니다. 백준, 코드업 등 온라인 저지에서도 gcc를 사용합니다.</div>
+<div style="margin:22px 0"><div style="display:flex;align-items:flex-start;gap:14px;margin-bottom:8px">
+<div style="width:32px;height:32px;background:#1a2e4a;color:white;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;flex-shrink:0">1</div>
+<div><div style="font-size:15px;font-weight:700;color:#1a2e4a;margin-bottom:2px">1단계: MSYS2 다운로드</div><div style="font-size:14px;color:#6b7280;line-height:1.6">msys2.org에 접속하여 설치 파일을 다운로드합니다. MSYS2는 Windows에서 Unix 도구를 사용할 수 있게 해주는 환경입니다.</div></div></div><div style="display:flex;align-items:flex-start;gap:14px;margin-bottom:8px">
+<div style="width:32px;height:32px;background:#1a2e4a;color:white;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;flex-shrink:0">2</div>
+<div><div style="font-size:15px;font-weight:700;color:#1a2e4a;margin-bottom:2px">2단계: MSYS2 설치</div><div style="font-size:14px;color:#6b7280;line-height:1.6">다운로드된 파일을 실행하고 기본 경로(C:\msys64)에 설치합니다. 설치 완료 후 MSYS2 터미널이 자동으로 열립니다.</div></div></div><div style="display:flex;align-items:flex-start;gap:14px;margin-bottom:8px">
+<div style="width:32px;height:32px;background:#1a2e4a;color:white;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;flex-shrink:0">3</div>
+<div><div style="font-size:15px;font-weight:700;color:#1a2e4a;margin-bottom:2px">3단계: gcc 설치</div><div style="font-size:14px;color:#6b7280;line-height:1.6">MSYS2 터미널에 아래 명령어를 입력합니다.
+pacman -S mingw-w64-ucrt-x86_64-gcc
+설치 확인 질문에 Y를 입력합니다.</div></div></div><div style="display:flex;align-items:flex-start;gap:14px;margin-bottom:8px">
+<div style="width:32px;height:32px;background:#1a2e4a;color:white;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;flex-shrink:0">4</div>
+<div><div style="font-size:15px;font-weight:700;color:#1a2e4a;margin-bottom:2px">4단계: PATH 설정</div><div style="font-size:14px;color:#6b7280;line-height:1.6">Windows 검색에서 "환경 변수"를 검색합니다. 시스템 변수의 Path에 C:\msys64\ucrt64\bin을 추가합니다.</div></div></div><div style="display:flex;align-items:flex-start;gap:14px;margin-bottom:8px">
+<div style="width:32px;height:32px;background:#1a2e4a;color:white;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;flex-shrink:0">5</div>
+<div><div style="font-size:15px;font-weight:700;color:#1a2e4a;margin-bottom:2px">5단계: 설치 확인</div><div style="font-size:14px;color:#6b7280;line-height:1.6">새 명령 프롬프트(cmd)를 열고 gcc --version을 입력합니다. 버전 정보가 출력되면 설치 성공입니다.</div></div></div></div>
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span><span class="code-bar-file">cmd</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc">C:\Users\사용자&gt; gcc --version</span></div>
+<div class="code-line highlighted"><span class="ln">2</span><span class="lc"><span class="s-fn">gcc</span>(Rev3, Built by MSYS2 project) <span class="s-num">14.2</span>.<span class="s-num">0</span></span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc"><span class="s-fn">Copyright</span>(C) <span class="s-num">2024</span> Free Software Foundation, Inc.</span></div>
+</div>
+</div>
+<div class="warn"><span class="warn-label">설치 확인 실패 시</span>
+<code>'gcc'은(는) 내부 또는 외부 명령, 실행할 수 있는 프로그램, 또는 배치 파일이 아닙니다.</code><br><br>이 메시지가 나오면 PATH 설정이 잘못된 것입니다. 4단계를 다시 확인하고, 반드시 <b>새 명령 프롬프트</b>를 열어서 테스트하십시오. 기존 창에서는 변경된 PATH가 반영되지 않습니다.</div>
+<h2 class="section-title">작업 폴더 만들기</h2>
+<p>코드를 작성하기 전에 파일을 정리할 폴더를 만듭니다. 바탕화면이나 문서 폴더에 C_Study라는 폴더를 만드십시오.</p>
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span><span class="code-bar-file">cmd</span></div>
+  <div class="code-body"><div class="code-line highlighted"><span class="ln">1</span><span class="lc">C:\Users\사용자&gt; mkdir C:\C_Study</span></div>
+<div class="code-line highlighted"><span class="ln">2</span><span class="lc">C:\Users\사용자&gt; cd C:\C_Study</span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc">C:\C_Study&gt;</span></div>
+</div>
+</div>
+<div class="tip"><span class="tip-label">TIP: 폴더 이름 규칙</span>
+폴더 이름에 한글, 공백, 특수문자를 넣지 마십시오. 일부 컴파일러에서 경로 인식 오류가 발생할 수 있습니다.<br><br>좋은 예: <code>C_Study</code>, <code>c_lang</code>, <code>coding</code><br>나쁜 예: <code>C 공부</code>, <code>코딩쏙 자료</code>, <code>my code!</code></div>
+<h2 class="section-title">첫 번째 C 파일 만들기</h2>
+<p>VS Code를 열고 File > Open Folder를 선택하여 C_Study 폴더를 엽니다. 그런 다음 새 파일을 만들어 아래 코드를 직접 입력하십시오.</p>
+<div class="warn"><span class="warn-label">반드시 직접 타이핑하십시오</span>
+코드를 복사-붙여넣기 하면 문법이 손에 익지 않습니다. 한 글자씩 직접 입력하십시오. 오타가 나도 괜찮습니다. 오타를 찾고 고치는 과정 자체가 학습입니다.</div>
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span><span class="code-bar-file">hello.c</span></div>
+  <div class="code-body"><div class="code-line highlighted"><span class="ln">1</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;stdio.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc"></span></div>
+<div class="code-line highlighted"><span class="ln">3</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">main</span>(<span class="s-type">void</span>) {</span></div>
+<div class="code-line highlighted"><span class="ln">4</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"Hello, World!\n"</span>);</span></div>
+<div class="code-line highlighted"><span class="ln">5</span><span class="lc">    <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">6</span><span class="lc">}</span></div>
+</div>
+</div>
+<p>파일 이름을 <code>hello.c</code>로 저장합니다. 확장자가 반드시 <code>.c</code>여야 합니다. <code>.txt</code>로 저장하면 컴파일러가 C 소스 코드로 인식하지 못합니다.</p>
+<h2 class="section-title">컴파일하기</h2>
+<p>VS Code 하단의 터미널(Terminal > New Terminal)을 열고 아래 명령어를 입력합니다.</p>
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span><span class="code-bar-file">cmd</span></div>
+  <div class="code-body"><div class="code-line highlighted"><span class="ln">1</span><span class="lc">C:\C_Study&gt; gcc hello.c -o hello</span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc">C:\C_Study&gt;</span></div>
+</div>
+</div>
+<table class="trace"><thead><tr><th style="width:40px">줄</th><th style="width:220px">코드</th><th>역할</th></tr></thead><tbody><tr><td>1</td><td>gcc</td><td>컴파일러를 실행합니다.</td></tr><tr><td>1</td><td>hello.c</td><td>컴파일할 소스 파일입니다.</td></tr><tr><td>1</td><td>-o hello</td><td>출력 파일 이름을 hello로 지정합니다. Windows에서는 hello.exe가 생성됩니다.</td></tr></tbody></table>
+<p>아무 메시지 없이 다음 줄로 넘어가면 컴파일 성공입니다. 에러가 있으면 에러 메시지가 출력됩니다.</p>
+<div class="note-box"><span class="note-label">-o 옵션을 안 쓰면?</span>
+<code>gcc hello.c</code>만 입력하면 기본 이름인 <code>a.exe</code>(Windows) 또는 <code>a.out</code>(Linux)이 생성됩니다. <code>-o</code>를 사용하면 원하는 이름을 지정할 수 있습니다.</div>
+<h2 class="section-title">실행하기</h2>
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span><span class="code-bar-file">cmd</span></div>
+  <div class="code-body"><div class="code-line highlighted"><span class="ln">1</span><span class="lc">C:\C_Study&gt; .\hello</span></div>
+<div class="code-line highlighted"><span class="ln">2</span><span class="lc">Hello, World!</span></div>
+</div>
+</div>
+<p><code>.\hello</code>는 "현재 폴더에 있는 hello.exe를 실행하라"는 뜻입니다. 화면에 <code>Hello, World!</code>가 출력되면 성공입니다.</p>
+<div class="tip"><span class="tip-label">TIP: 전체 과정 요약</span>
+<b>1. 작성:</b> VS Code에서 hello.c 파일에 코드 입력<br><b>2. 저장:</b> Ctrl+S<br><b>3. 컴파일:</b> 터미널에서 <code>gcc hello.c -o hello</code><br><b>4. 실행:</b> 터미널에서 <code>.\hello</code><br><br>이 4단계를 앞으로 수백 번 반복하게 됩니다. 손에 익을 때까지 연습하십시오.</div>
+<h2 class="section-title">직접 해보기</h2>
+<div class="tip"><span class="tip-label">🔧 직접 바꿔보기</span><p style="margin:0">hello.c의 출력 내용을 자신의 이름으로 바꿔서 컴파일하고 실행하십시오.</p><div style="font-size:13px;color:#4b5563;margin-top:6px">printf 안의 문자열만 수정하면 됩니다. 수정 후 반드시 Ctrl+S로 저장하고 다시 컴파일하십시오.</div></div>
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span><span class="code-bar-file">myname.c</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;stdio.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">main</span>(<span class="s-type">void</span>) {</span></div>
+<div class="code-line highlighted"><span class="ln">4</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"이름: ______\n"</span>);</span></div>
+<div class="code-line"><span class="ln">5</span><span class="lc">    <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">6</span><span class="lc">}</span></div>
+</div>
+</div>
+<div class="tip"><span class="tip-label">🔧 직접 바꿔보기</span><p style="margin:0">printf를 3번 사용하여 이름, 나이, 취미를 각각 한 줄씩 출력하는 프로그램을 작성하십시오. 파일 이름은 info.c로 하고, gcc info.c -o info로 컴파일하십시오.</p><div style="font-size:13px;color:#4b5563;margin-top:6px">각 printf마다 \n을 넣어 줄을 바꿉니다.</div></div>
+<h2 class="section-title">VS Code 유용한 단축키</h2>
+<table class="trace"><thead><tr><th>단축키</th><th>기능</th><th>설명</th></tr></thead><tbody><tr><td>Ctrl+S</td><td>저장</td><td>코드 수정 후 반드시 저장. 저장 안 하면 이전 코드가 컴파일됨</td></tr><tr><td>Ctrl+`</td><td>터미널 열기/닫기</td><td>VS Code 내장 터미널을 토글</td></tr><tr><td>Ctrl+Shift+P</td><td>명령 팔레트</td><td>모든 VS Code 기능을 검색하여 실행</td></tr><tr><td>Ctrl+Z</td><td>실행 취소</td><td>잘못 수정한 코드를 되돌림</td></tr><tr><td>Ctrl+/</td><td>주석 토글</td><td>선택한 줄을 주석 처리하거나 해제</td></tr><tr><td>Tab</td><td>들여쓰기</td><td>코드 정렬. 4칸 공백이 기본</td></tr></tbody></table>
+<div class="tip"><span class="tip-label">TIP: 자동 저장 설정</span>
+File > Preferences > Settings에서 "Auto Save"를 검색하고 <code>afterDelay</code>로 설정하면 코드가 자동으로 저장됩니다. 초보일 때는 Ctrl+S를 직접 누르는 습관을 들이는 것이 더 좋습니다.</div>
+<h2 class="section-title">에러 체험 — 저장 안 하고 컴파일</h2>
+<p>초보자가 가장 많이 하는 실수는 코드를 수정한 뒤 저장하지 않고 컴파일하는 것입니다.</p>
+<div style="margin:22px 0"><div style="display:flex;align-items:flex-start;gap:14px;margin-bottom:8px">
+<div style="width:32px;height:32px;background:#1a2e4a;color:white;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;flex-shrink:0">1</div>
+<div><div style="font-size:15px;font-weight:700;color:#1a2e4a;margin-bottom:2px">1. hello.c에서 "Hello"를 "Hi"로 수정</div><div style="font-size:14px;color:#6b7280;line-height:1.6">printf("Hi, World!\n"); 으로 변경합니다.</div></div></div><div style="display:flex;align-items:flex-start;gap:14px;margin-bottom:8px">
+<div style="width:32px;height:32px;background:#1a2e4a;color:white;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;flex-shrink:0">2</div>
+<div><div style="font-size:15px;font-weight:700;color:#1a2e4a;margin-bottom:2px">2. 저장하지 않고 바로 컴파일</div><div style="font-size:14px;color:#6b7280;line-height:1.6">gcc hello.c -o hello 실행</div></div></div><div style="display:flex;align-items:flex-start;gap:14px;margin-bottom:8px">
+<div style="width:32px;height:32px;background:#1a2e4a;color:white;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;flex-shrink:0">3</div>
+<div><div style="font-size:15px;font-weight:700;color:#1a2e4a;margin-bottom:2px">3. 실행하면?</div><div style="font-size:14px;color:#6b7280;line-height:1.6">.\hello 결과: Hello, World! — 수정 전 내용이 출력됩니다.</div></div></div><div style="display:flex;align-items:flex-start;gap:14px;margin-bottom:8px">
+<div style="width:32px;height:32px;background:#1a2e4a;color:white;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;flex-shrink:0">4</div>
+<div><div style="font-size:15px;font-weight:700;color:#1a2e4a;margin-bottom:2px">4. 원인</div><div style="font-size:14px;color:#6b7280;line-height:1.6">Ctrl+S를 누르지 않아서 디스크의 파일은 그대로이기 때문입니다.</div></div></div></div>
+<div class="note-box"><span class="note-label">핵심</span>
+코드를 수정했으면 반드시 <b>Ctrl+S → 컴파일 → 실행</b> 순서를 지키십시오. VS Code 탭에 <b>흰색 점(●)</b>이 보이면 아직 저장되지 않은 것입니다.</div>
+<h2 class="section-title">에러 체험 — 파일 이름 오타</h2>
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span><span class="code-bar-file">cmd</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc">C:\C_Study&gt; gcc helo.c -o hello</span></div>
+<div class="code-line highlighted"><span class="ln">2</span><span class="lc">gcc: error: helo.c: No such file or directory</span></div>
+<div class="code-line highlighted"><span class="ln">3</span><span class="lc">gcc: fatal error: no input files</span></div>
+</div>
+</div>
+<p>파일 이름을 <code>helo.c</code>로 잘못 입력했습니다. gcc는 해당 파일을 찾을 수 없다는 에러를 출력합니다. 파일 이름의 철자를 정확히 입력하십시오.</p>
+<h2 class="section-title">에러 체험 — 잘못된 폴더에서 컴파일</h2>
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span><span class="code-bar-file">cmd</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc">C:\Users\사용자&gt; gcc hello.c -o hello</span></div>
+<div class="code-line highlighted"><span class="ln">2</span><span class="lc">gcc: error: hello.c: No such file or directory</span></div>
+</div>
+</div>
+<p>현재 폴더에 hello.c 파일이 없으면 같은 에러가 발생합니다. <code>cd C:\C_Study</code>로 이동한 뒤 컴파일하십시오. <code>dir</code> 명령으로 현재 폴더의 파일 목록을 확인할 수 있습니다.</p>
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span><span class="code-bar-file">cmd</span></div>
+  <div class="code-body"><div class="code-line highlighted"><span class="ln">1</span><span class="lc">C:\Users\사용자&gt; cd C:\C_Study</span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc">C:\C_Study&gt; dir</span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc">hello.c</span></div>
+<div class="code-line highlighted"><span class="ln">4</span><span class="lc">C:\C_Study&gt; gcc hello.c -o hello</span></div>
+</div>
+</div>
+<h2 class="section-title">에러 체험 — 코드에 오타가 있을 때</h2>
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span><span class="code-bar-file">typo.c</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;stdio.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">main</span>(<span class="s-type">void</span>) {</span></div>
+<div class="code-line highlighted"><span class="ln">4</span><span class="lc">    <span class="s-fn">print</span>(<span class="s-str">"Hello\n"</span>);</span></div>
+<div class="code-line"><span class="ln">5</span><span class="lc">    <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">6</span><span class="lc">}</span></div>
+</div>
+</div>
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span><span class="code-bar-file">cmd</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc">C:\C_Study&gt; gcc typo.c -o typo</span></div>
+<div class="code-line highlighted"><span class="ln">2</span><span class="lc">typo.c:<span class="s-num">4</span>:<span class="s-num">5</span>: warning: implicit declaration of function 'print'</span></div>
+<div class="code-line highlighted"><span class="ln">3</span><span class="lc">undefined reference to 'print'</span></div>
+<div class="code-line"><span class="ln">4</span><span class="lc">collect2.exe: error: ld returned <span class="s-num">1</span> exit status</span></div>
+</div>
+</div>
+<p><code>printf</code>를 <code>print</code>로 잘못 입력했습니다. 컴파일러는 <code>print</code>라는 함수를 찾을 수 없다는 에러를 출력합니다.</p>
+<div class="tip"><span class="tip-label">에러 메시지 읽는 법</span>
+<code>typo.c:4:5</code>는 "typo.c 파일의 4번째 줄, 5번째 열"이라는 뜻입니다. 에러 메시지에서 <b>파일명:줄번호</b>를 먼저 찾고, 해당 줄을 확인하십시오.</div>
+<h2 class="section-title">에러 체험 — 실행 파일을 찾을 수 없을 때</h2>
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span><span class="code-bar-file">cmd</span></div>
+  <div class="code-body"><div class="code-line highlighted"><span class="ln">1</span><span class="lc">C:\C_Study&gt; hello</span></div>
+<div class="code-line highlighted"><span class="ln">2</span><span class="lc">'hello'은(는) 내부 또는 외부 명령...이 아닙니다.</span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc"></span></div>
+<div class="code-line highlighted"><span class="ln">4</span><span class="lc">C:\C_Study&gt; .\hello</span></div>
+<div class="code-line highlighted"><span class="ln">5</span><span class="lc">Hello, World!</span></div>
+</div>
+</div>
+<p>Windows에서는 현재 폴더의 실행 파일을 실행할 때 <code>.\</code>을 앞에 붙여야 합니다. <code>.\</code>은 "현재 폴더"를 뜻합니다.</p>
+<h2 class="section-title">설명하기 — 파인만 기법</h2>
+<p>아래 질문에 자신의 말로 답해 보십시오.</p>
+<div class="note-box"><span class="note-label">설명 연습 1</span>
+친구가 "VS Code가 뭐야?"라고 물었습니다. 메모장과 비교하여 설명해 보십시오.</div>
+<div class="note-box"><span class="note-label">설명 연습 2</span>
+"gcc가 뭐야?"라는 질문에 한두 문장으로 답하십시오.</div>
+<div class="note-box"><span class="note-label">설명 연습 3</span>
+C 프로그램을 만드는 전체 과정을 4단계로 설명하십시오.</div>
+<div class="note-box"><span class="note-label">설명 연습 4</span>
+아래 빈칸을 채우십시오.<br><br>1. C 소스 코드의 확장자는 ______ 입니다.<br>2. 컴파일 명령어: <code>gcc ______ -o ______</code><br>3. 실행 명령어: <code>.\______</code><br>4. 코드를 수정한 뒤 반드시 ______을 눌러야 합니다.<br>5. VS Code에서 터미널을 여는 단축키는 ______입니다.</div>
+<div class="note-box"><span class="note-label">정답</span>
+1. .c<br>2. gcc <b>소스파일.c</b> -o <b>실행파일명</b><br>3. .\<b>실행파일명</b><br>4. Ctrl+S (저장)<br>5. Ctrl+`</div>
+<h2 class="section-title">용어 정리</h2>
+<table class="trace"><thead><tr><th>용어</th><th>설명</th></tr></thead><tbody><tr><td><code>VS Code</code></td><td>Microsoft가 만든 무료 텍스트 편집기입니다. 구문 강조, 자동 완성, 내장 터미널을 지원합니다.</td></tr><tr><td><code>gcc</code></td><td>GNU Compiler Collection. 세계에서 가장 널리 사용되는 오픈소스 C/C++ 컴파일러입니다.</td></tr><tr><td><code>MinGW-w64</code></td><td>Windows에서 gcc를 사용할 수 있게 해주는 도구 모음입니다. MSYS2를 통해 설치합니다.</td></tr><tr><td><code>PATH</code></td><td>운영체제가 실행 파일을 찾는 폴더 목록입니다. gcc를 어디서든 실행하려면 PATH에 등록해야 합니다.</td></tr><tr><td><code>터미널</code></td><td>텍스트 명령어를 입력하여 컴퓨터를 조작하는 도구입니다. 명령 프롬프트(cmd), PowerShell 등이 있습니다.</td></tr><tr><td><code>-o 옵션</code></td><td>gcc에서 출력 파일의 이름을 지정하는 옵션입니다. 예: gcc hello.c -o hello</td></tr><tr><td><code>구문 강조</code></td><td>텍스트 편집기가 키워드, 문자열, 숫자 등을 다른 색상으로 표시하는 기능입니다.</td></tr><tr><td><code>.\</code></td><td>현재 폴더를 뜻하는 경로 표기입니다. Windows에서 현재 폴더의 실행 파일을 실행할 때 사용합니다.</td></tr></tbody></table>
+<h2 class="section-title">핵심 요약</h2>
+<div class="warmup-box"><div class="warmup-title">Unit 02 핵심 정리</div><div class="wq"><b>1.</b> C 개발에는 텍스트 편집기(VS Code)와 컴파일러(gcc) 두 가지가 필요합니다</div><div class="wq"><b>2.</b> VS Code 설치 후 C/C++ 확장과 Korean Language Pack을 설치합니다</div><div class="wq"><b>3.</b> gcc는 MSYS2를 통해 설치하고, PATH에 C:\msys64\ucrt64\bin을 추가합니다</div><div class="wq"><b>4.</b> 작업 순서: 코드 작성 → Ctrl+S 저장 → gcc 컴파일 → .\실행</div><div class="wq"><b>5.</b> 에러 메시지에서 파일명:줄번호를 먼저 확인합니다</div><div class="wq"><b>6.</b> 폴더 이름에 한글, 공백, 특수문자를 넣지 않습니다</div></div>
+<p>이번 유닛에서 배운 내용을 확인하는 문제입니다. 실습 문제는 직접 컴퓨터에서 수행하십시오.</p>
+<p>개발 환경이 준비되었으니, 온라인 저지에 직접 제출하여 채점 받는 연습을 합니다. 아래 문제들은 모두 printf만으로 풀 수 있습니다. gcc로 컴파일하여 출력을 확인한 뒤, 백준이나 코드업에 코드를 제출하십시오.</p>
+<div class="note-box"><span class="note-label">백준 제출 방법</span>
+1. acmicpc.net에 회원가입합니다.<br>2. 문제 번호를 검색하여 문제 페이지로 이동합니다.<br>3. 언어를 <b>C99</b>로 선택합니다.<br>4. 코드를 붙여넣고 제출합니다.<br>5. "맞았습니다!!"가 나오면 성공입니다.</div>
+<h2 class="section-title">대회 기출</h2>
+
+    <span class="page-num">2</span>
+  </div>
+</div>
+<div class="page">
+  <div class="content-page">
+    <div class="unit-header-bar">
+      <span class="unit-tag">UNIT 02</span>
+      <span class="unit-title-sm">3과목 연결</span>
+    </div>
+<h2 class="section-title">10축 매핑</h2>
+<p>이번 유닛에서 배운 내용을 10개의 학습 축으로 연결합니다.</p>
+<div class="note-box"><span class="note-label">축 1: C언어 [필수]</span>
+<b>이 유닛의 C 도구:</b> VS Code(편집기), gcc(컴파일러), 터미널(실행 환경)<br><b>깊이:</b> LAYER 1 — 개발 환경 구축. 코드를 작성하고 컴파일하고 실행하는 전체 파이프라인을 직접 수행<br><b>핵심 명령어:</b><br>- <code>gcc 소스.c -o 실행파일</code> (컴파일)<br>- <code>.\실행파일</code> (실행)</div>
+<div class="note-box"><span class="note-label">축 2: 컴퓨팅 사고력 [필수]</span>
+<b>사고 패턴: 알고리즘적 사고</b><br>C 프로그램 제작 과정 자체가 알고리즘입니다:<br>1. 문제 파악 (무엇을 출력할 것인가)<br>2. 코드 작성 (VS Code에서 .c 파일)<br>3. 컴파일 (gcc로 기계어 변환)<br>4. 실행 및 확인 (.\으로 결과 확인)<br>5. 에러 시 2번으로 돌아감<br><br>이 반복 과정이 프로그래밍의 본질입니다.</div>
+<div class="note-box"><span class="note-label">축 3: 디버깅 [필수]</span>
+<b>이 유닛의 에러 5가지:</b><br>1. 저장 안 하고 컴파일 → 이전 코드가 실행됨<br>2. 파일 이름 오타 → No such file or directory<br>3. 잘못된 폴더 → No such file or directory<br>4. 코드 오타(prntf) → implicit declaration + undefined reference<br>5. .\없이 실행 → 명령을 찾을 수 없음<br><br><b>원칙:</b> 에러 메시지의 <b>파일명:줄번호</b>를 먼저 확인합니다.</div>
+<div class="note-box"><span class="note-label">축 4: KOI — 정보올림피아드 [필수]</span>
+<b>난이도:</b> TIER 1 (입출력 정확성)<br>이번 유닛부터 온라인 저지에 직접 제출할 수 있습니다.<br><br><b>제출 시 주의사항:</b><br>- 언어: C99 선택<br>- 출력이 한 글자라도 다르면 오답<br>- 마지막 줄에 불필요한 줄바꿈이 있어도 오답이 될 수 있음<br>- 컴파일 에러 시 "컴파일 에러" 판정</div>
+<div class="tip"><span class="tip-label">축 5: 코딩 습관 [선택]</span>
+<b>LAYER 1 — 개발 환경 습관:</b><br>- 작업 폴더를 정리하여 사용 (C_Study/unit02/ 등)<br>- 파일 이름은 영문 소문자 + 밑줄 (hello_world.c)<br>- 코드 수정 → Ctrl+S → 컴파일 → 실행 순서를 반드시 지킴<br>- 에러가 나면 당황하지 않고 메시지를 읽음</div>
+<div class="tip"><span class="tip-label">축 6: 실생활 연결 [선택]</span>
+<b>개발 환경은 목수의 연장통과 같습니다.</b><br><br>- VS Code = 작업대 (코드를 올려놓고 편집하는 곳)<br>- gcc = 톱, 대패 (원재료를 제품으로 가공하는 도구)<br>- 터미널 = 손 (도구를 직접 조작하는 인터페이스)<br><br>좋은 도구를 갖추는 것이 모든 작업의 첫 단계입니다.</div>
+<div class="tip"><span class="tip-label">축 10: 하드웨어 연결 [선택]</span>
+<b>gcc가 만드는 실행 파일의 정체:</b><br>- .exe 파일은 CPU가 직접 실행할 수 있는 기계어 명령어의 모음입니다<br>- x86-64 CPU용으로 컴파일된 .exe는 ARM CPU에서 실행할 수 없습니다<br>- 이것이 "컴파일러가 플랫폼별로 다른 이유"입니다<br><br>MinGW의 gcc는 Windows x86-64용 기계어를 생성합니다.</div>
+<h2 class="section-title">다음 유닛 예고</h2>
+<div class="note-box"><span class="note-label">다음 유닛을 위한 예측</span>
+<b>예측:</b> printf("Hello"); 에서 printf 대신 puts를 사용하면 어떻게 될까요? puts("Hello"); 의 결과를 예측해 보십시오.<br><br><b>다음 유닛:</b> Unit 03 — Hello, World! 첫 프로그램<br>printf의 다양한 사용법과 C 프로그램의 기본 구조를 본격적으로 학습합니다.</div>
+
+    <span class="page-num">3</span>
+  </div>
+</div>
+<div class="page">
+  <div class="chapter-page">
+    <div class="chapter-sidebar"></div>
+    <div class="chapter-accent-bar"></div>
+    <div style="flex:1; min-width:0; padding:50px 50px 40px 45px; position:relative;">
+      <div class="problems-chapter-ref">Chapter 02: 개발 환경 준비</div>
+      <h2 class="problems-title">연습 문제 (Practice Problems)</h2>
+
+        <div class="prob-card">
+          <div class="prob-header">
+            <span class="prob-num">1. C 프로그램을 만들기 위해 필요한 두 가지 도구의 이름과 역할을 적으십시오.</span>
+            <span class="diff diff-basic">하</span>
+          </div>
+          <p class="prob-desc">C 프로그램을 만들기 위해 필요한 두 가지 도구의 이름과 역할을 적으십시오.</p>
+          
+          <div class="contest-write-area" style="margin-top:12px;">
+            <div class="contest-write-label">답 작성</div>
+            <textarea class="contest-textarea" rows="4" spellcheck="false" style="font-family:'Noto Sans KR',sans-serif;" placeholder=""></textarea>
+          </div>
+        </div>
+        <div class="prob-card">
+          <div class="prob-header">
+            <span class="prob-num">2. VS Code에서 코드를 저장하는 단축키와, 터미널을 여는 단축키를 적으십시오.</span>
+            <span class="diff diff-basic">하</span>
+          </div>
+          <p class="prob-desc">VS Code에서 코드를 저장하는 단축키와, 터미널을 여는 단축키를 적으십시오.</p>
+          
+          <div class="contest-write-area" style="margin-top:12px;">
+            <div class="contest-write-label">답 작성</div>
+            <textarea class="contest-textarea" rows="4" spellcheck="false" style="font-family:'Noto Sans KR',sans-serif;" placeholder=""></textarea>
+          </div>
+        </div>
+        <div class="prob-card">
+          <div class="prob-header">
+            <span class="prob-num">3. gcc로 test.c 파일을 컴파일하여 test라는 실행 파일을 만드는 명령어를 적으십시오.</span>
+            <span class="diff diff-basic">하</span>
+          </div>
+          <p class="prob-desc">gcc로 test.c 파일을 컴파일하여 test라는 실행 파일을 만드는 명령어를 적으십시오.</p>
+          
+          <div class="contest-write-area" style="margin-top:12px;">
+            <div class="contest-write-label">답 작성</div>
+            <textarea class="contest-textarea" rows="4" spellcheck="false" style="font-family:'Noto Sans KR',sans-serif;" placeholder=""></textarea>
+          </div>
+        </div>
+        <div class="prob-card">
+          <div class="prob-header">
+            <span class="prob-num">4. 코드를 수정한 뒤 Ctrl+S를 누르지 않고 컴파일하면 어떤 일이 발생합니까?</span>
+            <span class="diff diff-basic">하</span>
+          </div>
+          <p class="prob-desc">코드를 수정한 뒤 Ctrl+S를 누르지 않고 컴파일하면 어떤 일이 발생합니까?</p>
+          
+          <div class="contest-write-area" style="margin-top:12px;">
+            <div class="contest-write-label">답 작성</div>
+            <textarea class="contest-textarea" rows="4" spellcheck="false" style="font-family:'Noto Sans KR',sans-serif;" placeholder=""></textarea>
+          </div>
+        </div>
+        <div class="prob-card">
+          <div class="prob-header">
+            <span class="prob-num">5. 아래 터미널 출력에서 에러의 원인을 설명하십시오.</span>
+            <span class="diff diff-mid">중</span>
+          </div>
+          <p class="prob-desc">아래 터미널 출력에서 에러의 원인을 설명하십시오.</p>
+          <div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span><span class="code-bar-file">cmd</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc">C:\C_Study&gt; gcc myprog.c -o myprog</span></div>
+<div class="code-line highlighted"><span class="ln">2</span><span class="lc">gcc: error: myprog.c: No such file or directory</span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc">gcc: fatal error: no input files</span></div>
+</div>
+</div>
+          <div class="contest-write-area" style="margin-top:12px;">
+            <div class="contest-write-label">답 작성</div>
+            <textarea class="contest-textarea" rows="4" spellcheck="false" style="font-family:'Noto Sans KR',sans-serif;" placeholder=""></textarea>
+          </div>
+        </div>
+        <div class="prob-card">
+          <div class="prob-header">
+            <span class="prob-num">6. [실습] greeting.c 파일을 만들고, 아래 출력이 나오도록 프로그램을 작성한 뒤 컴파일하고 실행하십시오.
+
+[출력]
+Good morning!
+Have a nice day!</span>
+            <span class="diff diff-mid">중</span>
+          </div>
+          <p class="prob-desc">[실습] greeting.c 파일을 만들고, 아래 출력이 나오도록 프로그램을 작성한 뒤 컴파일하고 실행하십시오.<br><br>[출력]<br>Good morning!<br>Have a nice day!</p>
+          
+          <div class="contest-write-area" style="margin-top:12px;">
+            <div class="contest-write-label">코드 작성</div>
+            <textarea class="contest-textarea" rows="8" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+          </div>
+        </div>
+        <div class="prob-card">
+          <div class="prob-header">
+            <span class="prob-num">7. [실습] VS Code에서 새 파일 numbers.c를 만들고, 아래 출력이 나오도록 작성하십시오. 탭(\t)을 사용하여 정렬합니다.
+
+[출력]
+번호	이름	점수
+1	김철수	95
+2	이영희	88</span>
+            <span class="diff diff-mid">중</span>
+          </div>
+          <p class="prob-desc">[실습] VS Code에서 새 파일 numbers.c를 만들고, 아래 출력이 나오도록 작성하십시오. 탭(\t)을 사용하여 정렬합니다.<br><br>[출력]<br>번호	이름	점수<br>1	김철수	95<br>2	이영희	88</p>
+          
+          <div class="contest-write-area" style="margin-top:12px;">
+            <div class="contest-write-label">코드 작성</div>
+            <textarea class="contest-textarea" rows="8" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+          </div>
+        </div>
+        <div class="prob-card">
+          <div class="prob-header">
+            <span class="prob-num">8. 아래 에러 메시지를 보고 원인과 해결 방법을 적으십시오.</span>
+            <span class="diff diff-mid">중</span>
+          </div>
+          <p class="prob-desc">아래 에러 메시지를 보고 원인과 해결 방법을 적으십시오.</p>
+          <div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span><span class="code-bar-file">cmd</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc">C:\C_Study&gt; gcc hello.c -o hello</span></div>
+<div class="code-line highlighted"><span class="ln">2</span><span class="lc">hello.c:<span class="s-num">4</span>:<span class="s-num">5</span>: warning: implicit declaration of function 'prntf'</span></div>
+<div class="code-line highlighted"><span class="ln">3</span><span class="lc">undefined reference to 'prntf'</span></div>
+<div class="code-line"><span class="ln">4</span><span class="lc">collect2.exe: error: ld returned <span class="s-num">1</span> exit status</span></div>
+</div>
+</div>
+          <div class="contest-write-area" style="margin-top:12px;">
+            <div class="contest-write-label">답 작성</div>
+            <textarea class="contest-textarea" rows="4" spellcheck="false" style="font-family:'Noto Sans KR',sans-serif;" placeholder=""></textarea>
+          </div>
+        </div>
+        <div class="prob-card">
+          <div class="prob-header">
+            <span class="prob-num">9. [실습] 아래 코드를 card.c로 저장하고 컴파일하여 실행하십시오. 그 다음, 내용을 자신의 정보로 수정한 version2를 만드십시오.</span>
+            <span class="diff diff-hard">상</span>
+          </div>
+          <p class="prob-desc">[실습] 아래 코드를 card.c로 저장하고 컴파일하여 실행하십시오. 그 다음, 내용을 자신의 정보로 수정한 version2를 만드십시오.</p>
+          <div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span><span class="code-bar-file">card.c</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;stdio.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">main</span>(<span class="s-type">void</span>) {</span></div>
+<div class="code-line"><span class="ln">4</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"========================\n"</span>);</span></div>
+<div class="code-line highlighted"><span class="ln">5</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"  NAME: Hong Gildong\n"</span>);</span></div>
+<div class="code-line highlighted"><span class="ln">6</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"  AGE:  15\n"</span>);</span></div>
+<div class="code-line highlighted"><span class="ln">7</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"  HOBBY: Coding\n"</span>);</span></div>
+<div class="code-line"><span class="ln">8</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"========================\n"</span>);</span></div>
+<div class="code-line"><span class="ln">9</span><span class="lc">    <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">10</span><span class="lc">}</span></div>
+</div>
+</div>
+          <div class="contest-write-area" style="margin-top:12px;">
+            <div class="contest-write-label">답 작성</div>
+            <textarea class="contest-textarea" rows="4" spellcheck="false" style="font-family:'Noto Sans KR',sans-serif;" placeholder=""></textarea>
+          </div>
+        </div>
+        <div class="prob-card">
+          <div class="prob-header">
+            <span class="prob-num">10. PATH 환경 변수의 역할을 설명하고, gcc를 PATH에 등록하지 않으면 어떤 문제가 발생하는지 적으십시오.</span>
+            <span class="diff diff-hard">상</span>
+          </div>
+          <p class="prob-desc">PATH 환경 변수의 역할을 설명하고, gcc를 PATH에 등록하지 않으면 어떤 문제가 발생하는지 적으십시오.</p>
+          
+          <div class="contest-write-area" style="margin-top:12px;">
+            <div class="contest-write-label">답 작성</div>
+            <textarea class="contest-textarea" rows="4" spellcheck="false" style="font-family:'Noto Sans KR',sans-serif;" placeholder=""></textarea>
+          </div>
+        </div>
+      <span class="page-num">4</span>
+    </div>
+  </div>
+</div>
+<div class="page contest-page-wrap">
+  <div class="chapter-page">
+    <div class="chapter-sidebar"></div>
+    <div class="chapter-accent-bar"></div>
+    <div style="flex:1; min-width:0; padding:50px 50px 40px 45px; position:relative;">
+      <div class="problems-chapter-ref">Chapter 02: 개발 환경 준비</div>
+      <h2 class="problems-title">대회 문제 (Online Judge)</h2>
+      <p style="font-size:14px; color:#6b7280; margin:-8px 0 24px;">실제 온라인 저지에 출제된 문제입니다. 아래에 코드를 작성한 뒤, 사이트에 제출하여 채점하십시오.</p>
+
+        <div class="contest-card">
+          <div class="contest-header">
+            <div class="contest-num-source">
+              <span class="contest-num">11번</span>
+              <span class="contest-source">백준 2557</span>
+            </div>
+            <span class="diff diff-basic">하</span>
+          </div>
+          <div class="contest-body">
+            <p class="contest-question">[백준 2557] Hello World<br><br>Hello World!를 출력하십시오. VS Code에서 작성하고 gcc로 컴파일하여 출력을 확인한 뒤, 백준에 제출하십시오.<br><br>[출력]<br>Hello World!</p>
+            <div class="contest-expected"><div class="contest-expected-label">예상 출력</div><pre class="contest-expected-body">Hello World!</pre></div>
+            <div class="contest-write-area">
+              <div class="contest-write-label">코드 작성</div>
+              <textarea class="contest-textarea" rows="12" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="contest-card">
+          <div class="contest-header">
+            <div class="contest-num-source">
+              <span class="contest-num">12번</span>
+              <span class="contest-source">백준 10718</span>
+            </div>
+            <span class="diff diff-basic">하</span>
+          </div>
+          <div class="contest-body">
+            <p class="contest-question">[백준 10718] We love kriii<br><br>아래 문장을 정확히 두 줄 출력하십시오.<br><br>[출력]<br>강한친구 대한육군<br>강한친구 대한육군</p>
+            <div class="contest-expected"><div class="contest-expected-label">예상 출력</div><pre class="contest-expected-body">강한친구 대한육군
+강한친구 대한육군</pre></div>
+            <div class="contest-write-area">
+              <div class="contest-write-label">코드 작성</div>
+              <textarea class="contest-textarea" rows="12" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="contest-card">
+          <div class="contest-header">
+            <div class="contest-num-source">
+              <span class="contest-num">13번</span>
+              <span class="contest-source">코드업 1000</span>
+            </div>
+            <span class="diff diff-basic">하</span>
+          </div>
+          <div class="contest-body">
+            <p class="contest-question">[코드업 1000] 영문 출력<br><br>Hello를 출력하십시오.<br><br>[출력]<br>Hello</p>
+            <div class="contest-expected"><div class="contest-expected-label">예상 출력</div><pre class="contest-expected-body">Hello</pre></div>
+            <div class="contest-write-area">
+              <div class="contest-write-label">코드 작성</div>
+              <textarea class="contest-textarea" rows="12" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="contest-card">
+          <div class="contest-header">
+            <div class="contest-num-source">
+              <span class="contest-num">14번</span>
+              <span class="contest-source">백준 10171</span>
+            </div>
+            <span class="diff diff-mid">중</span>
+          </div>
+          <div class="contest-body">
+            <p class="contest-question">[백준 10171] 고양이<br><br>아래 고양이를 그대로 출력하십시오. 역슬래시(\\)에 주의하십시오.<br><br>[출력]<br>\    /\<br> )  ( ')<br>(  /  )<br> \(__)|</p>
+            <div class="contest-expected"><div class="contest-expected-label">예상 출력</div><pre class="contest-expected-body">\    /\
+ )  ( ')
+(  /  )
+ \(__)|</pre></div>
+            <div class="contest-write-area">
+              <div class="contest-write-label">코드 작성</div>
+              <textarea class="contest-textarea" rows="12" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="contest-card">
+          <div class="contest-header">
+            <div class="contest-num-source">
+              <span class="contest-num">15번</span>
+              <span class="contest-source">백준 10172</span>
+            </div>
+            <span class="diff diff-mid">중</span>
+          </div>
+          <div class="contest-body">
+            <p class="contest-question">[백준 10172] 개<br><br>아래 개를 그대로 출력하십시오.<br><br>[출력]<br>|\_/|<br>|q p|   /}<br>( 0 )"""\<br>|"^"`    |<br>||_/=\\__|</p>
+            <div class="contest-expected"><div class="contest-expected-label">예상 출력</div><pre class="contest-expected-body">|\_/|
+|q p|   /}
+( 0 )"""\
+|"^"`    |
+||_/=\\__|</pre></div>
+            <div class="contest-write-area">
+              <div class="contest-write-label">코드 작성</div>
+              <textarea class="contest-textarea" rows="12" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="contest-card">
+          <div class="contest-header">
+            <div class="contest-num-source">
+              <span class="contest-num">16번</span>
+              <span class="contest-source">백준 25083</span>
+            </div>
+            <span class="diff diff-mid">중</span>
+          </div>
+          <div class="contest-body">
+            <p class="contest-question">[백준 25083] 새싹<br><br>아래 새싹 모양을 정확히 출력하십시오.<br><br>[출력]<br>         ,r'"7<br>r`-_   ,'  ,/<br> \. ". L_r'<br>   `~\/<br>     |<br>     |</p>
+            <div class="contest-expected"><div class="contest-expected-label">예상 출력</div><pre class="contest-expected-body">,r'"7
+r`-_   ,'  ,/
+ \. ". L_r'
+   `~\/
+     |
+     |</pre></div>
+            <div class="contest-write-area">
+              <div class="contest-write-label">코드 작성</div>
+              <textarea class="contest-textarea" rows="12" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="contest-card">
+          <div class="contest-header">
+            <div class="contest-num-source">
+              <span class="contest-num">17번</span>
+              <span class="contest-source">코드업 1008</span>
+            </div>
+            <span class="diff diff-mid">중</span>
+          </div>
+          <div class="contest-body">
+            <p class="contest-question">[코드업 1008] 출력하기08<br><br>아래 유니코드 선 문자 표를 출력하십시오.<br><br>[출력]<br>┌┬┐<br>├┼┤<br>└┴┘</p>
+            <div class="contest-expected"><div class="contest-expected-label">예상 출력</div><pre class="contest-expected-body">┌┬┐
+├┼┤
+└┴┘</pre></div>
+            <div class="contest-write-area">
+              <div class="contest-write-label">코드 작성</div>
+              <textarea class="contest-textarea" rows="12" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="contest-card">
+          <div class="contest-header">
+            <div class="contest-num-source">
+              <span class="contest-num">18번</span>
+              <span class="contest-source">백준 7287</span>
+            </div>
+            <span class="diff diff-hard">상</span>
+          </div>
+          <div class="contest-body">
+            <p class="contest-question">[백준 7287] 등록<br><br>자신의 백준 정보를 출력하십시오. 첫째 줄에 풀었던 문제 수, 둘째 줄에 아이디를 출력합니다.<br><br>[출력 예시]<br>0<br>MyID</p>
+            
+            <div class="contest-write-area">
+              <div class="contest-write-label">코드 작성</div>
+              <textarea class="contest-textarea" rows="12" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="contest-card">
+          <div class="contest-header">
+            <div class="contest-num-source">
+              <span class="contest-num">19번</span>
+              <span class="contest-source">백준 10699</span>
+            </div>
+            <span class="diff diff-hard">상</span>
+          </div>
+          <div class="contest-body">
+            <p class="contest-question">[백준 10699] 오늘 날짜<br><br>서울의 오늘 날짜를 YYYY-MM-DD 형식으로 출력하십시오. time.h 헤더가 필요합니다. 검색하여 도전하십시오.</p>
+            
+            <div class="contest-write-area">
+              <div class="contest-write-label">코드 작성</div>
+              <textarea class="contest-textarea" rows="12" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="contest-card">
+          <div class="contest-header">
+            <div class="contest-num-source">
+              <span class="contest-num">20번</span>
+              <span class="contest-source">백준 변형</span>
+            </div>
+            <span class="diff diff-hard">상</span>
+          </div>
+          <div class="contest-body">
+            <p class="contest-question">[백준 변형] 다이아몬드<br><br>아래 다이아몬드를 printf로 정확히 출력하십시오.<br><br>[출력]<br>    *<br>   ***<br>  *****<br> *******<br>*********<br> *******<br>  *****<br>   ***<br>    *</p>
+            <div class="contest-expected"><div class="contest-expected-label">예상 출력</div><pre class="contest-expected-body">*
+   ***
+  *****
+ *******
+*********
+ *******
+  *****
+   ***
+    *</pre></div>
+            <div class="contest-write-area">
+              <div class="contest-write-label">코드 작성</div>
+              <textarea class="contest-textarea" rows="12" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="contest-card">
+          <div class="contest-header">
+            <div class="contest-num-source">
+              <span class="contest-num">1번</span>
+              <span class="contest-source">백준 2557</span>
+            </div>
+            <span class="diff diff-mid">대회</span>
+          </div>
+          <div class="contest-body">
+            <p class="contest-question">"Hello World"를 출력하십시오.</p>
+            
+            <div class="contest-write-area">
+              <div class="contest-write-label">코드 작성</div>
+              <textarea class="contest-textarea" rows="12" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="contest-card">
+          <div class="contest-header">
+            <div class="contest-num-source">
+              <span class="contest-num">2번</span>
+              <span class="contest-source">백준 10171</span>
+            </div>
+            <span class="diff diff-mid">대회</span>
+          </div>
+          <div class="contest-body">
+            <p class="contest-question">고양이를 출력하십시오.</p>
+            
+            <div class="contest-write-area">
+              <div class="contest-write-label">코드 작성</div>
+              <textarea class="contest-textarea" rows="12" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="contest-card">
+          <div class="contest-header">
+            <div class="contest-num-source">
+              <span class="contest-num">3번</span>
+              <span class="contest-source">백준 10172</span>
+            </div>
+            <span class="diff diff-mid">대회</span>
+          </div>
+          <div class="contest-body">
+            <p class="contest-question">개를 출력하십시오.</p>
+            
+            <div class="contest-write-area">
+              <div class="contest-write-label">코드 작성</div>
+              <textarea class="contest-textarea" rows="12" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="contest-card">
+          <div class="contest-header">
+            <div class="contest-num-source">
+              <span class="contest-num">4번</span>
+              <span class="contest-source">백준 25083</span>
+            </div>
+            <span class="diff diff-mid">대회</span>
+          </div>
+          <div class="contest-body">
+            <p class="contest-question">새싹을 출력하십시오.</p>
+            
+            <div class="contest-write-area">
+              <div class="contest-write-label">코드 작성</div>
+              <textarea class="contest-textarea" rows="12" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="contest-card">
+          <div class="contest-header">
+            <div class="contest-num-source">
+              <span class="contest-num">5번</span>
+              <span class="contest-source">백준 10926</span>
+            </div>
+            <span class="diff diff-mid">대회</span>
+          </div>
+          <div class="contest-body">
+            <p class="contest-question">ID를 입력받아 뒤에 ??!를 붙여 출력하십시오.</p>
+            
+            <div class="contest-write-area">
+              <div class="contest-write-label">코드 작성</div>
+              <textarea class="contest-textarea" rows="12" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="contest-card">
+          <div class="contest-header">
+            <div class="contest-num-source">
+              <span class="contest-num">6번</span>
+              <span class="contest-source">백준 10998</span>
+            </div>
+            <span class="diff diff-mid">대회</span>
+          </div>
+          <div class="contest-body">
+            <p class="contest-question">두 정수 A와 B를 입력받아 A×B를 출력하십시오.</p>
+            
+            <div class="contest-write-area">
+              <div class="contest-write-label">코드 작성</div>
+              <textarea class="contest-textarea" rows="12" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="contest-card">
+          <div class="contest-header">
+            <div class="contest-num-source">
+              <span class="contest-num">7번</span>
+              <span class="contest-source">백준 10869</span>
+            </div>
+            <span class="diff diff-mid">대회</span>
+          </div>
+          <div class="contest-body">
+            <p class="contest-question">두 자연수의 사칙연산 결과를 모두 출력하십시오.</p>
+            
+            <div class="contest-write-area">
+              <div class="contest-write-label">코드 작성</div>
+              <textarea class="contest-textarea" rows="12" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="contest-card">
+          <div class="contest-header">
+            <div class="contest-num-source">
+              <span class="contest-num">8번</span>
+              <span class="contest-source">백준 11382</span>
+            </div>
+            <span class="diff diff-mid">대회</span>
+          </div>
+          <div class="contest-body">
+            <p class="contest-question">세 정수를 입력받아 합을 출력하십시오.</p>
+            
+            <div class="contest-write-area">
+              <div class="contest-write-label">코드 작성</div>
+              <textarea class="contest-textarea" rows="12" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="contest-card">
+          <div class="contest-header">
+            <div class="contest-num-source">
+              <span class="contest-num">9번</span>
+              <span class="contest-source">백준 10430</span>
+            </div>
+            <span class="diff diff-mid">대회</span>
+          </div>
+          <div class="contest-body">
+            <p class="contest-question">(A+B)%C 등 나머지 연산 결과를 출력하십시오.</p>
+            
+            <div class="contest-write-area">
+              <div class="contest-write-label">코드 작성</div>
+              <textarea class="contest-textarea" rows="12" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="contest-card">
+          <div class="contest-header">
+            <div class="contest-num-source">
+              <span class="contest-num">10번</span>
+              <span class="contest-source">백준 2739</span>
+            </div>
+            <span class="diff diff-mid">대회</span>
+          </div>
+          <div class="contest-body">
+            <p class="contest-question">N을 입력받아 구구단을 출력하십시오.</p>
+            
+            <div class="contest-write-area">
+              <div class="contest-write-label">코드 작성</div>
+              <textarea class="contest-textarea" rows="12" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+            </div>
+          </div>
+        </div>
+      <span class="page-num">5</span>
+    </div>
+  </div>
+</div>
+</body>
+</html>

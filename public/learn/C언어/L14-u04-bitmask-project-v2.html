@@ -1,0 +1,1802 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>코딩쏙 교재 — 2진수 변환기 + 비트 마스크</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+
+  :root {
+    --navy: #1a2e4a;
+    --navy-mid: #2c4a6e;
+    --navy-light: #3d6590;
+    --orange: #e07830;
+    --orange-light: #f5e6d8;
+    --white: #ffffff;
+    --bg: #f7f8fa;
+    --bg-warm: #faf9f7;
+    --gray-50: #f9fafb;
+    --gray-100: #f3f4f6;
+    --gray-200: #e5e7eb;
+    --gray-300: #d1d5db;
+    --gray-400: #9ca3af;
+    --gray-500: #6b7280;
+    --gray-600: #4b5563;
+    --gray-700: #374151;
+    --gray-800: #1f2937;
+    --text: #2d3748;
+    --green: #16a34a;
+    --green-bg: #dcfce7;
+    --red: #dc2626;
+    --red-bg: #fee2e2;
+    --blue: #2563eb;
+    --blue-bg: #dbeafe;
+    --yellow-bg: #fef9c3;
+    --font: 'Noto Sans KR', sans-serif;
+    --mono: 'JetBrains Mono', 'Consolas', monospace;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: var(--font); background: #e8eaed; font-size: 15px; }
+
+  /* ========== PAGE ========== */
+  .page {
+    width: 210mm;
+    min-height: 295mm;
+    margin: 24px auto;
+    background: var(--white);
+    box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* ========== PAGE 1: CHAPTER START ========== */
+  .chapter-page {
+    display: flex;
+    min-height: 295mm;
+  }
+
+  .chapter-sidebar {
+    width: 10px;
+    background: var(--navy);
+    flex-shrink: 0;
+  }
+
+  .chapter-accent-bar {
+    width: 7px;
+    background: var(--orange);
+    flex-shrink: 0;
+  }
+
+  .chapter-body {
+    flex: 1;
+    padding: 70px 65px 50px 55px;
+    position: relative;
+  }
+
+  .chapter-watermark {
+    position: absolute;
+    top: -10px;
+    right: -15px;
+    font-size: 280px;
+    font-weight: 900;
+    color: rgba(180,195,212,0.35);
+    line-height: 1;
+    pointer-events: none;
+    letter-spacing: -10px;
+  }
+
+  .chapter-label {
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--navy-mid);
+    letter-spacing: 2px;
+    margin-bottom: 4px;
+  }
+
+  .chapter-title {
+    font-size: 44px;
+    font-weight: 900;
+    color: var(--navy);
+    line-height: 1.15;
+    margin-bottom: 12px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .chapter-sub {
+    font-size: 16px;
+    color: var(--gray-500);
+    font-weight: 400;
+    margin-bottom: 20px;
+    padding-bottom: 28px;
+    border-bottom: 1px solid var(--gray-200);
+  }
+
+  /* Learning objectives */
+  .obj-title {
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--navy);
+    margin-bottom: 16px;
+    margin-top: 32px;
+  }
+
+  .obj-list {
+    list-style: none;
+    margin-bottom: 40px;
+  }
+
+  .obj-list li {
+    padding: 5px 0 5px 24px;
+    position: relative;
+    font-size: 15px;
+    color: var(--gray-700);
+    line-height: 1.6;
+  }
+
+  .obj-list li::before {
+    content: '•';
+    position: absolute;
+    left: 8px;
+    color: var(--navy-mid);
+    font-weight: 700;
+  }
+
+  /* Prerequisites flow */
+  .prereq-title {
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--navy);
+    margin-bottom: 18px;
+  }
+
+  .prereq-flow {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    margin-bottom: 44px;
+  }
+
+  .prereq-item {
+    padding: 9px 22px;
+    border: 1.5px solid var(--gray-300);
+    border-radius: 50px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--gray-600);
+    background: var(--white);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+  }
+
+  .prereq-item.current {
+    border-color: var(--navy);
+    color: var(--navy);
+    font-weight: 700;
+    background: #edf2f7;
+    box-shadow: 0 2px 6px rgba(26,46,74,0.12);
+  }
+
+  .prereq-arrow {
+    width: 36px;
+    text-align: center;
+    color: var(--gray-300);
+    font-size: 18px;
+    font-weight: 300;
+  }
+
+  /* Predict box */
+  .predict-box {
+    background: var(--gray-50);
+    border: 1.5px solid var(--gray-200);
+    border-radius: 12px;
+    padding: 24px 28px;
+  }
+
+  .predict-label {
+    display: inline-block;
+    background: var(--orange);
+    color: var(--white);
+    font-size: 12px;
+    font-weight: 600;
+    padding: 3px 12px;
+    border-radius: 4px;
+    margin-bottom: 14px;
+    letter-spacing: 0.5px;
+  }
+
+  .predict-q {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--navy);
+    margin-bottom: 16px;
+  }
+
+  .predict-code {
+    background: var(--white);
+    border: 1px solid var(--gray-200);
+    border-radius: 8px;
+    padding: 14px 18px;
+    font-family: var(--mono);
+    font-size: 13px;
+    line-height: 1.65;
+    color: var(--gray-700);
+  }
+
+  /* ========== PAGE 2: CORE CONTENT ========== */
+  .content-page {
+    padding: 55px 65px;
+  }
+
+  .unit-header-bar {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    margin-bottom: 8px;
+  }
+
+  .unit-tag {
+    font-size: 12px;
+    color: var(--orange);
+    font-weight: 600;
+    letter-spacing: 1px;
+  }
+
+  .unit-title-sm {
+    font-size: 14px;
+    color: var(--gray-400);
+    font-weight: 400;
+  }
+
+  .section-title {
+    font-size: 24px;
+    font-weight: 800;
+    color: var(--navy);
+    margin-bottom: 24px;
+    margin-top: 8px;
+    padding-left: 16px;
+    border-left: 5px solid var(--orange);
+  }
+
+  p {
+    font-size: 15.5px;
+    line-height: 1.9;
+    color: var(--text);
+    margin-bottom: 18px;
+  }
+
+  p code {
+    font-family: var(--mono);
+    font-size: 13.5px;
+    background: #f1f3f5;
+    padding: 2px 7px;
+    border-radius: 4px;
+    color: var(--navy);
+    font-weight: 500;
+  }
+
+  /* Code block */
+  .code-wrap {
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    border: 1px solid var(--gray-200);
+    margin: 22px 0;
+  }
+
+  .code-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 9px 18px;
+    background: var(--navy);
+    font-size: 12px;
+  }
+
+  .code-bar-lang {
+    font-family: var(--mono);
+    font-weight: 600;
+    color: var(--white);
+  }
+
+  .code-bar-file {
+    color: rgba(255,255,255,0.6);
+    font-weight: 400;
+  }
+
+  .code-body {
+    background: #f8f9fb;
+    padding: 20px 0;
+    font-family: var(--mono);
+    font-size: 13.5px;
+    line-height: 1.75;
+    border: 1px solid var(--gray-200);
+    border-top: none;
+    border-radius: 0 0 12px 12px;
+  }
+
+  .code-line {
+    display: flex;
+    padding: 0 20px;
+  }
+
+  .code-line:hover {
+    background: #f0f4f8;
+  }
+
+  .code-line.highlighted {
+    background: #fff8e1;
+  }
+
+  .ln {
+    width: 30px;
+    text-align: right;
+    color: #b8bfc8;
+    font-size: 12px;
+    margin-right: 18px;
+    user-select: none;
+    flex-shrink: 0;
+    padding-top: 1px;
+  }
+
+  .lc { flex: 1; }
+
+  /* syntax */
+  .s-pp { color: #8b5cf6; font-weight: 600; }
+  .s-str { color: #d97706; }
+  .s-type { color: #2563eb; font-weight: 500; }
+  .s-kw { color: #7c3aed; font-weight: 500; }
+  .s-fn { color: #059669; font-weight: 500; }
+  .s-num { color: #dc2626; }
+  .s-cm { color: #9ca3af; font-style: italic; }
+
+  /* Output block */
+  .output-wrap {
+    border-radius: 10px;
+    overflow: hidden;
+    margin: 10px 0 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    border: 1px solid #d1d5db;
+  }
+
+  .output-bar {
+    padding: 9px 18px;
+    background: #374151;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--white);
+    letter-spacing: 0.5px;
+  }
+
+  .output-body {
+    padding: 16px 20px;
+    font-family: var(--mono);
+    font-size: 13.5px;
+    line-height: 1.7;
+    color: var(--gray-800);
+    background: #f1f5f9;
+    border: 1px solid var(--gray-200);
+    border-top: none;
+    border-radius: 0 0 10px 10px;
+  }
+
+  /* Callout */
+  .tip {
+    margin: 28px 0;
+    padding: 18px 24px;
+    background: #dbeafe;
+    border-left: 5px solid #2563eb;
+    border-radius: 0 12px 12px 0;
+    font-size: 14.5px;
+    line-height: 1.8;
+    color: var(--text);
+  }
+
+  .tip-label {
+    font-weight: 700;
+    color: #2563eb;
+    font-size: 13px;
+    display: block;
+    margin-bottom: 4px;
+  }
+
+  .warn {
+    margin: 28px 0;
+    padding: 18px 24px;
+    background: #fef3c7;
+    border-left: 5px solid #d97706;
+    border-radius: 0 12px 12px 0;
+    font-size: 14.5px;
+    line-height: 1.8;
+  }
+
+  .warn-label {
+    font-weight: 700;
+    color: #d97706;
+    font-size: 13px;
+    display: block;
+    margin-bottom: 4px;
+  }
+
+  .note-box {
+    margin: 28px 0;
+    padding: 18px 24px;
+    background: #e2e8f0;
+    border-left: 5px solid #64748b;
+    border-radius: 0 12px 12px 0;
+    font-size: 14.5px;
+    line-height: 1.8;
+  }
+
+  .note-label {
+    font-weight: 700;
+    color: var(--gray-600);
+    font-size: 13px;
+    display: block;
+    margin-bottom: 4px;
+  }
+
+  /* Trace table */
+  table.trace {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    margin: 28px 0;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+    font-size: 14px;
+  }
+
+  table.trace th {
+    background: var(--navy);
+    color: var(--white);
+    padding: 10px 16px;
+    text-align: left;
+    font-weight: 500;
+    font-size: 13px;
+  }
+
+  table.trace td {
+    padding: 10px 16px;
+    border-bottom: 1px solid var(--gray-200);
+    color: var(--gray-700);
+  }
+
+  table.trace tr:nth-child(even) td { background: var(--gray-50); }
+  table.trace tr:last-child td { border-bottom: none; }
+
+  table.trace td code {
+    font-family: var(--mono);
+    font-size: 12.5px;
+    background: #eef1f5;
+    padding: 2px 6px;
+    border-radius: 4px;
+    color: var(--navy);
+  }
+
+  /* ========== PAGE 3: PROBLEMS ========== */
+  .problems-header {
+    margin-bottom: 8px;
+  }
+
+  .problems-chapter-ref {
+    font-size: 13px;
+    color: var(--gray-500);
+    margin-bottom: 4px;
+  }
+
+  .problems-title {
+    font-size: 28px;
+    font-weight: 800;
+    color: var(--navy);
+    margin-bottom: 24px;
+  }
+
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 16px;
+  }
+
+  .prob-card {
+    background: var(--white);
+    border: 1px solid var(--gray-200);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 3px 15px rgba(0,0,0,0.06);
+  }
+
+  .prob-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 16px;
+    background: var(--navy);
+  }
+
+  .prob-num {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--white);
+  }
+
+  .diff {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    font-size: 12px;
+    font-weight: 800;
+  }
+
+  .diff-basic { background: #22c55e; color: white; }
+  .diff-mid { background: #f59e0b; color: white; }
+  .diff-hard { background: #ef4444; color: white; }
+
+  .prob-desc {
+    font-size: 13.5px;
+    line-height: 1.65;
+    color: var(--gray-600);
+    margin-bottom: 10px;
+    padding: 14px 16px 0;
+  }
+
+  .prob-code {
+    background: var(--gray-50);
+    border: 1px solid var(--gray-200);
+    border-radius: 6px;
+    padding: 10px 14px;
+    margin: 0 16px 16px;
+    font-family: var(--mono);
+    font-size: 12.5px;
+    line-height: 1.55;
+    color: var(--gray-600);
+  }
+
+  /* Competition section */
+  .comp-section {
+    margin-top: 32px;
+    padding-top: 24px;
+    border-top: 2px solid var(--navy);
+  }
+
+  .comp-title {
+    font-size: 22px;
+    font-weight: 800;
+    color: var(--navy);
+    margin-bottom: 20px;
+  }
+
+  .comp-card {
+    background: var(--white);
+    border: 1.5px solid var(--gray-200);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 18px rgba(0,0,0,0.06);
+  }
+
+  .comp-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 16px;
+    background: #0f766e;
+  }
+
+  .comp-header .comp-name {
+    color: var(--white);
+    font-size: 15px;
+    font-weight: 700;
+    margin: 0;
+  }
+
+  .comp-inner {
+    padding: 14px 18px 18px;
+  }
+
+  .comp-badge {
+    display: inline-block;
+    padding: 3px 12px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 700;
+  }
+
+  .badge-bj { background: #93c5fd; color: #1e3a5f; }
+  .badge-cu { background: #c4b5fd; color: #3b1f7e; }
+  .badge-pg { background: #7dd3fc; color: #0c4a6e; }
+
+  .comp-name {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--navy);
+    margin-bottom: 6px;
+  }
+
+  .comp-desc {
+    font-size: 14px;
+    color: var(--gray-600);
+    line-height: 1.7;
+    margin-bottom: 14px;
+  }
+
+  .io-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+
+  .io-card {
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid var(--gray-200);
+  }
+
+  .io-h {
+    padding: 6px 14px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--gray-600);
+    background: #e2e8f0;
+  }
+
+  .io-c {
+    padding: 10px 14px;
+    font-family: var(--mono);
+    font-size: 13px;
+    line-height: 1.5;
+    background: var(--white);
+  }
+
+  /* ========== DEBUG LAB ========== */
+  .debug-section {
+    margin: 24px 0;
+    border: 2px solid var(--red);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+
+  .debug-bar {
+    background: var(--red);
+    color: var(--white);
+    padding: 10px 20px;
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 1px;
+  }
+
+  .debug-body {
+    padding: 20px;
+    background: #fef2f2;
+  }
+
+  /* 10축 connection */
+  .connect-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 16px;
+    margin: 28px 0;
+  }
+
+  .connect-card {
+    border-radius: 12px;
+    padding: 20px;
+    text-align: center;
+    border: 1px solid var(--gray-200);
+    box-shadow: 0 3px 14px rgba(0,0,0,0.05);
+  }
+
+  .connect-card h5 {
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 8px;
+  }
+
+  .connect-card p {
+    font-size: 13px;
+    margin: 0;
+    color: var(--gray-600);
+    line-height: 1.6;
+  }
+
+  .cc1 { border-top: 3px solid #8b5cf6; }
+  .cc1 h5 { color: #8b5cf6; }
+  .cc2 { border-top: 3px solid var(--green); }
+  .cc2 h5 { color: var(--green); }
+  .cc3 { border-top: 3px solid var(--navy); }
+  .cc3 h5 { color: var(--navy); }
+
+  /* PAGE NUMBER */
+  .page-num {
+    position: absolute;
+    bottom: 20px;
+    right: 30px;
+    font-size: 12px;
+    color: var(--gray-400);
+  }
+
+  /* WARMUP */
+  .warmup-box {
+    background: #e0e7f1;
+    border-radius: 12px;
+    padding: 24px 28px;
+    margin: 28px 0;
+    border: 2px solid #c7d2e0;
+  }
+
+  .warmup-title {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--navy);
+    margin-bottom: 14px;
+  }
+
+  .wq {
+    padding: 9px 16px;
+    background: var(--white);
+    border-radius: 8px;
+    margin-bottom: 8px;
+    font-size: 14px;
+    border: 1px solid var(--gray-200);
+    color: var(--gray-700);
+  }
+
+  .wq b { color: var(--navy); margin-right: 6px; }
+  .wq .hint { color: var(--gray-400); font-size: 13px; }
+
+  /* ===== CONTEST PROBLEMS PAGE ===== */
+  .contest-page-wrap .chapter-page {
+    min-height: auto;
+  }
+
+  .contest-page-wrap .chapter-page > div:last-child {
+    min-width: 0;
+    overflow-wrap: break-word;
+    word-break: break-word;
+  }
+
+  .contest-card {
+    background: white;
+    border: 1.5px solid var(--gray-200);
+    border-radius: 12px;
+    margin-bottom: 28px;
+    overflow: hidden;
+    break-inside: avoid;
+  }
+
+  .contest-header {
+    background: var(--navy);
+    color: white;
+    padding: 14px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .contest-num-source {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .contest-num {
+    font-weight: 700;
+    font-size: 16px;
+  }
+
+  .contest-source {
+    background: rgba(255,255,255,0.15);
+    padding: 3px 10px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 500;
+  }
+
+  .contest-body {
+    padding: 20px 24px 24px;
+  }
+
+  .contest-question {
+    font-size: 15px;
+    line-height: 1.7;
+    color: var(--text);
+    margin: 0 0 16px;
+    word-break: break-word;
+    overflow-wrap: break-word;
+  }
+
+  .contest-expected {
+    background: #1e293b;
+    border-radius: 8px;
+    overflow: hidden;
+    margin-bottom: 20px;
+  }
+
+  .contest-expected-label {
+    background: #334155;
+    color: #94a3b8;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 6px 14px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .contest-expected-body {
+    color: #e2e8f0;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    line-height: 1.6;
+    padding: 12px 16px;
+    margin: 0;
+    white-space: pre;
+  }
+
+  .contest-write-area {
+    border: 2px dashed var(--gray-300);
+    border-radius: 10px;
+    overflow: hidden;
+    transition: border-color 0.2s;
+  }
+
+  .contest-write-area:focus-within {
+    border-color: var(--orange);
+    border-style: solid;
+  }
+
+  .contest-write-label {
+    background: var(--bg);
+    color: var(--gray-500);
+    font-size: 12px;
+    font-weight: 600;
+    padding: 8px 14px;
+    border-bottom: 1px solid var(--gray-200);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .contest-textarea {
+    width: 100%;
+    min-height: 200px;
+    padding: 16px 18px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    line-height: 1.7;
+    color: var(--text);
+    background: #fafbfc;
+    border: none;
+    outline: none;
+    resize: vertical;
+    tab-size: 4;
+    box-sizing: border-box;
+  }
+
+  .contest-textarea::placeholder {
+    color: var(--gray-300);
+  }
+
+  @media print {
+    body { background: white; }
+    .page { box-shadow: none; margin: 0; page-break-after: always; }
+    .contest-textarea { border: 1px solid var(--gray-300); min-height: 180px; }
+  }
+
+</style>
+</head>
+<body>
+
+<div class="page">
+  <div class="chapter-page">
+    <div class="chapter-sidebar"></div>
+    <div class="chapter-accent-bar"></div>
+    <div class="chapter-body">
+      <div class="chapter-watermark">04</div>
+      <div class="chapter-label">Chapter 04</div>
+      <h1 class="chapter-title">2진수 변환기 + 비트 마스크</h1>
+      <p class="chapter-sub">비트 연산을 종합 활용하여 2진수 변환기와 비트 마스크 도구를 구현합니다.</p>
+
+      <h3 class="obj-title">이 유닛에서 배우는 것</h3>
+      <ul class="obj-list">
+        <li>비트 연산으로 10진수와 2진수를 상호 변환할 수 있습니다.</li>
+        <li>비트 플래그의 SET, CLEAR, TOGGLE, CHECK 연산을 구현할 수 있습니다.</li>
+        <li>비트마스크를 이용한 집합 연산(합집합, 교집합, 차집합, 부분집합)을 구현할 수 있습니다.</li>
+        <li>비트마스크 기반 권한 관리 시스템을 설계하고 구현할 수 있습니다.</li>
+      </ul>
+
+      <h3 class="prereq-title">선수 학습</h3>
+      <div class="prereq-flow">
+        <div class="prereq-item current">L14-U03</div>
+      </div>
+
+      
+
+      <span class="page-num">1</span>
+    </div>
+  </div>
+</div>
+<div class="page">
+  <div class="content-page">
+    <div class="unit-header-bar">
+      <span class="unit-tag">UNIT 04</span>
+      <span class="unit-title-sm">2진수 변환기 + 비트 마스크</span>
+    </div>
+<h2 class="section-title">프로젝트 개요</h2>
+<div class="note-box"><span class="note-label"></span>
+<div style="font-weight:700;margin-bottom:6px;color:#1a2e4a">2진수 변환기 + 비트 마스크</div>비트 연산자를 종합 활용하여 2진수 변환, 비트 플래그 관리, 비트마스크 집합 연산을 구현합니다. 비트 연산은 하드웨어 제어, 권한 관리, 상태 플래그 등 시스템 프로그래밍의 핵심 기법이며 알고리즘 대회에서도 자주 활용됩니다.<br><br>버전 1: 10진수<->2진수 변환기 (비트 연산으로 구현, 비트 시각화 출력)<br>버전 2: 비트 플래그 관리 도구 (SET/CLEAR/TOGGLE/CHECK 메뉴, 8개 비트 상태 표시)<br>버전 3: 비트마스크 집합 연산 (합집합|, 교집합&, 차집합, 부분집합 판별) + 권한 관리 시스템</div>
+<h2 class="section-title">비트 연산 핵심 정리</h2>
+<div class="debug-section"><div class="debug-bar">DEBUG LAB — 에러를 찾으시오</div><div class="debug-body">
+
+<p style="margin:14px 0 0; font-size:14px;"><b>에러:</b> </p>
+<p style="font-size:14px;"><b>수정:</b> </p>
+</div></div>
+<div class="debug-section"><div class="debug-bar">DEBUG LAB — 에러를 찾으시오</div><div class="debug-body">
+
+<p style="margin:14px 0 0; font-size:14px;"><b>에러:</b> </p>
+<p style="font-size:14px;"><b>수정:</b> </p>
+</div></div>
+<h2 class="section-title">버전 1: 10진수<->2진수 변환기</h2>
+<p>undefined</p>
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;stdio.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;string.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">4</span><span class="lc"><span class="s-pp">#define</span> BITS <span class="s-num">8</span></span></div>
+<div class="code-line"><span class="ln">5</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">6</span><span class="lc"><span class="s-cm">/* 10진수 -&gt; 2진수 문자열 변환 (비트 연산 사용) */</span></span></div>
+<div class="code-line"><span class="ln">7</span><span class="lc"><span class="s-type">void</span> <span class="s-fn">decToBin</span>(<span class="s-type">unsigned</span> <span class="s-type">int</span> num, <span class="s-type">char</span> *result, <span class="s-type">int</span> bits) {</span></div>
+<div class="code-line"><span class="ln">8</span><span class="lc">    <span class="s-kw">for</span> (<span class="s-type">int</span> i = bits - <span class="s-num">1</span>; i &gt;= <span class="s-num">0</span>; i--) {</span></div>
+<div class="code-line"><span class="ln">9</span><span class="lc">        <span class="s-cm">/* 최상위 비트부터 검사: 해당 비트가 1인지 확인 */</span></span></div>
+<div class="code-line"><span class="ln">10</span><span class="lc">        result[bits - <span class="s-num">1</span> - i] = (num &amp; (<span class="s-num">1</span> &lt;&lt; i)) ? <span class="s-str">'1'</span> : <span class="s-str">'0'</span>;</span></div>
+<div class="code-line"><span class="ln">11</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">12</span><span class="lc">    result[bits] = '\<span class="s-num">0</span>';</span></div>
+<div class="code-line"><span class="ln">13</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">14</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">15</span><span class="lc"><span class="s-cm">/* 2진수 문자열 -&gt; 10진수 변환 (비트 연산 사용) */</span></span></div>
+<div class="code-line"><span class="ln">16</span><span class="lc"><span class="s-type">unsigned</span> <span class="s-type">int</span> <span class="s-fn">binToDec</span>(<span class="s-kw">const</span> <span class="s-type">char</span> *binStr) {</span></div>
+<div class="code-line"><span class="ln">17</span><span class="lc">    <span class="s-type">unsigned</span> <span class="s-type">int</span> result = <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">18</span><span class="lc">    <span class="s-type">int</span> len = (<span class="s-type">int</span>)<span class="s-fn">strlen</span>(binStr);</span></div>
+<div class="code-line"><span class="ln">19</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">20</span><span class="lc">    <span class="s-kw">for</span> (<span class="s-type">int</span> i = <span class="s-num">0</span>; i &lt; len; i++) {</span></div>
+<div class="code-line"><span class="ln">21</span><span class="lc">        <span class="s-kw">if</span> (binStr[i] == <span class="s-str">'1'</span>) {</span></div>
+<div class="code-line"><span class="ln">22</span><span class="lc">            result |= (<span class="s-num">1</span> &lt;&lt; (len - <span class="s-num">1</span> - i));  <span class="s-cm">/* 해당 비트 위치에 1 설정 */</span></span></div>
+<div class="code-line"><span class="ln">23</span><span class="lc">        }</span></div>
+<div class="code-line"><span class="ln">24</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">25</span><span class="lc">    <span class="s-kw">return</span> result;</span></div>
+<div class="code-line"><span class="ln">26</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">27</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">28</span><span class="lc"><span class="s-cm">/* 비트 시각화 출력 */</span></span></div>
+<div class="code-line"><span class="ln">29</span><span class="lc"><span class="s-type">void</span> <span class="s-fn">printBitVisual</span>(<span class="s-type">unsigned</span> <span class="s-type">int</span> num, <span class="s-type">int</span> bits) {</span></div>
+<div class="code-line"><span class="ln">30</span><span class="lc">    <span class="s-type">char</span> binStr[<span class="s-num">33</span>];</span></div>
+<div class="code-line"><span class="ln">31</span><span class="lc">    <span class="s-fn">decToBin</span>(num, binStr, bits);</span></div>
+<div class="code-line"><span class="ln">32</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">33</span><span class="lc">    <span class="s-cm">/* 비트 번호 출력 */</span></span></div>
+<div class="code-line"><span class="ln">34</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"비트 번호: "</span>);</span></div>
+<div class="code-line"><span class="ln">35</span><span class="lc">    <span class="s-kw">for</span> (<span class="s-type">int</span> i = bits - <span class="s-num">1</span>; i &gt;= <span class="s-num">0</span>; i--) {</span></div>
+<div class="code-line"><span class="ln">36</span><span class="lc">        <span class="s-fn">printf</span>(<span class="s-str">" %d "</span>, i);</span></div>
+<div class="code-line"><span class="ln">37</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">38</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"\n"</span>);</span></div>
+<div class="code-line"><span class="ln">39</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">40</span><span class="lc">    <span class="s-cm">/* 구분선 */</span></span></div>
+<div class="code-line"><span class="ln">41</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"          "</span>);</span></div>
+<div class="code-line"><span class="ln">42</span><span class="lc">    <span class="s-kw">for</span> (<span class="s-type">int</span> i = <span class="s-num">0</span>; i &lt; bits; i++) {</span></div>
+<div class="code-line"><span class="ln">43</span><span class="lc">        <span class="s-fn">printf</span>(<span class="s-str">"---"</span>);</span></div>
+<div class="code-line"><span class="ln">44</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">45</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"\n"</span>);</span></div>
+<div class="code-line"><span class="ln">46</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">47</span><span class="lc">    <span class="s-cm">/* 비트 값 출력 */</span></span></div>
+<div class="code-line"><span class="ln">48</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"비트 값:  "</span>);</span></div>
+<div class="code-line"><span class="ln">49</span><span class="lc">    <span class="s-kw">for</span> (<span class="s-type">int</span> i = <span class="s-num">0</span>; i &lt; bits; i++) {</span></div>
+<div class="code-line"><span class="ln">50</span><span class="lc">        <span class="s-fn">printf</span>(<span class="s-str">" %c "</span>, binStr[i]);</span></div>
+<div class="code-line"><span class="ln">51</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">52</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"\n"</span>);</span></div>
+<div class="code-line"><span class="ln">53</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">54</span><span class="lc">    <span class="s-cm">/* 자릿값 출력 */</span></span></div>
+<div class="code-line"><span class="ln">55</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"자릿값:   "</span>);</span></div>
+<div class="code-line"><span class="ln">56</span><span class="lc">    <span class="s-kw">for</span> (<span class="s-type">int</span> i = bits - <span class="s-num">1</span>; i &gt;= <span class="s-num">0</span>; i--) {</span></div>
+<div class="code-line"><span class="ln">57</span><span class="lc">        <span class="s-fn">printf</span>(<span class="s-str">"%3d"</span>, <span class="s-num">1</span> &lt;&lt; i);</span></div>
+<div class="code-line"><span class="ln">58</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">59</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"\n"</span>);</span></div>
+<div class="code-line"><span class="ln">60</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">61</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"\n10진수: %u\n"</span>, num);</span></div>
+<div class="code-line"><span class="ln">62</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"2진수:  %s\n"</span>, binStr);</span></div>
+<div class="code-line"><span class="ln">63</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">64</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">65</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">main</span>(<span class="s-type">void</span>) {</span></div>
+<div class="code-line"><span class="ln">66</span><span class="lc">    <span class="s-type">int</span> choice;</span></div>
+<div class="code-line"><span class="ln">67</span><span class="lc">    <span class="s-type">unsigned</span> <span class="s-type">int</span> num;</span></div>
+<div class="code-line"><span class="ln">68</span><span class="lc">    <span class="s-type">char</span> binStr[<span class="s-num">33</span>];</span></div>
+<div class="code-line"><span class="ln">69</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">70</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"=== 2진수 변환기 v1 ===\n\n"</span>);</span></div>
+<div class="code-line"><span class="ln">71</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">72</span><span class="lc">    <span class="s-kw">do</span> {</span></div>
+<div class="code-line"><span class="ln">73</span><span class="lc">        <span class="s-fn">printf</span>(<span class="s-str">"1. 10진수 -&gt; 2진수  2. 2진수 -&gt; 10진수  0. 종료\n"</span>);</span></div>
+<div class="code-line"><span class="ln">74</span><span class="lc">        <span class="s-fn">printf</span>(<span class="s-str">"선택: "</span>);</span></div>
+<div class="code-line"><span class="ln">75</span><span class="lc">        <span class="s-fn">scanf</span>(<span class="s-str">"%d"</span>, &amp;choice);</span></div>
+<div class="code-line"><span class="ln">76</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">77</span><span class="lc">        <span class="s-kw">switch</span> (choice) {</span></div>
+<div class="code-line"><span class="ln">78</span><span class="lc">            <span class="s-kw">case</span> <span class="s-num">1</span>:</span></div>
+<div class="code-line"><span class="ln">79</span><span class="lc">                <span class="s-fn">printf</span>(<span class="s-str">"10진수 입력 (0~255): "</span>);</span></div>
+<div class="code-line"><span class="ln">80</span><span class="lc">                <span class="s-fn">scanf</span>(<span class="s-str">"%u"</span>, &amp;num);</span></div>
+<div class="code-line"><span class="ln">81</span><span class="lc">                <span class="s-kw">if</span> (num &gt; <span class="s-num">255</span>) {</span></div>
+<div class="code-line"><span class="ln">82</span><span class="lc">                    <span class="s-fn">printf</span>(<span class="s-str">"오류: 8비트 범위(0~255)를 초과했습니다.\n\n"</span>);</span></div>
+<div class="code-line"><span class="ln">83</span><span class="lc">                    <span class="s-kw">break</span>;</span></div>
+<div class="code-line"><span class="ln">84</span><span class="lc">                }</span></div>
+<div class="code-line"><span class="ln">85</span><span class="lc">                <span class="s-fn">printf</span>(<span class="s-str">"\n"</span>);</span></div>
+<div class="code-line"><span class="ln">86</span><span class="lc">                <span class="s-fn">printBitVisual</span>(num, BITS);</span></div>
+<div class="code-line"><span class="ln">87</span><span class="lc">                <span class="s-fn">printf</span>(<span class="s-str">"\n"</span>);</span></div>
+<div class="code-line"><span class="ln">88</span><span class="lc">                <span class="s-kw">break</span>;</span></div>
+<div class="code-line"><span class="ln">89</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">90</span><span class="lc">            <span class="s-kw">case</span> <span class="s-num">2</span>:</span></div>
+<div class="code-line"><span class="ln">91</span><span class="lc">                <span class="s-fn">printf</span>(<span class="s-str">"2진수 입력 (최대 8자리): "</span>);</span></div>
+<div class="code-line"><span class="ln">92</span><span class="lc">                <span class="s-fn">scanf</span>(<span class="s-str">"%s"</span>, binStr);</span></div>
+<div class="code-line"><span class="ln">93</span><span class="lc">                <span class="s-kw">if</span> ((<span class="s-type">int</span>)<span class="s-fn">strlen</span>(binStr) &gt; BITS) {</span></div>
+<div class="code-line"><span class="ln">94</span><span class="lc">                    <span class="s-fn">printf</span>(<span class="s-str">"오류: 8비트를 초과했습니다.\n\n"</span>);</span></div>
+<div class="code-line"><span class="ln">95</span><span class="lc">                    <span class="s-kw">break</span>;</span></div>
+<div class="code-line"><span class="ln">96</span><span class="lc">                }</span></div>
+<div class="code-line"><span class="ln">97</span><span class="lc">                num = <span class="s-fn">binToDec</span>(binStr);</span></div>
+<div class="code-line"><span class="ln">98</span><span class="lc">                <span class="s-fn">printf</span>(<span class="s-str">"\n"</span>);</span></div>
+<div class="code-line"><span class="ln">99</span><span class="lc">                <span class="s-fn">printBitVisual</span>(num, BITS);</span></div>
+<div class="code-line"><span class="ln">100</span><span class="lc">                <span class="s-fn">printf</span>(<span class="s-str">"\n"</span>);</span></div>
+<div class="code-line"><span class="ln">101</span><span class="lc">                <span class="s-kw">break</span>;</span></div>
+<div class="code-line"><span class="ln">102</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">103</span><span class="lc">            <span class="s-kw">case</span> <span class="s-num">0</span>:</span></div>
+<div class="code-line"><span class="ln">104</span><span class="lc">                <span class="s-fn">printf</span>(<span class="s-str">"종료합니다.\n"</span>);</span></div>
+<div class="code-line"><span class="ln">105</span><span class="lc">                <span class="s-kw">break</span>;</span></div>
+<div class="code-line"><span class="ln">106</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">107</span><span class="lc">            <span class="s-kw">default</span>:</span></div>
+<div class="code-line"><span class="ln">108</span><span class="lc">                <span class="s-fn">printf</span>(<span class="s-str">"잘못된 선택입니다.\n\n"</span>);</span></div>
+<div class="code-line"><span class="ln">109</span><span class="lc">                <span class="s-kw">break</span>;</span></div>
+<div class="code-line"><span class="ln">110</span><span class="lc">        }</span></div>
+<div class="code-line"><span class="ln">111</span><span class="lc">    } <span class="s-kw">while</span> (choice != <span class="s-num">0</span>);</span></div>
+<div class="code-line"><span class="ln">112</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">113</span><span class="lc">    <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">114</span><span class="lc">}</span></div>
+</div>
+</div>
+<div class="debug-section"><div class="debug-bar">DEBUG LAB — 에러를 찾으시오</div><div class="debug-body">
+
+<p style="margin:14px 0 0; font-size:14px;"><b>에러:</b> </p>
+<p style="font-size:14px;"><b>수정:</b> </p>
+</div></div>
+<h2 class="section-title">버전 2: 비트 플래그 관리 도구</h2>
+<p>undefined</p>
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;stdio.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc"><span class="s-pp">#define</span> BITS <span class="s-num">8</span></span></div>
+<div class="code-line"><span class="ln">4</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">5</span><span class="lc"><span class="s-cm">/* 비트 상태 시각화 출력 */</span></span></div>
+<div class="code-line"><span class="ln">6</span><span class="lc"><span class="s-type">void</span> <span class="s-fn">printFlags</span>(<span class="s-type">unsigned</span> <span class="s-type">char</span> flags) {</span></div>
+<div class="code-line"><span class="ln">7</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"\n+-----+-----+-----+-----+-----+-----+-----+-----+\n"</span>);</span></div>
+<div class="code-line"><span class="ln">8</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"| Bit7| Bit6| Bit5| Bit4| Bit3| Bit2| Bit1| Bit0|\n"</span>);</span></div>
+<div class="code-line"><span class="ln">9</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"+-----+-----+-----+-----+-----+-----+-----+-----+\n"</span>);</span></div>
+<div class="code-line"><span class="ln">10</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"|"</span>);</span></div>
+<div class="code-line"><span class="ln">11</span><span class="lc">    <span class="s-kw">for</span> (<span class="s-type">int</span> i = BITS - <span class="s-num">1</span>; i &gt;= <span class="s-num">0</span>; i--) {</span></div>
+<div class="code-line"><span class="ln">12</span><span class="lc">        <span class="s-kw">if</span> (flags &amp; (<span class="s-num">1</span> &lt;&lt; i)) {</span></div>
+<div class="code-line"><span class="ln">13</span><span class="lc">            <span class="s-fn">printf</span>(<span class="s-str">"  1  |"</span>);</span></div>
+<div class="code-line"><span class="ln">14</span><span class="lc">        } <span class="s-kw">else</span> {</span></div>
+<div class="code-line"><span class="ln">15</span><span class="lc">            <span class="s-fn">printf</span>(<span class="s-str">"  0  |"</span>);</span></div>
+<div class="code-line"><span class="ln">16</span><span class="lc">        }</span></div>
+<div class="code-line"><span class="ln">17</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">18</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"\n+-----+-----+-----+-----+-----+-----+-----+-----+\n"</span>);</span></div>
+<div class="code-line"><span class="ln">19</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"10진수: %u    2진수: "</span>, flags);</span></div>
+<div class="code-line"><span class="ln">20</span><span class="lc">    <span class="s-kw">for</span> (<span class="s-type">int</span> i = BITS - <span class="s-num">1</span>; i &gt;= <span class="s-num">0</span>; i--) {</span></div>
+<div class="code-line"><span class="ln">21</span><span class="lc">        <span class="s-fn">printf</span>(<span class="s-str">"%d"</span>, (flags &gt;&gt; i) &amp; <span class="s-num">1</span>);</span></div>
+<div class="code-line"><span class="ln">22</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">23</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"\n\n"</span>);</span></div>
+<div class="code-line"><span class="ln">24</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">25</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">26</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">main</span>(<span class="s-type">void</span>) {</span></div>
+<div class="code-line"><span class="ln">27</span><span class="lc">    <span class="s-type">unsigned</span> <span class="s-type">char</span> flags = <span class="s-num">0</span>;  <span class="s-cm">/* 8비트 플래그: 모두 0으로 시작 */</span></span></div>
+<div class="code-line"><span class="ln">28</span><span class="lc">    <span class="s-type">int</span> choice, bit;</span></div>
+<div class="code-line"><span class="ln">29</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">30</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"=== 비트 플래그 관리 도구 v2 ===\n"</span>);</span></div>
+<div class="code-line"><span class="ln">31</span><span class="lc">    <span class="s-fn">printFlags</span>(flags);</span></div>
+<div class="code-line"><span class="ln">32</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">33</span><span class="lc">    <span class="s-kw">do</span> {</span></div>
+<div class="code-line"><span class="ln">34</span><span class="lc">        <span class="s-fn">printf</span>(<span class="s-str">"1. SET  2. CLEAR  3. TOGGLE  4. CHECK  "</span>);</span></div>
+<div class="code-line"><span class="ln">35</span><span class="lc">        <span class="s-fn">printf</span>(<span class="s-str">"5. 전체 리셋  6. 전체 세트  0. 종료\n"</span>);</span></div>
+<div class="code-line"><span class="ln">36</span><span class="lc">        <span class="s-fn">printf</span>(<span class="s-str">"선택: "</span>);</span></div>
+<div class="code-line"><span class="ln">37</span><span class="lc">        <span class="s-fn">scanf</span>(<span class="s-str">"%d"</span>, &amp;choice);</span></div>
+<div class="code-line"><span class="ln">38</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">39</span><span class="lc">        <span class="s-kw">if</span> (choice &gt;= <span class="s-num">1</span> &amp;&amp; choice &lt;= <span class="s-num">4</span>) {</span></div>
+<div class="code-line"><span class="ln">40</span><span class="lc">            <span class="s-fn">printf</span>(<span class="s-str">"비트 번호 (0~7): "</span>);</span></div>
+<div class="code-line"><span class="ln">41</span><span class="lc">            <span class="s-fn">scanf</span>(<span class="s-str">"%d"</span>, &amp;bit);</span></div>
+<div class="code-line"><span class="ln">42</span><span class="lc">            <span class="s-kw">if</span> (bit &lt; <span class="s-num">0</span> || bit &gt;= BITS) {</span></div>
+<div class="code-line"><span class="ln">43</span><span class="lc">                <span class="s-fn">printf</span>(<span class="s-str">"오류: 비트 번호는 0~7이어야 합니다.\n\n"</span>);</span></div>
+<div class="code-line"><span class="ln">44</span><span class="lc">                <span class="s-kw">continue</span>;</span></div>
+<div class="code-line"><span class="ln">45</span><span class="lc">            }</span></div>
+<div class="code-line"><span class="ln">46</span><span class="lc">        }</span></div>
+<div class="code-line"><span class="ln">47</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">48</span><span class="lc">        <span class="s-kw">switch</span> (choice) {</span></div>
+<div class="code-line"><span class="ln">49</span><span class="lc">            <span class="s-kw">case</span> <span class="s-num">1</span>:  <span class="s-cm">/* SET: 특정 비트를 1로 설정 */</span></span></div>
+<div class="code-line"><span class="ln">50</span><span class="lc">                flags |= (<span class="s-num">1</span> &lt;&lt; bit);</span></div>
+<div class="code-line"><span class="ln">51</span><span class="lc">                <span class="s-fn">printf</span>(<span class="s-str">"Bit%d을 SET 했습니다.\n"</span>, bit);</span></div>
+<div class="code-line"><span class="ln">52</span><span class="lc">                <span class="s-fn">printFlags</span>(flags);</span></div>
+<div class="code-line"><span class="ln">53</span><span class="lc">                <span class="s-kw">break</span>;</span></div>
+<div class="code-line"><span class="ln">54</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">55</span><span class="lc">            <span class="s-kw">case</span> <span class="s-num">2</span>:  <span class="s-cm">/* CLEAR: 특정 비트를 0으로 해제 */</span></span></div>
+<div class="code-line"><span class="ln">56</span><span class="lc">                flags &amp;= ~(<span class="s-num">1</span> &lt;&lt; bit);</span></div>
+<div class="code-line"><span class="ln">57</span><span class="lc">                <span class="s-fn">printf</span>(<span class="s-str">"Bit%d을 CLEAR 했습니다.\n"</span>, bit);</span></div>
+<div class="code-line"><span class="ln">58</span><span class="lc">                <span class="s-fn">printFlags</span>(flags);</span></div>
+<div class="code-line"><span class="ln">59</span><span class="lc">                <span class="s-kw">break</span>;</span></div>
+<div class="code-line"><span class="ln">60</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">61</span><span class="lc">            <span class="s-kw">case</span> <span class="s-num">3</span>:  <span class="s-cm">/* TOGGLE: 특정 비트를 반전 */</span></span></div>
+<div class="code-line"><span class="ln">62</span><span class="lc">                flags ^= (<span class="s-num">1</span> &lt;&lt; bit);</span></div>
+<div class="code-line"><span class="ln">63</span><span class="lc">                <span class="s-fn">printf</span>(<span class="s-str">"Bit%d을 TOGGLE 했습니다.\n"</span>, bit);</span></div>
+<div class="code-line"><span class="ln">64</span><span class="lc">                <span class="s-fn">printFlags</span>(flags);</span></div>
+<div class="code-line"><span class="ln">65</span><span class="lc">                <span class="s-kw">break</span>;</span></div>
+<div class="code-line"><span class="ln">66</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">67</span><span class="lc">            <span class="s-kw">case</span> <span class="s-num">4</span>:  <span class="s-cm">/* CHECK: 특정 비트 상태 확인 */</span></span></div>
+<div class="code-line"><span class="ln">68</span><span class="lc">                <span class="s-kw">if</span> (flags &amp; (<span class="s-num">1</span> &lt;&lt; bit)) {</span></div>
+<div class="code-line"><span class="ln">69</span><span class="lc">                    <span class="s-fn">printf</span>(<span class="s-str">"Bit%d는 1 (ON) 입니다.\n\n"</span>, bit);</span></div>
+<div class="code-line"><span class="ln">70</span><span class="lc">                } <span class="s-kw">else</span> {</span></div>
+<div class="code-line"><span class="ln">71</span><span class="lc">                    <span class="s-fn">printf</span>(<span class="s-str">"Bit%d는 0 (OFF) 입니다.\n\n"</span>, bit);</span></div>
+<div class="code-line"><span class="ln">72</span><span class="lc">                }</span></div>
+<div class="code-line"><span class="ln">73</span><span class="lc">                <span class="s-kw">break</span>;</span></div>
+<div class="code-line"><span class="ln">74</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">75</span><span class="lc">            <span class="s-kw">case</span> <span class="s-num">5</span>:  <span class="s-cm">/* 전체 리셋 */</span></span></div>
+<div class="code-line"><span class="ln">76</span><span class="lc">                flags = <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">77</span><span class="lc">                <span class="s-fn">printf</span>(<span class="s-str">"모든 비트를 0으로 리셋했습니다.\n"</span>);</span></div>
+<div class="code-line"><span class="ln">78</span><span class="lc">                <span class="s-fn">printFlags</span>(flags);</span></div>
+<div class="code-line"><span class="ln">79</span><span class="lc">                <span class="s-kw">break</span>;</span></div>
+<div class="code-line"><span class="ln">80</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">81</span><span class="lc">            <span class="s-kw">case</span> <span class="s-num">6</span>:  <span class="s-cm">/* 전체 세트 */</span></span></div>
+<div class="code-line"><span class="ln">82</span><span class="lc">                flags = <span class="s-num">0xFF</span>;</span></div>
+<div class="code-line"><span class="ln">83</span><span class="lc">                <span class="s-fn">printf</span>(<span class="s-str">"모든 비트를 1로 설정했습니다.\n"</span>);</span></div>
+<div class="code-line"><span class="ln">84</span><span class="lc">                <span class="s-fn">printFlags</span>(flags);</span></div>
+<div class="code-line"><span class="ln">85</span><span class="lc">                <span class="s-kw">break</span>;</span></div>
+<div class="code-line"><span class="ln">86</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">87</span><span class="lc">            <span class="s-kw">case</span> <span class="s-num">0</span>:</span></div>
+<div class="code-line"><span class="ln">88</span><span class="lc">                <span class="s-fn">printf</span>(<span class="s-str">"종료합니다.\n"</span>);</span></div>
+<div class="code-line"><span class="ln">89</span><span class="lc">                <span class="s-kw">break</span>;</span></div>
+<div class="code-line"><span class="ln">90</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">91</span><span class="lc">            <span class="s-kw">default</span>:</span></div>
+<div class="code-line"><span class="ln">92</span><span class="lc">                <span class="s-fn">printf</span>(<span class="s-str">"잘못된 선택입니다.\n\n"</span>);</span></div>
+<div class="code-line"><span class="ln">93</span><span class="lc">                <span class="s-kw">break</span>;</span></div>
+<div class="code-line"><span class="ln">94</span><span class="lc">        }</span></div>
+<div class="code-line"><span class="ln">95</span><span class="lc">    } <span class="s-kw">while</span> (choice != <span class="s-num">0</span>);</span></div>
+<div class="code-line"><span class="ln">96</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">97</span><span class="lc">    <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">98</span><span class="lc">}</span></div>
+</div>
+</div>
+<div class="debug-section"><div class="debug-bar">DEBUG LAB — 에러를 찾으시오</div><div class="debug-body">
+
+<p style="margin:14px 0 0; font-size:14px;"><b>에러:</b> </p>
+<p style="font-size:14px;"><b>수정:</b> </p>
+</div></div>
+<h2 class="section-title">버전 3: 비트마스크 집합 연산 + 권한 관리</h2>
+<p>undefined</p>
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;stdio.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;string.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">4</span><span class="lc"><span class="s-pp">#define</span> MAX_ELEMENTS <span class="s-num">8</span></span></div>
+<div class="code-line"><span class="ln">5</span><span class="lc"><span class="s-pp">#define</span> MAX_USERS    <span class="s-num">5</span></span></div>
+<div class="code-line"><span class="ln">6</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">7</span><span class="lc"><span class="s-cm">/* ===== 비트마스크 집합 연산 ===== */</span></span></div>
+<div class="code-line"><span class="ln">8</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">9</span><span class="lc"><span class="s-cm">/* 집합 원소 출력 */</span></span></div>
+<div class="code-line"><span class="ln">10</span><span class="lc"><span class="s-type">void</span> <span class="s-fn">printSet</span>(<span class="s-type">unsigned</span> <span class="s-type">char</span> set, <span class="s-kw">const</span> <span class="s-type">char</span> *names[], <span class="s-type">int</span> n) {</span></div>
+<div class="code-line"><span class="ln">11</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"{ "</span>);</span></div>
+<div class="code-line"><span class="ln">12</span><span class="lc">    <span class="s-type">int</span> first = <span class="s-num">1</span>;</span></div>
+<div class="code-line"><span class="ln">13</span><span class="lc">    <span class="s-kw">for</span> (<span class="s-type">int</span> i = <span class="s-num">0</span>; i &lt; n; i++) {</span></div>
+<div class="code-line"><span class="ln">14</span><span class="lc">        <span class="s-kw">if</span> (set &amp; (<span class="s-num">1</span> &lt;&lt; i)) {</span></div>
+<div class="code-line"><span class="ln">15</span><span class="lc">            <span class="s-kw">if</span> (!first) <span class="s-fn">printf</span>(<span class="s-str">", "</span>);</span></div>
+<div class="code-line"><span class="ln">16</span><span class="lc">            <span class="s-fn">printf</span>(<span class="s-str">"%s"</span>, names[i]);</span></div>
+<div class="code-line"><span class="ln">17</span><span class="lc">            first = <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">18</span><span class="lc">        }</span></div>
+<div class="code-line"><span class="ln">19</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">20</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">" }"</span>);</span></div>
+<div class="code-line"><span class="ln">21</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">22</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">23</span><span class="lc"><span class="s-cm">/* 집합 비트 시각화 */</span></span></div>
+<div class="code-line"><span class="ln">24</span><span class="lc"><span class="s-type">void</span> <span class="s-fn">printBits</span>(<span class="s-type">unsigned</span> <span class="s-type">char</span> set, <span class="s-type">int</span> n) {</span></div>
+<div class="code-line"><span class="ln">25</span><span class="lc">    <span class="s-kw">for</span> (<span class="s-type">int</span> i = n - <span class="s-num">1</span>; i &gt;= <span class="s-num">0</span>; i--) {</span></div>
+<div class="code-line"><span class="ln">26</span><span class="lc">        <span class="s-fn">printf</span>(<span class="s-str">"%d"</span>, (set &gt;&gt; i) &amp; <span class="s-num">1</span>);</span></div>
+<div class="code-line"><span class="ln">27</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">28</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">29</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">30</span><span class="lc"><span class="s-cm">/* 원소 개수 (popcount) */</span></span></div>
+<div class="code-line"><span class="ln">31</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">countBits</span>(<span class="s-type">unsigned</span> <span class="s-type">char</span> set) {</span></div>
+<div class="code-line"><span class="ln">32</span><span class="lc">    <span class="s-type">int</span> count = <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">33</span><span class="lc">    <span class="s-kw">while</span> (set) {</span></div>
+<div class="code-line"><span class="ln">34</span><span class="lc">        count += set &amp; <span class="s-num">1</span>;</span></div>
+<div class="code-line"><span class="ln">35</span><span class="lc">        set &gt;&gt;= <span class="s-num">1</span>;</span></div>
+<div class="code-line"><span class="ln">36</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">37</span><span class="lc">    <span class="s-kw">return</span> count;</span></div>
+<div class="code-line"><span class="ln">38</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">39</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">40</span><span class="lc"><span class="s-cm">/* 합집합 */</span></span></div>
+<div class="code-line"><span class="ln">41</span><span class="lc"><span class="s-type">unsigned</span> <span class="s-type">char</span> <span class="s-fn">setUnion</span>(<span class="s-type">unsigned</span> <span class="s-type">char</span> a, <span class="s-type">unsigned</span> <span class="s-type">char</span> b) {</span></div>
+<div class="code-line"><span class="ln">42</span><span class="lc">    <span class="s-kw">return</span> a | b;</span></div>
+<div class="code-line"><span class="ln">43</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">44</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">45</span><span class="lc"><span class="s-cm">/* 교집합 */</span></span></div>
+<div class="code-line"><span class="ln">46</span><span class="lc"><span class="s-type">unsigned</span> <span class="s-type">char</span> <span class="s-fn">setIntersection</span>(<span class="s-type">unsigned</span> <span class="s-type">char</span> a, <span class="s-type">unsigned</span> <span class="s-type">char</span> b) {</span></div>
+<div class="code-line"><span class="ln">47</span><span class="lc">    <span class="s-kw">return</span> a &amp; b;</span></div>
+<div class="code-line"><span class="ln">48</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">49</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">50</span><span class="lc"><span class="s-cm">/* 차집합 (A - B) */</span></span></div>
+<div class="code-line"><span class="ln">51</span><span class="lc"><span class="s-type">unsigned</span> <span class="s-type">char</span> <span class="s-fn">setDifference</span>(<span class="s-type">unsigned</span> <span class="s-type">char</span> a, <span class="s-type">unsigned</span> <span class="s-type">char</span> b) {</span></div>
+<div class="code-line"><span class="ln">52</span><span class="lc">    <span class="s-kw">return</span> a &amp; ~b;</span></div>
+<div class="code-line"><span class="ln">53</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">54</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">55</span><span class="lc"><span class="s-cm">/* 부분집합 판별: A가 B의 부분집합인가? */</span></span></div>
+<div class="code-line"><span class="ln">56</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">isSubset</span>(<span class="s-type">unsigned</span> <span class="s-type">char</span> a, <span class="s-type">unsigned</span> <span class="s-type">char</span> b) {</span></div>
+<div class="code-line"><span class="ln">57</span><span class="lc">    <span class="s-kw">return</span> (a &amp; b) == a;</span></div>
+<div class="code-line"><span class="ln">58</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">59</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">60</span><span class="lc"><span class="s-cm">/* 집합 연산 데모 */</span></span></div>
+<div class="code-line"><span class="ln">61</span><span class="lc"><span class="s-type">void</span> <span class="s-fn">setOperationDemo</span>(<span class="s-type">void</span>) {</span></div>
+<div class="code-line"><span class="ln">62</span><span class="lc">    <span class="s-kw">const</span> <span class="s-type">char</span> *elements[] = {</span></div>
+<div class="code-line"><span class="ln">63</span><span class="lc">        <span class="s-str">"A"</span>, <span class="s-str">"B"</span>, <span class="s-str">"C"</span>, <span class="s-str">"D"</span>, <span class="s-str">"E"</span>, <span class="s-str">"F"</span>, <span class="s-str">"G"</span>, <span class="s-str">"H"</span></span></div>
+<div class="code-line"><span class="ln">64</span><span class="lc">    };</span></div>
+<div class="code-line"><span class="ln">65</span><span class="lc">    <span class="s-type">int</span> n = MAX_ELEMENTS;</span></div>
+<div class="code-line"><span class="ln">66</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">67</span><span class="lc">    <span class="s-cm">/* 집합 정의: A={A,B,C,D}, B={C,D,E,F} */</span></span></div>
+<div class="code-line"><span class="ln">68</span><span class="lc">    <span class="s-type">unsigned</span> <span class="s-type">char</span> setA = <span class="s-num">0x0F</span>;  <span class="s-cm">/* 00001111: {A,B,C,D} */</span></span></div>
+<div class="code-line"><span class="ln">69</span><span class="lc">    <span class="s-type">unsigned</span> <span class="s-type">char</span> setB = <span class="s-num">0x3C</span>;  <span class="s-cm">/* 00111100: {C,D,E,F} */</span></span></div>
+<div class="code-line"><span class="ln">70</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">71</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"\n=== 비트마스크 집합 연산 ===\n\n"</span>);</span></div>
+<div class="code-line"><span class="ln">72</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">73</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"집합 A = "</span>);</span></div>
+<div class="code-line"><span class="ln">74</span><span class="lc">    <span class="s-fn">printSet</span>(setA, elements, n);</span></div>
+<div class="code-line"><span class="ln">75</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"  (비트: "</span>);</span></div>
+<div class="code-line"><span class="ln">76</span><span class="lc">    <span class="s-fn">printBits</span>(setA, n);</span></div>
+<div class="code-line"><span class="ln">77</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">")\n"</span>);</span></div>
+<div class="code-line"><span class="ln">78</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">79</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"집합 B = "</span>);</span></div>
+<div class="code-line"><span class="ln">80</span><span class="lc">    <span class="s-fn">printSet</span>(setB, elements, n);</span></div>
+<div class="code-line"><span class="ln">81</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"  (비트: "</span>);</span></div>
+<div class="code-line"><span class="ln">82</span><span class="lc">    <span class="s-fn">printBits</span>(setB, n);</span></div>
+<div class="code-line"><span class="ln">83</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">")\n\n"</span>);</span></div>
+<div class="code-line"><span class="ln">84</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">85</span><span class="lc">    <span class="s-cm">/* 합집합 */</span></span></div>
+<div class="code-line"><span class="ln">86</span><span class="lc">    <span class="s-type">unsigned</span> <span class="s-type">char</span> u = <span class="s-fn">setUnion</span>(setA, setB);</span></div>
+<div class="code-line"><span class="ln">87</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"A | B (합집합)  = "</span>);</span></div>
+<div class="code-line"><span class="ln">88</span><span class="lc">    <span class="s-fn">printSet</span>(u, elements, n);</span></div>
+<div class="code-line"><span class="ln">89</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"  원소 %d개\n"</span>, <span class="s-fn">countBits</span>(u));</span></div>
+<div class="code-line"><span class="ln">90</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">91</span><span class="lc">    <span class="s-cm">/* 교집합 */</span></span></div>
+<div class="code-line"><span class="ln">92</span><span class="lc">    <span class="s-type">unsigned</span> <span class="s-type">char</span> inter = <span class="s-fn">setIntersection</span>(setA, setB);</span></div>
+<div class="code-line"><span class="ln">93</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"A &amp; B (교집합)  = "</span>);</span></div>
+<div class="code-line"><span class="ln">94</span><span class="lc">    <span class="s-fn">printSet</span>(inter, elements, n);</span></div>
+<div class="code-line"><span class="ln">95</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"  원소 %d개\n"</span>, <span class="s-fn">countBits</span>(inter));</span></div>
+<div class="code-line"><span class="ln">96</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">97</span><span class="lc">    <span class="s-cm">/* 차집합 */</span></span></div>
+<div class="code-line"><span class="ln">98</span><span class="lc">    <span class="s-type">unsigned</span> <span class="s-type">char</span> diffAB = <span class="s-fn">setDifference</span>(setA, setB);</span></div>
+<div class="code-line"><span class="ln">99</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"A - B (차집합)  = "</span>);</span></div>
+<div class="code-line"><span class="ln">100</span><span class="lc">    <span class="s-fn">printSet</span>(diffAB, elements, n);</span></div>
+<div class="code-line"><span class="ln">101</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"  원소 %d개\n"</span>, <span class="s-fn">countBits</span>(diffAB));</span></div>
+<div class="code-line"><span class="ln">102</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">103</span><span class="lc">    <span class="s-type">unsigned</span> <span class="s-type">char</span> diffBA = <span class="s-fn">setDifference</span>(setB, setA);</span></div>
+<div class="code-line"><span class="ln">104</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"B - A (차집합)  = "</span>);</span></div>
+<div class="code-line"><span class="ln">105</span><span class="lc">    <span class="s-fn">printSet</span>(diffBA, elements, n);</span></div>
+<div class="code-line"><span class="ln">106</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"  원소 %d개\n"</span>, <span class="s-fn">countBits</span>(diffBA));</span></div>
+<div class="code-line"><span class="ln">107</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">108</span><span class="lc">    <span class="s-cm">/* 부분집합 판별 */</span></span></div>
+<div class="code-line"><span class="ln">109</span><span class="lc">    <span class="s-type">unsigned</span> <span class="s-type">char</span> setC = <span class="s-num">0x03</span>;  <span class="s-cm">/* 00000011: {A,B} */</span></span></div>
+<div class="code-line"><span class="ln">110</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"\n집합 C = "</span>);</span></div>
+<div class="code-line"><span class="ln">111</span><span class="lc">    <span class="s-fn">printSet</span>(setC, elements, n);</span></div>
+<div class="code-line"><span class="ln">112</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"\n"</span>);</span></div>
+<div class="code-line"><span class="ln">113</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"C는 A의 부분집합인가? %s\n"</span>,</span></div>
+<div class="code-line"><span class="ln">114</span><span class="lc">           <span class="s-fn">isSubset</span>(setC, setA) ? <span class="s-str">"예"</span> : <span class="s-str">"아니오"</span>);</span></div>
+<div class="code-line"><span class="ln">115</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"C는 B의 부분집합인가? %s\n"</span>,</span></div>
+<div class="code-line"><span class="ln">116</span><span class="lc">           <span class="s-fn">isSubset</span>(setC, setB) ? <span class="s-str">"예"</span> : <span class="s-str">"아니오"</span>);</span></div>
+<div class="code-line"><span class="ln">117</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">118</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">119</span><span class="lc"><span class="s-cm">/* ===== 권한 관리 시스템 ===== */</span></span></div>
+<div class="code-line"><span class="ln">120</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">121</span><span class="lc"><span class="s-cm">/* 권한 비트 정의 */</span></span></div>
+<div class="code-line"><span class="ln">122</span><span class="lc"><span class="s-pp">#define</span> <span class="s-fn">PERM_READ</span>(<span class="s-num">1</span> &lt;&lt; <span class="s-num">0</span>)  <span class="s-cm">/* 0b00000001: 읽기 */</span></span></div>
+<div class="code-line"><span class="ln">123</span><span class="lc"><span class="s-pp">#define</span> <span class="s-fn">PERM_WRITE</span>(<span class="s-num">1</span> &lt;&lt; <span class="s-num">1</span>)  <span class="s-cm">/* 0b00000010: 쓰기 */</span></span></div>
+<div class="code-line"><span class="ln">124</span><span class="lc"><span class="s-pp">#define</span> <span class="s-fn">PERM_EXECUTE</span>(<span class="s-num">1</span> &lt;&lt; <span class="s-num">2</span>)  <span class="s-cm">/* 0b00000100: 실행 */</span></span></div>
+<div class="code-line"><span class="ln">125</span><span class="lc"><span class="s-pp">#define</span> <span class="s-fn">PERM_DELETE</span>(<span class="s-num">1</span> &lt;&lt; <span class="s-num">3</span>)  <span class="s-cm">/* 0b00001000: 삭제 */</span></span></div>
+<div class="code-line"><span class="ln">126</span><span class="lc"><span class="s-pp">#define</span> <span class="s-fn">PERM_ADMIN</span>(<span class="s-num">1</span> &lt;&lt; <span class="s-num">4</span>)  <span class="s-cm">/* 0b00010000: 관리자 */</span></span></div>
+<div class="code-line"><span class="ln">127</span><span class="lc"><span class="s-pp">#define</span> <span class="s-fn">PERM_SHARE</span>(<span class="s-num">1</span> &lt;&lt; <span class="s-num">5</span>)  <span class="s-cm">/* 0b00100000: 공유 */</span></span></div>
+<div class="code-line"><span class="ln">128</span><span class="lc"><span class="s-pp">#define</span> <span class="s-fn">PERM_EXPORT</span>(<span class="s-num">1</span> &lt;&lt; <span class="s-num">6</span>)  <span class="s-cm">/* 0b01000000: 내보내기 */</span></span></div>
+<div class="code-line"><span class="ln">129</span><span class="lc"><span class="s-pp">#define</span> <span class="s-fn">PERM_AUDIT</span>(<span class="s-num">1</span> &lt;&lt; <span class="s-num">7</span>)  <span class="s-cm">/* 0b10000000: 감사 로그 */</span></span></div>
+<div class="code-line"><span class="ln">130</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">131</span><span class="lc"><span class="s-kw">const</span> <span class="s-type">char</span> *permNames[] = {</span></div>
+<div class="code-line"><span class="ln">132</span><span class="lc">    <span class="s-str">"READ"</span>, <span class="s-str">"WRITE"</span>, <span class="s-str">"EXECUTE"</span>, <span class="s-str">"DELETE"</span>,</span></div>
+<div class="code-line"><span class="ln">133</span><span class="lc">    <span class="s-str">"ADMIN"</span>, <span class="s-str">"SHARE"</span>, <span class="s-str">"EXPORT"</span>, <span class="s-str">"AUDIT"</span></span></div>
+<div class="code-line"><span class="ln">134</span><span class="lc">};</span></div>
+<div class="code-line"><span class="ln">135</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">136</span><span class="lc"><span class="s-kw">typedef</span> <span class="s-kw">struct</span> {</span></div>
+<div class="code-line"><span class="ln">137</span><span class="lc">    <span class="s-type">char</span> name[<span class="s-num">32</span>];</span></div>
+<div class="code-line"><span class="ln">138</span><span class="lc">    <span class="s-type">unsigned</span> <span class="s-type">char</span> permissions;</span></div>
+<div class="code-line"><span class="ln">139</span><span class="lc">} User;</span></div>
+<div class="code-line"><span class="ln">140</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">141</span><span class="lc"><span class="s-cm">/* 권한 출력 */</span></span></div>
+<div class="code-line"><span class="ln">142</span><span class="lc"><span class="s-type">void</span> <span class="s-fn">printPermissions</span>(<span class="s-type">unsigned</span> <span class="s-type">char</span> perm) {</span></div>
+<div class="code-line"><span class="ln">143</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"["</span>);</span></div>
+<div class="code-line"><span class="ln">144</span><span class="lc">    <span class="s-kw">for</span> (<span class="s-type">int</span> i = <span class="s-num">0</span>; i &lt; MAX_ELEMENTS; i++) {</span></div>
+<div class="code-line"><span class="ln">145</span><span class="lc">        <span class="s-kw">if</span> (perm &amp; (<span class="s-num">1</span> &lt;&lt; i)) {</span></div>
+<div class="code-line"><span class="ln">146</span><span class="lc">            <span class="s-fn">printf</span>(<span class="s-str">" %s"</span>, permNames[i]);</span></div>
+<div class="code-line"><span class="ln">147</span><span class="lc">        }</span></div>
+<div class="code-line"><span class="ln">148</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">149</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">" ]  비트: "</span>);</span></div>
+<div class="code-line"><span class="ln">150</span><span class="lc">    <span class="s-fn">printBits</span>(perm, MAX_ELEMENTS);</span></div>
+<div class="code-line"><span class="ln">151</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"\n"</span>);</span></div>
+<div class="code-line"><span class="ln">152</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">153</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">154</span><span class="lc"><span class="s-cm">/* 권한 관리 데모 */</span></span></div>
+<div class="code-line"><span class="ln">155</span><span class="lc"><span class="s-type">void</span> <span class="s-fn">permissionDemo</span>(<span class="s-type">void</span>) {</span></div>
+<div class="code-line"><span class="ln">156</span><span class="lc">    User users[MAX_USERS];</span></div>
+<div class="code-line"><span class="ln">157</span><span class="lc">    <span class="s-type">int</span> userCount = <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">158</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">159</span><span class="lc">    <span class="s-cm">/* 사용자 초기화 */</span></span></div>
+<div class="code-line"><span class="ln">160</span><span class="lc">    <span class="s-fn">strcpy</span>(users[<span class="s-num">0</span>].name, <span class="s-str">"관리자"</span>);</span></div>
+<div class="code-line"><span class="ln">161</span><span class="lc">    users[<span class="s-num">0</span>].permissions = PERM_READ | PERM_WRITE | PERM_EXECUTE |</span></div>
+<div class="code-line"><span class="ln">162</span><span class="lc">                           PERM_DELETE | PERM_ADMIN | PERM_SHARE |</span></div>
+<div class="code-line"><span class="ln">163</span><span class="lc">                           PERM_EXPORT | PERM_AUDIT;  <span class="s-cm">/* 모든 권한 */</span></span></div>
+<div class="code-line"><span class="ln">164</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">165</span><span class="lc">    <span class="s-fn">strcpy</span>(users[<span class="s-num">1</span>].name, <span class="s-str">"편집자"</span>);</span></div>
+<div class="code-line"><span class="ln">166</span><span class="lc">    users[<span class="s-num">1</span>].permissions = PERM_READ | PERM_WRITE | PERM_SHARE;</span></div>
+<div class="code-line"><span class="ln">167</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">168</span><span class="lc">    <span class="s-fn">strcpy</span>(users[<span class="s-num">2</span>].name, <span class="s-str">"뷰어"</span>);</span></div>
+<div class="code-line"><span class="ln">169</span><span class="lc">    users[<span class="s-num">2</span>].permissions = PERM_READ;</span></div>
+<div class="code-line"><span class="ln">170</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">171</span><span class="lc">    userCount = <span class="s-num">3</span>;</span></div>
+<div class="code-line"><span class="ln">172</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">173</span><span class="lc">    <span class="s-type">int</span> choice, userIdx, permBit;</span></div>
+<div class="code-line"><span class="ln">174</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">175</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"\n=== 권한 관리 시스템 ===\n"</span>);</span></div>
+<div class="code-line"><span class="ln">176</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">177</span><span class="lc">    <span class="s-kw">do</span> {</span></div>
+<div class="code-line"><span class="ln">178</span><span class="lc">        <span class="s-cm">/* 사용자 목록 출력 */</span></span></div>
+<div class="code-line"><span class="ln">179</span><span class="lc">        <span class="s-fn">printf</span>(<span class="s-str">"\n--- 사용자 권한 현황 ---\n"</span>);</span></div>
+<div class="code-line"><span class="ln">180</span><span class="lc">        <span class="s-kw">for</span> (<span class="s-type">int</span> i = <span class="s-num">0</span>; i &lt; userCount; i++) {</span></div>
+<div class="code-line"><span class="ln">181</span><span class="lc">            <span class="s-fn">printf</span>(<span class="s-str">"%d. %-8s "</span>, i + <span class="s-num">1</span>, users[i].name);</span></div>
+<div class="code-line"><span class="ln">182</span><span class="lc">            <span class="s-fn">printPermissions</span>(users[i].permissions);</span></div>
+<div class="code-line"><span class="ln">183</span><span class="lc">        }</span></div>
+<div class="code-line"><span class="ln">184</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">185</span><span class="lc">        <span class="s-fn">printf</span>(<span class="s-str">"\n1. 권한 부여  2. 권한 해제  3. 권한 확인  "</span>);</span></div>
+<div class="code-line"><span class="ln">186</span><span class="lc">        <span class="s-fn">printf</span>(<span class="s-str">"4. 공통 권한 조회  0. 종료\n"</span>);</span></div>
+<div class="code-line"><span class="ln">187</span><span class="lc">        <span class="s-fn">printf</span>(<span class="s-str">"선택: "</span>);</span></div>
+<div class="code-line"><span class="ln">188</span><span class="lc">        <span class="s-fn">scanf</span>(<span class="s-str">"%d"</span>, &amp;choice);</span></div>
+<div class="code-line"><span class="ln">189</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">190</span><span class="lc">        <span class="s-kw">switch</span> (choice) {</span></div>
+<div class="code-line"><span class="ln">191</span><span class="lc">            <span class="s-kw">case</span> <span class="s-num">1</span>:  <span class="s-cm">/* 권한 부여 (SET) */</span></span></div>
+<div class="code-line"><span class="ln">192</span><span class="lc">                <span class="s-fn">printf</span>(<span class="s-str">"사용자 번호 (1~%d): "</span>, userCount);</span></div>
+<div class="code-line"><span class="ln">193</span><span class="lc">                <span class="s-fn">scanf</span>(<span class="s-str">"%d"</span>, &amp;userIdx);</span></div>
+<div class="code-line"><span class="ln">194</span><span class="lc">                userIdx--;</span></div>
+<div class="code-line"><span class="ln">195</span><span class="lc">                <span class="s-kw">if</span> (userIdx &lt; <span class="s-num">0</span> || userIdx &gt;= userCount) {</span></div>
+<div class="code-line"><span class="ln">196</span><span class="lc">                    <span class="s-fn">printf</span>(<span class="s-str">"잘못된 번호입니다.\n"</span>);</span></div>
+<div class="code-line"><span class="ln">197</span><span class="lc">                    <span class="s-kw">break</span>;</span></div>
+<div class="code-line"><span class="ln">198</span><span class="lc">                }</span></div>
+<div class="code-line"><span class="ln">199</span><span class="lc">                <span class="s-fn">printf</span>(<span class="s-str">"권한 (0:READ 1:WRITE 2:EXECUTE 3:DELETE "</span>);</span></div>
+<div class="code-line"><span class="ln">200</span><span class="lc">                <span class="s-fn">printf</span>(<span class="s-str">"4:ADMIN 5:SHARE 6:EXPORT 7:AUDIT): "</span>);</span></div>
+<div class="code-line"><span class="ln">201</span><span class="lc">                <span class="s-fn">scanf</span>(<span class="s-str">"%d"</span>, &amp;permBit);</span></div>
+<div class="code-line"><span class="ln">202</span><span class="lc">                <span class="s-kw">if</span> (permBit &lt; <span class="s-num">0</span> || permBit &gt;= MAX_ELEMENTS) {</span></div>
+<div class="code-line"><span class="ln">203</span><span class="lc">                    <span class="s-fn">printf</span>(<span class="s-str">"잘못된 권한 번호입니다.\n"</span>);</span></div>
+<div class="code-line"><span class="ln">204</span><span class="lc">                    <span class="s-kw">break</span>;</span></div>
+<div class="code-line"><span class="ln">205</span><span class="lc">                }</span></div>
+<div class="code-line"><span class="ln">206</span><span class="lc">                users[userIdx].permissions |= (<span class="s-num">1</span> &lt;&lt; permBit);</span></div>
+<div class="code-line"><span class="ln">207</span><span class="lc">                <span class="s-fn">printf</span>(<span class="s-str">"%s에게 %s 권한을 부여했습니다.\n"</span>,</span></div>
+<div class="code-line"><span class="ln">208</span><span class="lc">                       users[userIdx].name, permNames[permBit]);</span></div>
+<div class="code-line"><span class="ln">209</span><span class="lc">                <span class="s-kw">break</span>;</span></div>
+<div class="code-line"><span class="ln">210</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">211</span><span class="lc">            <span class="s-kw">case</span> <span class="s-num">2</span>:  <span class="s-cm">/* 권한 해제 (CLEAR) */</span></span></div>
+<div class="code-line"><span class="ln">212</span><span class="lc">                <span class="s-fn">printf</span>(<span class="s-str">"사용자 번호 (1~%d): "</span>, userCount);</span></div>
+<div class="code-line"><span class="ln">213</span><span class="lc">                <span class="s-fn">scanf</span>(<span class="s-str">"%d"</span>, &amp;userIdx);</span></div>
+<div class="code-line"><span class="ln">214</span><span class="lc">                userIdx--;</span></div>
+<div class="code-line"><span class="ln">215</span><span class="lc">                <span class="s-kw">if</span> (userIdx &lt; <span class="s-num">0</span> || userIdx &gt;= userCount) {</span></div>
+<div class="code-line"><span class="ln">216</span><span class="lc">                    <span class="s-fn">printf</span>(<span class="s-str">"잘못된 번호입니다.\n"</span>);</span></div>
+<div class="code-line"><span class="ln">217</span><span class="lc">                    <span class="s-kw">break</span>;</span></div>
+<div class="code-line"><span class="ln">218</span><span class="lc">                }</span></div>
+<div class="code-line"><span class="ln">219</span><span class="lc">                <span class="s-fn">printf</span>(<span class="s-str">"권한 (0:READ 1:WRITE 2:EXECUTE 3:DELETE "</span>);</span></div>
+<div class="code-line"><span class="ln">220</span><span class="lc">                <span class="s-fn">printf</span>(<span class="s-str">"4:ADMIN 5:SHARE 6:EXPORT 7:AUDIT): "</span>);</span></div>
+<div class="code-line"><span class="ln">221</span><span class="lc">                <span class="s-fn">scanf</span>(<span class="s-str">"%d"</span>, &amp;permBit);</span></div>
+<div class="code-line"><span class="ln">222</span><span class="lc">                <span class="s-kw">if</span> (permBit &lt; <span class="s-num">0</span> || permBit &gt;= MAX_ELEMENTS) {</span></div>
+<div class="code-line"><span class="ln">223</span><span class="lc">                    <span class="s-fn">printf</span>(<span class="s-str">"잘못된 권한 번호입니다.\n"</span>);</span></div>
+<div class="code-line"><span class="ln">224</span><span class="lc">                    <span class="s-kw">break</span>;</span></div>
+<div class="code-line"><span class="ln">225</span><span class="lc">                }</span></div>
+<div class="code-line"><span class="ln">226</span><span class="lc">                users[userIdx].permissions &amp;= ~(<span class="s-num">1</span> &lt;&lt; permBit);</span></div>
+<div class="code-line"><span class="ln">227</span><span class="lc">                <span class="s-fn">printf</span>(<span class="s-str">"%s의 %s 권한을 해제했습니다.\n"</span>,</span></div>
+<div class="code-line"><span class="ln">228</span><span class="lc">                       users[userIdx].name, permNames[permBit]);</span></div>
+<div class="code-line"><span class="ln">229</span><span class="lc">                <span class="s-kw">break</span>;</span></div>
+<div class="code-line"><span class="ln">230</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">231</span><span class="lc">            <span class="s-kw">case</span> <span class="s-num">3</span>:  <span class="s-cm">/* 권한 확인 (CHECK) */</span></span></div>
+<div class="code-line"><span class="ln">232</span><span class="lc">                <span class="s-fn">printf</span>(<span class="s-str">"사용자 번호 (1~%d): "</span>, userCount);</span></div>
+<div class="code-line"><span class="ln">233</span><span class="lc">                <span class="s-fn">scanf</span>(<span class="s-str">"%d"</span>, &amp;userIdx);</span></div>
+<div class="code-line"><span class="ln">234</span><span class="lc">                userIdx--;</span></div>
+<div class="code-line"><span class="ln">235</span><span class="lc">                <span class="s-kw">if</span> (userIdx &lt; <span class="s-num">0</span> || userIdx &gt;= userCount) {</span></div>
+<div class="code-line"><span class="ln">236</span><span class="lc">                    <span class="s-fn">printf</span>(<span class="s-str">"잘못된 번호입니다.\n"</span>);</span></div>
+<div class="code-line"><span class="ln">237</span><span class="lc">                    <span class="s-kw">break</span>;</span></div>
+<div class="code-line"><span class="ln">238</span><span class="lc">                }</span></div>
+<div class="code-line"><span class="ln">239</span><span class="lc">                <span class="s-fn">printf</span>(<span class="s-str">"권한 (0:READ 1:WRITE 2:EXECUTE 3:DELETE "</span>);</span></div>
+<div class="code-line"><span class="ln">240</span><span class="lc">                <span class="s-fn">printf</span>(<span class="s-str">"4:ADMIN 5:SHARE 6:EXPORT 7:AUDIT): "</span>);</span></div>
+<div class="code-line"><span class="ln">241</span><span class="lc">                <span class="s-fn">scanf</span>(<span class="s-str">"%d"</span>, &amp;permBit);</span></div>
+<div class="code-line"><span class="ln">242</span><span class="lc">                <span class="s-kw">if</span> (permBit &lt; <span class="s-num">0</span> || permBit &gt;= MAX_ELEMENTS) {</span></div>
+<div class="code-line"><span class="ln">243</span><span class="lc">                    <span class="s-fn">printf</span>(<span class="s-str">"잘못된 권한 번호입니다.\n"</span>);</span></div>
+<div class="code-line"><span class="ln">244</span><span class="lc">                    <span class="s-kw">break</span>;</span></div>
+<div class="code-line"><span class="ln">245</span><span class="lc">                }</span></div>
+<div class="code-line"><span class="ln">246</span><span class="lc">                <span class="s-kw">if</span> (users[userIdx].permissions &amp; (<span class="s-num">1</span> &lt;&lt; permBit)) {</span></div>
+<div class="code-line"><span class="ln">247</span><span class="lc">                    <span class="s-fn">printf</span>(<span class="s-str">"%s는 %s 권한이 있습니다.\n"</span>,</span></div>
+<div class="code-line"><span class="ln">248</span><span class="lc">                           users[userIdx].name, permNames[permBit]);</span></div>
+<div class="code-line"><span class="ln">249</span><span class="lc">                } <span class="s-kw">else</span> {</span></div>
+<div class="code-line"><span class="ln">250</span><span class="lc">                    <span class="s-fn">printf</span>(<span class="s-str">"%s는 %s 권한이 없습니다.\n"</span>,</span></div>
+<div class="code-line"><span class="ln">251</span><span class="lc">                           users[userIdx].name, permNames[permBit]);</span></div>
+<div class="code-line"><span class="ln">252</span><span class="lc">                }</span></div>
+<div class="code-line"><span class="ln">253</span><span class="lc">                <span class="s-kw">break</span>;</span></div>
+<div class="code-line"><span class="ln">254</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">255</span><span class="lc">            <span class="s-kw">case</span> <span class="s-num">4</span>: {  <span class="s-cm">/* 공통 권한 조회 (교집합) */</span></span></div>
+<div class="code-line"><span class="ln">256</span><span class="lc">                <span class="s-type">int</span> u1, u2;</span></div>
+<div class="code-line"><span class="ln">257</span><span class="lc">                <span class="s-fn">printf</span>(<span class="s-str">"사용자1 번호: "</span>);</span></div>
+<div class="code-line"><span class="ln">258</span><span class="lc">                <span class="s-fn">scanf</span>(<span class="s-str">"%d"</span>, &amp;u1);</span></div>
+<div class="code-line"><span class="ln">259</span><span class="lc">                <span class="s-fn">printf</span>(<span class="s-str">"사용자2 번호: "</span>);</span></div>
+<div class="code-line"><span class="ln">260</span><span class="lc">                <span class="s-fn">scanf</span>(<span class="s-str">"%d"</span>, &amp;u2);</span></div>
+<div class="code-line"><span class="ln">261</span><span class="lc">                u1--; u2--;</span></div>
+<div class="code-line"><span class="ln">262</span><span class="lc">                <span class="s-kw">if</span> (u1 &lt; <span class="s-num">0</span> || u1 &gt;= userCount ||</span></div>
+<div class="code-line"><span class="ln">263</span><span class="lc">                    u2 &lt; <span class="s-num">0</span> || u2 &gt;= userCount) {</span></div>
+<div class="code-line"><span class="ln">264</span><span class="lc">                    <span class="s-fn">printf</span>(<span class="s-str">"잘못된 번호입니다.\n"</span>);</span></div>
+<div class="code-line"><span class="ln">265</span><span class="lc">                    <span class="s-kw">break</span>;</span></div>
+<div class="code-line"><span class="ln">266</span><span class="lc">                }</span></div>
+<div class="code-line"><span class="ln">267</span><span class="lc">                <span class="s-type">unsigned</span> <span class="s-type">char</span> common =</span></div>
+<div class="code-line"><span class="ln">268</span><span class="lc">                    users[u1].permissions &amp; users[u2].permissions;</span></div>
+<div class="code-line"><span class="ln">269</span><span class="lc">                <span class="s-fn">printf</span>(<span class="s-str">"%s와 %s의 공통 권한: "</span>,</span></div>
+<div class="code-line"><span class="ln">270</span><span class="lc">                       users[u1].name, users[u2].name);</span></div>
+<div class="code-line"><span class="ln">271</span><span class="lc">                <span class="s-fn">printPermissions</span>(common);</span></div>
+<div class="code-line"><span class="ln">272</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">273</span><span class="lc">                <span class="s-cm">/* 부분집합 판별 */</span></span></div>
+<div class="code-line"><span class="ln">274</span><span class="lc">                <span class="s-kw">if</span> (<span class="s-fn">isSubset</span>(users[u2].permissions,</span></div>
+<div class="code-line"><span class="ln">275</span><span class="lc">                             users[u1].permissions)) {</span></div>
+<div class="code-line"><span class="ln">276</span><span class="lc">                    <span class="s-fn">printf</span>(<span class="s-str">"%s의 권한은 %s의 부분집합입니다.\n"</span>,</span></div>
+<div class="code-line"><span class="ln">277</span><span class="lc">                           users[u2].name, users[u1].name);</span></div>
+<div class="code-line"><span class="ln">278</span><span class="lc">                }</span></div>
+<div class="code-line"><span class="ln">279</span><span class="lc">                <span class="s-kw">break</span>;</span></div>
+<div class="code-line"><span class="ln">280</span><span class="lc">            }</span></div>
+<div class="code-line"><span class="ln">281</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">282</span><span class="lc">            <span class="s-kw">case</span> <span class="s-num">0</span>:</span></div>
+<div class="code-line"><span class="ln">283</span><span class="lc">                <span class="s-fn">printf</span>(<span class="s-str">"종료합니다.\n"</span>);</span></div>
+<div class="code-line"><span class="ln">284</span><span class="lc">                <span class="s-kw">break</span>;</span></div>
+<div class="code-line"><span class="ln">285</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">286</span><span class="lc">            <span class="s-kw">default</span>:</span></div>
+<div class="code-line"><span class="ln">287</span><span class="lc">                <span class="s-fn">printf</span>(<span class="s-str">"잘못된 선택입니다.\n"</span>);</span></div>
+<div class="code-line"><span class="ln">288</span><span class="lc">                <span class="s-kw">break</span>;</span></div>
+<div class="code-line"><span class="ln">289</span><span class="lc">        }</span></div>
+<div class="code-line"><span class="ln">290</span><span class="lc">    } <span class="s-kw">while</span> (choice != <span class="s-num">0</span>);</span></div>
+<div class="code-line"><span class="ln">291</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">292</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">293</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">main</span>(<span class="s-type">void</span>) {</span></div>
+<div class="code-line"><span class="ln">294</span><span class="lc">    <span class="s-type">int</span> mode;</span></div>
+<div class="code-line"><span class="ln">295</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">296</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"=== 비트마스크 종합 도구 v3 ===\n\n"</span>);</span></div>
+<div class="code-line"><span class="ln">297</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"1. 집합 연산 데모  2. 권한 관리 시스템\n"</span>);</span></div>
+<div class="code-line"><span class="ln">298</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"선택: "</span>);</span></div>
+<div class="code-line"><span class="ln">299</span><span class="lc">    <span class="s-fn">scanf</span>(<span class="s-str">"%d"</span>, &amp;mode);</span></div>
+<div class="code-line"><span class="ln">300</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">301</span><span class="lc">    <span class="s-kw">switch</span> (mode) {</span></div>
+<div class="code-line"><span class="ln">302</span><span class="lc">        <span class="s-kw">case</span> <span class="s-num">1</span>:</span></div>
+<div class="code-line"><span class="ln">303</span><span class="lc">            <span class="s-fn">setOperationDemo</span>();</span></div>
+<div class="code-line"><span class="ln">304</span><span class="lc">            <span class="s-kw">break</span>;</span></div>
+<div class="code-line"><span class="ln">305</span><span class="lc">        <span class="s-kw">case</span> <span class="s-num">2</span>:</span></div>
+<div class="code-line"><span class="ln">306</span><span class="lc">            <span class="s-fn">permissionDemo</span>();</span></div>
+<div class="code-line"><span class="ln">307</span><span class="lc">            <span class="s-kw">break</span>;</span></div>
+<div class="code-line"><span class="ln">308</span><span class="lc">        <span class="s-kw">default</span>:</span></div>
+<div class="code-line"><span class="ln">309</span><span class="lc">            <span class="s-fn">printf</span>(<span class="s-str">"잘못된 선택입니다.\n"</span>);</span></div>
+<div class="code-line"><span class="ln">310</span><span class="lc">            <span class="s-kw">break</span>;</span></div>
+<div class="code-line"><span class="ln">311</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">312</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">313</span><span class="lc">    <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">314</span><span class="lc">}</span></div>
+</div>
+</div>
+<div class="debug-section"><div class="debug-bar">DEBUG LAB — 에러를 찾으시오</div><div class="debug-body">
+
+<p style="margin:14px 0 0; font-size:14px;"><b>에러:</b> </p>
+<p style="font-size:14px;"><b>수정:</b> </p>
+</div></div>
+<div class="debug-section"><div class="debug-bar">DEBUG LAB — 에러를 찾으시오</div><div class="debug-body">
+
+<p style="margin:14px 0 0; font-size:14px;"><b>에러:</b> </p>
+<p style="font-size:14px;"><b>수정:</b> </p>
+</div></div>
+<h2 class="section-title">에러 체험</h2>
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc"><span class="s-cm">// 에러 1: 시프트 연산 우선순위 실수</span></span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc"><span class="s-kw">if</span> (flags &amp; <span class="s-num">1</span> &lt;&lt; bit)    <span class="s-cm">// 의도와 다르게 동작할 수 있음</span></span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc"><span class="s-cm">// &amp; 와 &lt;&lt; 의 우선순위: &lt;&lt;가 &amp;보다 높으므로 이 경우는 정상</span></span></div>
+<div class="code-line"><span class="ln">4</span><span class="lc"><span class="s-cm">// 하지만 가독성을 위해 항상 괄호를 사용하는 것이 안전합니다.</span></span></div>
+<div class="code-line"><span class="ln">5</span><span class="lc"><span class="s-kw">if</span> (flags &amp; (<span class="s-num">1</span> &lt;&lt; bit))  <span class="s-cm">// 수정: 명시적으로 괄호 사용</span></span></div>
+<div class="code-line"><span class="ln">6</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">7</span><span class="lc"><span class="s-cm">// 에러 2: CLEAR 연산에서 ~ 누락</span></span></div>
+<div class="code-line"><span class="ln">8</span><span class="lc">flags &amp;= (<span class="s-num">1</span> &lt;&lt; bit);     <span class="s-cm">// 해당 비트만 남기고 나머지를 모두 삭제!</span></span></div>
+<div class="code-line"><span class="ln">9</span><span class="lc"><span class="s-cm">// 수정: flags &amp;= ~(1 &lt;&lt; bit);  // 해당 비트만 0으로 만듦</span></span></div>
+<div class="code-line"><span class="ln">10</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">11</span><span class="lc"><span class="s-cm">// 에러 3: 부분집합 판별 조건 오류</span></span></div>
+<div class="code-line"><span class="ln">12</span><span class="lc"><span class="s-kw">if</span> ((a | b) == a)  <span class="s-cm">// 이것은 b가 a의 부분집합인지 확인하는 것</span></span></div>
+<div class="code-line"><span class="ln">13</span><span class="lc"><span class="s-kw">if</span> ((a &amp; b) == a)  <span class="s-cm">// 이것은 a가 b의 부분집합인지 확인하는 것</span></span></div>
+<div class="code-line"><span class="ln">14</span><span class="lc"><span class="s-cm">// 주의: a가 b의 부분집합이면 a의 모든 비트가 b에도 있으므로</span></span></div>
+<div class="code-line"><span class="ln">15</span><span class="lc"><span class="s-cm">//       a &amp; b == a가 성립합니다.</span></span></div>
+<div class="code-line"><span class="ln">16</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">17</span><span class="lc"><span class="s-cm">// 에러 4: 비트 범위 초과 시프트</span></span></div>
+<div class="code-line"><span class="ln">18</span><span class="lc"><span class="s-type">int</span> flags = <span class="s-num">1</span> &lt;&lt; <span class="s-num">32</span>;     <span class="s-cm">// 정의되지 않은 동작 (int가 32비트일 때)</span></span></div>
+<div class="code-line"><span class="ln">19</span><span class="lc"><span class="s-cm">// 수정: unsigned long long flags = 1ULL &lt;&lt; 32;</span></span></div>
+</div>
+</div>
+<h2 class="section-title">설명하기</h2>
+<table class="trace"><thead><tr><th style="width:40px">줄</th><th style="width:220px">코드</th><th>역할</th></tr></thead><tbody></tbody></table>
+<h2 class="section-title">예제</h2>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 1</span><p style="margin:0;font-size:14px">양의 정수를 입력받아 비트 연산으로 2진수 문자열로 변환하여<br>출력하는 프로그램을 작성하십시오.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 2</span><p style="margin:0;font-size:14px">2진수 문자열을 입력받아 비트 연산으로 10진수로 변환하여<br>출력하는 프로그램을 작성하십시오.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 3</span><p style="margin:0;font-size:14px">8비트 정수의 각 비트 번호, 비트 값, 자릿값(2의 거듭제곱)을<br>표 형태로 시각화하여 출력하는 프로그램을 작성하십시오.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 4</span><p style="margin:0;font-size:14px">unsigned char 변수에 대해 SET, CLEAR, TOGGLE, CHECK<br>4가지 비트 조작을 수행하는 프로그램을 작성하십시오.<br>매 조작 후 8비트 상태를 출력하십시오.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 5</span><p style="margin:0;font-size:14px">두 개의 8비트 집합을 입력받아 합집합(|), 교집합(&),<br>차집합(&~)을 계산하고 결과를 2진수와 집합 형태로<br>출력하는 프로그램을 작성하십시오.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 6</span><p style="margin:0;font-size:14px">비트마스크를 이용하여 1~8 중 부분집합을 모두 열거하는<br>프로그램을 작성하십시오. (0부터 255까지 순회하며 각 비트마스크가<br>나타내는 부분집합을 출력합니다.)</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 7</span><p style="margin:0;font-size:14px">unsigned char의 비트를 역순으로 뒤집는 함수<br>unsigned char reverseBits(unsigned char n)를 작성하십시오.<br>예: 0b11010010 -> 0b01001011</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 8</span><p style="margin:0;font-size:14px">8개의 스위치(0~7번)를 비트 플래그로 관리하는 프로그램을<br>작성하십시오. 개별 ON/OFF, 전체 ON/OFF, 짝수/홀수 번호만<br>ON하는 기능을 포함하십시오.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 9</span><p style="margin:0;font-size:14px">비트마스크 기반 권한 관리 시스템을 구현하십시오.<br>READ, WRITE, EXECUTE, DELETE 4가지 권한을 정의하고<br>사용자별 권한 부여/해제/확인 기능을 포함하십시오.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 10</span><p style="margin:0;font-size:14px">popcount(1인 비트의 개수를 세는 함수)를 비트 연산만으로<br>구현하십시오. n &= (n - 1) 기법을 사용하여 O(k) 시간에<br>동작하도록 작성하십시오. (k는 1인 비트의 개수)</p></div>
+<h2 class="section-title">대회 기출</h2>
+<h2 class="section-title">요약</h2>
+<div class="warmup-box"><div class="warmup-title">핵심 정리</div><div class="wq"><b>1.</b> 10진수 -> 2진수: 최상위 비트부터 (1 << i)로 마스크 검사하여 변환</div><div class="wq"><b>2.</b> 2진수 -> 10진수: 각 '1' 위치에 대해 result |= (1 << 위치)로 누적</div><div class="wq"><b>3.</b> SET: flags |= (1 << bit) -- 특정 비트를 1로 설정</div><div class="wq"><b>4.</b> CLEAR: flags &= ~(1 << bit) -- 특정 비트를 0으로 해제</div><div class="wq"><b>5.</b> TOGGLE: flags ^= (1 << bit) -- 특정 비트를 반전</div><div class="wq"><b>6.</b> CHECK: flags & (1 << bit) -- 특정 비트가 1인지 확인</div><div class="wq"><b>7.</b> 합집합: a | b, 교집합: a & b, 차집합: a & ~b</div><div class="wq"><b>8.</b> 부분집합 판별: (a & b) == a이면 a는 b의 부분집합</div><div class="wq"><b>9.</b> popcount: n &= (n - 1)을 반복하면 1인 비트 수만큼만 순회</div><div class="wq"><b>10.</b> 비트마스크 집합은 O(1) 연산이 가능하나 원소 수가 비트 크기로 제한됨</div></div>
+<h2 class="section-title">다음 유닛으로</h2>
+<div class="note-box"><span class="note-label"></span>
+<div style="font-weight:700;margin-bottom:6px;color:#1a2e4a">다음: 오버플로와 언더플로</div>비트 연산으로 데이터를 비트 단위로 다루는 능력을 갖추었습니다. 다음 유닛에서는 정수형과 실수형의 표현 범위를 넘어설 때 발생하는 오버플로와 언더플로 현상을 학습합니다. 비트 관점에서 왜 오버플로가 발생하는지 이해하고, 이를 감지하고 방지하는 기법을 익힙니다.</div>
+
+    <span class="page-num">2</span>
+  </div>
+</div>
+<div class="page">
+  <div class="content-page">
+    <div class="unit-header-bar">
+      <span class="unit-tag">UNIT 04</span>
+      <span class="unit-title-sm">3과목 연결</span>
+    </div>
+<h2 class="section-title">10축 매핑</h2>
+<div class="note-box"><span class="note-label"></span>
+<div style="font-weight:700;margin-bottom:6px;color:#1a2e4a">이 유닛에서 키운 역량</div>C언어 ★★★★★ -- 비트 연산자(&, |, ^, ~, <<, >>)를 종합 활용하여 진법 변환, 비트 플래그 관리, 집합 연산, 권한 시스템을 구현했습니다.<br>컴퓨팅사고력 ★★★★★ -- 비트를 집합의 원소로 추상화하고, 비트 연산을 집합 연산으로 대응시키는 사고력을 키웠습니다.<br>디버깅 ★★★★★ -- 시프트 우선순위, CLEAR의 ~ 누락, 부분집합 판별 조건 혼동, 범위 초과 시프트 등 비트 연산 특유의 버그를 파악했습니다.<br>KOI ★★★★★ -- 비트마스크는 부분집합 열거, 상태 압축 DP, 집합 연산 등 대회 문제에서 핵심적으로 활용되는 기법입니다.</div>
+
+    <span class="page-num">3</span>
+  </div>
+</div>
+<div class="page contest-page-wrap">
+  <div class="chapter-page">
+    <div class="chapter-sidebar"></div>
+    <div class="chapter-accent-bar"></div>
+    <div style="flex:1; min-width:0; padding:50px 50px 40px 45px; position:relative;">
+      <div class="problems-chapter-ref">Chapter 04: 2진수 변환기 + 비트 마스크</div>
+      <h2 class="problems-title">대회 문제 (Online Judge)</h2>
+      <p style="font-size:14px; color:#6b7280; margin:-8px 0 24px;">실제 온라인 저지에 출제된 문제입니다. 아래에 코드를 작성한 뒤, 사이트에 제출하여 채점하십시오.</p>
+
+        <div class="contest-card">
+          <div class="contest-header">
+            <div class="contest-num-source">
+              <span class="contest-num">1번</span>
+              <span class="contest-source">백준 1629</span>
+            </div>
+            <span class="diff diff-mid">대회</span>
+          </div>
+          <div class="contest-body">
+            <p class="contest-question">A를 B번 곱한 수를 C로 나눈 나머지를 구하십시오.</p>
+            
+            <div class="contest-write-area">
+              <div class="contest-write-label">코드 작성</div>
+              <textarea class="contest-textarea" rows="12" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="contest-card">
+          <div class="contest-header">
+            <div class="contest-num-source">
+              <span class="contest-num">2번</span>
+              <span class="contest-source">백준 2447</span>
+            </div>
+            <span class="diff diff-mid">대회</span>
+          </div>
+          <div class="contest-body">
+            <p class="contest-question">별 찍기 패턴을 재귀로 출력하십시오.</p>
+            
+            <div class="contest-write-area">
+              <div class="contest-write-label">코드 작성</div>
+              <textarea class="contest-textarea" rows="12" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="contest-card">
+          <div class="contest-header">
+            <div class="contest-num-source">
+              <span class="contest-num">3번</span>
+              <span class="contest-source">백준 1074</span>
+            </div>
+            <span class="diff diff-mid">대회</span>
+          </div>
+          <div class="contest-body">
+            <p class="contest-question">Z 모양으로 방문하는 순서를 구하십시오.</p>
+            
+            <div class="contest-write-area">
+              <div class="contest-write-label">코드 작성</div>
+              <textarea class="contest-textarea" rows="12" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="contest-card">
+          <div class="contest-header">
+            <div class="contest-num-source">
+              <span class="contest-num">4번</span>
+              <span class="contest-source">백준 15649</span>
+            </div>
+            <span class="diff diff-mid">대회</span>
+          </div>
+          <div class="contest-body">
+            <p class="contest-question">1부터 N까지 자연수 중 M개를 고른 순열을 출력하십시오.</p>
+            
+            <div class="contest-write-area">
+              <div class="contest-write-label">코드 작성</div>
+              <textarea class="contest-textarea" rows="12" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="contest-card">
+          <div class="contest-header">
+            <div class="contest-num-source">
+              <span class="contest-num">5번</span>
+              <span class="contest-source">백준 15650</span>
+            </div>
+            <span class="diff diff-mid">대회</span>
+          </div>
+          <div class="contest-body">
+            <p class="contest-question">1부터 N까지 자연수 중 M개를 고른 조합을 출력하십시오.</p>
+            
+            <div class="contest-write-area">
+              <div class="contest-write-label">코드 작성</div>
+              <textarea class="contest-textarea" rows="12" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="contest-card">
+          <div class="contest-header">
+            <div class="contest-num-source">
+              <span class="contest-num">6번</span>
+              <span class="contest-source">백준 9663</span>
+            </div>
+            <span class="diff diff-mid">대회</span>
+          </div>
+          <div class="contest-body">
+            <p class="contest-question">N-Queen 문제의 경우의 수를 구하십시오.</p>
+            
+            <div class="contest-write-area">
+              <div class="contest-write-label">코드 작성</div>
+              <textarea class="contest-textarea" rows="12" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="contest-card">
+          <div class="contest-header">
+            <div class="contest-num-source">
+              <span class="contest-num">7번</span>
+              <span class="contest-source">백준 1182</span>
+            </div>
+            <span class="diff diff-mid">대회</span>
+          </div>
+          <div class="contest-body">
+            <p class="contest-question">부분수열의 합이 S가 되는 경우의 수를 구하십시오.</p>
+            
+            <div class="contest-write-area">
+              <div class="contest-write-label">코드 작성</div>
+              <textarea class="contest-textarea" rows="12" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="contest-card">
+          <div class="contest-header">
+            <div class="contest-num-source">
+              <span class="contest-num">8번</span>
+              <span class="contest-source">백준 6588</span>
+            </div>
+            <span class="diff diff-mid">대회</span>
+          </div>
+          <div class="contest-body">
+            <p class="contest-question">골드바흐의 추측을 검증하십시오.</p>
+            
+            <div class="contest-write-area">
+              <div class="contest-write-label">코드 작성</div>
+              <textarea class="contest-textarea" rows="12" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="contest-card">
+          <div class="contest-header">
+            <div class="contest-num-source">
+              <span class="contest-num">9번</span>
+              <span class="contest-source">백준 11758</span>
+            </div>
+            <span class="diff diff-mid">대회</span>
+          </div>
+          <div class="contest-body">
+            <p class="contest-question">세 점의 방향(CCW)을 판별하십시오.</p>
+            
+            <div class="contest-write-area">
+              <div class="contest-write-label">코드 작성</div>
+              <textarea class="contest-textarea" rows="12" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="contest-card">
+          <div class="contest-header">
+            <div class="contest-num-source">
+              <span class="contest-num">10번</span>
+              <span class="contest-source">백준 1987</span>
+            </div>
+            <span class="diff diff-mid">대회</span>
+          </div>
+          <div class="contest-body">
+            <p class="contest-question">알파벳을 중복 없이 지나는 최대 칸 수를 구하십시오.</p>
+            
+            <div class="contest-write-area">
+              <div class="contest-write-label">코드 작성</div>
+              <textarea class="contest-textarea" rows="12" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+            </div>
+          </div>
+        </div>
+      <span class="page-num">4</span>
+    </div>
+  </div>
+</div>
+</body>
+</html>

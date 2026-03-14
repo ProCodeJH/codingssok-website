@@ -1,0 +1,1682 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>코딩쏙 교재 — 텍스트 RPG (함수 종합 프로젝트)</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+
+  :root {
+    --navy: #1a2e4a;
+    --navy-mid: #2c4a6e;
+    --navy-light: #3d6590;
+    --orange: #e07830;
+    --orange-light: #f5e6d8;
+    --white: #ffffff;
+    --bg: #f7f8fa;
+    --bg-warm: #faf9f7;
+    --gray-50: #f9fafb;
+    --gray-100: #f3f4f6;
+    --gray-200: #e5e7eb;
+    --gray-300: #d1d5db;
+    --gray-400: #9ca3af;
+    --gray-500: #6b7280;
+    --gray-600: #4b5563;
+    --gray-700: #374151;
+    --gray-800: #1f2937;
+    --text: #2d3748;
+    --green: #16a34a;
+    --green-bg: #dcfce7;
+    --red: #dc2626;
+    --red-bg: #fee2e2;
+    --blue: #2563eb;
+    --blue-bg: #dbeafe;
+    --yellow-bg: #fef9c3;
+    --font: 'Noto Sans KR', sans-serif;
+    --mono: 'JetBrains Mono', 'Consolas', monospace;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: var(--font); background: #e8eaed; font-size: 15px; }
+
+  /* ========== PAGE ========== */
+  .page {
+    width: 210mm;
+    min-height: 295mm;
+    margin: 24px auto;
+    background: var(--white);
+    box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* ========== PAGE 1: CHAPTER START ========== */
+  .chapter-page {
+    display: flex;
+    min-height: 295mm;
+  }
+
+  .chapter-sidebar {
+    width: 10px;
+    background: var(--navy);
+    flex-shrink: 0;
+  }
+
+  .chapter-accent-bar {
+    width: 7px;
+    background: var(--orange);
+    flex-shrink: 0;
+  }
+
+  .chapter-body {
+    flex: 1;
+    padding: 70px 65px 50px 55px;
+    position: relative;
+  }
+
+  .chapter-watermark {
+    position: absolute;
+    top: -10px;
+    right: -15px;
+    font-size: 280px;
+    font-weight: 900;
+    color: rgba(180,195,212,0.35);
+    line-height: 1;
+    pointer-events: none;
+    letter-spacing: -10px;
+  }
+
+  .chapter-label {
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--navy-mid);
+    letter-spacing: 2px;
+    margin-bottom: 4px;
+  }
+
+  .chapter-title {
+    font-size: 44px;
+    font-weight: 900;
+    color: var(--navy);
+    line-height: 1.15;
+    margin-bottom: 12px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .chapter-sub {
+    font-size: 16px;
+    color: var(--gray-500);
+    font-weight: 400;
+    margin-bottom: 20px;
+    padding-bottom: 28px;
+    border-bottom: 1px solid var(--gray-200);
+  }
+
+  /* Learning objectives */
+  .obj-title {
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--navy);
+    margin-bottom: 16px;
+    margin-top: 32px;
+  }
+
+  .obj-list {
+    list-style: none;
+    margin-bottom: 40px;
+  }
+
+  .obj-list li {
+    padding: 5px 0 5px 24px;
+    position: relative;
+    font-size: 15px;
+    color: var(--gray-700);
+    line-height: 1.6;
+  }
+
+  .obj-list li::before {
+    content: '•';
+    position: absolute;
+    left: 8px;
+    color: var(--navy-mid);
+    font-weight: 700;
+  }
+
+  /* Prerequisites flow */
+  .prereq-title {
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--navy);
+    margin-bottom: 18px;
+  }
+
+  .prereq-flow {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    margin-bottom: 44px;
+  }
+
+  .prereq-item {
+    padding: 9px 22px;
+    border: 1.5px solid var(--gray-300);
+    border-radius: 50px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--gray-600);
+    background: var(--white);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+  }
+
+  .prereq-item.current {
+    border-color: var(--navy);
+    color: var(--navy);
+    font-weight: 700;
+    background: #edf2f7;
+    box-shadow: 0 2px 6px rgba(26,46,74,0.12);
+  }
+
+  .prereq-arrow {
+    width: 36px;
+    text-align: center;
+    color: var(--gray-300);
+    font-size: 18px;
+    font-weight: 300;
+  }
+
+  /* Predict box */
+  .predict-box {
+    background: var(--gray-50);
+    border: 1.5px solid var(--gray-200);
+    border-radius: 12px;
+    padding: 24px 28px;
+  }
+
+  .predict-label {
+    display: inline-block;
+    background: var(--orange);
+    color: var(--white);
+    font-size: 12px;
+    font-weight: 600;
+    padding: 3px 12px;
+    border-radius: 4px;
+    margin-bottom: 14px;
+    letter-spacing: 0.5px;
+  }
+
+  .predict-q {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--navy);
+    margin-bottom: 16px;
+  }
+
+  .predict-code {
+    background: var(--white);
+    border: 1px solid var(--gray-200);
+    border-radius: 8px;
+    padding: 14px 18px;
+    font-family: var(--mono);
+    font-size: 13px;
+    line-height: 1.65;
+    color: var(--gray-700);
+  }
+
+  /* ========== PAGE 2: CORE CONTENT ========== */
+  .content-page {
+    padding: 55px 65px;
+  }
+
+  .unit-header-bar {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    margin-bottom: 8px;
+  }
+
+  .unit-tag {
+    font-size: 12px;
+    color: var(--orange);
+    font-weight: 600;
+    letter-spacing: 1px;
+  }
+
+  .unit-title-sm {
+    font-size: 14px;
+    color: var(--gray-400);
+    font-weight: 400;
+  }
+
+  .section-title {
+    font-size: 24px;
+    font-weight: 800;
+    color: var(--navy);
+    margin-bottom: 24px;
+    margin-top: 8px;
+    padding-left: 16px;
+    border-left: 5px solid var(--orange);
+  }
+
+  p {
+    font-size: 15.5px;
+    line-height: 1.9;
+    color: var(--text);
+    margin-bottom: 18px;
+  }
+
+  p code {
+    font-family: var(--mono);
+    font-size: 13.5px;
+    background: #f1f3f5;
+    padding: 2px 7px;
+    border-radius: 4px;
+    color: var(--navy);
+    font-weight: 500;
+  }
+
+  /* Code block */
+  .code-wrap {
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    border: 1px solid var(--gray-200);
+    margin: 22px 0;
+  }
+
+  .code-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 9px 18px;
+    background: var(--navy);
+    font-size: 12px;
+  }
+
+  .code-bar-lang {
+    font-family: var(--mono);
+    font-weight: 600;
+    color: var(--white);
+  }
+
+  .code-bar-file {
+    color: rgba(255,255,255,0.6);
+    font-weight: 400;
+  }
+
+  .code-body {
+    background: #f8f9fb;
+    padding: 20px 0;
+    font-family: var(--mono);
+    font-size: 13.5px;
+    line-height: 1.75;
+    border: 1px solid var(--gray-200);
+    border-top: none;
+    border-radius: 0 0 12px 12px;
+  }
+
+  .code-line {
+    display: flex;
+    padding: 0 20px;
+  }
+
+  .code-line:hover {
+    background: #f0f4f8;
+  }
+
+  .code-line.highlighted {
+    background: #fff8e1;
+  }
+
+  .ln {
+    width: 30px;
+    text-align: right;
+    color: #b8bfc8;
+    font-size: 12px;
+    margin-right: 18px;
+    user-select: none;
+    flex-shrink: 0;
+    padding-top: 1px;
+  }
+
+  .lc { flex: 1; }
+
+  /* syntax */
+  .s-pp { color: #8b5cf6; font-weight: 600; }
+  .s-str { color: #d97706; }
+  .s-type { color: #2563eb; font-weight: 500; }
+  .s-kw { color: #7c3aed; font-weight: 500; }
+  .s-fn { color: #059669; font-weight: 500; }
+  .s-num { color: #dc2626; }
+  .s-cm { color: #9ca3af; font-style: italic; }
+
+  /* Output block */
+  .output-wrap {
+    border-radius: 10px;
+    overflow: hidden;
+    margin: 10px 0 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    border: 1px solid #d1d5db;
+  }
+
+  .output-bar {
+    padding: 9px 18px;
+    background: #374151;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--white);
+    letter-spacing: 0.5px;
+  }
+
+  .output-body {
+    padding: 16px 20px;
+    font-family: var(--mono);
+    font-size: 13.5px;
+    line-height: 1.7;
+    color: var(--gray-800);
+    background: #f1f5f9;
+    border: 1px solid var(--gray-200);
+    border-top: none;
+    border-radius: 0 0 10px 10px;
+  }
+
+  /* Callout */
+  .tip {
+    margin: 28px 0;
+    padding: 18px 24px;
+    background: #dbeafe;
+    border-left: 5px solid #2563eb;
+    border-radius: 0 12px 12px 0;
+    font-size: 14.5px;
+    line-height: 1.8;
+    color: var(--text);
+  }
+
+  .tip-label {
+    font-weight: 700;
+    color: #2563eb;
+    font-size: 13px;
+    display: block;
+    margin-bottom: 4px;
+  }
+
+  .warn {
+    margin: 28px 0;
+    padding: 18px 24px;
+    background: #fef3c7;
+    border-left: 5px solid #d97706;
+    border-radius: 0 12px 12px 0;
+    font-size: 14.5px;
+    line-height: 1.8;
+  }
+
+  .warn-label {
+    font-weight: 700;
+    color: #d97706;
+    font-size: 13px;
+    display: block;
+    margin-bottom: 4px;
+  }
+
+  .note-box {
+    margin: 28px 0;
+    padding: 18px 24px;
+    background: #e2e8f0;
+    border-left: 5px solid #64748b;
+    border-radius: 0 12px 12px 0;
+    font-size: 14.5px;
+    line-height: 1.8;
+  }
+
+  .note-label {
+    font-weight: 700;
+    color: var(--gray-600);
+    font-size: 13px;
+    display: block;
+    margin-bottom: 4px;
+  }
+
+  /* Trace table */
+  table.trace {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    margin: 28px 0;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+    font-size: 14px;
+  }
+
+  table.trace th {
+    background: var(--navy);
+    color: var(--white);
+    padding: 10px 16px;
+    text-align: left;
+    font-weight: 500;
+    font-size: 13px;
+  }
+
+  table.trace td {
+    padding: 10px 16px;
+    border-bottom: 1px solid var(--gray-200);
+    color: var(--gray-700);
+  }
+
+  table.trace tr:nth-child(even) td { background: var(--gray-50); }
+  table.trace tr:last-child td { border-bottom: none; }
+
+  table.trace td code {
+    font-family: var(--mono);
+    font-size: 12.5px;
+    background: #eef1f5;
+    padding: 2px 6px;
+    border-radius: 4px;
+    color: var(--navy);
+  }
+
+  /* ========== PAGE 3: PROBLEMS ========== */
+  .problems-header {
+    margin-bottom: 8px;
+  }
+
+  .problems-chapter-ref {
+    font-size: 13px;
+    color: var(--gray-500);
+    margin-bottom: 4px;
+  }
+
+  .problems-title {
+    font-size: 28px;
+    font-weight: 800;
+    color: var(--navy);
+    margin-bottom: 24px;
+  }
+
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 16px;
+  }
+
+  .prob-card {
+    background: var(--white);
+    border: 1px solid var(--gray-200);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 3px 15px rgba(0,0,0,0.06);
+  }
+
+  .prob-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 16px;
+    background: var(--navy);
+  }
+
+  .prob-num {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--white);
+  }
+
+  .diff {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    font-size: 12px;
+    font-weight: 800;
+  }
+
+  .diff-basic { background: #22c55e; color: white; }
+  .diff-mid { background: #f59e0b; color: white; }
+  .diff-hard { background: #ef4444; color: white; }
+
+  .prob-desc {
+    font-size: 13.5px;
+    line-height: 1.65;
+    color: var(--gray-600);
+    margin-bottom: 10px;
+    padding: 14px 16px 0;
+  }
+
+  .prob-code {
+    background: var(--gray-50);
+    border: 1px solid var(--gray-200);
+    border-radius: 6px;
+    padding: 10px 14px;
+    margin: 0 16px 16px;
+    font-family: var(--mono);
+    font-size: 12.5px;
+    line-height: 1.55;
+    color: var(--gray-600);
+  }
+
+  /* Competition section */
+  .comp-section {
+    margin-top: 32px;
+    padding-top: 24px;
+    border-top: 2px solid var(--navy);
+  }
+
+  .comp-title {
+    font-size: 22px;
+    font-weight: 800;
+    color: var(--navy);
+    margin-bottom: 20px;
+  }
+
+  .comp-card {
+    background: var(--white);
+    border: 1.5px solid var(--gray-200);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 18px rgba(0,0,0,0.06);
+  }
+
+  .comp-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 16px;
+    background: #0f766e;
+  }
+
+  .comp-header .comp-name {
+    color: var(--white);
+    font-size: 15px;
+    font-weight: 700;
+    margin: 0;
+  }
+
+  .comp-inner {
+    padding: 14px 18px 18px;
+  }
+
+  .comp-badge {
+    display: inline-block;
+    padding: 3px 12px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 700;
+  }
+
+  .badge-bj { background: #93c5fd; color: #1e3a5f; }
+  .badge-cu { background: #c4b5fd; color: #3b1f7e; }
+  .badge-pg { background: #7dd3fc; color: #0c4a6e; }
+
+  .comp-name {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--navy);
+    margin-bottom: 6px;
+  }
+
+  .comp-desc {
+    font-size: 14px;
+    color: var(--gray-600);
+    line-height: 1.7;
+    margin-bottom: 14px;
+  }
+
+  .io-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+
+  .io-card {
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid var(--gray-200);
+  }
+
+  .io-h {
+    padding: 6px 14px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--gray-600);
+    background: #e2e8f0;
+  }
+
+  .io-c {
+    padding: 10px 14px;
+    font-family: var(--mono);
+    font-size: 13px;
+    line-height: 1.5;
+    background: var(--white);
+  }
+
+  /* ========== DEBUG LAB ========== */
+  .debug-section {
+    margin: 24px 0;
+    border: 2px solid var(--red);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+
+  .debug-bar {
+    background: var(--red);
+    color: var(--white);
+    padding: 10px 20px;
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 1px;
+  }
+
+  .debug-body {
+    padding: 20px;
+    background: #fef2f2;
+  }
+
+  /* 10축 connection */
+  .connect-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 16px;
+    margin: 28px 0;
+  }
+
+  .connect-card {
+    border-radius: 12px;
+    padding: 20px;
+    text-align: center;
+    border: 1px solid var(--gray-200);
+    box-shadow: 0 3px 14px rgba(0,0,0,0.05);
+  }
+
+  .connect-card h5 {
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 8px;
+  }
+
+  .connect-card p {
+    font-size: 13px;
+    margin: 0;
+    color: var(--gray-600);
+    line-height: 1.6;
+  }
+
+  .cc1 { border-top: 3px solid #8b5cf6; }
+  .cc1 h5 { color: #8b5cf6; }
+  .cc2 { border-top: 3px solid var(--green); }
+  .cc2 h5 { color: var(--green); }
+  .cc3 { border-top: 3px solid var(--navy); }
+  .cc3 h5 { color: var(--navy); }
+
+  /* PAGE NUMBER */
+  .page-num {
+    position: absolute;
+    bottom: 20px;
+    right: 30px;
+    font-size: 12px;
+    color: var(--gray-400);
+  }
+
+  /* WARMUP */
+  .warmup-box {
+    background: #e0e7f1;
+    border-radius: 12px;
+    padding: 24px 28px;
+    margin: 28px 0;
+    border: 2px solid #c7d2e0;
+  }
+
+  .warmup-title {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--navy);
+    margin-bottom: 14px;
+  }
+
+  .wq {
+    padding: 9px 16px;
+    background: var(--white);
+    border-radius: 8px;
+    margin-bottom: 8px;
+    font-size: 14px;
+    border: 1px solid var(--gray-200);
+    color: var(--gray-700);
+  }
+
+  .wq b { color: var(--navy); margin-right: 6px; }
+  .wq .hint { color: var(--gray-400); font-size: 13px; }
+
+  /* ===== CONTEST PROBLEMS PAGE ===== */
+  .contest-page-wrap .chapter-page {
+    min-height: auto;
+  }
+
+  .contest-page-wrap .chapter-page > div:last-child {
+    min-width: 0;
+    overflow-wrap: break-word;
+    word-break: break-word;
+  }
+
+  .contest-card {
+    background: white;
+    border: 1.5px solid var(--gray-200);
+    border-radius: 12px;
+    margin-bottom: 28px;
+    overflow: hidden;
+    break-inside: avoid;
+  }
+
+  .contest-header {
+    background: var(--navy);
+    color: white;
+    padding: 14px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .contest-num-source {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .contest-num {
+    font-weight: 700;
+    font-size: 16px;
+  }
+
+  .contest-source {
+    background: rgba(255,255,255,0.15);
+    padding: 3px 10px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 500;
+  }
+
+  .contest-body {
+    padding: 20px 24px 24px;
+  }
+
+  .contest-question {
+    font-size: 15px;
+    line-height: 1.7;
+    color: var(--text);
+    margin: 0 0 16px;
+    word-break: break-word;
+    overflow-wrap: break-word;
+  }
+
+  .contest-expected {
+    background: #1e293b;
+    border-radius: 8px;
+    overflow: hidden;
+    margin-bottom: 20px;
+  }
+
+  .contest-expected-label {
+    background: #334155;
+    color: #94a3b8;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 6px 14px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .contest-expected-body {
+    color: #e2e8f0;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    line-height: 1.6;
+    padding: 12px 16px;
+    margin: 0;
+    white-space: pre;
+  }
+
+  .contest-write-area {
+    border: 2px dashed var(--gray-300);
+    border-radius: 10px;
+    overflow: hidden;
+    transition: border-color 0.2s;
+  }
+
+  .contest-write-area:focus-within {
+    border-color: var(--orange);
+    border-style: solid;
+  }
+
+  .contest-write-label {
+    background: var(--bg);
+    color: var(--gray-500);
+    font-size: 12px;
+    font-weight: 600;
+    padding: 8px 14px;
+    border-bottom: 1px solid var(--gray-200);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .contest-textarea {
+    width: 100%;
+    min-height: 200px;
+    padding: 16px 18px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    line-height: 1.7;
+    color: var(--text);
+    background: #fafbfc;
+    border: none;
+    outline: none;
+    resize: vertical;
+    tab-size: 4;
+    box-sizing: border-box;
+  }
+
+  .contest-textarea::placeholder {
+    color: var(--gray-300);
+  }
+
+  @media print {
+    body { background: white; }
+    .page { box-shadow: none; margin: 0; page-break-after: always; }
+    .contest-textarea { border: 1px solid var(--gray-300); min-height: 180px; }
+  }
+
+</style>
+</head>
+<body>
+
+<div class="page">
+  <div class="chapter-page">
+    <div class="chapter-sidebar"></div>
+    <div class="chapter-accent-bar"></div>
+    <div class="chapter-body">
+      <div class="chapter-watermark">14</div>
+      <div class="chapter-label">Chapter 14</div>
+      <h1 class="chapter-title">텍스트 RPG (함수 종합 프로젝트)</h1>
+      <p class="chapter-sub">Layer 7에서 배운 모든 함수 기법을 총동원하여, 전투·아이템·레벨 시스템을 갖춘 텍스트 RPG를 완성합니다.</p>
+
+      <h3 class="obj-title">이 유닛에서 배우는 것</h3>
+      <ul class="obj-list">
+        <li>void 함수, return 함수, 매개변수를 적재적소에 사용할 수 있습니다.</li>
+        <li>배열을 함수에 넘기고, static 변수로 상태를 유지할 수 있습니다.</li>
+        <li>함수 프로토타입으로 코드를 구조화할 수 있습니다.</li>
+        <li>전투·아이템·레벨 시스템을 갖춘 RPG를 함수 분리 원칙에 따라 완성할 수 있습니다.</li>
+      </ul>
+
+      <h3 class="prereq-title">선수 학습</h3>
+      <div class="prereq-flow">
+        <div class="prereq-item current">L7-U01~U13 함수 전체</div>
+      </div>
+
+      <div class="predict-box">
+        <div class="predict-label">예측해 봅시다</div>
+        <div class="predict-q">rand()가 3을 반환한다고 가정할 때 출력 결과를 예측하십시오.</div>
+        
+      </div>
+
+      <span class="page-num">1</span>
+    </div>
+  </div>
+</div>
+<div class="page">
+  <div class="content-page">
+    <div class="unit-header-bar">
+      <span class="unit-tag">UNIT 14</span>
+      <span class="unit-title-sm">텍스트 RPG (함수 종합 프로젝트)</span>
+    </div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 1</span><p style="margin:0;font-size:14px">void showStatus(int hp, int atk)처럼 반환 없이 출력만 하는 함수는 어떤 상황에 적합합니까?</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 2</span><p style="margin:0;font-size:14px">int attack(int atk)처럼 값을 반환하는 함수는 어떤 상황에 적합합니까?</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 3</span><p style="margin:0;font-size:14px">전투 결과에 따라 HP를 변경해야 한다면, 값을 어떻게 돌려받을 수 있습니까? (return 또는 배열 전달)</p></div>
+<h2 class="section-title">예측</h2>
+<h2 class="section-title">이야기</h2>
+<p>undefined</p>
+<h2 class="section-title">핵심 개념</h2>
+<div class="note-box"><span class="note-label"></span>
+<div style="font-weight:700;margin-bottom:6px;color:#1a2e4a">함수 설계 계획</div>이 프로젝트에서 사용하는 함수 분류입니다.<br><br>출력 함수 (void): showStatus, showMenu, showBattleResult<br>계산 함수 (return): attack, defend, calcExp<br>판정 함수 (return int): isAlive, canLevelUp<br>배열 함수: showInventory, useItem<br>static 활용: getBattleCount (전투 횟수 누적)</div>
+<p>undefined</p>
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;stdio.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;stdlib.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;time.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">4</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">5</span><span class="lc"><span class="s-cm">/* 함수 프로토타입 */</span></span></div>
+<div class="code-line"><span class="ln">6</span><span class="lc"><span class="s-type">void</span> <span class="s-fn">showStatus</span>(<span class="s-type">char</span> *name, <span class="s-type">int</span> hp, <span class="s-type">int</span> maxHp, <span class="s-type">int</span> atk, <span class="s-type">int</span> def);</span></div>
+<div class="code-line"><span class="ln">7</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">attack</span>(<span class="s-type">int</span> atk);</span></div>
+<div class="code-line"><span class="ln">8</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">defend</span>(<span class="s-type">int</span> damage, <span class="s-type">int</span> def);</span></div>
+<div class="code-line"><span class="ln">9</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">isAlive</span>(<span class="s-type">int</span> hp);</span></div>
+<div class="code-line"><span class="ln">10</span><span class="lc"><span class="s-type">void</span> <span class="s-fn">showBattleResult</span>(<span class="s-type">int</span> playerHp, <span class="s-type">int</span> monHp);</span></div>
+<div class="code-line"><span class="ln">11</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">12</span><span class="lc"><span class="s-type">void</span> <span class="s-fn">showStatus</span>(<span class="s-type">char</span> *name, <span class="s-type">int</span> hp, <span class="s-type">int</span> maxHp, <span class="s-type">int</span> atk, <span class="s-type">int</span> def) {</span></div>
+<div class="code-line"><span class="ln">13</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"[%s] HP:%d/%d ATK:%d DEF:%d\n"</span>,</span></div>
+<div class="code-line"><span class="ln">14</span><span class="lc">           name, hp, maxHp, atk, def);</span></div>
+<div class="code-line"><span class="ln">15</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">16</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">17</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">attack</span>(<span class="s-type">int</span> atk) {</span></div>
+<div class="code-line"><span class="ln">18</span><span class="lc">    <span class="s-kw">return</span> atk + <span class="s-fn">rand</span>() % <span class="s-num">5</span>;  <span class="s-cm">/* 기본 + 0~4 추가 */</span></span></div>
+<div class="code-line"><span class="ln">19</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">20</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">21</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">defend</span>(<span class="s-type">int</span> damage, <span class="s-type">int</span> def) {</span></div>
+<div class="code-line"><span class="ln">22</span><span class="lc">    <span class="s-type">int</span> actual = damage - def;</span></div>
+<div class="code-line"><span class="ln">23</span><span class="lc">    <span class="s-kw">return</span> (actual &gt; <span class="s-num">0</span>) ? actual : <span class="s-num">1</span>;  <span class="s-cm">/* 최소 1 데미지 */</span></span></div>
+<div class="code-line"><span class="ln">24</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">25</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">26</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">isAlive</span>(<span class="s-type">int</span> hp) {</span></div>
+<div class="code-line"><span class="ln">27</span><span class="lc">    <span class="s-kw">return</span> hp &gt; <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">28</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">29</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">30</span><span class="lc"><span class="s-type">void</span> <span class="s-fn">showBattleResult</span>(<span class="s-type">int</span> playerHp, <span class="s-type">int</span> monHp) {</span></div>
+<div class="code-line"><span class="ln">31</span><span class="lc">    <span class="s-kw">if</span> (playerHp &gt; <span class="s-num">0</span> &amp;&amp; monHp &lt;= <span class="s-num">0</span>)</span></div>
+<div class="code-line"><span class="ln">32</span><span class="lc">        <span class="s-fn">printf</span>(<span class="s-str">"\n*** 승리! 몬스터를 처치했습니다! ***\n"</span>);</span></div>
+<div class="code-line"><span class="ln">33</span><span class="lc">    <span class="s-kw">else</span> <span class="s-kw">if</span> (playerHp &lt;= <span class="s-num">0</span>)</span></div>
+<div class="code-line"><span class="ln">34</span><span class="lc">        <span class="s-fn">printf</span>(<span class="s-str">"\n*** 패배... 용사가 쓰러졌습니다. ***\n"</span>);</span></div>
+<div class="code-line"><span class="ln">35</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">36</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">37</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">main</span>(<span class="s-type">void</span>) {</span></div>
+<div class="code-line"><span class="ln">38</span><span class="lc">    <span class="s-fn">srand</span>(<span class="s-fn">time</span>(<span class="s-kw">NULL</span>));</span></div>
+<div class="code-line"><span class="ln">39</span><span class="lc">    <span class="s-cm">/* 용사 스탯 */</span></span></div>
+<div class="code-line"><span class="ln">40</span><span class="lc">    <span class="s-type">int</span> pHp = <span class="s-num">50</span>, pMax = <span class="s-num">50</span>, pAtk = <span class="s-num">12</span>, pDef = <span class="s-num">3</span>;</span></div>
+<div class="code-line"><span class="ln">41</span><span class="lc">    <span class="s-cm">/* 몬스터 스탯 */</span></span></div>
+<div class="code-line"><span class="ln">42</span><span class="lc">    <span class="s-type">int</span> mHp = <span class="s-num">35</span>, mMax = <span class="s-num">35</span>, mAtk = <span class="s-num">8</span>, mDef = <span class="s-num">2</span>;</span></div>
+<div class="code-line"><span class="ln">43</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">44</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"=== 텍스트 RPG v1 ===\n\n"</span>);</span></div>
+<div class="code-line"><span class="ln">45</span><span class="lc">    <span class="s-type">int</span> turn = <span class="s-num">1</span>;</span></div>
+<div class="code-line"><span class="ln">46</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">47</span><span class="lc">    <span class="s-kw">while</span> (<span class="s-fn">isAlive</span>(pHp) &amp;&amp; <span class="s-fn">isAlive</span>(mHp)) {</span></div>
+<div class="code-line"><span class="ln">48</span><span class="lc">        <span class="s-fn">printf</span>(<span class="s-str">"--- 턴 %d ---\n"</span>, turn++);</span></div>
+<div class="code-line"><span class="ln">49</span><span class="lc">        <span class="s-fn">showStatus</span>(<span class="s-str">"용사"</span>, pHp, pMax, pAtk, pDef);</span></div>
+<div class="code-line"><span class="ln">50</span><span class="lc">        <span class="s-fn">showStatus</span>(<span class="s-str">"슬라임"</span>, mHp, mMax, mAtk, mDef);</span></div>
+<div class="code-line"><span class="ln">51</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">52</span><span class="lc">        <span class="s-fn">printf</span>(<span class="s-str">"\n행동: 1.공격 2.방어: "</span>);</span></div>
+<div class="code-line"><span class="ln">53</span><span class="lc">        <span class="s-type">int</span> choice;</span></div>
+<div class="code-line"><span class="ln">54</span><span class="lc">        <span class="s-fn">scanf</span>(<span class="s-str">"%d"</span>, &amp;choice);</span></div>
+<div class="code-line"><span class="ln">55</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">56</span><span class="lc">        <span class="s-kw">if</span> (choice == <span class="s-num">1</span>) {</span></div>
+<div class="code-line"><span class="ln">57</span><span class="lc">            <span class="s-type">int</span> dmg = <span class="s-fn">attack</span>(pAtk);</span></div>
+<div class="code-line"><span class="ln">58</span><span class="lc">            <span class="s-type">int</span> actual = <span class="s-fn">defend</span>(dmg, mDef);</span></div>
+<div class="code-line"><span class="ln">59</span><span class="lc">            mHp -= actual;</span></div>
+<div class="code-line"><span class="ln">60</span><span class="lc">            <span class="s-fn">printf</span>(<span class="s-str">"→ 용사의 공격! %d 데미지!\n"</span>, actual);</span></div>
+<div class="code-line"><span class="ln">61</span><span class="lc">        } <span class="s-kw">else</span> {</span></div>
+<div class="code-line"><span class="ln">62</span><span class="lc">            pDef += <span class="s-num">2</span>;</span></div>
+<div class="code-line"><span class="ln">63</span><span class="lc">            <span class="s-fn">printf</span>(<span class="s-str">"→ 용사가 방어 태세! (DEF+2)\n"</span>);</span></div>
+<div class="code-line"><span class="ln">64</span><span class="lc">        }</span></div>
+<div class="code-line"><span class="ln">65</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">66</span><span class="lc">        <span class="s-kw">if</span> (<span class="s-fn">isAlive</span>(mHp)) {</span></div>
+<div class="code-line"><span class="ln">67</span><span class="lc">            <span class="s-type">int</span> dmg = <span class="s-fn">attack</span>(mAtk);</span></div>
+<div class="code-line"><span class="ln">68</span><span class="lc">            <span class="s-type">int</span> actual = <span class="s-fn">defend</span>(dmg, pDef);</span></div>
+<div class="code-line"><span class="ln">69</span><span class="lc">            pHp -= actual;</span></div>
+<div class="code-line"><span class="ln">70</span><span class="lc">            <span class="s-fn">printf</span>(<span class="s-str">"→ 슬라임의 공격! %d 데미지!\n"</span>, actual);</span></div>
+<div class="code-line"><span class="ln">71</span><span class="lc">        }</span></div>
+<div class="code-line"><span class="ln">72</span><span class="lc">        <span class="s-kw">if</span> (choice == <span class="s-num">2</span>) pDef -= <span class="s-num">2</span>;  <span class="s-cm">/* 방어 보너스 해제 */</span></span></div>
+<div class="code-line"><span class="ln">73</span><span class="lc">        <span class="s-fn">printf</span>(<span class="s-str">"\n"</span>);</span></div>
+<div class="code-line"><span class="ln">74</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">75</span><span class="lc">    <span class="s-fn">showBattleResult</span>(pHp, mHp);</span></div>
+<div class="code-line"><span class="ln">76</span><span class="lc">    <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">77</span><span class="lc">}</span></div>
+</div>
+</div>
+<p>undefined</p>
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;stdio.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;stdlib.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;time.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">4</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">5</span><span class="lc"><span class="s-cm">/* 프로토타입 */</span></span></div>
+<div class="code-line"><span class="ln">6</span><span class="lc"><span class="s-type">void</span> <span class="s-fn">showStatus</span>(<span class="s-type">char</span> *name, <span class="s-type">int</span> hp, <span class="s-type">int</span> max, <span class="s-type">int</span> atk, <span class="s-type">int</span> def, <span class="s-type">int</span> lv);</span></div>
+<div class="code-line"><span class="ln">7</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">attack</span>(<span class="s-type">int</span> atk);</span></div>
+<div class="code-line"><span class="ln">8</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">defend</span>(<span class="s-type">int</span> dmg, <span class="s-type">int</span> def);</span></div>
+<div class="code-line"><span class="ln">9</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">isAlive</span>(<span class="s-type">int</span> hp);</span></div>
+<div class="code-line"><span class="ln">10</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">calcExp</span>(<span class="s-type">int</span> monAtk, <span class="s-type">int</span> monDef);</span></div>
+<div class="code-line"><span class="ln">11</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">canLevelUp</span>(<span class="s-type">int</span> exp, <span class="s-type">int</span> level);</span></div>
+<div class="code-line"><span class="ln">12</span><span class="lc"><span class="s-type">void</span> <span class="s-fn">showInventory</span>(<span class="s-type">int</span> items[], <span class="s-type">int</span> size);</span></div>
+<div class="code-line"><span class="ln">13</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">useItem</span>(<span class="s-type">int</span> items[], <span class="s-type">int</span> size, <span class="s-type">int</span> *hp, <span class="s-type">int</span> maxHp);</span></div>
+<div class="code-line"><span class="ln">14</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">getBattleCount</span>(<span class="s-type">void</span>);</span></div>
+<div class="code-line"><span class="ln">15</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">16</span><span class="lc"><span class="s-type">void</span> <span class="s-fn">showStatus</span>(<span class="s-type">char</span> *name, <span class="s-type">int</span> hp, <span class="s-type">int</span> max, <span class="s-type">int</span> atk, <span class="s-type">int</span> def, <span class="s-type">int</span> lv) {</span></div>
+<div class="code-line"><span class="ln">17</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"[%s] Lv.%d HP:%d/%d ATK:%d DEF:%d\n"</span>,</span></div>
+<div class="code-line"><span class="ln">18</span><span class="lc">           name, lv, hp, max, atk, def);</span></div>
+<div class="code-line"><span class="ln">19</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">20</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">21</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">attack</span>(<span class="s-type">int</span> atk) { <span class="s-kw">return</span> atk + <span class="s-fn">rand</span>() % <span class="s-num">5</span>; }</span></div>
+<div class="code-line"><span class="ln">22</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">defend</span>(<span class="s-type">int</span> dmg, <span class="s-type">int</span> def) {</span></div>
+<div class="code-line"><span class="ln">23</span><span class="lc">    <span class="s-type">int</span> a = dmg - def;</span></div>
+<div class="code-line"><span class="ln">24</span><span class="lc">    <span class="s-kw">return</span> (a &gt; <span class="s-num">0</span>) ? a : <span class="s-num">1</span>;</span></div>
+<div class="code-line"><span class="ln">25</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">26</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">isAlive</span>(<span class="s-type">int</span> hp) { <span class="s-kw">return</span> hp &gt; <span class="s-num">0</span>; }</span></div>
+<div class="code-line"><span class="ln">27</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">28</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">calcExp</span>(<span class="s-type">int</span> monAtk, <span class="s-type">int</span> monDef) {</span></div>
+<div class="code-line"><span class="ln">29</span><span class="lc">    <span class="s-kw">return</span> (monAtk + monDef) * <span class="s-num">2</span>;</span></div>
+<div class="code-line"><span class="ln">30</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">31</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">32</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">canLevelUp</span>(<span class="s-type">int</span> exp, <span class="s-type">int</span> level) {</span></div>
+<div class="code-line"><span class="ln">33</span><span class="lc">    <span class="s-kw">return</span> exp &gt;= level * <span class="s-num">30</span>;</span></div>
+<div class="code-line"><span class="ln">34</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">35</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">36</span><span class="lc"><span class="s-type">void</span> <span class="s-fn">showInventory</span>(<span class="s-type">int</span> items[], <span class="s-type">int</span> size) {</span></div>
+<div class="code-line"><span class="ln">37</span><span class="lc">    <span class="s-type">char</span> *names[] = {<span class="s-str">"HP포션(+20)"</span>, <span class="s-str">"파워부스트(ATK+5)"</span>, <span class="s-str">"철갑옷(DEF+3)"</span>};</span></div>
+<div class="code-line"><span class="ln">38</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"\n--- 인벤토리 ---\n"</span>);</span></div>
+<div class="code-line"><span class="ln">39</span><span class="lc">    <span class="s-kw">for</span> (<span class="s-type">int</span> i = <span class="s-num">0</span>; i &lt; size; i++) {</span></div>
+<div class="code-line"><span class="ln">40</span><span class="lc">        <span class="s-kw">if</span> (items[i] &gt; <span class="s-num">0</span>)</span></div>
+<div class="code-line"><span class="ln">41</span><span class="lc">            <span class="s-fn">printf</span>(<span class="s-str">"%d. %s x%d\n"</span>, i+<span class="s-num">1</span>, names[i], items[i]);</span></div>
+<div class="code-line"><span class="ln">42</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">43</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">44</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">45</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">useItem</span>(<span class="s-type">int</span> items[], <span class="s-type">int</span> size, <span class="s-type">int</span> *hp, <span class="s-type">int</span> maxHp) {</span></div>
+<div class="code-line"><span class="ln">46</span><span class="lc">    <span class="s-fn">showInventory</span>(items, size);</span></div>
+<div class="code-line"><span class="ln">47</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"사용할 아이템 (0=취소): "</span>);</span></div>
+<div class="code-line"><span class="ln">48</span><span class="lc">    <span class="s-type">int</span> sel;</span></div>
+<div class="code-line"><span class="ln">49</span><span class="lc">    <span class="s-fn">scanf</span>(<span class="s-str">"%d"</span>, &amp;sel);</span></div>
+<div class="code-line"><span class="ln">50</span><span class="lc">    <span class="s-kw">if</span> (sel &lt; <span class="s-num">1</span> || sel &gt; size || items[sel-<span class="s-num">1</span>] &lt;= <span class="s-num">0</span>) <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">51</span><span class="lc">    items[sel-<span class="s-num">1</span>]--;</span></div>
+<div class="code-line"><span class="ln">52</span><span class="lc">    <span class="s-kw">if</span> (sel == <span class="s-num">1</span>) {</span></div>
+<div class="code-line"><span class="ln">53</span><span class="lc">        *hp += <span class="s-num">20</span>;</span></div>
+<div class="code-line"><span class="ln">54</span><span class="lc">        <span class="s-kw">if</span> (*hp &gt; maxHp) *hp = maxHp;</span></div>
+<div class="code-line"><span class="ln">55</span><span class="lc">        <span class="s-fn">printf</span>(<span class="s-str">"HP 회복! 현재 HP: %d\n"</span>, *hp);</span></div>
+<div class="code-line"><span class="ln">56</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">57</span><span class="lc">    <span class="s-kw">return</span> sel;</span></div>
+<div class="code-line"><span class="ln">58</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">59</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">60</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">getBattleCount</span>(<span class="s-type">void</span>) {</span></div>
+<div class="code-line"><span class="ln">61</span><span class="lc">    <span class="s-kw">static</span> <span class="s-type">int</span> count = <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">62</span><span class="lc">    <span class="s-kw">return</span> ++count;</span></div>
+<div class="code-line"><span class="ln">63</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">64</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">65</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">main</span>(<span class="s-type">void</span>) {</span></div>
+<div class="code-line"><span class="ln">66</span><span class="lc">    <span class="s-fn">srand</span>(<span class="s-fn">time</span>(<span class="s-kw">NULL</span>));</span></div>
+<div class="code-line"><span class="ln">67</span><span class="lc">    <span class="s-type">int</span> pHp=<span class="s-num">60</span>, pMax=<span class="s-num">60</span>, pAtk=<span class="s-num">12</span>, pDef=<span class="s-num">3</span>, pLv=<span class="s-num">1</span>, pExp=<span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">68</span><span class="lc">    <span class="s-type">int</span> items[<span class="s-num">3</span>] = {<span class="s-num">3</span>, <span class="s-num">1</span>, <span class="s-num">1</span>};  <span class="s-cm">/* 포션3, 파워1, 갑옷1 */</span></span></div>
+<div class="code-line"><span class="ln">69</span><span class="lc">    <span class="s-type">char</span> *monsters[] = {<span class="s-str">"슬라임"</span>, <span class="s-str">"고블린"</span>, <span class="s-str">"오크"</span>};</span></div>
+<div class="code-line"><span class="ln">70</span><span class="lc">    <span class="s-type">int</span> mHpBase[] = {<span class="s-num">30</span>, <span class="s-num">50</span>, <span class="s-num">80</span>};</span></div>
+<div class="code-line"><span class="ln">71</span><span class="lc">    <span class="s-type">int</span> mAtkBase[] = {<span class="s-num">7</span>, <span class="s-num">12</span>, <span class="s-num">18</span>};</span></div>
+<div class="code-line"><span class="ln">72</span><span class="lc">    <span class="s-type">int</span> mDefBase[] = {<span class="s-num">2</span>, <span class="s-num">4</span>, <span class="s-num">6</span>};</span></div>
+<div class="code-line"><span class="ln">73</span><span class="lc">    <span class="s-type">int</span> stage = <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">74</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">75</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"=== 텍스트 RPG v2 ===\n"</span>);</span></div>
+<div class="code-line"><span class="ln">76</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">77</span><span class="lc">    <span class="s-kw">while</span> (stage &lt; <span class="s-num">3</span> &amp;&amp; <span class="s-fn">isAlive</span>(pHp)) {</span></div>
+<div class="code-line"><span class="ln">78</span><span class="lc">        <span class="s-type">int</span> mHp = mHpBase[stage], mMax = mHp;</span></div>
+<div class="code-line"><span class="ln">79</span><span class="lc">        <span class="s-type">int</span> mAtk = mAtkBase[stage], mDef = mDefBase[stage];</span></div>
+<div class="code-line"><span class="ln">80</span><span class="lc">        <span class="s-type">int</span> battle = <span class="s-fn">getBattleCount</span>();</span></div>
+<div class="code-line"><span class="ln">81</span><span class="lc">        <span class="s-fn">printf</span>(<span class="s-str">"\n*** 전투 #%d: %s 출현! ***\n"</span>, battle, monsters[stage]);</span></div>
+<div class="code-line"><span class="ln">82</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">83</span><span class="lc">        <span class="s-kw">while</span> (<span class="s-fn">isAlive</span>(pHp) &amp;&amp; <span class="s-fn">isAlive</span>(mHp)) {</span></div>
+<div class="code-line"><span class="ln">84</span><span class="lc">            <span class="s-fn">showStatus</span>(<span class="s-str">"용사"</span>, pHp, pMax, pAtk, pDef, pLv);</span></div>
+<div class="code-line"><span class="ln">85</span><span class="lc">            <span class="s-fn">showStatus</span>(monsters[stage], mHp, mMax, mAtk, mDef, <span class="s-num">1</span>);</span></div>
+<div class="code-line"><span class="ln">86</span><span class="lc">            <span class="s-fn">printf</span>(<span class="s-str">"행동: 1.공격 2.방어 3.아이템: "</span>);</span></div>
+<div class="code-line"><span class="ln">87</span><span class="lc">            <span class="s-type">int</span> ch;</span></div>
+<div class="code-line"><span class="ln">88</span><span class="lc">            <span class="s-fn">scanf</span>(<span class="s-str">"%d"</span>, &amp;ch);</span></div>
+<div class="code-line"><span class="ln">89</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">90</span><span class="lc">            <span class="s-kw">if</span> (ch == <span class="s-num">1</span>) {</span></div>
+<div class="code-line"><span class="ln">91</span><span class="lc">                <span class="s-type">int</span> d = <span class="s-fn">defend</span>(<span class="s-fn">attack</span>(pAtk), mDef);</span></div>
+<div class="code-line"><span class="ln">92</span><span class="lc">                mHp -= d;</span></div>
+<div class="code-line"><span class="ln">93</span><span class="lc">                <span class="s-fn">printf</span>(<span class="s-str">"→ %d 데미지!\n"</span>, d);</span></div>
+<div class="code-line"><span class="ln">94</span><span class="lc">            } <span class="s-kw">else</span> <span class="s-kw">if</span> (ch == <span class="s-num">2</span>) {</span></div>
+<div class="code-line"><span class="ln">95</span><span class="lc">                pDef += <span class="s-num">3</span>;</span></div>
+<div class="code-line"><span class="ln">96</span><span class="lc">                <span class="s-fn">printf</span>(<span class="s-str">"→ 방어 태세! (DEF+3)\n"</span>);</span></div>
+<div class="code-line"><span class="ln">97</span><span class="lc">            } <span class="s-kw">else</span> <span class="s-kw">if</span> (ch == <span class="s-num">3</span>) {</span></div>
+<div class="code-line"><span class="ln">98</span><span class="lc">                <span class="s-type">int</span> used = <span class="s-fn">useItem</span>(items, <span class="s-num">3</span>, &amp;pHp, pMax);</span></div>
+<div class="code-line"><span class="ln">99</span><span class="lc">                <span class="s-kw">if</span> (used == <span class="s-num">2</span>) { pAtk += <span class="s-num">5</span>; <span class="s-fn">printf</span>(<span class="s-str">"ATK +5!\n"</span>); }</span></div>
+<div class="code-line"><span class="ln">100</span><span class="lc">                <span class="s-kw">if</span> (used == <span class="s-num">3</span>) { pDef += <span class="s-num">3</span>; <span class="s-fn">printf</span>(<span class="s-str">"DEF +3!\n"</span>); }</span></div>
+<div class="code-line"><span class="ln">101</span><span class="lc">            }</span></div>
+<div class="code-line"><span class="ln">102</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">103</span><span class="lc">            <span class="s-kw">if</span> (<span class="s-fn">isAlive</span>(mHp)) {</span></div>
+<div class="code-line"><span class="ln">104</span><span class="lc">                <span class="s-type">int</span> d = <span class="s-fn">defend</span>(<span class="s-fn">attack</span>(mAtk), pDef);</span></div>
+<div class="code-line"><span class="ln">105</span><span class="lc">                pHp -= d;</span></div>
+<div class="code-line"><span class="ln">106</span><span class="lc">                <span class="s-fn">printf</span>(<span class="s-str">"→ %s의 공격! %d 데미지!\n"</span>, monsters[stage], d);</span></div>
+<div class="code-line"><span class="ln">107</span><span class="lc">            }</span></div>
+<div class="code-line"><span class="ln">108</span><span class="lc">            <span class="s-kw">if</span> (ch == <span class="s-num">2</span>) pDef -= <span class="s-num">3</span>;</span></div>
+<div class="code-line"><span class="ln">109</span><span class="lc">        }</span></div>
+<div class="code-line"><span class="ln">110</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">111</span><span class="lc">        <span class="s-kw">if</span> (<span class="s-fn">isAlive</span>(pHp)) {</span></div>
+<div class="code-line"><span class="ln">112</span><span class="lc">            <span class="s-type">int</span> exp = <span class="s-fn">calcExp</span>(mAtk, mDef);</span></div>
+<div class="code-line"><span class="ln">113</span><span class="lc">            pExp += exp;</span></div>
+<div class="code-line"><span class="ln">114</span><span class="lc">            <span class="s-fn">printf</span>(<span class="s-str">"승리! 경험치 +%d (총 %d)\n"</span>, exp, pExp);</span></div>
+<div class="code-line"><span class="ln">115</span><span class="lc">            <span class="s-kw">if</span> (<span class="s-fn">canLevelUp</span>(pExp, pLv)) {</span></div>
+<div class="code-line"><span class="ln">116</span><span class="lc">                pLv++;</span></div>
+<div class="code-line"><span class="ln">117</span><span class="lc">                pAtk += <span class="s-num">3</span>; pDef += <span class="s-num">2</span>; pMax += <span class="s-num">15</span>;</span></div>
+<div class="code-line"><span class="ln">118</span><span class="lc">                pHp = pMax;</span></div>
+<div class="code-line"><span class="ln">119</span><span class="lc">                pExp = <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">120</span><span class="lc">                <span class="s-fn">printf</span>(<span class="s-str">"*** 레벨 업! Lv.%d ***\n"</span>, pLv);</span></div>
+<div class="code-line"><span class="ln">121</span><span class="lc">            }</span></div>
+<div class="code-line"><span class="ln">122</span><span class="lc">            stage++;</span></div>
+<div class="code-line"><span class="ln">123</span><span class="lc">        }</span></div>
+<div class="code-line"><span class="ln">124</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">125</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">126</span><span class="lc">    <span class="s-kw">if</span> (stage &gt;= <span class="s-num">3</span>)</span></div>
+<div class="code-line"><span class="ln">127</span><span class="lc">        <span class="s-fn">printf</span>(<span class="s-str">"\n*** 축하합니다! 모든 몬스터를 처치했습니다! ***\n"</span>);</span></div>
+<div class="code-line"><span class="ln">128</span><span class="lc">    <span class="s-kw">else</span></span></div>
+<div class="code-line"><span class="ln">129</span><span class="lc">        <span class="s-fn">printf</span>(<span class="s-str">"\n*** Game Over ***\n"</span>);</span></div>
+<div class="code-line"><span class="ln">130</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"총 전투: %d회\n"</span>, <span class="s-fn">getBattleCount</span>() - <span class="s-num">1</span>);</span></div>
+<div class="code-line"><span class="ln">131</span><span class="lc">    <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">132</span><span class="lc">}</span></div>
+</div>
+</div>
+<p>undefined</p>
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;stdio.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;stdlib.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;time.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">4</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">5</span><span class="lc"><span class="s-cm">/* === 프로토타입 === */</span></span></div>
+<div class="code-line"><span class="ln">6</span><span class="lc"><span class="s-type">void</span> <span class="s-fn">showStatus</span>(<span class="s-type">int</span> hp, <span class="s-type">int</span> max, <span class="s-type">int</span> atk, <span class="s-type">int</span> def, <span class="s-type">int</span> lv, <span class="s-type">int</span> gold);</span></div>
+<div class="code-line"><span class="ln">7</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">attack</span>(<span class="s-type">int</span> atk);</span></div>
+<div class="code-line"><span class="ln">8</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">critAttack</span>(<span class="s-type">int</span> atk);</span></div>
+<div class="code-line"><span class="ln">9</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">defend</span>(<span class="s-type">int</span> dmg, <span class="s-type">int</span> def);</span></div>
+<div class="code-line"><span class="ln">10</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">isAlive</span>(<span class="s-type">int</span> hp);</span></div>
+<div class="code-line"><span class="ln">11</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">calcExp</span>(<span class="s-type">int</span> mAtk, <span class="s-type">int</span> mDef);</span></div>
+<div class="code-line"><span class="ln">12</span><span class="lc"><span class="s-type">void</span> <span class="s-fn">levelUp</span>(<span class="s-type">int</span> *lv, <span class="s-type">int</span> *atk, <span class="s-type">int</span> *def, <span class="s-type">int</span> *max, <span class="s-type">int</span> *hp);</span></div>
+<div class="code-line"><span class="ln">13</span><span class="lc"><span class="s-type">void</span> <span class="s-fn">showInventory</span>(<span class="s-type">int</span> items[], <span class="s-type">int</span> n);</span></div>
+<div class="code-line"><span class="ln">14</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">useItem</span>(<span class="s-type">int</span> items[], <span class="s-type">int</span> *hp, <span class="s-type">int</span> max, <span class="s-type">int</span> *atk, <span class="s-type">int</span> *def);</span></div>
+<div class="code-line"><span class="ln">15</span><span class="lc"><span class="s-type">void</span> <span class="s-fn">shop</span>(<span class="s-type">int</span> *gold, <span class="s-type">int</span> items[]);</span></div>
+<div class="code-line"><span class="ln">16</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">skillAttack</span>(<span class="s-type">int</span> atk, <span class="s-type">int</span> *mp, <span class="s-type">int</span> cost);</span></div>
+<div class="code-line"><span class="ln">17</span><span class="lc"><span class="s-type">void</span> <span class="s-fn">showRecord</span>(<span class="s-type">int</span> wins, <span class="s-type">int</span> losses, <span class="s-type">int</span> dmgDealt, <span class="s-type">int</span> dmgTaken);</span></div>
+<div class="code-line"><span class="ln">18</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">getBattleCount</span>(<span class="s-type">void</span>);</span></div>
+<div class="code-line"><span class="ln">19</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">getMonster</span>(<span class="s-type">int</span> stage, <span class="s-type">int</span> *hp, <span class="s-type">int</span> *atk, <span class="s-type">int</span> *def, <span class="s-type">char</span> name[]);</span></div>
+<div class="code-line"><span class="ln">20</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">21</span><span class="lc"><span class="s-cm">/* === 출력 함수 (void) === */</span></span></div>
+<div class="code-line"><span class="ln">22</span><span class="lc"><span class="s-type">void</span> <span class="s-fn">showStatus</span>(<span class="s-type">int</span> hp, <span class="s-type">int</span> max, <span class="s-type">int</span> atk, <span class="s-type">int</span> def, <span class="s-type">int</span> lv, <span class="s-type">int</span> gold) {</span></div>
+<div class="code-line"><span class="ln">23</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"[용사] Lv.%d HP:%d/%d ATK:%d DEF:%d Gold:%d\n"</span>,</span></div>
+<div class="code-line"><span class="ln">24</span><span class="lc">           lv, hp, max, atk, def, gold);</span></div>
+<div class="code-line"><span class="ln">25</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">26</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">27</span><span class="lc"><span class="s-cm">/* === 계산 함수 (return) === */</span></span></div>
+<div class="code-line"><span class="ln">28</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">attack</span>(<span class="s-type">int</span> atk) { <span class="s-kw">return</span> atk + <span class="s-fn">rand</span>() % <span class="s-num">5</span>; }</span></div>
+<div class="code-line"><span class="ln">29</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">30</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">critAttack</span>(<span class="s-type">int</span> atk) {</span></div>
+<div class="code-line"><span class="ln">31</span><span class="lc">    <span class="s-kw">if</span> (<span class="s-fn">rand</span>() % <span class="s-num">100</span> &lt; <span class="s-num">20</span>)  <span class="s-cm">/* 20% 확률 크리티컬 */</span></span></div>
+<div class="code-line"><span class="ln">32</span><span class="lc">        <span class="s-kw">return</span> atk * <span class="s-num">2</span>;</span></div>
+<div class="code-line"><span class="ln">33</span><span class="lc">    <span class="s-kw">return</span> <span class="s-fn">attack</span>(atk);</span></div>
+<div class="code-line"><span class="ln">34</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">35</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">36</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">defend</span>(<span class="s-type">int</span> dmg, <span class="s-type">int</span> def) {</span></div>
+<div class="code-line"><span class="ln">37</span><span class="lc">    <span class="s-type">int</span> a = dmg - def;</span></div>
+<div class="code-line"><span class="ln">38</span><span class="lc">    <span class="s-kw">return</span> (a &gt; <span class="s-num">0</span>) ? a : <span class="s-num">1</span>;</span></div>
+<div class="code-line"><span class="ln">39</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">40</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">41</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">calcExp</span>(<span class="s-type">int</span> mAtk, <span class="s-type">int</span> mDef) {</span></div>
+<div class="code-line"><span class="ln">42</span><span class="lc">    <span class="s-kw">return</span> (mAtk + mDef) * <span class="s-num">2</span>;</span></div>
+<div class="code-line"><span class="ln">43</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">44</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">45</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">skillAttack</span>(<span class="s-type">int</span> atk, <span class="s-type">int</span> *mp, <span class="s-type">int</span> cost) {</span></div>
+<div class="code-line"><span class="ln">46</span><span class="lc">    <span class="s-kw">if</span> (*mp &lt; cost) { <span class="s-fn">printf</span>(<span class="s-str">"MP 부족!\n"</span>); <span class="s-kw">return</span> <span class="s-num">0</span>; }</span></div>
+<div class="code-line"><span class="ln">47</span><span class="lc">    *mp -= cost;</span></div>
+<div class="code-line"><span class="ln">48</span><span class="lc">    <span class="s-kw">return</span> atk * <span class="s-num">3</span>;  <span class="s-cm">/* 스킬: 3배 데미지 */</span></span></div>
+<div class="code-line"><span class="ln">49</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">50</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">51</span><span class="lc"><span class="s-cm">/* === 판정 함수 === */</span></span></div>
+<div class="code-line"><span class="ln">52</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">isAlive</span>(<span class="s-type">int</span> hp) { <span class="s-kw">return</span> hp &gt; <span class="s-num">0</span>; }</span></div>
+<div class="code-line"><span class="ln">53</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">54</span><span class="lc"><span class="s-cm">/* === 상태 변경 함수 === */</span></span></div>
+<div class="code-line"><span class="ln">55</span><span class="lc"><span class="s-type">void</span> <span class="s-fn">levelUp</span>(<span class="s-type">int</span> *lv, <span class="s-type">int</span> *atk, <span class="s-type">int</span> *def, <span class="s-type">int</span> *max, <span class="s-type">int</span> *hp) {</span></div>
+<div class="code-line"><span class="ln">56</span><span class="lc">    (*lv)++; *atk += <span class="s-num">3</span>; *def += <span class="s-num">2</span>; *max += <span class="s-num">20</span>; *hp = *max;</span></div>
+<div class="code-line"><span class="ln">57</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"\n*** LEVEL UP! Lv.%d ***\n"</span>, *lv);</span></div>
+<div class="code-line"><span class="ln">58</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"ATK+3 DEF+2 MaxHP+20 HP 완전 회복!\n"</span>);</span></div>
+<div class="code-line"><span class="ln">59</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">60</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">61</span><span class="lc"><span class="s-cm">/* === 배열 함수 === */</span></span></div>
+<div class="code-line"><span class="ln">62</span><span class="lc"><span class="s-type">void</span> <span class="s-fn">showInventory</span>(<span class="s-type">int</span> items[], <span class="s-type">int</span> n) {</span></div>
+<div class="code-line"><span class="ln">63</span><span class="lc">    <span class="s-type">char</span> *names[] = {<span class="s-str">"HP포션(+30)"</span>,<span class="s-str">"MP포션(+20)"</span>,<span class="s-str">"폭탄(50dmg)"</span>};</span></div>
+<div class="code-line"><span class="ln">64</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"--- 인벤토리 ---\n"</span>);</span></div>
+<div class="code-line"><span class="ln">65</span><span class="lc">    <span class="s-kw">for</span> (<span class="s-type">int</span> i = <span class="s-num">0</span>; i &lt; n; i++)</span></div>
+<div class="code-line"><span class="ln">66</span><span class="lc">        <span class="s-fn">printf</span>(<span class="s-str">"%d. %s x%d\n"</span>, i+<span class="s-num">1</span>, names[i], items[i]);</span></div>
+<div class="code-line"><span class="ln">67</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">68</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">69</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">useItem</span>(<span class="s-type">int</span> items[], <span class="s-type">int</span> *hp, <span class="s-type">int</span> max, <span class="s-type">int</span> *atk, <span class="s-type">int</span> *def) {</span></div>
+<div class="code-line"><span class="ln">70</span><span class="lc">    <span class="s-fn">showInventory</span>(items, <span class="s-num">3</span>);</span></div>
+<div class="code-line"><span class="ln">71</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"사용 (0=취소): "</span>);</span></div>
+<div class="code-line"><span class="ln">72</span><span class="lc">    <span class="s-type">int</span> s; <span class="s-fn">scanf</span>(<span class="s-str">"%d"</span>, &amp;s);</span></div>
+<div class="code-line"><span class="ln">73</span><span class="lc">    <span class="s-kw">if</span> (s &lt; <span class="s-num">1</span> || s &gt; <span class="s-num">3</span> || items[s-<span class="s-num">1</span>] &lt;= <span class="s-num">0</span>) <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">74</span><span class="lc">    items[s-<span class="s-num">1</span>]--;</span></div>
+<div class="code-line"><span class="ln">75</span><span class="lc">    <span class="s-kw">if</span> (s == <span class="s-num">1</span>) { *hp += <span class="s-num">30</span>; <span class="s-kw">if</span> (*hp &gt; max) *hp = max; <span class="s-fn">printf</span>(<span class="s-str">"HP+30\n"</span>); }</span></div>
+<div class="code-line"><span class="ln">76</span><span class="lc">    <span class="s-kw">return</span> s;</span></div>
+<div class="code-line"><span class="ln">77</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">78</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">79</span><span class="lc"><span class="s-cm">/* === 상점 === */</span></span></div>
+<div class="code-line"><span class="ln">80</span><span class="lc"><span class="s-type">void</span> <span class="s-fn">shop</span>(<span class="s-type">int</span> *gold, <span class="s-type">int</span> items[]) {</span></div>
+<div class="code-line"><span class="ln">81</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"\n=== 상점 ==="</span>);</span></div>
+<div class="code-line"><span class="ln">82</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"\n1.HP포션(30G) 2.MP포션(25G) 3.폭탄(50G) 0.나가기\n"</span>);</span></div>
+<div class="code-line"><span class="ln">83</span><span class="lc">    <span class="s-type">int</span> ch; <span class="s-fn">scanf</span>(<span class="s-str">"%d"</span>, &amp;ch);</span></div>
+<div class="code-line"><span class="ln">84</span><span class="lc">    <span class="s-type">int</span> prices[] = {<span class="s-num">30</span>, <span class="s-num">25</span>, <span class="s-num">50</span>};</span></div>
+<div class="code-line"><span class="ln">85</span><span class="lc">    <span class="s-kw">if</span> (ch &gt;= <span class="s-num">1</span> &amp;&amp; ch &lt;= <span class="s-num">3</span> &amp;&amp; *gold &gt;= prices[ch-<span class="s-num">1</span>]) {</span></div>
+<div class="code-line"><span class="ln">86</span><span class="lc">        *gold -= prices[ch-<span class="s-num">1</span>];</span></div>
+<div class="code-line"><span class="ln">87</span><span class="lc">        items[ch-<span class="s-num">1</span>]++;</span></div>
+<div class="code-line"><span class="ln">88</span><span class="lc">        <span class="s-fn">printf</span>(<span class="s-str">"구매 완료! 남은 골드: %d\n"</span>, *gold);</span></div>
+<div class="code-line"><span class="ln">89</span><span class="lc">    } <span class="s-kw">else</span> <span class="s-kw">if</span> (ch &gt;= <span class="s-num">1</span> &amp;&amp; ch &lt;= <span class="s-num">3</span>) {</span></div>
+<div class="code-line"><span class="ln">90</span><span class="lc">        <span class="s-fn">printf</span>(<span class="s-str">"골드가 부족합니다.\n"</span>);</span></div>
+<div class="code-line"><span class="ln">91</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">92</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">93</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">94</span><span class="lc"><span class="s-cm">/* === static 활용 === */</span></span></div>
+<div class="code-line"><span class="ln">95</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">getBattleCount</span>(<span class="s-type">void</span>) {</span></div>
+<div class="code-line"><span class="ln">96</span><span class="lc">    <span class="s-kw">static</span> <span class="s-type">int</span> count = <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">97</span><span class="lc">    <span class="s-kw">return</span> ++count;</span></div>
+<div class="code-line"><span class="ln">98</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">99</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">100</span><span class="lc"><span class="s-cm">/* === 몬스터 생성 === */</span></span></div>
+<div class="code-line"><span class="ln">101</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">getMonster</span>(<span class="s-type">int</span> stage, <span class="s-type">int</span> *hp, <span class="s-type">int</span> *atk, <span class="s-type">int</span> *def, <span class="s-type">char</span> name[]) {</span></div>
+<div class="code-line"><span class="ln">102</span><span class="lc">    <span class="s-type">char</span> *names[] = {<span class="s-str">"슬라임"</span>,<span class="s-str">"고블린"</span>,<span class="s-str">"오크"</span>,<span class="s-str">"다크나이트"</span>,<span class="s-str">"드래곤"</span>};</span></div>
+<div class="code-line"><span class="ln">103</span><span class="lc">    <span class="s-type">int</span> hpArr[]  = {<span class="s-num">30</span>, <span class="s-num">50</span>, <span class="s-num">80</span>, <span class="s-num">120</span>, <span class="s-num">200</span>};</span></div>
+<div class="code-line"><span class="ln">104</span><span class="lc">    <span class="s-type">int</span> atkArr[] = {<span class="s-num">7</span>, <span class="s-num">12</span>, <span class="s-num">18</span>, <span class="s-num">25</span>, <span class="s-num">35</span>};</span></div>
+<div class="code-line"><span class="ln">105</span><span class="lc">    <span class="s-type">int</span> defArr[] = {<span class="s-num">2</span>, <span class="s-num">4</span>, <span class="s-num">6</span>, <span class="s-num">8</span>, <span class="s-num">12</span>};</span></div>
+<div class="code-line"><span class="ln">106</span><span class="lc">    <span class="s-kw">if</span> (stage &gt;= <span class="s-num">5</span>) <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">107</span><span class="lc">    *hp = hpArr[stage]; *atk = atkArr[stage]; *def = defArr[stage];</span></div>
+<div class="code-line"><span class="ln">108</span><span class="lc">    <span class="s-kw">for</span> (<span class="s-type">int</span> i = <span class="s-num">0</span>; names[stage][i]; i++) name[i] = names[stage][i];</span></div>
+<div class="code-line"><span class="ln">109</span><span class="lc">    name[<span class="s-num">10</span>] = '\<span class="s-num">0</span>';</span></div>
+<div class="code-line"><span class="ln">110</span><span class="lc">    <span class="s-cm">/* 간단한 문자열 복사 */</span></span></div>
+<div class="code-line"><span class="ln">111</span><span class="lc">    <span class="s-type">int</span> i = <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">112</span><span class="lc">    <span class="s-kw">while</span> (names[stage][i]) { name[i] = names[stage][i]; i++; }</span></div>
+<div class="code-line"><span class="ln">113</span><span class="lc">    name[i] = '\<span class="s-num">0</span>';</span></div>
+<div class="code-line"><span class="ln">114</span><span class="lc">    <span class="s-kw">return</span> <span class="s-num">1</span>;</span></div>
+<div class="code-line"><span class="ln">115</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">116</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">117</span><span class="lc"><span class="s-cm">/* === 전적 === */</span></span></div>
+<div class="code-line"><span class="ln">118</span><span class="lc"><span class="s-type">void</span> <span class="s-fn">showRecord</span>(<span class="s-type">int</span> wins, <span class="s-type">int</span> losses, <span class="s-type">int</span> dmgDealt, <span class="s-type">int</span> dmgTaken) {</span></div>
+<div class="code-line"><span class="ln">119</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"\n===== 전적 ====="</span>);</span></div>
+<div class="code-line"><span class="ln">120</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"\n승리: %d 패배: %d\n"</span>, wins, losses);</span></div>
+<div class="code-line"><span class="ln">121</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"총 가한 데미지: %d\n"</span>, dmgDealt);</span></div>
+<div class="code-line"><span class="ln">122</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"총 받은 데미지: %d\n"</span>, dmgTaken);</span></div>
+<div class="code-line"><span class="ln">123</span><span class="lc">    <span class="s-kw">if</span> (wins + losses &gt; <span class="s-num">0</span>)</span></div>
+<div class="code-line"><span class="ln">124</span><span class="lc">        <span class="s-fn">printf</span>(<span class="s-str">"승률: %.1f%%\n"</span>, (<span class="s-type">double</span>)wins/(wins+losses)*<span class="s-num">100</span>);</span></div>
+<div class="code-line"><span class="ln">125</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">126</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">127</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">main</span>(<span class="s-type">void</span>) {</span></div>
+<div class="code-line"><span class="ln">128</span><span class="lc">    <span class="s-fn">srand</span>(<span class="s-fn">time</span>(<span class="s-kw">NULL</span>));</span></div>
+<div class="code-line"><span class="ln">129</span><span class="lc">    <span class="s-type">int</span> hp=<span class="s-num">80</span>, max=<span class="s-num">80</span>, atk=<span class="s-num">14</span>, def=<span class="s-num">4</span>, lv=<span class="s-num">1</span>;</span></div>
+<div class="code-line"><span class="ln">130</span><span class="lc">    <span class="s-type">int</span> mp=<span class="s-num">30</span>, mpMax=<span class="s-num">30</span>, gold=<span class="s-num">50</span>, exp=<span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">131</span><span class="lc">    <span class="s-type">int</span> items[<span class="s-num">3</span>] = {<span class="s-num">2</span>, <span class="s-num">2</span>, <span class="s-num">1</span>};</span></div>
+<div class="code-line"><span class="ln">132</span><span class="lc">    <span class="s-type">int</span> wins=<span class="s-num">0</span>, losses=<span class="s-num">0</span>, totalDmg=<span class="s-num">0</span>, totalTaken=<span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">133</span><span class="lc">    <span class="s-type">int</span> stage = <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">134</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">135</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"========= 텍스트 RPG v3 =========\n"</span>);</span></div>
+<div class="code-line"><span class="ln">136</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">137</span><span class="lc">    <span class="s-kw">while</span> (stage &lt; <span class="s-num">5</span> &amp;&amp; <span class="s-fn">isAlive</span>(hp)) {</span></div>
+<div class="code-line"><span class="ln">138</span><span class="lc">        <span class="s-cm">/* 전투 사이 메뉴 */</span></span></div>
+<div class="code-line"><span class="ln">139</span><span class="lc">        <span class="s-fn">printf</span>(<span class="s-str">"\n--- 마을 ---\n"</span>);</span></div>
+<div class="code-line"><span class="ln">140</span><span class="lc">        <span class="s-fn">showStatus</span>(hp, max, atk, def, lv, gold);</span></div>
+<div class="code-line"><span class="ln">141</span><span class="lc">        <span class="s-fn">printf</span>(<span class="s-str">"1.탐험  2.상점  3.아이템  4.전적  0.포기\n선택: "</span>);</span></div>
+<div class="code-line"><span class="ln">142</span><span class="lc">        <span class="s-type">int</span> menu; <span class="s-fn">scanf</span>(<span class="s-str">"%d"</span>, &amp;menu);</span></div>
+<div class="code-line"><span class="ln">143</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">144</span><span class="lc">        <span class="s-kw">if</span> (menu == <span class="s-num">2</span>) { <span class="s-fn">shop</span>(&amp;gold, items); <span class="s-kw">continue</span>; }</span></div>
+<div class="code-line"><span class="ln">145</span><span class="lc">        <span class="s-kw">if</span> (menu == <span class="s-num">3</span>) { <span class="s-fn">showInventory</span>(items, <span class="s-num">3</span>); <span class="s-kw">continue</span>; }</span></div>
+<div class="code-line"><span class="ln">146</span><span class="lc">        <span class="s-kw">if</span> (menu == <span class="s-num">4</span>) { <span class="s-fn">showRecord</span>(wins,losses,totalDmg,totalTaken); <span class="s-kw">continue</span>; }</span></div>
+<div class="code-line"><span class="ln">147</span><span class="lc">        <span class="s-kw">if</span> (menu == <span class="s-num">0</span>) <span class="s-kw">break</span>;</span></div>
+<div class="code-line"><span class="ln">148</span><span class="lc">        <span class="s-kw">if</span> (menu != <span class="s-num">1</span>) <span class="s-kw">continue</span>;</span></div>
+<div class="code-line"><span class="ln">149</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">150</span><span class="lc">        <span class="s-cm">/* 전투 시작 */</span></span></div>
+<div class="code-line"><span class="ln">151</span><span class="lc">        <span class="s-type">char</span> mName[<span class="s-num">20</span>];</span></div>
+<div class="code-line"><span class="ln">152</span><span class="lc">        <span class="s-type">int</span> mHp, mAtk, mDef;</span></div>
+<div class="code-line"><span class="ln">153</span><span class="lc">        <span class="s-kw">if</span> (!<span class="s-fn">getMonster</span>(stage, &amp;mHp, &amp;mAtk, &amp;mDef, mName)) <span class="s-kw">break</span>;</span></div>
+<div class="code-line"><span class="ln">154</span><span class="lc">        <span class="s-type">int</span> mMax = mHp;</span></div>
+<div class="code-line"><span class="ln">155</span><span class="lc">        <span class="s-type">int</span> battle = <span class="s-fn">getBattleCount</span>();</span></div>
+<div class="code-line"><span class="ln">156</span><span class="lc">        <span class="s-fn">printf</span>(<span class="s-str">"\n*** 전투 #%d: %s 출현! ***\n"</span>, battle, mName);</span></div>
+<div class="code-line"><span class="ln">157</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">158</span><span class="lc">        <span class="s-kw">while</span> (<span class="s-fn">isAlive</span>(hp) &amp;&amp; <span class="s-fn">isAlive</span>(mHp)) {</span></div>
+<div class="code-line"><span class="ln">159</span><span class="lc">            <span class="s-fn">showStatus</span>(hp, max, atk, def, lv, gold);</span></div>
+<div class="code-line"><span class="ln">160</span><span class="lc">            <span class="s-fn">printf</span>(<span class="s-str">"[%s] HP:%d/%d\n"</span>, mName, mHp, mMax);</span></div>
+<div class="code-line"><span class="ln">161</span><span class="lc">            <span class="s-fn">printf</span>(<span class="s-str">"1.공격 2.스킬(MP%d) 3.방어 4.아이템: "</span>, mp);</span></div>
+<div class="code-line"><span class="ln">162</span><span class="lc">            <span class="s-type">int</span> ch; <span class="s-fn">scanf</span>(<span class="s-str">"%d"</span>, &amp;ch);</span></div>
+<div class="code-line"><span class="ln">163</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">164</span><span class="lc">            <span class="s-type">int</span> dmg = <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">165</span><span class="lc">            <span class="s-kw">if</span> (ch == <span class="s-num">1</span>) {</span></div>
+<div class="code-line"><span class="ln">166</span><span class="lc">                dmg = <span class="s-fn">defend</span>(<span class="s-fn">critAttack</span>(atk), mDef);</span></div>
+<div class="code-line"><span class="ln">167</span><span class="lc">                mHp -= dmg;</span></div>
+<div class="code-line"><span class="ln">168</span><span class="lc">                totalDmg += dmg;</span></div>
+<div class="code-line"><span class="ln">169</span><span class="lc">                <span class="s-fn">printf</span>(<span class="s-str">"→ %d 데미지!\n"</span>, dmg);</span></div>
+<div class="code-line"><span class="ln">170</span><span class="lc">            } <span class="s-kw">else</span> <span class="s-kw">if</span> (ch == <span class="s-num">2</span>) {</span></div>
+<div class="code-line"><span class="ln">171</span><span class="lc">                <span class="s-type">int</span> sd = <span class="s-fn">skillAttack</span>(atk, &amp;mp, <span class="s-num">10</span>);</span></div>
+<div class="code-line"><span class="ln">172</span><span class="lc">                <span class="s-kw">if</span> (sd &gt; <span class="s-num">0</span>) {</span></div>
+<div class="code-line"><span class="ln">173</span><span class="lc">                    dmg = <span class="s-fn">defend</span>(sd, mDef);</span></div>
+<div class="code-line"><span class="ln">174</span><span class="lc">                    mHp -= dmg;</span></div>
+<div class="code-line"><span class="ln">175</span><span class="lc">                    totalDmg += dmg;</span></div>
+<div class="code-line"><span class="ln">176</span><span class="lc">                    <span class="s-fn">printf</span>(<span class="s-str">"→ 스킬 공격! %d 데미지!\n"</span>, dmg);</span></div>
+<div class="code-line"><span class="ln">177</span><span class="lc">                }</span></div>
+<div class="code-line"><span class="ln">178</span><span class="lc">            } <span class="s-kw">else</span> <span class="s-kw">if</span> (ch == <span class="s-num">3</span>) {</span></div>
+<div class="code-line"><span class="ln">179</span><span class="lc">                def += <span class="s-num">5</span>;</span></div>
+<div class="code-line"><span class="ln">180</span><span class="lc">                <span class="s-fn">printf</span>(<span class="s-str">"→ 방어 태세! (DEF+5)\n"</span>);</span></div>
+<div class="code-line"><span class="ln">181</span><span class="lc">            } <span class="s-kw">else</span> <span class="s-kw">if</span> (ch == <span class="s-num">4</span>) {</span></div>
+<div class="code-line"><span class="ln">182</span><span class="lc">                <span class="s-type">int</span> used = <span class="s-fn">useItem</span>(items, &amp;hp, max, &amp;atk, &amp;def);</span></div>
+<div class="code-line"><span class="ln">183</span><span class="lc">                <span class="s-kw">if</span> (used == <span class="s-num">2</span>) { mp += <span class="s-num">20</span>; <span class="s-kw">if</span>(mp&gt;mpMax)mp=mpMax; <span class="s-fn">printf</span>(<span class="s-str">"MP+20\n"</span>); }</span></div>
+<div class="code-line"><span class="ln">184</span><span class="lc">                <span class="s-kw">if</span> (used == <span class="s-num">3</span> &amp;&amp; <span class="s-fn">isAlive</span>(mHp)) {</span></div>
+<div class="code-line"><span class="ln">185</span><span class="lc">                    mHp -= <span class="s-num">50</span>; totalDmg += <span class="s-num">50</span>;</span></div>
+<div class="code-line"><span class="ln">186</span><span class="lc">                    <span class="s-fn">printf</span>(<span class="s-str">"폭탄! 50 데미지!\n"</span>);</span></div>
+<div class="code-line"><span class="ln">187</span><span class="lc">                }</span></div>
+<div class="code-line"><span class="ln">188</span><span class="lc">            }</span></div>
+<div class="code-line"><span class="ln">189</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">190</span><span class="lc">            <span class="s-kw">if</span> (<span class="s-fn">isAlive</span>(mHp)) {</span></div>
+<div class="code-line"><span class="ln">191</span><span class="lc">                <span class="s-type">int</span> md = <span class="s-fn">defend</span>(<span class="s-fn">attack</span>(mAtk), def);</span></div>
+<div class="code-line"><span class="ln">192</span><span class="lc">                hp -= md;</span></div>
+<div class="code-line"><span class="ln">193</span><span class="lc">                totalTaken += md;</span></div>
+<div class="code-line"><span class="ln">194</span><span class="lc">                <span class="s-fn">printf</span>(<span class="s-str">"→ %s의 반격! %d 데미지!\n"</span>, mName, md);</span></div>
+<div class="code-line"><span class="ln">195</span><span class="lc">            }</span></div>
+<div class="code-line"><span class="ln">196</span><span class="lc">            <span class="s-kw">if</span> (ch == <span class="s-num">3</span>) def -= <span class="s-num">5</span>;</span></div>
+<div class="code-line"><span class="ln">197</span><span class="lc">        }</span></div>
+<div class="code-line"><span class="ln">198</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">199</span><span class="lc">        <span class="s-kw">if</span> (<span class="s-fn">isAlive</span>(hp)) {</span></div>
+<div class="code-line"><span class="ln">200</span><span class="lc">            wins++;</span></div>
+<div class="code-line"><span class="ln">201</span><span class="lc">            <span class="s-type">int</span> reward = (mAtk + mDef) * <span class="s-num">3</span>;</span></div>
+<div class="code-line"><span class="ln">202</span><span class="lc">            gold += reward;</span></div>
+<div class="code-line"><span class="ln">203</span><span class="lc">            <span class="s-type">int</span> e = <span class="s-fn">calcExp</span>(mAtk, mDef);</span></div>
+<div class="code-line"><span class="ln">204</span><span class="lc">            exp += e;</span></div>
+<div class="code-line"><span class="ln">205</span><span class="lc">            <span class="s-fn">printf</span>(<span class="s-str">"승리! 골드+%d 경험치+%d\n"</span>, reward, e);</span></div>
+<div class="code-line"><span class="ln">206</span><span class="lc">            <span class="s-kw">if</span> (exp &gt;= lv * <span class="s-num">40</span>) {</span></div>
+<div class="code-line"><span class="ln">207</span><span class="lc">                <span class="s-fn">levelUp</span>(&amp;lv, &amp;atk, &amp;def, &amp;max, &amp;hp);</span></div>
+<div class="code-line"><span class="ln">208</span><span class="lc">                mp = mpMax; exp = <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">209</span><span class="lc">            }</span></div>
+<div class="code-line"><span class="ln">210</span><span class="lc">            stage++;</span></div>
+<div class="code-line"><span class="ln">211</span><span class="lc">        } <span class="s-kw">else</span> {</span></div>
+<div class="code-line"><span class="ln">212</span><span class="lc">            losses++;</span></div>
+<div class="code-line"><span class="ln">213</span><span class="lc">        }</span></div>
+<div class="code-line"><span class="ln">214</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">215</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">216</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"\n========= 게임 종료 =========\n"</span>);</span></div>
+<div class="code-line"><span class="ln">217</span><span class="lc">    <span class="s-kw">if</span> (stage &gt;= <span class="s-num">5</span>) <span class="s-fn">printf</span>(<span class="s-str">"*** 모든 몬스터를 처치! 용사의 전설! ***\n"</span>);</span></div>
+<div class="code-line"><span class="ln">218</span><span class="lc">    <span class="s-fn">showRecord</span>(wins, losses, totalDmg, totalTaken);</span></div>
+<div class="code-line"><span class="ln">219</span><span class="lc">    <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">220</span><span class="lc">}</span></div>
+</div>
+</div>
+<h2 class="section-title">에러 체험</h2>
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc"><span class="s-cm">// 에러 1: 포인터 없이 HP 변경 시도</span></span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc"><span class="s-type">void</span> <span class="s-fn">heal</span>(<span class="s-type">int</span> hp, <span class="s-type">int</span> amount) {</span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc">    hp += amount;  <span class="s-cm">// 원본 변경 안 됨 (Call by Value)</span></span></div>
+<div class="code-line"><span class="ln">4</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">5</span><span class="lc"><span class="s-cm">// 수정: void heal(int *hp, int amount) { *hp += amount; }</span></span></div>
+<div class="code-line"><span class="ln">6</span><span class="lc"><span class="s-cm">// 또는: int heal(int hp, int amount) { return hp + amount; }</span></span></div>
+<div class="code-line"><span class="ln">7</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">8</span><span class="lc"><span class="s-cm">// 에러 2: static 변수 초기화 오해</span></span></div>
+<div class="code-line"><span class="ln">9</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">getCount</span>(<span class="s-type">void</span>) {</span></div>
+<div class="code-line"><span class="ln">10</span><span class="lc">    <span class="s-kw">static</span> <span class="s-type">int</span> c = <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">11</span><span class="lc">    c = <span class="s-num">0</span>;   <span class="s-cm">// 매번 0으로 초기화 → 항상 1 반환</span></span></div>
+<div class="code-line"><span class="ln">12</span><span class="lc">    <span class="s-kw">return</span> ++c;</span></div>
+<div class="code-line"><span class="ln">13</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">14</span><span class="lc"><span class="s-cm">// 수정: static int c = 0; 선언만 하고, c = 0 제거</span></span></div>
+<div class="code-line"><span class="ln">15</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">16</span><span class="lc"><span class="s-cm">// 에러 3: 배열 크기를 함수 안에서 계산</span></span></div>
+<div class="code-line"><span class="ln">17</span><span class="lc"><span class="s-type">void</span> <span class="s-fn">show</span>(<span class="s-type">int</span> items[]) {</span></div>
+<div class="code-line"><span class="ln">18</span><span class="lc">    <span class="s-type">int</span> size = <span class="s-kw">sizeof</span>(items) / <span class="s-kw">sizeof</span>(items[<span class="s-num">0</span>]); <span class="s-cm">// 항상 1 또는 2</span></span></div>
+<div class="code-line"><span class="ln">19</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">20</span><span class="lc"><span class="s-cm">// 수정: void show(int items[], int size) — 크기를 매개변수로 전달</span></span></div>
+</div>
+</div>
+<h2 class="section-title">설명하기</h2>
+<table class="trace"><thead><tr><th style="width:40px">줄</th><th style="width:220px">코드</th><th>역할</th></tr></thead><tbody></tbody></table>
+<h2 class="section-title">예제</h2>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 1</span><p style="margin:0;font-size:14px">HP, ATK, DEF를 받아 상태를 출력하는 void showStatus 함수를 작성하십시오.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 2</span><p style="margin:0;font-size:14px">공격력을 받아 데미지(공격력 + 0~4 랜덤)를 반환하는 int attack 함수를 작성하십시오.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 3</span><p style="margin:0;font-size:14px">HP가 0 이하이면 0, 아니면 1을 반환하는 int isAlive 함수를 작성하고 테스트하십시오.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 4</span><p style="margin:0;font-size:14px">HP포션 3개, MP포션 2개를 배열로 관리하고, 사용하면 수량이 줄어드는 useItem 함수를 작성하십시오.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 5</span><p style="margin:0;font-size:14px">static 변수를 사용하여 전투 횟수를 누적하는 getBattleCount 함수를 작성하십시오.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 6</span><p style="margin:0;font-size:14px">경험치와 레벨을 받아 레벨업 가능 여부를 판정하는 canLevelUp 함수를 작성하십시오.<br>(조건: 경험치 >= 레벨 * 30)</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 7</span><p style="margin:0;font-size:14px">20% 확률로 2배 데미지를 주는 크리티컬 공격 함수를 구현하십시오.<br>(rand() % 100 < 20이면 크리티컬)</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 8</span><p style="margin:0;font-size:14px">몬스터 5종의 스탯을 배열로 관리하고, 스테이지 번호에 따라 몬스터를 생성하는 함수를 작성하십시오.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 9</span><p style="margin:0;font-size:14px">상점 시스템(아이템 구매, 골드 차감)을 함수로 분리하여 구현하십시오.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 10</span><p style="margin:0;font-size:14px">전투, 아이템, 상점, 레벨업, 전적 통계를 모두 함수로 분리한 완전한 RPG를 작성하십시오.</p></div>
+<h2 class="section-title">대회 기출</h2>
+<h2 class="section-title">요약</h2>
+<div class="warmup-box"><div class="warmup-title">핵심 정리</div><div class="wq"><b>1.</b> void 함수: 상태 표시, 전적 출력 등 출력 전용</div><div class="wq"><b>2.</b> return 함수: 데미지 계산, 판정 등 값 반환</div><div class="wq"><b>3.</b> 배열 전달: 인벤토리(items[]) 관리</div><div class="wq"><b>4.</b> static 변수: 전투 횟수 누적 (getBattleCount)</div><div class="wq"><b>5.</b> 프로토타입: 모든 함수를 main 위에 선언</div><div class="wq"><b>6.</b> 함수 분리 원칙: 한 함수 = 한 기능</div></div>
+<h2 class="section-title">다음 유닛으로</h2>
+<div class="note-box"><span class="note-label"></span>
+<div style="font-weight:700;margin-bottom:6px;color:#1a2e4a">Layer 7 완료!</div>함수의 모든 것을 배우고 텍스트 RPG로 종합 실습을 마쳤습니다. 다음 Layer 8에서는 C언어의 핵심인 포인터를 배웁니다. 메모리 주소를 직접 다루는 강력한 도구, 포인터의 세계가 시작됩니다.</div>
+
+    <span class="page-num">2</span>
+  </div>
+</div>
+<div class="page">
+  <div class="content-page">
+    <div class="unit-header-bar">
+      <span class="unit-tag">UNIT 14</span>
+      <span class="unit-title-sm">3과목 연결</span>
+    </div>
+<h2 class="section-title">10축 매핑</h2>
+<div class="note-box"><span class="note-label"></span>
+<div style="font-weight:700;margin-bottom:6px;color:#1a2e4a">이 유닛에서 키운 역량</div>C언어 ★★★★★ — void/return/매개변수/배열전달/static/프로토타입 등 함수의 모든 기법을 종합했습니다.<br>컴퓨팅사고력 ★★★★★ — 게임 시스템을 기능별로 분해하고 함수로 구조화하는 설계력을 완성했습니다.<br>디버깅 ★★★★★ — Call by Value 함정, static 초기화 실수, sizeof 트랩을 종합 체험했습니다.<br>KOI ★★★★☆ — 시뮬레이션 + 함수 분리 구현력을 강화했습니다.</div>
+
+    <span class="page-num">3</span>
+  </div>
+</div>
+<div class="page contest-page-wrap">
+  <div class="chapter-page">
+    <div class="chapter-sidebar"></div>
+    <div class="chapter-accent-bar"></div>
+    <div style="flex:1; min-width:0; padding:50px 50px 40px 45px; position:relative;">
+      <div class="problems-chapter-ref">Chapter 14: 텍스트 RPG (함수 종합 프로젝트)</div>
+      <h2 class="problems-title">대회 문제 (Online Judge)</h2>
+      <p style="font-size:14px; color:#6b7280; margin:-8px 0 24px;">실제 온라인 저지에 출제된 문제입니다. 아래에 코드를 작성한 뒤, 사이트에 제출하여 채점하십시오.</p>
+
+        <div class="contest-card">
+          <div class="contest-header">
+            <div class="contest-num-source">
+              <span class="contest-num">1번</span>
+              <span class="contest-source">백준 15596</span>
+            </div>
+            <span class="diff diff-mid">대회</span>
+          </div>
+          <div class="contest-body">
+            <p class="contest-question">정수 N개의 합을 반환하는 함수를 작성하십시오.</p>
+            
+            <div class="contest-write-area">
+              <div class="contest-write-label">코드 작성</div>
+              <textarea class="contest-textarea" rows="12" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="contest-card">
+          <div class="contest-header">
+            <div class="contest-num-source">
+              <span class="contest-num">2번</span>
+              <span class="contest-source">백준 4673</span>
+            </div>
+            <span class="diff diff-mid">대회</span>
+          </div>
+          <div class="contest-body">
+            <p class="contest-question">셀프 넘버를 출력하십시오.</p>
+            
+            <div class="contest-write-area">
+              <div class="contest-write-label">코드 작성</div>
+              <textarea class="contest-textarea" rows="12" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="contest-card">
+          <div class="contest-header">
+            <div class="contest-num-source">
+              <span class="contest-num">3번</span>
+              <span class="contest-source">백준 1065</span>
+            </div>
+            <span class="diff diff-mid">대회</span>
+          </div>
+          <div class="contest-body">
+            <p class="contest-question">1부터 N까지의 한수의 개수를 구하십시오.</p>
+            
+            <div class="contest-write-area">
+              <div class="contest-write-label">코드 작성</div>
+              <textarea class="contest-textarea" rows="12" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="contest-card">
+          <div class="contest-header">
+            <div class="contest-num-source">
+              <span class="contest-num">4번</span>
+              <span class="contest-source">백준 4344</span>
+            </div>
+            <span class="diff diff-mid">대회</span>
+          </div>
+          <div class="contest-body">
+            <p class="contest-question">각 케이스에서 평균을 넘는 학생 비율을 출력하십시오.</p>
+            
+            <div class="contest-write-area">
+              <div class="contest-write-label">코드 작성</div>
+              <textarea class="contest-textarea" rows="12" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="contest-card">
+          <div class="contest-header">
+            <div class="contest-num-source">
+              <span class="contest-num">5번</span>
+              <span class="contest-source">백준 1259</span>
+            </div>
+            <span class="diff diff-mid">대회</span>
+          </div>
+          <div class="contest-body">
+            <p class="contest-question">주어진 수가 팰린드롬수인지 판별하십시오.</p>
+            
+            <div class="contest-write-area">
+              <div class="contest-write-label">코드 작성</div>
+              <textarea class="contest-textarea" rows="12" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="contest-card">
+          <div class="contest-header">
+            <div class="contest-num-source">
+              <span class="contest-num">6번</span>
+              <span class="contest-source">백준 1436</span>
+            </div>
+            <span class="diff diff-mid">대회</span>
+          </div>
+          <div class="contest-body">
+            <p class="contest-question">666이 포함된 N번째 수를 찾으십시오.</p>
+            
+            <div class="contest-write-area">
+              <div class="contest-write-label">코드 작성</div>
+              <textarea class="contest-textarea" rows="12" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="contest-card">
+          <div class="contest-header">
+            <div class="contest-num-source">
+              <span class="contest-num">7번</span>
+              <span class="contest-source">백준 2941</span>
+            </div>
+            <span class="diff diff-mid">대회</span>
+          </div>
+          <div class="contest-body">
+            <p class="contest-question">크로아티아 알파벳의 개수를 세십시오.</p>
+            
+            <div class="contest-write-area">
+              <div class="contest-write-label">코드 작성</div>
+              <textarea class="contest-textarea" rows="12" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="contest-card">
+          <div class="contest-header">
+            <div class="contest-num-source">
+              <span class="contest-num">8번</span>
+              <span class="contest-source">백준 1018</span>
+            </div>
+            <span class="diff diff-mid">대회</span>
+          </div>
+          <div class="contest-body">
+            <p class="contest-question">체스판을 다시 칠할 때 최소 횟수를 구하십시오.</p>
+            
+            <div class="contest-write-area">
+              <div class="contest-write-label">코드 작성</div>
+              <textarea class="contest-textarea" rows="12" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="contest-card">
+          <div class="contest-header">
+            <div class="contest-num-source">
+              <span class="contest-num">9번</span>
+              <span class="contest-source">백준 2292</span>
+            </div>
+            <span class="diff diff-mid">대회</span>
+          </div>
+          <div class="contest-body">
+            <p class="contest-question">벌집에서 방 번호까지의 최소 이동 횟수를 구하십시오.</p>
+            
+            <div class="contest-write-area">
+              <div class="contest-write-label">코드 작성</div>
+              <textarea class="contest-textarea" rows="12" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="contest-card">
+          <div class="contest-header">
+            <div class="contest-num-source">
+              <span class="contest-num">10번</span>
+              <span class="contest-source">백준 1476</span>
+            </div>
+            <span class="diff diff-mid">대회</span>
+          </div>
+          <div class="contest-body">
+            <p class="contest-question">E S M이 주어졌을 때 연도를 구하십시오.</p>
+            
+            <div class="contest-write-area">
+              <div class="contest-write-label">코드 작성</div>
+              <textarea class="contest-textarea" rows="12" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+            </div>
+          </div>
+        </div>
+      <span class="page-num">4</span>
+    </div>
+  </div>
+</div>
+</body>
+</html>

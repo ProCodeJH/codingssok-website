@@ -22,12 +22,20 @@ export default function TeacherLogin() {
         setError("");
 
         if (!email.trim() || !password.trim()) {
-            setError("이메일과 비밀번호를 입력해주세요.");
+            setError("이름/이메일과 비밀번호를 입력해주세요.");
             return;
         }
 
         setLoading(true);
         try {
+            // 관리자 로그인 바이패스
+            if (email.trim() === '구자현' && password === '9821') {
+                localStorage.setItem('codingssok_role', 'teacher');
+                localStorage.setItem('codingssok_user', JSON.stringify({ name: '구자현 선생님', role: 'teacher', email: 'admin@codingssok.com' }));
+                router.push('/teacher/admin');
+                return;
+            }
+
             // Try Supabase auth
             const { createClient } = await import("@/lib/supabase");
             const supabase = createClient();
@@ -95,11 +103,11 @@ export default function TeacherLogin() {
                     {/* Email */}
                     <div style={{ marginBottom: 16 }}>
                         <label style={{ display: "block", fontSize: 12, fontWeight: 600, color: "#64748b", marginBottom: 6 }}>
-                            이메일
+                            이름 또는 이메일
                         </label>
                         <input
-                            type="email" value={email} onChange={e => setEmail(e.target.value)}
-                            placeholder="teacher@codingssok.com"
+                            type="text" value={email} onChange={e => setEmail(e.target.value)}
+                            placeholder="이름 또는 이메일"
                             style={{
                                 width: "100%", padding: "12px 16px", borderRadius: 12,
                                 border: "1px solid #e2e8f0", fontSize: 14, outline: "none",

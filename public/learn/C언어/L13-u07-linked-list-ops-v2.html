@@ -1,0 +1,1401 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>코딩쏙 교재 — 연결 리스트② — 삽입, 삭제, 탐색</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+
+  :root {
+    --navy: #1a2e4a;
+    --navy-mid: #2c4a6e;
+    --navy-light: #3d6590;
+    --orange: #e07830;
+    --orange-light: #f5e6d8;
+    --white: #ffffff;
+    --bg: #f7f8fa;
+    --bg-warm: #faf9f7;
+    --gray-50: #f9fafb;
+    --gray-100: #f3f4f6;
+    --gray-200: #e5e7eb;
+    --gray-300: #d1d5db;
+    --gray-400: #9ca3af;
+    --gray-500: #6b7280;
+    --gray-600: #4b5563;
+    --gray-700: #374151;
+    --gray-800: #1f2937;
+    --text: #2d3748;
+    --green: #16a34a;
+    --green-bg: #dcfce7;
+    --red: #dc2626;
+    --red-bg: #fee2e2;
+    --blue: #2563eb;
+    --blue-bg: #dbeafe;
+    --yellow-bg: #fef9c3;
+    --font: 'Noto Sans KR', sans-serif;
+    --mono: 'JetBrains Mono', 'Consolas', monospace;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: var(--font); background: #e8eaed; font-size: 15px; }
+
+  /* ========== PAGE ========== */
+  .page {
+    width: 210mm;
+    min-height: 295mm;
+    margin: 24px auto;
+    background: var(--white);
+    box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* ========== PAGE 1: CHAPTER START ========== */
+  .chapter-page {
+    display: flex;
+    min-height: 295mm;
+  }
+
+  .chapter-sidebar {
+    width: 10px;
+    background: var(--navy);
+    flex-shrink: 0;
+  }
+
+  .chapter-accent-bar {
+    width: 7px;
+    background: var(--orange);
+    flex-shrink: 0;
+  }
+
+  .chapter-body {
+    flex: 1;
+    padding: 70px 65px 50px 55px;
+    position: relative;
+  }
+
+  .chapter-watermark {
+    position: absolute;
+    top: -10px;
+    right: -15px;
+    font-size: 280px;
+    font-weight: 900;
+    color: rgba(180,195,212,0.35);
+    line-height: 1;
+    pointer-events: none;
+    letter-spacing: -10px;
+  }
+
+  .chapter-label {
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--navy-mid);
+    letter-spacing: 2px;
+    margin-bottom: 4px;
+  }
+
+  .chapter-title {
+    font-size: 44px;
+    font-weight: 900;
+    color: var(--navy);
+    line-height: 1.15;
+    margin-bottom: 12px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .chapter-sub {
+    font-size: 16px;
+    color: var(--gray-500);
+    font-weight: 400;
+    margin-bottom: 20px;
+    padding-bottom: 28px;
+    border-bottom: 1px solid var(--gray-200);
+  }
+
+  /* Learning objectives */
+  .obj-title {
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--navy);
+    margin-bottom: 16px;
+    margin-top: 32px;
+  }
+
+  .obj-list {
+    list-style: none;
+    margin-bottom: 40px;
+  }
+
+  .obj-list li {
+    padding: 5px 0 5px 24px;
+    position: relative;
+    font-size: 15px;
+    color: var(--gray-700);
+    line-height: 1.6;
+  }
+
+  .obj-list li::before {
+    content: '•';
+    position: absolute;
+    left: 8px;
+    color: var(--navy-mid);
+    font-weight: 700;
+  }
+
+  /* Prerequisites flow */
+  .prereq-title {
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--navy);
+    margin-bottom: 18px;
+  }
+
+  .prereq-flow {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    margin-bottom: 44px;
+  }
+
+  .prereq-item {
+    padding: 9px 22px;
+    border: 1.5px solid var(--gray-300);
+    border-radius: 50px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--gray-600);
+    background: var(--white);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+  }
+
+  .prereq-item.current {
+    border-color: var(--navy);
+    color: var(--navy);
+    font-weight: 700;
+    background: #edf2f7;
+    box-shadow: 0 2px 6px rgba(26,46,74,0.12);
+  }
+
+  .prereq-arrow {
+    width: 36px;
+    text-align: center;
+    color: var(--gray-300);
+    font-size: 18px;
+    font-weight: 300;
+  }
+
+  /* Predict box */
+  .predict-box {
+    background: var(--gray-50);
+    border: 1.5px solid var(--gray-200);
+    border-radius: 12px;
+    padding: 24px 28px;
+  }
+
+  .predict-label {
+    display: inline-block;
+    background: var(--orange);
+    color: var(--white);
+    font-size: 12px;
+    font-weight: 600;
+    padding: 3px 12px;
+    border-radius: 4px;
+    margin-bottom: 14px;
+    letter-spacing: 0.5px;
+  }
+
+  .predict-q {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--navy);
+    margin-bottom: 16px;
+  }
+
+  .predict-code {
+    background: var(--white);
+    border: 1px solid var(--gray-200);
+    border-radius: 8px;
+    padding: 14px 18px;
+    font-family: var(--mono);
+    font-size: 13px;
+    line-height: 1.65;
+    color: var(--gray-700);
+  }
+
+  /* ========== PAGE 2: CORE CONTENT ========== */
+  .content-page {
+    padding: 55px 65px;
+  }
+
+  .unit-header-bar {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    margin-bottom: 8px;
+  }
+
+  .unit-tag {
+    font-size: 12px;
+    color: var(--orange);
+    font-weight: 600;
+    letter-spacing: 1px;
+  }
+
+  .unit-title-sm {
+    font-size: 14px;
+    color: var(--gray-400);
+    font-weight: 400;
+  }
+
+  .section-title {
+    font-size: 24px;
+    font-weight: 800;
+    color: var(--navy);
+    margin-bottom: 24px;
+    margin-top: 8px;
+    padding-left: 16px;
+    border-left: 5px solid var(--orange);
+  }
+
+  p {
+    font-size: 15.5px;
+    line-height: 1.9;
+    color: var(--text);
+    margin-bottom: 18px;
+  }
+
+  p code {
+    font-family: var(--mono);
+    font-size: 13.5px;
+    background: #f1f3f5;
+    padding: 2px 7px;
+    border-radius: 4px;
+    color: var(--navy);
+    font-weight: 500;
+  }
+
+  /* Code block */
+  .code-wrap {
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    border: 1px solid var(--gray-200);
+    margin: 22px 0;
+  }
+
+  .code-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 9px 18px;
+    background: var(--navy);
+    font-size: 12px;
+  }
+
+  .code-bar-lang {
+    font-family: var(--mono);
+    font-weight: 600;
+    color: var(--white);
+  }
+
+  .code-bar-file {
+    color: rgba(255,255,255,0.6);
+    font-weight: 400;
+  }
+
+  .code-body {
+    background: #f8f9fb;
+    padding: 20px 0;
+    font-family: var(--mono);
+    font-size: 13.5px;
+    line-height: 1.75;
+    border: 1px solid var(--gray-200);
+    border-top: none;
+    border-radius: 0 0 12px 12px;
+  }
+
+  .code-line {
+    display: flex;
+    padding: 0 20px;
+  }
+
+  .code-line:hover {
+    background: #f0f4f8;
+  }
+
+  .code-line.highlighted {
+    background: #fff8e1;
+  }
+
+  .ln {
+    width: 30px;
+    text-align: right;
+    color: #b8bfc8;
+    font-size: 12px;
+    margin-right: 18px;
+    user-select: none;
+    flex-shrink: 0;
+    padding-top: 1px;
+  }
+
+  .lc { flex: 1; }
+
+  /* syntax */
+  .s-pp { color: #8b5cf6; font-weight: 600; }
+  .s-str { color: #d97706; }
+  .s-type { color: #2563eb; font-weight: 500; }
+  .s-kw { color: #7c3aed; font-weight: 500; }
+  .s-fn { color: #059669; font-weight: 500; }
+  .s-num { color: #dc2626; }
+  .s-cm { color: #9ca3af; font-style: italic; }
+
+  /* Output block */
+  .output-wrap {
+    border-radius: 10px;
+    overflow: hidden;
+    margin: 10px 0 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    border: 1px solid #d1d5db;
+  }
+
+  .output-bar {
+    padding: 9px 18px;
+    background: #374151;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--white);
+    letter-spacing: 0.5px;
+  }
+
+  .output-body {
+    padding: 16px 20px;
+    font-family: var(--mono);
+    font-size: 13.5px;
+    line-height: 1.7;
+    color: var(--gray-800);
+    background: #f1f5f9;
+    border: 1px solid var(--gray-200);
+    border-top: none;
+    border-radius: 0 0 10px 10px;
+  }
+
+  /* Callout */
+  .tip {
+    margin: 28px 0;
+    padding: 18px 24px;
+    background: #dbeafe;
+    border-left: 5px solid #2563eb;
+    border-radius: 0 12px 12px 0;
+    font-size: 14.5px;
+    line-height: 1.8;
+    color: var(--text);
+  }
+
+  .tip-label {
+    font-weight: 700;
+    color: #2563eb;
+    font-size: 13px;
+    display: block;
+    margin-bottom: 4px;
+  }
+
+  .warn {
+    margin: 28px 0;
+    padding: 18px 24px;
+    background: #fef3c7;
+    border-left: 5px solid #d97706;
+    border-radius: 0 12px 12px 0;
+    font-size: 14.5px;
+    line-height: 1.8;
+  }
+
+  .warn-label {
+    font-weight: 700;
+    color: #d97706;
+    font-size: 13px;
+    display: block;
+    margin-bottom: 4px;
+  }
+
+  .note-box {
+    margin: 28px 0;
+    padding: 18px 24px;
+    background: #e2e8f0;
+    border-left: 5px solid #64748b;
+    border-radius: 0 12px 12px 0;
+    font-size: 14.5px;
+    line-height: 1.8;
+  }
+
+  .note-label {
+    font-weight: 700;
+    color: var(--gray-600);
+    font-size: 13px;
+    display: block;
+    margin-bottom: 4px;
+  }
+
+  /* Trace table */
+  table.trace {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    margin: 28px 0;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+    font-size: 14px;
+  }
+
+  table.trace th {
+    background: var(--navy);
+    color: var(--white);
+    padding: 10px 16px;
+    text-align: left;
+    font-weight: 500;
+    font-size: 13px;
+  }
+
+  table.trace td {
+    padding: 10px 16px;
+    border-bottom: 1px solid var(--gray-200);
+    color: var(--gray-700);
+  }
+
+  table.trace tr:nth-child(even) td { background: var(--gray-50); }
+  table.trace tr:last-child td { border-bottom: none; }
+
+  table.trace td code {
+    font-family: var(--mono);
+    font-size: 12.5px;
+    background: #eef1f5;
+    padding: 2px 6px;
+    border-radius: 4px;
+    color: var(--navy);
+  }
+
+  /* ========== PAGE 3: PROBLEMS ========== */
+  .problems-header {
+    margin-bottom: 8px;
+  }
+
+  .problems-chapter-ref {
+    font-size: 13px;
+    color: var(--gray-500);
+    margin-bottom: 4px;
+  }
+
+  .problems-title {
+    font-size: 28px;
+    font-weight: 800;
+    color: var(--navy);
+    margin-bottom: 24px;
+  }
+
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 16px;
+  }
+
+  .prob-card {
+    background: var(--white);
+    border: 1px solid var(--gray-200);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 3px 15px rgba(0,0,0,0.06);
+  }
+
+  .prob-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 16px;
+    background: var(--navy);
+  }
+
+  .prob-num {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--white);
+  }
+
+  .diff {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    font-size: 12px;
+    font-weight: 800;
+  }
+
+  .diff-basic { background: #22c55e; color: white; }
+  .diff-mid { background: #f59e0b; color: white; }
+  .diff-hard { background: #ef4444; color: white; }
+
+  .prob-desc {
+    font-size: 13.5px;
+    line-height: 1.65;
+    color: var(--gray-600);
+    margin-bottom: 10px;
+    padding: 14px 16px 0;
+  }
+
+  .prob-code {
+    background: var(--gray-50);
+    border: 1px solid var(--gray-200);
+    border-radius: 6px;
+    padding: 10px 14px;
+    margin: 0 16px 16px;
+    font-family: var(--mono);
+    font-size: 12.5px;
+    line-height: 1.55;
+    color: var(--gray-600);
+  }
+
+  /* Competition section */
+  .comp-section {
+    margin-top: 32px;
+    padding-top: 24px;
+    border-top: 2px solid var(--navy);
+  }
+
+  .comp-title {
+    font-size: 22px;
+    font-weight: 800;
+    color: var(--navy);
+    margin-bottom: 20px;
+  }
+
+  .comp-card {
+    background: var(--white);
+    border: 1.5px solid var(--gray-200);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 18px rgba(0,0,0,0.06);
+  }
+
+  .comp-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 16px;
+    background: #0f766e;
+  }
+
+  .comp-header .comp-name {
+    color: var(--white);
+    font-size: 15px;
+    font-weight: 700;
+    margin: 0;
+  }
+
+  .comp-inner {
+    padding: 14px 18px 18px;
+  }
+
+  .comp-badge {
+    display: inline-block;
+    padding: 3px 12px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 700;
+  }
+
+  .badge-bj { background: #93c5fd; color: #1e3a5f; }
+  .badge-cu { background: #c4b5fd; color: #3b1f7e; }
+  .badge-pg { background: #7dd3fc; color: #0c4a6e; }
+
+  .comp-name {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--navy);
+    margin-bottom: 6px;
+  }
+
+  .comp-desc {
+    font-size: 14px;
+    color: var(--gray-600);
+    line-height: 1.7;
+    margin-bottom: 14px;
+  }
+
+  .io-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+
+  .io-card {
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid var(--gray-200);
+  }
+
+  .io-h {
+    padding: 6px 14px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--gray-600);
+    background: #e2e8f0;
+  }
+
+  .io-c {
+    padding: 10px 14px;
+    font-family: var(--mono);
+    font-size: 13px;
+    line-height: 1.5;
+    background: var(--white);
+  }
+
+  /* ========== DEBUG LAB ========== */
+  .debug-section {
+    margin: 24px 0;
+    border: 2px solid var(--red);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+
+  .debug-bar {
+    background: var(--red);
+    color: var(--white);
+    padding: 10px 20px;
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 1px;
+  }
+
+  .debug-body {
+    padding: 20px;
+    background: #fef2f2;
+  }
+
+  /* 10축 connection */
+  .connect-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 16px;
+    margin: 28px 0;
+  }
+
+  .connect-card {
+    border-radius: 12px;
+    padding: 20px;
+    text-align: center;
+    border: 1px solid var(--gray-200);
+    box-shadow: 0 3px 14px rgba(0,0,0,0.05);
+  }
+
+  .connect-card h5 {
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 8px;
+  }
+
+  .connect-card p {
+    font-size: 13px;
+    margin: 0;
+    color: var(--gray-600);
+    line-height: 1.6;
+  }
+
+  .cc1 { border-top: 3px solid #8b5cf6; }
+  .cc1 h5 { color: #8b5cf6; }
+  .cc2 { border-top: 3px solid var(--green); }
+  .cc2 h5 { color: var(--green); }
+  .cc3 { border-top: 3px solid var(--navy); }
+  .cc3 h5 { color: var(--navy); }
+
+  /* PAGE NUMBER */
+  .page-num {
+    position: absolute;
+    bottom: 20px;
+    right: 30px;
+    font-size: 12px;
+    color: var(--gray-400);
+  }
+
+  /* WARMUP */
+  .warmup-box {
+    background: #e0e7f1;
+    border-radius: 12px;
+    padding: 24px 28px;
+    margin: 28px 0;
+    border: 2px solid #c7d2e0;
+  }
+
+  .warmup-title {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--navy);
+    margin-bottom: 14px;
+  }
+
+  .wq {
+    padding: 9px 16px;
+    background: var(--white);
+    border-radius: 8px;
+    margin-bottom: 8px;
+    font-size: 14px;
+    border: 1px solid var(--gray-200);
+    color: var(--gray-700);
+  }
+
+  .wq b { color: var(--navy); margin-right: 6px; }
+  .wq .hint { color: var(--gray-400); font-size: 13px; }
+
+  /* ===== CONTEST PROBLEMS PAGE ===== */
+  .contest-page-wrap .chapter-page {
+    min-height: auto;
+  }
+
+  .contest-page-wrap .chapter-page > div:last-child {
+    min-width: 0;
+    overflow-wrap: break-word;
+    word-break: break-word;
+  }
+
+  .contest-card {
+    background: white;
+    border: 1.5px solid var(--gray-200);
+    border-radius: 12px;
+    margin-bottom: 28px;
+    overflow: hidden;
+    break-inside: avoid;
+  }
+
+  .contest-header {
+    background: var(--navy);
+    color: white;
+    padding: 14px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .contest-num-source {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .contest-num {
+    font-weight: 700;
+    font-size: 16px;
+  }
+
+  .contest-source {
+    background: rgba(255,255,255,0.15);
+    padding: 3px 10px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 500;
+  }
+
+  .contest-body {
+    padding: 20px 24px 24px;
+  }
+
+  .contest-question {
+    font-size: 15px;
+    line-height: 1.7;
+    color: var(--text);
+    margin: 0 0 16px;
+    word-break: break-word;
+    overflow-wrap: break-word;
+  }
+
+  .contest-expected {
+    background: #1e293b;
+    border-radius: 8px;
+    overflow: hidden;
+    margin-bottom: 20px;
+  }
+
+  .contest-expected-label {
+    background: #334155;
+    color: #94a3b8;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 6px 14px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .contest-expected-body {
+    color: #e2e8f0;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    line-height: 1.6;
+    padding: 12px 16px;
+    margin: 0;
+    white-space: pre;
+  }
+
+  .contest-write-area {
+    border: 2px dashed var(--gray-300);
+    border-radius: 10px;
+    overflow: hidden;
+    transition: border-color 0.2s;
+  }
+
+  .contest-write-area:focus-within {
+    border-color: var(--orange);
+    border-style: solid;
+  }
+
+  .contest-write-label {
+    background: var(--bg);
+    color: var(--gray-500);
+    font-size: 12px;
+    font-weight: 600;
+    padding: 8px 14px;
+    border-bottom: 1px solid var(--gray-200);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .contest-textarea {
+    width: 100%;
+    min-height: 200px;
+    padding: 16px 18px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    line-height: 1.7;
+    color: var(--text);
+    background: #fafbfc;
+    border: none;
+    outline: none;
+    resize: vertical;
+    tab-size: 4;
+    box-sizing: border-box;
+  }
+
+  .contest-textarea::placeholder {
+    color: var(--gray-300);
+  }
+
+  @media print {
+    body { background: white; }
+    .page { box-shadow: none; margin: 0; page-break-after: always; }
+    .contest-textarea { border: 1px solid var(--gray-300); min-height: 180px; }
+  }
+
+</style>
+</head>
+<body>
+
+<div class="page">
+  <div class="chapter-page">
+    <div class="chapter-sidebar"></div>
+    <div class="chapter-accent-bar"></div>
+    <div class="chapter-body">
+      <div class="chapter-watermark">07</div>
+      <div class="chapter-label">Chapter 07</div>
+      <h1 class="chapter-title">연결 리스트②</h1>
+      <p class="chapter-sub">연결 리스트의 임의 위치 삽입, 노드 삭제, 탐색 연산을 구현합니다.</p>
+
+      <h3 class="obj-title">이 유닛에서 배우는 것</h3>
+      <ul class="obj-list">
+        <li>특정 위치에 노드를 삽입하는 insertAt 함수를 구현합니다.</li>
+        <li>값을 기준으로 노드를 삭제하는 deleteNode 함수를 구현합니다.</li>
+        <li>값으로 노드를 탐색하는 search 함수를 구현합니다.</li>
+        <li>연결 리스트의 전체 메모리를 해제하는 freeAll 함수를 구현합니다.</li>
+      </ul>
+
+      <h3 class="prereq-title">선수 학습</h3>
+      <div class="prereq-flow">
+        <div class="prereq-item current">L13-U06</div>
+      </div>
+
+      <div class="predict-box">
+        <div class="predict-label">예측해 봅시다</div>
+        <div class="predict-q">이 코드의 출력 결과는 무엇입니까?</div>
+        
+      </div>
+
+      <span class="page-num">1</span>
+    </div>
+  </div>
+</div>
+<div class="page">
+  <div class="content-page">
+    <div class="unit-header-bar">
+      <span class="unit-tag">UNIT 07</span>
+      <span class="unit-title-sm">연결 리스트②</span>
+    </div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 1</span><p style="margin:0;font-size:14px">연결 리스트의 세 번째 위치에 새 노드를 삽입하려면 어떤 노드를 먼저 찾아야 합니까?</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 2</span><p style="margin:0;font-size:14px">연결 리스트에서 중간 노드를 삭제할 때, 삭제 전에 반드시 해야 하는 작업은 무엇입니까?</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 3</span><p style="margin:0;font-size:14px">배열에서 특정 위치에 삽입하는 것과 연결 리스트에서 삽입하는 것의 시간 복잡도 차이는 무엇입니까?</p></div>
+<h2 class="section-title">예측</h2>
+<h2 class="section-title">이야기</h2>
+<p>undefined</p>
+<h2 class="section-title">핵심 개념</h2>
+<div class="note-box"><span class="note-label"></span>
+<div style="font-weight:700;margin-bottom:6px;color:#1a2e4a">특정 위치 삽입 (insertAt)</div>임의의 위치에 노드를 삽입하려면 다음 절차를 따릅니다.<br><br>1단계: 새 노드를 malloc으로 생성합니다.<br>2단계: 삽입할 위치의 이전 노드(prev)를 순회하여 찾습니다.<br>3단계: 새 노드의 next를 prev->next로 설정합니다.<br>4단계: prev->next를 새 노드로 변경합니다.<br><br>위치가 0(맨 앞)이면 head를 갱신하는 별도 처리가 필요합니다.<br>시간 복잡도: 탐색 O(n) + 삽입 O(1) = O(n)</div>
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;stdio.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;stdlib.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">4</span><span class="lc"><span class="s-kw">typedef</span> <span class="s-kw">struct</span> Node {</span></div>
+<div class="code-line"><span class="ln">5</span><span class="lc">    <span class="s-type">int</span> data;</span></div>
+<div class="code-line"><span class="ln">6</span><span class="lc">    <span class="s-kw">struct</span> Node *next;</span></div>
+<div class="code-line"><span class="ln">7</span><span class="lc">} Node;</span></div>
+<div class="code-line"><span class="ln">8</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">9</span><span class="lc"><span class="s-cm">/* 특정 위치(pos)에 노드 삽입 (0부터 시작) */</span></span></div>
+<div class="code-line"><span class="ln">10</span><span class="lc">Node *<span class="s-fn">insert_at</span>(Node *head, <span class="s-type">int</span> pos, <span class="s-type">int</span> data) {</span></div>
+<div class="code-line"><span class="ln">11</span><span class="lc">    Node *new_node = (Node *)<span class="s-fn">malloc</span>(<span class="s-kw">sizeof</span>(Node));</span></div>
+<div class="code-line"><span class="ln">12</span><span class="lc">    new_node-&gt;data = data;</span></div>
+<div class="code-line"><span class="ln">13</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">14</span><span class="lc">    <span class="s-cm">/* 맨 앞 삽입 */</span></span></div>
+<div class="code-line"><span class="ln">15</span><span class="lc">    <span class="s-kw">if</span> (pos == <span class="s-num">0</span>) {</span></div>
+<div class="code-line"><span class="ln">16</span><span class="lc">        new_node-&gt;next = head;</span></div>
+<div class="code-line"><span class="ln">17</span><span class="lc">        <span class="s-kw">return</span> new_node;       <span class="s-cm">/* 새 head 반환 */</span></span></div>
+<div class="code-line"><span class="ln">18</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">19</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">20</span><span class="lc">    <span class="s-cm">/* pos-1번째 노드(prev) 찾기 */</span></span></div>
+<div class="code-line"><span class="ln">21</span><span class="lc">    Node *prev = head;</span></div>
+<div class="code-line"><span class="ln">22</span><span class="lc">    <span class="s-kw">for</span> (<span class="s-type">int</span> i = <span class="s-num">0</span>; i &lt; pos - <span class="s-num">1</span> &amp;&amp; prev != <span class="s-kw">NULL</span>; i++) {</span></div>
+<div class="code-line"><span class="ln">23</span><span class="lc">        prev = prev-&gt;next;</span></div>
+<div class="code-line"><span class="ln">24</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">25</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">26</span><span class="lc">    <span class="s-kw">if</span> (prev == <span class="s-kw">NULL</span>) {</span></div>
+<div class="code-line"><span class="ln">27</span><span class="lc">        <span class="s-fn">printf</span>(<span class="s-str">"위치 초과! 삽입 실패\n"</span>);</span></div>
+<div class="code-line"><span class="ln">28</span><span class="lc">        <span class="s-fn">free</span>(new_node);</span></div>
+<div class="code-line"><span class="ln">29</span><span class="lc">        <span class="s-kw">return</span> head;</span></div>
+<div class="code-line"><span class="ln">30</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">31</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">32</span><span class="lc">    <span class="s-cm">/* prev 뒤에 삽입 */</span></span></div>
+<div class="code-line"><span class="ln">33</span><span class="lc">    new_node-&gt;next = prev-&gt;next;</span></div>
+<div class="code-line"><span class="ln">34</span><span class="lc">    prev-&gt;next = new_node;</span></div>
+<div class="code-line"><span class="ln">35</span><span class="lc">    <span class="s-kw">return</span> head;</span></div>
+<div class="code-line"><span class="ln">36</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">37</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">38</span><span class="lc"><span class="s-type">void</span> <span class="s-fn">print_list</span>(Node *head) {</span></div>
+<div class="code-line"><span class="ln">39</span><span class="lc">    Node *cur = head;</span></div>
+<div class="code-line"><span class="ln">40</span><span class="lc">    <span class="s-kw">while</span> (cur != <span class="s-kw">NULL</span>) {</span></div>
+<div class="code-line"><span class="ln">41</span><span class="lc">        <span class="s-fn">printf</span>(<span class="s-str">"%d -&gt; "</span>, cur-&gt;data);</span></div>
+<div class="code-line"><span class="ln">42</span><span class="lc">        cur = cur-&gt;next;</span></div>
+<div class="code-line"><span class="ln">43</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">44</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"NULL\n"</span>);</span></div>
+<div class="code-line"><span class="ln">45</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">46</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">47</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">main</span>(<span class="s-type">void</span>) {</span></div>
+<div class="code-line"><span class="ln">48</span><span class="lc">    Node *head = <span class="s-kw">NULL</span>;</span></div>
+<div class="code-line"><span class="ln">49</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">50</span><span class="lc">    <span class="s-cm">/* 리스트: NULL */</span></span></div>
+<div class="code-line"><span class="ln">51</span><span class="lc">    head = <span class="s-fn">insert_at</span>(head, <span class="s-num">0</span>, <span class="s-num">10</span>);   <span class="s-cm">/* 10 -&gt; NULL */</span></span></div>
+<div class="code-line"><span class="ln">52</span><span class="lc">    head = <span class="s-fn">insert_at</span>(head, <span class="s-num">1</span>, <span class="s-num">30</span>);   <span class="s-cm">/* 10 -&gt; 30 -&gt; NULL */</span></span></div>
+<div class="code-line"><span class="ln">53</span><span class="lc">    head = <span class="s-fn">insert_at</span>(head, <span class="s-num">1</span>, <span class="s-num">20</span>);   <span class="s-cm">/* 10 -&gt; 20 -&gt; 30 -&gt; NULL */</span></span></div>
+<div class="code-line"><span class="ln">54</span><span class="lc">    head = <span class="s-fn">insert_at</span>(head, <span class="s-num">0</span>, <span class="s-num">5</span>);    <span class="s-cm">/* 5 -&gt; 10 -&gt; 20 -&gt; 30 -&gt; NULL */</span></span></div>
+<div class="code-line"><span class="ln">55</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">56</span><span class="lc">    <span class="s-fn">print_list</span>(head);</span></div>
+<div class="code-line"><span class="ln">57</span><span class="lc">    <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">58</span><span class="lc">}</span></div>
+</div>
+</div>
+<div class="note-box"><span class="note-label"></span>
+<div style="font-weight:700;margin-bottom:6px;color:#1a2e4a">값으로 노드 삭제 (deleteNode)</div>특정 값을 가진 노드를 삭제하려면 다음 절차를 따릅니다.<br><br>1단계: head 노드가 삭제 대상인지 확인합니다.<br>  — head 삭제 시 head를 head->next로 변경 후 free합니다.<br>2단계: 이전 노드(prev)를 추적하며 삭제 대상을 탐색합니다.<br>3단계: prev->next를 삭제 대상의 next로 변경합니다.<br>4단계: 삭제 대상을 free합니다.<br><br>핵심: 삭제할 노드의 이전 노드를 반드시 알아야 합니다.<br>head 삭제와 중간 노드 삭제는 처리 방식이 다릅니다.</div>
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc"><span class="s-cm">/* 값(target)을 가진 첫 번째 노드를 삭제 */</span></span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc">Node *<span class="s-fn">delete_node</span>(Node *head, <span class="s-type">int</span> target) {</span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc">    <span class="s-kw">if</span> (head == <span class="s-kw">NULL</span>) <span class="s-kw">return</span> <span class="s-kw">NULL</span>;</span></div>
+<div class="code-line"><span class="ln">4</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">5</span><span class="lc">    <span class="s-cm">/* head가 삭제 대상인 경우 */</span></span></div>
+<div class="code-line"><span class="ln">6</span><span class="lc">    <span class="s-kw">if</span> (head-&gt;data == target) {</span></div>
+<div class="code-line"><span class="ln">7</span><span class="lc">        Node *temp = head;</span></div>
+<div class="code-line"><span class="ln">8</span><span class="lc">        head = head-&gt;next;</span></div>
+<div class="code-line"><span class="ln">9</span><span class="lc">        <span class="s-fn">free</span>(temp);</span></div>
+<div class="code-line"><span class="ln">10</span><span class="lc">        <span class="s-kw">return</span> head;</span></div>
+<div class="code-line"><span class="ln">11</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">12</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">13</span><span class="lc">    <span class="s-cm">/* 중간/끝 노드 삭제: prev 추적 */</span></span></div>
+<div class="code-line"><span class="ln">14</span><span class="lc">    Node *prev = head;</span></div>
+<div class="code-line"><span class="ln">15</span><span class="lc">    <span class="s-kw">while</span> (prev-&gt;next != <span class="s-kw">NULL</span> &amp;&amp; prev-&gt;next-&gt;data != target) {</span></div>
+<div class="code-line"><span class="ln">16</span><span class="lc">        prev = prev-&gt;next;</span></div>
+<div class="code-line"><span class="ln">17</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">18</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">19</span><span class="lc">    <span class="s-kw">if</span> (prev-&gt;next != <span class="s-kw">NULL</span>) {</span></div>
+<div class="code-line"><span class="ln">20</span><span class="lc">        Node *temp = prev-&gt;next;</span></div>
+<div class="code-line"><span class="ln">21</span><span class="lc">        prev-&gt;next = temp-&gt;next;   <span class="s-cm">/* 이전 노드와 다음 노드 연결 */</span></span></div>
+<div class="code-line"><span class="ln">22</span><span class="lc">        <span class="s-fn">free</span>(temp);                <span class="s-cm">/* 삭제 대상 해제 */</span></span></div>
+<div class="code-line"><span class="ln">23</span><span class="lc">    } <span class="s-kw">else</span> {</span></div>
+<div class="code-line"><span class="ln">24</span><span class="lc">        <span class="s-fn">printf</span>(<span class="s-str">"%d을(를) 찾을 수 없습니다.\n"</span>, target);</span></div>
+<div class="code-line"><span class="ln">25</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">26</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">27</span><span class="lc">    <span class="s-kw">return</span> head;</span></div>
+<div class="code-line"><span class="ln">28</span><span class="lc">}</span></div>
+</div>
+</div>
+<div class="note-box"><span class="note-label"></span>
+<div style="font-weight:700;margin-bottom:6px;color:#1a2e4a">값으로 탐색 (search)</div>연결 리스트에서 특정 값을 찾으려면 head부터 순서대로 순회합니다.<br><br>현재 노드의 data가 target과 같으면 해당 노드 포인터를 반환합니다.<br>cur->next로 이동하며, NULL에 도달하면 탐색 실패입니다.<br><br>시간 복잡도: O(n) — 최악의 경우 전체 노드를 순회합니다.<br>배열의 인덱스 접근 O(1)과 달리, 연결 리스트는 임의 접근이 불가능합니다.</div>
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc"><span class="s-cm">/* 값(target)을 가진 노드를 탐색하여 포인터 반환 */</span></span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc">Node *<span class="s-fn">search</span>(Node *head, <span class="s-type">int</span> target) {</span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc">    Node *cur = head;</span></div>
+<div class="code-line"><span class="ln">4</span><span class="lc">    <span class="s-type">int</span> index = <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">5</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">6</span><span class="lc">    <span class="s-kw">while</span> (cur != <span class="s-kw">NULL</span>) {</span></div>
+<div class="code-line"><span class="ln">7</span><span class="lc">        <span class="s-kw">if</span> (cur-&gt;data == target) {</span></div>
+<div class="code-line"><span class="ln">8</span><span class="lc">            <span class="s-fn">printf</span>(<span class="s-str">"%d을(를) 인덱스 %d에서 찾았습니다.\n"</span>, target, index);</span></div>
+<div class="code-line"><span class="ln">9</span><span class="lc">            <span class="s-kw">return</span> cur;</span></div>
+<div class="code-line"><span class="ln">10</span><span class="lc">        }</span></div>
+<div class="code-line"><span class="ln">11</span><span class="lc">        cur = cur-&gt;next;</span></div>
+<div class="code-line"><span class="ln">12</span><span class="lc">        index++;</span></div>
+<div class="code-line"><span class="ln">13</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">14</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">15</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"%d을(를) 찾을 수 없습니다.\n"</span>, target);</span></div>
+<div class="code-line"><span class="ln">16</span><span class="lc">    <span class="s-kw">return</span> <span class="s-kw">NULL</span>;</span></div>
+<div class="code-line"><span class="ln">17</span><span class="lc">}</span></div>
+</div>
+</div>
+<div class="note-box"><span class="note-label"></span>
+<div style="font-weight:700;margin-bottom:6px;color:#1a2e4a">전체 메모리 해제 (freeAll)</div>프로그램 종료 전에 연결 리스트의 모든 노드를 free해야 메모리 누수가 발생하지 않습니다.<br><br>절차:<br>1. 현재 노드(cur)를 head로 설정합니다.<br>2. cur이 NULL이 아닌 동안 반복합니다.<br>3. 다음 노드(next)를 미리 저장합니다.<br>4. cur을 free합니다.<br>5. cur을 next로 이동합니다.<br><br>주의: free(cur) 후에는 cur->next에 접근할 수 없으므로, 반드시 next를 먼저 저장해야 합니다.</div>
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc"><span class="s-cm">/* 연결 리스트의 모든 노드를 해제 */</span></span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc"><span class="s-type">void</span> <span class="s-fn">free_all</span>(Node *head) {</span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc">    Node *cur = head;</span></div>
+<div class="code-line"><span class="ln">4</span><span class="lc">    <span class="s-kw">while</span> (cur != <span class="s-kw">NULL</span>) {</span></div>
+<div class="code-line"><span class="ln">5</span><span class="lc">        Node *next = cur-&gt;next;   <span class="s-cm">/* 다음 노드 미리 저장 */</span></span></div>
+<div class="code-line"><span class="ln">6</span><span class="lc">        <span class="s-fn">free</span>(cur);                <span class="s-cm">/* 현재 노드 해제 */</span></span></div>
+<div class="code-line"><span class="ln">7</span><span class="lc">        cur = next;               <span class="s-cm">/* 다음 노드로 이동 */</span></span></div>
+<div class="code-line"><span class="ln">8</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">9</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">10</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">11</span><span class="lc"><span class="s-cm">/* 사용 예시 */</span></span></div>
+<div class="code-line"><span class="ln">12</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">main</span>(<span class="s-type">void</span>) {</span></div>
+<div class="code-line"><span class="ln">13</span><span class="lc">    Node *head = <span class="s-kw">NULL</span>;</span></div>
+<div class="code-line"><span class="ln">14</span><span class="lc">    head = <span class="s-fn">insert_at</span>(head, <span class="s-num">0</span>, <span class="s-num">10</span>);</span></div>
+<div class="code-line"><span class="ln">15</span><span class="lc">    head = <span class="s-fn">insert_at</span>(head, <span class="s-num">1</span>, <span class="s-num">20</span>);</span></div>
+<div class="code-line"><span class="ln">16</span><span class="lc">    head = <span class="s-fn">insert_at</span>(head, <span class="s-num">2</span>, <span class="s-num">30</span>);</span></div>
+<div class="code-line"><span class="ln">17</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">18</span><span class="lc">    <span class="s-fn">print_list</span>(head);           <span class="s-cm">/* 10 -&gt; 20 -&gt; 30 -&gt; NULL */</span></span></div>
+<div class="code-line"><span class="ln">19</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">20</span><span class="lc">    head = <span class="s-fn">delete_node</span>(head, <span class="s-num">20</span>);</span></div>
+<div class="code-line"><span class="ln">21</span><span class="lc">    <span class="s-fn">print_list</span>(head);           <span class="s-cm">/* 10 -&gt; 30 -&gt; NULL */</span></span></div>
+<div class="code-line"><span class="ln">22</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">23</span><span class="lc">    <span class="s-fn">search</span>(head, <span class="s-num">30</span>);           <span class="s-cm">/* 30을(를) 인덱스 1에서 찾았습니다. */</span></span></div>
+<div class="code-line"><span class="ln">24</span><span class="lc">    <span class="s-fn">search</span>(head, <span class="s-num">99</span>);           <span class="s-cm">/* 99을(를) 찾을 수 없습니다. */</span></span></div>
+<div class="code-line"><span class="ln">25</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">26</span><span class="lc">    <span class="s-fn">free_all</span>(head);</span></div>
+<div class="code-line"><span class="ln">27</span><span class="lc">    head = <span class="s-kw">NULL</span>;                <span class="s-cm">/* dangling pointer 방지 */</span></span></div>
+<div class="code-line"><span class="ln">28</span><span class="lc">    <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">29</span><span class="lc">}</span></div>
+</div>
+</div>
+<div class="debug-section"><div class="debug-bar">DEBUG LAB — 에러를 찾으시오</div><div class="debug-body">
+
+<p style="margin:14px 0 0; font-size:14px;"><b>에러:</b> </p>
+<p style="font-size:14px;"><b>수정:</b> </p>
+</div></div>
+<div class="debug-section"><div class="debug-bar">DEBUG LAB — 에러를 찾으시오</div><div class="debug-body">
+
+<p style="margin:14px 0 0; font-size:14px;"><b>에러:</b> </p>
+<p style="font-size:14px;"><b>수정:</b> </p>
+</div></div>
+<h2 class="section-title">에러 체험</h2>
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc"><span class="s-cm">// 에러 1: 삭제 시 이전 노드 연결 끊김</span></span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc">Node *temp = prev-&gt;next;</span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc"><span class="s-fn">free</span>(temp);                    <span class="s-cm">// prev-&gt;next가 해제된 메모리를 가리킴!</span></span></div>
+<div class="code-line"><span class="ln">4</span><span class="lc"><span class="s-cm">// 수정: prev-&gt;next = temp-&gt;next; 를 free 전에 실행할 것</span></span></div>
+<div class="code-line"><span class="ln">5</span><span class="lc"><span class="s-cm">//   Node *temp = prev-&gt;next;</span></span></div>
+<div class="code-line"><span class="ln">6</span><span class="lc"><span class="s-cm">//   prev-&gt;next = temp-&gt;next;</span></span></div>
+<div class="code-line"><span class="ln">7</span><span class="lc"><span class="s-cm">//   free(temp);</span></span></div>
+<div class="code-line"><span class="ln">8</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">9</span><span class="lc"><span class="s-cm">// 에러 2: head 삭제 특수 처리 누락</span></span></div>
+<div class="code-line"><span class="ln">10</span><span class="lc">Node *prev = head;</span></div>
+<div class="code-line"><span class="ln">11</span><span class="lc"><span class="s-kw">while</span> (prev-&gt;next-&gt;data != target)  <span class="s-cm">// head가 target이면 건너뜀!</span></span></div>
+<div class="code-line"><span class="ln">12</span><span class="lc">    prev = prev-&gt;next;</span></div>
+<div class="code-line"><span class="ln">13</span><span class="lc"><span class="s-cm">// 수정: head-&gt;data == target인 경우를 먼저 별도 처리할 것</span></span></div>
+<div class="code-line"><span class="ln">14</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">15</span><span class="lc"><span class="s-cm">// 에러 3: free 후 dangling pointer</span></span></div>
+<div class="code-line"><span class="ln">16</span><span class="lc"><span class="s-fn">free</span>(cur);</span></div>
+<div class="code-line"><span class="ln">17</span><span class="lc"><span class="s-fn">printf</span>(<span class="s-str">"%d\n"</span>, cur-&gt;data);     <span class="s-cm">// 해제된 메모리 접근 — 정의되지 않은 동작!</span></span></div>
+<div class="code-line"><span class="ln">18</span><span class="lc"><span class="s-cm">// 수정: free 전에 필요한 데이터를 미리 저장하거나,</span></span></div>
+<div class="code-line"><span class="ln">19</span><span class="lc"><span class="s-cm">//   free 후 포인터를 NULL로 설정할 것</span></span></div>
+</div>
+</div>
+<h2 class="section-title">설명하기</h2>
+<table class="trace"><thead><tr><th style="width:40px">줄</th><th style="width:220px">코드</th><th>역할</th></tr></thead><tbody></tbody></table>
+<h2 class="section-title">예제</h2>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 1</span><p style="margin:0;font-size:14px">정수를 입력받아 연결 리스트의 맨 앞에 삽입하고, 특정 위치(pos)에 새 값을 삽입한 후 전체 리스트를 출력하는 프로그램을 작성하십시오.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 2</span><p style="margin:0;font-size:14px">연결 리스트에서 특정 값을 가진 노드를 탐색하여 인덱스를 출력하는 프로그램을 작성하십시오. 값이 없으면 -1을 출력합니다.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 3</span><p style="margin:0;font-size:14px">연결 리스트에서 특정 값을 가진 노드를 삭제하고 결과를 출력하는 프로그램을 작성하십시오. head 삭제와 중간 삭제를 모두 처리해야 합니다.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 4</span><p style="margin:0;font-size:14px">연결 리스트에 N개의 정수를 삽입한 후, 모든 노드의 메모리를 해제하는 프로그램을 작성하십시오. 해제 전후로 노드 개수를 출력합니다.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 5</span><p style="margin:0;font-size:14px">정렬된 연결 리스트를 유지하면서 새 값을 올바른 위치에 삽입하는 sorted_insert 함수를 작성하십시오.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 6</span><p style="margin:0;font-size:14px">연결 리스트에서 특정 값을 가진 노드를 모두 삭제하는 delete_all 함수를 작성하십시오. (같은 값이 여러 개 있을 수 있습니다.)</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 7</span><p style="margin:0;font-size:14px">연결 리스트를 역순으로 뒤집는 reverse 함수를 구현하십시오. 새 노드를 생성하지 않고 포인터 연결만 변경해야 합니다.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 8</span><p style="margin:0;font-size:14px">두 개의 정렬된 연결 리스트를 하나의 정렬된 연결 리스트로 합치는 merge 함수를 작성하십시오.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 9</span><p style="margin:0;font-size:14px">연결 리스트에서 중간 노드를 찾는 프로그램을 작성하십시오. (느린 포인터와 빠른 포인터를 사용합니다.)</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 10</span><p style="margin:0;font-size:14px">연결 리스트로 간단한 주소록을 구현하십시오. 이름과 전화번호를 저장하고, 이름으로 검색/삭제가 가능해야 합니다.</p></div>
+<h2 class="section-title">대회 기출</h2>
+<h2 class="section-title">요약</h2>
+<div class="warmup-box"><div class="warmup-title">핵심 정리</div><div class="wq"><b>1.</b> insertAt: prev 노드 찾기 -> new->next = prev->next -> prev->next = new</div><div class="wq"><b>2.</b> deleteNode: prev 추적 -> prev->next = target->next -> free(target)</div><div class="wq"><b>3.</b> head 삭제: head = head->next 후 free (별도 처리 필수)</div><div class="wq"><b>4.</b> search: head부터 순회하며 data 비교 -> O(n)</div><div class="wq"><b>5.</b> freeAll: next를 미리 저장한 후 free -> cur = next 반복</div><div class="wq"><b>6.</b> 삽입/삭제 자체는 O(1)이나 위치 탐색에 O(n) 소요</div><div class="wq"><b>7.</b> free 후 포인터를 NULL로 설정하여 dangling pointer 방지</div><div class="wq"><b>8.</b> 배열 대비 장점: 삽입/삭제 시 원소 이동 불필요</div></div>
+<h2 class="section-title">다음 유닛으로</h2>
+<div class="note-box"><span class="note-label"></span>
+<div style="font-weight:700;margin-bottom:6px;color:#1a2e4a">다음: 할 일 목록 (연결 리스트) — 프로젝트</div>삽입, 삭제, 탐색, 해제 등 연결 리스트의 핵심 연산을 모두 학습했습니다. 다음 유닛에서는 이 연산들을 종합하여 할 일 목록(To-Do List) 프로젝트를 완성합니다.</div>
+
+    <span class="page-num">2</span>
+  </div>
+</div>
+<div class="page">
+  <div class="content-page">
+    <div class="unit-header-bar">
+      <span class="unit-tag">UNIT 07</span>
+      <span class="unit-title-sm">3과목 연결</span>
+    </div>
+<h2 class="section-title">10축 매핑</h2>
+<div class="note-box"><span class="note-label"></span>
+<div style="font-weight:700;margin-bottom:6px;color:#1a2e4a">이 유닛에서 키운 역량</div>C언어 ★★★★☆ — 연결 리스트의 삽입, 삭제, 탐색, 해제 함수를 직접 구현했습니다.<br>컴퓨팅사고력 ★★★★☆ — 포인터 연결 변경의 순서와 원리를 논리적으로 분석했습니다.<br>디버깅 ★★★★★ — dangling pointer, 이전 노드 연결 누락, head 삭제 특수 처리 등 연결 리스트 특유의 오류를 경험했습니다.<br>KOI ★★★★☆ — 연결 리스트 조작은 자료구조 문제의 기초이며 대회에서 빈번하게 활용됩니다.</div>
+
+    <span class="page-num">3</span>
+  </div>
+</div>
+<div class="page contest-page-wrap">
+  <div class="chapter-page">
+    <div class="chapter-sidebar"></div>
+    <div class="chapter-accent-bar"></div>
+    <div style="flex:1; min-width:0; padding:50px 50px 40px 45px; position:relative;">
+      <div class="problems-chapter-ref">Chapter 07: 연결 리스트②</div>
+      <h2 class="problems-title">대회 문제 (Online Judge)</h2>
+      <p style="font-size:14px; color:#6b7280; margin:-8px 0 24px;">실제 온라인 저지에 출제된 문제입니다. 아래에 코드를 작성한 뒤, 사이트에 제출하여 채점하십시오.</p>
+
+        <div class="contest-card">
+          <div class="contest-header">
+            <div class="contest-num-source">
+              <span class="contest-num">1번</span>
+              <span class="contest-source">백준 1935</span>
+            </div>
+            <span class="diff diff-mid">대회</span>
+          </div>
+          <div class="contest-body">
+            <p class="contest-question">후위 표기식의 값을 계산하십시오.</p>
+            
+            <div class="contest-write-area">
+              <div class="contest-write-label">코드 작성</div>
+              <textarea class="contest-textarea" rows="12" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="contest-card">
+          <div class="contest-header">
+            <div class="contest-num-source">
+              <span class="contest-num">2번</span>
+              <span class="contest-source">백준 1918</span>
+            </div>
+            <span class="diff diff-mid">대회</span>
+          </div>
+          <div class="contest-body">
+            <p class="contest-question">중위 표기식을 후위 표기식으로 변환하십시오.</p>
+            
+            <div class="contest-write-area">
+              <div class="contest-write-label">코드 작성</div>
+              <textarea class="contest-textarea" rows="12" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="contest-card">
+          <div class="contest-header">
+            <div class="contest-num-source">
+              <span class="contest-num">3번</span>
+              <span class="contest-source">백준 2504</span>
+            </div>
+            <span class="diff diff-mid">대회</span>
+          </div>
+          <div class="contest-body">
+            <p class="contest-question">괄호열의 값을 계산하십시오.</p>
+            
+            <div class="contest-write-area">
+              <div class="contest-write-label">코드 작성</div>
+              <textarea class="contest-textarea" rows="12" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="contest-card">
+          <div class="contest-header">
+            <div class="contest-num-source">
+              <span class="contest-num">4번</span>
+              <span class="contest-source">백준 5430</span>
+            </div>
+            <span class="diff diff-mid">대회</span>
+          </div>
+          <div class="contest-body">
+            <p class="contest-question">배열에 R(뒤집기)과 D(버리기) 함수를 적용하십시오.</p>
+            
+            <div class="contest-write-area">
+              <div class="contest-write-label">코드 작성</div>
+              <textarea class="contest-textarea" rows="12" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="contest-card">
+          <div class="contest-header">
+            <div class="contest-num-source">
+              <span class="contest-num">5번</span>
+              <span class="contest-source">백준 1021</span>
+            </div>
+            <span class="diff diff-mid">대회</span>
+          </div>
+          <div class="contest-body">
+            <p class="contest-question">회전하는 큐에서 원소를 꺼내는 최소 연산 수를 구하십시오.</p>
+            
+            <div class="contest-write-area">
+              <div class="contest-write-label">코드 작성</div>
+              <textarea class="contest-textarea" rows="12" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="contest-card">
+          <div class="contest-header">
+            <div class="contest-num-source">
+              <span class="contest-num">6번</span>
+              <span class="contest-source">백준 11279</span>
+            </div>
+            <span class="diff diff-mid">대회</span>
+          </div>
+          <div class="contest-body">
+            <p class="contest-question">최대 힙을 구현하십시오.</p>
+            
+            <div class="contest-write-area">
+              <div class="contest-write-label">코드 작성</div>
+              <textarea class="contest-textarea" rows="12" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="contest-card">
+          <div class="contest-header">
+            <div class="contest-num-source">
+              <span class="contest-num">7번</span>
+              <span class="contest-source">백준 1927</span>
+            </div>
+            <span class="diff diff-mid">대회</span>
+          </div>
+          <div class="contest-body">
+            <p class="contest-question">최소 힙을 구현하십시오.</p>
+            
+            <div class="contest-write-area">
+              <div class="contest-write-label">코드 작성</div>
+              <textarea class="contest-textarea" rows="12" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="contest-card">
+          <div class="contest-header">
+            <div class="contest-num-source">
+              <span class="contest-num">8번</span>
+              <span class="contest-source">백준 11286</span>
+            </div>
+            <span class="diff diff-mid">대회</span>
+          </div>
+          <div class="contest-body">
+            <p class="contest-question">절댓값 힙을 구현하십시오.</p>
+            
+            <div class="contest-write-area">
+              <div class="contest-write-label">코드 작성</div>
+              <textarea class="contest-textarea" rows="12" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="contest-card">
+          <div class="contest-header">
+            <div class="contest-num-source">
+              <span class="contest-num">9번</span>
+              <span class="contest-source">백준 1991</span>
+            </div>
+            <span class="diff diff-mid">대회</span>
+          </div>
+          <div class="contest-body">
+            <p class="contest-question">이진 트리를 전위, 중위, 후위 순회하십시오.</p>
+            
+            <div class="contest-write-area">
+              <div class="contest-write-label">코드 작성</div>
+              <textarea class="contest-textarea" rows="12" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="contest-card">
+          <div class="contest-header">
+            <div class="contest-num-source">
+              <span class="contest-num">10번</span>
+              <span class="contest-source">백준 5639</span>
+            </div>
+            <span class="diff diff-mid">대회</span>
+          </div>
+          <div class="contest-body">
+            <p class="contest-question">이진 검색 트리를 후위 순회한 결과를 출력하십시오.</p>
+            
+            <div class="contest-write-area">
+              <div class="contest-write-label">코드 작성</div>
+              <textarea class="contest-textarea" rows="12" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+            </div>
+          </div>
+        </div>
+      <span class="page-num">4</span>
+    </div>
+  </div>
+</div>
+</body>
+</html>

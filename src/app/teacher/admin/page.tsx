@@ -30,7 +30,7 @@ const STATUS_COLORS: Record<string, { bg: string; text: string; label: string }>
 };
 
 export default function TeacherAdmin() {
-    const [activeTab, setActiveTab] = useState<"students" | "add" | "homework" | "content" | "notify" | "feedback" | "monitor">("students");
+    const [activeTab, setActiveTab] = useState<"students" | "add" | "homework" | "content" | "notify" | "feedback" | "monitor" | "chat">("students");
     const [students, setStudents] = useState<Student[]>([]);
     const [loading, setLoading] = useState(true);
     const [notifyMsg, setNotifyMsg] = useState("");
@@ -65,11 +65,14 @@ export default function TeacherAdmin() {
     const [hwDesc, setHwDesc] = useState("");
     const [hwDueDate, setHwDueDate] = useState("");
     const [hwCourse, setHwCourse] = useState("");
+    const [hwHtmlUrl, setHwHtmlUrl] = useState("");
+    const [hwType, setHwType] = useState<"text" | "html">("text");
+    const [hwPreview, setHwPreview] = useState(false);
     const [hwSelectedStudents, setHwSelectedStudents] = useState<string[]>([]);
     const [hwSelectAll, setHwSelectAll] = useState(true);
     const [hwSending, setHwSending] = useState(false);
     const [hwMsg, setHwMsg] = useState<{ ok: boolean; text: string } | null>(null);
-    const [hwList, setHwList] = useState<{ id: string; title: string; description: string; due_date: string; course_id: string; assigned_to: string | null; is_active: boolean; created_at: string }[]>([]);
+    const [hwList, setHwList] = useState<{ id: string; title: string; description: string; due_date: string; course_id: string; assigned_to: string | null; is_active: boolean; created_at: string; html_url?: string; homework_type?: string }[]>([]);
     const [hwSubs, setHwSubs] = useState<{ id: string; homework_id: string; user_id: string; content: string; score: number | null; feedback: string | null; submitted_at: string }[]>([]);
     const [gradingId, setGradingId] = useState<string | null>(null);
     const [gradeScore, setGradeScore] = useState("");
@@ -80,12 +83,25 @@ export default function TeacherAdmin() {
     interface PresenceRow { user_id: string; student_name: string; course_id: string | null; course_title: string | null; unit_id: string | null; unit_title: string | null; page_id: string | null; page_title: string | null; page_url: string | null; is_online: boolean; last_heartbeat: string; started_at: string; }
     const [presenceList, setPresenceList] = useState<PresenceRow[]>([]);
 
+    // 채팅
+    const [chatStudents, setChatStudents] = useState<{id:string;name:string;lastMsg:string;unread:number;lastTime:string}[]>([]);
+    const [chatActiveId, setChatActiveId] = useState<string|null>(null);
+    const [chatMessages, setChatMessages] = useState<{id:string;sender_id:string;receiver_id:string;sender_name:string;content:string;is_read:boolean;created_at:string}[]>([]);
+    const [chatInput, setChatInput] = useState("");
+    const [chatSending, setChatSending] = useState(false);
+
     const [authed, setAuthed] = useState(false);
 
-    // Auth check — Supabase 세션 확인
+    // Auth check — Supabase 세션 또는 localStorage 바이패스 확인
     useEffect(() => {
         (async () => {
             try {
+                // 관리자 바이패스 체크
+                const role = localStorage.getItem("codingssok_role");
+                if (role === "teacher") {
+                    setAuthed(true);
+                    return;
+                }
                 const sb = createClient();
                 const { data: { session } } = await sb.auth.getSession();
                 if (!session) {
@@ -162,7 +178,7 @@ export default function TeacherAdmin() {
     const fetchHomework = useCallback(async () => {
         const sb = createClient();
         const [rHw, rSubs] = await Promise.all([
-            sb.from("homework").select("id,title,description,due_date,course_id,assigned_to,is_active,created_at")
+            sb.from("homework").select("id,title,description,due_date,course_id,assigned_to,is_active,created_at,html_url,homework_type")
                 .eq("is_active", true).order("created_at", { ascending: false }).limit(50),
             sb.from("homework_submissions").select("id,homework_id,user_id,content,score,feedback,submitted_at")
                 .order("submitted_at", { ascending: false }).limit(200),
@@ -195,6 +211,93 @@ export default function TeacherAdmin() {
         return () => { sb.removeChannel(ch); };
     }, [activeTab]);
 
+    // 채팅 데이터 로드
+    const fetchChatStudents = useCallback(async () => {
+        const sb = createClient();
+        const { data: msgs } = await sb
+            .from("direct_messages")
+            .select("*")
+            .order("created_at", { ascending: false });
+
+        if (!msgs) return;
+
+        // Get current user (teacher) session
+        const { data: { session } } = await sb.auth.getSession();
+        const teacherId = session?.user?.id || '';
+
+        // Group by student
+        const studentMap = new Map<string, { id: string; name: string; lastMsg: string; unread: number; lastTime: string }>();
+        msgs.forEach((m: { sender_id: string; receiver_id: string; sender_name: string; content: string; is_read: boolean; created_at: string }) => {
+            const studentId = m.sender_id === teacherId ? m.receiver_id : m.sender_id;
+            const studentName = m.sender_id === teacherId ? '학생' : (m.sender_name || '학생');
+            if (!studentMap.has(studentId)) {
+                const date = new Date(m.created_at);
+                studentMap.set(studentId, {
+                    id: studentId,
+                    name: profiles.find(p => p.id === studentId)?.name || studentName,
+                    lastMsg: m.content.length > 30 ? m.content.slice(0, 30) + '...' : m.content,
+                    unread: (!m.is_read && m.receiver_id === teacherId) ? 1 : 0,
+                    lastTime: `${date.getMonth()+1}/${date.getDate()} ${date.getHours()}:${String(date.getMinutes()).padStart(2,'0')}`,
+                });
+            } else {
+                const entry = studentMap.get(studentId)!;
+                if (!m.is_read && m.receiver_id === teacherId) entry.unread++;
+            }
+        });
+
+        setChatStudents(Array.from(studentMap.values()));
+    }, [profiles]);
+
+    const loadConversation = useCallback(async (studentId: string) => {
+        const sb = createClient();
+        const { data: { session } } = await sb.auth.getSession();
+        const teacherId = session?.user?.id || '';
+
+        const { data } = await sb
+            .from("direct_messages")
+            .select("*")
+            .or(`and(sender_id.eq.${studentId},receiver_id.eq.${teacherId}),and(sender_id.eq.${teacherId},receiver_id.eq.${studentId})`)
+            .order("created_at", { ascending: true });
+
+        setChatMessages(data || []);
+
+        // Mark as read
+        const unread = (data || []).filter((m: { receiver_id: string; is_read: boolean }) => m.receiver_id === teacherId && !m.is_read);
+        if (unread.length > 0) {
+            await sb.from("direct_messages").update({ is_read: true }).in("id", unread.map((m: { id: string }) => m.id));
+            fetchChatStudents();
+        }
+
+        // Scroll to bottom
+        setTimeout(() => {
+            const el = document.getElementById('chatScroll');
+            if (el) el.scrollTop = el.scrollHeight;
+        }, 100);
+    }, [fetchChatStudents]);
+
+    const sendChat = useCallback(async () => {
+        if (!chatActiveId || !chatInput.trim()) return;
+        setChatSending(true);
+        try {
+            const sb = createClient();
+            const { data: { session } } = await sb.auth.getSession();
+            await sb.from("direct_messages").insert({
+                sender_id: session?.user?.id || '',
+                receiver_id: chatActiveId,
+                sender_name: '선생님',
+                content: chatInput.trim(),
+            });
+            setChatInput("");
+            loadConversation(chatActiveId);
+        } catch (err) {
+            if (process.env.NODE_ENV === 'development') console.error(err);
+        } finally {
+            setChatSending(false);
+        }
+    }, [chatActiveId, chatInput, loadConversation]);
+
+    useEffect(() => { if (activeTab === 'chat') fetchChatStudents(); }, [activeTab, fetchChatStudents]);
+
     /* ── 숙제 출제 ── */
     const createHomework = async () => {
         if (!hwTitle.trim()) { setHwMsg({ ok: false, text: "숙제 제목을 입력해주세요" }); return; }
@@ -211,6 +314,8 @@ export default function TeacherAdmin() {
                     due_date: hwDueDate || null,
                     course_id: hwCourse || null,
                     assigned_to: null,
+                    html_url: hwType === 'html' ? hwHtmlUrl.trim() || null : null,
+                    homework_type: hwType,
                 });
                 if (error) throw error;
             } else {
@@ -221,6 +326,8 @@ export default function TeacherAdmin() {
                     due_date: hwDueDate || null,
                     course_id: hwCourse || null,
                     assigned_to: sid,
+                    html_url: hwType === 'html' ? hwHtmlUrl.trim() || null : null,
+                    homework_type: hwType,
                 }));
                 const { error } = await sb.from("homework").insert(rows);
                 if (error) throw error;
@@ -230,6 +337,7 @@ export default function TeacherAdmin() {
             setHwMsg({ ok: true, text: `"${hwTitle.trim()}" 숙제가 ${count}에게 출제되었습니다!` });
             setHwTitle(""); setHwDesc(""); setHwDueDate(""); setHwCourse("");
             setHwSelectedStudents([]); setHwSelectAll(true);
+            setHwHtmlUrl(""); setHwType("text"); setHwPreview(false);
             fetchHomework();
         } catch (err: unknown) {
             setHwMsg({ ok: false, text: `오류: ${err instanceof Error ? err.message : String(err)}` });
@@ -363,6 +471,7 @@ export default function TeacherAdmin() {
                         { id: "homework" as const, label: "숙제 출제" },
                         { id: "feedback" as const, label: "피드백" },
                         { id: "monitor" as const, label: "실시간 모니터" },
+                        { id: "chat" as const, label: "채팅" },
                         { id: "content" as const, label: "콘텐츠" },
                         { id: "notify" as const, label: "알림" },
                     ]).map(tab => (
@@ -638,6 +747,77 @@ export default function TeacherAdmin() {
                                     </div>
                                 </div>
 
+                                {/* 숙제 유형 선택 */}
+                                <div style={{ display: "flex", gap: 8, marginBottom: 10 }}>
+                                    <button
+                                        onClick={() => { setHwType("text"); setHwPreview(false); }}
+                                        style={{
+                                            flex: 1, padding: "10px", borderRadius: 10,
+                                            border: hwType === "text" ? "2px solid #2563eb" : "1px solid #e2e8f0",
+                                            background: hwType === "text" ? "rgba(37,99,235,0.06)" : "#fff",
+                                            fontSize: 13, fontWeight: hwType === "text" ? 700 : 500,
+                                            color: hwType === "text" ? "#2563eb" : "#64748b",
+                                            cursor: "pointer", display: "flex", alignItems: "center", gap: 6, justifyContent: "center",
+                                        }}
+                                    >
+                                        <span className="material-symbols-outlined" style={{ fontSize: 18 }}>edit_note</span>
+                                        텍스트 숙제
+                                    </button>
+                                    <button
+                                        onClick={() => setHwType("html")}
+                                        style={{
+                                            flex: 1, padding: "10px", borderRadius: 10,
+                                            border: hwType === "html" ? "2px solid #2563eb" : "1px solid #e2e8f0",
+                                            background: hwType === "html" ? "rgba(37,99,235,0.06)" : "#fff",
+                                            fontSize: 13, fontWeight: hwType === "html" ? 700 : 500,
+                                            color: hwType === "html" ? "#2563eb" : "#64748b",
+                                            cursor: "pointer", display: "flex", alignItems: "center", gap: 6, justifyContent: "center",
+                                        }}
+                                    >
+                                        <span className="material-symbols-outlined" style={{ fontSize: 18 }}>code</span>
+                                        HTML 숙제
+                                    </button>
+                                </div>
+
+                                {hwType === "html" && (
+                                    <div style={{ marginBottom: 10 }}>
+                                        <div style={{ position: "relative" }}>
+                                            <input
+                                                value={hwHtmlUrl}
+                                                onChange={e => setHwHtmlUrl(e.target.value)}
+                                                placeholder="/homework/cospro-python2-week03.html"
+                                                style={{ width: "100%", padding: "12px 14px", paddingRight: 80, borderRadius: 10, border: "1px solid #e2e8f0", fontSize: 13, outline: "none", boxSizing: "border-box", fontFamily: "'JetBrains Mono', monospace" }}
+                                            />
+                                            {hwHtmlUrl.trim() && (
+                                                <button
+                                                    onClick={() => setHwPreview(!hwPreview)}
+                                                    style={{
+                                                        position: "absolute", right: 6, top: "50%", transform: "translateY(-50%)",
+                                                        padding: "6px 12px", borderRadius: 8, border: "1px solid #e2e8f0",
+                                                        background: hwPreview ? "#2563eb" : "#fff",
+                                                        color: hwPreview ? "#fff" : "#2563eb",
+                                                        fontSize: 11, fontWeight: 700, cursor: "pointer",
+                                                    }}
+                                                >
+                                                    {hwPreview ? "닫기" : "미리보기"}
+                                                </button>
+                                            )}
+                                        </div>
+                                        {hwPreview && hwHtmlUrl.trim() && (
+                                            <div style={{ marginTop: 8, borderRadius: 12, overflow: "hidden", border: "1px solid #e2e8f0", height: 300 }}>
+                                                <iframe
+                                                    src={hwHtmlUrl.trim()}
+                                                    style={{ width: "100%", height: "100%", border: "none" }}
+                                                    title="숙제 미리보기"
+                                                />
+                                            </div>
+                                        )}
+                                        <p style={{ fontSize: 11, color: "#94a3b8", marginTop: 6 }}>
+                                            public/homework/ 폴더에 HTML 파일을 넣고 경로를 입력하세요
+                                        </p>
+                                    </div>
+                                )}
+
                                 {/* 학생 선택 */}
                                 <div style={{ padding: 14, borderRadius: 12, background: "#f8fafc", marginBottom: 12 }}>
                                     <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 10 }}>
@@ -720,7 +900,12 @@ export default function TeacherAdmin() {
                                                 }}>
                                                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
                                                         <div style={{ flex: 1 }}>
-                                                            <div style={{ fontSize: 14, fontWeight: 700, color: "#172554", marginBottom: 4 }}>{hw.title}</div>
+                                                            <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 4 }}>
+                                                                <span style={{ fontSize: 14, fontWeight: 700, color: "#172554" }}>{hw.title}</span>
+                                                                {(hw as any).homework_type === "html" && (
+                                                                    <span style={{ fontSize: 9, fontWeight: 700, padding: "2px 6px", borderRadius: 4, background: "rgba(139,92,246,0.1)", color: "#7c3aed" }}>HTML</span>
+                                                                )}
+                                                            </div>
                                                             <div style={{ display: "flex", gap: 10, fontSize: 11, color: "#94a3b8", flexWrap: "wrap" }}>
                                                                 <span>{studentName}</span>
                                                                 {hw.due_date && <span>{hw.due_date}</span>}
@@ -1118,6 +1303,115 @@ export default function TeacherAdmin() {
                                         })}
                                 </div>
                             )}
+                        </div>
+                    </motion.div>
+                )}
+
+                {activeTab === "chat" && (
+                    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} style={{ height: "calc(100vh - 200px)" }}>
+                        <div style={{ display: "grid", gridTemplateColumns: "280px 1fr", gap: 0, height: "100%", background: "#fff", borderRadius: 16, overflow: "hidden", border: "1px solid #e2e8f0" }}>
+                            {/* Student list */}
+                            <div style={{ borderRight: "1px solid #e2e8f0", display: "flex", flexDirection: "column" }}>
+                                <div style={{ padding: "16px", borderBottom: "1px solid #f1f5f9" }}>
+                                    <h3 style={{ fontSize: 15, fontWeight: 700, color: "#172554", margin: 0 }}>학생 채팅</h3>
+                                    <p style={{ fontSize: 11, color: "#94a3b8", margin: "4px 0 0" }}>{chatStudents.length}명</p>
+                                </div>
+                                <div style={{ flex: 1, overflowY: "auto" }}>
+                                    {chatStudents.length === 0 ? (
+                                        <div style={{ padding: 40, textAlign: "center", color: "#94a3b8", fontSize: 13 }}>
+                                            받은 메시지가 없습니다
+                                        </div>
+                                    ) : chatStudents.map(s => (
+                                        <div key={s.id} onClick={() => { setChatActiveId(s.id); loadConversation(s.id); }} style={{
+                                            padding: "12px 16px", cursor: "pointer",
+                                            background: chatActiveId === s.id ? "rgba(37,99,235,0.06)" : "transparent",
+                                            borderBottom: "1px solid #f8fafc",
+                                            borderLeft: chatActiveId === s.id ? "3px solid #2563eb" : "3px solid transparent",
+                                        }}>
+                                            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                                                <span style={{ fontSize: 13, fontWeight: 700, color: "#172554" }}>{s.name}</span>
+                                                <span style={{ fontSize: 10, color: "#94a3b8" }}>{s.lastTime}</span>
+                                            </div>
+                                            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 4 }}>
+                                                <span style={{ fontSize: 11, color: "#64748b", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", maxWidth: 160 }}>{s.lastMsg}</span>
+                                                {s.unread > 0 && (
+                                                    <span style={{ fontSize: 10, fontWeight: 700, color: "#fff", background: "#ef4444", borderRadius: 20, padding: "2px 7px", minWidth: 18, textAlign: "center" }}>{s.unread}</span>
+                                                )}
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+
+                            {/* Chat window */}
+                            <div style={{ display: "flex", flexDirection: "column" }}>
+                                {!chatActiveId ? (
+                                    <div style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", color: "#94a3b8" }}>
+                                        <div style={{ textAlign: "center" }}>
+                                            <span className="material-symbols-outlined" style={{ fontSize: 48, color: "#cbd5e1", display: "block", marginBottom: 8 }}>forum</span>
+                                            <p style={{ fontSize: 14, fontWeight: 600 }}>학생을 선택하세요</p>
+                                        </div>
+                                    </div>
+                                ) : (
+                                    <>
+                                        {/* Chat header */}
+                                        <div style={{ padding: "12px 20px", borderBottom: "1px solid #f1f5f9", display: "flex", alignItems: "center", gap: 10 }}>
+                                            <div style={{ width: 36, height: 36, borderRadius: 10, background: "#e2e8f0", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 800, fontSize: 14, color: "#64748b" }}>
+                                                {chatStudents.find(s => s.id === chatActiveId)?.name[0] || "?"}
+                                            </div>
+                                            <span style={{ fontSize: 15, fontWeight: 700, color: "#172554" }}>{chatStudents.find(s => s.id === chatActiveId)?.name}</span>
+                                        </div>
+
+                                        {/* Messages */}
+                                        <div id="chatScroll" style={{ flex: 1, overflowY: "auto", padding: "16px 20px", background: "#f8fafc" }}>
+                                            {chatMessages.map(m => {
+                                                const isMine = m.sender_id !== chatActiveId;
+                                                return (
+                                                    <div key={m.id} style={{ display: "flex", justifyContent: isMine ? "flex-end" : "flex-start", marginBottom: 8 }}>
+                                                        <div style={{ maxWidth: "65%" }}>
+                                                            <div style={{
+                                                                padding: "10px 14px",
+                                                                borderRadius: isMine ? "14px 14px 4px 14px" : "14px 14px 14px 4px",
+                                                                background: isMine ? "#2563eb" : "#fff",
+                                                                color: isMine ? "#fff" : "#0f172a",
+                                                                fontSize: 13, lineHeight: 1.6,
+                                                                boxShadow: "0 1px 3px rgba(0,0,0,0.05)",
+                                                                whiteSpace: "pre-wrap",
+                                                            }}>{m.content}</div>
+                                                            <span style={{ fontSize: 10, color: "#94a3b8", marginTop: 2, display: "block", textAlign: isMine ? "right" : "left" }}>
+                                                                {new Date(m.created_at).toLocaleTimeString("ko-KR", { hour: "2-digit", minute: "2-digit" })}
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                );
+                                            })}
+                                        </div>
+
+                                        {/* Input */}
+                                        <div style={{ padding: "12px 16px", borderTop: "1px solid #f1f5f9", display: "flex", gap: 8 }}>
+                                            <input
+                                                value={chatInput}
+                                                onChange={e => setChatInput(e.target.value)}
+                                                onKeyDown={e => { if (e.key === "Enter") { e.preventDefault(); sendChat(); } }}
+                                                placeholder="답장을 입력하세요..."
+                                                style={{
+                                                    flex: 1, padding: "10px 14px", borderRadius: 10,
+                                                    border: "1px solid #e2e8f0", fontSize: 13, outline: "none",
+                                                }}
+                                            />
+                                            <button
+                                                onClick={sendChat}
+                                                disabled={chatSending || !chatInput.trim()}
+                                                style={{
+                                                    padding: "10px 20px", borderRadius: 10, border: "none",
+                                                    background: chatInput.trim() ? "#2563eb" : "#e2e8f0",
+                                                    color: chatInput.trim() ? "#fff" : "#94a3b8",
+                                                    fontWeight: 700, fontSize: 13, cursor: chatInput.trim() ? "pointer" : "default",
+                                                }}>전송</button>
+                                        </div>
+                                    </>
+                                )}
+                            </div>
                         </div>
                     </motion.div>
                 )}

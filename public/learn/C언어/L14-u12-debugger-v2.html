@@ -1,0 +1,1562 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>코딩쏙 교재 — 디버거 사용법 -- GDB/VS 디버거</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+
+  :root {
+    --navy: #1a2e4a;
+    --navy-mid: #2c4a6e;
+    --navy-light: #3d6590;
+    --orange: #e07830;
+    --orange-light: #f5e6d8;
+    --white: #ffffff;
+    --bg: #f7f8fa;
+    --bg-warm: #faf9f7;
+    --gray-50: #f9fafb;
+    --gray-100: #f3f4f6;
+    --gray-200: #e5e7eb;
+    --gray-300: #d1d5db;
+    --gray-400: #9ca3af;
+    --gray-500: #6b7280;
+    --gray-600: #4b5563;
+    --gray-700: #374151;
+    --gray-800: #1f2937;
+    --text: #2d3748;
+    --green: #16a34a;
+    --green-bg: #dcfce7;
+    --red: #dc2626;
+    --red-bg: #fee2e2;
+    --blue: #2563eb;
+    --blue-bg: #dbeafe;
+    --yellow-bg: #fef9c3;
+    --font: 'Noto Sans KR', sans-serif;
+    --mono: 'JetBrains Mono', 'Consolas', monospace;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: var(--font); background: #e8eaed; font-size: 15px; }
+
+  /* ========== PAGE ========== */
+  .page {
+    width: 210mm;
+    min-height: 295mm;
+    margin: 24px auto;
+    background: var(--white);
+    box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* ========== PAGE 1: CHAPTER START ========== */
+  .chapter-page {
+    display: flex;
+    min-height: 295mm;
+  }
+
+  .chapter-sidebar {
+    width: 10px;
+    background: var(--navy);
+    flex-shrink: 0;
+  }
+
+  .chapter-accent-bar {
+    width: 7px;
+    background: var(--orange);
+    flex-shrink: 0;
+  }
+
+  .chapter-body {
+    flex: 1;
+    padding: 70px 65px 50px 55px;
+    position: relative;
+  }
+
+  .chapter-watermark {
+    position: absolute;
+    top: -10px;
+    right: -15px;
+    font-size: 280px;
+    font-weight: 900;
+    color: rgba(180,195,212,0.35);
+    line-height: 1;
+    pointer-events: none;
+    letter-spacing: -10px;
+  }
+
+  .chapter-label {
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--navy-mid);
+    letter-spacing: 2px;
+    margin-bottom: 4px;
+  }
+
+  .chapter-title {
+    font-size: 44px;
+    font-weight: 900;
+    color: var(--navy);
+    line-height: 1.15;
+    margin-bottom: 12px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .chapter-sub {
+    font-size: 16px;
+    color: var(--gray-500);
+    font-weight: 400;
+    margin-bottom: 20px;
+    padding-bottom: 28px;
+    border-bottom: 1px solid var(--gray-200);
+  }
+
+  /* Learning objectives */
+  .obj-title {
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--navy);
+    margin-bottom: 16px;
+    margin-top: 32px;
+  }
+
+  .obj-list {
+    list-style: none;
+    margin-bottom: 40px;
+  }
+
+  .obj-list li {
+    padding: 5px 0 5px 24px;
+    position: relative;
+    font-size: 15px;
+    color: var(--gray-700);
+    line-height: 1.6;
+  }
+
+  .obj-list li::before {
+    content: '•';
+    position: absolute;
+    left: 8px;
+    color: var(--navy-mid);
+    font-weight: 700;
+  }
+
+  /* Prerequisites flow */
+  .prereq-title {
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--navy);
+    margin-bottom: 18px;
+  }
+
+  .prereq-flow {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    margin-bottom: 44px;
+  }
+
+  .prereq-item {
+    padding: 9px 22px;
+    border: 1.5px solid var(--gray-300);
+    border-radius: 50px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--gray-600);
+    background: var(--white);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+  }
+
+  .prereq-item.current {
+    border-color: var(--navy);
+    color: var(--navy);
+    font-weight: 700;
+    background: #edf2f7;
+    box-shadow: 0 2px 6px rgba(26,46,74,0.12);
+  }
+
+  .prereq-arrow {
+    width: 36px;
+    text-align: center;
+    color: var(--gray-300);
+    font-size: 18px;
+    font-weight: 300;
+  }
+
+  /* Predict box */
+  .predict-box {
+    background: var(--gray-50);
+    border: 1.5px solid var(--gray-200);
+    border-radius: 12px;
+    padding: 24px 28px;
+  }
+
+  .predict-label {
+    display: inline-block;
+    background: var(--orange);
+    color: var(--white);
+    font-size: 12px;
+    font-weight: 600;
+    padding: 3px 12px;
+    border-radius: 4px;
+    margin-bottom: 14px;
+    letter-spacing: 0.5px;
+  }
+
+  .predict-q {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--navy);
+    margin-bottom: 16px;
+  }
+
+  .predict-code {
+    background: var(--white);
+    border: 1px solid var(--gray-200);
+    border-radius: 8px;
+    padding: 14px 18px;
+    font-family: var(--mono);
+    font-size: 13px;
+    line-height: 1.65;
+    color: var(--gray-700);
+  }
+
+  /* ========== PAGE 2: CORE CONTENT ========== */
+  .content-page {
+    padding: 55px 65px;
+  }
+
+  .unit-header-bar {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    margin-bottom: 8px;
+  }
+
+  .unit-tag {
+    font-size: 12px;
+    color: var(--orange);
+    font-weight: 600;
+    letter-spacing: 1px;
+  }
+
+  .unit-title-sm {
+    font-size: 14px;
+    color: var(--gray-400);
+    font-weight: 400;
+  }
+
+  .section-title {
+    font-size: 24px;
+    font-weight: 800;
+    color: var(--navy);
+    margin-bottom: 24px;
+    margin-top: 8px;
+    padding-left: 16px;
+    border-left: 5px solid var(--orange);
+  }
+
+  p {
+    font-size: 15.5px;
+    line-height: 1.9;
+    color: var(--text);
+    margin-bottom: 18px;
+  }
+
+  p code {
+    font-family: var(--mono);
+    font-size: 13.5px;
+    background: #f1f3f5;
+    padding: 2px 7px;
+    border-radius: 4px;
+    color: var(--navy);
+    font-weight: 500;
+  }
+
+  /* Code block */
+  .code-wrap {
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    border: 1px solid var(--gray-200);
+    margin: 22px 0;
+  }
+
+  .code-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 9px 18px;
+    background: var(--navy);
+    font-size: 12px;
+  }
+
+  .code-bar-lang {
+    font-family: var(--mono);
+    font-weight: 600;
+    color: var(--white);
+  }
+
+  .code-bar-file {
+    color: rgba(255,255,255,0.6);
+    font-weight: 400;
+  }
+
+  .code-body {
+    background: #f8f9fb;
+    padding: 20px 0;
+    font-family: var(--mono);
+    font-size: 13.5px;
+    line-height: 1.75;
+    border: 1px solid var(--gray-200);
+    border-top: none;
+    border-radius: 0 0 12px 12px;
+  }
+
+  .code-line {
+    display: flex;
+    padding: 0 20px;
+  }
+
+  .code-line:hover {
+    background: #f0f4f8;
+  }
+
+  .code-line.highlighted {
+    background: #fff8e1;
+  }
+
+  .ln {
+    width: 30px;
+    text-align: right;
+    color: #b8bfc8;
+    font-size: 12px;
+    margin-right: 18px;
+    user-select: none;
+    flex-shrink: 0;
+    padding-top: 1px;
+  }
+
+  .lc { flex: 1; }
+
+  /* syntax */
+  .s-pp { color: #8b5cf6; font-weight: 600; }
+  .s-str { color: #d97706; }
+  .s-type { color: #2563eb; font-weight: 500; }
+  .s-kw { color: #7c3aed; font-weight: 500; }
+  .s-fn { color: #059669; font-weight: 500; }
+  .s-num { color: #dc2626; }
+  .s-cm { color: #9ca3af; font-style: italic; }
+
+  /* Output block */
+  .output-wrap {
+    border-radius: 10px;
+    overflow: hidden;
+    margin: 10px 0 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    border: 1px solid #d1d5db;
+  }
+
+  .output-bar {
+    padding: 9px 18px;
+    background: #374151;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--white);
+    letter-spacing: 0.5px;
+  }
+
+  .output-body {
+    padding: 16px 20px;
+    font-family: var(--mono);
+    font-size: 13.5px;
+    line-height: 1.7;
+    color: var(--gray-800);
+    background: #f1f5f9;
+    border: 1px solid var(--gray-200);
+    border-top: none;
+    border-radius: 0 0 10px 10px;
+  }
+
+  /* Callout */
+  .tip {
+    margin: 28px 0;
+    padding: 18px 24px;
+    background: #dbeafe;
+    border-left: 5px solid #2563eb;
+    border-radius: 0 12px 12px 0;
+    font-size: 14.5px;
+    line-height: 1.8;
+    color: var(--text);
+  }
+
+  .tip-label {
+    font-weight: 700;
+    color: #2563eb;
+    font-size: 13px;
+    display: block;
+    margin-bottom: 4px;
+  }
+
+  .warn {
+    margin: 28px 0;
+    padding: 18px 24px;
+    background: #fef3c7;
+    border-left: 5px solid #d97706;
+    border-radius: 0 12px 12px 0;
+    font-size: 14.5px;
+    line-height: 1.8;
+  }
+
+  .warn-label {
+    font-weight: 700;
+    color: #d97706;
+    font-size: 13px;
+    display: block;
+    margin-bottom: 4px;
+  }
+
+  .note-box {
+    margin: 28px 0;
+    padding: 18px 24px;
+    background: #e2e8f0;
+    border-left: 5px solid #64748b;
+    border-radius: 0 12px 12px 0;
+    font-size: 14.5px;
+    line-height: 1.8;
+  }
+
+  .note-label {
+    font-weight: 700;
+    color: var(--gray-600);
+    font-size: 13px;
+    display: block;
+    margin-bottom: 4px;
+  }
+
+  /* Trace table */
+  table.trace {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    margin: 28px 0;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+    font-size: 14px;
+  }
+
+  table.trace th {
+    background: var(--navy);
+    color: var(--white);
+    padding: 10px 16px;
+    text-align: left;
+    font-weight: 500;
+    font-size: 13px;
+  }
+
+  table.trace td {
+    padding: 10px 16px;
+    border-bottom: 1px solid var(--gray-200);
+    color: var(--gray-700);
+  }
+
+  table.trace tr:nth-child(even) td { background: var(--gray-50); }
+  table.trace tr:last-child td { border-bottom: none; }
+
+  table.trace td code {
+    font-family: var(--mono);
+    font-size: 12.5px;
+    background: #eef1f5;
+    padding: 2px 6px;
+    border-radius: 4px;
+    color: var(--navy);
+  }
+
+  /* ========== PAGE 3: PROBLEMS ========== */
+  .problems-header {
+    margin-bottom: 8px;
+  }
+
+  .problems-chapter-ref {
+    font-size: 13px;
+    color: var(--gray-500);
+    margin-bottom: 4px;
+  }
+
+  .problems-title {
+    font-size: 28px;
+    font-weight: 800;
+    color: var(--navy);
+    margin-bottom: 24px;
+  }
+
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 16px;
+  }
+
+  .prob-card {
+    background: var(--white);
+    border: 1px solid var(--gray-200);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 3px 15px rgba(0,0,0,0.06);
+  }
+
+  .prob-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 16px;
+    background: var(--navy);
+  }
+
+  .prob-num {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--white);
+  }
+
+  .diff {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    font-size: 12px;
+    font-weight: 800;
+  }
+
+  .diff-basic { background: #22c55e; color: white; }
+  .diff-mid { background: #f59e0b; color: white; }
+  .diff-hard { background: #ef4444; color: white; }
+
+  .prob-desc {
+    font-size: 13.5px;
+    line-height: 1.65;
+    color: var(--gray-600);
+    margin-bottom: 10px;
+    padding: 14px 16px 0;
+  }
+
+  .prob-code {
+    background: var(--gray-50);
+    border: 1px solid var(--gray-200);
+    border-radius: 6px;
+    padding: 10px 14px;
+    margin: 0 16px 16px;
+    font-family: var(--mono);
+    font-size: 12.5px;
+    line-height: 1.55;
+    color: var(--gray-600);
+  }
+
+  /* Competition section */
+  .comp-section {
+    margin-top: 32px;
+    padding-top: 24px;
+    border-top: 2px solid var(--navy);
+  }
+
+  .comp-title {
+    font-size: 22px;
+    font-weight: 800;
+    color: var(--navy);
+    margin-bottom: 20px;
+  }
+
+  .comp-card {
+    background: var(--white);
+    border: 1.5px solid var(--gray-200);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 18px rgba(0,0,0,0.06);
+  }
+
+  .comp-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 16px;
+    background: #0f766e;
+  }
+
+  .comp-header .comp-name {
+    color: var(--white);
+    font-size: 15px;
+    font-weight: 700;
+    margin: 0;
+  }
+
+  .comp-inner {
+    padding: 14px 18px 18px;
+  }
+
+  .comp-badge {
+    display: inline-block;
+    padding: 3px 12px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 700;
+  }
+
+  .badge-bj { background: #93c5fd; color: #1e3a5f; }
+  .badge-cu { background: #c4b5fd; color: #3b1f7e; }
+  .badge-pg { background: #7dd3fc; color: #0c4a6e; }
+
+  .comp-name {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--navy);
+    margin-bottom: 6px;
+  }
+
+  .comp-desc {
+    font-size: 14px;
+    color: var(--gray-600);
+    line-height: 1.7;
+    margin-bottom: 14px;
+  }
+
+  .io-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+
+  .io-card {
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid var(--gray-200);
+  }
+
+  .io-h {
+    padding: 6px 14px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--gray-600);
+    background: #e2e8f0;
+  }
+
+  .io-c {
+    padding: 10px 14px;
+    font-family: var(--mono);
+    font-size: 13px;
+    line-height: 1.5;
+    background: var(--white);
+  }
+
+  /* ========== DEBUG LAB ========== */
+  .debug-section {
+    margin: 24px 0;
+    border: 2px solid var(--red);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+
+  .debug-bar {
+    background: var(--red);
+    color: var(--white);
+    padding: 10px 20px;
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 1px;
+  }
+
+  .debug-body {
+    padding: 20px;
+    background: #fef2f2;
+  }
+
+  /* 10축 connection */
+  .connect-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 16px;
+    margin: 28px 0;
+  }
+
+  .connect-card {
+    border-radius: 12px;
+    padding: 20px;
+    text-align: center;
+    border: 1px solid var(--gray-200);
+    box-shadow: 0 3px 14px rgba(0,0,0,0.05);
+  }
+
+  .connect-card h5 {
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 8px;
+  }
+
+  .connect-card p {
+    font-size: 13px;
+    margin: 0;
+    color: var(--gray-600);
+    line-height: 1.6;
+  }
+
+  .cc1 { border-top: 3px solid #8b5cf6; }
+  .cc1 h5 { color: #8b5cf6; }
+  .cc2 { border-top: 3px solid var(--green); }
+  .cc2 h5 { color: var(--green); }
+  .cc3 { border-top: 3px solid var(--navy); }
+  .cc3 h5 { color: var(--navy); }
+
+  /* PAGE NUMBER */
+  .page-num {
+    position: absolute;
+    bottom: 20px;
+    right: 30px;
+    font-size: 12px;
+    color: var(--gray-400);
+  }
+
+  /* WARMUP */
+  .warmup-box {
+    background: #e0e7f1;
+    border-radius: 12px;
+    padding: 24px 28px;
+    margin: 28px 0;
+    border: 2px solid #c7d2e0;
+  }
+
+  .warmup-title {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--navy);
+    margin-bottom: 14px;
+  }
+
+  .wq {
+    padding: 9px 16px;
+    background: var(--white);
+    border-radius: 8px;
+    margin-bottom: 8px;
+    font-size: 14px;
+    border: 1px solid var(--gray-200);
+    color: var(--gray-700);
+  }
+
+  .wq b { color: var(--navy); margin-right: 6px; }
+  .wq .hint { color: var(--gray-400); font-size: 13px; }
+
+  /* ===== CONTEST PROBLEMS PAGE ===== */
+  .contest-page-wrap .chapter-page {
+    min-height: auto;
+  }
+
+  .contest-page-wrap .chapter-page > div:last-child {
+    min-width: 0;
+    overflow-wrap: break-word;
+    word-break: break-word;
+  }
+
+  .contest-card {
+    background: white;
+    border: 1.5px solid var(--gray-200);
+    border-radius: 12px;
+    margin-bottom: 28px;
+    overflow: hidden;
+    break-inside: avoid;
+  }
+
+  .contest-header {
+    background: var(--navy);
+    color: white;
+    padding: 14px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .contest-num-source {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .contest-num {
+    font-weight: 700;
+    font-size: 16px;
+  }
+
+  .contest-source {
+    background: rgba(255,255,255,0.15);
+    padding: 3px 10px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 500;
+  }
+
+  .contest-body {
+    padding: 20px 24px 24px;
+  }
+
+  .contest-question {
+    font-size: 15px;
+    line-height: 1.7;
+    color: var(--text);
+    margin: 0 0 16px;
+    word-break: break-word;
+    overflow-wrap: break-word;
+  }
+
+  .contest-expected {
+    background: #1e293b;
+    border-radius: 8px;
+    overflow: hidden;
+    margin-bottom: 20px;
+  }
+
+  .contest-expected-label {
+    background: #334155;
+    color: #94a3b8;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 6px 14px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .contest-expected-body {
+    color: #e2e8f0;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    line-height: 1.6;
+    padding: 12px 16px;
+    margin: 0;
+    white-space: pre;
+  }
+
+  .contest-write-area {
+    border: 2px dashed var(--gray-300);
+    border-radius: 10px;
+    overflow: hidden;
+    transition: border-color 0.2s;
+  }
+
+  .contest-write-area:focus-within {
+    border-color: var(--orange);
+    border-style: solid;
+  }
+
+  .contest-write-label {
+    background: var(--bg);
+    color: var(--gray-500);
+    font-size: 12px;
+    font-weight: 600;
+    padding: 8px 14px;
+    border-bottom: 1px solid var(--gray-200);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .contest-textarea {
+    width: 100%;
+    min-height: 200px;
+    padding: 16px 18px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    line-height: 1.7;
+    color: var(--text);
+    background: #fafbfc;
+    border: none;
+    outline: none;
+    resize: vertical;
+    tab-size: 4;
+    box-sizing: border-box;
+  }
+
+  .contest-textarea::placeholder {
+    color: var(--gray-300);
+  }
+
+  @media print {
+    body { background: white; }
+    .page { box-shadow: none; margin: 0; page-break-after: always; }
+    .contest-textarea { border: 1px solid var(--gray-300); min-height: 180px; }
+  }
+
+</style>
+</head>
+<body>
+
+<div class="page">
+  <div class="chapter-page">
+    <div class="chapter-sidebar"></div>
+    <div class="chapter-accent-bar"></div>
+    <div class="chapter-body">
+      <div class="chapter-watermark">12</div>
+      <div class="chapter-label">Chapter 12</div>
+      <h1 class="chapter-title">디버거 사용법 -- GDB/VS 디버거</h1>
+      <p class="chapter-sub">GDB와 Visual Studio 디버거로 프로그램을 단계 실행하고 변수를 검사하는 방법을 배웁니다.</p>
+
+      <h3 class="obj-title">이 유닛에서 배우는 것</h3>
+      <ul class="obj-list">
+        <li>gcc -g 옵션으로 디버그 정보를 포함하여 컴파일할 수 있습니다.</li>
+        <li>GDB 기본 명령어(break, run, next, step, print, watch)를 사용할 수 있습니다.</li>
+        <li>중단점을 설정하고 단계 실행으로 프로그램 흐름을 추적할 수 있습니다.</li>
+        <li>VS Code/Visual Studio 디버거를 설정하고 사용할 수 있습니다.</li>
+      </ul>
+
+      <h3 class="prereq-title">선수 학습</h3>
+      <div class="prereq-flow">
+        <div class="prereq-item current">L14-U11</div>
+      </div>
+
+      <div class="predict-box">
+        <div class="predict-label">예측해 봅시다</div>
+        <div class="predict-q">gcc -g main.c -o main으로 컴파일한 파일과 gcc main.c -o main으로 컴파일한 파일의 크기가 다릅니다. 어느 쪽이 더 크고, 그 이유는 무엇입니까?</div>
+        
+      </div>
+
+      <span class="page-num">1</span>
+    </div>
+  </div>
+</div>
+<div class="page">
+  <div class="content-page">
+    <div class="unit-header-bar">
+      <span class="unit-tag">UNIT 12</span>
+      <span class="unit-title-sm">디버거 사용법 -- GDB/VS 디버거</span>
+    </div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 1</span><p style="margin:0;font-size:14px">프로그램에 버그가 있을 때 printf를 넣어서 변수 값을 확인한 경험이 있습니까?</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 2</span><p style="margin:0;font-size:14px">디버거를 사용하면 프로그램을 한 줄씩 실행할 수 있습니다. 이것이 printf 디버깅보다 유리한 점은 무엇입니까?</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 3</span><p style="margin:0;font-size:14px">중단점(breakpoint)이란 무엇이라고 생각합니까?</p></div>
+<h2 class="section-title">예측</h2>
+<p>undefined</p>
+<h2 class="section-title">이야기</h2>
+<p>undefined</p>
+<h2 class="section-title">핵심 개념</h2>
+<div class="note-box"><span class="note-label"></span>
+<div style="font-weight:700;margin-bottom:6px;color:#1a2e4a">디버거란?</div>디버거(debugger)는 프로그램의 실행을 제어하고 내부 상태를 관찰하는 도구입니다.<br><br>┌──────────────┬─────────────────────┬─────────────────────┐<br>│     항목      │   printf 디버깅      │      디버거          │<br>├──────────────┼─────────────────────┼─────────────────────┤<br>│ 준비 작업     │ printf 문 삽입/삭제  │ 중단점 설정          │<br>│ 실행 제어     │ 불가능               │ 한 줄씩 실행 가능    │<br>│ 변수 검사     │ 미리 출력문 필요     │ 실시간 검사 가능     │<br>│ 코드 수정     │ 필요 (나중에 삭제)   │ 불필요               │<br>│ 호출 스택     │ 확인 어려움          │ backtrace로 즉시 확인│<br>│ 조건부 중단   │ if + printf 필요     │ 조건부 중단점 설정   │<br>│ 학습 비용     │ 낮음                 │ 초기 학습 필요       │<br>└──────────────┴─────────────────────┴─────────────────────┘<br><br>printf 디버깅은 간단한 버그에 효과적이지만, 복잡한 버그에는 디버거가 훨씬 효율적입니다.</div>
+<h2 class="section-title">gcc -g 컴파일과 GDB 시작</h2>
+<p>undefined</p>
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc"># <span class="s-num">1</span>단계: -g 옵션으로 컴파일</span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc">gcc -g main.c -o main</span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">4</span><span class="lc"># <span class="s-num">2</span>단계: GDB 시작</span></div>
+<div class="code-line"><span class="ln">5</span><span class="lc">gdb ./main</span></div>
+<div class="code-line"><span class="ln">6</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">7</span><span class="lc"># GDB 프롬프트가 나타남</span></div>
+<div class="code-line"><span class="ln">8</span><span class="lc">(gdb) _</span></div>
+</div>
+</div>
+<div class="note-box"><span class="note-label"></span>
+<div style="font-weight:700;margin-bottom:6px;color:#1a2e4a">중요: -O2와 -g를 함께 쓰지 마십시오</div>gcc -O2 -g main.c -o main<br><br>최적화 옵션(-O2)을 켜면 컴파일러가 코드를 재배치하거나 변수를 제거합니다.<br>디버거에서 변수가 'optimized out'으로 표시되거나, 줄 번호가 뒤섞여 보입니다.<br>디버깅할 때는 최적화 옵션을 끄십시오: gcc -g main.c -o main</div>
+<h2 class="section-title">GDB 핵심 명령어</h2>
+<div class="note-box"><span class="note-label"></span>
+<div style="font-weight:700;margin-bottom:6px;color:#1a2e4a">GDB 명령어 비교표</div>┌──────────────┬──────────┬───────────────────────────────────┐<br>│    명령어     │  약자    │            설명                    │<br>├──────────────┼──────────┼───────────────────────────────────┤<br>│ break main   │ b main   │ main 함수 시작에 중단점 설정       │<br>│ break 15     │ b 15     │ 15번째 줄에 중단점 설정            │<br>│ run          │ r        │ 프로그램 실행 시작                 │<br>│ next         │ n        │ 다음 줄 실행 (함수 내부 진입 안 함)│<br>│ step         │ s        │ 다음 줄 실행 (함수 내부로 진입)    │<br>│ continue     │ c        │ 다음 중단점까지 실행 계속          │<br>│ print x      │ p x      │ 변수 x의 현재 값 출력              │<br>│ print/x val  │ p/x val  │ 16진수로 값 출력                   │<br>│ watch x      │          │ x 값이 변할 때마다 자동 중단       │<br>│ backtrace    │ bt       │ 현재 호출 스택 표시                │<br>│ info locals  │          │ 현재 함수의 지역 변수 모두 표시    │<br>│ list         │ l        │ 현재 위치 주변 소스 코드 표시      │<br>│ quit         │ q        │ GDB 종료                          │<br>└──────────────┴──────────┴───────────────────────────────────┘</div>
+<h2 class="section-title">중단점 설정과 변수 검사 실습</h2>
+<p>undefined</p>
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc"><span class="s-pp">#include</span> <span class="s-str">&lt;stdio.h&gt;</span></span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">sum_array</span>(<span class="s-type">int</span> arr[], <span class="s-type">int</span> n) {</span></div>
+<div class="code-line"><span class="ln">4</span><span class="lc">    <span class="s-type">int</span> total = <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">5</span><span class="lc">    <span class="s-kw">for</span> (<span class="s-type">int</span> i = <span class="s-num">0</span>; i &lt;= n; i++) {   <span class="s-cm">/* 버그: i &lt; n이어야 함 */</span></span></div>
+<div class="code-line"><span class="ln">6</span><span class="lc">        total += arr[i];</span></div>
+<div class="code-line"><span class="ln">7</span><span class="lc">    }</span></div>
+<div class="code-line"><span class="ln">8</span><span class="lc">    <span class="s-kw">return</span> total;</span></div>
+<div class="code-line"><span class="ln">9</span><span class="lc">}</span></div>
+<div class="code-line"><span class="ln">10</span><span class="lc"></span></div>
+<div class="code-line"><span class="ln">11</span><span class="lc"><span class="s-type">int</span> <span class="s-fn">main</span>(<span class="s-type">void</span>) {</span></div>
+<div class="code-line"><span class="ln">12</span><span class="lc">    <span class="s-type">int</span> data[] = {<span class="s-num">10</span>, <span class="s-num">20</span>, <span class="s-num">30</span>, <span class="s-num">40</span>, <span class="s-num">50</span>};</span></div>
+<div class="code-line"><span class="ln">13</span><span class="lc">    <span class="s-type">int</span> result = <span class="s-fn">sum_array</span>(data, <span class="s-num">5</span>);</span></div>
+<div class="code-line"><span class="ln">14</span><span class="lc">    <span class="s-fn">printf</span>(<span class="s-str">"합계: %d\n"</span>, result);    <span class="s-cm">/* 예상: 150, 실제: 쓰레기 값 */</span></span></div>
+<div class="code-line"><span class="ln">15</span><span class="lc">    <span class="s-kw">return</span> <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">16</span><span class="lc">}</span></div>
+</div>
+</div>
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc">$ gcc -g bug_sum.c -o bug_sum</span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc">$ gdb ./bug_sum</span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc">(gdb) <span class="s-kw">break</span> sum_array        # 함수에 중단점 설정</span></div>
+<div class="code-line"><span class="ln">4</span><span class="lc">Breakpoint <span class="s-num">1</span> at 0x...: file bug_sum.c, line <span class="s-num">4</span>.</span></div>
+<div class="code-line"><span class="ln">5</span><span class="lc">(gdb) run                     # 프로그램 실행</span></div>
+<div class="code-line"><span class="ln">6</span><span class="lc">Breakpoint <span class="s-num">1</span>, <span class="s-fn">sum_array</span>(arr=0x..., n=<span class="s-num">5</span>) at bug_sum.c:<span class="s-num">4</span></span></div>
+<div class="code-line"><span class="ln">7</span><span class="lc"><span class="s-num">4</span>	    <span class="s-type">int</span> total = <span class="s-num">0</span>;</span></div>
+<div class="code-line"><span class="ln">8</span><span class="lc">(gdb) next                    # 한 줄 실행</span></div>
+<div class="code-line"><span class="ln">9</span><span class="lc"><span class="s-num">5</span>	    <span class="s-kw">for</span> (<span class="s-type">int</span> i = <span class="s-num">0</span>; i &lt;= n; i++) {</span></div>
+<div class="code-line"><span class="ln">10</span><span class="lc">(gdb) print n                 # n 값 확인</span></div>
+<div class="code-line"><span class="ln">11</span><span class="lc">$<span class="s-num">1</span> = <span class="s-num">5</span></span></div>
+<div class="code-line"><span class="ln">12</span><span class="lc">(gdb) watch total             # total 값 변화 감시</span></div>
+<div class="code-line"><span class="ln">13</span><span class="lc">Hardware watchpoint <span class="s-num">2</span>: total</span></div>
+<div class="code-line"><span class="ln">14</span><span class="lc">(gdb) <span class="s-kw">continue</span>                # 계속 실행</span></div>
+<div class="code-line"><span class="ln">15</span><span class="lc">Hardware watchpoint <span class="s-num">2</span>: total</span></div>
+<div class="code-line"><span class="ln">16</span><span class="lc">Old value = <span class="s-num">0</span></span></div>
+<div class="code-line"><span class="ln">17</span><span class="lc">New value = <span class="s-num">10</span>                # i=<span class="s-num">0</span>: arr[<span class="s-num">0</span>]=<span class="s-num">10</span></span></div>
+<div class="code-line"><span class="ln">18</span><span class="lc">(gdb) <span class="s-kw">continue</span></span></div>
+<div class="code-line"><span class="ln">19</span><span class="lc">Old value = <span class="s-num">10</span></span></div>
+<div class="code-line"><span class="ln">20</span><span class="lc">New value = <span class="s-num">30</span>                # i=<span class="s-num">1</span>: arr[<span class="s-num">1</span>]=<span class="s-num">20</span> 누적</span></div>
+<div class="code-line"><span class="ln">21</span><span class="lc">(gdb) <span class="s-kw">continue</span></span></div>
+<div class="code-line"><span class="ln">22</span><span class="lc">Old value = <span class="s-num">30</span></span></div>
+<div class="code-line"><span class="ln">23</span><span class="lc">New value = <span class="s-num">60</span>                # i=<span class="s-num">2</span>: arr[<span class="s-num">2</span>]=<span class="s-num">30</span> 누적</span></div>
+<div class="code-line"><span class="ln">24</span><span class="lc">(gdb) <span class="s-kw">continue</span></span></div>
+<div class="code-line"><span class="ln">25</span><span class="lc">Old value = <span class="s-num">60</span></span></div>
+<div class="code-line"><span class="ln">26</span><span class="lc">New value = <span class="s-num">100</span>               # i=<span class="s-num">3</span>: arr[<span class="s-num">3</span>]=<span class="s-num">40</span> 누적</span></div>
+<div class="code-line"><span class="ln">27</span><span class="lc">(gdb) <span class="s-kw">continue</span></span></div>
+<div class="code-line"><span class="ln">28</span><span class="lc">Old value = <span class="s-num">100</span></span></div>
+<div class="code-line"><span class="ln">29</span><span class="lc">New value = <span class="s-num">150</span>               # i=<span class="s-num">4</span>: arr[<span class="s-num">4</span>]=<span class="s-num">50</span> 누적</span></div>
+<div class="code-line"><span class="ln">30</span><span class="lc">(gdb) <span class="s-kw">continue</span></span></div>
+<div class="code-line"><span class="ln">31</span><span class="lc">Old value = <span class="s-num">150</span></span></div>
+<div class="code-line"><span class="ln">32</span><span class="lc">New value = <span class="s-num">150</span> + ???         # i=<span class="s-num">5</span>: arr[<span class="s-num">5</span>] 범위 초과! 쓰레기 값 추가</span></div>
+<div class="code-line"><span class="ln">33</span><span class="lc">(gdb) print i</span></div>
+<div class="code-line"><span class="ln">34</span><span class="lc">$<span class="s-num">2</span> = <span class="s-num">5</span>                        # i &lt;= <span class="s-fn">n</span>(<span class="s-num">5</span>)이므로 i=<span class="s-num">5</span>도 실행됨 -&gt; 버그!</span></div>
+</div>
+</div>
+<p>undefined</p>
+<h2 class="section-title">VS Code 디버거 설정</h2>
+<p>undefined</p>
+<div class="code-wrap">
+  <div class="code-bar"><span class="code-bar-lang">C</span></div>
+  <div class="code-body"><div class="code-line"><span class="ln">1</span><span class="lc"><span class="s-cm">// .vscode/launch.json</span></span></div>
+<div class="code-line"><span class="ln">2</span><span class="lc">{</span></div>
+<div class="code-line"><span class="ln">3</span><span class="lc">    <span class="s-str">"version"</span>: <span class="s-str">"0.2.0"</span>,</span></div>
+<div class="code-line"><span class="ln">4</span><span class="lc">    <span class="s-str">"configurations"</span>: [</span></div>
+<div class="code-line"><span class="ln">5</span><span class="lc">        {</span></div>
+<div class="code-line"><span class="ln">6</span><span class="lc">            <span class="s-str">"name"</span>: <span class="s-str">"C 디버그"</span>,</span></div>
+<div class="code-line"><span class="ln">7</span><span class="lc">            <span class="s-str">"type"</span>: <span class="s-str">"cppdbg"</span>,</span></div>
+<div class="code-line"><span class="ln">8</span><span class="lc">            <span class="s-str">"request"</span>: <span class="s-str">"launch"</span>,</span></div>
+<div class="code-line"><span class="ln">9</span><span class="lc">            <span class="s-str">"program"</span>: <span class="s-str">"${workspaceFolder}/${fileBasenameNoExtension}"</span>,</span></div>
+<div class="code-line"><span class="ln">10</span><span class="lc">            <span class="s-str">"args"</span>: [],</span></div>
+<div class="code-line"><span class="ln">11</span><span class="lc">            <span class="s-str">"stopAtEntry"</span>: false,</span></div>
+<div class="code-line"><span class="ln">12</span><span class="lc">            <span class="s-str">"cwd"</span>: <span class="s-str">"${workspaceFolder}"</span>,</span></div>
+<div class="code-line"><span class="ln">13</span><span class="lc">            <span class="s-str">"environment"</span>: [],</span></div>
+<div class="code-line"><span class="ln">14</span><span class="lc">            <span class="s-str">"externalConsole"</span>: false,</span></div>
+<div class="code-line"><span class="ln">15</span><span class="lc">            <span class="s-str">"MIMode"</span>: <span class="s-str">"gdb"</span>,</span></div>
+<div class="code-line"><span class="ln">16</span><span class="lc">            <span class="s-str">"preLaunchTask"</span>: <span class="s-str">"gcc-build"</span>,</span></div>
+<div class="code-line"><span class="ln">17</span><span class="lc">            <span class="s-str">"setupCommands"</span>: [</span></div>
+<div class="code-line"><span class="ln">18</span><span class="lc">                {</span></div>
+<div class="code-line"><span class="ln">19</span><span class="lc">                    <span class="s-str">"description"</span>: <span class="s-str">"Enable pretty-printing"</span>,</span></div>
+<div class="code-line"><span class="ln">20</span><span class="lc">                    <span class="s-str">"text"</span>: <span class="s-str">"-enable-pretty-printing"</span>,</span></div>
+<div class="code-line"><span class="ln">21</span><span class="lc">                    <span class="s-str">"ignoreFailures"</span>: true</span></div>
+<div class="code-line"><span class="ln">22</span><span class="lc">                }</span></div>
+<div class="code-line"><span class="ln">23</span><span class="lc">            ]</span></div>
+<div class="code-line"><span class="ln">24</span><span class="lc">        }</span></div>
+<div class="code-line"><span class="ln">25</span><span class="lc">    ]</span></div>
+<div class="code-line"><span class="ln">26</span><span class="lc">}</span></div>
+</div>
+</div>
+<div class="note-box"><span class="note-label"></span>
+<div style="font-weight:700;margin-bottom:6px;color:#1a2e4a">VS Code 디버거 단축키</div>F5        : 디버깅 시작 / 계속 (= GDB run / continue)<br>F9        : 중단점 토글 (= GDB break)<br>F10       : 다음 줄 실행 (= GDB next)<br>F11       : 함수 내부 진입 (= GDB step)<br>Shift+F11 : 함수 밖으로 나가기 (= GDB finish)<br>Ctrl+Shift+Y : 디버그 콘솔 열기<br><br>VS Code는 왼쪽 패널에서 변수 값, 호출 스택, 중단점 목록을 시각적으로 보여줍니다.<br>코드 위에 마우스를 올리면 변수의 현재 값이 툴팁으로 표시됩니다.</div>
+<h2 class="section-title">디버깅 전략</h2>
+<div class="note-box"><span class="note-label"></span>
+<div style="font-weight:700;margin-bottom:6px;color:#1a2e4a">효과적인 디버깅 전략</div>1. 이분 탐색 디버깅<br>   - 코드 중간에 중단점을 설정하여 버그가 앞쪽인지 뒤쪽인지 판별합니다.<br>   - 범위를 절반씩 좁혀가며 버그 위치를 찾습니다.<br>   - 100줄 코드에서 최대 7번(log2(100))의 검사로 버그를 찾을 수 있습니다.<br><br>2. 가설 검증 디버깅<br>   - "이 변수가 이 시점에 이 값일 것이다"라는 가설을 세웁니다.<br>   - 중단점을 설정하고 print로 실제 값을 확인합니다.<br>   - 가설과 다르면 그 지점이 버그 발생 위치입니다.<br><br>3. 역추적 디버깅<br>   - 잘못된 출력이 나오는 지점에서 시작합니다.<br>   - backtrace로 호출 경로를 확인합니다.<br>   - 어떤 함수에서 잘못된 값이 전달되었는지 역으로 추적합니다.</div>
+<h2 class="section-title">Layer 14 전체 총정리</h2>
+<div class="note-box"><span class="note-label"></span>
+<div style="font-weight:700;margin-bottom:6px;color:#1a2e4a">Layer 14 종합 비교표</div>┌─────┬────────────────────┬──────────────────────────────────┐<br>│ U01 │ _Bool과 stdbool.h  │ bool/true/false, 플래그 패턴     │<br>│ U02 │ 비트 연산 AND/OR   │ &, |, ^, ~, 비트 마스킹          │<br>│ U03 │ 비트 시프트        │ <<, >>, 2의 거듭제곱 곱셈/나눗셈 │<br>│ U04 │ 비트 마스크 응용   │ 플래그 집합, 권한 관리            │<br>│ U05 │ 공용체(union)      │ 메모리 공유, 타입 해석            │<br>│ U06 │ 열거형(enum)       │ 이름 있는 상수, 가독성 향상       │<br>│ U07 │ typedef            │ 타입 별칭, 이식성 향상            │<br>│ U08 │ 전처리기 #define   │ 매크로, 조건부 컴파일             │<br>│ U09 │ #include와 헤더    │ 헤더 가드, 선언과 정의 분리       │<br>│ U10 │ 다중 파일 컴파일   │ 분할 컴파일, extern, Makefile     │<br>│ U11 │ Makefile           │ 빌드 자동화, 의존성 관리          │<br>│ U12 │ 디버거 사용법      │ GDB/VS 디버거, 중단점, 단계 실행 │<br>└─────┴────────────────────┴──────────────────────────────────┘<br><br>Layer 14는 C 프로그래밍의 실전 도구를 다루었습니다.<br>비트 연산으로 저수준 데이터를 다루고, 전처리기와 분할 컴파일로 대규모 프로젝트를 관리하며,<br>디버거로 효율적으로 버그를 찾는 능력을 갖추었습니다.</div>
+<h2 class="section-title">에러 체험</h2>
+<div class="note-box"><span class="note-label"></span>
+<div style="font-weight:700;margin-bottom:6px;color:#1a2e4a">에러 1: -g 옵션 없이 디버깅</div>$ gcc main.c -o main<br>$ gdb ./main<br>(gdb) break main<br>Breakpoint 1 at 0x401136<br>(gdb) run<br>(gdb) print x<br>No symbol "x" in current context.<br><br>-g 없이 컴파일하면 디버그 정보가 없어 변수 이름을 찾을 수 없습니다.<br>줄 번호도 표시되지 않아 어디를 실행 중인지 알 수 없습니다.<br>반드시 gcc -g main.c -o main으로 컴파일하십시오.</div>
+<div class="note-box"><span class="note-label"></span>
+<div style="font-weight:700;margin-bottom:6px;color:#1a2e4a">에러 2: 최적화(-O2)와 디버거 충돌</div>$ gcc -O2 -g main.c -o main<br>$ gdb ./main<br>(gdb) break 10<br>(gdb) run<br>(gdb) print counter<br>$1 = <optimized out><br><br>-O2 최적화가 변수를 레지스터에만 저장하거나 제거하여 디버거가 값을 읽을 수 없습니다.<br>next로 한 줄씩 실행할 때 줄 순서가 뒤바뀌어 혼란스럽습니다.<br>디버깅 시에는 최적화를 끄십시오: gcc -g -O0 main.c -o main</div>
+<div class="note-box"><span class="note-label"></span>
+<div style="font-weight:700;margin-bottom:6px;color:#1a2e4a">에러 3: 중단점 위치 실수</div>(gdb) break 1<br>Breakpoint 1 at 0x...: file main.c, line 1.<br>(gdb) run<br><br>1번 줄(#include <stdio.h>)에 중단점을 설정하면 의미가 없습니다.<br>실행 가능한 코드가 있는 줄에 중단점을 설정해야 합니다.<br><br>올바른 예:<br>(gdb) break main          // main 함수 시작<br>(gdb) break 12            // 12번 줄 (실행문이 있는 줄)<br>(gdb) break sum_array     // 특정 함수의 시작</div>
+<h2 class="section-title">설명하기</h2>
+<div class="tip"><span class="tip-label">설명하기</span><p style="margin:0">printf 디버깅과 GDB 디버거의 차이를 비교하고, 어떤 상황에서 디버거를 사용하는 것이 더 효율적인지 구체적인 예를 들어 설명하십시오. next와 step 명령어의 차이도 서술하십시오.</p></div>
+<h2 class="section-title">예제</h2>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 1</span><p style="margin:0;font-size:14px">gcc -g 옵션의 역할을 쓰고, -g 없이 컴파일한 파일에서 gdb가 변수를 찾지 못하는 이유를 설명하십시오.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 2</span><p style="margin:0;font-size:14px">GDB에서 main 함수에 중단점을 설정하고, 프로그램을 실행한 뒤, 변수 x의 값을 출력하는 명령어 3개를 순서대로 쓰십시오.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 3</span><p style="margin:0;font-size:14px">next와 step의 차이를 설명하십시오. add(a, b) 함수 호출문에서 각각 어떻게 동작합니까?</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 4</span><p style="margin:0;font-size:14px">watch total 명령의 역할을 설명하고, 어떤 상황에서 유용한지 서술하십시오.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 5</span><p style="margin:0;font-size:14px">backtrace(bt) 명령이 보여주는 정보를 설명하고, 재귀 함수 디버깅에서 왜 유용한지 서술하십시오.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 6</span><p style="margin:0;font-size:14px">다음 코드에서 GDB를 사용하여 버그를 찾으십시오. 팩토리얼 함수가 잘못된 결과를 반환합니다.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 7</span><p style="margin:0;font-size:14px">조건부 중단점을 사용하여 반복문에서 i가 50일 때만 멈추는 GDB 명령을 작성하십시오.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 8</span><p style="margin:0;font-size:14px">VS Code에서 launch.json의 preLaunchTask 항목의 역할을 설명하고, tasks.json에 gcc -g 빌드 작업을 작성하십시오.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 9</span><p style="margin:0;font-size:14px">이분 탐색 디버깅 전략을 200줄짜리 코드에 적용할 때, 최대 몇 번의 중단점 검사로 버그 위치를 찾을 수 있는지 계산하십시오.</p></div>
+<div class="tip" style="padding:14px 18px"><span class="tip-label" style="font-size:12px">실습 10</span><p style="margin:0;font-size:14px">GDB에서 배열 arr[10]의 전체 내용을 한 번에 출력하는 명령과, 포인터가 가리키는 구조체의 멤버를 출력하는 명령을 작성하십시오.</p></div>
+<h2 class="section-title">대회 기출 문제</h2>
+<h2 class="section-title">대회 기출</h2>
+<h2 class="section-title">요약</h2>
+<div class="warmup-box"><div class="warmup-title">핵심 정리</div><div class="wq"><b>1.</b> 디버거: 프로그램 실행을 제어하고 내부 상태를 관찰하는 도구</div><div class="wq"><b>2.</b> gcc -g: 디버그 정보(줄 번호, 변수명, 타입)를 실행 파일에 포함</div><div class="wq"><b>3.</b> break/run/next/step: 중단점 설정, 실행, 줄 단위 실행, 함수 진입</div><div class="wq"><b>4.</b> print/watch: 변수 값 출력, 값 변경 시 자동 중단</div><div class="wq"><b>5.</b> backtrace: 함수 호출 스택 확인 (재귀 디버깅에 필수)</div><div class="wq"><b>6.</b> VS Code: launch.json 설정, F5/F9/F10/F11 단축키로 시각적 디버깅</div><div class="wq"><b>7.</b> 디버깅 전략: 이분 탐색 디버깅, 가설 검증, 역추적</div><div class="wq"><b>8.</b> Layer 14 완료: bool, 비트 연산, union/enum/typedef, 전처리기, 분할 컴파일, 디버거</div></div>
+
+    <span class="page-num">2</span>
+  </div>
+</div>
+<div class="page">
+  <div class="content-page">
+    <div class="unit-header-bar">
+      <span class="unit-tag">UNIT 12</span>
+      <span class="unit-title-sm">3과목 연결</span>
+    </div>
+<h2 class="section-title">10축 매핑</h2>
+<div class="note-box"><span class="note-label"></span>
+<div style="font-weight:700;margin-bottom:6px;color:#1a2e4a">이 유닛에서 키운 역량</div>C언어 ★★★★★ -- gcc -g 컴파일, GDB 명령어, VS Code 디버거 설정 등 실전 개발 도구를 익혔습니다.<br>컴퓨팅사고력 ★★★★☆ -- 이분 탐색 디버깅, 가설 검증 등 체계적 문제 해결 전략을 훈련했습니다.<br>디버깅 ★★★★★ -- 디버거의 핵심 기능(중단점, 단계 실행, 변수 검사, 감시점)을 직접 사용했습니다.<br>KOI ★★★☆☆ -- 대회 문제 풀이 시 디버거로 틀린 테스트 케이스를 분석하는 능력을 키웠습니다.</div>
+<h2 class="section-title">다음 유닛 예고</h2>
+<p>undefined</p>
+<table class="trace"><thead><tr><th>용어</th><th>설명</th></tr></thead><tbody><tr><td><code>디버거(Debugger)</code></td><td>프로그램의 실행을 제어하고, 중단점에서 멈추고, 변수를 검사할 수 있는 개발 도구입니다.</td></tr><tr><td><code>GDB</code></td><td>GNU Debugger. 리눅스/맥에서 가장 널리 사용되는 C/C++ 디버거입니다.</td></tr><tr><td><code>중단점(Breakpoint)</code></td><td>프로그램 실행을 특정 줄에서 멈추게 하는 표시입니다. GDB에서 break 명령으로 설정합니다.</td></tr><tr><td><code>단계 실행(Step Execution)</code></td><td>프로그램을 한 줄씩 실행하며 상태를 확인하는 방법입니다. next와 step 명령이 있습니다.</td></tr><tr><td><code>감시점(Watchpoint)</code></td><td>특정 변수의 값이 변경될 때 자동으로 실행을 멈추는 기능입니다. watch 명령으로 설정합니다.</td></tr><tr><td><code>호출 스택(Call Stack)</code></td><td>현재 실행 중인 함수와 그 함수를 호출한 함수들의 경로입니다. backtrace로 확인합니다.</td></tr><tr><td><code>launch.json</code></td><td>VS Code에서 디버거 설정을 저장하는 JSON 파일입니다. .vscode 폴더에 위치합니다.</td></tr><tr><td><code>-g 옵션</code></td><td>gcc 컴파일 옵션으로, 실행 파일에 디버그 정보를 포함시킵니다.</td></tr><tr><td><code>이분 탐색 디버깅</code></td><td>코드 중간에 중단점을 놓고 범위를 절반씩 좁혀가며 버그를 찾는 전략입니다.</td></tr></tbody></table>
+
+    <span class="page-num">3</span>
+  </div>
+</div>
+<div class="page contest-page-wrap">
+  <div class="chapter-page">
+    <div class="chapter-sidebar"></div>
+    <div class="chapter-accent-bar"></div>
+    <div style="flex:1; min-width:0; padding:50px 50px 40px 45px; position:relative;">
+      <div class="problems-chapter-ref">Chapter 12: 디버거 사용법 -- GDB/VS 디버거</div>
+      <h2 class="problems-title">대회 문제 (Online Judge)</h2>
+      <p style="font-size:14px; color:#6b7280; margin:-8px 0 24px;">실제 온라인 저지에 출제된 문제입니다. 아래에 코드를 작성한 뒤, 사이트에 제출하여 채점하십시오.</p>
+
+        <div class="contest-card">
+          <div class="contest-header">
+            <div class="contest-num-source">
+              <span class="contest-num">1번</span>
+              <span class="contest-source">백준 1000</span>
+            </div>
+            <span class="diff diff-mid">대회</span>
+          </div>
+          <div class="contest-body">
+            <p class="contest-question">두 정수 A와 B를 입력받아 A+B를 출력하십시오.</p>
+            
+            <div class="contest-write-area">
+              <div class="contest-write-label">코드 작성</div>
+              <textarea class="contest-textarea" rows="12" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="contest-card">
+          <div class="contest-header">
+            <div class="contest-num-source">
+              <span class="contest-num">2번</span>
+              <span class="contest-source">백준 1001</span>
+            </div>
+            <span class="diff diff-mid">대회</span>
+          </div>
+          <div class="contest-body">
+            <p class="contest-question">두 정수 A와 B를 입력받아 A-B를 출력하십시오.</p>
+            
+            <div class="contest-write-area">
+              <div class="contest-write-label">코드 작성</div>
+              <textarea class="contest-textarea" rows="12" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="contest-card">
+          <div class="contest-header">
+            <div class="contest-num-source">
+              <span class="contest-num">3번</span>
+              <span class="contest-source">백준 1008</span>
+            </div>
+            <span class="diff diff-mid">대회</span>
+          </div>
+          <div class="contest-body">
+            <p class="contest-question">두 정수 A와 B를 입력받아 A/B를 소수점 9자리까지 출력하십시오.</p>
+            
+            <div class="contest-write-area">
+              <div class="contest-write-label">코드 작성</div>
+              <textarea class="contest-textarea" rows="12" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="contest-card">
+          <div class="contest-header">
+            <div class="contest-num-source">
+              <span class="contest-num">4번</span>
+              <span class="contest-source">백준 2588</span>
+            </div>
+            <span class="diff diff-mid">대회</span>
+          </div>
+          <div class="contest-body">
+            <p class="contest-question">세 자리 수와 세 자리 수의 곱셈 과정을 출력하십시오. (A) x (B)에서 B의 각 자릿수와 A의 곱, 그리고 최종 결과를 출력합니다.</p>
+            
+            <div class="contest-write-area">
+              <div class="contest-write-label">코드 작성</div>
+              <textarea class="contest-textarea" rows="12" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="contest-card">
+          <div class="contest-header">
+            <div class="contest-num-source">
+              <span class="contest-num">5번</span>
+              <span class="contest-source">백준 8393</span>
+            </div>
+            <span class="diff diff-mid">대회</span>
+          </div>
+          <div class="contest-body">
+            <p class="contest-question">N이 주어졌을 때 1부터 N까지의 합을 구하십시오.</p>
+            
+            <div class="contest-write-area">
+              <div class="contest-write-label">코드 작성</div>
+              <textarea class="contest-textarea" rows="12" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="contest-card">
+          <div class="contest-header">
+            <div class="contest-num-source">
+              <span class="contest-num">6번</span>
+              <span class="contest-source">백준 2738</span>
+            </div>
+            <span class="diff diff-mid">대회</span>
+          </div>
+          <div class="contest-body">
+            <p class="contest-question">N x M 크기의 두 행렬 A, B를 입력받아 A+B를 출력하십시오.</p>
+            
+            <div class="contest-write-area">
+              <div class="contest-write-label">코드 작성</div>
+              <textarea class="contest-textarea" rows="12" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="contest-card">
+          <div class="contest-header">
+            <div class="contest-num-source">
+              <span class="contest-num">7번</span>
+              <span class="contest-source">백준 15596</span>
+            </div>
+            <span class="diff diff-mid">대회</span>
+          </div>
+          <div class="contest-body">
+            <p class="contest-question">정수 N개의 합을 구하는 함수를 작성하십시오.</p>
+            
+            <div class="contest-write-area">
+              <div class="contest-write-label">코드 작성</div>
+              <textarea class="contest-textarea" rows="12" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="contest-card">
+          <div class="contest-header">
+            <div class="contest-num-source">
+              <span class="contest-num">8번</span>
+              <span class="contest-source">백준 4673</span>
+            </div>
+            <span class="diff diff-mid">대회</span>
+          </div>
+          <div class="contest-body">
+            <p class="contest-question">셀프 넘버: 생성자가 없는 수를 셀프 넘버라 합니다. 1~10000 중 셀프 넘버를 모두 출력하십시오.</p>
+            
+            <div class="contest-write-area">
+              <div class="contest-write-label">코드 작성</div>
+              <textarea class="contest-textarea" rows="12" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="contest-card">
+          <div class="contest-header">
+            <div class="contest-num-source">
+              <span class="contest-num">9번</span>
+              <span class="contest-source">백준 1065</span>
+            </div>
+            <span class="diff diff-mid">대회</span>
+          </div>
+          <div class="contest-body">
+            <p class="contest-question">어떤 양의 정수 N이 한수인지 판별하십시오. 한수란 각 자릿수가 등차수열을 이루는 수입니다. 1~N 중 한수의 개수를 출력하십시오.</p>
+            
+            <div class="contest-write-area">
+              <div class="contest-write-label">코드 작성</div>
+              <textarea class="contest-textarea" rows="12" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="contest-card">
+          <div class="contest-header">
+            <div class="contest-num-source">
+              <span class="contest-num">10번</span>
+              <span class="contest-source">백준 1546</span>
+            </div>
+            <span class="diff diff-mid">대회</span>
+          </div>
+          <div class="contest-body">
+            <p class="contest-question">시험 점수를 조작하여 각 점수를 (점수/최대점수)*100으로 변환한 평균을 출력하십시오.</p>
+            
+            <div class="contest-write-area">
+              <div class="contest-write-label">코드 작성</div>
+              <textarea class="contest-textarea" rows="12" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="contest-card">
+          <div class="contest-header">
+            <div class="contest-num-source">
+              <span class="contest-num">1번</span>
+              <span class="contest-source">백준 1629</span>
+            </div>
+            <span class="diff diff-mid">대회</span>
+          </div>
+          <div class="contest-body">
+            <p class="contest-question">A를 B번 곱한 수를 C로 나눈 나머지를 구하십시오.</p>
+            
+            <div class="contest-write-area">
+              <div class="contest-write-label">코드 작성</div>
+              <textarea class="contest-textarea" rows="12" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="contest-card">
+          <div class="contest-header">
+            <div class="contest-num-source">
+              <span class="contest-num">2번</span>
+              <span class="contest-source">백준 2447</span>
+            </div>
+            <span class="diff diff-mid">대회</span>
+          </div>
+          <div class="contest-body">
+            <p class="contest-question">별 찍기 패턴을 재귀로 출력하십시오.</p>
+            
+            <div class="contest-write-area">
+              <div class="contest-write-label">코드 작성</div>
+              <textarea class="contest-textarea" rows="12" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="contest-card">
+          <div class="contest-header">
+            <div class="contest-num-source">
+              <span class="contest-num">3번</span>
+              <span class="contest-source">백준 1074</span>
+            </div>
+            <span class="diff diff-mid">대회</span>
+          </div>
+          <div class="contest-body">
+            <p class="contest-question">Z 모양으로 방문하는 순서를 구하십시오.</p>
+            
+            <div class="contest-write-area">
+              <div class="contest-write-label">코드 작성</div>
+              <textarea class="contest-textarea" rows="12" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="contest-card">
+          <div class="contest-header">
+            <div class="contest-num-source">
+              <span class="contest-num">4번</span>
+              <span class="contest-source">백준 15649</span>
+            </div>
+            <span class="diff diff-mid">대회</span>
+          </div>
+          <div class="contest-body">
+            <p class="contest-question">1부터 N까지 자연수 중 M개를 고른 순열을 출력하십시오.</p>
+            
+            <div class="contest-write-area">
+              <div class="contest-write-label">코드 작성</div>
+              <textarea class="contest-textarea" rows="12" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="contest-card">
+          <div class="contest-header">
+            <div class="contest-num-source">
+              <span class="contest-num">5번</span>
+              <span class="contest-source">백준 15650</span>
+            </div>
+            <span class="diff diff-mid">대회</span>
+          </div>
+          <div class="contest-body">
+            <p class="contest-question">1부터 N까지 자연수 중 M개를 고른 조합을 출력하십시오.</p>
+            
+            <div class="contest-write-area">
+              <div class="contest-write-label">코드 작성</div>
+              <textarea class="contest-textarea" rows="12" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="contest-card">
+          <div class="contest-header">
+            <div class="contest-num-source">
+              <span class="contest-num">6번</span>
+              <span class="contest-source">백준 9663</span>
+            </div>
+            <span class="diff diff-mid">대회</span>
+          </div>
+          <div class="contest-body">
+            <p class="contest-question">N-Queen 문제의 경우의 수를 구하십시오.</p>
+            
+            <div class="contest-write-area">
+              <div class="contest-write-label">코드 작성</div>
+              <textarea class="contest-textarea" rows="12" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="contest-card">
+          <div class="contest-header">
+            <div class="contest-num-source">
+              <span class="contest-num">7번</span>
+              <span class="contest-source">백준 1182</span>
+            </div>
+            <span class="diff diff-mid">대회</span>
+          </div>
+          <div class="contest-body">
+            <p class="contest-question">부분수열의 합이 S가 되는 경우의 수를 구하십시오.</p>
+            
+            <div class="contest-write-area">
+              <div class="contest-write-label">코드 작성</div>
+              <textarea class="contest-textarea" rows="12" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="contest-card">
+          <div class="contest-header">
+            <div class="contest-num-source">
+              <span class="contest-num">8번</span>
+              <span class="contest-source">백준 6588</span>
+            </div>
+            <span class="diff diff-mid">대회</span>
+          </div>
+          <div class="contest-body">
+            <p class="contest-question">골드바흐의 추측을 검증하십시오.</p>
+            
+            <div class="contest-write-area">
+              <div class="contest-write-label">코드 작성</div>
+              <textarea class="contest-textarea" rows="12" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="contest-card">
+          <div class="contest-header">
+            <div class="contest-num-source">
+              <span class="contest-num">9번</span>
+              <span class="contest-source">백준 11758</span>
+            </div>
+            <span class="diff diff-mid">대회</span>
+          </div>
+          <div class="contest-body">
+            <p class="contest-question">세 점의 방향(CCW)을 판별하십시오.</p>
+            
+            <div class="contest-write-area">
+              <div class="contest-write-label">코드 작성</div>
+              <textarea class="contest-textarea" rows="12" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="contest-card">
+          <div class="contest-header">
+            <div class="contest-num-source">
+              <span class="contest-num">10번</span>
+              <span class="contest-source">백준 1987</span>
+            </div>
+            <span class="diff diff-mid">대회</span>
+          </div>
+          <div class="contest-body">
+            <p class="contest-question">알파벳을 중복 없이 지나는 최대 칸 수를 구하십시오.</p>
+            
+            <div class="contest-write-area">
+              <div class="contest-write-label">코드 작성</div>
+              <textarea class="contest-textarea" rows="12" spellcheck="false" placeholder="#include <stdio.h>
+
+int main(void) {
+    
+    return 0;
+}"></textarea>
+            </div>
+          </div>
+        </div>
+      <span class="page-num">4</span>
+    </div>
+  </div>
+</div>
+</body>
+</html>

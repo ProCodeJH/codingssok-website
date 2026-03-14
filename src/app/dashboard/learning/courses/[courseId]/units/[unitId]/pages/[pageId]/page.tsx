@@ -44,7 +44,7 @@ export default function LearningContentPage() {
     const pages = useMemo(() => {
         const basePgs = unit?.pages ?? [];
         if (htmlContentPath && !basePgs.some(p => p.id.endsWith('.0'))) {
-            const textbookPage: Page = { id: `${unit?.unitNumber ?? 0}.0`, title: '교재', type: '페이지' as const, content: `<iframe src="${htmlContentPath}" style="width:100%;min-height:85vh;border:none;border-radius:12px" />` };
+            const textbookPage: Page = { id: `${unit?.unitNumber ?? 0}.0`, title: '교재', type: '페이지' as const, content: `<iframe src="${htmlContentPath}" style="width:100%;height:100%;border:none;display:block" />` };
             return [textbookPage, ...basePgs];
         }
         return basePgs;

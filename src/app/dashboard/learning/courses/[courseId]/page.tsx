@@ -71,6 +71,8 @@ export default function CourseDetailPage() {
     const [activePage, setActivePage] = useState<Page | null>(null);
     const [leftOpen, setLeftOpen] = useState(true);
     const [rightOpen, setRightOpen] = useState(true);
+    const [bookView, setBookView] = useState(false);
+    const iframeBookRef = useRef<HTMLIFrameElement | null>(null);
 
     // Resizable panels
     const [leftW, setLeftW] = useState(280);
@@ -369,6 +371,127 @@ export default function CourseDetailPage() {
         return () => clearTimeout(timer);
     }, [activePage?.content]);
 
+    // ── Book View: inject CSS into iframe ──
+    const isIframePage = !!activePage?.content?.includes('<iframe');
+    const [bookPage, setBookPage] = useState(0); // current spread (pair of pages)
+    const [totalPages, setTotalPages] = useState(0);
+
+    const injectBookCSS = useCallback(() => {
+        const iframe = iframeBookRef.current;
+        if (!iframe?.contentDocument) return;
+        const doc = iframe.contentDocument;
+        let styleEl = doc.getElementById('book-view-css') as HTMLStyleElement | null;
+
+        // Count pages
+        const pageEls = doc.querySelectorAll('.page');
+        setTotalPages(pageEls.length);
+
+        if (bookView && pageEls.length > 0) {
+            if (!styleEl) {
+                styleEl = doc.createElement('style');
+                styleEl.id = 'book-view-css';
+                doc.head.appendChild(styleEl);
+            }
+            styleEl.textContent = `
+                html, body {
+                    background: #e8eaed !important;
+                    margin: 0 !important;
+                    padding: 0 !important;
+                    overflow: hidden !important;
+                    height: 100vh !important;
+                }
+                body {
+                    display: flex !important;
+                    align-items: center !important;
+                    justify-content: center !important;
+                    gap: 0 !important;
+                }
+                .page {
+                    display: none !important;
+                }
+                .page.bv-visible {
+                    display: block !important;
+                    width: 50% !important;
+                    height: 95vh !important;
+                    margin: 0 !important;
+                    box-shadow: none !important;
+                    border-radius: 0 !important;
+                    min-height: unset !important;
+                    overflow-y: auto !important;
+                    flex-shrink: 0 !important;
+                }
+                .page.bv-left {
+                    border-right: 1px solid #d1d5db;
+                    box-shadow: inset -8px 0 16px -8px rgba(0,0,0,0.06);
+                }
+                .page.bv-right {
+                    box-shadow: inset 8px 0 16px -8px rgba(0,0,0,0.06);
+                }
+                /* Single page (odd last) - center */
+                .page.bv-single {
+                    width: 50% !important;
+                    border-right: none;
+                }
+            `;
+
+            // Show only the current spread
+            pageEls.forEach((el, i) => {
+                el.classList.remove('bv-visible', 'bv-left', 'bv-right', 'bv-single');
+                const leftIdx = bookPage * 2;
+                const rightIdx = leftIdx + 1;
+                if (i === leftIdx) {
+                    el.classList.add('bv-visible', 'bv-left');
+                } else if (i === rightIdx) {
+                    el.classList.add('bv-visible', 'bv-right');
+                }
+                // If only left page exists (last odd page)
+                if (i === leftIdx && rightIdx >= pageEls.length) {
+                    el.classList.add('bv-single');
+                }
+            });
+        } else {
+            if (styleEl) styleEl.remove();
+            // Remove all bv- classes
+            const pageEls2 = doc.querySelectorAll('.page');
+            pageEls2.forEach(el => {
+                el.classList.remove('bv-visible', 'bv-left', 'bv-right', 'bv-single');
+            });
+        }
+    }, [bookView, bookPage]);
+
+    // Re-inject when bookView or bookPage changes
+    useEffect(() => { injectBookCSS(); }, [bookView, bookPage, injectBookCSS]);
+
+    // Reset bookPage when unit changes
+    useEffect(() => { setBookPage(0); }, [selectedUnit]);
+
+    // Keyboard navigation for book view (arrow keys)
+    useEffect(() => {
+        if (!bookView || !isIframePage) return;
+        const maxSpread = Math.ceil(totalPages / 2) - 1;
+        const handleKey = (e: KeyboardEvent) => {
+            if (e.key === 'ArrowLeft') { e.preventDefault(); setBookPage(p => Math.max(0, p - 1)); }
+            if (e.key === 'ArrowRight') { e.preventDefault(); setBookPage(p => Math.min(maxSpread, p + 1)); }
+        };
+        window.addEventListener('keydown', handleKey);
+        return () => window.removeEventListener('keydown', handleKey);
+    }, [bookView, isIframePage, totalPages]);
+
+    // Capture iframe ref from htmlContentRef after render
+    useEffect(() => {
+        if (!isIframePage || !htmlContentRef.current) return;
+        const timer = setTimeout(() => {
+            const iframe = htmlContentRef.current?.querySelector('iframe');
+            if (iframe) {
+                iframeBookRef.current = iframe;
+                iframe.addEventListener('load', () => {
+                    injectBookCSS();
+                });
+            }
+        }, 100);
+        return () => clearTimeout(timer);
+    }, [activePage, isIframePage, injectBookCSS]);
+
     // ── Actions ──
     const toggleChapter = (id: string) => setExpandedChapters(prev => { const n = new Set(prev); n.has(id) ? n.delete(id) : n.add(id); return n; });
 
@@ -383,7 +506,7 @@ export default function CourseDetailPage() {
                 id: `${unit.unitNumber ?? 0}.0`,
                 title: '교재',
                 type: '페이지' as const,
-                content: `<iframe src="${htmlPath}" style="width:100%;min-height:85vh;border:none;border-radius:12px" />`,
+                content: `<iframe src="${htmlPath}" style="width:100%;height:100%;border:none;display:block" />`,
             };
             pagesWithHtml = [textbookPage, ...pagesWithHtml];
         }
@@ -447,7 +570,7 @@ export default function CourseDetailPage() {
                 id: `${selectedUnit.unitNumber ?? 0}.0`,
                 title: '교재',
                 type: '페이지' as const,
-                content: `<iframe src="${htmlPath}" style="width:100%;min-height:85vh;border:none;border-radius:12px" />`,
+                content: `<iframe src="${htmlPath}" style="width:100%;height:100%;border:none;display:block" />`,
             };
             return [textbookPage, ...basePgs];
         }
@@ -617,8 +740,9 @@ export default function CourseDetailPage() {
 
                 {selectedUnit && activePage ? (
                     <>
-                        {/* Highlighter Toolbar — 상단 중앙 */}
-                        <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 6, borderBottom: "1px solid #e2e8f0", background: "#fff", padding: "10px 24px", flexShrink: 0 }}>
+                        {/* Toolbar — 형광펜 + 보기 모드 */}
+                        <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 6, borderBottom: "1px solid #e2e8f0", background: "#fff", padding: "8px 24px", flexShrink: 0 }}>
+                            {!isIframePage && <>
                             <MI icon="ink_highlighter" style={{ fontSize: 16, color: activeHL ? HL_COLORS.find(c => c.id === activeHL)?.solid || "#3b82f6" : "#94a3b8" }} />
                             {HL_COLORS.map(c => {
                                 const isOn = activeHL === c.id;
@@ -639,12 +763,78 @@ export default function CourseDetailPage() {
                                 <button onClick={() => setActiveHL(null)} title="형광펜 끄기" style={{ width: 20, height: 18, borderRadius: 6, border: "1px solid #e2e8f0", background: "#f8fafc", cursor: "pointer", fontSize: 10, color: "#94a3b8", fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center" }}>✕</button>
                             )}
                             {activeHL && <span style={{ fontSize: 10, color: HL_COLORS.find(c => c.id === activeHL)?.solid || "#3b82f6", fontWeight: 700, marginLeft: 4 }}>텍스트를 드래그하세요</span>}
+                            </>}
+
+                            {/* Book view toggle for iframe content */}
+                            {isIframePage && (
+                                <>
+                                    <span style={{ fontSize: 11, color: "#64748b", fontWeight: 700 }}>Unit {selectedUnit.unitNumber}. {selectedUnit.title}</span>
+                                    <div style={{ flex: 1 }} />
+
+                                    {/* Book page navigation */}
+                                    {bookView && totalPages > 0 && (
+                                        <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
+                                            <button onClick={() => setBookPage(Math.max(0, bookPage - 1))} disabled={bookPage === 0}
+                                                style={{ padding: "4px 8px", borderRadius: 6, border: "1px solid #e2e8f0", background: bookPage === 0 ? "#f8fafc" : "#fff", cursor: bookPage === 0 ? "not-allowed" : "pointer", color: bookPage === 0 ? "#cbd5e1" : "#64748b", fontSize: 12, fontWeight: 700 }}>
+                                                <MI icon="chevron_left" style={{ fontSize: 14 }} />
+                                            </button>
+                                            <span style={{ fontSize: 10, color: "#94a3b8", fontWeight: 700, minWidth: 50, textAlign: "center" }}>
+                                                {bookPage * 2 + 1}-{Math.min(bookPage * 2 + 2, totalPages)} / {totalPages}
+                                            </span>
+                                            <button onClick={() => setBookPage(Math.min(Math.ceil(totalPages / 2) - 1, bookPage + 1))} disabled={bookPage >= Math.ceil(totalPages / 2) - 1}
+                                                style={{ padding: "4px 8px", borderRadius: 6, border: "1px solid #e2e8f0", background: bookPage >= Math.ceil(totalPages / 2) - 1 ? "#f8fafc" : "#fff", cursor: bookPage >= Math.ceil(totalPages / 2) - 1 ? "not-allowed" : "pointer", color: bookPage >= Math.ceil(totalPages / 2) - 1 ? "#cbd5e1" : "#64748b", fontSize: 12, fontWeight: 700 }}>
+                                                <MI icon="chevron_right" style={{ fontSize: 14 }} />
+                                            </button>
+                                        </div>
+                                    )}
+
+                                    <button
+                                        onClick={() => { setBookView(!bookView); setBookPage(0); }}
+                                        title={bookView ? "스크롤 보기" : "책 보기"}
+                                        style={{
+                                            padding: "5px 12px", borderRadius: 8, cursor: "pointer",
+                                            border: bookView ? "1.5px solid #3b82f6" : "1px solid #e2e8f0",
+                                            background: bookView ? "rgba(59,130,246,0.06)" : "#fff",
+                                            color: bookView ? "#2563eb" : "#64748b",
+                                            fontSize: 11, fontWeight: 700, display: "flex", alignItems: "center", gap: 5,
+                                            transition: "all 0.2s",
+                                        }}>
+                                        <MI icon={bookView ? "auto_stories" : "menu_book"} style={{ fontSize: 15 }} />
+                                        {bookView ? "책 보기" : "스크롤"}
+                                    </button>
+                                    <button
+                                        onClick={() => { setLeftOpen(false); setRightOpen(false); }}
+                                        title="집중 모드"
+                                        style={{
+                                            padding: "5px 10px", borderRadius: 8, cursor: "pointer",
+                                            border: "1px solid #e2e8f0", background: "#fff",
+                                            color: "#64748b", fontSize: 11, fontWeight: 700,
+                                            display: "flex", alignItems: "center", gap: 4,
+                                        }}>
+                                        <MI icon="fullscreen" style={{ fontSize: 15 }} />
+                                    </button>
+                                </>
+                            )}
                         </div>
 
                         {/* Content */}
-                        <div ref={contentRef} className="hide-sb" style={{ flex: 1, overflowY: "auto", padding: activePage.content?.includes("<iframe") ? "16px 12px 120px" : "32px 40px 120px" }}>
-                            {/* Page header */}
-                            {!activePage.content?.includes("<iframe") && (
+                        <div ref={contentRef} className="hide-sb" style={{
+                            flex: 1, overflowY: isIframePage && bookView ? "hidden" : "auto",
+                            padding: isIframePage ? 0 : "32px 40px 120px",
+                            background: isIframePage && bookView ? "#e8eaed" : isIframePage ? "#e8eaed" : undefined,
+                            position: "relative",
+                        }}>
+                            {/* Book spine overlay */}
+                            {isIframePage && bookView && (
+                                <div style={{
+                                    position: "absolute", top: 0, bottom: 0, left: "50%", transform: "translateX(-50%)",
+                                    width: 6, zIndex: 10, pointerEvents: "none",
+                                    background: "linear-gradient(90deg, rgba(0,0,0,0.08), rgba(0,0,0,0.15) 40%, rgba(0,0,0,0.15) 60%, rgba(0,0,0,0.08))",
+                                    boxShadow: "0 0 12px rgba(0,0,0,0.08)",
+                                }} />
+                            )}
+                            {/* Page header (non-iframe only) */}
+                            {!isIframePage && (
                             <div style={{ marginBottom: 28, paddingBottom: 20, borderBottom: "1px solid #f1f5f9" }}>
                                 <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 6 }}>
                                     <span style={{ fontSize: 10, fontWeight: 800, color: "#94a3b8", letterSpacing: 1.5 }}>UNIT {selectedUnit.unitNumber} · PAGE {activePage.id}</span>
@@ -656,7 +846,14 @@ export default function CourseDetailPage() {
 
                             {/* HTML content — ref 기반 렌더링으로 형광펜 보존 */}
                             {activePage.content && (
-                                <div ref={htmlContentRef} style={{ maxWidth: "100%", margin: "0 auto", fontSize: 14, lineHeight: 1.9, color: "#334155", marginBottom: activePage.quiz || (activePage.problems && activePage.problems.length > 0) ? 32 : 0 }} />
+                                <div ref={htmlContentRef} style={{
+                                    maxWidth: "100%", margin: "0 auto",
+                                    fontSize: isIframePage ? undefined : 14,
+                                    lineHeight: isIframePage ? undefined : 1.9,
+                                    color: isIframePage ? undefined : "#334155",
+                                    height: isIframePage ? "100%" : undefined,
+                                    marginBottom: activePage.quiz || (activePage.problems && activePage.problems.length > 0) ? 32 : 0,
+                                }} />
                             )}
 
                             {/* Quiz */}

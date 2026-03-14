@@ -12,6 +12,7 @@ import { awardXP, deductXP } from "@/lib/xp-client";
 import { trackMission } from "@/lib/mission-tracker";
 import { checkAchievementBadges } from "@/lib/reward-engine";
 import { getCourseById, getAllUnits } from "@/data/courses";
+import { getHtmlContentPath } from "@/data/courses/html-content-map";
 
 declare global { interface Window { __runCCode?: (btn: HTMLButtonElement) => Promise<void>; } }
 import type { Unit, Quiz, Chapter as ChapterType, Page, CodeProblem } from "@/data/courses";
@@ -373,7 +374,20 @@ export default function CourseDetailPage() {
 
     const selectUnit = (unit: Unit) => {
         setSelectedUnit(unit);
-        const firstPage = unit.pages?.find(p => p.content || p.quiz || p.problems) || unit.pages?.[0] || null;
+        // Auto-inject HTML textbook page if available
+        const unitIdx = allUnits.indexOf(unit);
+        const htmlPath = getHtmlContentPath(courseId, unitIdx + 1);
+        let pagesWithHtml = unit.pages ?? [];
+        if (htmlPath && !pagesWithHtml.some(p => p.id.endsWith('.0'))) {
+            const textbookPage: Page = {
+                id: `${unit.unitNumber ?? 0}.0`,
+                title: '교재',
+                type: '페이지' as const,
+                content: `<iframe src="${htmlPath}" style="width:100%;min-height:85vh;border:none;border-radius:12px" />`,
+            };
+            pagesWithHtml = [textbookPage, ...pagesWithHtml];
+        }
+        const firstPage = pagesWithHtml.find(p => p.content || p.quiz || p.problems) || pagesWithHtml[0] || null;
         setActivePage(firstPage);
         resetQuiz();
     };
@@ -422,8 +436,23 @@ export default function CourseDetailPage() {
         }
     };
 
-    // Page navigation
-    const pages = selectedUnit?.pages ?? [];
+    // Page navigation (include injected HTML textbook page)
+    const pages = useMemo(() => {
+        const basePgs = selectedUnit?.pages ?? [];
+        if (!selectedUnit) return basePgs;
+        const uIdx = allUnits.indexOf(selectedUnit);
+        const htmlPath = getHtmlContentPath(courseId, uIdx + 1);
+        if (htmlPath && !basePgs.some(p => p.id.endsWith('.0'))) {
+            const textbookPage: Page = {
+                id: `${selectedUnit.unitNumber ?? 0}.0`,
+                title: '교재',
+                type: '페이지' as const,
+                content: `<iframe src="${htmlPath}" style="width:100%;min-height:85vh;border:none;border-radius:12px" />`,
+            };
+            return [textbookPage, ...basePgs];
+        }
+        return basePgs;
+    }, [selectedUnit, allUnits, courseId]);
     const currentPageIdx = pages.findIndex(p => p.id === activePage?.id);
     const prevPage = currentPageIdx > 0 ? pages[currentPageIdx - 1] : null;
     const nextPage = currentPageIdx < pages.length - 1 ? pages[currentPageIdx + 1] : null;
@@ -539,7 +568,9 @@ export default function CourseDetailPage() {
                                                 const prevU = i > 0 ? ch.units[i - 1] : null;
                                                 const locked = prevU ? !completedUnits.has(prevU.id) && !done : false;
                                                 const isSelected = selectedUnit?.id === unit.id;
-                                                const hasContent = unit.pages?.some(p => p.content || p.quiz || p.problems) || unit.content;
+                                                const uIdx = allUnits.indexOf(unit);
+                                                const hasHtml = !!getHtmlContentPath(courseId, uIdx + 1);
+                                                const hasContent = unit.pages?.some(p => p.content || p.quiz || p.problems) || unit.content || hasHtml;
                                                 return (
                                                     <button key={unit.id} onClick={() => !locked && hasContent && selectUnit(unit)} disabled={locked || !hasContent}
                                                         style={{

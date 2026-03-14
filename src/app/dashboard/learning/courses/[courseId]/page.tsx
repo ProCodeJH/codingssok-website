@@ -72,6 +72,8 @@ export default function CourseDetailPage() {
     const [leftOpen, setLeftOpen] = useState(true);
     const [rightOpen, setRightOpen] = useState(true);
     const [bookView, setBookView] = useState(false);
+    const [isFullscreen, setIsFullscreen] = useState(false);
+    const [bookPageAnimDir, setBookPageAnimDir] = useState<'left' | 'right' | null>(null);
     const iframeBookRef = useRef<HTMLIFrameElement | null>(null);
 
     // Resizable panels
@@ -160,6 +162,21 @@ export default function CourseDetailPage() {
     }, [timerRunning, timerSec, timerMode]);
 
     const resetTimer = (mode: "focus" | "short" | "long") => { setTimerMode(mode); setTimerSec(TIMER_DURATIONS[mode]); setTimerRunning(false); if (timerRef.current) clearInterval(timerRef.current); };
+
+    // ── Fullscreen API ──
+    const toggleFullscreen = useCallback(() => {
+        if (!document.fullscreenElement) {
+            document.documentElement.requestFullscreen().catch(() => {});
+        } else {
+            document.exitFullscreen().catch(() => {});
+        }
+    }, []);
+
+    useEffect(() => {
+        const handler = () => setIsFullscreen(!!document.fullscreenElement);
+        document.addEventListener('fullscreenchange', handler);
+        return () => document.removeEventListener('fullscreenchange', handler);
+    }, []);
 
     // Q&A
     const [qaList, setQaList] = useState<{ q: string; ts: number }[]>(() => {
@@ -394,7 +411,7 @@ export default function CourseDetailPage() {
             }
             styleEl.textContent = `
                 html, body {
-                    background: #e8eaed !important;
+                    background: #d5d8dc !important;
                     margin: 0 !important;
                     padding: 0 !important;
                     overflow: hidden !important;
@@ -409,44 +426,96 @@ export default function CourseDetailPage() {
                 .page {
                     display: none !important;
                 }
+                @keyframes bv-slide-in-left {
+                    from { opacity: 0.4; transform: translateX(-30px); }
+                    to { opacity: 1; transform: translateX(0); }
+                }
+                @keyframes bv-slide-in-right {
+                    from { opacity: 0.4; transform: translateX(30px); }
+                    to { opacity: 1; transform: translateX(0); }
+                }
                 .page.bv-visible {
                     display: block !important;
                     width: 50% !important;
-                    height: 95vh !important;
+                    height: 96vh !important;
                     margin: 0 !important;
-                    box-shadow: none !important;
                     border-radius: 0 !important;
                     min-height: unset !important;
                     overflow-y: auto !important;
                     flex-shrink: 0 !important;
+                    background: #fff !important;
+                    box-sizing: border-box !important;
+                    position: relative !important;
+                }
+                .page.bv-visible.bv-anim-left {
+                    animation: bv-slide-in-left 0.35s ease-out;
+                }
+                .page.bv-visible.bv-anim-right {
+                    animation: bv-slide-in-right 0.35s ease-out;
                 }
                 .page.bv-left {
-                    border-right: 1px solid #d1d5db;
-                    box-shadow: inset -8px 0 16px -8px rgba(0,0,0,0.06);
+                    border-right: none;
+                    box-shadow: -4px 0 20px rgba(0,0,0,0.08), inset -12px 0 20px -12px rgba(0,0,0,0.04);
+                    border-radius: 4px 0 0 4px !important;
                 }
                 .page.bv-right {
-                    box-shadow: inset 8px 0 16px -8px rgba(0,0,0,0.06);
+                    box-shadow: 4px 0 20px rgba(0,0,0,0.08), inset 12px 0 20px -12px rgba(0,0,0,0.04);
+                    border-radius: 0 4px 4px 0 !important;
+                }
+                /* Page corner curl effect */
+                .page.bv-right::after {
+                    content: '';
+                    position: absolute;
+                    bottom: 0;
+                    right: 0;
+                    width: 30px;
+                    height: 30px;
+                    background: linear-gradient(225deg, #d5d8dc 45%, rgba(255,255,255,0.6) 50%, #fff 55%);
+                    border-radius: 0 0 4px 0;
+                    pointer-events: none;
+                    z-index: 2;
+                }
+                .page.bv-left::after {
+                    content: '';
+                    position: absolute;
+                    bottom: 0;
+                    left: 0;
+                    width: 30px;
+                    height: 30px;
+                    background: linear-gradient(135deg, #d5d8dc 45%, rgba(255,255,255,0.6) 50%, #fff 55%);
+                    border-radius: 0 0 0 4px;
+                    pointer-events: none;
+                    z-index: 2;
                 }
                 /* Single page (odd last) - center */
                 .page.bv-single {
                     width: 50% !important;
-                    border-right: none;
+                    box-shadow: 0 4px 24px rgba(0,0,0,0.1);
+                    border-radius: 4px !important;
                 }
+                /* Scrollbar styling inside pages */
+                .page.bv-visible::-webkit-scrollbar { width: 4px; }
+                .page.bv-visible::-webkit-scrollbar-track { background: transparent; }
+                .page.bv-visible::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
             `;
 
             // Show only the current spread
+            const animClass = bookPageAnimDir === 'right' ? 'bv-anim-right' : bookPageAnimDir === 'left' ? 'bv-anim-left' : '';
             pageEls.forEach((el, i) => {
-                el.classList.remove('bv-visible', 'bv-left', 'bv-right', 'bv-single');
+                el.classList.remove('bv-visible', 'bv-left', 'bv-right', 'bv-single', 'bv-anim-left', 'bv-anim-right');
                 const leftIdx = bookPage * 2;
                 const rightIdx = leftIdx + 1;
                 if (i === leftIdx) {
                     el.classList.add('bv-visible', 'bv-left');
+                    if (animClass) el.classList.add(animClass);
                 } else if (i === rightIdx) {
                     el.classList.add('bv-visible', 'bv-right');
+                    if (animClass) el.classList.add(animClass);
                 }
                 // If only left page exists (last odd page)
                 if (i === leftIdx && rightIdx >= pageEls.length) {
                     el.classList.add('bv-single');
+                    el.classList.remove('bv-left');
                 }
             });
         } else {
@@ -454,10 +523,10 @@ export default function CourseDetailPage() {
             // Remove all bv- classes
             const pageEls2 = doc.querySelectorAll('.page');
             pageEls2.forEach(el => {
-                el.classList.remove('bv-visible', 'bv-left', 'bv-right', 'bv-single');
+                el.classList.remove('bv-visible', 'bv-left', 'bv-right', 'bv-single', 'bv-anim-left', 'bv-anim-right');
             });
         }
-    }, [bookView, bookPage]);
+    }, [bookView, bookPage, bookPageAnimDir]);
 
     // Re-inject when bookView or bookPage changes
     useEffect(() => { injectBookCSS(); }, [bookView, bookPage, injectBookCSS]);
@@ -465,17 +534,36 @@ export default function CourseDetailPage() {
     // Reset bookPage when unit changes
     useEffect(() => { setBookPage(0); }, [selectedUnit]);
 
-    // Keyboard navigation for book view (arrow keys)
+    // Keyboard navigation for book view
     useEffect(() => {
         if (!bookView || !isIframePage) return;
         const maxSpread = Math.ceil(totalPages / 2) - 1;
         const handleKey = (e: KeyboardEvent) => {
-            if (e.key === 'ArrowLeft') { e.preventDefault(); setBookPage(p => Math.max(0, p - 1)); }
-            if (e.key === 'ArrowRight') { e.preventDefault(); setBookPage(p => Math.min(maxSpread, p + 1)); }
+            if (e.key === 'ArrowLeft') {
+                e.preventDefault();
+                setBookPageAnimDir('left');
+                setBookPage(p => Math.max(0, p - 1));
+                setTimeout(() => setBookPageAnimDir(null), 400);
+            }
+            if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') {
+                e.preventDefault();
+                setBookPageAnimDir('right');
+                setBookPage(p => Math.min(maxSpread, p + 1));
+                setTimeout(() => setBookPageAnimDir(null), 400);
+            }
+            if (e.key === 'PageUp') {
+                e.preventDefault();
+                setBookPageAnimDir('left');
+                setBookPage(p => Math.max(0, p - 1));
+                setTimeout(() => setBookPageAnimDir(null), 400);
+            }
+            if (e.key === 'Escape' && isFullscreen) {
+                document.exitFullscreen().catch(() => {});
+            }
         };
         window.addEventListener('keydown', handleKey);
         return () => window.removeEventListener('keydown', handleKey);
-    }, [bookView, isIframePage, totalPages]);
+    }, [bookView, isIframePage, totalPages, isFullscreen]);
 
     // Capture iframe ref from htmlContentRef after render
     useEffect(() => {
@@ -623,6 +711,12 @@ export default function CourseDetailPage() {
                 .panel-drag:hover,.panel-drag:active{background:rgba(59,130,246,0.15)}
                 .panel-drag::after{content:'';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:2px;height:32px;border-radius:2px;background:#cbd5e1;transition:background .15s}
                 .panel-drag:hover::after,.panel-drag:active::after{background:#3b82f6}
+                .book-floating-bar{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);z-index:99999;display:flex;align-items:center;gap:10px;padding:10px 20px;border-radius:16px;background:rgba(15,23,42,0.85);backdrop-filter:blur(12px);box-shadow:0 8px 32px rgba(0,0,0,0.3);transition:opacity .3s}
+                .book-floating-bar button{border:none;cursor:pointer;border-radius:8px;font-weight:700;transition:all .15s;display:flex;align-items:center;justify-content:center}
+                .book-floating-bar button:hover{transform:scale(1.08)}
+                .book-page-dots{display:flex;gap:4px;align-items:center}
+                .book-page-dot{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,0.25);transition:all .2s}
+                .book-page-dot.active{background:#3b82f6;width:16px;border-radius:3px}
             `}</style>
 
             {levelUpInfo && <LevelUpModal level={levelUpInfo.level} onClose={() => setLevelUpInfo(null)} />}
@@ -637,7 +731,7 @@ export default function CourseDetailPage() {
                 LEFT PANEL — 커리큘럼 트리
                ══════════════════════════════════════════════ */}
             <aside
-                style={{ width: leftOpen ? leftW : 0, opacity: leftOpen ? 1 : 0, flexShrink: 0, overflow: "hidden", borderRight: leftOpen ? "1px solid #e2e8f0" : "none", background: "#fff", display: "flex", flexDirection: "column", transition: isDragging ? "none" : "width .25s ease, opacity .2s ease" }}>
+                style={{ width: leftOpen && !isFullscreen ? leftW : 0, opacity: leftOpen && !isFullscreen ? 1 : 0, flexShrink: 0, overflow: "hidden", borderRight: leftOpen && !isFullscreen ? "1px solid #e2e8f0" : "none", background: "#fff", display: isFullscreen ? "none" : "flex", flexDirection: "column", transition: isDragging ? "none" : "width .25s ease, opacity .2s ease" }}>
 
                 {/* Header */}
                 <div style={{ padding: "20px 16px 12px", borderBottom: "1px solid #f1f5f9" }}>
@@ -726,8 +820,8 @@ export default function CourseDetailPage() {
             </aside>
 
             {/* Left drag handle + toggle */}
-            {leftOpen && <div className="panel-drag" onMouseDown={(e) => startDrag("left", e)} onDoubleClick={() => setLeftOpen(false)} title="드래그: 크기 조절 / 더블클릭: 접기" />}
-            {!leftOpen && (
+            {leftOpen && !isFullscreen && <div className="panel-drag" onMouseDown={(e) => startDrag("left", e)} onDoubleClick={() => setLeftOpen(false)} title="드래그: 크기 조절 / 더블클릭: 접기" />}
+            {!leftOpen && !isFullscreen && (
                 <button onClick={() => setLeftOpen(true)} style={{ width: 24, height: 48, position: "absolute", left: 0, top: "50%", transform: "translateY(-50%)", zIndex: 50, borderRadius: "0 8px 8px 0", border: "1px solid #e2e8f0", borderLeft: "none", background: "#fff", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "2px 0 8px rgba(0,0,0,0.04)" }}>
                     <span style={{ fontSize: 12, color: "#94a3b8" }}>▸</span>
                 </button>
@@ -741,7 +835,7 @@ export default function CourseDetailPage() {
                 {selectedUnit && activePage ? (
                     <>
                         {/* Toolbar — 형광펜 + 보기 모드 */}
-                        <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 6, borderBottom: "1px solid #e2e8f0", background: "#fff", padding: "8px 24px", flexShrink: 0 }}>
+                        <div style={{ display: isFullscreen && bookView ? "none" : "flex", alignItems: "center", justifyContent: "center", gap: 6, borderBottom: "1px solid #e2e8f0", background: "#fff", padding: "8px 24px", flexShrink: 0 }}>
                             {!isIframePage && <>
                             <MI icon="ink_highlighter" style={{ fontSize: 16, color: activeHL ? HL_COLORS.find(c => c.id === activeHL)?.solid || "#3b82f6" : "#94a3b8" }} />
                             {HL_COLORS.map(c => {
@@ -774,14 +868,14 @@ export default function CourseDetailPage() {
                                     {/* Book page navigation */}
                                     {bookView && totalPages > 0 && (
                                         <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
-                                            <button onClick={() => setBookPage(Math.max(0, bookPage - 1))} disabled={bookPage === 0}
+                                            <button onClick={() => { setBookPageAnimDir('left'); setBookPage(Math.max(0, bookPage - 1)); setTimeout(() => setBookPageAnimDir(null), 400); }} disabled={bookPage === 0}
                                                 style={{ padding: "4px 8px", borderRadius: 6, border: "1px solid #e2e8f0", background: bookPage === 0 ? "#f8fafc" : "#fff", cursor: bookPage === 0 ? "not-allowed" : "pointer", color: bookPage === 0 ? "#cbd5e1" : "#64748b", fontSize: 12, fontWeight: 700 }}>
                                                 <MI icon="chevron_left" style={{ fontSize: 14 }} />
                                             </button>
                                             <span style={{ fontSize: 10, color: "#94a3b8", fontWeight: 700, minWidth: 50, textAlign: "center" }}>
                                                 {bookPage * 2 + 1}-{Math.min(bookPage * 2 + 2, totalPages)} / {totalPages}
                                             </span>
-                                            <button onClick={() => setBookPage(Math.min(Math.ceil(totalPages / 2) - 1, bookPage + 1))} disabled={bookPage >= Math.ceil(totalPages / 2) - 1}
+                                            <button onClick={() => { setBookPageAnimDir('right'); setBookPage(Math.min(Math.ceil(totalPages / 2) - 1, bookPage + 1)); setTimeout(() => setBookPageAnimDir(null), 400); }} disabled={bookPage >= Math.ceil(totalPages / 2) - 1}
                                                 style={{ padding: "4px 8px", borderRadius: 6, border: "1px solid #e2e8f0", background: bookPage >= Math.ceil(totalPages / 2) - 1 ? "#f8fafc" : "#fff", cursor: bookPage >= Math.ceil(totalPages / 2) - 1 ? "not-allowed" : "pointer", color: bookPage >= Math.ceil(totalPages / 2) - 1 ? "#cbd5e1" : "#64748b", fontSize: 12, fontWeight: 700 }}>
                                                 <MI icon="chevron_right" style={{ fontSize: 14 }} />
                                             </button>
@@ -803,15 +897,16 @@ export default function CourseDetailPage() {
                                         {bookView ? "책 보기" : "스크롤"}
                                     </button>
                                     <button
-                                        onClick={() => { setLeftOpen(false); setRightOpen(false); }}
-                                        title="집중 모드"
+                                        onClick={toggleFullscreen}
+                                        title={isFullscreen ? "전체화면 종료" : "전체화면"}
                                         style={{
                                             padding: "5px 10px", borderRadius: 8, cursor: "pointer",
-                                            border: "1px solid #e2e8f0", background: "#fff",
-                                            color: "#64748b", fontSize: 11, fontWeight: 700,
+                                            border: isFullscreen ? "1.5px solid #3b82f6" : "1px solid #e2e8f0",
+                                            background: isFullscreen ? "rgba(59,130,246,0.06)" : "#fff",
+                                            color: isFullscreen ? "#2563eb" : "#64748b", fontSize: 11, fontWeight: 700,
                                             display: "flex", alignItems: "center", gap: 4,
                                         }}>
-                                        <MI icon="fullscreen" style={{ fontSize: 15 }} />
+                                        <MI icon={isFullscreen ? "fullscreen_exit" : "fullscreen"} style={{ fontSize: 15 }} />
                                     </button>
                                 </>
                             )}
@@ -826,12 +921,19 @@ export default function CourseDetailPage() {
                         }}>
                             {/* Book spine overlay */}
                             {isIframePage && bookView && (
-                                <div style={{
-                                    position: "absolute", top: 0, bottom: 0, left: "50%", transform: "translateX(-50%)",
-                                    width: 6, zIndex: 10, pointerEvents: "none",
-                                    background: "linear-gradient(90deg, rgba(0,0,0,0.08), rgba(0,0,0,0.15) 40%, rgba(0,0,0,0.15) 60%, rgba(0,0,0,0.08))",
-                                    boxShadow: "0 0 12px rgba(0,0,0,0.08)",
-                                }} />
+                                <>
+                                    <div style={{
+                                        position: "absolute", top: "2vh", bottom: "2vh", left: "50%", transform: "translateX(-50%)",
+                                        width: 8, zIndex: 10, pointerEvents: "none",
+                                        background: "linear-gradient(90deg, transparent 0%, rgba(0,0,0,0.03) 15%, rgba(0,0,0,0.12) 40%, rgba(0,0,0,0.18) 50%, rgba(0,0,0,0.12) 60%, rgba(0,0,0,0.03) 85%, transparent 100%)",
+                                    }} />
+                                    {/* Spine highlight line */}
+                                    <div style={{
+                                        position: "absolute", top: "2vh", bottom: "2vh", left: "50%", transform: "translateX(-50%)",
+                                        width: 1, zIndex: 11, pointerEvents: "none",
+                                        background: "rgba(255,255,255,0.15)",
+                                    }} />
+                                </>
                             )}
                             {/* Page header (non-iframe only) */}
                             {!isIframePage && (
@@ -886,6 +988,79 @@ export default function CourseDetailPage() {
                                 )}
                             </div>
                         </div>
+
+                        {/* ── Floating Book Control Bar (fullscreen book view) ── */}
+                        {isFullscreen && bookView && isIframePage && totalPages > 0 && (() => {
+                            const maxSpread = Math.ceil(totalPages / 2) - 1;
+                            const spreadCount = Math.ceil(totalPages / 2);
+                            return (
+                                <div className="book-floating-bar">
+                                    {/* Prev */}
+                                    <button
+                                        onClick={() => { setBookPageAnimDir('left'); setBookPage(Math.max(0, bookPage - 1)); setTimeout(() => setBookPageAnimDir(null), 400); }}
+                                        disabled={bookPage === 0}
+                                        style={{ padding: "6px 10px", background: bookPage === 0 ? "rgba(255,255,255,0.05)" : "rgba(255,255,255,0.12)", color: bookPage === 0 ? "rgba(255,255,255,0.2)" : "#fff", fontSize: 14 }}>
+                                        <MI icon="chevron_left" style={{ fontSize: 18 }} />
+                                    </button>
+                                    {/* Page counter */}
+                                    <span style={{ fontSize: 12, color: "rgba(255,255,255,0.85)", fontWeight: 700, minWidth: 60, textAlign: "center" }}>
+                                        {bookPage * 2 + 1}-{Math.min(bookPage * 2 + 2, totalPages)} / {totalPages}
+                                    </span>
+                                    {/* Next */}
+                                    <button
+                                        onClick={() => { setBookPageAnimDir('right'); setBookPage(Math.min(maxSpread, bookPage + 1)); setTimeout(() => setBookPageAnimDir(null), 400); }}
+                                        disabled={bookPage >= maxSpread}
+                                        style={{ padding: "6px 10px", background: bookPage >= maxSpread ? "rgba(255,255,255,0.05)" : "rgba(255,255,255,0.12)", color: bookPage >= maxSpread ? "rgba(255,255,255,0.2)" : "#fff", fontSize: 14 }}>
+                                        <MI icon="chevron_right" style={{ fontSize: 18 }} />
+                                    </button>
+                                    {/* Divider */}
+                                    <div style={{ width: 1, height: 20, background: "rgba(255,255,255,0.15)", margin: "0 4px" }} />
+                                    {/* Page dots */}
+                                    <div className="book-page-dots">
+                                        {Array.from({ length: Math.min(spreadCount, 20) }, (_, i) => (
+                                            <button key={i}
+                                                className={`book-page-dot${i === bookPage ? ' active' : ''}`}
+                                                onClick={() => { setBookPageAnimDir(i > bookPage ? 'right' : 'left'); setBookPage(i); setTimeout(() => setBookPageAnimDir(null), 400); }}
+                                                title={`${i * 2 + 1}-${Math.min(i * 2 + 2, totalPages)}`}
+                                                style={{ padding: 0, border: "none", cursor: "pointer" }} />
+                                        ))}
+                                        {spreadCount > 20 && <span style={{ fontSize: 10, color: "rgba(255,255,255,0.4)" }}>...</span>}
+                                    </div>
+                                    {/* Divider */}
+                                    <div style={{ width: 1, height: 20, background: "rgba(255,255,255,0.15)", margin: "0 4px" }} />
+                                    {/* Toggle scroll/book */}
+                                    <button
+                                        onClick={() => { setBookView(false); setBookPage(0); }}
+                                        style={{ padding: "6px 12px", background: "rgba(255,255,255,0.12)", color: "#fff", fontSize: 11, gap: 4, display: "flex", alignItems: "center" }}>
+                                        <MI icon="view_agenda" style={{ fontSize: 14 }} />
+                                        <span>스크롤</span>
+                                    </button>
+                                    {/* Exit fullscreen */}
+                                    <button
+                                        onClick={toggleFullscreen}
+                                        style={{ padding: "6px 10px", background: "rgba(239,68,68,0.2)", color: "#fca5a5", fontSize: 11, gap: 4, display: "flex", alignItems: "center" }}>
+                                        <MI icon="fullscreen_exit" style={{ fontSize: 16 }} />
+                                    </button>
+                                </div>
+                            );
+                        })()}
+
+                        {/* ── Page indicator dots (non-fullscreen book view) ── */}
+                        {!isFullscreen && bookView && isIframePage && totalPages > 0 && (() => {
+                            const spreadCount = Math.ceil(totalPages / 2);
+                            return (
+                                <div style={{ display: "flex", justifyContent: "center", padding: "8px 0", gap: 4, background: "#e8eaed", borderTop: "1px solid #d1d5db" }}>
+                                    {Array.from({ length: Math.min(spreadCount, 30) }, (_, i) => (
+                                        <button key={i}
+                                            onClick={() => { setBookPageAnimDir(i > bookPage ? 'right' : 'left'); setBookPage(i); setTimeout(() => setBookPageAnimDir(null), 400); }}
+                                            style={{
+                                                width: i === bookPage ? 16 : 6, height: 6, borderRadius: i === bookPage ? 3 : 50, border: "none", cursor: "pointer", padding: 0,
+                                                background: i === bookPage ? "#3b82f6" : "#b0b5bc", transition: "all 0.2s",
+                                            }} />
+                                    ))}
+                                </div>
+                            );
+                        })()}
                     </>
                 ) : selectedUnit && !activePage && selectedUnit.content ? (
                     /* Legacy unit with direct content (no pages) */
@@ -949,8 +1124,8 @@ export default function CourseDetailPage() {
             </main>
 
             {/* Right drag handle + toggle */}
-            {rightOpen && <div className="panel-drag" onMouseDown={(e) => startDrag("right", e)} onDoubleClick={() => setRightOpen(false)} title="드래그: 크기 조절 / 더블클릭: 접기" />}
-            {!rightOpen && (
+            {rightOpen && !isFullscreen && <div className="panel-drag" onMouseDown={(e) => startDrag("right", e)} onDoubleClick={() => setRightOpen(false)} title="드래그: 크기 조절 / 더블클릭: 접기" />}
+            {!rightOpen && !isFullscreen && (
                 <button onClick={() => setRightOpen(true)} style={{ width: 24, height: 48, position: "absolute", right: 0, top: "50%", transform: "translateY(-50%)", zIndex: 50, borderRadius: "8px 0 0 8px", border: "1px solid #e2e8f0", borderRight: "none", background: "#fff", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "-2px 0 8px rgba(0,0,0,0.04)" }}>
                     <span style={{ fontSize: 12, color: "#94a3b8" }}>◂</span>
                 </button>
@@ -960,7 +1135,7 @@ export default function CourseDetailPage() {
                 RIGHT PANEL — 도구 패널
                ══════════════════════════════════════════════ */}
             <aside
-                style={{ width: rightOpen ? rightW : 0, opacity: rightOpen ? 1 : 0, flexShrink: 0, overflow: "hidden", borderLeft: rightOpen ? "1px solid #e2e8f0" : "none", background: "#fff", display: "flex", flexDirection: "column", transition: isDragging ? "none" : "width .25s ease, opacity .2s ease" }}>
+                style={{ width: rightOpen && !isFullscreen ? rightW : 0, opacity: rightOpen && !isFullscreen ? 1 : 0, flexShrink: 0, overflow: "hidden", borderLeft: rightOpen && !isFullscreen ? "1px solid #e2e8f0" : "none", background: "#fff", display: isFullscreen ? "none" : "flex", flexDirection: "column", transition: isDragging ? "none" : "width .25s ease, opacity .2s ease" }}>
 
                 {/* ── Tab Bar ── */}
                 <div style={{ display: "flex", borderBottom: "1px solid #f1f5f9", background: "#fafafa" }}>
